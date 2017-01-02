@@ -15,7 +15,9 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
+
 import java.io.*;
 
 /** A thread for executing commands */
@@ -41,7 +43,10 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	private Vector cleanUpJobs;
 	private int listenerSuppressionLevel = 0; //0 no suppression; 1 lower level only; 2 all suppressed
 	public static int numFilesBeingRead =0;
-	
+	boolean readingThread = false;
+	public boolean resetUIOnMe = true;
+	public static String SEPARATETHREADHELPMESSAGE = "If you use a separate thread, you will then regain control of Mesquite once the process starts."+
+	 " This has the advantage that it will allow you to continue to use Mesquite.  However, it is dangerous, as you can alter aspects of your data that will eventually cause problems for the separate process.";
 	static int numInst = 1;
 	static {
 		threads = new Vector(10);
@@ -65,10 +70,28 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		Thread t = Thread.currentThread();
 		return (t instanceof MesquiteThread) ||(t instanceof ConsoleThread);
 	}
+	public static boolean isReadingThread(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread)
+			return ((MesquiteThread)t).isReading();
+		return false;
+	}
 	public String toString(){
 		return getClass().getName() + " = " + super.toString();
 	}
-
+	public static boolean okToResetUI(){
+		Thread thread = Thread.currentThread();
+		if (!(thread instanceof MesquiteThread))
+			return false;
+		return ((MesquiteThread)thread).resetUIOnMe;
+	}
+	//=====================
+	public void setIsReading(boolean isReading){
+		this.readingThread = isReading;
+	}
+	public boolean isReading(){
+		return readingThread;
+	}
 	//=====================
 	/*logger for current thread */
 	Logger logger = null;

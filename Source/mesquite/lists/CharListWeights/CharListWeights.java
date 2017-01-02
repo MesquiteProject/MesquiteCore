@@ -147,7 +147,7 @@ public class CharListWeights extends CharListAssistant {
 		deleteMenuItem(mStc);
 		deleteMenuItem(mwt);
 		mwt = addMenuItem("Set Weight...", makeCommand("setWeight", this));
-		mLine = addMenuItem("-",null);
+		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current set", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)

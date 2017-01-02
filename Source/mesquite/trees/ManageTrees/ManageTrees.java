@@ -369,13 +369,18 @@ public class ManageTrees extends TreesManager {
 						tw.getParentFrame().showFrontWindow();
 						return null;
 					}
+					
 
 					//not shown; need to make new tree window
+					CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
+					CommandRecord scr = new CommandRecord(true);
+					MesquiteThread.setCurrentCommandRecord(scr);
 					String commands = "makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It; setTreeSource  #StoredTrees;";
 					commands += " tell It; setTaxa " + getProject().getTaxaReferenceInternal(taxa) + " ;  setTreeBlock " + TreeVector.toExternal(whichTreeBlock)  + "; endTell; getWindow; tell It; setSize 400 300; endTell; showWindowForce; endTell; ";
 					MesquiteInteger pos = new MesquiteInteger(0);
 					Puppeteer p = new Puppeteer(this);
 					p.execute(treeWindowCoord, commands, pos, null, false);
+					MesquiteThread.setCurrentCommandRecord(oldCR);
 					/*
 					 */
 				}
@@ -1764,6 +1769,7 @@ abstract class FillerThread extends MesquiteThread {
 	ManageTrees ownerModule;
 	public FillerThread (ManageTrees ownerModule) {
 		super();
+		resetUIOnMe = false;
 		this.ownerModule = ownerModule;
 	}
 	public void threadGoodbye(){
@@ -1988,6 +1994,10 @@ class TreeBlock extends NexusBlock {
 		}
 		return (block.getBlockName().equalsIgnoreCase("TAXA") || block.getBlockName().equalsIgnoreCase("CHARACTERS"));
 
+	}
+	public void dispose(){
+		trees = null;
+		super.dispose();
 	}
 	public String getBlockName(){
 		return "TREES";

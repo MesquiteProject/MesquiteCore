@@ -753,7 +753,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isColumnNameSelected(i) || isColumnSelected(i)) {
 					if (columnNamesEditable) {
-						String t = getNextTabbedToken(s, pos);
+						String t = StringUtil.getNextTabbedToken(s, pos);
 						if (t != null)
 							returnedColumnNameText(i, t);
 					}
@@ -764,7 +764,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		for (int j = 0; j < numRowsTotal; j++) {
 			if (rowNamesCopyPaste && (isRowNameSelected(j) || isRowSelected(j))) {
 				if (rowNamesEditable) {
-					String t = getNextTabbedToken(s, pos);
+					String t = StringUtil.getNextTabbedToken(s, pos);
 					if (t != null)
 						returnedRowNameText(j, t);
 				}
@@ -773,7 +773,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
 					if (isCellEditable(i, j)) {
-						String t = getNextTabbedToken(s, pos);
+						String t = StringUtil.getNextTabbedToken(s, pos);
 						if (t != null)
 							returnedMatrixText(i, j, t);
 					}
@@ -789,7 +789,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		MesquiteInteger pos = new MesquiteInteger(0);
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isColumnNameSelected(i) || isColumnSelected(i)) {
-						String t = getNextTabbedToken(s, pos);
+						String t = StringUtil.getNextTabbedToken(s, pos);
 						if (t != null && columnNamesEditable && columnNamesCopyPaste)
 							returnedColumnNameText(i, t);
 					count++;
@@ -798,14 +798,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		
 		for (int j = 0; j < numRowsTotal; j++) {
 			if (isRowNameSelected(j) || isRowSelected(j)) {
-					String t = getNextTabbedToken(s, pos);
+					String t = StringUtil.getNextTabbedToken(s, pos);
 					if (t != null && rowNamesEditable && rowNamesCopyPaste)
 						returnedRowNameText(j, t);
 				count++;
 			}
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
-						String t = getNextTabbedToken(s, pos);
+						String t = StringUtil.getNextTabbedToken(s, pos);
 						if (t != null && isCellEditable(i, j))
 							returnedMatrixText(i, j, t);
 					count++;
@@ -1839,80 +1839,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		return result;
 	}
 
-	/* ................................................................................................................. */
-	String getTabbedToken(String s, int which) {
-		if (s == null)
-			return null;
-		int count = -1;
-		int startOfToken = -1;
-		int endOfToken = -1;
-		for (int i = 0; i < s.length(); i++) {
-			if (isLineBreak(s, i)) {
-				while (i < s.length() && (isLineBreak(s, i)))
-					i++;
-				if (i < s.length()) {
-					count++;
-					if (count == which)
-						startOfToken = i;
-					while (i < s.length() && (s.charAt(i) != '\t') && !isLineBreak(s, i))
-						i++;
-					if (startOfToken >= 0) {
-						endOfToken = i;
-						return s.substring(startOfToken, endOfToken);
-					}
-					// i--;
-				}
-			}
-			else {
-				count++;
-				if (count == which)
-					startOfToken = i;
-				while (i < s.length() && (s.charAt(i) != '\t') && !isLineBreak(s, i))
-					i++;
-				if (startOfToken >= 0) {
-					endOfToken = i;
-					return s.substring(startOfToken, endOfToken);
-				}
-				// i--;
-			}
-		}
-		return null;
-	}
 
-	/* ................................................................................................................. */
-	// this is modified from getTabbedToken which explains its strange style
-	public static String getNextTabbedToken(String s, MesquiteInteger pos) {
-		if (s == null)
-			return null;
-		int which = 0;
-		int count = -1;
-		int startOfToken = -1;
-		int endOfToken = -1;
-		for (int i = pos.getValue(); i < s.length(); i++) {
-			count++;
-			if (count == which)
-				startOfToken = i;
-			while (i < s.length() && (s.charAt(i) != '\t') && !isLineBreak(s, i))
-				i++;
-
-			if (startOfToken >= 0) {
-				endOfToken = i;
-				pos.setValue(i + 1);
-				if (isLineBreak(s,i) && i+1<s.length() && isLineBreak(s, i+1) && s.charAt(i) != s.charAt(i+1) && StringUtil.lineEnding().length() > 1)
-					pos.increment();
-				return s.substring(startOfToken, endOfToken);
-			}
-		}
-		pos.setValue(s.length());
-		return null;
-	}
-
-	static boolean isLineBreak(String s, int index) {
-		if (s == null || index >= s.length() || index < 0)
-			return false;
-		char c = s.charAt(index);
-		return (c == '\n' || c == '\r');
-	}
 
 	/* ................................................................................................................. */
 	public MesquiteCommand getCopyCommand() {
@@ -2907,7 +2834,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			int lineX = 0;
 			//	if (tb.showRowGrabbers)
 			//		lineX = tb.getRowGrabberWidth();
-			for (int c=firstColumnVisible; (c<column); c++) {
+			for (int c=firstColumnVisible; c<column && c<columnWidths.length; c++) {
 				lineX += columnWidths[c];
 			}
 			return lineX;

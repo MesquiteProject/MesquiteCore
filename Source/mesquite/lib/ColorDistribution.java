@@ -30,8 +30,9 @@ public class ColorDistribution {
 	public static int numberOfRed = 5;
 	public static int numberOfGreen = 11;
 	public static int numberOfBlue = 14;
-	public static Color lightGreen, veryLightGreen, darkGreen, lightGreenYellow, lightGreenYellowish, lightBlue, darkBlue, veryLightBlue, violetBlue, veryLightGray, veryVeryLightGray, veryVeryVeryLightGray, lightRed, darkRed, veryVeryLightGreen;
+	public static Color lightGreen, veryLightGreen, darkGreen, lightGreenYellow, lightGreenYellowish, lightBlue, darkBlue, veryLightBlue, veryVeryLightBlue, violetBlue, veryLightGray, veryVeryLightGray, veryVeryVeryLightGray, lightRed, darkRed, veryVeryLightGreen;
 	public static Color darkBrown, brown, lightOrange, lightPurple, orange, straw, lightYellow, veryLightYellow, tabLineBrown, mesquiteBrown, darkMesquiteBrown, veryDarkMesquiteBrown, lightMesquiteBrown, brightMesquiteBrown;
+	public static Color lightBlueGray;
 	public static Color uneditable;
 	public static Color unassigned;
 	public static Color inapplicable;
@@ -70,6 +71,7 @@ public class ColorDistribution {
 		darkBlue = new Color((float)0.0, (float)0.0, (float)0.7);
 		lightBlue = new Color((float)0.35, (float)0.48, (float)0.9);
 		veryLightBlue = new Color((float)0.55, (float)0.68, (float)0.99);
+		veryVeryLightBlue = new Color((float)0.85, (float)0.85, (float)0.99);
 		lightOrange = new Color((float)1, (float)0.8, (float)0);
 		orange = new Color((float)1, (float)0.5, (float)0);
 
@@ -95,6 +97,9 @@ public class ColorDistribution {
 		mesquiteBrown = new Color(108, 98, 82);
 		darkMesquiteBrown = new Color(92, 82, 70);
 		veryDarkMesquiteBrown = new Color(78, 68, 55);
+		
+		lightBlueGray = new Color((float)0.7, (float)0.7, (float)0.8);
+
 		//spinLight = new Color((float)0.6, (float)0.9, (float)0.6);
 		//spinDark = new Color((float)0.05, (float)0.5, (float)0.05);
 //		darkMesquiteBrown = new Color(82, 72, 60);
@@ -267,13 +272,35 @@ public class ColorDistribution {
 		else
 			return light;
 	}
-	public static Color getContrasting(Color c){
-		if (c==null){
+	private static boolean lightColor(Color c) {
+		int highBreak=155;
+		int lowBreak = 100;
+		if (c.getRed()>highBreak || c.getGreen() > highBreak || c.getGreen() > highBreak)  // all are high values
+			return true;
+		if (c.getRed()>lowBreak && c.getGreen() > lowBreak && c.getGreen() > lowBreak && c.getRed()<highBreak && c.getGreen() < highBreak && c.getGreen() < highBreak)  // grey
+			return true;
+		return false;
+	}
+	private static boolean darkColor(Color c) {
+		int highBreak=155;
+		int lowBreak = 100;
+		if (c.getRed()<lowBreak && c.getGreen() < lowBreak && c.getGreen() < lowBreak)
+			return true;
+		return false;
+	}
+	public static Color getContrastingTextColor(Color backgroundColor){
+		if (backgroundColor==null){
 			return Color.black;
 		}
-		int red = (255-c.getRed());
-		int green = (255-c.getGreen());
-		int blue = (255-c.getBlue());
+		int highBreak=155;
+		int lowBreak = 100;
+		if (lightColor(backgroundColor))
+			return Color.black;
+		if (darkColor(backgroundColor))
+			return Color.white;
+		int red = (255-backgroundColor.getRed());
+		int green = (255-backgroundColor.getGreen());
+		int blue = (255-backgroundColor.getBlue());
 		return new Color(red,green,blue);
 	}
 	public static int getStandardColorNumber(String name){

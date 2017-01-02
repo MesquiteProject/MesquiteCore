@@ -360,7 +360,8 @@ public class Pagel94 extends Pagel94Calculator {
 		clearResultAndLastResult(result);
 		if (tree == null || charStates1 == null || charStates2 == null)
 			return;
-
+		if (result == null)
+			result = new MesquiteNumber();  //for saveLastResult
 		double resultConstrained;
 		double result8;
 		double pvalue = MesquiteDouble.unassigned;

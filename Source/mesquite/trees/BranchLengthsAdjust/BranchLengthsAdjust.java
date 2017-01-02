@@ -15,6 +15,7 @@ package mesquite.trees.BranchLengthsAdjust;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -100,7 +101,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 	MesquiteMenuItemSpec hideMenuItem = null;
 	BranchLengthsAdjust selectModule;
 	Tree tree;
-	int originalX, originalY, lastX, lastY;
+	double originalX, originalY, lastX, lastY;
 	boolean lineOn = true;
 	MiniNumberEditor miniEditor;
 	double lastBL;	
@@ -140,7 +141,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 		this.tree = tree;
 		if (editorOn) {
 			if (tree.nodeExists(editorNode))
-				miniEditor.setLocation(treeDisplay.getTreeDrawing().x[editorNode], treeDisplay.getTreeDrawing().y[editorNode]);
+				miniEditor.setLocation((int)treeDisplay.getTreeDrawing().x[editorNode], (int)treeDisplay.getTreeDrawing().y[editorNode]);
 			else hideMiniEditor();
 		}
 	}
@@ -167,7 +168,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			miniEditor = new MiniNumberEditor(ownerModule, ownerModule.makeCommand("acceptLength", this));
 			addPanelPlease(miniEditor);
 		}
-		miniEditor.setLocation(treeDisplay.getTreeDrawing().x[node], treeDisplay.getTreeDrawing().y[node]);
+		miniEditor.setLocation((int)treeDisplay.getTreeDrawing().x[node], (int)treeDisplay.getTreeDrawing().y[node]);
 		miniEditor.setNumber(t.getBranchLength(node));
 		miniEditor.setVisible(true);
 		editorOn = true;
@@ -183,19 +184,19 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			tree.setBranchLength(node, length, false);
 	}
 	void stretchTouched(int node, int x, int y, String mod) {
-		Point newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
-		originalX = newOnLine.x;
-		originalY = newOnLine.y;
+		Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+		originalX = newOnLine.getX();
+		originalY = newOnLine.getY();
 		lastBL = tree.getBranchLength(node);
 		lastX = treeDisplay.getTreeDrawing().lineTipX[node];
 		lastY = treeDisplay.getTreeDrawing().lineTipY[node];
-		int ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
-		int ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
+		double ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
+		double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
 		if (GraphicsUtil.useXORMode(null, false)){
 			Graphics g = treeDisplay.getGraphics();
 			g.setXORMode(Color.white);
 			g.setColor(Color.red);
-			g.drawString(MesquiteDouble.toString(lastBL), lastX+10, lastY);
+			GraphicsUtil.drawString(g,MesquiteDouble.toString(lastBL), lastX+10, lastY);
 			drawLine(g,ibX, ibY, lastX, lastY);
 			drawLine(g,ibX+1, ibY, lastX+1, lastY);
 			drawLine(g,ibX+2, ibY, lastX+2, lastY);
@@ -203,22 +204,22 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 		}
 		lineOn=true;
 	}
-	void drawLine(Graphics g, int x, int y, int x2, int y2){
+	void drawLine(Graphics g, double x, double y, double x2, double y2){
 		if (g==null)
 			return;
 		if (x==x2 && y>y2)
-			g.drawLine( x2, y2, x, y);
+			GraphicsUtil.drawLine(g, x2, y2, x, y);
 		else
-			g.drawLine(x, y, x2, y2);
+			GraphicsUtil.drawLine(g,x, y, x2, y2);
 	}
 	int count=0;
 	void stretchDragged(Tree t, int node, int x, int y){
-		Point newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+		Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 		//WARNING":  This shouldn't result in length increase if simple click and release with no drag; must subtract original X, Y
-		int ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
-		int ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
-		int itX = treeDisplay.getTreeDrawing().lineTipX[node];
-		int itY = treeDisplay.getTreeDrawing().lineTipY[node];
+		double ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
+		double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
+		double itX = treeDisplay.getTreeDrawing().lineTipX[node];
+		double itY = treeDisplay.getTreeDrawing().lineTipY[node];
 		if (GraphicsUtil.useXORMode(null, false)){
 			Graphics g = treeDisplay.getGraphics();
 			g.setXORMode(Color.white);
@@ -231,7 +232,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			double tY = itY;
 			double lengthLine =  Math.sqrt((originalY-bY)*(originalY-bY) + (originalX-bX)*(originalX-bX));
 			if (lengthLine!=0) {
-				double extension =  Math.sqrt((newOnLine.y-bY)*(newOnLine.y-bY) + (newOnLine.x-bX)*(newOnLine.x-bX))/lengthLine;
+				double extension =  Math.sqrt((newOnLine.getY()-bY)*(newOnLine.getY()-bY) + (newOnLine.getX()-bX)*(newOnLine.getX()-bX))/lengthLine;
 				double bL;
 				if (t.getBranchLength(node)==0) {
 					bL = extension;
@@ -246,14 +247,14 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 				drawLine(g,ibX, ibY, lastX, lastY);
 				drawLine(g,ibX+1, ibY, lastX+1, lastY);
 				drawLine(g,ibX+2, ibY, lastX+2, lastY);
-				int newX =ibX+(int)(extension*(tX-bX));
-				int newY = ibY+(int)(extension*(tY-bY));
+				double newX =ibX+(extension*(tX-bX));
+				double newY = ibY+(extension*(tY-bY));
 				if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.getJavaVersionAsDouble()>=1.5 && MesquiteTrunk.getJavaVersionAsDouble()<1.6)  //due to a JVM bug
-					g.fillRect(lastX, lastY-20, 100, 20);
-				g.drawString(MesquiteDouble.toString(lastBL), lastX+10, lastY);
+					GraphicsUtil.fillRect(g,lastX, lastY-20, 100, 20);
+				GraphicsUtil.drawString(g,MesquiteDouble.toString(lastBL), lastX+10, lastY);
 				if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.getJavaVersionAsDouble()>=1.5 && MesquiteTrunk.getJavaVersionAsDouble()<1.6)  //due to a JVM bug
-					g.fillRect(lastX, lastY-20, 100, 20);
-				g.drawString(MesquiteDouble.toString(bL), newX+10, newY);
+					GraphicsUtil.fillRect(g,lastX, lastY-20, 100, 20);
+				GraphicsUtil.drawString(g,MesquiteDouble.toString(bL), newX+10, newY);
 				count++;
 				lastBL = bL;
 				lastX= newX;
@@ -267,14 +268,14 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 		}
 	}
 	void stretchDropped(MesquiteTree t, int node, int x, int y){
-		Point newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+		Point2D newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 		double bX = treeDisplay.getTreeDrawing().lineBaseX[node];
 		double bY = treeDisplay.getTreeDrawing().lineBaseY[node];
 		double tX = treeDisplay.getTreeDrawing().lineTipX[node];
 		double tY = treeDisplay.getTreeDrawing().lineTipY[node];
 		double lengthLine =  Math.sqrt((originalY-bY)*(originalY-bY) + (originalX-bX)*(originalX-bX));
 		if (lengthLine!=0) {
-			double extension =  Math.sqrt((newOnLine.y-bY)*(newOnLine.y-bY) + (newOnLine.x-bX)*(newOnLine.x-bX))/lengthLine;
+			double extension =  Math.sqrt((newOnLine.getY()-bY)*(newOnLine.getY()-bY) + (newOnLine.getX()-bX)*(newOnLine.getX()-bX))/lengthLine;
 			if (t.getBranchLength(node)==0) {
 				t.setBranchLength(node, extension, false);
 			}

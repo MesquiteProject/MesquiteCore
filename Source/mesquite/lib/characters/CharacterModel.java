@@ -152,6 +152,7 @@ public abstract class CharacterModel extends FileElement implements Compatibilit
 			mother.removeListener(this);
 		if (cml !=null)
 			cml.notifyDisposing(this);
+		super.dispose();
 	}
 	/*.................................................................................................................*/
 	public void changed(Object caller, Object obj, Notification notification){

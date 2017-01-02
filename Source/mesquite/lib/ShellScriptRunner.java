@@ -172,7 +172,7 @@ public class ShellScriptRunner implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	/** monitors the run.   */
-	public boolean monitorAndCleanUpShell(){
+	public boolean monitorAndCleanUpShell(ProgressIndicator progressIndicator){
 		lastModified=null;
 		boolean stillGoing = true;
 		if (outputFilePaths!=null) {
@@ -192,6 +192,14 @@ public class ShellScriptRunner implements Commandable  {
 					return false;
 				}
 				stillGoing = watcher == null || watcher.continueShellProcess(proc);
+				if (progressIndicator!=null){
+					progressIndicator.spin();
+					if (progressIndicator.isAborted()){
+						if (proc!=null)
+							proc.destroy();
+						return false;  //TODO: destroy process
+					}
+				}
 			}
 		}/* else
 			externalProcessManager.endStandardOutputsReaders();*/
@@ -204,6 +212,13 @@ public class ShellScriptRunner implements Commandable  {
 		if (outputFileProcessor!=null)
 			outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
 		return true;
+	}
+
+	/*.................................................................................................................*/
+	/** monitors the run.   */
+	public boolean monitorAndCleanUpShell(){
+		
+		return monitorAndCleanUpShell(null);
 	}
 
 

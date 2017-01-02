@@ -621,7 +621,7 @@ class MTWScroll extends MesquiteScrollbar {
 		w.setFirstTree(currentValue*w.numColumns);
 	}
 	public boolean processDuringAdjustment() {
-		return false;
+		return true;
 	}
 	public void print(Graphics g){
 	}

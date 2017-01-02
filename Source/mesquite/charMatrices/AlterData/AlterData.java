@@ -20,6 +20,7 @@ import java.awt.image.*;
 
 import mesquite.align.lib.AlignMultipleSequencesMachine;
 import mesquite.align.lib.MultipleSequenceAligner;
+import mesquite.categ.lib.MolecularData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
@@ -214,6 +215,10 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 			if (table!=null && data !=null){
 				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
+					return null;
+				}
+				if (!(data instanceof MolecularData)){
+					discreetAlert("This matrix is not a molecular matrix; it can't be aligned.");
 					return null;
 				}
 				aligner= (MultipleSequenceAligner)hireNamedEmployee(MultipleSequenceAligner.class, arguments);

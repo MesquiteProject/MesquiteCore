@@ -86,7 +86,7 @@ public class NumTreesMatchingCriterion extends NumberForTreeBlock {
 	public String getExplanation(){
 		return "Counts the number of trees in a tree block that match a user-specified criterion.  For example, it could " +
 				"count the number of trees in a tree block which are congruent with a particular tree topology (by " +
-				"selecting the \"Tree Congruent with Constraint Tree Topology\" module in the Criterion for Trees dialog).";
+				"selecting the \"Tree Congruent with Specified Tree Topology\" module in the Criterion for Trees dialog).";
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){

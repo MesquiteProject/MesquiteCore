@@ -19,8 +19,10 @@ import java.awt.*;
 import java.io.*;
 
 import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.MolecularData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 
 /**  Manages character matrices, including reading and writing from files (for which it relies on managers of the particular data types).
@@ -1584,7 +1586,31 @@ public class ManageCharacters extends CharactersManager {
 		defaultData = getProject().getCharacterMatrix(defaultTaxa, 0);
 		return defaultData;
 	}
-	 */NameReference origIndexRef = NameReference.getNameReference("OrigIndex");
+	
+	
+	 */
+	/** This method cleans up the confounded GenBank annotations of version 3.1 and earlier.  In those versions, the GenBank 
+	 * associated string included GenBank accession numbers and/or other details of sequence length, etc., appended in the 
+	 * TaxonListHadData module. After version 3.1, these were separated into different objects, in order to maintain the veracity
+	 * of the GenBank data.
+	 /*...................................................................................................................*/
+	void cleanUpGenBankAssociatedObject (Associable as, int whichTaxon, String genBankNote){
+		String newNote="";
+		while (!StringUtil.blank(genBankNote) && genBankNote.indexOf("(")>=0){
+			int start = genBankNote.indexOf("(");
+			int end = genBankNote.indexOf(")");
+			String firstBit = "";
+			if (start>0)
+				firstBit = genBankNote.substring(0, start);
+			newNote=genBankNote.substring(start,end+1);
+			genBankNote = firstBit + genBankNote.substring(end+1, genBankNote.length());
+		}
+		 as.setAssociatedObject(MolecularData.genBankNumberRef, whichTaxon, genBankNote);
+		 as.setAssociatedObject(CharacterData.taxonMatrixNotesRef, whichTaxon, newNote);
+	}
+
+	
+	NameReference origIndexRef = NameReference.getNameReference("OrigIndex");
 	 /*...................................................................................................................*/
 	 public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
 		 if (blockName.equalsIgnoreCase("NOTES")) {
@@ -1878,7 +1904,11 @@ public class ManageCharacters extends CharactersManager {
 									 Object previous = as.getAssociatedObject(NameReference.getNameReference(name), whichTaxon);
 									 if (!StringUtil.blank((String)previous))
 										 string = (String)previous + "; " + string;
-									 as.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, string);
+									 if (name.equals(MolecularData.genBankNumberName)) {  // let's clean it up because of Mesquite 3.1 and before's confounding of GenBank numbers and other annotations
+											cleanUpGenBankAssociatedObject (as, whichTaxon, string);  
+									 }
+									 else
+										 as.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, string);
 								 }
 								 else
 									 data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, string);

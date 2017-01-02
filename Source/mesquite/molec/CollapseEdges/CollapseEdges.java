@@ -62,16 +62,16 @@ public class CollapseEdges extends MolecularDataAlterer implements AltererWholeC
    	 }
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Trim Terminal Gap Characters";
+		return "Remove Terminal Gaps-Only Characters";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Trim Terminal Gap Characters";
+		return "Remove Terminal Gaps-Only Characters";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Trims characters at edges of matrix that are gaps only." ;
+ 		return "Removes characters at edges of matrix that are gaps only." ;
    	 }
    	 
 }

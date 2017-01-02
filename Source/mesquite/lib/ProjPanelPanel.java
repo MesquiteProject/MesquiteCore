@@ -175,7 +175,7 @@ public void resetTitle(){
 	public ClosablePanel getPrecedingPanel(ClosablePanel panel){
 		return null;
 	}
-	void chart(){  //to be overridden to respond to command to chart the element
+	public void chart(){  //to be overridden to respond to command to chart the element
 	}
 	public void changed(Object caller, Object obj, Notification notification){
 			refresh();

@@ -167,16 +167,19 @@ class RecodeDialog extends ListDialog {
 		this.states = states;
 		this.data = data;
 		this.rules = rules;
-		text = addTextField("Recode to:", "", 3);
+		text = addTextField("Specify new state and press \"Set New State\":", "", 3);
 		suppressNewPanel();
+		appendToHelpString("For each state you want to recode to another state, select the line for that state (e.g., \"state 0\"), ");
+		appendToHelpString("and type into the small box the new state, then press \"Set New State\" to specify that as the new state.  ");
+		appendToHelpString("Once you have done this for all of the states you wish to recode, press the Recode button. Only then will the data be recoded.");
 
-
-		addAListenedButton("Enter",null,this);
+		addAListenedButton("Set New State",null,this);
 		suppressNewPanel();
 		addAListenedButton("Reset",null,this);
 
 		getList().setEnableDoubleClicks(false);
-		completeAndShowDialog();
+		completeAndShowDialog("Recode", "Cancel", null, "Recode");
+		
 	}
 
 	private void enter(){
@@ -219,7 +222,7 @@ class RecodeDialog extends ListDialog {
 			text.setText("");
 			resetList();
 		}
-		else if ("Enter".equalsIgnoreCase(buttonLabel)){   // Enter button is pressed
+		else if ("Set New State".equalsIgnoreCase(buttonLabel)){   // Enter button is pressed
 			enter();
 		}
 		else if ("Cancel".equalsIgnoreCase(buttonLabel)){   // Enter button is pressed
@@ -251,7 +254,7 @@ class RecodeDialog extends ListDialog {
 					text.setText("");
 					resetList();
 				}
-				else if (buttonLabel.equalsIgnoreCase("Enter")){
+				else if (buttonLabel.equalsIgnoreCase("Set New State")){
 					enter();
 				}
 				else {

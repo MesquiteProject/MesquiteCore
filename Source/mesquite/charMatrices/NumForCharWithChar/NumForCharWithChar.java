@@ -59,7 +59,7 @@ public class NumForCharWithChar extends NumberForCharacter implements Incrementa
 		addMenuItem( "Next Character", makeCommand("nextCharacter",  this));
 		addMenuItem( "Previous Character", makeCommand("previousCharacter",  this));
 		addMenuItem( "Choose Character...", makeCommand("chooseCharacter",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 
 		return true;
 	}

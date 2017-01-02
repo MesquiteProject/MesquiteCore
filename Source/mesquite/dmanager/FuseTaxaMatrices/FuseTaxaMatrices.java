@@ -50,7 +50,10 @@ public class FuseTaxaMatrices extends FileAssistantT {
 		MesquiteModule fCoord = getFileCoordinator();
 		MesquiteCommand command = makeCommand("includeFileFuse", fCoord);
 		command.doItMainThread(StringUtil.argumentMarker + "fuseTaxaCharBlocks", null, this);
-		getProject().showProjectWindow();
+		MesquiteWindow w = containerOfModule();
+		MesquiteFrame f = w.getParentFrame();
+		if (f.getResourcesClosedWhenMinimized())
+				f.setResourcesState(false, false, -1);
 		iQuit();
 
 	}

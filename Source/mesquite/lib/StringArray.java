@@ -46,6 +46,16 @@ public class StringArray implements StringLister, Listable {
 		return strings;
 	}
 	/*...........................................................*/
+	public static boolean allBlank(String[] array){
+		if (array==null || array.length==0)
+			return true;
+		for (int i=0; i<array.length; i++) {
+			if (StringUtil.notEmpty(array[i]))
+				return false;
+		}
+		return true;
+	}
+	/*...........................................................*/
 	public static void sort(String[] array){
 		if (array==null || array.length<=1)
 			return;
@@ -193,6 +203,43 @@ public class StringArray implements StringLister, Listable {
 	/*...........................................................*/
 	public int getSize() {
 		return values.length;
+	}
+	
+	/** Concatenates the two String arrays together */
+	public static String[] concatenate(String[] d1, String[] d2) {
+		if (d1==null && d2==null)
+			return null;
+		int newNumParts = 0;
+		int d1Length = 0;
+		int d2Length = 0;
+		if (d2==null) {
+			newNumParts = d1.length;
+			d1Length = d1.length;
+		}
+		else if (d1==null) {
+			newNumParts = d2.length;
+			d2Length = d2.length;
+		}
+		else {
+			newNumParts = d1.length+d2.length;
+			d1Length = d1.length;
+			d2Length = d2.length;
+		}
+		if (newNumParts==0)
+			return null;
+		
+		String[] newValues = new String[newNumParts];
+		
+		
+		if (d1!=null)
+			for (int i=0; i< d1Length; i++) {
+				newValues[i] = d1[i];
+			}
+		if (d2!=null)
+			for (int i=0; i< d2Length; i++) {
+				newValues[i+d1Length] = d2[i];
+			}
+		return newValues;
 	}
 	/*...........................................................*/
 	public void addParts(int starting, int num) {

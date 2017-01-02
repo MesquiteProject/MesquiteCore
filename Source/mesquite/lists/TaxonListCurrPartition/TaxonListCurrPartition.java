@@ -241,12 +241,12 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 
 		ms2 = addMenuItem("Remove Group Designation", makeCommand("removeGroup",  this));
 
-		mLine2 = addMenuItem("-",null);
+		mLine2 = addMenuSeparator();
 		nNG = addMenuItem("New Group...", makeCommand("newGroup",  this));
 		mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 
-		mLine = addMenuItem("-",null);
+		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {
@@ -291,12 +291,13 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		Color c = g.getColor();
 		MesquiteSymbol symbol = null;
 		boolean colored = false;
+		Color backgroundColor = null;
 		if (part!=null) {
 			TaxaGroup tg = part.getTaxaGroup(ic);
 			if (tg!=null){
-				Color cT = tg.getColor();
-				if (cT!=null){
-					g.setColor(cT);
+				backgroundColor= tg.getColor();
+				if (backgroundColor!=null){
+					g.setColor(backgroundColor);
 					g.fillRect(x+1,y+1,w-1,h-1);
 					colored = true;
 				}
@@ -321,10 +322,15 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 				return;
 			int sw = fm.stringWidth(s);
 			int sh = fm.getMaxAscent()+ fm.getMaxDescent();
-			if (selected)
-				g.setColor(Color.white);
-			else
-				g.setColor(Color.black);
+			if (backgroundColor==null) {
+				if (selected)
+					g.setColor(Color.white);
+				else
+					g.setColor(Color.black);
+			} else {  // background is color; choose contrasting color
+				Color contrast = ColorDistribution.getContrastingTextColor(backgroundColor);
+				g.setColor(contrast);
+			}
 			g.drawString(s, x+(w-sw)/2, y+h-(h-sh)/2);
 			if (c!=null) g.setColor(c);
 		}

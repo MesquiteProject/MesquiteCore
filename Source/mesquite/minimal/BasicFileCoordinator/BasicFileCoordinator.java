@@ -131,7 +131,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 			}
 			closeWindows();
-
+			if (pw != null)
+				pw.dispose();
+			pw = null;
+			setModuleWindow(null);
 			doomEmployees(this);
 			p.dispose();
 			MesquiteTrunk.mesquiteTrunk.removeProject(p);
@@ -186,6 +189,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else
 			pw.setWindowSize(700, 500);
 		pw.setWindowLocation(8,8, false); //TODO: should set staggered positions
+
 		MesquiteTrunk.mesquiteTrunk.addProject(getProject());
 		p.addFile(homeFile);
 		homeFile.setProject(p);
@@ -513,7 +517,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			alert("Error: attempt to read second project for single file coordinator");
 			return null;
 		}
-		
+
 
 		incrementMenuResetSuppression();
 		MesquiteProject p=null;
@@ -562,7 +566,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				MesquiteFile sf = CommandRecord.getScriptingFileS();
 				if (MesquiteThread.isScripting())
 					CommandRecord.setScriptingFileS(thisFile);
-				pw.suppress();
+				if (pw != null)
+					pw.suppress();
 				if (parser.tokenIndexOfIgnoreCase(arguments, "useStandardizedTaxonNames")>=0)
 					thisFile.useStandardizedTaxonNames = true;
 				int tI = parser.tokenIndexOfIgnoreCase(arguments, "taxa");
@@ -572,9 +577,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					thisFile.setCurrentTaxa(taxa);
 				}
 				fileInterp.readFile(getProject(), thisFile, arguments);
-				if (fileInterp != nfi)
-					pw.setWindowSize(700, 500);
-				pw.resume();
+				if (pw != null){
+					if (fileInterp != nfi)
+						pw.setWindowSize(700, 500);
+					pw.resume();
+				}
 				CommandRecord.setScriptingFileS(sf);
 				p.decrementProjectWindowSuppression();
 
@@ -589,7 +596,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				else {
 					// "Import" or "Translate"  Open Special NEXUS File
 					// behaviour: autosave or not
-					
+
 					p.fileSaved(thisFile);  // If used import system, then doesn't add extension or save file if it was some type of NEXUS file 
 					if (imp && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
 						thisFile.changeLocation(thisFile.getDirectoryName(), thisFile.getFileName()+".nex");
@@ -667,9 +674,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					pw =  new ProjectWindow(this);
 					p.setFrame(pw.getParentFrame());
 					setModuleWindow(pw);
+
+					pw.setWindowSize(700, 500);
+					pw.setWindowLocation(8,8, false);
 				}
-				pw.setWindowSize(700, 500);
-				pw.setWindowLocation(8,8, false);
 
 				p.developing = false;
 				afterProjectRead();
@@ -949,11 +957,15 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	/*  */
 	public boolean closeFile(MesquiteFile fi){
+		return closeFile(fi, false);
+	}
+	public boolean closeFile(MesquiteFile fi, boolean quietly){
 		if (getProject() ==null)
 			return false;
+		incrementMenuResetSuppression();
 		if (fi!=null) {
 			if (getProject().getHomeFile() == fi) { //should ask for all files
-				if (MesquiteThread.isScripting() || !getProject().isDirty()) {
+				if (quietly || MesquiteThread.isScripting() || !getProject().isDirty()) {
 					waitWriting(null);
 					logln("Closing " + getProject().getName());
 					getProject().isDoomed = true;
@@ -981,6 +993,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 										}
 										else if (q==1) {
 											logln("File close cancelled by user");
+											decrementMenuResetSuppression();
 											return false;
 										}
 									}
@@ -993,7 +1006,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 			}
 			else {
-				if (MesquiteThread.isScripting() || !fi.isDirty()) {
+				if (quietly || MesquiteThread.isScripting() || !fi.isDirty()) {
 					waitWriting(fi);
 					fi.close();
 				}
@@ -1005,6 +1018,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 						writeFile(fi);
 					else if (q==1) {
 						logln("File close cancelled by user");
+						decrementMenuResetSuppression();
 						return false;
 					}
 					logln("Closing file " + fi.getName());
@@ -1012,6 +1026,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 			}
 		}
+		decrementMenuResetSuppression();
 		return true;
 	}
 	private void waitWriting(MesquiteFile f){
@@ -1118,7 +1133,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				MesquiteMessage.notifyUser("File \"" + fi.getName() + "\" cannot be written because it was accessed as a URL");
 		}
 		MainThread.decrementSuppressWaitWindow();
-		getProject().decrementProjectWindowSuppression();
+		if (getProject() != null)
+			getProject().decrementProjectWindowSuppression();
 	}
 	/*.................................................................................................................*/
 	/*  */
@@ -2047,14 +2063,17 @@ class FileRead implements CommandRecordHolder, Runnable {
 				MesquiteFile sf = CommandRecord.getScriptingFileS();
 
 				CommandRecord.setScriptingFileS(linkedFile);
-				ownerModule.pw.suppress();
+				if (ownerModule.pw != null)
+					ownerModule.pw.suppress();
 
 				if (fileType == 0 || fileInterp == nfi)
 					fileInterp.readFile(ownerModule.getProject(), linkedFile, arguments);
 				else 
 					((FileInterpreterITree)fileInterp).readTreeFile(ownerModule.getProject(), linkedFile, arguments);
-				ownerModule.pw.resume();
-				ownerModule.pw.getParentFrame().setAsFrontWindow(ownerModule.getProject().activeWindowOfProject);
+				if (ownerModule.pw != null) {
+					ownerModule.pw.resume();
+					ownerModule.pw.getParentFrame().setAsFrontWindow(ownerModule.getProject().activeWindowOfProject);
+				}
 				CommandRecord.setScriptingFileS(sf);
 				linkedFile.fileReadingArguments = null;
 				ownerModule.broadcastFileRead(ownerModule, linkedFile);

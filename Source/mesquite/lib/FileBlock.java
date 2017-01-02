@@ -67,7 +67,7 @@ public class FileBlock {
 	
 		String command = file.getNextCommand(status, withinCommandComments);
 		String wcc = withinCommandComments.toString();
-		if (!StringUtil.blank(wcc)){
+		if (!StringUtil.blank(wcc) && wcc.length()>2){
 			wcc = wcc.substring(1, wcc.length()-2);
 			wcc = new Parser().getFirstToken(wcc);
 			blockComments.append(wcc);

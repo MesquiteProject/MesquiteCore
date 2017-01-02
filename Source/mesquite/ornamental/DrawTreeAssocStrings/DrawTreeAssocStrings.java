@@ -38,7 +38,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 		horizontal = new MesquiteBoolean(true);
 		centred = new MesquiteBoolean(true);
 		showOnTerminals = new MesquiteBoolean(true);
-		MesquiteSubmenuSpec mss = addSubmenu(null, "Node-Associated Text");
+		MesquiteSubmenuSpec mss = addSubmenu(null, "Node or Branch-Associated Text");
 		addItemToSubmenu(null, mss, "Choose Associated Text To Show...", makeCommand("chooseText",  this));
 		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
 		addCheckMenuItemToSubmenu(null, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
@@ -59,7 +59,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Node-Associated Text";
+		return "Node or Branch-Associated Text";
 	}
 
 	/*.................................................................................................................*/
@@ -270,10 +270,10 @@ class NodeAssocTextExtra extends TreeDisplayExtra  {
 			if (!StringUtil.blank(s)){
 				box.setString(s);
 				box.setColors(Color.black, Color.white);
-				int x, y;
+				double x, y;
 				if (assocTextModule.centred.getValue()){
-					int centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + assocTextModule.xOffset;
-					int centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ assocTextModule.yOffset;
+					double centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + assocTextModule.xOffset;
+					double centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ assocTextModule.yOffset;
 					/*g.setColor(Color.yellow);
 					g.drawLine(treeDisplay.getTreeDrawing().lineBaseX[node], treeDisplay.getTreeDrawing().lineBaseY[node], treeDisplay.getTreeDrawing().lineTipX[node], treeDisplay.getTreeDrawing().lineTipY[node]);
 					/*g.setColor(Color.red);
@@ -296,7 +296,7 @@ class NodeAssocTextExtra extends TreeDisplayExtra  {
 				if (assocTextModule.horizontal.getValue())
 					box.draw(g,  x, y);
 				else
-					box.draw(g,  x, y, 0, 1500, treeDisplay, false);
+					box.draw(g,  x, y, 0, 1500, treeDisplay, false, false);
 
 			}
 		}
@@ -365,11 +365,11 @@ class NodeAssocTextExtra extends TreeDisplayExtra  {
 		if (popup==null)
 			popup = new MesquitePopup(treeDisplay);
 		popup.removeAll();
-		popup.add(new MesquiteMenuItem("Display Node-Associated Text", null, null));
+		popup.add(new MesquiteMenuItem("Display Node or Branch-Associated Text", null, null));
 		popup.add(new MesquiteMenuItem("-", null, null));
 		int num = tree.getNumberAssociatedObjects();
 		if (num == 0)
-			popup.add(new MesquiteMenuItem("This Tree has no text associated with nodes", null, null));
+			popup.add(new MesquiteMenuItem("This Tree has no text associated with nodes or branches", null, null));
 		else 
 			for (int i = 0; i< num; i++){
 				ObjectArray da = tree.getAssociatedObjects(i);

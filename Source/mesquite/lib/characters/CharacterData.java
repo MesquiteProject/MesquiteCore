@@ -23,8 +23,10 @@ import java.util.zip.*;
 import javax.swing.text.JTextComponent;
 
 import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.MolecularData;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lists.lib.ListModule;
 import mesquite.lib.table.*;
 
@@ -61,6 +63,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	protected boolean charNumChanging = false;
 
+	public static final NameReference publicationCodeNameRef = NameReference.getNameReference("publicationCode");//String: tInfo
+	public static final NameReference taxonMatrixNotesRef = NameReference.getNameReference("taxonMatrixNotes");//String: tInfo
 
 	private Taxa taxa; //taxa to which this matrix belongs
 	private long[] taxaIDs; //the remembered id's of the taxa; to use to reconcile changed Taxa with last used here
@@ -211,9 +215,10 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return null;
 	}
 	/*.................................................................................................................*/
-	/** this is deprecated and will be removed as soon as all modules no longer call this **/  
-	public UndoInstructions getUndoInstructionsAllData(){   //WAYNECHECK:  needs to be removed from gataga and, ideally, pdap, and above method called instead.
-		return getUndoInstructionsAllMatrixCells(null);
+	/** This is deprecated and will be removed as soon as all modules no longer call this **/  
+	@Deprecated
+	public UndoInstructions getUndoInstructionsAllData(){   //needs to be removed from gataga and, ideally, pdap, and above method called instead.
+		return getUndoInstructionsAllMatrixCells(null); 
 	}
 
 
@@ -879,6 +884,26 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return deleted;
 	}
 	/*-----------------------------------------------------------*/
+	/** Deletes characters that are turned on in a Bits. */
+	public final boolean deleteCharacters(Bits bits, String progressNote, boolean notify){
+		int ic = numChars;
+		boolean deleted = false;
+		while (ic>=0) {
+			int start = bits.startOfBlock(ic);
+			if (bits.isBitOn(ic)){
+				boolean del = deleteParts(start, ic-start+1);
+				if (del)
+					deleted=true;
+			} 
+			if (StringUtil.notEmpty(progressNote)) 
+				CommandRecord.setDetailsOfProgress(progressNote + " " + ic);
+			ic=start-1;
+		}
+		if (deleted && notify)
+			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+		return deleted;
+	}
+	/*-----------------------------------------------------------*/
 	/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
 	public boolean deleteParts(int starting, int num){
 		if (num<=0)
@@ -990,6 +1015,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				d.deleteParts(starting, num);
 				if (notify)
 					d.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, new int[] {starting, num}));
+			}
+		}
+	}
+	/*-----------------------------------------------------------*/
+	/** Deletes characters flagged in the Bits in linked data matrices. */
+	public final void deleteInLinked(Bits bits, String progressNote,  boolean notify){
+		if (linkedDatas.size()>0){
+			for (int i=0; i<linkedDatas.size(); i++){
+				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
+				d.deleteCharacters(bits, progressNote, notify);
 			}
 		}
 	}
@@ -2823,7 +2858,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 	}	
 	/* ................................................................................................................. */
-	boolean pasteData(int it, String s) {
+	boolean pasteDataOld(int it, String s) {
 		String[] lines = StringUtil.getLines(s);
 		StringBuffer sb = new StringBuffer(lines[0]);
 		Parser parser = new Parser();
@@ -2837,6 +2872,20 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		return true;
 	}
+	/* ................................................................................................................. */
+	boolean pasteData(int it, String s) {
+		String[] lines = StringUtil.getLines(s);
+		Parser parser = new Parser();
+		MesquiteInteger pos = new MesquiteInteger(0);
+		s = lines[0];
+		String t = StringUtil.getNextTabbedToken(s, pos);
+		for (int i = 0; i < numChars && pos.getValue()<s.length(); i++) {
+			t = StringUtil.getNextTabbedToken(s, pos);
+			pasteCell(parser, i, it, t);
+		}
+		return true;
+	}
+
 
 	/* ................................................................................................................. */
 
@@ -2875,7 +2924,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		sb.append('\t');
 
 		for (int i = 0; i < numChars; i++) {
-			statesIntoStringBuffer(i, row, sb, true);
+			statesIntoStringBuffer(i, row, sb, false);
+			sb.append('\t');
 		}
 		sb.append(StringUtil.lineEnding());
 	}
@@ -3363,6 +3413,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return -1;
 	}
 
+	/*.................................................................................................................*/
+	/** gets the get titles for tabbed summary data about matrix*/
+	public String getTabbedTitles() {
+		return "Name\tNumber of Taxa\tNumber of Characters\tA\tC\tG\tT";
+	}
+	/*.................................................................................................................*/
+	/** gets the get  tabbed summary data about matrix*/
+	public String getTabbedSummary() {
+		return getName()+ "\t"+getNumTaxa() + "\t" + getNumChars();
+	}
 	/*.................................................................................................................*/
 	/** gets the explanation of this matrix*/
 	public String getExplanation() {
@@ -3864,6 +3924,39 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	 * unassigned + assigned or inapplicable + assigned */
 	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
 		return mergeTaxa(sinkTaxon, taxaToMerge, false);
+	}
+	
+	/*..........................................CharacterData.....................................*/
+	/**Gets the CharacterData object for an MCharactersDistribution.  It first checks to see if the CharacterData object
+	 * already exists, and if so, returns it; otherwise, it created one.  */
+	public static CharacterData getData (MesquiteModule mb, MCharactersDistribution matrix, Taxa taxa) {
+		if (matrix.getParentData()==null) {
+			CharactersManager manageCharacters = (CharactersManager)mb.findElementManager(CharacterData.class);
+			CharMatrixManager manager = manageCharacters.getMatrixManager(matrix.getCharacterDataClass());
+			return matrix.makeCharacterData(manager, taxa);
+		}
+		return matrix.getParentData();
+	}
+
+	/*...............................................................................................................*/
+	/** Sets the publication code of a particular taxon in this data object. */
+	public void setPublicationCode(int it, String s){
+		Taxon taxon = getTaxa().getTaxon(it);
+		Associable tInfo = getTaxaInfo(true);
+		if (tInfo != null && taxon != null) {
+			tInfo.setAssociatedObject(CharacterData.publicationCodeNameRef, it, s);
+		}
+	}
+	/*...............................................................................................................*/
+	/** Gets the publication code of a particular taxon in this data object. */
+	public String getPublicationCode(int it){
+		Associable tInfo = getTaxaInfo(true);
+		if (tInfo == null)
+			return null;
+		Object obj = tInfo.getAssociatedObject(CharacterData.publicationCodeNameRef, it);
+		if (obj == null || !(obj instanceof String))
+			return null;
+		return (String)obj;
 	}
 
 }

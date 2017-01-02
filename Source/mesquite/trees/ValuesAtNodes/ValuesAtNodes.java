@@ -73,7 +73,7 @@ public class ValuesAtNodes extends TreeDisplayAssistantMA implements LegendHolde
 		}
 		addMenuItem( "Transfer to Associated", makeCommand("transferToAssociated",  this));
 		addMenuItem( "Close Node Values", makeCommand("closeTrace",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		return true;
 	}
 	/*.................................................................................................................*/

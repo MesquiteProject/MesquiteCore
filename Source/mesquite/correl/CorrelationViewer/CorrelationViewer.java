@@ -77,7 +77,7 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 		addMenuItem( "Choose Character Y...", makeCommand("chooseY",  this));
 		addMenuItem( "Re-run analysis", makeCommand("rerun",  this));
 		addMenuItem( "Close Correlation Analysis", makeCommand("close",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 
 		return true;
 	}
@@ -176,6 +176,9 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 				return numberTask;
 			}
 		}
+		else if (checker.compare(this.getClass(), "Returns employee", null, commandName, "getCorrelationCalculator")) {
+			return numberTask;
+		}
 		else   	if (checker.compare(this.getClass(), "Returns employee", null, commandName, "getCharSource")) {
 			return characterSourceTaskX;
 		}
@@ -184,6 +187,18 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 		}
 		else   	if (checker.compare(this.getClass(), "Returns employee", null, commandName, "getCharSourceY")) {
 			return characterSourceTaskY;
+		}
+		else   	if (checker.compare(this.getClass(), "Returns name of character X", null, commandName, "getCharNameX")) {
+			if (characterSourceTaskX == null)
+				return null;
+			else
+				return characterSourceTaskX.getCharacterName(taxa, currentX);
+		}
+		else   	if (checker.compare(this.getClass(), "Returns name of character Y", null, commandName, "getCharNameY")) {
+			if (characterSourceTaskY == null)
+				return null;
+			else
+				return characterSourceTaskY.getCharacterName(taxa, currentY);
 		}
 		else   	if (checker.compare(this.getClass(), "Sets character source", null, commandName, "setCharSource")) {
 			CharSourceCoordObed temp  = (CharSourceCoordObed)replaceCompatibleEmployee(CharSourceCoordObed.class, arguments, characterSourceTaskX, numberTask.getCompatibilityTest());

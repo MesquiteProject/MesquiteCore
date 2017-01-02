@@ -151,6 +151,11 @@ public class ParseUtil extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns token from line starting at startChar; excluding square bracket comments*/
 	public static String getToken(String line, MesquiteInteger startChar, String whitespaceString, String punctuationString) {
+		return getToken(line, startChar, whitespaceString, punctuationString, true);
+	}
+	/*............................................  ....................................................*/
+	/** returns token from line starting at startChar; excluding square bracket comments*/
+	public static String getToken(String line, MesquiteInteger startChar, String whitespaceString, String punctuationString, boolean replaceUnderscoresWithBlanks) {
 		if (line==null)
 			return null;
 		else if (line.equals(""))
@@ -186,7 +191,7 @@ public class ParseUtil extends StringUtil {
 			}
 			if (continu) {
 				while ((!whitespace(c, whitespaceString) && !punctuation(c, punctuationString)) && c!=0) {
-					if (c=='_')
+					if (c=='_' && replaceUnderscoresWithBlanks)
 						c = ' ';
 					temp.append(c);
 					c=getNextChar(line, startChar);

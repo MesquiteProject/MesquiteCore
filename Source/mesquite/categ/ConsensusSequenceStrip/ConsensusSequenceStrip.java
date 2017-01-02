@@ -95,7 +95,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	public void addRemoveMenuItem() {
 		closeMenuItem= addMenuItem(null,"Remove Consensus Sequence", makeCommand("remove", this));
 		moveToMatrixItem= addMenuItem(null,"Move to Matrix", makeCommand("moveToMatrix", this));
-		lineMenuItem = addMenuLine();
+		lineMenuItem = addMenuSeparator();
 	}
 		
 	public void setTableAndData(MesquiteTable table, CharacterData data) {

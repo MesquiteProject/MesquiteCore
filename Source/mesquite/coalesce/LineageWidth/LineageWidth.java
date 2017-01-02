@@ -106,10 +106,10 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 	private void drawWidths (Tree tree, int node, Graphics g) {
 		double w =widths.getValue(node);
 		if (MesquiteDouble.isCombinable(w)) {
-			int nodeX = treeDisplay.getTreeDrawing().x[node];
-			int nodeY = treeDisplay.getTreeDrawing().y[node];
+			double nodeX = treeDisplay.getTreeDrawing().x[node];
+			double nodeY = treeDisplay.getTreeDrawing().y[node];
 
-			g.drawString(MesquiteDouble.toString(w), nodeX,nodeY);
+			GraphicsUtil.drawString(g,MesquiteDouble.toString(w), nodeX,nodeY);
 		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawWidths(tree, d, g);
@@ -119,7 +119,7 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 		this.tree = tree;
 		if (editorOn) {
 			if (tree.nodeExists(editorNode))
-				miniEditor.setLocation(treeDisplay.getTreeDrawing().x[editorNode], treeDisplay.getTreeDrawing().y[editorNode]);
+				miniEditor.setLocation((int)treeDisplay.getTreeDrawing().x[editorNode],(int) treeDisplay.getTreeDrawing().y[editorNode]); // integer nodeloc approximation
 			else hideMiniEditor();
 		}
 		if (widths!=null) {
@@ -179,7 +179,7 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 			miniEditor = new MiniNumberEditor(ownerModule, ownerModule.makeCommand("acceptWidth", this));
 			addPanelPlease(miniEditor);
 		}
-		miniEditor.setLocation(treeDisplay.getTreeDrawing().x[node], treeDisplay.getTreeDrawing().y[node]);
+		miniEditor.setLocation((int)treeDisplay.getTreeDrawing().x[node], (int)treeDisplay.getTreeDrawing().y[node]); // integer nodeloc approximation
 		miniEditor.setNumber(tree.getAssociatedDouble(widthNameReference, node));
 		miniEditor.setVisible(true);
 		editorOn = true;

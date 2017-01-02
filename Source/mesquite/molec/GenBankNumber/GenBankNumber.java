@@ -28,7 +28,7 @@ public class GenBankNumber extends TaxonListAssistant {
 	Taxa taxa;
 	MesquiteTable table=null;
 	Taxa currentTaxa = null;
-	DNAData data = null;
+	MolecularData data = null;
 	MatrixSourceCoord matrixSourceTask;
 	MesquiteMenuItemSpec mss2;
 	/*.................................................................................................................*/
@@ -44,8 +44,8 @@ public class GenBankNumber extends TaxonListAssistant {
 			matrixSourceTask.initialize(currentTaxa);
 			MCharactersDistribution observedStates = matrixSourceTask.getCurrentMatrix(currentTaxa);
 			CharacterData d = observedStates.getParentData();
-			if (d instanceof DNAData)
-				data = (DNAData)d;
+			if (d instanceof MolecularData)
+				data = (MolecularData)d;
 			else
 				data=null;
 		
@@ -88,17 +88,6 @@ public class GenBankNumber extends TaxonListAssistant {
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
-	/*.................................................................................................................*/
-	public static String getGenBankNumber(MolecularData data, int it) {
-		if (data==null)
-			return null;
-		Taxon taxon = data.getTaxa().getTaxon(it);
-		Associable tInfo = data.getTaxaInfo(false);
-		if (tInfo != null && taxon != null) {
-			return (String)tInfo.getAssociatedObject(MolecularData.genBankNumberRef, it);
-		}
-		return null;
-	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
@@ -212,6 +201,6 @@ public class GenBankNumber extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Lists the primers used in the reads composing a sequence." ;
+		return "Lists the GenBank accession number of a sequence in a matrix." ;
 	}
 }

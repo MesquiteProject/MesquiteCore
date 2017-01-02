@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<mesquite>
+	<lastnoticeNumber>17</lastnoticeNumber>
+	<MessagesFromHome>
+		<version>1</version>
+		<currentReleaseVersion>
+			<versionString>3.2</versionString>
+			<build>801</build>
+			<version>320</version>
+			<downloadURL>http://mesquiteproject.wikispaces.com/Installation</downloadURL>
+		</currentReleaseVersion>
+		<notice>
+			<forVersion>311</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[A new version of Mesquite is available, version 3.2, with various bug fixes, performance improvements, and new features.  We strongly urge that you update to the new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>310</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[Your version of Mesquite has bugs in how it writes codon positions of sequence matrices.  There is an update available to solve this, version 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>304</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[You are using an old version of Mesquite.  The current version is 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>303</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[You are using an old version of Mesquite.  The current version is 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>302</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[You are using an old version of Mesquite.  The current version is 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>301</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[You are using an old version of Mesquite.  The current version is 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>300</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[You are using an <b>OLD</b> version of Mesquite.  The current version is 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>273</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[You are using a <b>VERY OLD</b> version of Mesquite.  The current version is 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>274</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[You are using a <b>VERY OLD</b> version of Mesquite.  The current version is 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>275</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[You are using a <b>VERY VERY OLD</b> version of Mesquite.  The current version is 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>201</forVersion>
+			<noticeNumber>18</noticeNumber>
+			<messageType>alert</messageType>
+			<message>This notice is to inform you that Mesquite now checks its web site for notices to users (such as this one) when it starts up.  This should not cause a delay (if it does, please inform us).  We anticipate notices will be given rarely, when there is an update available or an important bug to tell you about.</message>
+		</notice>
+		
+	</MessagesFromHome>
+</mesquite>

@@ -25,13 +25,13 @@ the number of nodes, and the x and y positions of the nodes.  It should be subcl
 so that they can add their own needed field.  TaxaDrawings are typically used within TaxaDisplays.*/
 
 public abstract class TaxaDrawing  {
-	public int[] x; //x positions of taxa
-	public int[] y; //y positions of taxa
+	public double[] x; //x positions of taxa
+	public double[] y; //y positions of taxa
 	public double[] z; //z positions of taxa (closeness to viewer, smaller numbers closer)
-	public int[] lineBaseX; //base of line on which to draw labels etc.
-	public int[] lineBaseY; 
-	public int[] lineTipX; //tip of line on which to draw labels etc.
-	public int[] lineTipY; 
+	public double[] lineBaseX; //base of line on which to draw labels etc.
+	public double[] lineBaseY; 
+	public double[] lineTipX; //tip of line on which to draw labels etc.
+	public double[] lineTipY; 
 	/**labelOrientation indicates where label is to be drawn, in degrees. 0 = normal horizontal 
 	writing to right of node, as would be done for a tree with orientation RIGHT.
 	This does not represent simple rotation, i.e. 180 is on left side, but the writing is not upside down.  Thus
@@ -57,28 +57,28 @@ public abstract class TaxaDrawing  {
 			return;
 		numTaxa++;
 		totalCreated++;
-		x = IntegerArray.copyIntoDifferentSize(x,numTaxa,0);
-		y = IntegerArray.copyIntoDifferentSize(y,numTaxa,0);
+		x = DoubleArray.copyIntoDifferentSize(x,numTaxa,0);
+		y = DoubleArray.copyIntoDifferentSize(y,numTaxa,0);
 		z = DoubleArray.copyIntoDifferentSize(z,numTaxa,MesquiteDouble.unassigned);
 		labelOrientation = IntegerArray.copyIntoDifferentSize(labelOrientation,numTaxa,MesquiteInteger.unassigned);
-		lineBaseX = IntegerArray.copyIntoDifferentSize(lineBaseX,numTaxa,0);
-		lineBaseY = IntegerArray.copyIntoDifferentSize(lineBaseY,numTaxa,0);
-		lineTipX = IntegerArray.copyIntoDifferentSize(lineTipX,numTaxa,0);
-		lineTipY = IntegerArray.copyIntoDifferentSize(lineTipY,numTaxa,0);
+		lineBaseX = DoubleArray.copyIntoDifferentSize(lineBaseX,numTaxa,0);
+		lineBaseY = DoubleArray.copyIntoDifferentSize(lineBaseY,numTaxa,0);
+		lineTipX = DoubleArray.copyIntoDifferentSize(lineTipX,numTaxa,0);
+		lineTipY = DoubleArray.copyIntoDifferentSize(lineTipY,numTaxa,0);
 	}
 	public void resetNumTaxa(int numTaxa){
 		if (this.numTaxa == numTaxa && x != null)
 			return;
 		this.numTaxa=numTaxa;
 		totalCreated++;
-		x = new int[numTaxa];
-		y = new int[numTaxa];
+		x = new double[numTaxa];
+		y = new double[numTaxa];
 		z = new double[numTaxa];
 		labelOrientation = new int[numTaxa];
-		lineBaseX = new int[numTaxa];
-		lineBaseY = new int[numTaxa];
-		lineTipX = new int[numTaxa];
-		lineTipY = new int[numTaxa];
+		lineBaseX = new double[numTaxa];
+		lineBaseY = new double[numTaxa];
+		lineTipX = new double[numTaxa];
+		lineTipY = new double[numTaxa];
 		for (int i=0; i<numTaxa; i++) {
 			x[i]=0;
 			y[i]=0;

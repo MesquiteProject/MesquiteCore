@@ -51,7 +51,10 @@ public class MesquiteCMenuItemSpec extends MesquiteMenuItemSpec{
 			return mmis;
 		}
 	}
-	
+	public void dispose(){
+		releaseBoolean();
+		super.dispose();
+	}
 	public void releaseBoolean() {
 		if (checkBoolean!=null)
 			checkBoolean.releaseMenuItem();

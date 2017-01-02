@@ -178,8 +178,8 @@ class ShadeNumbersDecorator extends TreeDecorator {
 			int stringWidth = fm.stringWidth(s);
 			int stringHeight = fm.getMaxAscent()+fm.getMaxDescent(); //numbers wouldn't actually reach max descent
 
-			int nodeX = treeDisplay.getTreeDrawing().x[N];
-			int nodeY = treeDisplay.getTreeDrawing().y[N];
+			double nodeX = treeDisplay.getTreeDrawing().x[N];
+			double nodeY = treeDisplay.getTreeDrawing().y[N];
 
 			if (treeDisplay.getOrientation() == treeDisplay.UP) {
 				nodeY+=fm.getMaxAscent()+2;
@@ -213,10 +213,10 @@ class ShadeNumbersDecorator extends TreeDecorator {
 			if (ownerModule.backRect.getValue()){
 				Color c = g.getColor();
 				g.setColor(Color.white);
-				g.fillRect(nodeX, nodeY, stringWidth+4, stringHeight);
+				GraphicsUtil.fillRect(g,nodeX, nodeY, stringWidth+4, stringHeight);
 				g.setColor(Color.blue);
-				g.drawRect(nodeX, nodeY, stringWidth+4, stringHeight);
-				g.drawString(s, nodeX +2, nodeY + fm.getMaxAscent()+1);
+				GraphicsUtil.drawRect(g,nodeX, nodeY, stringWidth+4, stringHeight);
+				GraphicsUtil.drawString(g,s, nodeX +2, nodeY + fm.getMaxAscent()+1);
 				if (c!=null) g.setColor(c);
 			}
 			else

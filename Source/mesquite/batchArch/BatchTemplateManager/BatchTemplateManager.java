@@ -47,6 +47,11 @@ public class BatchTemplateManager extends TemplateManager {
 		loadTemplates();
 		return true;
 	}
+ 	public void endJob(){
+ 		templates.dispose(true);
+ 		fileSpecifics.dispose(true);
+		super.endJob();
+ 	}
    	public String getExpectedPath(){
 		return getPath() + "templates";
   	 }

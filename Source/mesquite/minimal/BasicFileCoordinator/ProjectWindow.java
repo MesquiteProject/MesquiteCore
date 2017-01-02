@@ -213,6 +213,13 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	}
 	public void dispose(){
 		projPanel.dispose();
+		if (proj != null)
+			proj.removeListener(this);
+		proj = null;
+		bfc = null;
+		removeAll();
+		projPanel = null;
+		scrollPanel = null;
 		super.dispose();
 	}
 	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
@@ -222,6 +229,10 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 
 	}
 	public void setFootnote(String heading, String text){
+		if (heading == null && text == null && MesquiteTrunk.debugMode){
+			heading = "FileElement instantiations - finalizations " + (FileElement.totalCreated - FileElement.totalFinalized);
+			text = "FileElement instantiations " + (FileElement.totalCreated);
+		}
 		projPanel.setFootnote(heading, text);
 	}
 	public void refresh(FileElement element){
@@ -291,13 +302,15 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	}
 
 	public void dispose(){
-		if (true)
-			return;
 		for (int i = 0; i<elements.size(); i++){
 			ClosablePanel panel = ((ClosablePanel)elements.elementAt(i));
-			remove(panel);
 			panel.dispose();
 		}
+		removeAll();
+		w = null;
+		bfc = null;
+		proj = null;
+		super.dispose();
 	}
 	public ClosablePanel getPrecedingPanel(ClosablePanel panel){
 		return null;
@@ -1038,16 +1051,7 @@ class TaxaPanel extends ElementPanel {
 		addCommand(true, null, "Delete Taxa Block", "Delete Taxa Block", new MesquiteCommand("deleteMe", element));
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Edit Comment", "Edit Comment", new MesquiteCommand("editComment", element));
-		/*	Vector vv = ((FileElement)element).getSpecSetsVectorVector();
-		for (int i=0; i<vv.size(); i++){
-			SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
-			v.addListener(this);
-			for (int k=0; k<v.size(); k++){
-				FileElement fe = (FileElement)v.elementAt(k);
-				fe.addListener(this);
-			}
-		}
-		 */
+		
 	}
 
 	public String getTitleAddition(){
@@ -1081,7 +1085,7 @@ class TaxaPanel extends ElementPanel {
 	public int requestSpacer(){
 		return 16;
 	}
-	void chart(){
+	public void chart(){
 		String mID = Long.toString(((FileElement)element).getID());
 		MesquiteThread.addHint(new MesquiteString("TaxonValuesChart", mID));
 		if (MesquiteDialog.useWizards)
@@ -1200,7 +1204,7 @@ class MElementPanel extends ElementPanel {
 
 	}
 
-	void chart(){
+	public void chart(){
 		String mID = Long.toString(((FileElement)element).getID());
 		String tID = Long.toString(((CharacterData)element).getTaxa().getID());
 		MesquiteThread.addHint(new MesquiteString("CharacterValuesChart", tID));
@@ -1281,7 +1285,7 @@ class TreesRPanel extends ElementPanel {
 	public String getElementTypeName(){ 
 		return "Trees Block";
 	}
-	void chart(){
+	public void chart(){
 		String mID = Long.toString(((TreeVector)element).getID());
 		String tID = Long.toString(((TreeVector)element).getTaxa().getID());
 		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", tID));

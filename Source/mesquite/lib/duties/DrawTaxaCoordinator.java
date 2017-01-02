@@ -67,6 +67,13 @@ public abstract class DrawTaxaCoordinator extends MesquiteModule  {
 			assistantTasks.removeElement(mb);
 	}
 
+	public double getRescaleValue() {
+		return 1.0;
+	}
+
+	public void setRescaleValue() {
+	}
+
    	public boolean isSubstantive(){
    		return false;  
    	}

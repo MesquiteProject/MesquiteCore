@@ -27,7 +27,7 @@ import mesquite.lib.duties.FileCoordinator;
 
 /* ======================================================================== */
 /** A class for file elements.  It must remember the file to which it is associated.*/
-public class FileElement extends AssociableWithSpecs implements Identifiable, Listable, Renamable, FileDirtier, HNode, Explainable, Annotatable, Doomable, Showable  {
+public class FileElement extends AssociableWithSpecs implements Identifiable, Listable, Renamable, FileDirtier, HNode, Explainable, Annotatable, Doomable, Disposable, Showable  {
 	/** Element was disposed (returned by close()).*/
 	public static final int OK = 0;
 	/** Element is in use (returned by close()).*/
@@ -36,6 +36,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	public static final int DIRTY = 2;
 	
 	public static long totalCreated = 0;
+	public static long totalTrueFileElementCreated = 0;
 	public static long totalDisposed = 0;
 	public static long totalFinalized  = 0;
 	public static Vector classesCreated, classesFinalized, countsOfClasses, countsOfClassesDisposed; //to detect memory leaks
@@ -72,6 +73,8 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		super(numParts); //for Associable
 		listeners = new Vector();
 		FileElement.totalCreated++;
+		if (getClass() != ListableVector.class)  //straight listableVectors not counted
+			FileElement.totalTrueFileElementCreated++;
 		if (MesquiteTrunk.checkMemory)
 			countCreated();
 		idNumber = FileElement.totalCreated;
@@ -384,6 +387,11 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	public NexusBlock getNexusBlock(){
 		return nexusBlock;
 	}
+	/*.................................................................................................................*
+	/** Removes the associated NexusBlock of the FileElement *
+	public void removeNexusBlock(){
+		nexusBlock = null;
+	}
 	/*.................................................................................................................*/
 	/** for FileDirtier interface */
 	public void fileDirtiedByCommand(MesquiteCommand command){
@@ -524,11 +532,14 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		FileElement.totalDisposed++;
 		project = null;
 		file = null;
+		nexusBlock = null;
+		elementManager = null;
 		super.dispose();
 	}
 	/*-------------------------------------------------------*/
 	public void finalize() throws Throwable {
 		FileElement.totalFinalized++;
+		
 		if (MesquiteTrunk.checkMemory && classesFinalized.indexOf(getClass())<0)
 			classesFinalized.addElement(getClass());
 		/*

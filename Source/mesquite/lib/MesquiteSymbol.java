@@ -22,6 +22,7 @@ public abstract class MesquiteSymbol extends Listened implements Listable  {
 	protected int size=8;
 	Color color = Color.black;
 	IntegerField sizeField = null;
+	double rescaleValue = 1.0;
 	public MesquiteSymbol() {
 	}
 	/**sets the size of the symbol*/
@@ -44,6 +45,13 @@ public abstract class MesquiteSymbol extends Listened implements Listable  {
 	public String getExtraNexusOptions(){
 		return " ";
 	}
+	public double getRescaleValue() {
+		return rescaleValue;
+	}
+	public void setRescaleValue(double rescaleValue) {
+		this.rescaleValue = rescaleValue;
+	}
+
 	/*.................................................................................................................*/
 	public void  setToCloned(MesquiteSymbol cloned){
 		setSize(cloned.getSize());
@@ -83,33 +91,33 @@ public abstract class MesquiteSymbol extends Listened implements Listable  {
 		this.color = color;
 	}
 	/**draws the Symbol*/
-	public void drawSymbol(Graphics g, int x, int y){
+	public void drawSymbol(Graphics g, double x, double y){
 		drawSymbol(g,x,y,0,0,false);
 	}
 	/**draws the Symbol*/
-	public void drawSymbol(Graphics g, int x, int y, int maxWidth, int maxHeight, boolean fillBlack){
+	public void drawSymbol(Graphics g, double x, double y, int maxWidth, int maxHeight, boolean fillBlack){
 	}
 	/**fills the Symbol with current color*/
-	public void fillSymbol(Graphics g, int x, int y){
+	public void fillSymbol(Graphics g, double x, double y){
 		fillSymbol(g,x,y,0,0);
 	}
 	/**fills the Symbol with current color*/
-	public void fillSymbol(Graphics g, int x, int y, int maxWidth, int maxHeight){
+	public void fillSymbol(Graphics g, double x, double y, int maxWidth, int maxHeight){
 	}
 	/**returns if the point x, y is contained within the Symbol*/
-	public boolean inSymbol(int symbolX, int symbolY, int x, int y, int maxWidth, int maxHeight){
+	public boolean inSymbol(double symbolX, double symbolY, int x, int y, int maxWidth, int maxHeight){
 		return false;
 	}
 	/**returns if the point x, y is contained within the Symbol*/
-	public boolean inSymbol(int symbolX, int symbolY, int x, int y){
+	public boolean inSymbol(double symbolX, double symbolY, int x, int y){
 		return inSymbol(symbolX, symbolY, x,y,0,0);
 	}
 	/**returns if the point x, y is contained within the Symbol*/
-	public boolean inRect(int symbolX, int symbolY, int x1, int y1, int x2, int y2, int maxWidth, int maxHeight){
+	public boolean inRect(double symbolX, double symbolY, int x1, int y1, int x2, int y2, int maxWidth, int maxHeight){
 		return false;
 	}
 	/**returns if the point x, y is contained within the Symbol*/
-	public boolean inRect(int symbolX, int symbolY, int x1, int y1, int x2, int y2){
+	public boolean inRect(double symbolX, double symbolY, int x1, int y1, int x2, int y2){
 		return inRect(symbolX, symbolY, x1,y1,x2,y2,0,0);
 	}
 }

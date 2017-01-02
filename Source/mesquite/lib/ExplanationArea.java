@@ -96,8 +96,8 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		if (lastTick < 0 || (lastTick > 0 && System.currentTimeMillis() - lastTick > 200)){
 
 			if (explTextArea != null)
-					explTextArea.setText(tickString);
-			
+				explTextArea.setText(tickString);
+
 			if (lastTick < 0)
 				control.clockCount = 0;
 			else
@@ -110,7 +110,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	public void hideClock(){
 		this.tickString = null;
 		control.showClock = false;
-		
+
 		if (explTextArea != null){
 			if (annotatable == null)
 				explTextArea.setText(explanationSet);
@@ -483,15 +483,19 @@ class ExplTextArea extends TextArea {
 	}
 
 	public void setText(String t){  // and possibly others
-		
-		if (MesquiteTrunk.isMacOSX()){  //this had been a workaround to bug in OS X Snow Leopard, but it slowed alignment too much
-			setSelectionStart(0);
-			setSelectionEnd(0);
+		try {
+			if (MesquiteTrunk.isMacOSX()){  //this had been a workaround to bug in OS X Snow Leopard, but it slowed alignment too much
+				setSelectionStart(0);
+				setSelectionEnd(0);
+			}
+			super.setText(t);
+			if (MesquiteTrunk.isMacOSX()){
+				setSelectionStart(0);
+				setSelectionEnd(0);
+			}
 		}
-		super.setText(t);
-		if (MesquiteTrunk.isMacOSX()){
-			setSelectionStart(0);
-			setSelectionEnd(0);
+		catch (Throwable e){
+			//This is to catch ClassCastExceptions on Linux deep in java 1.8 code
 		}
 	}
 

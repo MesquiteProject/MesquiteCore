@@ -133,7 +133,7 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 		numTreesItem = addMenuItem("Number of Trees...", makeCommand("setNumTrees", this));
 		numTreesItem.setEnabled(false);
 		addMenuItem( "Close Trace Over Trees", makeCommand("closeTrace",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		resetContainingMenuBar();
 		return true;
 	}

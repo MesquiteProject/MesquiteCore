@@ -38,33 +38,36 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2016. Mesquite: A modular system for evolutionary analysis.  Version 3.11.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2017. Mesquite: A modular system for evolutionary analysis.  Version 3.2.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.11";
-	}
+		return "3.2";
+
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 311;
+		return 320;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.11;
+		return 3.2;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "December 2016"; //"April 2007";
+		return "January 2017"; //"April 2007";
 	}
+	
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
 		if (!isPrerelease() && !debugMode)
-			return "http://mesquiteproject.org/mesquite/notice/notices.xml";   
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/notices.xml";   
 		else
-			return "http://mesquiteproject.org/mesquite/prereleasenotices/notices.xml";   
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
 	}
+	//See MesquiteModule for version reporter and error reporter URLs
+	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return false;
@@ -99,8 +102,6 @@ public class Mesquite extends MesquiteTrunk
 	private Vector splashURLInfo = new Vector(3);
 	private ListableVector splashNames = new ListableVector(3);
 	public static AboutWindow about;
-	private String supportFilesPath;
-	private File supportFilesDirectory;
 	private int numUses =0;
 	String configFile = "all";
 	HPanel browser;
@@ -139,7 +140,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 
-	static boolean startedFromOSXJava17Executable = false;
+	static boolean startedFromOSXJava17Executable = false; 
 	/*.................................................................................................................*/
 	public void init()
 	{
@@ -167,7 +168,6 @@ public class Mesquite extends MesquiteTrunk
 
 
 		String sep = MesquiteFile.fileSeparator;
-		supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
 
 		//finding mesquite directory
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
@@ -184,7 +184,7 @@ public class Mesquite extends MesquiteTrunk
 
 			try {
 				if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForURL(loc);
+					loc = StringUtil.encodeForAppBuilderURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -201,7 +201,7 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("@ " + loc);
 			try {
 				if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForURL(loc);
+					loc = StringUtil.encodeForAppBuilderURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -237,9 +237,17 @@ public class Mesquite extends MesquiteTrunk
 		/* EMBEDDED delete these if embedded */
 		userDirectory = new File(System.getProperty("user.home")+sep);  //used to be user.dir, but caused permission problems in linux
 
+		String supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
 		supportFilesDirectory = new File(supportFilesPath);
 		if (!supportFilesDirectory.exists()){
-			supportFilesDirectory.mkdir();
+			String supportFilesPathALT = System.getProperty("user.home") + sep + ".Mesquite_Support_Files";
+			File supportFilesDirectoryALT = new File(supportFilesPathALT);
+			if (supportFilesDirectoryALT.exists()){
+				supportFilesPath = supportFilesPathALT;
+				supportFilesDirectory = supportFilesDirectoryALT;
+			}
+			else
+				supportFilesDirectory.mkdir();
 		}
 		boolean supportFilesWritable = MesquiteFile.canWrite(supportFilesPath);
 		boolean writabilityWarned = false;
@@ -336,11 +344,11 @@ public class Mesquite extends MesquiteTrunk
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2015 W. Maddison and D. Maddison\n");
+		logInitString  += ("Copyright (c) 1997-2017 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
-				+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Peter Midford, Rutger Vos, Jeff Oliver, Daisie Huang"
+				+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Daisie Huang, Peter Midford, Rutger Vos, Jeff Oliver"
 				+ "\nDevelopment Team Alumnus: Danny Mandel\n";
 
 		if (verboseStartup) System.out.println("main init 11");
@@ -695,6 +703,7 @@ public class Mesquite extends MesquiteTrunk
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
 		if (MesquiteTrunk.debugMode)
 			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
+		
 	} 
 
 	/*.................................................................................................................*/
@@ -1438,6 +1447,15 @@ public class Mesquite extends MesquiteTrunk
 			logln("Memory status cannot be reported because checkMemory is not set");
 			return;
 		}
+		Vector wcre,wct, wctf;
+		wcre = MesquiteWindow.classesCreated;
+		wct = MesquiteWindow.countsOfClasses;
+		wctf = MesquiteWindow.countsOfClassesFinalized;
+			logln("Window classes created     " );
+			for (int i=0; i<wcre.size(); i++){
+				logln("    " + wcre.elementAt(i) + "  created: " + wct.elementAt(i) + "  finalized: " + wctf.elementAt(i));
+			}
+		
 		Vector cre, fin, ct, ctd;
 		cre = FileElement.classesCreated;
 		fin = FileElement.classesFinalized;
@@ -1482,6 +1500,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 
+		logln(" MesquiteMenuBar.totalFinalized " +  MesquiteMenuBar.totalFinalized + "  MesquiteMenuBar.totalCreated " +  MesquiteMenuBar.totalCreated);
 		logln(" MesquiteMenuItem.totalFinalized " +  MesquiteMenuItem.totalFinalized + " MesquiteMenuItem.totalDisposed " + MesquiteMenuItem.totalDisposed + " MesquiteMenuItem.totalCreated " +  MesquiteMenuItem.totalCreated);
 		logln(" MesquiteMenuItemSpec.totalFinalized " +  MesquiteMenuItemSpec.totalFinalized + " MesquiteMenuItemSpec.totalDisposed " + MesquiteMenuItemSpec.totalDisposed + " MesquiteMenuItemSpec.totalCreated " +  MesquiteMenuItemSpec.totalCreated);
 		logln(" MesquiteModule.totalFinalized " +  MesquiteModule.totalFinalized + " EmployerEmployee.totalDisposed " +  EmployerEmployee.totalDisposed + " EmployerEmployee.totalCreated " +  EmployerEmployee.totalCreated);
@@ -1492,6 +1511,7 @@ public class Mesquite extends MesquiteTrunk
 		logln("Associable.totalFinalizedA " + Associable.totalFinalizedA  + " Associable.totalDisposedA " +  Associable.totalDisposedA + " Associable.totalCreatedA " +  Associable.totalCreatedA);
 		logln("CharacterData.totalDisposed " + CharacterData.totalDisposed + " CharacterData.totalCreated " +  CharacterData.totalCreated);
 		logln("TreeVector.totalDisposed " + TreeVector.totalDisposed + " TreeVector.totalCreated " +  TreeVector.totalCreated);
+		logln("SpecsSet.totalDisposed " + SpecsSet.totalDisposed + " SpecsSet.totalCreated " +  SpecsSet.totalCreated);
 		logln("Listened.listenersRemaining " + Listened.listenersRemaining);
 		logln("Listened.listenersReport\n" + Listened.reportListeners());
 		logln("Threads");
@@ -1781,7 +1801,7 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Redirects log saving to the given filename", "[filename]", commandName, "redirectLog")) {
 			String name = parser.getFirstToken(arguments);
 			if (StringUtil.blank(name))
-				name = MesquiteString.queryString(containerOfModule(), "Redirect Log", "Indicate name of log file to which subsequent log output is to be directored.  It will be saved in the directory " + supportFilesPath, MesquiteTrunk.logFileName);
+				name = MesquiteString.queryString(containerOfModule(), "Redirect Log", "Indicate name of log file to which subsequent log output is to be directored.  It will be saved in the directory " + supportFilesDirectory, MesquiteTrunk.logFileName);
 			if (StringUtil.blank(name))
 				return null;
 			logln("Log redirected to \"" + name + "\"");
@@ -1791,14 +1811,14 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Changes the current log file's name", "[filename]", commandName, "renameLog")) {
 			String name = parser.getFirstToken(arguments);
 			if (StringUtil.blank(name))
-				name = MesquiteString.queryString(containerOfModule(), "Rename Log", "Indicate new name of log file.  It will be saved in the directory " + supportFilesPath, MesquiteTrunk.logFileName);
+				name = MesquiteString.queryString(containerOfModule(), "Rename Log", "Indicate new name of log file.  It will be saved in the directory " + supportFilesDirectory, MesquiteTrunk.logFileName);
 			if (StringUtil.blank(name))
 				return null;
 			MesquiteFile.closeLog();
 			logln("Log renamed to \"" + name + "\"");
-			String currentPath = supportFilesPath  + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName;
+			String currentPath = supportFilesDirectory  + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName;
 			MesquiteTrunk.logFileName = name;
-			MesquiteFile.rename(currentPath, supportFilesPath + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName);
+			MesquiteFile.rename(currentPath, supportFilesDirectory + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName);
 
 
 		}
@@ -1923,11 +1943,12 @@ public class Mesquite extends MesquiteTrunk
 				logln("MesquiteProject.totalFinalized " +  MesquiteProject.totalFinalized + " totalDisposed " + MesquiteProject.totalDisposed + " totalCreated " +  MesquiteProject.totalCreated);
 				logln("MesquiteFile.totalFinalized " +  MesquiteFile.totalFinalized + " totalDisposed " + MesquiteFile.totalDisposed + " totalCreated " +  MesquiteFile.totalCreated);
 				logln("ProjectRead.totalFinalized " +  ProjectRead.totalFinalized + " totalCreated " +  ProjectRead.totalCreated);
-				logln("FileElement.totalFinalized " +  FileElement.totalFinalized + " totalDisposed " + FileElement.totalDisposed + " totalCreated " +  FileElement.totalCreated);
+				logln("FileElement.totalFinalized " +  FileElement.totalFinalized + " totalDisposed " + FileElement.totalDisposed + " totalCreated " +  FileElement.totalCreated+ " totalTrueFileElementCreated " +  FileElement.totalTrueFileElementCreated);
 				logln("MesquiteFrame.totalFinalized " +  MesquiteFrame.totalFinalized + " totalDisposed " + MesquiteFrame.totalDisposed + " totalCreated " +  MesquiteFrame.totalCreated);
 				logln("MesquiteWindow.totalFinalized " +  MesquiteWindow.totalFinalized + " totalDisposed " + MesquiteWindow.totalDisposed + " numDisposing " +  MesquiteWindow.numDisposing + " totalCreated " +  MesquiteWindow.totalCreated);
 				logln("MesquiteDialogParent.totalFinalized " +  MesquiteDialogParent.totalFinalized + " totalDisposed " + MesquiteDialogParent.totalDisposed + " totalCreated " +  MesquiteDialogParent.totalCreated);
 				logln("ListableVector.totalFinalized " +  ListableVector.totalFinalized + " totalDisposed " + ListableVector.totalDisposed + " totalCreated " +  ListableVector.totalCreated);
+				logln("MesquiteMenuBar.totalFinalized " +  MesquiteMenuBar.totalFinalized +  " totalCreated " +  MesquiteMenuBar.totalCreated);
 				logln("MesquiteMenuItem.totalFinalized " +  MesquiteMenuItem.totalFinalized + " totalDisposed " + MesquiteMenuItem.totalDisposed + " totalCreated " +  MesquiteMenuItem.totalCreated);
 				logln("MesquiteMenuItemSpec.totalFinalized " +  MesquiteMenuItemSpec.totalFinalized + " totalDisposed " + MesquiteMenuItemSpec.totalDisposed + " totalCreated " +  MesquiteMenuItemSpec.totalCreated);
 				logln("NexusBlock.totalFinalized " +  NexusBlock.totalFinalized + " totalDisposed " + NexusBlock.totalDisposed + " totalCreated " +  NexusBlock.totalCreated);
@@ -2429,7 +2450,6 @@ public class Mesquite extends MesquiteTrunk
 				}
 			}
 		}
-		//if passed --version then write text file with stringForVersion, tab, stringForBuild
 		if (outputVersion){
 			Writer stream;
 			try {
@@ -2539,6 +2559,8 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("main constructor 6");
 		if (about !=null && mesquiteTrunk.getProjectList()!=null && mesquiteTrunk.getProjectList().getNumProjects()>0 && defaultHideMesquiteWindow)
 			about.hide();
+		
+		
 	}
 
 	/*.................................................................................................................*

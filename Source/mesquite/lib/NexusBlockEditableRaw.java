@@ -25,6 +25,10 @@ public abstract class NexusBlockEditableRaw extends NexusBlock {
 	public NexusBlockEditableRaw(MesquiteFile f, MesquiteModule manager){
 		super(f, manager);
 	}
+	public void dispose(){
+		editor = null;
+		super.dispose();
+	}
 	/** DOCUMENT */
 	public abstract String getText();
 

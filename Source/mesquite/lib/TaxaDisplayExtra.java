@@ -32,6 +32,8 @@ public abstract class TaxaDisplayExtra implements Listable, OwnedByModule {
 	public static int ABOVE = 3;
 	int placement=NORMAL;
 	
+	double rescaleValue=1.0;
+	
 	private Vector panels = new Vector();
 	public TaxaDisplayExtra (MesquiteModule ownerModule, TaxaDisplay taxaDisplay) {
 		this.taxaDisplay = taxaDisplay;
@@ -61,6 +63,16 @@ public abstract class TaxaDisplayExtra implements Listable, OwnedByModule {
 	public TaxaDisplay getTaxaDisplay(){
 		return taxaDisplay;
 	}
+	
+	public double getRescaleValue() {
+		return rescaleValue;
+	}
+
+	public void setRescaleValue(double rescaleValue) {
+		this.rescaleValue = rescaleValue;
+	}
+
+
 	public void dispose(){
 		ownerModule =null;
 		taxaDisplay=null;

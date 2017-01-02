@@ -34,6 +34,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static final int LINKED = 0;
 	public static final int INCLUDED = 1;
 	public static final int HOME = -1;
+	
+	public static boolean suppressReadWriteLogging = false;
 
 	private boolean local = true;
 	private URL url;
@@ -980,12 +982,14 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return false;
 		}
 		writing = true;
-		MesquiteModule.mesquiteTrunk.logln( "Saving File: " + fileName);
+		if (!suppressReadWriteLogging)
+			MesquiteModule.mesquiteTrunk.logln( "Saving File: " + fileName);
 		if (directoryName !=null) {
 			writingFileName = directoryName + fileName;
 			backupDirPath = directoryName + "backups" + fileSeparator;
 			backupFileName = backupDirPath + fileName;
-			MesquiteModule.mesquiteTrunk.logln( "In Directory: " + directoryName);
+			if (!suppressReadWriteLogging)
+				MesquiteModule.mesquiteTrunk.logln( "In Directory: " + directoryName);
 		}
 		else {
 			writingFileName = fileName;
@@ -2096,12 +2100,17 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 	/*.................................................................................................................*/
 	public static boolean deleteDirectory(String directoryPath){
+		if (StringUtil.blank(directoryPath))
+			return false;
 		try {
 			File directory = new File(directoryPath);
+			String sep = "";
+			if (!directoryPath.endsWith(MesquiteFile.fileSeparator))
+				sep=MesquiteFile.fileSeparator;
 			if (directory!=null && directory.isDirectory()) {
 				String[] files = directory.list();
 				for (int i=0; i<files.length; i++) {
-					String path = directoryPath + MesquiteFile.fileSeparator + files[i];
+					String path = directoryPath + sep + files[i];
 					File f = new File(path);
 					if (f.isDirectory()) {
 						boolean success = deleteDirectory(path);
@@ -2627,6 +2636,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			//MesquiteMessage.printStackTrace();
 			return null;
 		}
+		catch( Exception e ) {
+			if (warnIfProblem)
+				MesquiteMessage.warnProgrammer("Other Exception found (6) : " + relativePath + "   " + e.getMessage());
+			//MesquiteMessage.printStackTrace();
+			return null;
+		}
 	}
 	/*.................................................................................................................*/
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
@@ -2718,9 +2733,13 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}
 		}
 		catch( IOException e ) {
-			if (warnIfProblem)
-				MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + path + "\n   " + e.getMessage());
-			//MesquiteMessage.printStackTrace();  
+			if (warnIfProblem) {
+				MesquiteMessage.warnProgrammer("IO Exception getting URL contents (6a) : " + path + "\n   " + e.getMessage());
+				if (MesquiteTrunk.debugMode){
+					MesquiteMessage.warnProgrammer("  " + e);
+					e.printStackTrace();
+				}
+			}
 			return null;
 		}
 		return s.toString();
@@ -2890,9 +2909,23 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		String tempDirectoryName=fdlg.getDirectory();
 		// fdlg.dispose();
 		if (!StringUtil.blank(tempFileName) && !StringUtil.blank(tempDirectoryName)) {
-			MesquiteFile.putFileContents(tempDirectoryName+tempFileName, output, true);
+			MesquiteFile.putFileContents(tempDirectoryName+tempFileName, output,ascii);
 		}
 		MainThread.decrementSuppressWaitWindow();
+	}
+	/*.................................................................................................................*/
+	public static String putFileContentsQueryReturnDirectory(String message, String output){
+		MainThread.incrementSuppressWaitWindow();
+		MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), message, FileDialog.SAVE);   // Save File dialog box
+		fdlg.setVisible(true);
+		String tempFileName=fdlg.getFile();
+		String tempDirectoryName=fdlg.getDirectory();
+		// fdlg.dispose();
+		if (!StringUtil.blank(tempFileName) && !StringUtil.blank(tempDirectoryName)) {
+			MesquiteFile.putFileContents(tempDirectoryName+tempFileName, output,false);
+		}
+		MainThread.decrementSuppressWaitWindow();
+		return tempDirectoryName;
 	}
 	/*.................................................................................................................*/
 	static boolean w = false;
@@ -3134,7 +3167,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (!MesquiteTrunk.isApplet() && s!=null) {
 			try {
 				if (logStream==null) {
-					logPath = MesquiteModule.userDirectory + fileSeparator + "Mesquite_Support_Files" + fileSeparator + MesquiteTrunk.logFileName; //TODO: should have user settable in future
+					logPath = MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName; //TODO: should have user settable in future
 					logStream = new PrintWriter(new FileOutputStream(logPath, appendToLog));
 					appendToLog = true;  //subsequent calls append
 				}
@@ -3179,7 +3212,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (logStream!=null) {
 			logStream.close();
 			logStream = null;
-			try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.userDirectory + fileSeparator + "Mesquite_Support_Files" + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+			try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
 			catch (Throwable t){}
 		}
 	}

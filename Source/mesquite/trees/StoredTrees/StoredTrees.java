@@ -92,7 +92,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		Snapshot temp = new Snapshot();
 		if (laxMode)
 			temp.addLine("laxMode");
-		if (preferredTaxa!=null && getProject().getNumberTaxas()>1)
+		if (preferredTaxa!=null && getProject() != null && getProject().getNumberTaxas()>1)
 			temp.addLine("setTaxa " + getProject().getTaxaReferenceExternal(preferredTaxa));
 		if (currentSourceFile!=null && currentSourceFile != file)
 			temp.addLine("setTreeBlockInt " + currentListNumber); 

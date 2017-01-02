@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<mesquite>
+	<MessagesFromHome>
+		<version>1</version>
+		<notice><!--workaround for java 1.7 tree drawing crash on Windows -->
+			<forVersion>275</forVersion>
+			<noticeNumber>17</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Fix for Windows Java 1.7 tree drawing crash (improved)</identity>
+			<packageName>Mesquite 2.75, improved fix for tree drawing crash on Windows</packageName>
+			<updateVersion>568</updateVersion>
+			<explanation>
+			<![CDATA[<p> 
+			An update to Mesquite 2.75 is available for those using Java 1.7 on Windows.
+			<strong>(This includes and expands upon the fix released earlier this week.)</strong> 
+			It provides a workaround for a bug in Java that causes Mesquite to crash when the mouse is moved in the tree window.  
+			Please update (touch the link below). 
+			]]>
+			</explanation>
+				<install>
+					<location>mesquite/lib</location>
+					<file>TreeDrawing.class</file>
+					<url>http://mesquiteproject.org/mesquite/addenda/TreeDrawing.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>568</updateVersion>
+				</install>
+				<install>
+					<location>mesquite/trees/BasicTreeWindowMaker</location>
+					<file>BasicTreeWindow.class</file>
+					<url>http://mesquiteproject.org/mesquite/addenda/BasicTreeWindow.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>568</updateVersion>
+				</install>
+				<install>
+					<location>mesquite/trees/DependentTreeWindow</location>
+					<file>DepTreeWindow.class</file>
+					<url>http://mesquiteproject.org/mesquite/addenda/DepTreeWindow.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>568</updateVersion>
+				</install>
+				<install>
+					<location>mesquite/trees/MirrorTreeWindowMaker</location>
+					<file>MirrorTreeWindow.class</file>
+					<url>http://mesquiteproject.org/mesquite/addenda/MirrorTreeWindow.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>568</updateVersion>
+				</install>
+				<install>
+					<location>mesquite/trees/lib</location>
+					<file>SimpleTreeWindow.class</file>
+					<url>http://mesquiteproject.org/mesquite/addenda/SimpleTreeWindow.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>568</updateVersion>
+				</install>
+		</notice>
+	</MessagesFromHome>
+</mesquite>

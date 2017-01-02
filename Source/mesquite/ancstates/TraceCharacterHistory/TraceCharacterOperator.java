@@ -797,8 +797,8 @@ class SpecsPrintTextArea extends TextArea {
 	}
 
 	public void setText(String s){
-		super.setText(s);
 		try {
+			super.setText(s);
 			if (isVisible())
 				setCaretPosition(0);
 		}

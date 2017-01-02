@@ -30,7 +30,8 @@ public class TreeNotesMaker extends TreeDisplayAssistantD  {
     	 	notes = new Vector();
     	 	setUseMenubar(false);
    		addMenuItem("Close Note", makeCommand("closeNote", this));
-		addSubmenu(null, "Font", makeCommand("setFont", this), MesquiteSubmenu.getFontList());
+		//addSubmenu(null, "Font", makeCommand("setFont", this), MesquiteSubmenu.getFontList());
+		FontUtil.getFontSubmenuSpec(this,this);
 		addSubmenu(null, "Font Size", makeCommand("setFontSize", this), MesquiteSubmenu.getFontSizeList());
     	 	return true;
  	}
@@ -77,14 +78,27 @@ public class TreeNotesMaker extends TreeDisplayAssistantD  {
   	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Sets the font", null, commandName, "setFont")) {
-			Enumeration e = notes.elements();
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				if (obj instanceof TreeNotesOperator) {
-					TreeNotesOperator tCO = (TreeNotesOperator)obj;
-		 			tCO.treeNote.doCommand("setFont", arguments, checker);
-		 		}
-			}
+    	 		Enumeration e = notes.elements();
+    	 		while (e.hasMoreElements()) {
+    	 			Object obj = e.nextElement();
+    	 			if (obj instanceof TreeNotesOperator) {
+    	 				TreeNotesOperator tCO = (TreeNotesOperator)obj;
+    	 				tCO.treeNote.doCommand("setFont", arguments, checker);
+    	 			}
+    	 		}
+    	 	}
+    	 	else if (checker.compare(this.getClass(), "Sets the font", null, commandName, FontUtil.setFontOther)) {
+    	 		String t=FontUtil.getFontNameFromDialog(containerOfModule());
+    	 		if (t!=null) {
+    	 			Enumeration e = notes.elements();
+    	 			while (e.hasMoreElements()) {
+    	 				Object obj = e.nextElement();
+    	 				if (obj instanceof TreeNotesOperator) {
+    	 					TreeNotesOperator tCO = (TreeNotesOperator)obj;
+    	 					tCO.treeNote.doCommand("setFont", t, checker);
+    	 				}
+    	 			}
+    	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Sets the font size", null, commandName, "setFontSize")) {
 			Enumeration e = notes.elements();
@@ -147,25 +161,25 @@ class TreeNotesOperator extends TreeDisplayDrawnExtra {
 	}
 	/*.................................................................................................................*/
 	public   void placeNote(Tree tree, int drawnRoot) {
-		int noteX = treeDisplay.getTreeDrawing().x[drawnRoot]+treeNote.getOffsetX();
-		int noteY = treeDisplay.getTreeDrawing().y[drawnRoot]+treeNote.getOffsetY();
+		int noteX = (int) treeDisplay.getTreeDrawing().x[drawnRoot]+treeNote.getOffsetX();  //integer nodeloc approximation
+		int noteY = (int) treeDisplay.getTreeDrawing().y[drawnRoot]+treeNote.getOffsetY(); //integer nodeloc approximation
 		
 		if (noteX>treeDisplay.getBounds().width) {
-			treeNote.setOffsetX(treeDisplay.getBounds().width-treeDisplay.getTreeDrawing().x[drawnRoot]-40);
-			noteX = treeDisplay.getTreeDrawing().x[drawnRoot]+treeNote.getOffsetX();
+			treeNote.setOffsetX((int)(treeDisplay.getBounds().width-treeDisplay.getTreeDrawing().x[drawnRoot]-40));
+			noteX = (int) treeDisplay.getTreeDrawing().x[drawnRoot]+treeNote.getOffsetX();
 		}
 		else if (noteX<0) {
-			treeNote.setOffsetX(-treeDisplay.getTreeDrawing().x[drawnRoot]+4);
-			noteX = treeDisplay.getTreeDrawing().x[drawnRoot]+treeNote.getOffsetX();
+			treeNote.setOffsetX((int)(-treeDisplay.getTreeDrawing().x[drawnRoot]+4));
+			noteX = (int) treeDisplay.getTreeDrawing().x[drawnRoot]+treeNote.getOffsetX();
 		}
 			
 		if (noteY>treeDisplay.getBounds().height) {
-			treeNote.setOffsetY(treeDisplay.getBounds().height-treeDisplay.getTreeDrawing().y[drawnRoot]-40);
-			noteY = treeDisplay.getTreeDrawing().y[drawnRoot]+treeNote.getOffsetY();
+			treeNote.setOffsetY((int)(treeDisplay.getBounds().height-treeDisplay.getTreeDrawing().y[drawnRoot]-40));
+			noteY = (int) treeDisplay.getTreeDrawing().y[drawnRoot]+treeNote.getOffsetY();
 		}
 		else if (noteY<0) {
-			treeNote.setOffsetY(-treeDisplay.getTreeDrawing().y[drawnRoot]+4);
-			noteY = treeDisplay.getTreeDrawing().y[drawnRoot]+treeNote.getOffsetY();
+			treeNote.setOffsetY((int)(-treeDisplay.getTreeDrawing().y[drawnRoot]+4));
+			noteY =(int)  treeDisplay.getTreeDrawing().y[drawnRoot]+treeNote.getOffsetY();
 		}
 		if ((noteX!=treeNote.getBounds().x) || (noteY!=treeNote.getBounds().y))
 			treeNote.setLocation(noteX, noteY);

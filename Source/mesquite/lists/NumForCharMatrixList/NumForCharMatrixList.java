@@ -84,7 +84,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 	public void changed(Object caller, Object obj, Notification notification){
 		if (Notification.appearsCosmetic(notification))
 			return;
-		doCalcs();
+		if (notification.getCode()!=MesquiteListener.LOCK_CHANGED)
+			doCalcs();
 		parametersChanged(notification);
 	}
 	/*.................................................................................................................*/
@@ -117,6 +118,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
+		if (Notification.appearsCosmetic(notification) || (notification!=null && notification.getCode()==MesquiteListener.LOCK_CHANGED)) 
+			return;
 		doCalcs();
 		parametersChanged(notification);
 	}

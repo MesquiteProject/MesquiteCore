@@ -14,12 +14,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 
 /* ======================================================================== */
 /** A menu bar attached to a window.*/
 public class MesquiteMenuBar extends MenuBar {
 	MesquiteWindow ownerWindow;
 	public static long totalCreated = 0;
+	public static long totalFinalized = 0;
 	public MesquiteMenuBar(MesquiteWindow ownerWindow){
 		super();
 		this.ownerWindow=ownerWindow;
@@ -42,26 +45,37 @@ public class MesquiteMenuBar extends MenuBar {
 			menu.setLabel(menu.getLabel()+".");
 		return super.add(menu);
 	}
+	/*-------------------------------------------------------*/
+	public void finalize() throws Throwable {
+		MesquiteMenuBar.totalFinalized++;
+		super.finalize();
+	}
+	private void removeItems(Menu menu){
+			for (int j=0; j<menu.getItemCount(); j++) {
+				MenuItem item = menu.getItem(j);
+				if (item instanceof Menu)
+					removeItems((Menu)item);
+				if (item instanceof ActionListener){
+					((MenuItem)item).removeActionListener((ActionListener)item);
+				}
+				if (item instanceof CheckboxMenuItem){
+					((CheckboxMenuItem)item).removeItemListener((ItemListener)item);
+				}
+			}
+			menu.removeAll();
+	}
 	public void disconnect() {
 		ownerWindow = null;
-	/*
 		for (int i=0; i<getMenuCount(); i++){
 			Menu menu = getMenu(i);
-			if (menu instanceof MesquiteMenu)
-				((MesquiteMenu)menu).recycle = true; //setting recycle flag so can be recycled
-			for (int j=0; j<menu.getItemCount(); j++) {
-				MenuItem item = menu.getItem(i);
-				if (item instanceof MesquiteMenu)
-					((MesquiteMenu)item).recycle = true; //setting recycle flag so can be recycled
-			}
+			removeItems(menu);
 		}
 		for (int i=getMenuCount()-1; i>=0; i--){
 			Menu menu = getMenu(i);
-			menu.removeAll();
 			remove(menu);
 		}
-	//	removeAll();
-	*/
+		
+	
 	}
 }
 

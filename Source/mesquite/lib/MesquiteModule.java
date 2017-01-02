@@ -68,17 +68,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "3 Dec 2016";
+		return "1 January 2017";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.11";
+		return "3.2";
 	}
-	/*.................................................................................................................*/
-	/*.................................................................................................................*/
-	//As of 3.0 this becomes fixed, not changing with version)
-	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
 	public final static String getBuildLetter() {
@@ -90,7 +86,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	766;  
+		return 801;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -135,6 +131,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.04  = 725 released 16 August 2015
 	//3.10  = 765 released 27 June 2016
 	//3.11  = 766 released 3 December 2016,  fix of miswriting of codon positions
+	//3.20  = 801 released 1 January 2017
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
@@ -144,6 +141,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static String getBuildVersion() {
 		return " (build " + getBuildLetter() + getBuildNumber() + ")";
 	}
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	//As of 3.0 this becomes fixed, not changing with version)
+	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
+	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
+	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
+	//See Mesquite.java for notices.xml URLs
+	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 
 
@@ -159,6 +164,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 
 	/** The user's directory.*/
 	public static File userDirectory=null;  
+	/** The Mesquite_Support_Files directory.*/
+	public static File supportFilesDirectory=null;  
 	/** The window, created by mesquiteTrunk, that displays the log.*/
 	public static LogWindow logWindow;
 	/** true if name of MesquiteModule is to be shown in alerts*/
@@ -290,6 +297,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** endJob is called as a module is quitting; modules should put their clean up code here.*/
 	public void endJob() {
+		if (menuItemsSpecs != null) {
+			menuItemsSpecs.dispose(true);
+		}
+		menuItemsSpecs = null;
 	}
 	/*.................................................................................................................*/
 	public void finalize() throws Throwable {
@@ -313,7 +324,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				w.removeAll();
 			}				
 			w.setVisible(false);
-
 		}
 		boolean employerDoomed =  (employer!=null && employer.doomed);
 
@@ -1143,17 +1153,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Reports crash or error to Mesquite server*/
 	public void reportCrashToHome(Throwable e, String s) {
 		StackTraceElement[] stack = e.getStackTrace();
-		String report = MesquiteException.lastLocMessage() + "\n";
-		report += e + "\n";
-		report += s + "\n";
+		String report = "£message:" + MesquiteException.lastLocMessage() + "\n";
+		report += "£exception:" +e + "\n";
+		report += "£string:" + s + "\n£stacktrace:";
 		for (int i= 0; i< stack.length; i++)
 			report += stack[i] + "\n";
 		if (MainThread.emergencyCancelled)
 			report += "\n\nEMERGENCY CANCELLED";
 
-		report += "\n\n\n";
-		report += logWindow.getText();
-		report += "\n\n\n";
+		report += "\n";
+		String q = logWindow.getText();
+		q = StringUtil.replace(q,  "\n", "©");
+		q = StringUtil.replace(q,  "\r", "©");
+		report += "£log:" + q;
+		report += "£end\n";
 		reportProblemToHome(report);
 		MesquiteTrunk.errorReportedToHome = true;
 	}
@@ -1171,7 +1184,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else {
 			boolean q = AlertDialog.query(containerOfModule(), "Error", s + "\n\nPlease send a report of this error to the Mesquite server, to help us understand how often this happens.  None of your data will be sent." + addendum, "OK, Send Report",  "Close without sending");
 			if (q){
-				reportProblemToHome(s + "\n\n" + details + "\n\n@@@@@@@@@@@@@@@\n\n" + logWindow.getText());
+				reportProblemToHome("£reportableAlert:" + s + "\n\n" + details + "\n\n£log:" + logWindow.getText());
 				MesquiteTrunk.errorReportedToHome = true;
 			}
 		}
@@ -1202,7 +1215,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (numPairs>=4)
 			pairs[3] = new NameValuePair("notes", StringUtil.tokenize(notes));
 
-		if (BaseHttpRequestMaker.sendInfoToServer(pairs, "http://mesquiteproject.org/pyMesquiteBeans", null, 0)){  // changed to not retry
+		if (BaseHttpRequestMaker.sendInfoToServer(pairs, beansReportURL, null, 0)){  // changed to not retry
 			if (notifyUser) 
 				MesquiteMessage.println("Bean sent to Mesquite server.");
 		}
@@ -1222,14 +1235,17 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				"In order to fix this bug, we may need to contact you for more details.  " + 
 				"If you don't mind our contacting you, please indicate your email address here.  Thanks. " + 
 				"(If you want a response urgently, please send an email directly to info@mesquiteproject.org.)", "");
-		String report = "build " + MesquiteTrunk.mesquiteTrunk.getBuildNumber() + "\n";
-		report += "java:" + System.getProperty("java.version") +"; vm:" + System.getProperty("java.vendor") + "; os:" + System.getProperty("os.name") + "; osversion:" + System.getProperty("os.version") + "; arch:" + System.getProperty("os.arch") + "\n";
+		
+		String report = "$build " + MesquiteTrunk.mesquiteTrunk.getBuildNumber() + "\t";
+		report += "$system java:" + System.getProperty("java.version") +"\tvm:" + System.getProperty("java.vendor") + "; os:" + System.getProperty("os.name") + "; osversion:" + System.getProperty("os.version") + "; arch:" + System.getProperty("os.arch") + "\t";
 		if (!StringUtil.blank(email))
-			report += "EMAIL\t" + email +  "\n\n";
+			report += "$EMAIL\t" + email +  "\t";
 		else
-			report += "EMAIL NOT GIVEN\n\n";
-
-		report += s + "\n";
+			report += "$EMAIL NOT GIVEN\t";
+		s = StringUtil.replace(s,  "\n", "¢");
+		s = StringUtil.replace(s,  "\r", "¢");
+		report += "$report\t" + s + "$end";
+		
 		StringBuffer response = new StringBuffer();
 		if (BaseHttpRequestMaker.postToServer(report, errorReportURL, response)){
 			String r = response.toString();
@@ -1251,6 +1267,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** If scripting, puts alert in log; otherwise puts up alert dialog.*/
 	public void discreetAlert(boolean beDiscreet, String s) {
+		if (StringUtil.blank(s))
+			return;
 		if (beDiscreet)
 			logln("Note: " + s);
 		else

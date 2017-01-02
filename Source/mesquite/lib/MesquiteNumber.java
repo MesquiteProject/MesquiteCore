@@ -1078,11 +1078,11 @@ public class MesquiteNumber implements Listable, WithStringDetails{
 	This is useful for graphing and so on, since the graphing program doesn't have to 
 	know the data types of this object, min or max in order to calculate the appropriate pixel placement 
 	in a graph, for instance */
-	public int setWithinBounds(MesquiteNumber min, MesquiteNumber max, int numUnits) {
+	public synchronized int setWithinBounds(MesquiteNumber min, MesquiteNumber max, int numUnits) {
 		if (min==null || max == null)
 			return 0;
-		MesquiteNumber div = new MesquiteNumber(max);
-		div.subtract(min);
+		MesquiteNumber div = new MesquiteNumber(max); 
+		div.subtract(min);  //div now holds the difference between max and min; this is the scaling factor.
 		if (div.isZero())
 			return 0;
 		MesquiteNumber num = new MesquiteNumber(this);

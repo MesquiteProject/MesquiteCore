@@ -22,21 +22,25 @@ import java.text.*;
 public class ObjectContainer implements Listable {
 	Object object;
 	static int totalCreated = 0;
+	int id = 0;  
 	String name = null;
 	public ObjectContainer() {
- 		totalCreated++;
+		ObjectContainer.totalCreated++;
+ 		id=ObjectContainer.totalCreated;
 	}
 	public ObjectContainer(Object o) {
- 		totalCreated++;
+		ObjectContainer.totalCreated++;
  		object = o;
+ 		id=ObjectContainer.totalCreated;
 	}
 	public ObjectContainer(String name, Object o) {
  		totalCreated++;
  		object = o;
  		this.name = name;
+ 		id=ObjectContainer.totalCreated;
 	}
 	public int getID() {
-		return totalCreated;
+		return id;
 	}
  	public Object getObject(){
  		return object;

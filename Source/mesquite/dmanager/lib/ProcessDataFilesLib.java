@@ -341,7 +341,8 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 									}
 									logln(" ");
 								}
-								project.getCoordinatorModule().closeFile(file);
+								
+								project.getCoordinatorModule().closeFile(file, true);
 							}
 						}
 					}

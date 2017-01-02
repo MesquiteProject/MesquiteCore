@@ -203,9 +203,12 @@ public class CommandRecord extends Listened {
 			}
 		}
 	}
-	public static void tick(String progressNote){
-		
 	
+	
+	/**  The progress note string will be displayed in the explanation area and in the automatic progress indicator for operations
+	 * that take a long time */
+	
+	public static void tick(String progressNote){
 		MesquiteWindow.tickClock(progressNote);
 		Thread thread = Thread.currentThread();
 		if (thread.isInterrupted()){
@@ -228,6 +231,12 @@ public class CommandRecord extends Listened {
 			}
 		}
 	}
+	
+	/** This is a synonym of tick; it is here because David can never remember the method name "tick".   */
+	public static void setDetailsOfProgress(String progressNote){
+		tick(progressNote);
+	}
+	
 	public static void incrementProgress(){
 		
 		

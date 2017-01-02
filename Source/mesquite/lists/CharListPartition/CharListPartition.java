@@ -234,13 +234,13 @@ public class CharListPartition extends CharListAssistant {
 		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
 		mss2 = addMenuItem("Remove Group Designation", makeCommand("removeGroup", this));
-		mLine2 = addMenuItem("-",null);
+		mLine2 = addMenuSeparator();
 		nNG = addMenuItem("New Group...", makeCommand("newGroup",  this));
 		mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
 		mEGC.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
 		mDGC = addSubmenu(null, "Delete Group...", makeCommand("deleteGroup", this));
 		mDGC.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
-		mLine = addMenuItem("-",null);
+		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)

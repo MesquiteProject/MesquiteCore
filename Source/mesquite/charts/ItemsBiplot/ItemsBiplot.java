@@ -319,7 +319,7 @@ class ItemsBiplotWindow extends ChartWindow implements ChartListener, ActionList
 		scrollBox.setLocation(2, getHeight()-24-chartInsetBottom- scrollBox.getBounds().height);
 		scrollBox.setVisible(true);
 		setWindowSize(400,400);
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		ownerModule.addCheckMenuItem(null, "Auto-recalculate", ownerModule.makeCommand("toggleAutoRecalc", this), autoCount);
 	}
 	public void setDefaultNumberOfItems(int def){

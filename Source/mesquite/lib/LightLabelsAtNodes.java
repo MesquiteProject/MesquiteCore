@@ -116,9 +116,6 @@ public class LightLabelsAtNodes  {
 	public   void paintLabels(Tree tree, int node, Graphics g) {
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				paintLabels(tree, d, g);
-				
-		int nodeX = treeDisplay.getTreeDrawing().x[node];
-		int nodeY = treeDisplay.getTreeDrawing().y[node];
 		LightLabel p = getLabel(node);
 		if (p!=null) {
 			p.paint(g); 
@@ -155,8 +152,8 @@ public class LightLabelsAtNodes  {
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				locateLightLabels(tree, d);
 				
-		int nodeX = treeDisplay.getTreeDrawing().x[node];
-		int nodeY = treeDisplay.getTreeDrawing().y[node];
+		int nodeX = (int)treeDisplay.getTreeDrawing().x[node];  //integer nodeloc approximation
+		int nodeY = (int)treeDisplay.getTreeDrawing().y[node];  //integer nodeloc approximation
 		LightLabel p = getLabel(node);
 		if (p!=null){
 			if  ((p.getLocation()==null) || ((p.getLocation().x!=nodeX) || (p.getLocation().y!=nodeY)))

@@ -325,6 +325,13 @@ public class IntegerArray  implements Listable  {
 		return newValues;
 	}
 	/*...........................................................*/
+	public static int[] addParts(int[] d, int num) {
+		if (d==null)
+			return null;
+		int starting=d.length-1;
+		return addParts(d,d.length-1,num);
+	}
+	/*...........................................................*/
 	public void deleteParts(int starting, int num) {
 		if (num<=0 || starting<0 || starting>=getSize())
 			return;

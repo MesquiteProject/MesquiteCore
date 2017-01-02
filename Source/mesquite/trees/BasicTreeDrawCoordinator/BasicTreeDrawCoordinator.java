@@ -56,7 +56,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
-		//addMenuItem("-", null);
+		//addMenuSeparator();
 		makeMenu("Display");
 		if (defaultDrawer !=null && (condition == null || !(condition instanceof MesquiteBoolean) || ((MesquiteBoolean)condition).getValue() )) {
 			treeDrawTask= (DrawTree)hireNamedEmployee(DrawTree.class, defaultDrawer);
@@ -803,7 +803,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 	private   void showNodeLocations(Tree tree, Graphics g, int N) {
 		if (tree.nodeExists(N)) {
 			g.setColor(Color.red);
-			g.fillOval(getTreeDrawing().x[N], getTreeDrawing().y[N], 4, 4);
+			GraphicsUtil.fillOval(g,getTreeDrawing().x[N], getTreeDrawing().y[N], 4, 4);
 			g.setColor(branchColor);
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				showNodeLocations( tree, g, d);
@@ -879,9 +879,9 @@ class BasicTreeDisplay extends TreeDisplay  {
 				if (spotsize>height)
 					height = spotsize;
 				g.setColor(Color.white);
-				int x = treeDisplay.getTreeDrawing().x[N] - width/2;
-				int y = treeDisplay.getTreeDrawing().y[N] - height/2;
-				g.fillOval(x , y, width, height);
+				double x = treeDisplay.getTreeDrawing().x[N] - width/2;
+				double y = treeDisplay.getTreeDrawing().y[N] - height/2;
+				GraphicsUtil.fillOval(g,x , y, width, height);
 			/*	g.setColor(Color.red);
 				Graphics2D g2 = (Graphics2D)g;
 				GraphicsConfiguration gc;
@@ -900,7 +900,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 				ss += " " +  at0.getTranslateX() + " " +  at.getTranslateX() + " " + nt.getTranslateX() + "/ ";
 				*/
 				g.setColor(Color.black);
-			   g.drawString(Integer.toString(N), x+2, y-4+ height);
+			   GraphicsUtil.drawString(g,Integer.toString(N), x+2, y-4+ height);
 				/*g.drawRect(x , y, width, height);
 				gc = g2.getDeviceConfiguration();
 				 at0 = g2.getTransform();
@@ -908,7 +908,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 				 nt = gc.getNormalizingTransform();
 				ss += " " +  at0.getTranslateX() + " " +  at.getTranslateX() + " " + nt.getTranslateX() + "/ ";
 				*/
-				g.drawOval(x , y, width, height);
+				GraphicsUtil.drawOval(g,x , y, width, height);
 				/*gc = g2.getDeviceConfiguration();
 				 at0 = g2.getTransform();
 				 at = gc.getDefaultTransform();
@@ -946,8 +946,8 @@ class BasicTreeDisplay extends TreeDisplay  {
 			int shiftY = 10;
 			int nameLength = 0;
 			int nameHeight = 0;
-			int nodeX = getTreeDrawing().x[N];
-			int nodeY = getTreeDrawing().y[N];
+			double nodeX = getTreeDrawing().x[N];
+			double nodeY = getTreeDrawing().y[N];
 			MesquiteDouble angle = new MesquiteDouble();
 			if (ownerDrawModule.getCenterBrLenLabels()){
 				int motherNode = tree.motherOfNode(N);

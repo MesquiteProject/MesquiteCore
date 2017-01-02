@@ -50,7 +50,7 @@ public class ColorTaxon extends TaxaListAssistantI  {
 		addCheckMenuItem(null, "Remove color", makeCommand("removeColor",  this), removeColor);
 		addMenuItem(null, "Remove all color", makeCommand("removeAllColor",  this));
 		MesquiteSubmenuSpec mss2 = addSubmenu(null, "Set Color of Selected", makeCommand("setColorSelected",  this), ColorDistribution.standardColorNames);
-		//addMenuItem(null, "-", null);
+		//addMenuSeparator();
 		//addMenuItem(null, "Color Selected", makeCommand("colorSelected",  this));
 		setUseMenubar(false); //menu available by touching button
 		return true;

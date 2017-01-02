@@ -62,7 +62,7 @@ public class AlignMultipleSequencesMachine {
 			}
 		}
 		//firstRowWithSelectedCell() != 
-		if (aligner.permitSeparateThread() && (separateThread= !AlertDialog.query(ownerModule.containerOfModule(), "Separate Thread?", "Run on separate thread? (Beware! Don't close window before done)","No", "Separate"))){
+		if (aligner.permitSeparateThread() && (separateThread= !AlertDialog.query(ownerModule.containerOfModule(), "Separate Thread?", "Run on separate thread? (Beware! Don't close matrix window before done)","No", "Separate", 1, MesquiteThread.SEPARATETHREADHELPMESSAGE))){
 			AlignThread alignThread = new AlignThread(ownerModule, this, aligner, this.data, this.table);
 			alignThread.separateThread = true;
 			separateThreadStorage.setSeparateThread(separateThread);
@@ -98,7 +98,6 @@ class AlignThread extends Thread {
 	}
 
 	public void run() {
-
 		MesquiteInteger firstRow = new MesquiteInteger();
 		MesquiteInteger lastRow = new MesquiteInteger();
 		MesquiteInteger firstColumn = new MesquiteInteger();
@@ -125,6 +124,5 @@ class AlignThread extends Thread {
 		if (separateThread)
 			data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
 		table.repaintAll();
-
 	}
 }

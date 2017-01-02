@@ -927,29 +927,55 @@ public class DNAData extends MolecularData {
 		return proteins;
 	}
 
+	/*.................................................................................................................*/
+	/** gets the get titles for tabbed summary data about matrix*/
+	public String getTabbedTitles() {
+		return "Number of Taxa\tNumber of Characters\tA\tC\tG\tT";
+	}
+	/*.................................................................................................................*/
+	/** gets the get  tabbed summary data about matrix*/
+	public String getTabbedSummary() {
+		StringBuffer sb = new StringBuffer();
+		sb.append( ""+getNumTaxa() + "\t" + getNumChars()+"\t");
+		double[] freq = getBaseFrequencies();
+		if (freq !=null) {
+			sb.append(""+ freq[0] + "\t" + freq[1] + "\t" + freq[2] + "\t" +freq[3]+"\t");
+		} else
+			sb.append("\t\t\t\t");
+	
+
+		return sb.toString();
+	}
 	/* ................................................................................................................. */
-	/** gets the explanation of this matrix */
-	public String getExplanation() {
-		String extra = "This DNA character matrix for the taxa block \"" + getTaxa().getName() + "\" has " + getNumChars() + " characters for the " + getNumTaxa() + " taxa. Category of data: " + getDataTypeName() + "\n";
+	public double[] getBaseFrequencies(){
 		int[] freq = new int[4];
 		for (int i = 0; i < 4; i++)
 			freq[i] = 0;
-		int cg = 0;
+		int count = 0;
 		for (int it = 0; it < getNumTaxa(); it++) {
 			for (int ic = 0; ic < getNumChars(); ic++) {
 				long s = getStateRaw(ic, it);
 				if (!CategoricalState.isUnassigned(s) && !CategoricalState.isInapplicable(s)) {
-					cg++;
+					count++;
 					for (int i = 0; i < 4; i++)
 						if (CategoricalState.isElement(s, i))
 							freq[i]++;
 				}
 			}
 		}
-		if (cg != 0) {
-			extra += "Frequency of A: " + MesquiteDouble.toString(((double) freq[0]) / cg) + " C: " + MesquiteDouble.toString(((double) freq[1]) / cg) + " G: " + MesquiteDouble.toString(((double) freq[2]) / cg) + " T: " + MesquiteDouble.toString(((double) freq[3]) / cg);
-		}
+		if (count!=0)
+			return new double[] {	((double) freq[0]) / count,((double) freq[1]) / count,((double) freq[2]) / count,((double) freq[3]) / count};
+		return null;
 
+	}
+	/* ................................................................................................................. */
+	/** gets the explanation of this matrix */
+	public String getExplanation() {
+		String extra = "This DNA character matrix for the taxa block \"" + getTaxa().getName() + "\" has " + getNumChars() + " characters for the " + getNumTaxa() + " taxa. Category of data: " + getDataTypeName() + "\n";
+		double[] freq = getBaseFrequencies();
+		if (freq !=null) {
+			extra += "Frequency of A: " + freq[0] + " C: " + freq[1] + " G: " + freq[2] + " T: " +freq[3];
+		}
 		return extra;
 
 	}

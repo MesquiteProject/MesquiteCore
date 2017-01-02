@@ -33,16 +33,16 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
 		if (MesquiteTrunk.isWindows())
-			return StringUtil.protectForWindows(s);
+			return StringUtil.protectFilePathForWindows(s);
 		else
-			return StringUtil.protectForUnix(s);
+			return StringUtil.protectFilePathForUnix(s);
 	}
 	/*.................................................................................................................*/
 	public static String getWriteStringAsFile(String path, String contents) {
 		if (MesquiteTrunk.isWindows())
-			return "echo \"" + contents + "\" > " + StringUtil.protectForWindows(path) + StringUtil.lineEnding();
+			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
 		else
-			return "echo \"" + contents + "\" > " + StringUtil.protectForUnix(path) + StringUtil.lineEnding();
+			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
 	}
 
 	/*.................................................................................................................*
@@ -52,26 +52,26 @@ public class ShellScriptUtil  {
     	/*.................................................................................................................*/
 	public static String getLinkCommand(String path, String aliasPath){
 		if (MesquiteTrunk.isWindows())
-			return "shortcut -f -t " +StringUtil.protectForWindows(path) + " -n " + StringUtil.protectForUnix(aliasPath) +StringUtil.lineEnding();
+			return "shortcut -f -t " +StringUtil.protectFilePathForWindows(path) + " -n " + StringUtil.protectFilePathForUnix(aliasPath) +StringUtil.lineEnding();
 		else
-			return "ln  " +StringUtil.protectForUnix(path) + " " + StringUtil.protectForUnix(aliasPath) +StringUtil.lineEnding();
+			return "ln  " +StringUtil.protectFilePathForUnix(path) + " " + StringUtil.protectFilePathForUnix(aliasPath) +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
 	public static String getChangeDirectoryCommand(String directory){
 		String directoryString;
 		if (MesquiteTrunk.isWindows()) {
-			directoryString = StringUtil.protectForWindows(directory);
+			directoryString = StringUtil.protectFilePathForWindows(directory);
 		} else {
-			directoryString = StringUtil.protectForUnix(directory);
+			directoryString = StringUtil.protectFilePathForUnix(directory);
 		}
 		return "cd " + directoryString +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(String filePath){
 		if (MesquiteTrunk.isWindows())
-			return "del " + StringUtil.protectForWindows(filePath) +StringUtil.lineEnding();
+			return "del " + StringUtil.protectFilePathForWindows(filePath) +StringUtil.lineEnding();
 		else
-			return "rm -f " + StringUtil.protectForUnix(filePath) +StringUtil.lineEnding();
+			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
 	public static String getExitCommand(){
@@ -84,14 +84,14 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static String getSetFileTypeCommand(String filePath){
 		if (MesquiteTrunk.isMacOSX())
-			return "/Developer/Tools/setFile -t TEXT " + StringUtil.protectForUnix(filePath) +StringUtil.lineEnding();
+			return "/Developer/Tools/setFile -t TEXT " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding();
 		else
 			return "";
 	}
 	/*.................................................................................................................*/
 	public static String getOpenDirectoryCommand(String directoryPath){
 		if (MesquiteTrunk.isMacOSX())
-			return "open " + StringUtil.protectForUnix(directoryPath) +StringUtil.lineEnding();
+			return "open " + StringUtil.protectFilePathForUnix(directoryPath) +StringUtil.lineEnding();
 		else
 			return "";
 	}
@@ -293,6 +293,7 @@ public class ShellScriptUtil  {
 			runningFilePath=getDefaultRunningFilePath();
 		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name);
 	}
+
 
 	/*.................................................................................................................*/
 	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher){

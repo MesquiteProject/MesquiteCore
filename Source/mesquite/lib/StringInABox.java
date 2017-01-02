@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 
@@ -39,7 +40,7 @@ public class StringInABox {
 	Color textColor, edgeColor;
 	int linkEnd = -1;
 	int linkStart = -1;
-	Rectangle linkBox = null;
+	Rectangle2D linkBox = null;
 	/* ----------------------------------------------- */
 	public StringInABox(StringBuffer s, Font f, int w){
 		font = f;
@@ -62,7 +63,7 @@ public class StringInABox {
 		linkStart = start;
 		linkEnd = end;
 	}
-	public Rectangle getLinkBounds(){  //the box must have been drawn before the bounds are known
+	public Rectangle2D getLinkBounds(){  //the box must have been drawn before the bounds are known
 		if (linkEnd < 0 && linkStart<0)
 			return null;
 		return linkBox;
@@ -72,7 +73,7 @@ public class StringInABox {
 			return false;
 		if (linkBox == null)
 			return false;
-		return x >= linkBox.x && x <= linkBox.x + linkBox.width && y >= linkBox.y && y <= linkBox.y + linkBox.height;
+		return x >= linkBox.getX() && x <= linkBox.getX() + linkBox.getWidth() && y >= linkBox.getY() && y <= linkBox.getY() + linkBox.getHeight();
 	}
 	/* ----------------------------------------------- */
 	public void setBuffer(int b){
@@ -171,10 +172,10 @@ public class StringInABox {
 			StringBuffer sB = new StringBuffer(s);
 			StringInABox sBox = new StringInABox(sB,font, dim.width);  //TODO: should set font here!!!
 			int tot =  sBox.getHeight();
-			int lastY = 0;
+			double lastY = 0;
 			boolean done = false; 
 			while (lastY<tot && !done){
-				int r = sBox.getRemainingHeight(lastY);
+				int r = sBox.getRemainingHeight((int)lastY);
 				if (r> dim.height)
 					r=dim.height;
 				Graphics pg = pjob.getGraphics();
@@ -199,10 +200,10 @@ public class StringInABox {
 		StringBuffer sB = new StringBuffer(s);
 		StringInABox sBox = new StringInABox(sB, font, dim.width);  
 		int tot =  sBox.getHeight();
-		int lastY = 0;
+		double lastY = 0;
 		boolean done = false; 
 		while (lastY<tot && !done){
-			int r = sBox.getRemainingHeight(lastY);
+			int r = sBox.getRemainingHeight((int)lastY);
 			if (r> dim.height)
 				r=dim.height;
 			Graphics pg = pjob.getGraphics();
@@ -384,13 +385,13 @@ public class StringInABox {
 	/* ----------------------------------------------- */
 	TextRotator textRotator;
 	/** draw text based at x, y, starting at local position y in box for height h*/
-	public int draw(Graphics g, int x, int y, int yPos, int h, Component component, boolean drawHorizontal){
+	public double draw(Graphics g, int x, int y, int yPos, int h, Component component, boolean drawHorizontal){
 		return draw(g, x, y, yPos, h, component, drawHorizontal, false);
 	}
-	public int draw(Graphics g, int x, int y, int yPos, int h, Component component, boolean drawHorizontal, boolean tightVertical){
+	public double draw(Graphics g, double x, double y, double yPos, int h, Component component, boolean drawHorizontal, boolean tightVertical){
 		try {
 			if (sb!=null && sb.length()>0 && strings!=null && font!=null && width>0){
-				int lastDrawnYPos = yPos;
+				double lastDrawnYPos = yPos;
 				Font prevFont = g.getFont();
 				Color prevColor = g.getColor();
 				g.setFont(font); //use g's font if font is null
@@ -414,7 +415,7 @@ public class StringInABox {
 					if (strings[i] != null){
 						if (drawHorizontal) {
 							if (textColor !=null && edgeColor!=null) {
-								StringUtil.highlightString(g, strings[i], x, y + heightOnThisPage, textColor, edgeColor);
+								StringUtil.highlightString(g, strings[i], (int)x, (int)y + heightOnThisPage, textColor, edgeColor);  // integer nodeloc approximation
 							}
 							else {
 								boolean drawn = false;
@@ -445,27 +446,29 @@ public class StringInABox {
 										String remnant = strings[i].substring(localLinkEnd, strings[i].length());
 										if (remnant == null)
 											remnant = "";
-										g.drawString(prelink, x, y + heightOnThisPage);  
+										GraphicsUtil.drawString(g,prelink, x, y + heightOnThisPage);  
 										Color c = g.getColor();
 										g.setColor(Color.blue);
-										g.drawString(link,  x + prelinkWidth, y + heightOnThisPage);  
-										g.drawLine(x + prelinkWidth, y + heightOnThisPage+1, x + prelinkWidth + linkWidth, y + heightOnThisPage+1);  
+										GraphicsUtil.drawString(g,link,  x + prelinkWidth, y + heightOnThisPage);  
+										GraphicsUtil.drawLine(g, x + prelinkWidth, y + heightOnThisPage+1, x + prelinkWidth + linkWidth, y + heightOnThisPage+1);  
 										if (linkBox == null) {
-											linkBox = new Rectangle(x + prelinkWidth, y + heightOnThisPage+1- increment, linkWidth, increment);
+											linkBox = new Rectangle2D.Double(x + prelinkWidth, y + heightOnThisPage+1- increment, linkWidth, increment);
 										}
 										else {
-											if (linkBox.x + linkBox.width < x + prelinkWidth + linkWidth)
-												linkBox.width = x + prelinkWidth + linkWidth - linkBox.x;
-											if (linkBox.x> x + prelinkWidth)
-												linkBox.x = x + prelinkWidth;
-											if (linkBox.y + linkBox.height < y + heightOnThisPage+1)
-												linkBox.height = y + heightOnThisPage+1 - linkBox.y;
-											if (linkBox.y> y + heightOnThisPage+1- increment)
-												linkBox.y = y + heightOnThisPage+1- increment;
+											double linkX = linkBox.getX(), linkY =linkBox.getY(), linkW =linkBox.getWidth(), linkH = linkBox.getHeight();
+											if (linkBox.getX() + linkBox.getWidth() < x + prelinkWidth + linkWidth)
+												linkW = x + prelinkWidth + linkWidth - linkBox.getX();
+											if (linkBox.getX()> x + prelinkWidth)
+												linkX = x + prelinkWidth;
+											if (linkBox.getY() + linkBox.getHeight() < y + heightOnThisPage+1)
+												linkH = y + heightOnThisPage+1 - linkBox.getY();
+											if (linkBox.getY()> y + heightOnThisPage+1- increment)
+												linkY = y + heightOnThisPage+1- increment;
+											linkBox.setFrame(linkX, linkY, linkW, linkH);
 										}
-										//g.drawRect(linkBox.x, linkBox.y, linkBox.width, linkBox.height);
+										//g.drawRect(linkBox.getX(), linkBox.y, linkBox.width, linkBox.height);
 										g.setColor(c);
-										g.drawString(remnant, x + fm.stringWidth(prelink + link), y + heightOnThisPage);  
+										GraphicsUtil.drawString(g,remnant, x + fm.stringWidth(prelink + link), y + heightOnThisPage);  
 										drawn = true;
 									}
 								}
@@ -473,14 +476,14 @@ public class StringInABox {
 								
 								
 								if (!drawn) {
-									g.drawString(strings[i], x, y + heightOnThisPage); 
+									GraphicsUtil.drawString(g,strings[i], x, y + heightOnThisPage); 
 								}
 							}
 						}
 						else {
 							g.setColor(textColor);
 							textRotator.assignBackground(edgeColor);
-							textRotator.drawRotatedText(strings[i], i, g, component, x + heightOnThisPage, y);
+							textRotator.drawRotatedText(strings[i], i, g, component, (int)x + heightOnThisPage, (int)y); // integer nodeloc approximation
 						}
 
 						lastDrawnYPos = y + heightOnThisPage + accumulatedHeight;
@@ -507,22 +510,32 @@ public class StringInABox {
 	}
 	/* ----------------------------------------------- */
 	/** draw text based at x, y, starting at local position y in box for height h*/
-	public int draw(Graphics g, int x, int y, int yPos, int h){
-		return draw(g,x,y,yPos,h, null, true);
+	public double draw(Graphics g, double x, double y, double yPos, int h){
+		return draw(g,x,y,yPos,h, null, true, false);
 	}
 	/* ----------------------------------------------- */
 	/** draw text based at x, y*/
-	public int draw(Graphics g, int x, int y){
+	public double draw(Graphics g, int x, int y){
 		return draw(g, x, y, 0, getHeight());
 	}
 	/* ----------------------------------------------- */
 	/** draw text based at x, y*/
-	public int drawTight(Graphics g, int x, int y){
+	public double draw(Graphics g, double x, double y){
+		return draw(g, x, y, 0, getHeight());
+	}
+	/* ----------------------------------------------- */
+	/** draw text based at x, y*/
+	public double drawTight(Graphics g, int x, int y){
 		return draw(g,x,y,0,getHeight(), null, true, true);
 	}
 	/* ----------------------------------------------- */
 	/** draw text based at x, y*/
-	public int drawInBox(Graphics g, Color backgroundColor, int x, int y){
+	public double drawTight(Graphics g, double x, double y){
+		return draw(g,x,y,0,getHeight(), null, true, true);
+	}
+	/* ----------------------------------------------- */
+	/** draw text based at x, y*/
+	public double drawInBox(Graphics g, Color backgroundColor, int x, int y){
 		int h = getHeight();
 		Color c = g.getColor();
 		g.setColor(backgroundColor);

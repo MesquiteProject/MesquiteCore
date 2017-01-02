@@ -218,6 +218,7 @@ public class ProjectRead implements Runnable {
 	/** DOCUMENT */
 	public void run() {
 		try {
+			MesquiteModule.incrementMenuResetSuppression();
 			CommandRecord comRec = new CommandRecord(wasScripting);
 			CommandRecord prevRec = MesquiteThread.getCurrentCommandRecord();
 			MesquiteThread.setCurrentCommandRecord(comRec);
@@ -247,10 +248,12 @@ public class ProjectRead implements Runnable {
 			}
 			thread = null;
 			MesquiteTrunk.mesquiteTrunk.logWindow.showPrompt();
+			MesquiteModule.decrementMenuResetSuppression();
 		}
 		catch (Exception e){
 			MesquiteFile.throwableToLog(this, e);
 			MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, "File reading could not be completed because an exception or error occurred (i.e. a crash; " + e.getClass() + "). If you save any files, you might best use Save As... in case data were lost or file saving doesn't work properly.");
+			MesquiteModule.decrementMenuResetSuppression();
 
 		}
 		catch (Error e){
@@ -261,6 +264,7 @@ public class ProjectRead implements Runnable {
 				MesquiteDialog.closeWizard();
 				MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, "File reading could not be completed because an exception or error occurred (i.e. a crash; " + e.getClass() + "). If you save any files, you might best use Save As... in case data were lost or file saving doesn't work properly.");
 			}
+			MesquiteModule.decrementMenuResetSuppression();
 			throw e;
 		}
 	}

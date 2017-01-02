@@ -115,7 +115,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 		addCheckMenuItem(null, "Save Details To File...", makeCommand("toggleSaveDetails", this), saveDetailsToFile);
 
 		addMenuItem( "Close Summarize Changes", makeCommand("closeSummarizeChanges",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 
 
 		allowedChanges = new boolean[CategoricalState.maxCategoricalState][CategoricalState.maxCategoricalState];
@@ -669,7 +669,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 				if (saveDetails())
 					MesquiteFile.putFileContentsQuery("Save file with full details", fullDetails.toString(), true);
 			}
-			else
+			else if (textWindow != null)
 				if (processedTrees<=0) {
 					if (!oneValidMapping)
 						textWindow.setText("Sorry, changes not calculated; character mappings could not be sampled for any of the trees examined.");
