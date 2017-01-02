@@ -1355,7 +1355,10 @@ public class StringUtil {
 		}
 	}
 
-	/** This encodes a string so that it can be used as part of a URL for the Oracle AppBuilder */
+	/** This encodes a string so that it can be used as part of a URL for the Oracle AppBuilder.
+	Note that this cannot use the standard URLEncoder logic, as that replaces spaces with +, which will break
+	the AppBuilder code as that will mean that any path with a space in it will not match reality.  */
+	
 	public static String encodeForAppBuilderURL(String s){
 		if (s==null) return null;
 		StringBuffer buffer = new StringBuffer(s.length()*2);
