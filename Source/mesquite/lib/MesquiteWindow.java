@@ -2251,7 +2251,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 
 		resetMenuTime.start();
-
 		MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); 
 		if (ownerModule==null) {
 			MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@@@null ownerModule in window");
@@ -2280,7 +2279,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public MenuBar getMenuBar() {
 		return menuBar;
 	}
-	boolean needMenuBarReset = false;
+	boolean needMenuBarReset = true;
 	public MenuBar getMenuBar(boolean generateIfNeeded) { //MenuBar object is built on demand at this point
 		if (generateIfNeeded && needMenuBarReset) {
 			resetMenus(true);

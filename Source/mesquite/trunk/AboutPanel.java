@@ -53,7 +53,7 @@ public class AboutPanel extends Panel {
 			g.drawImage(InfoBar.prereleaseImage,3,3,(ImageObserver)this);
 		}
 		g.drawString("http://mesquiteproject.org", 5,210);
-		g.drawString("Copyright (c) 1997-2016 W. & D. Maddison.", 5,225);
+		g.drawString("Copyright (c) 1997-2017 W. & D. Maddison.", 5,225);
 		
 		MesquiteWindow.uncheckDoomed(this);
 	}
