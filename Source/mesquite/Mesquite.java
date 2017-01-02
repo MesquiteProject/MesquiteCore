@@ -141,7 +141,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 
-	static boolean startedFromOSXJava17Executable = false;
+	static boolean startedFromOSXJava17Executable = true; //Debugg.println
 	/*.................................................................................................................*/
 	public void init()
 	{
