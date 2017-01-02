@@ -2143,12 +2143,20 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (current instanceof Menu && target instanceof Menu){
 			Menu currentMM = (Menu)current;
 			Menu targetMM = (Menu)target;
-			return ((currentMM.getLabel()== null && targetMM.getLabel()==null) || currentMM.getLabel().equals(targetMM.getLabel()));
+			if ((currentMM.getLabel()== null && targetMM.getLabel()==null))
+				return true;
+			if (currentMM.getLabel()== null || targetMM.getLabel()==null)
+					return false;
+			return currentMM.getLabel().equals(targetMM.getLabel());
 		}
 		if (current instanceof MenuItem && target instanceof MenuItem){
 			MenuItem currentMMI = (MenuItem)current;
 			MenuItem targetMMI = (MenuItem)target;
-			return ((currentMMI.getLabel()== null && targetMMI.getLabel()==null) || currentMMI.getLabel().equals(targetMMI.getLabel()));
+			if ((currentMMI.getLabel()== null && targetMMI.getLabel()==null))
+				return true;
+			if (currentMMI.getLabel()== null || targetMMI.getLabel()==null)
+					return false;
+			return currentMMI.getLabel().equals(targetMMI.getLabel());
 		}
 		return true;
 	}
