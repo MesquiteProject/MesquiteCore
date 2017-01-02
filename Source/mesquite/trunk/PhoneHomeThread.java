@@ -13,14 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trunk;
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
 
 import mesquite.lib.*;
-import mesquite.*;
-import mesquite.lib.duties.*;
 import mesquite.tol.lib.BaseHttpRequestMaker;
 
 /* ======================================================================== */
