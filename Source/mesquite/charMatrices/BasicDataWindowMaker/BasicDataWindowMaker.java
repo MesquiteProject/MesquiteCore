@@ -1776,7 +1776,7 @@ public void requestFocus(){
 			MesquiteInteger io = new MesquiteInteger(0);
 			int shiftAmount = MesquiteInteger.fromString(arguments, io);
 
-			if (!MesquiteInteger.isCombinable(shiftAmount) && !MesquiteThread.isScripting()) {
+			if (!(MesquiteInteger.isCombinable(shiftAmount) || shiftAmount==0) && !MesquiteThread.isScripting()) {
 				String helpString ="Enter the amount to shift the block.  If you enter a positive number, the block will be shifted through that many characters to the right; a negative number, to the left. ";
 				helpString+="The block will not be shifted over top of existing data; it will only be moved through gaps.  If you request a shift larger than can be accommodated, then ";
 				helpString += "the block will be shifted as far as possible without overwriting data.";
@@ -1784,7 +1784,7 @@ public void requestFocus(){
 				shiftAmount = MesquiteInteger.queryInteger(ownerModule.containerOfModule(), "Move Selected Block", "Number of characters to shift selected block", helpString, 1, MesquiteInteger.unassigned, MesquiteInteger.unassigned);
 			}
 			
-			if (MesquiteInteger.isCombinable(shiftAmount)) {
+			if (MesquiteInteger.isCombinable(shiftAmount) && shiftAmount!=0) {
 				MesquiteBoolean dataChanged = new MesquiteBoolean();
 				MesquiteInteger charAdded = new MesquiteInteger();
 				MesquiteInteger distanceMoved = new MesquiteInteger();
