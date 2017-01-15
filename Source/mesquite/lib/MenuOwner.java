@@ -121,8 +121,13 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			rightBracket = "▶"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
 		}
 		else {*/
-		leftBracket = "«";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");
-		rightBracket = "»"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
+		if (MesquiteTrunk.isMacOSX()){
+			leftBracket = "«";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");
+			rightBracket = "»"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
+		} else {
+			leftBracket = "�";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");
+			rightBracket = "�"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
+		}
 		//}
 
 	}
