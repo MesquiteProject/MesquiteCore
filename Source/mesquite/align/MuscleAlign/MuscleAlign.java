@@ -78,7 +78,7 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	/*.................................................................................................................*/
 	public String getProgramCommand(){
 		if (MesquiteTrunk.isWindows())
-			return StringUtil.protectFilePathForWindows(getProgramPath());
+			return "call " + StringUtil.protectFilePathForWindows(getProgramPath());
 		else
 			return StringUtil.protectFilePathForUnix(getProgramPath());
 	}
