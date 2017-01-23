@@ -2275,6 +2275,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return getRoot();
 	}
+	/** Returns true if the first node is an ancestor of the second node.*/
+	public boolean isAncestor(int potentialAncestor, int node){
+		int mN = motherOfNode(node);
+		while (nodeExists(mN)){
+			if (mN==potentialAncestor)
+				return true;
+			if (mN==subRoot)
+				return false;
+			mN = motherOfNode(mN);
+		}
+		return false;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns most recent common ancestor of the terminals designated in terminals.*/
 	public int mrca(Bits terminals) { 

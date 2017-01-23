@@ -179,6 +179,8 @@ public interface Tree extends Listable {
 	public int nextInPostorder(int node);
 	/** Returns first node in postorder traversal.*/
 	public int firstInPostorder();
+	/** Returns true if the first node is an ancestor of the second node.*/
+	public boolean isAncestor(int potentialAncestor, int node); 
 	/** Returns most recent common ancestor of two branches.*/
 	public int mrca(int branchA, int branchB); 
 	/** Returns most recent common ancestor of the terminals designated in terminals.*/
