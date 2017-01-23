@@ -334,7 +334,9 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	/** This calculates the node locs of each node entirely using the angular sector devoted to the descendents. */
 	private void convertAnglesToNodeLocs (int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
-			double length = 80;
+			double length = scaling;
+			if (showBranchLengths.getValue())
+				length = getBranchLength(node)*scaling;
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				location[d].setLocation(location[node].getX()+length*Math.cos(angle[d]), location[node].getY()-length*Math.sin(angle[d]));
 			}
@@ -350,16 +352,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		double rx = location[rotateNode].getX();
 		double ry = location[rotateNode].getY();
 		double newX = rx + (nx-rx)*Math.cos(rotateAngle) - (ny-ry)*Math.sin(rotateAngle);
-
 		double newY = ry + (nx-rx)*Math.sin(rotateAngle) + (ny-ry)*Math.cos(rotateAngle);
-		
-/*		double x = nx-rx;
-		double y = ny-ry;
-		double currentAngle = Math.atan2(y,x);
-		double length = Math.sqrt(x*x+y*y);
-		double newAngle = currentAngle+rotateAngle;
-		location[node].setLocation(location[rotateNode].getX()+length*Math.cos(newAngle), location[rotateNode].getY()-length*Math.sin(newAngle));
-*/
 		location[node].setLocation(newX, newY);
 	}
 
@@ -380,20 +373,26 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		if (tree.nodeIsInternal(node)){
 			double daylight = calculateDaylightForNode(drawnRoot, node);
 			int numDaughters = tree.numberOfDaughtersOfNode(node);
-			double daylightPerDaughter = daylight/(numDaughters+1);
+			if (node!=drawnRoot)
+				numDaughters ++;
+			double daylightPerDaughter = daylight/(numDaughters);
 			int mN = tree.motherOfNode(node);
-			double daylightInThisPair = daylightBetweenNodes (mN,tree.firstDaughterOfNode(node), node);  // start out with daylight between nother node and first daughter
-			if (daylightInThisPair-daylightPerDaughter>daylightTolerancePerNode) {
-				rotateBranch(tree.firstDaughterOfNode(node), node, daylightInThisPair-daylightPerDaughter);
+			double difference = 0.0;
+			double daylightInThisPair = 0.0;
+			if (node!=drawnRoot) {
+				daylightInThisPair = daylightBetweenNodes (drawnRoot,mN,tree.firstDaughterOfNode(node), node);  // start out with daylight between nother node and first daughter
+				difference = daylightInThisPair-daylightPerDaughter;
+				if (Math.abs(difference)>daylightTolerancePerNode) {
+					rotateBranch(tree.firstDaughterOfNode(node), node, -difference);
+				}
 			}
-
-			
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				int nextD = tree.nextSisterOfNode(d);  // get comparison sister
 				if (tree.nodeExists(nextD)){
-					daylightInThisPair =  daylightBetweenNodes(d, nextD, node); 
-					if (daylightInThisPair-daylightPerDaughter>daylightTolerancePerNode) {
-						rotateBranch(nextD, node, daylightInThisPair-daylightPerDaughter);
+					daylightInThisPair =  daylightBetweenNodes(drawnRoot,d, nextD, node); 
+					difference = daylightInThisPair-daylightPerDaughter;
+					if (Math.abs(difference)>daylightTolerancePerNode) {
+						rotateBranch(nextD, node, -difference);
 					}
 				}
 					
@@ -410,25 +409,43 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		} 
 	}
 
-	private double daylightBetweenNodes (int node1, int node2, int centerNode){   //node begins as the drawnRoot
+	/**  */
+	private double daylightBetweenNodes (int drawnRoot, int node1, int node2, int centerNode){   //node begins as the drawnRoot
 		int rightD = 0;
 		int leftD = 0;
 		if (tree.isAncestor(node1, node2)) { // node 1 is an ancestor of node 2
-		// we've got the right hand side, which is node2
+			// we've got the right hand side, which is node2
 			leftD = tree.leftmostTerminalOfNode(node2);
-		// but we need to get the left hand one
+			// but we need to get the left hand one
 			int nodeToLeft = tree.previousSisterOfNode(centerNode);  // we want previous sister 
-			if (!tree.nodeExists(nodeToLeft))
-				nodeToLeft = tree.lastDaughterOfNode(node1);  // so we have to go all the way around to the 
-										
+			if (!tree.nodeExists(nodeToLeft)) {
+				int aN = centerNode;
+				while(!tree.nodeExists(nodeToLeft)) {
+					aN = tree.motherOfNode(aN);
+					if (aN==drawnRoot) {
+						nodeToLeft = tree.lastDaughterOfNode(aN);
+						break;
+					}
+					nodeToLeft = tree.previousSisterOfNode(aN);
+				}
+			}
 			rightD = tree.rightmostTerminalOfNode(nodeToLeft);
 		} else if (tree.isAncestor(node2, node1)) {  // node 2 is an ancestor of node 1
 			// we've got the left hand side, which is node1
 			rightD = tree.rightmostTerminalOfNode(node1);
-		// but we need to get the right hand one
+			// but we need to get the right hand one
 			int nodeToRight = tree.nextSisterOfNode(centerNode);  // we want next sister 
-			if (!tree.nodeExists(nodeToRight))
-				nodeToRight = tree.firstDaughterOfNode(node2);  // so we have to go all the way around to the 
+			if (!tree.nodeExists(nodeToRight)) {
+				int aN = centerNode;
+				while(!tree.nodeExists(nodeToRight)) {
+					aN = tree.motherOfNode(aN);
+					if (aN==drawnRoot) {
+						nodeToRight = tree.firstDaughterOfNode(aN);
+						break;
+					}
+					nodeToRight = tree.nextSisterOfNode(aN);
+				}
+			}
 			//so we go back to the ancestor, node 2, and see if there is a descendent to the left of node 1
 			leftD = tree.leftmostTerminalOfNode(nodeToRight);
 		} else {
@@ -444,21 +461,12 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		double angle1 = Math.atan2(ldy,ldx);
 		double angle2 = Math.atan2(rdy,rdx);
 	
-	/* 	if (angle1>Math.PI)
-			angle1-=2*Math.PI;
-		if (angle1<-Math.PI)
-			angle1+=2*Math.PI;
-		if (angle2>Math.PI)
-			angle2-=2*Math.PI;
-		if (angle2<-Math.PI)
-			angle2+=2*Math.PI;
-		*/
 		double value = Math.abs(angle1 - angle2);
 	 	if (value>Math.PI)
 	 		value =2*Math.PI-value;
 
-		if (centerNode==2)
-			Debugg.println(" ** daylight leftNode = " + node1 + ", rightNode = " + node2 + ", centerNode = " + centerNode + ", leftD = " + leftD + ", rightD = " + rightD + ", DAYLIGHT: " + value);
+//		if (centerNode==8)
+//			Debugg.println(" ** daylight leftNode = " + node1 + ", rightNode = " + node2 + ", centerNode = " + centerNode + ", leftD = " + leftD + ", rightD = " + rightD + ", DAYLIGHT: " + value);
 		return value;
 	}
 
@@ -469,7 +477,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			int mN = tree.motherOfNode(node);
 			double daylight = 0.0;
 			if (node!=drawnRoot)
-				daylight = daylightBetweenNodes (mN,tree.firstDaughterOfNode(node), node);  // start out with daylight between nother node and first daughter
+				daylight = daylightBetweenNodes (drawnRoot, mN,tree.firstDaughterOfNode(node), node);  // start out with daylight between nother node and first daughter
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				int nextD = tree.nextSisterOfNode(d);  // get comparison sister
 				if (!tree.nodeExists(nextD))  // oops, must be at end, so let's get motherNode again
@@ -477,21 +485,21 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 						nextD = tree.firstDaughterOfNode(node);
 					else
 						nextD = mN;
-				daylight += daylightBetweenNodes(d, nextD, node); 
+				daylight += daylightBetweenNodes(drawnRoot, d, nextD, node); 
 			}
 			return daylight;
 		} 
 		return 0;
 	}
 
-	private double calculateDaylight (int drawnRoot, int node, double daylight){   //node begins as the drawnRoot
+	private void calculateDaylight (int drawnRoot, int node, MesquiteDouble daylight){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				calculateDaylight(drawnRoot, d, daylight);
 			}
-			return daylight + calculateDaylightForNode(drawnRoot, node);
+			double dl = calculateDaylightForNode(drawnRoot, node);
+			daylight.add(dl);
 		} 
-		return daylight;
 	}
 
 	
@@ -501,13 +509,19 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		double daylightInTree = 0.0;
 		double lastDaylightInTree = 0.0;
 		
-		lastDaylightInTree = calculateDaylight(drawnRoot, drawnRoot, 0.0);
+		MesquiteDouble daylight = new MesquiteDouble(0.0);
+		Debugg.println("\n\nADJUST DAYLIGHT ");
+
+		calculateDaylight(drawnRoot, drawnRoot, daylight);
+		lastDaylightInTree = daylight.getValue();
 		Debugg.println("daylight0: " + lastDaylightInTree);
 		
 		int count = 0;
-		while (count < 0) {
+		while (count < 100) {
 			equalizeDaylight(drawnRoot, drawnRoot);
-			daylightInTree = calculateDaylight(drawnRoot, drawnRoot, 0.0);
+			daylight.setValue(0.0);
+			calculateDaylight(drawnRoot, drawnRoot, daylight);
+			daylightInTree = daylight.getValue();
 			Debugg.println("daylight: " + daylightInTree);
 			if (Math.abs(daylightInTree - lastDaylightInTree)<0.001)
 					break;
@@ -515,6 +529,8 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			count++;
 		}
 		
+		Debugg.println("COUNT: " + count);
+
 		
 	}
 
@@ -611,6 +627,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			anglePerTerminalTaxon=(2 * Math.PI) / tree.numberOfTerminalsInClade(drawnRoot);  // the angle allotted to each terminal
 			
 			treeRectangle = rect;
+			scaling = 100;
 			
 			
 			treeCenter.setLocation(treeRectangle.width / 2,treeRectangle.height / 2);
@@ -622,14 +639,6 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			
 			angleOfSector[drawnRoot] = 2*Math.PI;
 			
-			Debugg.println("\n\n\n");
-			Debugg.println("anglePerTerminalTaxon: " + anglePerTerminalTaxon);
-			Debugg.println("drawnRoot: " + drawnRoot);
-			Debugg.println("subRoot: " + subRoot);
-			Debugg.println("root: " + tree.getRoot());
-
-			Debugg.println("\n");
-
 			calculateEqualAreaAngleSectors (drawnRoot);
 			
 	//		for (int i = 1; i<tree.getNumNodeSpaces(); i++) 
@@ -654,84 +663,9 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				treeDrawing.x[i] = location[i].getX();
 			}
 		}
-	}/*_________________________________________________*/
-	public void calculateNodeLocsOLD(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { 
-		if (MesquiteTree.OK(tree)) {
-			this.tree = tree;
-			this.treeDisplay = treeDisplay;
-			if (treeDisplay.getExtras() !=null) {
-				if (treeDisplay.getExtras().myElements(this)==null) {  //todo: need to do one for each treeDisplay!
-					NodeLocsUnrootedExtra extra = new NodeLocsUnrootedExtra(this, treeDisplay);
-					treeDisplay.addExtra(extra); 
-					extras.addElement(extra);
-				}
-			}
-			int subRoot = tree.motherOfNode(drawnRoot);
-			treeCenter = new Point();
-		if (!compatibleWithOrientation(treeDisplay.getOrientation()))
-				setDefaultOrientation(treeDisplay);
-			int numNodes =tree.getNumNodeSpaces();
-			if (oldNumTaxa != tree.getNumTaxa() || location == null || location.length != numNodes) {
-				location = new Point2D.Double[numNodes];
-				//sLoc = new DoublePt[numNodes];
-				for (int i=0; i<numNodes; i++) {
-					//sLoc[i]= new DoublePt();
-					location[i] = new Point2D.Double(0.0,0.0);
-				}
-				angle = new double[numNodes];
-				polarLength  = new double[numNodes];
-				oldNumTaxa=tree.getNumTaxa();
-			}
-			else {
-				for (int i=0; i<location.length && location[i]!=null; i++) {
-					if (location[i]!=null){
-						location[i].setLocation(0, 0);
-					}
-					polarLength[i] = 0;
-					angle[i] = 0;
-				}
-			}
-			if (resetShowBranchLengths)
-				treeDisplay.showBranchLengths=showBranchLengths.getValue();
-			else {
-				if (treeDisplay.showBranchLengths != showBranchLengths.getValue()) {
-					showBranchLengths.setValue(treeDisplay.showBranchLengths);
-					if (showBranchLengths.getValue()) 
-						showScaleItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
-					else
-						deleteMenuItem(showScaleItem);
-					resetContainingMenuBar();
-				}
-			}
-			this.treeDrawing = treeDisplay.getTreeDrawing();
-			
-			emptyRootSlices=1;
-			anglePerTerminalTaxon=(2 * Math.PI*fractionCoverage) / tree.numberOfTerminalsInClade(drawnRoot);
-			treeRectangle = rect;
-			if (treeRectangle.width<treeRectangle.height)
-				radius=(treeRectangle.width * 3 )/ 8;
-			else
-				radius=(treeRectangle.height) * 3 / 8;
-			circleSlice = radius / (mostNodesToTip(drawnRoot) + emptyRootSlices);  //{v4: have it based upon an ellipse}
-			
-			treeCenter.setLocation(treeRectangle.width / 2,treeRectangle.height / 2);
-			location[drawnRoot].setLocation(treeCenter.getX(), treeCenter.getY());
-			location[subRoot].setLocation(treeCenter.getX(), treeCenter.getY());
-			polarLength[subRoot] = 0;
-			angle[subRoot] = 0;
-			terminalTaxaLocs(drawnRoot);
-			calcNodeLocs (drawnRoot);
-			if (showBranchLengths.getValue()) {
-				adjustForLengths(drawnRoot);
-				//if (showScale.getValue())
-				//	drawGrid(g, tree.tallestPathAboveNode(drawnRoot, 1.0), scaling, treeCenter);
-			}
-			for (int i=0; i<numNodes && i<treeDrawing.y.length; i++) {
-				treeDrawing.y[i] = location[i].getY();
-				treeDrawing.x[i] = location[i].getX();
-			}
-		}
 	}
+	
+	
 	
 	public void drawGrid (Graphics g, double totalHeight, double scaling,  Point2D treeCenter) {
 		if (g == null)
