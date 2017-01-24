@@ -187,7 +187,10 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			polar.angle = Math.PI-polar.angle;
 		
 	}
-//	{-----------------------------------------------------------------------------}
+	/*-----------------------------------------------------------------------------*/
+	boolean massageLoc = false;
+	PolarCoord polar = new PolarCoord();
+	/*-----------------------------------------------------------------------------*/
 	private double nodeAngle (int left, int right){
 		double theAngle;
 		if (angle[left]<= angle[right])
@@ -199,9 +202,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		}
 		return theAngle;
 	}
-	boolean massageLoc = false;
-//	{-----------------------------------------------------------------------------}
-	PolarCoord polar = new PolarCoord();
+	/*-----------------------------------------------------------------------------*
 //	angle 0 = vertical up
 	private void calcterminalPosition (int node){
 		double firstangle;
@@ -237,7 +238,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		lasttx = (anglePerTerminalTaxon + lasttx);
 		
 	}
-//	{-----------------------------------------------------------------------------}
+/*-----------------------------------------------------------------------------*
 	
 	private void termTaxaRec (int node){		//{tree traversal to find locations}
 		if (tree.nodeIsTerminal(node)) 
@@ -252,8 +253,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		lasttx = firsttx*Math.PI * 2.0;
 		termTaxaRec(node);
 	}
-//	{-----------------------------------------------------------------------------}
-//	{-----------------------------------------------------------------------------}
+	/*-----------------------------------------------------------------------------*
 	private void calcNodeLocs (int node){
 		if (tree.nodeIsInternal(node)){
 			double min = MesquiteDouble.unassigned;
@@ -277,7 +277,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			}
 		}
 	}
-//	{-----------------------------------------------------------------------------}
+	/*-----------------------------------------------------------------------------*/
 	private void calculateDaylightAngles (int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			double min = MesquiteDouble.unassigned;
@@ -534,6 +534,145 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		
 	}
 
+	double leftMost = MesquiteDouble.unassigned;
+	double rightMost = MesquiteDouble.unassigned;
+	double topMost = MesquiteDouble.unassigned;
+	double bottomMost = MesquiteDouble.unassigned;
+
+	/** Calculates the vertical postion of the topmost node */
+	private void topMostNode (int node){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				topMostNode(d);
+			}
+		} 
+		if (!MesquiteDouble.isCombinable(topMost))
+			topMost= location[node].getY();
+		else
+			if (topMost>location[node].getY())
+				topMost = location[node].getY();
+	}
+
+	/** Calculates the vertical postion of the bottomMost node */
+	private void bottomMostNode (int node){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				bottomMostNode(d);
+			}
+		} 
+		if (!MesquiteDouble.isCombinable(bottomMost))
+			bottomMost= location[node].getY();
+		else
+			if (bottomMost<location[node].getY())
+				bottomMost= location[node].getY();
+	}
+
+	/** Calculates the horizontal postion of the leftmost node */
+	private void leftMostNode (int node){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				leftMostNode(d);
+			}
+		} 
+		if (!MesquiteDouble.isCombinable(leftMost))
+			leftMost= location[node].getX();
+		else
+			if (leftMost>location[node].getX())
+				leftMost = location[node].getX();
+	}
+
+	/** Calculates the horizontal postion of the rightmost node */
+	private void rightMostNode (int node){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				rightMostNode(d);
+			}
+		} 
+		if (!MesquiteDouble.isCombinable(rightMost))
+			rightMost= location[node].getX();
+		else
+			if (rightMost<location[node].getX())
+				rightMost= location[node].getX();
+	}
+
+	
+	/** adjusts  positions to fit */
+	private void shrink (int node, double shrinkRatioH, double shrinkRatioV){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				shrink(d, shrinkRatioH, shrinkRatioV);
+			}
+		} 
+		double x = location[node].getX();
+		double y = location[node].getY();
+		location[node].setLocation(x*shrinkRatioH, y*shrinkRatioV);
+
+	}
+
+	/** adjusts  positions to fit */
+	private void shift (int node, double shiftH, double shiftV){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				shift(d, shiftH, shiftV);
+			}
+		} 
+		double x = location[node].getX();
+		double y = location[node].getY();
+		location[node].setLocation(x+shiftH, y+shiftV);
+
+	}
+
+
+	/** Condenses the tree so that it fits within treeRectangle*/
+	private void condenseTree (int drawnRoot){  
+		leftMost = MesquiteDouble.unassigned;
+		rightMost = MesquiteDouble.unassigned;
+		topMost = MesquiteDouble.unassigned;
+		bottomMost = MesquiteDouble.unassigned;
+		leftMostNode(drawnRoot);
+		rightMostNode(drawnRoot);
+		topMostNode(drawnRoot);
+		bottomMostNode(drawnRoot);
+		Debugg.println(" leftMost: " + leftMost + ", rect left: " + treeRectangle.getX());
+		Debugg.println(" rightMost: " + rightMost + ", rect right: " +(treeRectangle.getX() + treeRectangle.getWidth()));
+		Debugg.println(" topMost: " + topMost + ", rect top: " + treeRectangle.getY());
+		Debugg.println(" bottomMost: " + bottomMost + ", rect bottom: " +(treeRectangle.getY() + treeRectangle.getHeight()));
+		double horiz = rightMost-leftMost;
+		double vert = bottomMost-topMost;
+		double shrinkRatioH = 1.0;
+		double shrinkRatioV = 1.0;
+		double extraShrink = 0.8;
+		if (horiz>treeRectangle.getWidth()) {
+			shrinkRatioH = extraShrink*treeRectangle.getWidth()*1.0/horiz;
+		}
+		if (vert>treeRectangle.getHeight()) {
+			shrinkRatioV = extraShrink* treeRectangle.getHeight()*1.0/vert;
+		}
+		if (shrinkRatioH!=1.0 || shrinkRatioV != 1.0)
+			shrink(drawnRoot,shrinkRatioH, shrinkRatioV);
+		
+		leftMost = MesquiteDouble.unassigned;
+		rightMost = MesquiteDouble.unassigned;
+		topMost = MesquiteDouble.unassigned;
+		bottomMost = MesquiteDouble.unassigned;
+		leftMostNode(drawnRoot);
+		rightMostNode(drawnRoot);
+		topMostNode(drawnRoot);
+		bottomMostNode(drawnRoot);
+		double leftIdeal = (treeRectangle.getWidth()-(rightMost-leftMost))/2;
+		double topIdeal = (treeRectangle.getHeight()-(bottomMost-topMost))/2;
+		
+		double shiftH = 0;
+		double shiftV = 0;
+		shiftH = leftIdeal-leftMost;
+		shiftV = topIdeal-topMost;
+
+		if (shiftH!=0 || shiftV != 0)
+			shift(drawnRoot,shiftH, shiftV);
+
+
+	}
+
 	
 
 	
@@ -652,6 +791,8 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 			
 			adjustDaylight(drawnRoot);
+			
+			condenseTree(drawnRoot);
 
 			//terminalTaxaLocs(drawnRoot);
 			//calcNodeLocs (drawnRoot);

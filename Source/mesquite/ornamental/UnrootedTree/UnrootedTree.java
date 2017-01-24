@@ -219,11 +219,8 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 		//GraphicsUtil.drawCross(g, treeDisplay.getTreeDrawing().x[node],treeDisplay.getTreeDrawing().y[node], 2);
 		lineTipX[node]= treeDisplay.getTreeDrawing().x[node];
 		lineTipY[node]= treeDisplay.getTreeDrawing().y[node];
-
-		nodePolarToLoc(polarLength[motherN]-edgewidth, angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
-
-		lineBaseX[node]= loc.getX();
-		lineBaseY[node]= loc.getY();
+		lineBaseX[node]= treeDisplay.getTreeDrawing().x[motherN];
+		lineBaseY[node]= treeDisplay.getTreeDrawing().y[motherN];
 
 		//		private void makeSlantedRectangle(Polygon poly, double[] polarlength, double[] angle, int node, int motherN, int width){
 //		makeBranchPoly(branchPoly[node],polarLength, angle, node, motherN, edgewidth);
@@ -361,7 +358,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 		if (tree.nodeExists(node)) {
 			long c = tree.getAssociatedLong(ColorDistribution.colorNameReference, node);
 			g.setColor(treeDisplay.getBranchColor(node));
-			if (tree.getRooted() || tree.getRoot()!=node)
+			if (tree.getRoot()!=node)  //TODO: only draw if requested  tree.getRooted() || 
 				drawOneBranch(tree, node, g);
 
 			if (!tree.getAssociatedBit(triangleNameRef,node))
@@ -371,6 +368,11 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 	}
 	/*----------------------------------------------------------------------------*/
 	public   void drawTree(Tree tree, int drawnRoot, Graphics g) {
+	/*	Rectangle rect = treeDisplay.getField();
+		int inset = 10;
+		g.setColor(Color.yellow);
+		GraphicsUtil.fillRect(g,rect.getX()+inset, rect.getY()+inset, rect.getWidth()-inset*2, rect.getHeight()-inset*2);
+		*/
 		if (MesquiteTree.OK(tree)) {
 			treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
 			if (tree.getNumNodeSpaces()!=numNodes)
