@@ -1,13 +1,13 @@
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
- 
+
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
- 
+
  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
  Mesquite's web site is http://mesquiteproject.org
- 
+
  This source code and its compiled class files are free and modifiable under the terms of 
  GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
@@ -34,7 +34,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	double anglePerTerminalTaxon;
 	double angleOfFirstLeftDaughterOfDrawnRoot=0.0;
 	double fractionCoverage = 0.96;
-	
+
 	double firsttx = 0.02;
 	double centerx, centery;
 	double circleSlice;
@@ -46,7 +46,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	int emptyRootSlices;
 	int oldNumTaxa=0;
 	private MesquiteMenuItemSpec showScaleItem;
-	
+
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		showBranchLengths = new MesquiteBoolean(false);
 		extras = new Vector();
@@ -60,9 +60,9 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		}
 		return true;
 	}
-	
+
 	/*.................................................................................................................*/
-	
+
 	public void endJob(){
 		if (extras!=null) {
 			for (int i=0; i<extras.size(); i++){
@@ -78,7 +78,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		}
 		super.endJob();
 	}
-	
+
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -125,13 +125,13 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	public String getName() {
 		return "Node Locations (unrooted)";
 	}
-	
+
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Calculates the node locations for a tree drawn in unrooted fashion." ;
 	}
-	
+
 	/*_________________________________________________*/
 	public boolean compatibleWithOrientation(int orientation) {
 		return orientation==TreeDisplay.UNROOTED;
@@ -141,7 +141,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	}
 	/*_________________________________________________*/
 	double scaling;
-	
+
 	private double getBranchLength (int N) {
 		if (tree.branchLengthUnassigned(N))
 			return 1;
@@ -167,7 +167,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		numNodes = 0;
 		return findTaxa(node);
 	}
-//	{-----------------------------------------------------------------------------*/
+	//	{-----------------------------------------------------------------------------*/
 	private void nodePolarToLoc (double polarlength, double angle, Point2D.Double loc){
 		loc.setLocation(1.0*treeCenter.getX() + polarlength * Math.sin(angle), 1.0*treeCenter.getY() - polarlength * Math.cos(angle));
 	}
@@ -185,7 +185,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			polar.angle = Math.PI*2.0+polar.angle;
 		else if (targetAngle>Math.PI/2.0)
 			polar.angle = Math.PI-polar.angle;
-		
+
 	}
 	/*-----------------------------------------------------------------------------*/
 	boolean massageLoc = false;
@@ -208,11 +208,11 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		double firstangle;
 		massageLoc = false;
 //		firstangle = Math.PI + angleBetweenTaxa/2; //TODO: {here need to use stored value}
-		
+
 		firstangle = anglePerTerminalTaxon;
 		angle[node] =firstangle + lasttx; // {angle in radians horizontal from vertical}
 		polarLength[node] =radius;
-		
+
 		nodePolarToLoc(polarLength[node], angle[node], location[node]);
 		if (massageLoc){
 			nodeLocToPolar(location[node], treeCenter, angle[node], polar);
@@ -220,7 +220,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			angle[node] = polar.angle;
 			nodePolarToLoc(polarLength[node], angle[node], location[node]);  //convert back and forth to deal with roundoff
 		}
-		
+
 //		double degrees = (angle[node]/Math.PI/2*360) % 360;
 		double degrees = (angle[node]/Math.PI/2*360);
 		if (degrees < 45)
@@ -233,13 +233,13 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			treeDrawing.labelOrientation[node] = 180;
 		else 
 			treeDrawing.labelOrientation[node] = 270;
-		
+
 		//nodePolarToSingleLoc(polarLength[node], angle[node], sLoc[node]);
 		lasttx = (anglePerTerminalTaxon + lasttx);
-		
+
 	}
 /*-----------------------------------------------------------------------------*
-	
+
 	private void termTaxaRec (int node){		//{tree traversal to find locations}
 		if (tree.nodeIsTerminal(node)) 
 			calcterminalPosition(node);
@@ -248,7 +248,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				termTaxaRec(d);
 		}
 	}
-	
+
 	private void terminalTaxaLocs (int node){
 		lasttx = firsttx*Math.PI * 2.0;
 		termTaxaRec(node);
@@ -301,7 +301,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			}
 		}
 	}
-	
+
 	/** This calculates the angular area devoted to each node, based upon the number of descendents. 
 	 * This is the Equal-Area algorithm of Meacham, as outlined by Felsenstein. */
 	private void calculateEqualAreaAngleSectors (int node){   //node begins as the drawnRoot
@@ -315,7 +315,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			angleOfSector[node] = anglePerTerminalTaxon;
 		}
 	}
-	
+
 	/** This calculates the node locs of each node entirely using the angular sector devoted to the descendents. */
 	private void calculateEqualAreaAngles (int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
@@ -330,14 +330,15 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			}
 		} 
 	}
-	
+
 	/** This calculates the node locs of each node entirely using the angular sector devoted to the descendents. */
 	private void convertAnglesToNodeLocs (int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			double length = scaling;
-			if (showBranchLengths.getValue())
-				length = getBranchLength(node)*scaling;
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				if (showBranchLengths.getValue()){
+					length = getBranchLength(d)*scaling;
+				}
 				location[d].setLocation(location[node].getX()+length*Math.cos(angle[d]), location[node].getY()-length*Math.sin(angle[d]));
 			}
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
@@ -357,19 +358,39 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	}
 
 
-	private void rotateBranch (int node, int rotateNode, double rotateAngle){   //node begins as the drawnRoot
+
+	private void rotateBranch (int node, int anc, int rotateNode, double rotateAngle){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
-			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
-				rotateBranch(d, rotateNode, rotateAngle);
+			int lastDaughter=tree.lastDaughterOfNodeUR(anc, node);
+			for (int d = tree.firstDaughterOfNodeUR(anc, node); tree.nodeExists(d); d = tree.nextAroundUR(node,d)){
+				rotateBranch(d, node, rotateNode, rotateAngle);
+				if (d==lastDaughter)
+					break;
 			}
 		} 
 		rotateNode(node, rotateNode, rotateAngle);
 	}
 
+	private void rotateTreeRec (int node, int rotateNode, double rotateAngle){  
+		if (tree.nodeIsInternal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				rotateTreeRec(d,  rotateNode, rotateAngle);
+			}
+		} 
+		rotateNode(node, rotateNode, rotateAngle);
+	}
+
+	private void rotateTree (int drawnRoot, int standardNode, double standardAngle){  
+		double currentAngle = angleToNode(drawnRoot, standardNode) ;
+		double rotateAngle = currentAngle-standardAngle;
+		rotateTreeRec(drawnRoot, drawnRoot, rotateAngle);
+	}
+
 
 	double daylightTolerancePerNode = 0.0001;
-	
-	private void equalizeDaylightForNode (int drawnRoot, int node){   //node begins as the drawnRoot
+
+	/*
+	private void equalizeDaylightForNodeOld (int drawnRoot, int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			double daylight = calculateDaylightForNode(drawnRoot, node);
 			int numDaughters = tree.numberOfDaughtersOfNode(node);
@@ -395,8 +416,69 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 						rotateBranch(nextD, node, -difference);
 					}
 				}
-					
+
 			}
+		} 
+	}
+
+	private void equalizeDaylightOld (int drawnRoot, int node){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				equalizeDaylightOld(drawnRoot, d);
+			}
+			equalizeDaylightForNodeOld(drawnRoot, node);
+		} 
+	}
+
+*/
+	
+	private void equalizeDaylightForNode (int drawnRoot, int node){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			double daylight = calculateDaylightForNode(drawnRoot, node);
+			int numDaughters = tree.numberOfDaughtersOfNode(node);
+			if (node!=drawnRoot)
+				numDaughters ++;
+			double daylightPerDaughter = daylight/(numDaughters);
+			double[] shiftAmount = new double[numDaughters];
+			double[] daylightInDaughter = new double[numDaughters];
+
+			double daylightInThisPair = 0.0;
+
+			int daughterUR = tree.firstDaughterOfNode(node); // use firstDaughter as the first daughter for comparison
+			int firstDaughterUR = daughterUR;
+			int nextDaughterUR = daughterUR;
+			int count = 0;
+			while (tree.nodeExists(nextDaughterUR)) {
+				nextDaughterUR = tree.nextAroundUR(node, nextDaughterUR);
+				daylightInThisPair = daylightBetweenNodes (drawnRoot, daughterUR,nextDaughterUR, node);  // start out with daylight between nother node and first daughter
+				shiftAmount[count]=daylightPerDaughter-daylightInThisPair;
+				daylightInDaughter[count]=daylightInThisPair;
+				daughterUR = nextDaughterUR;
+				if (daughterUR==firstDaughterUR)  // we are back where we started
+					break;
+				count++;
+			}		
+			
+			daughterUR = tree.firstDaughterOfNode(node); // use firstDaughter as the first daughter for comparison
+			nextDaughterUR = daughterUR;
+			count=0;
+			while (tree.nodeExists(nextDaughterUR)) {
+				nextDaughterUR = tree.nextAroundUR(node, nextDaughterUR);
+				double angle = angleToNode(node,nextDaughterUR);
+				if (Math.abs(shiftAmount[count])>daylightTolerancePerNode) {
+					rotateBranch(nextDaughterUR, node, node, shiftAmount[count]);
+					angle = angleToNode(node,nextDaughterUR);
+				}
+				if (count<shiftAmount.length-1)
+					shiftAmount[count+1] += shiftAmount[count];
+				daylightInThisPair = daylightBetweenNodes (drawnRoot, daughterUR,nextDaughterUR, node);  // start out with daylight between nother node and first daughter
+				double daylightNEW = calculateDaylightForNode(drawnRoot, node);
+				daughterUR = nextDaughterUR;
+				if (daughterUR==firstDaughterUR)  // we are back where we started
+					break;
+				count++;
+			}		
+
 		} 
 	}
 
@@ -410,14 +492,16 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	}
 
 	/**  */
-	private double daylightBetweenNodes (int drawnRoot, int node1, int node2, int centerNode){   //node begins as the drawnRoot
+	private double daylightBetweenNodesOLD (int drawnRoot, int node1, int node2, int centerNode){   //node begins as the drawnRoot
 		int rightD = 0;
 		int leftD = 0;
+		int nodeToRight=0;
+		int nodeToLeft=0;
 		if (tree.isAncestor(node1, node2)) { // node 1 is an ancestor of node 2
 			// we've got the right hand side, which is node2
 			leftD = tree.leftmostTerminalOfNode(node2);
 			// but we need to get the left hand one
-			int nodeToLeft = tree.previousSisterOfNode(centerNode);  // we want previous sister 
+			nodeToLeft = tree.previousSisterOfNode(centerNode);  // we want previous sister 
 			if (!tree.nodeExists(nodeToLeft)) {
 				int aN = centerNode;
 				while(!tree.nodeExists(nodeToLeft)) {
@@ -434,7 +518,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			// we've got the left hand side, which is node1
 			rightD = tree.rightmostTerminalOfNode(node1);
 			// but we need to get the right hand one
-			int nodeToRight = tree.nextSisterOfNode(centerNode);  // we want next sister 
+			nodeToRight = tree.nextSisterOfNode(centerNode);  // we want next sister 
 			if (!tree.nodeExists(nodeToRight)) {
 				int aN = centerNode;
 				while(!tree.nodeExists(nodeToRight)) {
@@ -460,24 +544,295 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		double rdy = location[rightD].getY()-dy;
 		double angle1 = Math.atan2(ldy,ldx);
 		double angle2 = Math.atan2(rdy,rdx);
-	
-		double value = Math.abs(angle1 - angle2);
-	 	if (value>Math.PI)
-	 		value =2*Math.PI-value;
 
-//		if (centerNode==8)
-//			Debugg.println(" ** daylight leftNode = " + node1 + ", rightNode = " + node2 + ", centerNode = " + centerNode + ", leftD = " + leftD + ", rightD = " + rightD + ", DAYLIGHT: " + value);
+		double value = Math.abs(angle1 - angle2);
+		if (value>Math.PI) {
+			//Debugg.println("    daylight between nodes " + node1 + " and " + node2 + ": " + value + " (centernode: " + centerNode+")");
+			value =2*Math.PI-value;
+		}
+		if (centerNode==52) {
+			Debugg.println("    daylight between nodes " + node1 + " and " + node2 + ": " + value + " (centernode: " + centerNode+") LEFT: " + leftD + " RIGHT " + rightD);
+		}
 		return value;
+	}
+
+	/** Calculates the angle of node Node, relative to vertext centerNode */
+	private double angleToNode(int centerNode, int node) {
+		double dx = location[centerNode].getX();
+		double dy = location[centerNode].getY();
+		double nodedx = location[node].getX()-dx;
+		double nodedy = location[node].getY()-dy;
+		double value = Math.atan2(nodedy,nodedx);
+		if (nodedy>0) // in lower left quadrant, need to subtract value from 2pi
+			value = Math.PI*2-value;
+		else value = -value;
+
+		//double angle2 = Math.atan2(enddy,enddx);
+		//double value = Math.abs(angle1 - angle2);
+		//		if (value>Math.PI) {
+		//			value =2*Math.PI-value;
+		//		}
+		return value;
+	}
+
+	/** Calculates angle between nodes leftNode and rightNode relative to vertex centerNode */
+	private double angleBetweenNodes(int centerNode, int leftNode, int rightNode) {
+		double dx = location[centerNode].getX();
+		double dy = location[centerNode].getY();
+		double ldx = location[leftNode].getX()-dx;
+		double ldy = location[leftNode].getY()-dy;
+		double rdx = location[rightNode].getX()-dx;
+		double rdy = location[rightNode].getY()-dy;
+		double angle1 = Math.atan2(ldy,ldx);
+		double angle2 = Math.atan2(rdy,rdx);
+		double value = Math.abs(angle1 - angle2);
+		if (value>Math.PI) {
+			value =2*Math.PI-value;
+		}
+		return value;
+	}
+
+
+	/** Among the nodes that are descendent from node "node", calculates
+	 *  the node that is furthest counterclockwise relative to node "node" */
+	private void leftmostNodeOfCladeUR(int node, int anc, int centerNode, MesquiteDouble maxAngle, MesquiteInteger maxNode, double leftMaxAngle, double rightMaxAngle) {
+		if (tree.nodeIsInternal(node)){
+			int startNode = tree.firstDaughterOfNodeUR(anc, node);
+			int count = 0;
+			for (int d = tree.firstDaughterOfNodeUR(anc, node); tree.nodeExists(d); d = tree.nextAroundUR(node,d)){
+				leftmostNodeOfCladeUR(d, node, centerNode, maxAngle, maxNode, leftMaxAngle, rightMaxAngle);
+				count++;
+				if (d==tree.lastDaughterOfNodeUR(anc, node))
+					break;
+			}
+		} 
+		if (tree.nodeExists(node)) {
+			double value = angleToNode(centerNode,node);
+			if ((node==26|| node==9) && centerNode==0 && false) {
+				Debugg.println("||| LEFTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
+				Debugg.println("       leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
+				Debugg.println("");
+			}
+			boolean record = false;
+			if (leftMaxAngle>rightMaxAngle) {
+				if (value>maxAngle.getValue() || value==0) {  // we have found one further to the right than previously
+					if (value<leftMaxAngle && value>rightMaxAngle){  // we are within bounds
+						record = true;
+					} else if ((value==leftMaxAngle || value==rightMaxAngle) && (maxNode.getValue()==0)){  // we are at the boundary
+						record = true;
+					}
+				}
+			} else {  // the left angle is to the left of 3 pm, the right angle to the right
+				if (value<=leftMaxAngle) {  // we are just CCW of 3pm
+					if (value>maxAngle.getValue())  
+							record = true;
+					else if (value<maxAngle.getValue() && maxAngle.getValue()>=rightMaxAngle)   // previous value is in the slice CW of 3 pm
+						record = true;
+					else if ((value==leftMaxAngle || value==rightMaxAngle) && maxNode.getValue()==0) {
+						record = true;
+					}
+				} else if (value>=rightMaxAngle){ // we are CW of 3 pm
+					if ((maxAngle.getValue()>leftMaxAngle || maxNode.getValue()==0) && value>maxAngle.getValue()){  // we already found one that is in this sector
+						record = true;
+					} else if (maxAngle.getValue()<leftMaxAngle) {  // current best is CCW of 3pm, so don't record this new one CW of 3pm
+						record = false;
+					} else if ((value==leftMaxAngle || value==rightMaxAngle) && maxNode.getValue()==0) {
+						record = true;
+					}
+				}
+			}
+			if (record) {
+				maxNode.setValue(node);
+				maxAngle.setValue(value);
+			}		
+		}
+	}
+
+	/** Among the nodes that are descendent from node "node", calculates
+	 *  the node that is furthest clockwise relative to node "node" */
+	private void rightmostNodeOfCladeUR(int node, int anc, int centerNode, MesquiteDouble maxAngle, MesquiteInteger maxNode, double leftMaxAngle, double rightMaxAngle) {
+		if (tree.nodeIsInternal(node)){
+			int startNode = tree.firstDaughterOfNodeUR(anc, node);
+			int count = 0;
+			for (int d = tree.firstDaughterOfNodeUR(anc, node); tree.nodeExists(d); d = tree.nextAroundUR(node,d)){
+				rightmostNodeOfCladeUR(d, node, centerNode, maxAngle, maxNode, leftMaxAngle, rightMaxAngle);
+				if (d==tree.lastDaughterOfNodeUR(anc, node))
+					break;
+			}
+		} 
+		if (tree.nodeExists(node)) {
+			double value = angleToNode(centerNode,node);
+			if ((node==25|| node==9) && centerNode==0 && false) {
+				Debugg.println("||| RIGHTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
+				Debugg.println("       leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
+				Debugg.println("");
+			}
+			boolean record = false;
+			if (leftMaxAngle>rightMaxAngle) {
+				if (value<maxAngle.getValue() || value==0) {  // we have found one further to the right than previously
+					if (value<leftMaxAngle && value>rightMaxAngle){  // we are within bounds
+						record = true;
+					} else if ((value==leftMaxAngle || value==rightMaxAngle) && (maxNode.getValue()==0)){  // we are at the boundary
+						record = true;
+					}
+				}
+			} else {  // the left angle is to the left of 3 pm, the right angle to the right
+				if (value<=leftMaxAngle) {  // we are just CCW of 3pm
+					if (value==leftMaxAngle || value==rightMaxAngle){   // we are at boundary
+						if (maxNode.getValue()==0) {  // only record if first time through
+							record = true;
+						}
+					} else if ((value<maxAngle.getValue())) {
+						record = true;
+					}
+				} else if (value>=rightMaxAngle){ // we are CW of 3 pm
+					if (value<maxAngle.getValue()) {
+						record = true;
+					} else if (value>maxAngle.getValue() && maxAngle.getValue()<=leftMaxAngle) {
+						record = true;
+					} else if ((value==leftMaxAngle || value==rightMaxAngle) && maxNode.getValue()==0) {
+						record = true;
+					}
+				}
+
+			}
+			if (record) {
+				maxNode.setValue(node);
+				maxAngle.setValue(value);
+			}
+		}
+	}
+
+
+	/** Among the nodes that are "descendent" from node "node", calculates
+	 *  the node that is furthest counterclockwise relative to node "node" */
+	private int leftmostNode(int node, int centerNode, double leftMaxAngle, double rightMaxAngle) {
+		MesquiteDouble maxAngle = new MesquiteDouble(0.0);
+		MesquiteInteger maxNode = new MesquiteInteger(0);
+		if (tree.nodeIsTerminal(node))
+			return node;
+		else
+			leftmostNodeOfCladeUR(node, centerNode, centerNode, maxAngle, maxNode, leftMaxAngle, rightMaxAngle);
+		return maxNode.getValue();
+	}
+
+	/** Among the nodes that are "descendent" from node "node", calculates
+	 *  the node that is furthest clockwise relative to node "node" */
+	private int rightmostNode(int node, int centerNode, double leftMaxAngle, double rightMaxAngle) {
+		MesquiteDouble maxAngle = new MesquiteDouble(Math.PI*2);
+		MesquiteInteger maxNode = new MesquiteInteger(0);
+		if (tree.nodeIsTerminal(node))
+			return node;
+		else
+			rightmostNodeOfCladeUR(node, centerNode, centerNode, maxAngle, maxNode, leftMaxAngle, rightMaxAngle);
+		return maxNode.getValue();
+	}
+
+
+	/*
+	private double daylightBetweenNodesPrevious (int drawnRoot, int node1, int node2, int centerNode){   //node begins as the drawnRoot
+		int rightD = 0;
+		int leftD = 0;
+		int nodeToRight=0;
+		int nodeToLeft=0;
+
+		if (tree.isAncestor(node1, node2)) { // node 1 is an ancestor of node 2
+			// we've got the right hand side, which is node2
+			leftD = leftmostNode(node2, centerNode);
+			// but we need to get the left hand one
+			nodeToLeft = tree.previousSisterOfNode(centerNode);  // we want previous sister 
+			if (!tree.nodeExists(nodeToLeft)) {
+				int aN = centerNode;
+				while(!tree.nodeExists(nodeToLeft)) {
+					aN = tree.motherOfNode(aN);
+					if (aN==drawnRoot) {
+						nodeToLeft = tree.lastDaughterOfNode(aN);
+						break;
+					}
+					nodeToLeft = tree.previousSisterOfNode(aN);
+				}
+			}
+			rightD = rightmostNode(nodeToLeft, centerNode);
+		} else if (tree.isAncestor(node2, node1)) {  // node 2 is an ancestor of node 1
+			// we've got the left hand side, which is node1
+			rightD = rightmostNode(node1, centerNode);
+			// but we need to get the right hand one
+			nodeToRight = tree.nextSisterOfNode(centerNode);  // we want next sister 
+			if (!tree.nodeExists(nodeToRight)) {
+				int aN = centerNode;
+				while(!tree.nodeExists(nodeToRight)) {
+					aN = tree.motherOfNode(aN);
+					if (aN==drawnRoot) {
+						nodeToRight = tree.firstDaughterOfNode(aN);
+						break;
+					}
+					nodeToRight = tree.nextSisterOfNode(aN);
+				}
+			}
+			//so we go back to the ancestor, node 2, and see if there is a descendent to the left of node 1
+			leftD = leftmostNode(nodeToRight, centerNode);
+		} else {
+			rightD = rightmostNode(node1, centerNode);
+			leftD = leftmostNode(node2, centerNode);
+		}
+
+		double value = angleBetweenNodes(centerNode, leftD, rightD);
+	 	if (centerNode==52) {
+		 	Debugg.println("    daylight between nodes " + node1 + " and " + node2 + ": " + value + " (centernode: " + centerNode+") LEFT: " + leftD + " RIGHT " + rightD);
+	 	}
+		return value;
+	}
+
+
+	/**  */
+	private synchronized double daylightBetweenNodes (int drawnRoot, int leftDaughter, int rightDaughter, int centerNode){   //node begins as the drawnRoot
+		if ((centerNode==4 && leftDaughter==14 && rightDaughter==3) && false) {
+				Debugg.println("\n CENTERNODE: " + centerNode);
+				Debugg.println("      leftDaughter: " + leftDaughter + "  rightDaughter " + rightDaughter);
+		}
+		double leftMaxAngle = angleToNode(centerNode,leftDaughter);
+		double rightMaxAngle = angleToNode(centerNode,rightDaughter);
+		if (centerNode==23 && leftDaughter==25 && rightDaughter==19) {
+			//Debugg.println("      leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle +"\n");
+		}
+		int nodeToLeft = rightmostNode(leftDaughter,centerNode, leftMaxAngle, rightMaxAngle);
+		int nodeToRight = leftmostNode(rightDaughter,centerNode, leftMaxAngle, rightMaxAngle);
+		double daylight = angleBetweenNodes(centerNode, nodeToLeft, nodeToRight);
+		if ((centerNode==4 && leftDaughter==14 && rightDaughter==3) & false) {
+			Debugg.println("      nodeToLeft: " + nodeToLeft + "  nodeToRight " + nodeToRight);
+			Debugg.println("      daylight angle: " + daylight);
+			//Debugg.println("      leftMaxAngle: " + leftMaxAngle + "  rightMaxAngle " + rightMaxAngle);
+		}
+		return daylight;
 	}
 
 
 
 	private double calculateDaylightForNode (int drawnRoot, int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
+			double daylight = 0.0;
+			int daughterUR = tree.firstDaughterOfNode(node); // use firstDaughter as the first daughter for comparison
+			int firstDaughterUR = daughterUR;
+			int nextDaughterUR = daughterUR;
+			while (tree.nodeExists(nextDaughterUR)) {
+				nextDaughterUR = tree.nextAroundUR(node, nextDaughterUR);
+				daylight += daylightBetweenNodes (drawnRoot, daughterUR,nextDaughterUR, node);  // start out with daylight between nother node and first daughter
+				daughterUR = nextDaughterUR;
+				if (daughterUR==firstDaughterUR)  // we are back where we started
+					break;
+			}
+			return daylight;
+		} 
+		return 0;
+	}
+
+	/* -----
+	private double calculateDaylightForNodeOld (int drawnRoot, int node){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
 			int mN = tree.motherOfNode(node);
 			double daylight = 0.0;
 			if (node!=drawnRoot)
-				daylight = daylightBetweenNodes (drawnRoot, mN,tree.firstDaughterOfNode(node), node);  // start out with daylight between nother node and first daughter
+				daylight = daylightBetweenNodesPrevious (drawnRoot, mN,tree.firstDaughterOfNode(node), node);  // start out with daylight between nother node and first daughter
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				int nextD = tree.nextSisterOfNode(d);  // get comparison sister
 				if (!tree.nodeExists(nextD))  // oops, must be at end, so let's get motherNode again
@@ -485,12 +840,13 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 						nextD = tree.firstDaughterOfNode(node);
 					else
 						nextD = mN;
-				daylight += daylightBetweenNodes(drawnRoot, d, nextD, node); 
+				daylight += daylightBetweenNodesPrevious(drawnRoot, d, nextD, node); 
 			}
 			return daylight;
 		} 
 		return 0;
 	}
+	 */
 
 	private void calculateDaylight (int drawnRoot, int node, MesquiteDouble daylight){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
@@ -501,37 +857,50 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			daylight.add(dl);
 		} 
 	}
+	/*
+	private void calculateDaylightOld(int drawnRoot, int node, MesquiteDouble daylight){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				calculateDaylightOld(drawnRoot, d, daylight);
+			}
+			double dl = calculateDaylightForNodeOld(drawnRoot, node);
+			daylight.add(dl);
+		} 
+	}
 
-	
+	 */
+
 	/** This calculates the node locs of each node entirely using the angular sector devoted to the descendents. */
 	private void adjustDaylight (int drawnRoot){   //node begins as the drawnRoot
-		
+
 		double daylightInTree = 0.0;
 		double lastDaylightInTree = 0.0;
-		
+
 		MesquiteDouble daylight = new MesquiteDouble(0.0);
-		Debugg.println("\n\nADJUST DAYLIGHT ");
 
 		calculateDaylight(drawnRoot, drawnRoot, daylight);
+		Debugg.println(" Daylight initial: " + daylight.getValue());
 		lastDaylightInTree = daylight.getValue();
-		Debugg.println("daylight0: " + lastDaylightInTree);
-		
+
 		int count = 0;
-		while (count < 100) {
-			equalizeDaylight(drawnRoot, drawnRoot);
+		while (count < 4) {
 			daylight.setValue(0.0);
+			equalizeDaylight(drawnRoot, drawnRoot);
+			//Debugg.println(" (AFTER EQUALIZE)\n");
+			daylight.setValue(0.0);
+			rotateTree (drawnRoot, tree.firstDaughterOfNode(drawnRoot), Math.PI/2);
+
 			calculateDaylight(drawnRoot, drawnRoot, daylight);
+			Debugg.println("       Daylight " + (count+1) + ": " +daylight.getValue());
 			daylightInTree = daylight.getValue();
-			Debugg.println("daylight: " + daylightInTree);
 			if (Math.abs(daylightInTree - lastDaylightInTree)<0.001)
-					break;
+				break;
 			lastDaylightInTree = daylightInTree;
 			count++;
 		}
-		
-		Debugg.println("COUNT: " + count);
 
-		
+
+
 	}
 
 	double leftMost = MesquiteDouble.unassigned;
@@ -595,8 +964,8 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				rightMost= location[node].getX();
 	}
 
-	
-	/** adjusts  positions to fit */
+
+	/** Shrinks the tree the specified amount */
 	private void shrink (int node, double shrinkRatioH, double shrinkRatioV){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
@@ -609,7 +978,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	}
 
-	/** adjusts  positions to fit */
+	/** Shifts the tree the specified amount */
 	private void shift (int node, double shiftH, double shiftV){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
@@ -623,7 +992,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	}
 
 
-	/** Condenses the tree so that it fits within treeRectangle*/
+	/** Condenses the tree so that it fits within treeRectangle, and centers it*/
 	private void condenseTree (int drawnRoot){  
 		leftMost = MesquiteDouble.unassigned;
 		rightMost = MesquiteDouble.unassigned;
@@ -633,10 +1002,6 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		rightMostNode(drawnRoot);
 		topMostNode(drawnRoot);
 		bottomMostNode(drawnRoot);
-		Debugg.println(" leftMost: " + leftMost + ", rect left: " + treeRectangle.getX());
-		Debugg.println(" rightMost: " + rightMost + ", rect right: " +(treeRectangle.getX() + treeRectangle.getWidth()));
-		Debugg.println(" topMost: " + topMost + ", rect top: " + treeRectangle.getY());
-		Debugg.println(" bottomMost: " + bottomMost + ", rect bottom: " +(treeRectangle.getY() + treeRectangle.getHeight()));
 		double horiz = rightMost-leftMost;
 		double vert = bottomMost-topMost;
 		double shrinkRatioH = 1.0;
@@ -650,7 +1015,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		}
 		if (shrinkRatioH!=1.0 || shrinkRatioV != 1.0)
 			shrink(drawnRoot,shrinkRatioH, shrinkRatioV);
-		
+
 		leftMost = MesquiteDouble.unassigned;
 		rightMost = MesquiteDouble.unassigned;
 		topMost = MesquiteDouble.unassigned;
@@ -661,7 +1026,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		bottomMostNode(drawnRoot);
 		double leftIdeal = (treeRectangle.getWidth()-(rightMost-leftMost))/2;
 		double topIdeal = (treeRectangle.getHeight()-(bottomMost-topMost))/2;
-		
+
 		double shiftH = 0;
 		double shiftV = 0;
 		shiftH = leftIdeal-leftMost;
@@ -673,10 +1038,10 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	}
 
-	
 
-	
-//	{-----------------------------------------------------------------------------}
+
+
+	//	{-----------------------------------------------------------------------------}
 	private void adjustNodeLocsWithLengths (int node, double polarHeightToAncestor, int root){
 		if (node==root)
 			polarLength[node] = rootHeight;
@@ -698,11 +1063,11 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				adjustNodeLocsWithLengths(d, polarLength[node], root);
 		}
 	}
-	
-//	{-----------------------------------------------------------------------------}
+
+	//	{-----------------------------------------------------------------------------}
 	private void adjustForLengths (int root){
 		double tpaD = tree.tallestPathAboveNode(root, 1.0);
-		
+
 		if (tpaD>0)
 			scaling=(radius-rootHeight)/tpaD;
 		else // all assigned 0's give arbitrary scaling (not great solution!)
@@ -721,8 +1086,8 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 					extras.addElement(extra);
 				}
 			}
-			
-			
+
+
 			int subRoot = tree.motherOfNode(drawnRoot);
 			treeCenter = new Point();
 			int numNodes =tree.getNumNodeSpaces();
@@ -746,7 +1111,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 					angleOfSector[i] = 0;
 				}
 			}
-			
+
 			if (resetShowBranchLengths)
 				treeDisplay.showBranchLengths=showBranchLengths.getValue();
 			else {
@@ -760,28 +1125,28 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				}
 			}
 			this.treeDrawing = treeDisplay.getTreeDrawing();
-			
-			
+
+
 			emptyRootSlices=1;
 			anglePerTerminalTaxon=(2 * Math.PI) / tree.numberOfTerminalsInClade(drawnRoot);  // the angle allotted to each terminal
-			
+
 			treeRectangle = rect;
 			scaling = 100;
-			
-			
+
+
 			treeCenter.setLocation(treeRectangle.width / 2,treeRectangle.height / 2);
 			location[drawnRoot].setLocation(treeCenter.getX(), treeCenter.getY());
 			location[subRoot].setLocation(treeCenter.getX(), treeCenter.getY());
 			polarLength[subRoot] = 0;
 			angle[subRoot] = angleOfFirstLeftDaughterOfDrawnRoot;
 			angle[drawnRoot] = angleOfFirstLeftDaughterOfDrawnRoot;
-			
+
 			angleOfSector[drawnRoot] = 2*Math.PI;
-			
+
 			calculateEqualAreaAngleSectors (drawnRoot);
-			
-	//		for (int i = 1; i<tree.getNumNodeSpaces(); i++) 
-	//			Debugg.println("node " + i + ": " + angleOfSector[i]);
+
+			//		for (int i = 1; i<tree.getNumNodeSpaces(); i++) 
+			//			Debugg.println("node " + i + ": " + angleOfSector[i]);
 			//int fdN = tree.firstDaughterOfNode(drawnRoot);
 			//angle[fdN] = angleOfFirstLeftDaughterOfDrawnRoot;
 			calculateEqualAreaAngles(drawnRoot);
@@ -789,10 +1154,13 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				angle[i]= -angle[i];
 			convertAnglesToNodeLocs(drawnRoot);
 
-			
+			Debugg.println("\n ==========");
+
 			adjustDaylight(drawnRoot);
-			
+
 			condenseTree(drawnRoot);
+
+			Debugg.println("-------- After Condense ");
 
 			//terminalTaxaLocs(drawnRoot);
 			//calcNodeLocs (drawnRoot);
@@ -805,9 +1173,9 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	public void drawGrid (Graphics g, double totalHeight, double scaling,  Point2D treeCenter) {
 		if (g == null)
 			return;
@@ -828,10 +1196,59 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			//	g.drawString(MesquiteDouble.toString(totalScaleHeight - thisHeight), rightEdge + buffer, (int)(base- (thisHeight*scaling)));
 			countTenths ++;
 		}
-		
+
 		if (c!=null) g.setColor(c);
 	}
 }
+/*.................................................................................................................*
+public void drawGrid(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, Graphics g) {
+	if (g == null)
+		return;
+	boolean rulerOnly = false;
+	int rulerWidth = 8;
+	Color c=g.getColor();
+	g.setColor(Color.cyan);
+	int scaleBuffer = 28;
+	TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
+	int buffer = 8;
+	double log10 = Math.log(10.0);
+	double hundredthHeight = Math.exp(log10* ((int) (Math.log(totalScaleHeight)/log10)-1));
+	if (totalScaleHeight/hundredthHeight <20.0)
+		hundredthHeight /= 10.0;
+	int countTenths = 0;
+	double thisHeight = totalScaleHeight + hundredthHeight;
+		fm=g.getFontMetrics(g.getFont());
+		int textHeight = fm.getHeight();
+		double leftEdge = treeDisplay.getTreeDrawing().y[tree.leftmostTerminalOfNode(drawnRoot)];
+		double rightEdge = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)] + scaleBuffer;
+		if (narrowScaleOnly) {
+			leftEdge = rightEdge - 10;
+		}
+		double base = treeDrawing.x[drawnRoot];
+		if (fixedScale)
+			base += (totalTreeHeight - fixedDepth)*scaling;
+		while ( thisHeight>=0) {
+			if (countTenths % 10 == 0)
+				g.setColor(Color.blue);
+			else
+				g.setColor(Color.cyan);
+			thisHeight -= hundredthHeight;
+			if (rulerOnly)
+				GraphicsUtil.drawLine(g,(int)(base+ (thisHeight*scaling)), rightEdge-rulerWidth,  (int)(base+ (thisHeight*scaling)),  rightEdge);
+			else
+				GraphicsUtil.drawLine(g,(int)(base+ (thisHeight*scaling)), leftEdge,  (int)(base+ (thisHeight*scaling)),  rightEdge);
+			if (countTenths % 10 == 0)
+				drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), (int)(base+ (thisHeight*scaling)), rightEdge + buffer + textHeight);
+			countTenths ++;
+		}
+		if (rulerOnly)
+			GraphicsUtil.drawLine(g,(int)(base), rightEdge, (int)(base+ (totalScaleHeight*scaling)),rightEdge);
+	
+	if (c !=null)
+		g.setColor(c);
+	g.setPaintMode();
+}
+/*.................................................................................................................*/
 
 class PolarCoord {
 	public double length, angle;
@@ -840,7 +1257,7 @@ class PolarCoord {
 
 class NodeLocsUnrootedExtra extends TreeDisplayBkgdExtra {
 	NodeLocsUnrootedBasic locsModule;
-	
+
 	public NodeLocsUnrootedExtra (NodeLocsUnrootedBasic ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		locsModule = ownerModule;
@@ -863,7 +1280,7 @@ class NodeLocsUnrootedExtra extends TreeDisplayBkgdExtra {
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 	}
-	
+
 }
 
 

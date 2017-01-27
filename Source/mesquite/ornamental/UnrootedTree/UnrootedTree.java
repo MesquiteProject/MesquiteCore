@@ -93,7 +93,7 @@ public class UnrootedTree extends DrawTree {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Unrooted tree";
+		return "Unrooted Tree Form";
 	}
 
 	/*.................................................................................................................*/
@@ -105,7 +105,7 @@ public class UnrootedTree extends DrawTree {
 
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Draws trees as unrooted." ;
+		return "Draws trees as if they had no root." ;
 	}
 	/*.................................................................................................................*/
 }
