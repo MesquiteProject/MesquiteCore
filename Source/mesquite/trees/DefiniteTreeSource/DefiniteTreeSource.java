@@ -114,7 +114,7 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 			wasDefinite = false;
 			assigned = true;
 			if (numTreesItem == null) {
-				numTreesItem = addMenuItem( "Number of  Trees...", makeCommand("assignNumTrees",  this));
+				numTreesItem = addMenuItem( "Number of Trees...", makeCommand("assignNumTrees",  this));
 				resetContainingMenuBar();
 			}
 		}

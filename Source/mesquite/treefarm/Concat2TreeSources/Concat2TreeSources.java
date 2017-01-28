@@ -172,7 +172,7 @@ public class Concat2TreeSources extends TreeSource {
 			}
 			assignedA = true;
 			if (numTreesAItem == null) {
-				numTreesAItem = addMenuItem( "Number of  Trees from First Source...", makeCommand("assignNumTreesA",  this));
+				numTreesAItem = addMenuItem( "Number of Trees from First Source...", makeCommand("assignNumTreesA",  this));
 				resetContainingMenuBar();
 			}
 		}
@@ -198,7 +198,7 @@ public class Concat2TreeSources extends TreeSource {
 			}
 			assignedB = true;
 			if (numTreesBItem == null) {
-				numTreesBItem = addMenuItem( "Number of  Trees from Second Source...", makeCommand("assignNumTreesB",  this));
+				numTreesBItem = addMenuItem( "Number of Trees from Second Source...", makeCommand("assignNumTreesB",  this));
 				resetContainingMenuBar();
 			}
 		}

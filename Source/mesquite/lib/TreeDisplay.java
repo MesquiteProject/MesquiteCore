@@ -51,6 +51,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public static final int DOWN = 3;
 	/** Tree is drawn in circular arrangement of nodes */
 	public static final int CIRCULAR = 4;
+	/** Tree is drawn in circular arrangement of nodes */
+	public static final int UNROOTED = 5;
 	/** Tree orientation is not yet set; take from node locs module */
 	public static final int NOTYETSET = -1;
 	

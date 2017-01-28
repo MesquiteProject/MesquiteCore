@@ -2275,6 +2275,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return getRoot();
 	}
+	/** Returns true if the first node is an ancestor of the second node.*/
+	public boolean isAncestor(int potentialAncestor, int node){
+		int mN = motherOfNode(node);
+		while (nodeExists(mN)){
+			if (mN==potentialAncestor)
+				return true;
+			if (mN==subRoot)
+				return false;
+			mN = motherOfNode(mN);
+		}
+		return false;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns most recent common ancestor of the terminals designated in terminals.*/
 	public int mrca(Bits terminals) { 
@@ -2352,10 +2365,28 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else
 			return candidate;
 	}
-	/*-----------------------------------------*/
+	/*-----------------------------------------* WAYNECHECK
+
+	public  int lastDaughterOfNodeUR(int anc, int node) {
+		if (!nodeExists(node) && !nodeExists(anc))
+			return 0;
+		int first = firstDaughterOfNodeUR(anc, node);
+		int prev = first;
+		int current = first;
+		while (nodeExists(current)) {
+			prev = current;
+			current = nextSisterOfNodeUR(anc, node, current);
+			if (current==first)
+				return prev;
+		}
+		return prev;
+	}
+	*/
+	
 	/** Returns the first (left-most) daughter of node in an UNROOTED sense where the node
 	is treated as descendant from anc. This is one of the UR procedures, designed
 	to allow unrooted style traversal through the tree*/
+
 	public  int lastDaughterOfNodeUR(int anc, int node) {
 		if (!nodeExists(node) && !nodeExists(anc))
 			return 0;
@@ -2367,6 +2398,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return prev;
 	}
+
 	/*-----------------------------------------*/
 	/** Returns what node number in Mesquite's standard rooted sense corresponds to the anc-node branch.*/
 	public  int nodeOfBranchUR(int anc, int node) {
