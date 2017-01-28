@@ -656,7 +656,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					}
 				}
 			}
-			else { 
+			else {
 				double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])/(treeDrawing.lineBaseX[N]-treeDrawing.lineTipX[N]);
 				if (slope>=-1 && slope <= 1) {  //right or left side
 					if (treeDrawing.lineTipX[N]> treeDrawing.lineBaseX[N]) { // right

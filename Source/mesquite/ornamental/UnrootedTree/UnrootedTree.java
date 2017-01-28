@@ -37,6 +37,12 @@ public class UnrootedTree extends DrawTree {
 	Vector drawings;
 	int oldEdgeWidth = 6;
 
+	/*.................................................................................................................*/
+	public boolean loadModule() {
+		return false;
+	}
+
+
 	/*----------------------------------------------------------------------------*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		nodeLocsTask= (NodeLocsUnrooted)hireEmployee(NodeLocsUnrooted.class, "Calculator of node locations");
@@ -151,51 +157,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 			branchPoly[i] = new Path2D.Double();
 			fillBranchPoly[i] = new Path2D.Double();
 		}
-	}
-	/*----------------------------------------------------------------------------*/
-	private void nodePolarToLoc (double polarlength, double angle, Point2D center, Point2D.Double loc){
-		loc.setLocation(1.0*center.getX() + polarlength * Math.sin(angle),1.0*center.getY() - polarlength * Math.cos(angle));
-	}
-	/*----------------------------------------------------------------------------*/
-	private void nodeLocToPolar (Point loc, Point center, PolarCoord polar){
-		polar.length = Math.sqrt((loc.x-center.x) *(loc.x-center.x) + (center.y-loc.y)*(center.y-loc.y));
-		polar.angle = Math.asin((loc.x-center.x)/polar.length);
-	}
-	/*----------------------------------------------------------------------------*/
-	//	makeSlantedRectangle(branchPoly[node], loc, polarLength[node]-polarLength[motherN]+edgewidth, angle[node], edgewidth);
-	private void makeBranchPoly(Path2D.Double poly, double[] polarlength, double[] angle, int node, int motherN, int width){
-		Point2D.Double loc = new Point2D.Double();
-		Point2D.Double w = new Point2D.Double();
-		nodePolarToLoc (width, angle[node] + Math.PI/2, ownerModule.nodeLocsTask.treeCenter, w);
-		double wx2p = (w.getX() -ownerModule.nodeLocsTask.treeCenter.getX())/2;
-		if (wx2p == 0)
-			wx2p = 1;
-		double wx2m = -wx2p;
-		double wy2p = (w.getY() -ownerModule.nodeLocsTask.treeCenter.getY())/2;
-		if (wy2p == 0)
-			wy2p = 1;
-		double wy2m = -wy2p;
-		//if (wx2p == 0 && wy2p == 0)
-		//	wx2p = 1;
-		nodePolarToLoc(polarlength[node], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
-		/**/
-		poly.reset();
-		poly.moveTo(loc.getX() + wx2p, loc.getY() + wy2p);
-		poly.lineTo(loc.getX() + wx2m, loc.getY() + wy2m);
-		nodePolarToLoc(polarlength[motherN], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
-		poly.lineTo(loc.getX() + wx2m, loc.getY() + wy2m);
-		poly.lineTo(loc.getX() + wx2p, loc.getY() + wy2p);
-		nodePolarToLoc(polarlength[node], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
-		poly.lineTo(loc.getX() + wx2p, loc.getY() + wy2p);
-		/**
- 		poly.addPoint(loc.x + wx, loc.y + wy);
-		poly.addPoint(loc.x, loc.y);
-		nodePolarToLoc(polarlength[motherN], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
-		poly.addPoint(loc.x, loc.y);
-		poly.addPoint(loc.x + wx, loc.y + wy);
-		nodePolarToLoc(polarlength[node], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
-		poly.addPoint(loc.x + wx, loc.y + wy);
-/**/
+	
 	}
 	private double findHighest(Tree tree, int node, double[] polarLength){
 		if (tree.nodeIsTerminal(node))
@@ -228,9 +190,8 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 
 		//	makeSlantedRectangle(fillBranchPoly[node], loc, polarLength[node]-polarLength[motherN]+edgewidth-2, angle[node], edgewidth-2);
 		//GraphicsUtil.fill(g,branchPoly[node]);
-		int mN = tree.motherOfNode(node);
 
-		GraphicsUtil.drawLine(g, x[mN], y[mN], x[node], y[node], edgewidth);
+		GraphicsUtil.drawLine(g, x[motherN], y[motherN], x[node], y[node], edgewidth);
 
 
 
@@ -584,7 +545,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 	}
 	/*----------------------------------------------------------------------------*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
 			Color c = g.getColor();
 			if (treeDisplay.getOrientation()==TreeDisplay.UNROOTED) {
 				int numColors = colors.getNumColors();
@@ -592,11 +553,25 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
-					GraphicsUtil.fill(g,fillBranchPoly[node]);
+
 					int motherN= tree.motherOfNode(node);
-					double[] polarLength= ownerModule.nodeLocsTask.polarLength;
-					double[] angle= ownerModule.nodeLocsTask.angle;
-					drawArc(g, polarLength, angle, node, motherN, 1);
+
+					//GraphicsUtil.drawCross(g, treeDisplay.getTreeDrawing().x[node],treeDisplay.getTreeDrawing().y[node], 2);
+					lineTipX[node]= treeDisplay.getTreeDrawing().x[node];
+					lineTipY[node]= treeDisplay.getTreeDrawing().y[node];
+					lineBaseX[node]= treeDisplay.getTreeDrawing().x[motherN];
+					lineBaseY[node]= treeDisplay.getTreeDrawing().y[motherN];
+
+					//		private void makeSlantedRectangle(Polygon poly, double[] polarlength, double[] angle, int node, int motherN, int width){
+//					makeBranchPoly(branchPoly[node],polarLength, angle, node, motherN, edgewidth);
+//					makeBranchPoly(fillBranchPoly[node],polarLength, angle, node, motherN, edgewidth-2); //TODO: include arc into fillBranchPoly
+
+					//	makeSlantedRectangle(fillBranchPoly[node], loc, polarLength[node]-polarLength[motherN]+edgewidth-2, angle[node], edgewidth-2);
+					//GraphicsUtil.fill(g,branchPoly[node]);
+
+					GraphicsUtil.drawLine(g, x[motherN], y[motherN], x[node], y[node], edgewidth);
+
+					
 					/*
 					int L, R, T, B;
 					R = (int)Math.round(ownerModule.nodeLocsTask.treeCenter.x + polarLength[motherN]);
@@ -751,9 +726,6 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 		return edgewidth;
 	}
 	/*End new code Feb.22.07 oliver*/
-}
-class PolarCoord {
-	public double length, angle;
 }
 
 
