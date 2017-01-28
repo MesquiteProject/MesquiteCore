@@ -18,6 +18,8 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.*;
 
+import mesquite.trees.SquareLineTree.SquareLineTree;
+
 
 
 /* ======================================================================== */
@@ -46,6 +48,14 @@ public class GraphicsUtil {
 		if (!(g instanceof Graphics2D))
 			return;
 		Graphics2D g2 = (Graphics2D)g;
+		drawLine(g2,fromX, fromY, toX, toY);
+	}
+	/*_________________________________________________*/
+	public static void drawLine(Graphics g, double fromX, double fromY, double toX, double toY, double thickness) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setStroke(new RoundCapStroke((float)thickness));
 		drawLine(g2,fromX, fromY, toX, toY);
 	}
 	/*_________________________________________________*/
@@ -586,6 +596,17 @@ public class GraphicsUtil {
 		}
 		else
 			fillArc(g,x,y,w,h, startAngle, arcAngle); 
+	}
+
+}
+
+/* ======================================================================== */
+class RoundCapStroke extends BasicStroke  {
+	public RoundCapStroke (float width) {
+		super(width);
+	}
+	public int getEndCap() {
+		return BasicStroke.CAP_ROUND;
 	}
 
 }
