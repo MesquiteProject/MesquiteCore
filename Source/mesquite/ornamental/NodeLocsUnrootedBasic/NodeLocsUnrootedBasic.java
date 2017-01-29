@@ -148,6 +148,14 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		else
 			return tree.getBranchLength(N);
 	}
+
+	private double getUnscaledBranchLength (int N) {
+		if (showBranchLengths.getValue())
+			return getBranchLength(N);
+		else
+			return 1;
+	}
+
 	int numNodes;
 	/*{-----------------------------------------------------------------------------}
 	private int findTaxa (int node){
@@ -320,6 +328,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		double ny = location[node].getY();
 		double rx = location[rotateNode].getX();
 		double ry = location[rotateNode].getY();
+			
 		double newX = rx + (nx-rx)*Math.cos(rotateAngle) - (ny-ry)*Math.sin(rotateAngle);
 		double newY = ry + (nx-rx)*Math.sin(rotateAngle) + (ny-ry)*Math.cos(rotateAngle);
 		location[node].setLocation(newX, newY);
@@ -400,6 +409,24 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	 */
 
+
+	private synchronized void reportDaughters (int drawnRoot, int node){   //node begins as the drawnRoot
+		if (tree.nodeIsInternal(node)){
+			int[] daughtersUR = tree.daughtersOfNodeUR(drawnRoot, node);
+			String s = " centerNode: " + node + " daughters: ";
+			if (daughtersUR!=null) {
+				for (int i=0; i<daughtersUR.length; i++)
+					s+= " " + daughtersUR[i];
+			} else s+= "none";
+			Debugg.println(s);
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				reportDaughters(drawnRoot, d);
+			}
+		} 
+	}
+
+	boolean nodeRotatedDuringEqualization = false;
+
 	private synchronized void equalizeDaylightForNode (int drawnRoot, int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			double daylight = calculateDaylightForNode(drawnRoot, node);
@@ -408,55 +435,166 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				numDaughters ++;
 			double daylightPerDaughter = daylight/(numDaughters);
 			double[] shiftAmount = new double[numDaughters];
-			double[] daylightInDaughter = new double[numDaughters];
+			double[] originalShiftAmount = new double[numDaughters];
+			double[] cumulativeShift = new double[numDaughters];
+			for (int i=0; i<cumulativeShift.length; i++)
+				cumulativeShift[i]=0.0;
+			double[] originalDaylightInDaughter = new double[numDaughters];
+			int[] daughtersUR = tree.daughtersOfNodeUR(drawnRoot, node);
+			if (daughtersUR==null) return;
 
-			double daylightInThisPair = 0.0;
-
-			int daughterUR = tree.firstDaughterOfNode(node); // use firstDaughter as the first daughter for comparison
-			int firstDaughterUR = daughterUR;
-			int nextDaughterUR = daughterUR;
-			int count = 0;
-			//Debugg.println(" centerNode: " + node);
+			//double daylightInThisPair = 0.0;
+			//	Debugg.println("\n\n\n centerNode: " + node);
+			//	Debugg.println("    daylightPerDaughter: " + daylightPerDaughter);
 			double totalDaylight = 0.0;
-			while (tree.nodeExists(nextDaughterUR)) {
-				nextDaughterUR = tree.nextAroundUR(node, nextDaughterUR);
-				daylightInThisPair = daylightBetweenNodes (drawnRoot, daughterUR,nextDaughterUR, node);  // start out with daylight between nother node and first daughter
-				shiftAmount[count]=daylightPerDaughter-daylightInThisPair;
-				daylightInDaughter[count]=daylightInThisPair;
-				totalDaylight+= daylightInThisPair;
-				//	Debugg.println("    pair: " + daughterUR + " " + nextDaughterUR + "  shift: " + shiftAmount[count] + " daylight " + daylightInThisPair);
-				daughterUR = nextDaughterUR;
-				if (daughterUR==firstDaughterUR)  // we are back where we started
-					break;
-				count++;
-			}		
-			//Debugg.println("    total daylight: " + totalDaylight);
 
+			//int daughterUR = tree.firstDaughterOfNode(node); // use firstDaughter as the first daughter for comparison
+			//int firstDaughterUR = daughterUR;
+			//int count = 0;
+			double branchLengthTolerance=0.00000001;
+
+			for (int i =0; i<daughtersUR.length; i++) {
+				int leftDaughter = i;
+				int rightDaughter = i+1;
+				if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
+					rightDaughter = 0;
+				originalDaylightInDaughter[rightDaughter] = daylightBetweenNodes (drawnRoot, daughtersUR[leftDaughter],daughtersUR[rightDaughter], node); 
+				if (getUnscaledBranchLength(daughtersUR[leftDaughter])>branchLengthTolerance && getUnscaledBranchLength(daughtersUR[rightDaughter])>branchLengthTolerance)  // shift only if branches long enough
+					shiftAmount[rightDaughter]=daylightPerDaughter-originalDaylightInDaughter[rightDaughter];
+				else
+					shiftAmount[rightDaughter]=0.0;				
+				originalShiftAmount[rightDaughter] = shiftAmount[rightDaughter];
+				totalDaylight+= originalDaylightInDaughter[rightDaughter];
+			}
+
+			for (int i =1; i<daughtersUR.length; i++) {
+				cumulativeShift[i] = cumulativeShift[i-1]+shiftAmount[i];
+			}
+
+			for (int i =0; i<daughtersUR.length; i++) {
+				int leftDaughter = i;
+				int rightDaughter = i+1;
+			//	int prevRightDaughter = i;
+				if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
+					rightDaughter = 0;
+				shiftAmount[rightDaughter] += shiftAmount[leftDaughter];
+		}
+			//shiftAmount[0] += cumulativeShift[daughtersUR.length-1];
+
+	/*		Debugg.println("\n    centerNode: " + node);
+			for (int i =0; i<daughtersUR.length; i++) {
+				int leftDaughter = i;
+				int rightDaughter = i+1;
+			//	int prevRightDaughter = i;
+				if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
+					rightDaughter = 0;
+				Debugg.println("         pair: " + daughtersUR[leftDaughter] + "   " + daughtersUR[rightDaughter] + "   (" + leftDaughter + "  " + rightDaughter+")");
+				Debugg.println("         original shift: " + originalShiftAmount[i]);
+				Debugg.println("         shift: " + shiftAmount[i]);
+			//	Debugg.println("         cumulativeShift: " + cumulativeShift[i]);
+		}
+
+*/
 			boolean doShift=false;
-			for (int i = 0; i<count; i++)
-				if (shiftAmount[i]>daylightTolerancePerNode)
+			//	shiftAmount[shiftAmount.length-1] +=shiftAmount[0];
+
+			for (int i =0; i<daughtersUR.length; i++) {
+				if (Math.abs(shiftAmount[i])>daylightTolerancePerNode) {
 					doShift = true;
+					break;
+				}
+			}
+
 
 			if (doShift) {
-				daughterUR = tree.firstDaughterOfNode(node); // use firstDaughter as the first daughter for comparison
-				nextDaughterUR = daughterUR;
-				count=0;
+
+
+				for (int i =0; i<daughtersUR.length; i++) {
+					int leftDaughter = i;
+					int rightDaughter = i+1;
+					if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
+						rightDaughter = 0;
+					//double angle = angleToNode(node,daughters[rightDaughter]);
+					//if (Math.abs(shiftAmount[leftDaughter])>daylightTolerancePerNode && getUnscaledBranchLength(daughtersUR[rightDaughter])>branchLengthTolerance && getUnscaledBranchLength(daughtersUR[leftDaughter])>branchLengthTolerance) {
+					double angle = angleToNode(node,daughtersUR[rightDaughter]);
+					rotateBranch(daughtersUR[rightDaughter], node, node, shiftAmount[rightDaughter]);
+					double angle2 = angleToNode(node,daughtersUR[rightDaughter]);
+					//double shiftError = (Math.abs(angle-angle2) - Math.abs(shiftAmount[leftDaughter]));
+					nodeRotatedDuringEqualization= true;
+					//angle = angleToNode(node,daughtersUR[rightDaughter]);
+					//}
+					//if (rightDaughter<shiftAmount.length-1 && rightDaughter!=0)
+					//	shiftAmount[rightDaughter+1] +=shiftAmount[rightDaughter];
+
+				}
+				boolean equalized = true;
+
+				for (int i =0; i<daughtersUR.length; i++) {
+					int leftDaughter = i;
+					int rightDaughter = i+1;
+					if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
+						rightDaughter = 0;
+					double daylightInThisPair = daylightBetweenNodes (drawnRoot, daughtersUR[leftDaughter],daughtersUR[rightDaughter], node);  // start out with daylight between nother node and first daughter
+					if (Math.abs(daylightInThisPair-daylightPerDaughter)>	daylightTolerancePerNode) {
+						equalized=false;
+					}
+				}
+
+
+				if (!equalized && false) {
+					if (!equalized)
+						Debugg.println("\n\n  •|•|•|•|•|•|•|•|•|  Not Equalized •|•|•|•|•|•|");
+					Debugg.println("  centerNode: " + node);
+					double cumulative = 0.0;
+					for (int i =0; i<daughtersUR.length; i++) {
+						int leftDaughter = i;
+						int rightDaughter = i+1;
+						if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
+							rightDaughter = 0;
+						double daylightInThisPair = daylightBetweenNodes (drawnRoot, daughtersUR[leftDaughter],daughtersUR[rightDaughter], node);  // start out with daylight between nother node and first daughter
+						Debugg.println("\n    pair: " + daughtersUR[leftDaughter] + "   " + daughtersUR[rightDaughter] + "   (" + leftDaughter + "  " + rightDaughter+")");
+						Debugg.println("       daylightPerDaughter: " + daylightPerDaughter);
+						Debugg.println("       beforeRotateDaylight " + originalDaylightInDaughter[rightDaughter]);
+						Debugg.println("         original shift: " + originalShiftAmount[rightDaughter] + "            expected difference: " + (daylightPerDaughter-(originalDaylightInDaughter[rightDaughter]+originalShiftAmount[rightDaughter])));
+						Debugg.println("         shift: " + shiftAmount[rightDaughter]+"            expected difference: " + (daylightPerDaughter-(originalDaylightInDaughter[rightDaughter]+shiftAmount[rightDaughter])));
+						Debugg.println("       afterRotateDaylight " + daylightInThisPair + "            observed difference: " + (daylightPerDaughter-daylightInThisPair));
+
+						//	cumulative +=shiftAmount[rightDaughter];
+					}
+				}
+
+				/*
 				while (tree.nodeExists(nextDaughterUR)) {
 					nextDaughterUR = tree.nextAroundUR(node, nextDaughterUR);
 					double angle = angleToNode(node,nextDaughterUR);
-					if (Math.abs(shiftAmount[count])>daylightTolerancePerNode) {
+					if (Math.abs(shiftAmount[count])>daylightTolerancePerNode && getUnscaledBranchLength(nextDaughterUR)>branchLengthTolerance && getUnscaledBranchLength(daughterUR)>branchLengthTolerance) {
 						rotateBranch(nextDaughterUR, node, node, shiftAmount[count]);
 						angle = angleToNode(node,nextDaughterUR);
 					}
 					if (count<shiftAmount.length-1)
-						shiftAmount[count+1] += shiftAmount[count];
+						shiftAmount[count+1] +=shiftAmount[count];
 					daylightInThisPair = daylightBetweenNodes (drawnRoot, daughterUR,nextDaughterUR, node);  // start out with daylight between nother node and first daughter
+					if (daylightInThisPair-daylightPerDaughter>	daylightTolerancePerNode) {
+							Debugg.println("\n  •|•|•|•|•|•|•|•|•|  Not Equalized •|•|•|•|•|•|");
+							Debugg.println("  centerNode: " + node);
+							Debugg.println("    pair: " + daughterUR + " " + nextDaughterUR);
+							Debugg.println("    daylightPerDaughter: " + daylightPerDaughter + " afterRotateDaylight " + daylightInThisPair);
+							Debugg.println("    shift: " + shiftAmount[count]);
+							Debugg.println("    firstDaughterUR: "+firstDaughterUR);
+					}
+
+		//	Debugg.println("    daylightPerDaughter: " + daylightPerDaughter);
+	//				Debugg.println("  after rotate: "+"    pair: " + daughterUR + " " + nextDaughterUR + "      shift: " + shiftAmount[count] + " daylight " + daylightInThisPair);
 					double daylightNEW = calculateDaylightForNode(drawnRoot, node);
 					daughterUR = nextDaughterUR;
+					count++;
 					if (daughterUR==firstDaughterUR)  // we are back where we started
 						break;
-					count++;
-				}		
+				}	
+				 */	
+				//		if (count!= numDaughters)
+				//			Debugg.println("  •|•|•|•|•|•|•|•|•|  NumDaughters different node " + node +" •|•|•|•|•|•|");
+
 			}
 
 		} 
@@ -464,11 +602,17 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	private synchronized void equalizeDaylight (int drawnRoot, int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
+			if (node<20)
+				//if (node>=11 && node<=18)
+				//  	if ((node==53) ||(node==54) || (node==64))
+				//	if (node==53)
+		// 	if ((node==46) || (node==53) ||(node==54) || (node==64))
+				//    if ((node == 58)  || (node>60&& node<=76))
+				//  	if (node==58 || node==52|| node==51|| node==46|| node==53|| node==54|| node==68)
+				equalizeDaylightForNode(drawnRoot, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				equalizeDaylight(drawnRoot, d);
 			}
-			//	if (node==77 || node==65)
-			equalizeDaylightForNode(drawnRoot, node);
 		} 
 	}
 
@@ -538,7 +682,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	}
 
 	/** Calculates the angle of node Node, relative to vertext centerNode */
-	private double angleToNode(int centerNode, int node) {
+	private synchronized double angleToNode(int centerNode, int node) {
 		double dx = location[centerNode].getX();
 		double dy = location[centerNode].getY();
 		double nodedx = location[node].getX()-dx;
@@ -557,7 +701,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	}
 
 	/** Calculates angle between nodes leftNode and rightNode relative to vertex centerNode */
-	private double angleBetweenNodes(int centerNode, int leftNode, int rightNode) {
+	private synchronized double angleBetweenNodes(int centerNode, int leftNode, int rightNode) {
 		double dx = location[centerNode].getX();
 		double dy = location[centerNode].getY();
 		double ldx = location[leftNode].getX()-dx;
@@ -811,7 +955,10 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	/**  */
 	private synchronized double daylightBetweenNodes (int drawnRoot, int leftDaughter, int rightDaughter, int centerNode){   //node begins as the drawnRoot
-		if ((centerNode==3 && leftDaughter==2 && rightDaughter==4) && false) {
+		boolean centerNodeToCheck = ((centerNode==46) || (centerNode==53) ||(centerNode==54) || (centerNode==64));
+		centerNodeToCheck = false;
+		if (centerNodeToCheck) {
+			//	if ((centerNode==3 && leftDaughter==2 && rightDaughter==4) && false) {
 			Debugg.println("\n CENTERNODE: " + centerNode);
 			Debugg.println("      leftDaughter: " + leftDaughter + "  rightDaughter " + rightDaughter);
 		}
@@ -833,7 +980,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 
 		double daylight = angleBetweenNodes(centerNode, nodeToLeft, nodeToRight);
-		if ((centerNode==3 && leftDaughter==2 && rightDaughter==4) && false) {
+		if (centerNodeToCheck) {
 			Debugg.println("      nodeToLeft: " + nodeToLeft + "  nodeToRight " + nodeToRight);
 			Debugg.println("      daylight angle: " + daylight);
 			//Debugg.println("      leftMaxAngle: " + leftMaxAngle + "  rightMaxAngle " + rightMaxAngle);
@@ -846,6 +993,20 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	private synchronized double calculateDaylightForNode (int drawnRoot, int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			double daylight = 0.0;
+			int[] daughtersUR = tree.daughtersOfNodeUR(drawnRoot, node);
+
+			if (daughtersUR==null)
+				return 0.0;
+			for (int i =0; i<daughtersUR.length; i++) {
+				int leftDaughter = i;
+				int rightDaughter = i+1;
+				if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
+					rightDaughter = 0;
+				daylight+= daylightBetweenNodes (drawnRoot, daughtersUR[leftDaughter],daughtersUR[rightDaughter], node); 
+			}
+
+			/*			
+
 			int daughterUR = tree.firstDaughterOfNode(node); // use firstDaughter as the first daughter for comparison
 			int firstDaughterUR = daughterUR;
 			int nextDaughterUR = daughterUR;
@@ -856,6 +1017,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				if (daughterUR==firstDaughterUR)  // we are back where we started
 					break;
 			}
+			 */
 			return daylight;
 		} 
 		return 0;
@@ -912,29 +1074,35 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		double lastDaylightInTree = 0.0;
 
 		MesquiteDouble daylight = new MesquiteDouble(0.0);
-		//	Debugg.println(" |||||||||||||  \n\n ");
+		//Debugg.println(" |||||||||||||  \n\n ");
 
 		calculateDaylight(drawnRoot, drawnRoot, daylight);
-		//		Debugg.println(" Daylight initial: " + daylight.getValue());
+		//Debugg.println(" Daylight initial: " + daylight.getValue());
 		lastDaylightInTree = daylight.getValue();
 
 		int count = 0;
-		while (count < 20) {
+
+		//reportDaughters(drawnRoot, drawnRoot);
+
+		while (count < 16) {
 			daylight.setValue(0.0);
+			nodeRotatedDuringEqualization= false;
 			equalizeDaylight(drawnRoot, drawnRoot);
-			//Debugg.println(" (AFTER EQUALIZE)\n");
+			//Debugg.println("\n (AFTER EQUALIZE)\n");
 			daylight.setValue(0.0);
-			rotateTree (drawnRoot, tree.firstDaughterOfNode(drawnRoot), Math.PI/2);
 
 			calculateDaylight(drawnRoot, drawnRoot, daylight);
-			//			Debugg.println("       Daylight " + (count+1) + ": " +daylight.getValue());
+			//Debugg.println("       Daylight " + (count+1) + ": " +daylight.getValue());
 			daylightInTree = daylight.getValue();
-			if (Math.abs(daylightInTree - lastDaylightInTree)<0.001)
+			if (!nodeRotatedDuringEqualization)
 				break;
+			//		if (daylightInTree-lastDaylightInTree<0.000001)
+			//			break;
 			lastDaylightInTree = daylightInTree;
 			count++;
 		}
 
+		rotateTree (drawnRoot, tree.firstDaughterOfNode(drawnRoot), Math.PI/2);
 
 
 	}
@@ -1068,8 +1236,14 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		shiftH = leftIdeal-leftMost;
 		shiftV = topIdeal-topMost;
 
+		//	shiftV+=800;
+		//	shiftH-=600;
+
 		if (shiftH!=0 || shiftV != 0)
 			shift(drawnRoot,shiftH, shiftV);
+
+		//		Debugg.println(" node 46: " +  location[46].getX() + " " + location[46].getY());
+		//		Debugg.println(" node 47: " +  location[47].getX() + " " + location[47].getY());
 
 
 	}

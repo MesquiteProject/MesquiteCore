@@ -39,7 +39,7 @@ public class UnrootedTree extends DrawTree {
 
 	/*.................................................................................................................*/
 	public boolean loadModule() {
-		return false;
+		return true;
 	}
 
 

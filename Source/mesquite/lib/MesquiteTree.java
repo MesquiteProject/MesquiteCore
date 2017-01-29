@@ -2372,12 +2372,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return 0;
 		int first = firstDaughterOfNodeUR(anc, node);
 		int prev = first;
-		int current = first;
-		while (nodeExists(current)) {
-			prev = current;
-			current = nextSisterOfNodeUR(anc, node, current);
-			if (current==first)
-				return prev;
+		while (nodeExists(first)) {
+			prev = first;
+			first = nextSisterOfNodeUR(anc, node, first);
 		}
 		return prev;
 	}
@@ -2392,9 +2389,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return 0;
 		int first = firstDaughterOfNodeUR(anc, node);
 		int prev = first;
-		while (nodeExists(first)) {
-			prev = first;
-			first = nextSisterOfNodeUR(anc, node, first);
+		
+		int current = first;
+		while (nodeExists(current)) {
+			prev = current;
+			current = nextSisterOfNodeUR(anc, node, current);
+			if (current==first)
+				return prev;
 		}
 		return prev;
 	}
@@ -2409,6 +2410,32 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else
 			return 0;
 	}
+	
+	/** Returns all of the "daughters" of a node, treating the tree as unrooted.  That is, it returns as
+	 * one of the daughters the mother of the node (which should be the the last entry in the array). 
+	 * If you pass into root the MRCA of a subtree containing "node", then it will treat
+	 * that subtree as unrooted.  Note:  if node is not the root or a descendant of root, then this will return null */
+	public int[] daughtersOfNodeUR (int root, int node){  
+		if (nodeIsInternal(node) && (!getRooted() || isAncestor(root, node) || root==node)){
+			int numDaughters = numberOfDaughtersOfNode(node);
+			if (node!=root)
+				numDaughters ++;
+			int[] daughters = new int[numDaughters];
+			int firstDaughterUR = firstDaughterOfNode(node); // use firstDaughter as the first daughter 
+			int nextDaughterUR = firstDaughterUR;
+			int count=0;
+			while (nodeExists(nextDaughterUR)) {
+				daughters[count]=nextDaughterUR;
+				nextDaughterUR = nextAroundUR(node, nextDaughterUR);
+				if (nextDaughterUR==firstDaughterUR)  // we are back where we started
+					break;
+				count++;
+			}		
+			return daughters;
+		}
+		return null;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns whether any branchLengths are assigned.*/
 	private boolean lengthsAssigned(int node) { 
