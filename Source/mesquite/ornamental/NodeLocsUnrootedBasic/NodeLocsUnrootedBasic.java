@@ -477,7 +477,11 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			//	int prevRightDaughter = i;
 				if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
 					rightDaughter = 0;
-				shiftAmount[rightDaughter] += shiftAmount[leftDaughter];
+				if (leftDaughter!=0)
+					shiftAmount[rightDaughter] += shiftAmount[leftDaughter];
+			//	if (rightDaughter==0)
+			//		shiftAmount[rightDaughter] -= shiftAmount[leftDaughter];
+
 		}
 			//shiftAmount[0] += cumulativeShift[daughtersUR.length-1];
 
@@ -561,6 +565,11 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 						//	cumulative +=shiftAmount[rightDaughter];
 					}
+					double newDaylight = calculateDaylightForNode(drawnRoot, node);
+					Debugg.println("       old total daylight " + daylight);
+					Debugg.println("       new total daylight " + newDaylight);
+
+					Debugg.println("");
 				}
 
 				/*
@@ -985,6 +994,12 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			Debugg.println("      daylight angle: " + daylight);
 			//Debugg.println("      leftMaxAngle: " + leftMaxAngle + "  rightMaxAngle " + rightMaxAngle);
 		}
+		if (daylight<0) {
+			Debugg.println("••••••••  DAYLIGHT<0  ••••••••••");
+			Debugg.println("   CENTERNODE: " + centerNode);
+			Debugg.println("      leftDaughter: " + leftDaughter + "  rightDaughter " + rightDaughter);
+		}
+			
 		return daylight;
 	}
 
@@ -994,14 +1009,16 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		if (tree.nodeIsInternal(node)){
 			double daylight = 0.0;
 			int[] daughtersUR = tree.daughtersOfNodeUR(drawnRoot, node);
-
 			if (daughtersUR==null)
 				return 0.0;
+			
+			
 			for (int i =0; i<daughtersUR.length; i++) {
 				int leftDaughter = i;
 				int rightDaughter = i+1;
 				if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
 					rightDaughter = 0;
+				
 				daylight+= daylightBetweenNodes (drawnRoot, daughtersUR[leftDaughter],daughtersUR[rightDaughter], node); 
 			}
 
@@ -1084,7 +1101,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 		//reportDaughters(drawnRoot, drawnRoot);
 
-		while (count < 16) {
+		while (count < 15) {
 			daylight.setValue(0.0);
 			nodeRotatedDuringEqualization= false;
 			equalizeDaylight(drawnRoot, drawnRoot);
@@ -1236,8 +1253,8 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		shiftH = leftIdeal-leftMost;
 		shiftV = topIdeal-topMost;
 
-		//	shiftV+=800;
-		//	shiftH-=600;
+			//shiftV+=300;
+			//shiftH-=300;
 
 		if (shiftH!=0 || shiftV != 0)
 			shift(drawnRoot,shiftH, shiftV);
