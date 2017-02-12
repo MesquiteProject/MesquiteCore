@@ -1622,7 +1622,9 @@ public class StringUtil {
 		return sb.toString();
 	}
 	
-/** This is a general method to take a string, and remove any "fancy" characters in it.  Accented characters are converted
+
+
+	/** This is a general method to take a string, and remove any "fancy" characters in it.  Accented characters are converted
  * to their unaccented equivalent.  If some of the stricter variants are used (e.g., if onlyAlphaNumeric is true), then all characters 
  * other than letters and numbers are removed (or converted to underscores if alphaNumericAndUnderscore is true).
  * */
@@ -1639,12 +1641,12 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 	if (onlyAlphaNumeric) {
 		s = s.replaceAll("[^a-zA-Z0-9]", "");
 	}
-
-	if (alphaNumericAndUnderscore) {
-		s = s.replaceAll("[^a-zA-Z0-9_]", "");
+	else if (alphaNumericAndUnderscore) {
+		s = s.replaceAll("[^a-zA-Z0-9_]", "_");
 	}
 	return s;
 }
+
 	/*.................................................................................................................*/
 	public static String cleanseStringOfFancyChars(String s){
 		return cleanseStringOfFancyChars(s,false, false);

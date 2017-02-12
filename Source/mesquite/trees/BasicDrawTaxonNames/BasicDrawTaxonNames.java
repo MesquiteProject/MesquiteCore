@@ -176,7 +176,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				else
 					current = namesAngle/2/Math.PI*360;
 				MesquiteDouble d = new MesquiteDouble(current);
-				if (!QueryDialogs.queryDouble(containerOfModule(), "Names Angle", "Angle of taxon names, in degrees clockwise from horizontal.  Use \"?\" to indicate default.  Typical settings are between 0 degrees and -90 degrees.  0 = text reads from left to right (long dash = �); -90 = text reads from bottom to top (long dash = |); -45 = text angled diagonally (long dash = /).  This setting applies only when tree is in UP orientation", d))
+				if (!QueryDialogs.queryDouble(containerOfModule(), "Names Angle", "Angle of taxon names, in degrees clockwise from horizontal.  Use \"?\" to indicate default.  Typical settings are between 0 degrees and -90 degrees.  0 = text reads from left to right (like this: —); -90 = text reads from bottom to top (like this: |); -45 = text angled diagonally (like this: /).  This setting applies only when tree is in UP orientation", d))
 					return null;
 				namesAngle = d.getValue();
 				if (MesquiteDouble.isCombinable(namesAngle))
