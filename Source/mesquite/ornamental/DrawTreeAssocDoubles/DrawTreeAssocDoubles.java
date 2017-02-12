@@ -182,7 +182,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			centred.setValue(false);
 			horizontal.setValue(true);
 			digits=0;
-			xOffset = 0;
+			xOffset = -2;
 			yOffset = 9;
 			if (!MesquiteThread.isScripting()) parametersChanged();
 		}
