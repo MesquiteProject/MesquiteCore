@@ -237,7 +237,7 @@ public class SimCharsOnTrees extends CharacterSource {
 
 		seed.setValue(charSeed(currentChar));
 		lastTree = treeTask.getTree(taxa, currentChar);
-		CharacterDistribution states = simulatorTask.getSimulatedCharacter(null, lastTree, seed);
+		CharacterDistribution states = simulatorTask.getSimulatedCharacter(null, lastTree, seed, ic);
 		if (simulatorTask.isDoomed())
 				return null;
    		if (states!=null) {

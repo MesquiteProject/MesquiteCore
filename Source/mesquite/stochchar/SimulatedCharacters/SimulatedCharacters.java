@@ -203,7 +203,7 @@ public class SimulatedCharacters extends CharacterSource {
 
 		seed.setValue(charSeed(currentChar));
 		lastTree = treeTask.getTree(taxa);
-		CharacterDistribution states = simulatorTask.getSimulatedCharacter(null, lastTree, seed); //1. 06: had passed states back in, which caused problems for employers requiring multiple
+		CharacterDistribution states = simulatorTask.getSimulatedCharacter(null, lastTree, seed, ic); //1. 06: had passed states back in, which caused problems for employers requiring multiple
 		if (simulatorTask.isDoomed())
 				return null;
    		if (states!=null)

@@ -21,8 +21,8 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
+import mesquite.stochchar.CurrentProbModelsLike.*;
 import mesquite.stochchar.lib.*;
-import mesquite.stochchar.CurrentProbModels.*;
 
 /* ======================================================================== */
 public class CharLikelihood extends CharacterLikelihood {
@@ -128,10 +128,10 @@ public class CharLikelihood extends CharacterLikelihood {
 			if (observedStates.getParentData()!= oldData)
 				warned = false;
 			if (!warned){
-				if (observedStates.getParentData()!=null && modelTask instanceof CurrentProbModels  && !MesquiteThread.isScripting()) {
+				if (observedStates.getParentData()!=null && modelTask instanceof CurrentProbModelsLike  && !MesquiteThread.isScripting()) {
 					oldData = observedStates.getParentData();
 					if (AlertDialog.query(containerOfModule(), "Assign models?", "There are currently no probability models assigned to the characters.  Do you want to assign a model to all characters unassigned?")) {
-						((CurrentProbModels)modelTask).chooseAndFillUnassignedCharacters(observedStates.getParentData());
+						((CurrentProbModelsLike)modelTask).chooseAndFillUnassignedCharacters(observedStates.getParentData());
 						model = modelTask.getCharacterModel(observedStates);
 					}
 					else {

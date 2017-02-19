@@ -229,7 +229,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 			numChars = simulatorTask.getMaximumNumChars(taxa); //not quite right; should have separate maxnum
 	 		if (!MesquiteThread.isScripting() && !MesquiteInteger.isCombinable(numChars)){
 	 		
-				int defaultNumChars = simulatorTask.getDefaultNumChars();
+				int defaultNumChars = simulatorTask.getDefaultNumChars(taxa);
 				numChars = MesquiteInteger.queryInteger(containerOfModule(), "Number of characters in matrix", "Number of characters to simulate:", defaultNumChars, 1, 1000000, false);
 
 		 		if (!MesquiteInteger.isCombinable(numChars))
@@ -295,7 +295,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 			//TODO: getSimulatedCharacter should be passed scripting and should be initializable
 			if (states!=null && states instanceof AdjustableDistribution)
 				((AdjustableDistribution)states).setParentCharacter(ic);
-			states = simulatorTask.getSimulatedCharacter(states, tree, seed); 
+			states = simulatorTask.getSimulatedCharacter(states, tree, seed, ic); 
  	 		matrix.transferFrom(ic, states);
  	 	}
    		matrix.setName("Matrix #" + CharacterStates.toExternal(currentDataSet)  + " simulated by " + simulatorTask.getName());

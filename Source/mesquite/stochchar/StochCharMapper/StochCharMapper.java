@@ -22,8 +22,8 @@ import mesquite.lib.duties.*;
 import mesquite.meristic.lib.MeristicState;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
+import mesquite.stochchar.CurrentProbModelsLike.*;
 import mesquite.stochchar.lib.*;
-import mesquite.stochchar.CurrentProbModels.*;
 
 /* ======================================================================== */
 public class StochCharMapper extends CharMapper {
@@ -229,10 +229,10 @@ handle models needing estimation
 			if (observedStates.getParentData()!= oldData)
 				warned = false;
 			if (!warned){
-				if (observedStates.getParentData()!=null && modelTask instanceof CurrentProbModels) {
+				if (observedStates.getParentData()!=null && modelTask instanceof CurrentProbModelsLike) {
 					oldData = observedStates.getParentData();
 					if (AlertDialog.query(containerOfModule(), "Assign models?", "There are currently no probability models assigned to the characters.  Do you want to assign a model to all characters unassigned?")) {
-						((CurrentProbModels)modelTask).chooseAndFillUnassignedCharacters(observedStates.getParentData());
+						((CurrentProbModelsLike)modelTask).chooseAndFillUnassignedCharacters(observedStates.getParentData());
 						if (modelTask.getCharacterModel(observedStates) instanceof ProbPhenCategCharModel )
 							origModel = (ProbPhenCategCharModel)modelTask.getCharacterModel(observedStates);
 						else AlertDialog.notice(containerOfModule(),"Incompatible model","The model you selected is not compatible with Stochastic Character Mapping at this time.");

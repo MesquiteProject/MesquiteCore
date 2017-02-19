@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.stochchar.CurrentProbModels;
+package mesquite.stochchar.CurrentProbModelsLike;
 /*~~  */
 
 import java.util.*;
@@ -22,7 +22,7 @@ import mesquite.lib.duties.*;
 import mesquite.stochchar.lib.*;
 
 /* ======================================================================== */
-public class CurrentProbModels extends ProbModelSourceLike {
+public class CurrentProbModelsLike extends ProbModelSourceLike {
 	ModelSet currentModelSet;
 	String preferred =  "Likelihood";
 	boolean reassignable = false;
@@ -45,6 +45,10 @@ public class CurrentProbModels extends ProbModelSourceLike {
 	public boolean isPrerelease() {
 		return false;
   	 }
+  	 public boolean modelFromModelSet() {
+ 	 	return true;    	 
+ }
+
 	/*.................................................................................................................*/
 	public void endJob() {
 		getProject().getCentralModelListener().removeListener(this);
