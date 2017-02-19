@@ -32,7 +32,7 @@ public class NEXUSDefaults extends DefaultsAssistant {
 		suppressTitleLink = new MesquiteBoolean(false);
 		loadPreferences();
 		addMenuItemToDefaults( "Automatic NEXUS backups...", makeCommand("autobackup",  this));
-		addCheckMenuItemToDefaults( null, "Suppress TITLE in NEXUS files", makeCommand("toggleSuppress",  this), suppressTitleLink);
+		addCheckMenuItemToDefaults( null, "Suppress TITLE, LINK, ID, and BLOCKIDs in NEXUS files", makeCommand("toggleSuppress",  this), suppressTitleLink);
 		return true;
 	}
 	public void processPreferencesFromFile (String[] prefs) {

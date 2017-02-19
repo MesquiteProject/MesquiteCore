@@ -314,7 +314,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		blocks.append( StringUtil.lineEnding());
 		if (!file.useSimplifiedNexus && !file.useConservativeNexus){
 			String idsCommand = null;
-			if (!StringUtil.blank(data.getUniqueID()))
+			if (!StringUtil.blank(data.getUniqueID()) && !NexusBlock.suppressTITLESANDLINKS)
 				idsCommand = "BLOCKID " + data.getUniqueID() + ";" + StringUtil.lineEnding();
 			if (!StringUtil.blank(idsCommand))
 				blocks.append("\t" + idsCommand + StringUtil.lineEnding());
