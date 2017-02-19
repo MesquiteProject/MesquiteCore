@@ -387,7 +387,7 @@ public class AlignUtil {
 							rect = new Rectangle(ic+icOrigStart, itOrig , ic, itAligned);
 						}
 						failed = true;
-						failedReportString = "At least one site has had its character state changed (site " + ic + "). ";
+						failedReportString = "At least one site has had its character state changed (site " + (ic+1) + "). ";
 						break;
 					}
 				
