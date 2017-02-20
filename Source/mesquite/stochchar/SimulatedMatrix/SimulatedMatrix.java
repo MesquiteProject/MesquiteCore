@@ -298,6 +298,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 			states = simulatorTask.getSimulatedCharacter(states, tree, seed, ic); 
  	 		matrix.transferFrom(ic, states);
  	 	}
+		simulatorTask.cleanupAfterSimulation();
    		matrix.setName("Matrix #" + CharacterStates.toExternal(currentDataSet)  + " simulated by " + simulatorTask.getName());
    		matrix.setAnnotation(accumulateParameters(" "), false);
    		matrix.setBasisTree(tree);

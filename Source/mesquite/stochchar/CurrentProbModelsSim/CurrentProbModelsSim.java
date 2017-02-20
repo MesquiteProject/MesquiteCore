@@ -102,7 +102,7 @@ public class CurrentProbModelsSim extends ProbModelSourceSim {
  				data.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));
  		
    	 }
-   	/** returns model for character ic in data */
+   	/** Returns model for character ic in data */
    	public CharacterModel getCharacterModel(CharacterData data, int ic) {
    		currentData = data;
    		currentChar = ic;
@@ -289,18 +289,40 @@ public class CurrentProbModelsSim extends ProbModelSourceSim {
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Current probability models";
-   	 }
-	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
-   	public boolean requestPrimaryChoice(){
-   		return true;  
-   	}
-	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Supplies the currently assigned stochastic (likelihood, probability) model for a character." ;
-   	 }
-   	 
+		return "Current Probability Model Set (for Simulation)";
+    	 }
+    	 /*.................................................................................................................*/
+    	 public String getParameters() {
+    		 StringBuffer sb = new StringBuffer();
+    		 sb.append( "Probability models in current probability model set: ") ;
+    		 if (currentModelSet!=null) {
+    			 CharacterData data = currentModelSet.getCharacterData();
+    			 if (data!=null) { 
+    				 Enumeration enumeration = data.getFile().getProject().getCharacterModels().elements();
+    				 while (enumeration.hasMoreElements()){
+    					 Object obj = enumeration.nextElement();
+    					 CharacterModel cm = (CharacterModel)obj;
+    					 int q = ListableVector.indexOf(currentModelSet.getModels(), cm);
+    					 if (q>=0) {
+    						 sb.append(cm.getName() + ", ");
+    					 }
+    				 }
+    			 }
+    			 // sb.append(currentModelSet.toString());
+    		 }
+    		 return sb.toString();
+    	 }
+
+    	 /*.................................................................................................................*/
+    	 /** returns whether this module is requesting to appear as a primary choice */
+    	 public boolean requestPrimaryChoice(){
+    		 return true;  
+    	 }
+    	 /*.................................................................................................................*/
+    	 /** returns an explanation of what the module does.*/
+    	 public String getExplanation() {
+    		 return "Supplies the currently assigned stochastic (likelihood, probability) model for a character for a simulation." ;
+    	 }
+
 }
 

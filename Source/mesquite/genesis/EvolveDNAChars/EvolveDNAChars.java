@@ -49,7 +49,7 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 			return sorry("Module \"Evolve DNA characters\" has been asked to simulate a sort of data it's not able to simulate (" + ((Class)condition).getName() + "; employer path: " + getEmployerPath()+ ")");
 		representativeCharacter = new DNACharacterAdjustable(null, 1);
 
-		modelSource = (ProbModelSourceSim)hireCompatibleEmployee(ProbModelSourceSim.class, DNAState.class, "Source of stochastic model for simulation of DNA evolution");
+		modelSource = (ProbModelSourceSim)hireCompatibleEmployee(ProbModelSourceSim.class, DNAState.class, "Source of stochastic model(s) for simulation of DNA evolution");
 		if (modelSource == null) {
 			return sorry("Evolve DNA characters could not start because no appropriate model source module could be obtained");
 		}
@@ -202,15 +202,17 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 	String checkModel(CategoricalDistribution statesAtNodes, int ic) {
 		ProbabilityModel cmodel = originalProbabilityModel;
 		modelChecked = true;
-		
+
 		if (modelSource.modelFromModelSet()) {
 			MCharactersDistribution m = matrixSource.getCurrentMatrix(statesAtNodes.getTaxa());
 			if (m!=null) {
 				data = m.getParentData();
 				cmodel = (ProbabilityModel)modelSource.getCharacterModel(m.getParentData(), ic);
 			}
-		} else if (originalProbabilityModel == null) {
-			cmodel = (ProbabilityModel)modelSource.getCharacterModel(statesAtNodes);
+		} else {
+			if (originalProbabilityModel == null) {
+				cmodel = (ProbabilityModel)modelSource.getCharacterModel(statesAtNodes);
+			}
 		}
 		if (cmodel == null)
 			return "model not obtained.";
@@ -243,12 +245,23 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 				matrix = m;
 				model.setMCharactersStatesHolder(matrix);
 				model.setDefaultNumChars(matrix.getNumChars());
+				model.recalcAfterSetMCharactersStatesHolder();
 			}
 		}
 		return null;
 	}
 	int warned = 0;
 	int warnedNoModel = 0;
+	
+   	public void cleanupAfterSimulation(){
+		 if (modelSource.modelFromModelSet()) {
+			 for (int ic=0; ic<data.getNumChars(); ic++) {
+				 SimulationDNAModel currentModel = (SimulationDNAModel)((ProbModelSourceSim)modelSource).getCharacterModel(data,ic);
+				 currentModel.clearNoCheckFlag();
+			 }
+		}
+   	}
+
 	/*.................................................................................................................*/
 	public CharacterDistribution getSimulatedCharacter(CharacterDistribution statesAtTips, Tree tree, MesquiteLong seed, int ic){
 		if (tree == null)
@@ -264,6 +277,16 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 			checkString = checkModel(representativeCharacter = new DNACharacterAdjustable(tree.getTaxa(), tree.getTaxa().getNumTaxa()), ic);
 		 if (modelSource.modelFromModelSet()) {
 			model = (SimulationDNAModel)((ProbModelSourceSim)modelSource).getCharacterModel(data,ic);
+			if (matrix == null){
+				MCharactersDistribution m = matrixSource.getCurrentMatrix(statesAtTips.getTaxa());
+				if (m == null)
+					return null;
+				matrix = m;
+			}
+			model.setMCharactersStatesHolder(matrix);
+			model.setDefaultNumChars(matrix.getNumChars());
+			model.recalcAfterSetMCharactersStatesHolder();
+			model.setNoCheckFlag(true);
 		}
 
 		if (statesAtTips instanceof CategoricalAdjustable)
@@ -347,9 +370,13 @@ set, give different result from before, but second time, gives same result*/
 		else if (!model.isFullySpecified()){
 			return "Simulation cannot be done because model is not fully specified";
 		}
+		if (modelSource.modelFromModelSet()) {
+			return "Simulated evolution using models in current probability model set.";
+		}
 		String param = "Simulated evolution using model " + model.getName() + " with the following parameters:"+StringUtil.lineEnding() ;
 		param += model.getParameters();
 		return param;
+
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation(){

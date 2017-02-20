@@ -37,7 +37,11 @@ public abstract class CharacterSimulator extends MesquiteModule  {
 	
 	/** Does any needed initializations. */ 
    	public void initialize(Taxa taxa){}
-	//TODO: return also the states at internals!!!!
+   	
+	/** Does any needed cleanups after simulation. */ 
+   	public void cleanupAfterSimulation(){}
+
+   	//TODO: return also the states at internals!!!!
 	/** Returns a character for the terminal taxa (place in passed CharacterDistribution if it is non-null, and return the same reference, or create
 	new one otherwise). */ 
    	public abstract CharacterDistribution getSimulatedCharacter(CharacterDistribution statesAtTips, Tree tree, MesquiteLong seed, int ic);
