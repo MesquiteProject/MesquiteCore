@@ -35,9 +35,6 @@ public abstract class ProbModelSource extends CharacterModelSource  {
    	 public String[] getDefaultModule() {
    	 	return new String[] {"#CurrentProbModels"};
    	 }
-   	 public boolean modelFromModelSet() {
- 	 	return false;    	 
- }
 
 }
 

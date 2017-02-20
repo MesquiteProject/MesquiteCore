@@ -33,6 +33,10 @@ public abstract class ProbModelSourceSim extends ProbModelSource  {
   	 public String[] getDefaultModule() {
     	 	return new String[] {"#StoredProbModelSim"};
     	 }
+   	 public boolean modelFromModelSet() {
+ 	 	return false;    	 
+ }
+
 }
 
 

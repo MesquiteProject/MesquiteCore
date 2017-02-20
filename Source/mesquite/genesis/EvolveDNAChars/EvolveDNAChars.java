@@ -24,7 +24,7 @@ import mesquite.stochchar.lib.*;
 /* ======================================================================== */
 public class EvolveDNAChars extends CharacterSimulator implements MesquiteListener {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(ProbModelSource.class, getName() + "  needs a source of a probabilistic model to use in the simulation.",
+		EmployeeNeed e = registerEmployeeNeed(ProbModelSourceSim.class, getName() + "  needs a source of a probabilistic model to use in the simulation.",
 				"The source of a probabilistic model to use in the simulation can be selected initially or in the Source of Stochastic Models submenu");
 		EmployeeNeed e2 = registerEmployeeNeed(mesquite.charMatrices.StoredMatrices.StoredMatrices.class, getName() + "  needs a source of character matrices.",
 				"The source of character matrices is arranged automatically");
@@ -32,7 +32,7 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 	/*.................................................................................................................*/
 	DNACharacterHistory evolvingStates;
 	CharacterData data = null;
-	ProbModelSource modelSource; //ProbModelSourceSim
+	ProbModelSourceSim modelSource; //ProbModelSourceSim
 	MesquiteString modelSourceName;
 	SimulationDNAModel  model, originalProbabilityModel;
 	CharMatrixSource matrixSource;
@@ -49,7 +49,7 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 			return sorry("Module \"Evolve DNA characters\" has been asked to simulate a sort of data it's not able to simulate (" + ((Class)condition).getName() + "; employer path: " + getEmployerPath()+ ")");
 		representativeCharacter = new DNACharacterAdjustable(null, 1);
 
-		modelSource = (ProbModelSource)hireCompatibleEmployee( ProbModelSource.class, DNAState.class, "Source of stochastic model for simulation of DNA evolution");
+		modelSource = (ProbModelSourceSim)hireCompatibleEmployee(ProbModelSourceSim.class, DNAState.class, "Source of stochastic model for simulation of DNA evolution");
 		if (modelSource == null) {
 			return sorry("Evolve DNA characters could not start because no appropriate model source module could be obtained");
 		}
@@ -182,8 +182,8 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 	MesquiteInteger pos = new MesquiteInteger(0);
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the module used to supply stochastic models", "[name of module]", commandName, "setModelSource")) {
-			ProbModelSource temp;
-			temp =  (ProbModelSource)replaceCompatibleEmployee(ProbModelSource.class, arguments, modelSource, DNAState.class);
+			ProbModelSourceSim temp;
+			temp =  (ProbModelSourceSim)replaceCompatibleEmployee(ProbModelSourceSim.class, arguments, modelSource, DNAState.class);
 			if (temp!=null) {
 				modelSource=  temp;
 				modelSourceName.setValue(modelSource.getName());
@@ -263,7 +263,7 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 		if (!modelChecked || model==null)
 			checkString = checkModel(representativeCharacter = new DNACharacterAdjustable(tree.getTaxa(), tree.getTaxa().getNumTaxa()), ic);
 		 if (modelSource.modelFromModelSet()) {
-			model = (SimulationDNAModel)((ProbModelSourceLike)modelSource).getCharacterModel(data,ic);
+			model = (SimulationDNAModel)((ProbModelSourceSim)modelSource).getCharacterModel(data,ic);
 		}
 
 		if (statesAtTips instanceof CategoricalAdjustable)
