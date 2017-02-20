@@ -187,10 +187,13 @@ public class AlignUtil {
 				return false;
 			long aligned = CategoricalState.setUncertainty(s[icAligned][itAligned],false);
 			long origState = CategoricalState.setUncertainty(orig.getState(icOrig, itOrig),false);
-			if (!((CategoricalState.statesBitsMask & s[icAligned][itAligned]) == (CategoricalState.statesBitsMask & orig.getState(icOrig, itOrig))))
-				MesquiteMessage.println("   Incorporation mismatch, aligned: " + aligned + ", orig: " + origState);
-			
-			return (CategoricalState.statesBitsMask & s[icAligned][itAligned]) == (CategoricalState.statesBitsMask & orig.getState(icOrig, itOrig));
+			boolean success = (CategoricalState.statesBitsMask & s[icAligned][itAligned]) == (CategoricalState.statesBitsMask & orig.getState(icOrig, itOrig));
+			if (!success && CategoricalState.isUnassigned(s[icAligned][itAligned])) {  // this is a case in which the data was reset to full missing on import into the aligner as the aligner couldn't cope otherwise
+				success = true;
+			}
+			if (!success)
+				MesquiteMessage.println("   Incorporation mismatch, aligned: " + aligned + ", orig: " + origState);		
+			return success;
 		}
 		if (o instanceof long[] ){
 			long[] s = (long[])o;
@@ -217,15 +220,24 @@ public class AlignUtil {
 			orig.statesIntoStringBuffer(icOrig, itOrig, sb, true);
 			if (sb.length()!= 1)
 				return false;
-			return s[itAligned].charAt(icAligned) == sb.charAt(0);
+			boolean success = s[itAligned].charAt(icAligned) == sb.charAt(0);
+			if (!success && MesquiteTrunk.debugMode)
+				MesquiteMessage.println("   Incorporation mismatch 2, aligned: " + s[itAligned].charAt(icAligned)  + ", orig: " +  sb.charAt(0));
+			return success;
 		}
 		else if (o instanceof CategoricalData){
 			CategoricalData aligned = (CategoricalData)o;
-			return aligned.getState(icAligned, itAligned) == orig.getState(icOrig, itOrig);
+			boolean success = aligned.getState(icAligned, itAligned) == orig.getState(icOrig, itOrig);
+			if (!success && MesquiteTrunk.debugMode)
+				MesquiteMessage.println("   Incorporation mismatch 3, aligned: " + aligned.getState(icAligned, itAligned) + ", orig: " +  orig.getState(icOrig, itOrig));
+			return success;
 		}
 		else if (o instanceof MCategoricalDistribution){
 			MCategoricalDistribution aligned = (MCategoricalDistribution)o;
-			return aligned.getState(icAligned, itAligned) == orig.getState(icOrig, itOrig);
+			boolean success =  aligned.getState(icAligned, itAligned) == orig.getState(icOrig, itOrig);
+			if (!success && MesquiteTrunk.debugMode)
+				MesquiteMessage.println("   Incorporation mismatch 4, aligned: " + aligned.getState(icAligned, itAligned) + ", orig: " +  orig.getState(icOrig, itOrig));
+			return success;
 		}
 		return false;
 	}
@@ -387,7 +399,7 @@ public class AlignUtil {
 							rect = new Rectangle(ic+icOrigStart, itOrig , ic, itAligned);
 						}
 						failed = true;
-						failedReportString = "At least one site has had its character state changed (site " + ic + "). ";
+						failedReportString = "At least one site has had its character state changed (site " + (ic+1) + " of taxon " + (itOrig+1) + "). ";
 						break;
 					}
 				
