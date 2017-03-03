@@ -1045,7 +1045,7 @@ class FIleCheckThread extends Thread {
 			try {
 				Thread.sleep(200);
 				if (treeFile != null){
-					long mod = treeFile.lastModified();
+					long mod = MesquiteFile.fileOrDirectoryLastModified(treeFile.getPath());
 					long length = treeFile.length();
 					if (mod > lastModified) {
 						ownerModule.fileModified(length - lastLength);

@@ -16,6 +16,8 @@ package mesquite.lib;
 import java.awt.*;
 import java.io.*;
 import java.net.*;
+import java.nio.file.*;
+import java.nio.file.attribute.FileTime;
 import java.util.*;
 import com.apple.mrj.*;
 import javax.swing.*;
@@ -2137,6 +2139,15 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			if (path.indexOf("//")>=0)
 				MesquiteMessage.printStackTrace("double // in path " + path); 
 			File testing = new File(path);
+			if (MesquiteTrunk.isWindows() && MesquiteTrunk.isJavaGreaterThanOrEqualTo(1.8)) {
+				try {
+					FileTime ft = Files.getLastModifiedTime(Paths.get(path), null);
+					if (ft!=null)
+						return ft.toMillis();
+				} catch (IOException ioe) {
+				}
+				
+			}
 			return testing.lastModified();
 		}
 		return 0;
