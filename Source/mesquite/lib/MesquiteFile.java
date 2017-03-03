@@ -17,6 +17,8 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
 import com.apple.mrj.*;
@@ -2133,7 +2135,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return true;
 	}
 	/*.................................................................................................................*/
-	/** Checks to see if path leads to a directory OR file*/
+	/** Returns last modified time of file.*/
 	public static long fileOrDirectoryLastModified(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
@@ -2149,6 +2151,26 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				
 			}
 			return testing.lastModified();
+		}
+		return 0;
+	}	
+	/*.................................................................................................................*/
+	/** Returns last accessed time of file.*/
+	public static long fileOrDirectoryLastAccessed(String path) {
+		if (path != null) {
+			if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(1.7)) {
+				if (path.indexOf("//")>=0)
+					MesquiteMessage.printStackTrace("double // in path " + path); 
+				File testing = new File(path);
+				Path testingPath = testing.toPath();
+				BasicFileAttributeView basicView = Files.getFileAttributeView(testingPath,BasicFileAttributeView.class);
+				try {
+					BasicFileAttributes basicAttribs = basicView.readAttributes();
+					if (basicAttribs!=null)
+						return basicAttribs.lastAccessTime().toMillis();
+				} catch (IOException ioe) {
+				}
+			}
 		}
 		return 0;
 	}	
