@@ -198,6 +198,8 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+
 	/*.................................................................................................................*/
 	String checkModel(CategoricalDistribution statesAtNodes, int ic) {
 		ProbabilityModel cmodel = originalProbabilityModel;
@@ -253,13 +255,23 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 	int warned = 0;
 	int warnedNoModel = 0;
 	
-   	public void cleanupAfterSimulation(){
+	void stampWithCurrentSpecsSet (CharacterData currentData) {
+		CharacterPartition characterPartition = (CharacterPartition)currentData.getCurrentSpecsSet(CharacterPartition.class);
+		CharInclusionSet incl = (CharInclusionSet)currentData.getCurrentSpecsSet(CharInclusionSet.class);
+	}
+
+   	public void cleanupAfterSimulation(MAdjustableDistribution matrix){
 		 if (modelSource.modelFromModelSet()) {
 			 for (int ic=0; ic<data.getNumChars(); ic++) {
 				 SimulationDNAModel currentModel = (SimulationDNAModel)((ProbModelSourceSim)modelSource).getCharacterModel(data,ic);
 				 currentModel.clearNoCheckFlag();
 			 }
 		}
+		 if (matrix!=null) {
+			 CharacterData data = matrix.getParentData();
+			 if (data !=null) {
+			 }
+		 }
    	}
 
 	/*.................................................................................................................*/
@@ -308,7 +320,7 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 
 		/*For some reason, in some circumstances, this setSeed can use the same seed but the resulting simulation differs. This happens with composite model, and first time seed is
 set, give different result from before, but second time, gives same result*/
-		if (seed!=null)
+		if (seed!=null && !modelSource.modelFromModelSet())  // we need to turn this off if from modelset as just resets to same thing every time.  TODO: find out why
 			model.setSeed(seed.getValue());
 		model.setCharacterDistribution(statesAtTips);
 		model.initForNextCharacter();
