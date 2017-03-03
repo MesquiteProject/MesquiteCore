@@ -263,6 +263,10 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean isJavaVersionLessThan(double queryVersion){
 		return getJavaVersionAsDouble() < queryVersion;
 	}
+	/*.................................................................................................................*/
+	public static boolean isJavaGreaterThanOrEqualTo(double queryVersion){
+		return getJavaVersionAsDouble() >= queryVersion;
+	}
 	
 	/*.................................................................................................................*/
 	public static int getOSXVersion() {
