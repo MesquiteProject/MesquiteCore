@@ -601,6 +601,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void UPdefineFillPoly(int node, Path2D poly, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
 		if (poly!=null) {
+			poly.reset();
 			int sliceWidth=branchEdgeWidth(node);
 			if (numSlices>1) {
 				Nx+= (sliceNumber-1)*(branchEdgeWidth(node)-inset)/numSlices;
@@ -660,6 +661,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void UPdefinePoly(int node, Path2D poly, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null) {
+			poly.reset();
 			if (internalNode&& false) 
 			{
 				poly.moveTo(Nx, Ny);
