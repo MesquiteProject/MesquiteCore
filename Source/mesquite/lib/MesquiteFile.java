@@ -163,7 +163,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static boolean okToWriteTitleOfNEXUSBlock (MesquiteFile file, Listable obj) {
 		if (StringUtil.blank(obj.getName()))
 			return false;
-		if (NexusBlock.suppressTITLESANDLINKS)
+		if (NexusBlock.suppressNEXUSTITLESANDLINKS)
 			return false;
 		if (file==null)
 			return true;

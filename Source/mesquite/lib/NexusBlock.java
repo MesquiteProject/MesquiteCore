@@ -41,7 +41,7 @@ public abstract class NexusBlock implements Listable, Identifiable, Disposable {
 	private String defaultCharacters = null;
 
 	long id;
-	public static boolean suppressTITLESANDLINKS = false;
+	public static boolean suppressNEXUSTITLESANDLINKS = false;
 	static {
 		if (MesquiteTrunk.checkMemory) {
 			classesCreated = new Vector();
