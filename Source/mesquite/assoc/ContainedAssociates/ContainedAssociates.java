@@ -494,7 +494,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	private double lastleft;
 	private int taxspacing;
 	public int highlightedBranch, branchFrom;
-	public int xFrom, yFrom, xTo, yTo;
+	//public double xFrom, yFrom, xTo, yTo;
 	public ContainedAssociates ownerModule;
 	Color resolvedColor = Color.magenta;
 	Color defaultContainedColor = Color.green;
@@ -715,6 +715,32 @@ class WideTreeDrawing extends TreeDrawing  {
 		UPCalcBranchPolys(tree, drawnRoot);
 		UPCalcFillBranchPolys(tree, drawnRoot);
 	}
+	public void getSingletonLocation(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue){
+		if(tree==null || xValue==null || yValue==null)
+			return;
+		if(!tree.nodeExists(N))
+			return;
+		int mother = tree.motherOfNode(N);
+		int daughter = tree.firstDaughterOfNode(N);
+		if(treeDisplay.getOrientation()==TreeDisplay.UP){
+			xValue.setValue(x[daughter]);
+			yValue.setValue(y[mother]+(y[daughter]-y[mother])/2);
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){
+			xValue.setValue(x[daughter]);
+			yValue.setValue(y[mother]+(y[mother]-y[daughter])/2);
+		}
+		else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
+		//	int offset = (x[N]-x[mother])/2;
+			xValue.setValue(x[mother]+(x[daughter]-x[mother])/2);
+			yValue.setValue(y[daughter]);
+		}
+		else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){
+			xValue.setValue(x[daughter]+(x[mother]-x[daughter])/2);
+			yValue.setValue(y[daughter]);
+		}
+	}
+
 	/*_________________________________________________*/
 	/** Draw highlight for branch node with current color of graphics context */
 	public void drawHighlight(Tree tree, int node, Graphics g, boolean flip){
@@ -917,8 +943,8 @@ class WideTreeDrawing extends TreeDrawing  {
 				double nFDy = miniY[fD];
 				double nLDx = miniX[lD];
 				double nLDy = miniY[lD];
-				miniY[node] = (-nFDx + nLDx+nFDy + nLDy) / 2;
-				miniX[node] =(nFDx + nLDx - nFDy + nLDy) / 2;
+				miniY[node] = (-nFDx + nLDx+nFDy + nLDy) / 2.0;
+				miniX[node] =(nFDx + nLDx - nFDy + nLDy) / 2.0;
 			}
 		}
 
@@ -1154,6 +1180,7 @@ class WideTreeDrawing extends TreeDrawing  {
 
 				miniTerminals(g, containedTree, aNodes[i], terminals, yC, taxaSpacing, atTip, cc);
 				miniCalcInternalLocs(containedTree, aNodes[i], terminals);
+				int mother = tree.motherOfNode(containingNode);
 				double ySpan = (yC-y[tree.motherOfNode(containingNode)]);
 				if (ownerModule.scale.getValue() && allLengthsAssigned(containedTree, containedTree.getRoot())){
 					double scaling = 1.0;
@@ -1166,7 +1193,7 @@ class WideTreeDrawing extends TreeDrawing  {
 						scaling = (Math.abs(minimumYOfContained(tree, tree.getRoot())-y[tree.getRoot()])/(tree.tallestPathAboveNode(tree.getRoot(), 1.0)));
 					
 					//if this is the root and branch lengths are not being shown for the containing tree, don't scale
-					if (tree.hasBranchLengths() && (treeDisplay.showBranchLengths || (true || containingNode!=tree.getRoot()))){
+					if (tree.hasBranchLengths() && (treeDisplay.showBranchLengths || (true|| containingNode!=tree.getRoot()))){
 						miniScaleInternalLocs (containedTree, aNodes[i], terminals,  top, cladeTop, containingNode, aNodes[i], scaling);
 					}
 
