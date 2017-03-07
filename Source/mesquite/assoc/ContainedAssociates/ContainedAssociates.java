@@ -131,7 +131,7 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 		mmis.setList(ColorDistribution.standardColorNames);
 		mmis.setSelected(containingBrColorName);
 */
-		containedBrColorName = new MesquiteString("Green");
+		containedBrColorName = new MesquiteString("Black");
 		MesquiteSubmenuSpec mmis2 = addSubmenu(null, "Contained Branch Color", makeCommand("setContainedBranchColor",  this));
 		mmis2.setList(ColorDistribution.standardColorNames);
 		mmis2.setSelected(containedBrColorName);
@@ -497,11 +497,11 @@ class WideTreeDrawing extends TreeDrawing  {
 	//public double xFrom, yFrom, xTo, yTo;
 	public ContainedAssociates ownerModule;
 	Color resolvedColor = Color.magenta;
-	Color defaultContainedColor = Color.green;
+	Color defaultContainedColor = Color.black;
 	Color containedColor = defaultContainedColor;
 	Color selectedContainedColor = Color.cyan;
 	Color migratedColor = Color.yellow;
-	static Color defaultBranchColor = Color.blue;
+	static Color defaultBranchColor = ColorDistribution.burlyWood;
 	Color containingColor = defaultBranchColor;
 	AssociationSource associationTask;
 	TaxaAssociation association;
