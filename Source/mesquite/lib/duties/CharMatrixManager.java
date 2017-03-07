@@ -469,7 +469,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			}
 			s += ";" + StringUtil.lineEnding();
 		}
-		if (!StringUtil.blank(data.getUniqueID()))
+		if (!StringUtil.blank(data.getUniqueID())&& !NexusBlock.suppressNEXUSIDS)
 			s += "\tBLOCKID " + data.getUniqueID() + ";" + StringUtil.lineEnding();
 		if (StringUtil.blank(s))
 			return null;

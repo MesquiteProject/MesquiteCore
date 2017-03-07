@@ -1693,6 +1693,8 @@ public class ManageTrees extends TreesManager {
 		if (!NexusBlock.suppressNEXUSTITLESANDLINKS){
 			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
 			block.append(endLine);
+		}
+		if (!NexusBlock.suppressNEXUSIDS){
 			block.append("\tID " + StringUtil.tokenize(trees.getUniqueID()));
 			block.append(endLine);
 		}

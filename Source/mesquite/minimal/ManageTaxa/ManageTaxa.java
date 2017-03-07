@@ -1283,7 +1283,7 @@ public class ManageTaxa extends TaxaManager {
 			block.append(";" + end);
 		}
 		CommandRecord.tick("Taxa block composed ");
-		if (!file.useSimplifiedNexus  && !file.useConservativeNexus && !StringUtil.blank(taxa.getUniqueID()))
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus && !StringUtil.blank(taxa.getUniqueID()) && !NexusBlock.suppressNEXUSIDS)
 			block.append("\tBLOCKID " + taxa.getUniqueID() + ";" + end);
 		if (tB != null) block.append( tB.getUnrecognizedCommands()+ end);
 		block.append("END;" + end+ end);

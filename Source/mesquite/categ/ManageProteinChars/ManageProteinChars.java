@@ -275,7 +275,7 @@ public class ManageProteinChars extends CategMatrixManager {
 
 		writeNexusMatrix(data, cB, blocks, file, progIndicator);
 
-		if (!file.useSimplifiedNexus  && !file.useConservativeNexus){
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus && !NexusBlock.suppressNEXUSIDS){
 			String idsCommand = getIDsCommand(data);
 			if (!StringUtil.blank(idsCommand))
 				blocks.append("\t" + idsCommand + StringUtil.lineEnding());
