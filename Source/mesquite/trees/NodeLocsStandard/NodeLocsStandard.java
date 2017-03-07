@@ -832,8 +832,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { //Graphics g removed as parameter May 02
 		if (MesquiteTree.OK(tree)) {
 			int effectiveROOTSIZE = ROOTSIZE;
-			if (tree.numberOfTerminalsInClade(drawnRoot) == 1){
-				effectiveROOTSIZE += rect.height/2;
+			if (tree.numberOfTerminalsInClade(drawnRoot) == 1){  // it is just a single terminal in the tree
+				effectiveROOTSIZE += rect.height/6;
 			}
 			/*if (!stretchWasSet){
 				if (treeDisplay.inhibitStretchByDefault != inhibitStretch.getValue())
