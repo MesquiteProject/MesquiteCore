@@ -1269,6 +1269,13 @@ public class MesquiteDouble implements Listable {
 		QueryDialogs.queryDouble(parent, title, message, io);
 		return io.getValue();
 	}
+	/*--------------------------------QUERY DIALOGS--------------------------*/
+	/** Presents dialog querying user for a double, with no check for minimum and maximum */
+	public static double queryDouble(MesquiteWindow parent, String title, String message, String help, double current) {
+		MesquiteDouble io = new MesquiteDouble(current);
+		QueryDialogs.queryDouble(parent, title, message, help, io);
+		return io.getValue();
+	}
 	/** Presents dialog querying user for a double, with a check for minimum and maximum */
 	public static double queryDouble(MesquiteWindow parent, String title, String message, double current, double minimum, double maximum) {
 		return queryDouble(parent, title, message, "", current, minimum, maximum);

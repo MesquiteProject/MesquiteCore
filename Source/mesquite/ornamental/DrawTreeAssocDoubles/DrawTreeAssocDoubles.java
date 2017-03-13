@@ -28,6 +28,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 	public boolean first = true;
 	MesquiteBoolean on, percentage, horizontal, centred, whiteEdges, showOnTerminals;
 	MesquiteInteger positionAlongBranch;
+	MesquiteDouble thresholdValueToShow;
 	MesquiteSubmenuSpec positionSubMenu;
 	public static final boolean CENTEREDDEFAULT = false;
 	public ListableVector names;
@@ -42,6 +43,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		names = new ListableVector();
 		if (!MesquiteThread.isScripting())
 			names.addElement(new MesquiteString("consensusFrequency", "consensusFrequency"), false);
+		thresholdValueToShow = new MesquiteDouble();
 		on = new MesquiteBoolean(true);  //ON is currently true always
 		percentage = new MesquiteBoolean(false);
 		horizontal = new MesquiteBoolean(true);
@@ -50,6 +52,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		showOnTerminals = new MesquiteBoolean(true);
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Node-Associated Values");
 		addItemToSubmenu(null, mss, "Choose Values To Show...", makeCommand("chooseValues",  this));
+		addItemToSubmenu(null, mss, "Threshold Value...", makeCommand("setThreshold",  this));
 		MesquiteSubmenuSpec mss2 =  addSubmenu(mss, "Styles");  //Wayne: here it is.   x123y
 		addItemToSubmenu(mss, mss2, "Percentage, Below Branch", makeCommand("setCorvallisStyle",  this));
 		addItemToSubmenu(null, mss, "Digits...", makeCommand("setDigits",  this));
@@ -86,6 +89,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			for (int i=0; i< names.size(); i++)
 				temp.addLine("toggleShow " + StringUtil.tokenize(((Listable)names.elementAt(i)).getName()));
 			temp.addLine("setDigits " + digits); 
+			temp.addLine("setThreshold " + thresholdValueToShow); 
 			temp.addLine("writeAsPercentage " + percentage.toOffOnString());
 			temp.addLine("toggleCentred " + centred.toOffOnString());
 //			temp.addLine("setPositionAlongBranch " + positionAlongBranch); 
@@ -176,11 +180,26 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
+		else if (checker.compare(this.getClass(), "Sets threshold value - values have to be above this to be shown", "[value]", commandName, "setThreshold")) {
+			String value = parser.getFirstToken(arguments);
+			double newThreshold = MesquiteDouble.unassigned;
+			if (!"off".equalsIgnoreCase(value) && "?"!=value){
+				newThreshold= MesquiteDouble.fromString(value);
+				if (!MesquiteDouble.isCombinable(newThreshold))
+					newThreshold = MesquiteDouble.queryDouble(containerOfModule(), "Set threshold value", "Only show values above this threshold:", "Remember to enter the threshold in its native format.  For example, if percentages are being shown, "+
+				 " and you wish to have a threshold of 50%, then enter 0.5. To turn off the threshold, enter ?",thresholdValueToShow.getValue());
+			}
+			if (newThreshold!=thresholdValueToShow.getValue()) {
+				thresholdValueToShow.setValue(newThreshold);
+				if (!MesquiteThread.isScripting()) parametersChanged();
+			}
+		}
 		else if (checker.compare(this.getClass(), "Set's to David's style", "", commandName, "setCorvallisStyle")) {
 			whiteEdges.setValue(false);
 			percentage.setValue(true);
 			centred.setValue(false);
 			horizontal.setValue(true);
+			thresholdValueToShow.setToUnassigned();
 			digits=0;
 			xOffset = -2;
 			yOffset = 9;
@@ -343,7 +362,7 @@ class NodeAssocValuesExtra extends TreeDisplayExtra  {
 			myDraw(tree, d, g, arrays);
 		for (int i=0; i<arrays.length; i++){
 			double d = arrays[i].getValue(node);
-			if (MesquiteDouble.isCombinable(d)){
+			if (MesquiteDouble.isCombinable(d) && (!assocDoublesModule.thresholdValueToShow.isCombinable() || (d>=assocDoublesModule.thresholdValueToShow.getValue()))){
 				if (assocDoublesModule.percentage.getValue())
 					d *= 100;
 				if (assocDoublesModule.whiteEdges.getValue())
