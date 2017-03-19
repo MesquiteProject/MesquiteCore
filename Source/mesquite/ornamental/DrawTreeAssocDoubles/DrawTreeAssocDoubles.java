@@ -185,7 +185,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			double newThreshold = MesquiteDouble.unassigned;
 			if (!"off".equalsIgnoreCase(value) && "?"!=value){
 				newThreshold= MesquiteDouble.fromString(value);
-				if (!MesquiteDouble.isCombinable(newThreshold))
+				if (!MesquiteDouble.isCombinable(newThreshold) && !MesquiteThread.isScripting())
 					newThreshold = MesquiteDouble.queryDouble(containerOfModule(), "Set threshold value", "Only show values above this threshold:", "Remember to enter the threshold in its native format.  For example, if percentages are being shown, "+
 				 " and you wish to have a threshold of 50%, then enter 0.5. To turn off the threshold, enter ?",thresholdValueToShow.getValue());
 			}
