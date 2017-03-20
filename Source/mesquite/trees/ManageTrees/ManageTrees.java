@@ -1690,13 +1690,15 @@ public class ManageTrees extends TreesManager {
 		if (trees.getAnnotation()!=null) 
 			block.append("[!" + StringUtil.tokenize(trees.getAnnotation()) + "]");
 		block.append(endLine);
-		if (!NexusBlock.suppressTITLESANDLINKS){
+		if (!NexusBlock.suppressNEXUSTITLESANDLINKS){
 			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
 			block.append(endLine);
+		}
+		if (!NexusBlock.suppressNEXUSIDS){
 			block.append("\tID " + StringUtil.tokenize(trees.getUniqueID()));
 			block.append(endLine);
 		}
-		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressTITLESANDLINKS)) {
+		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressNEXUSTITLESANDLINKS)) {
 			block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 			block.append(endLine);
 		}

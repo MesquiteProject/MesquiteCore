@@ -322,7 +322,7 @@ public class ManageMeristicChars extends CharMatrixManager {
 		}
 		file.write(StringUtil.lineEnding()+ ";");
 		file.write( StringUtil.lineEnding());
-		if (!file.useSimplifiedNexus  && !file.useConservativeNexus){
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus && !NexusBlock.suppressNEXUSIDS){
 			String idsCommand = getIDsCommand(data);
 			if (!StringUtil.blank(idsCommand))
 				file.write("\t" + idsCommand + StringUtil.lineEnding());

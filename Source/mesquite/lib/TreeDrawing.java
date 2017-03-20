@@ -253,6 +253,7 @@ public abstract class TreeDrawing  {
 			return;
 		xValue.deassignAllValues();
 		yValue.deassignAllValues();
+		MesquiteMessage.warnProgrammer("getSingletonLocation not overridden in TreeDrawing");
 	}
 
 	/*_________________________________________________*/

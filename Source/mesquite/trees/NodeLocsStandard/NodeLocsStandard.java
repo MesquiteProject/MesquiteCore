@@ -685,8 +685,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 		return t;
 	}
 	/*_________________________________________________*/
-	private int propAverage(int xd, int xa, int i, int L){
-		return (int)(1.0*i*(xa-xd)/L + xd);
+	private double propAverage(double xd, double xa, double i, double L){
+		return (double)(1.0*i*(xa-xd)/L + xd);
 	}
 
 	private void placeSingletons (TreeDrawing treeDrawing, Tree tree, int N) {
@@ -701,19 +701,19 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (bA == tree.getRoot() && tree.numberOfDaughtersOfNode(bA)==1)
 					bA = tree.getSubRoot();
 			}
-			int nA = tree.depthToAncestor(N, bA);
-			int nD = tree.depthToAncestor(bD, N);
 			
+		
 			MesquiteNumber xValue=new MesquiteNumber();
 			MesquiteNumber yValue=new MesquiteNumber();
-			MesquiteDouble angle = new MesquiteDouble();
 			treeDrawing.getSingletonLocation(tree, N,  xValue,  yValue);
-			treeDrawing.x[N]=xValue.getIntValue();
-			treeDrawing.y[N]=yValue.getIntValue();
+			treeDrawing.x[N]=xValue.getDoubleValue();
+			treeDrawing.y[N]=yValue.getDoubleValue();
 
 				
-		//	treeDrawing.x[N]=propAverage(treeDrawing.x[bD], treeDrawing.x[bA], nD, nA+nD);
-		//	treeDrawing.y[N]=propAverage(treeDrawing.y[bD], treeDrawing.y[bA], nD, nA+nD);
+			/*double nA = tree.depthToAncestor(N, bA);
+			double nD = tree.depthToAncestor(bD, N);
+			treeDrawing.x[N]=propAverage(treeDrawing.x[bD], treeDrawing.x[bA], nD, nA+nD);
+			treeDrawing.y[N]=propAverage(treeDrawing.y[bD], treeDrawing.y[bA], nD, nA+nD); */
 		}
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			placeSingletons(treeDrawing, tree, d);
@@ -832,8 +832,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { //Graphics g removed as parameter May 02
 		if (MesquiteTree.OK(tree)) {
 			int effectiveROOTSIZE = ROOTSIZE;
-			if (tree.numberOfTerminalsInClade(drawnRoot) == 1){
-				effectiveROOTSIZE += rect.height/2;
+			if (tree.numberOfTerminalsInClade(drawnRoot) == 1){  // it is just a single terminal in the tree
+				effectiveROOTSIZE += rect.height/6;
 			}
 			/*if (!stretchWasSet){
 				if (treeDisplay.inhibitStretchByDefault != inhibitStretch.getValue())

@@ -163,7 +163,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static boolean okToWriteTitleOfNEXUSBlock (MesquiteFile file, Listable obj) {
 		if (StringUtil.blank(obj.getName()))
 			return false;
-		if (NexusBlock.suppressTITLESANDLINKS)
+		if (NexusBlock.suppressNEXUSTITLESANDLINKS)
 			return false;
 		if (file==null)
 			return true;
@@ -2131,7 +2131,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return true;
 	}
 	/*.................................................................................................................*/
-	/** Checks to see if path leads to a directory OR file*/
+	/** Returns last modified time of file.*/
 	public static long fileOrDirectoryLastModified(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)

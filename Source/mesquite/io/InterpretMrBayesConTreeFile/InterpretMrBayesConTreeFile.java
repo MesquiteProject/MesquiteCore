@@ -72,13 +72,13 @@ public class InterpretMrBayesConTreeFile extends FileInterpreterI implements NEX
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Import MrBayes Consensus Tree File";
+		return "Import Bayesian Consensus Tree File";
 	}
 	/*.................................................................................................................*/
 
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Imports MrBayes Consensus Tree File (a NEXUS file) to capture metadata recorded at nodes" ;
+		return "Imports Bayesian Consensus Tree File (a NEXUS file) to capture metadata recorded at nodes" ;
 	}
 	/*.................................................................................................................*/
 
