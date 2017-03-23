@@ -51,6 +51,19 @@ public class IOUtil {
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 
+	public static void copyCurrentSpecSets(CharacterData sourceData, CharacterData destinationData){
+		CharactersGroup[] parts =null;
+		CharacterPartition characterPartition = (CharacterPartition)sourceData.getCurrentSpecsSet(CharacterPartition.class);
+		if (characterPartition != null) {
+			destinationData.setCurrentSpecsSet(characterPartition, CharacterPartition.class);
+		}
+		CharInclusionSet incl = (CharInclusionSet)sourceData.getCurrentSpecsSet(CharInclusionSet.class);
+		if (incl != null) {
+			destinationData.setCurrentSpecsSet(incl, CharInclusionSet.class);
+		}
+	}
+	/*.................................................................................................................*/
+
 	public static String getMultipleModelRAxMLString(MesquiteModule mb, CharacterData data, boolean partByCodPos){
 		boolean writeCodPosPartition = false;
 		boolean writeStandardPartition = false;
