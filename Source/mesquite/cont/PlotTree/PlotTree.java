@@ -31,6 +31,7 @@ public class PlotTree extends AnalyticalDrawTree {
 	NodeLocsPlot nodeLocsTask;
 	Vector drawings;
 	int spotSize = 16;
+	int oldEdgeWidth = 4;
 	public MesquiteBoolean showInternals, showTree, showTerminals;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -39,6 +40,7 @@ public class PlotTree extends AnalyticalDrawTree {
 			return sorry(getName() + " couldn't start because no node location plotter module was obtained.");
 		drawings = new Vector();
  		addMenuItem( "Spot Size...", makeCommand("setSpotDiameter",  this));
+		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
 		showInternals = new MesquiteBoolean(true);
 		showTerminals = new MesquiteBoolean(true);
 		showTree = new MesquiteBoolean(true);
@@ -89,6 +91,7 @@ public class PlotTree extends AnalyticalDrawTree {
 	/*.................................................................................................................*/
   	 public Snapshot getSnapshot(MesquiteFile file) {
    	 	Snapshot temp = new Snapshot();
+		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
   	 	temp.addLine("setNodeLocs " , nodeLocsTask);
   	 	temp.addLine("setSpotDiameter " + spotSize);
   	 	temp.addLine("toggleShowTerminals " + showTerminals.toOffOnString());
@@ -117,6 +120,24 @@ public class PlotTree extends AnalyticalDrawTree {
     	 		}
     	 		
     	 	}
+    		else 	if (checker.compare(this.getClass(), "Sets the width of lines for drawing the tree", "[width in pixels]", commandName, "setEdgeWidth")) {
+
+    			int newWidth= MesquiteInteger.fromFirstToken(arguments, pos);
+    			if (!MesquiteInteger.isCombinable(newWidth))
+    				newWidth = MesquiteInteger.queryInteger(containerOfModule(), "Set edge width", "Edge Width:", oldEdgeWidth, 1, 99);
+    			if (newWidth>0 && newWidth<100 && newWidth!=oldEdgeWidth) {
+    				oldEdgeWidth=newWidth;
+    				Enumeration e = drawings.elements();
+    				while (e.hasMoreElements()) {
+    					Object obj = e.nextElement();
+    					PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
+    					treeDrawing.setEdgeWidth(newWidth);
+    					//treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
+    				}
+    				if ( !MesquiteThread.isScripting()) parametersChanged();
+    			}
+
+    		}
     	 	else if (checker.compare(this.getClass(), "Sets whether or not internal nodes are shown", "[on = show;  off]", commandName, "toggleShowInternals")) {
     	 		showInternals.toggleValue(parser.getFirstToken(arguments));
 	 		 parametersChanged();
@@ -254,18 +275,20 @@ class PlotTreeDrawing extends TreeDrawing  {
 					sisterNode = tree.previousSisterOfNode(node);
 				if (sisterNode !=0) {
 					if (MesquiteDouble.isCombinable(lineTipX[node]) && MesquiteDouble.isCombinable(lineTipY[node]) && MesquiteDouble.isCombinable(lineTipX[sisterNode]) && MesquiteDouble.isCombinable(lineTipY[sisterNode])) {
-						GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node], lineTipX[sisterNode]+1, lineTipY[sisterNode]);
+						GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node], lineTipX[sisterNode], lineTipY[sisterNode],edgewidth);
+						/*GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node], lineTipX[sisterNode]+1, lineTipY[sisterNode]);
 						GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node], lineTipX[sisterNode], lineTipY[sisterNode]);
 						GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node]+1, lineTipX[sisterNode], lineTipY[sisterNode]+1);
-						GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node]+1, lineTipX[sisterNode]+1, lineTipY[sisterNode]+1);
+						GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node]+1, lineTipX[sisterNode]+1, lineTipY[sisterNode]+1);*/
 					}
 				}
 			}
 			else  if (MesquiteDouble.isCombinable(lineTipX[node]) && MesquiteDouble.isCombinable(lineBaseX[node]) && MesquiteDouble.isCombinable(lineTipY[node]) && MesquiteDouble.isCombinable(lineBaseY[node])) {
-				GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node], lineBaseX[node]+1, lineBaseY[node]);
+				GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node], lineBaseX[node], lineBaseY[node], edgewidth);
+				/*GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node], lineBaseX[node]+1, lineBaseY[node]);
 				GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node], lineBaseX[node], lineBaseY[node]);
 				GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node]+1, lineBaseX[node], lineBaseY[node]+1);
-				GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node]+1, lineBaseX[node]+1, lineBaseY[node]+1);
+				GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node]+1, lineBaseX[node]+1, lineBaseY[node]+1); */
 			}
 			
 			if (composite!=null)
