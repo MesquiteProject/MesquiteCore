@@ -51,6 +51,21 @@ public class IOUtil {
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 
+	public static void copyCurrentSpecSets(CharacterData sourceData, CharacterData destinationData){
+		CharactersGroup[] parts =null;
+		CharacterPartition characterPartition = (CharacterPartition)sourceData.getCurrentSpecsSet(CharacterPartition.class);
+		if (characterPartition != null) {
+			SpecsSet partitionCopy = characterPartition.cloneSpecsSet();
+			destinationData.setCurrentSpecsSet(partitionCopy, CharacterPartition.class);
+		}
+		CharInclusionSet incl = (CharInclusionSet)sourceData.getCurrentSpecsSet(CharInclusionSet.class);
+		if (incl != null) {
+			destinationData.setCurrentSpecsSet(incl, CharInclusionSet.class);
+		} 
+
+	}
+	/*.................................................................................................................*/
+
 	public static String getMultipleModelRAxMLString(MesquiteModule mb, CharacterData data, boolean partByCodPos){
 		boolean writeCodPosPartition = false;
 		boolean writeStandardPartition = false;
@@ -58,8 +73,9 @@ public class IOUtil {
 		if (data instanceof DNAData)
 			writeCodPosPartition = ((DNAData)data).someCoding();
 		CharacterPartition characterPartition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
-		if (characterPartition == null && !writeCodPosPartition)
+		if (characterPartition == null && !writeCodPosPartition) {
 			return null;
+		} 
 		if (characterPartition!=null) {
 			parts = characterPartition.getGroups();
 			writeStandardPartition = parts!=null;

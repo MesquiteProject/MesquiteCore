@@ -22,8 +22,8 @@ import mesquite.lib.duties.*;
 import mesquite.meristic.lib.MeristicState;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
+import mesquite.stochchar.CurrentProbModelsSim.*;
 import mesquite.stochchar.lib.*;
-import mesquite.stochchar.CurrentProbModels.*;
 
 /* ======================================================================== */
 public class StochCharMapper extends CharMapper {

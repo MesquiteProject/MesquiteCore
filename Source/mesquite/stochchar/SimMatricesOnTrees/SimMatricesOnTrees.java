@@ -302,7 +302,7 @@ public class SimMatricesOnTrees extends CharMatrixSource {
 		CharacterDistribution states = null;
 
 		for (int ic = 0; ic<numChars; ic++) {
-			states = charSimulatorTask.getSimulatedCharacter(states, tree, seed); 
+			states = charSimulatorTask.getSimulatedCharacter(states, tree, seed, ic); 
  	 		matrix.transferFrom(ic, states);
  	 	}
    		matrix.setName("Matrix #" + (currentDataSet)  + " simulated by " + charSimulatorTask.getName());

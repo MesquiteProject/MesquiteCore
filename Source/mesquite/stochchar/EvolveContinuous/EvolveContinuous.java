@@ -149,7 +149,7 @@ public class EvolveContinuous extends CharacterSimulator implements MesquiteList
 	boolean failed = false;
 	int warnedNoModel = 0;
 	/*.................................................................................................................*/
-	public CharacterDistribution getSimulatedCharacter(CharacterDistribution statesAtTips, Tree tree, MesquiteLong seed){
+	public CharacterDistribution getSimulatedCharacter(CharacterDistribution statesAtTips, Tree tree, MesquiteLong seed, int ic){
 		if (tree == null) {
 			//System.out.println("tree null in Evolve continuous chars ");
 			return null;

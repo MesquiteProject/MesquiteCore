@@ -175,7 +175,7 @@ public class EvolveCategChars extends CharacterSimulator implements MesquiteList
 	boolean failed = false;
 	int warnedNoModel = 0;
 	/*.................................................................................................................*/
-   	public CharacterDistribution getSimulatedCharacter(CharacterDistribution statesAtTips, Tree tree, MesquiteLong seed){
+   	public CharacterDistribution getSimulatedCharacter(CharacterDistribution statesAtTips, Tree tree, MesquiteLong seed, int ic){
    		if (tree == null) {
    			//MesquiteMessage.warnProgrammer("tree null in Evolve categorical chars simple ");
    			return null;

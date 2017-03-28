@@ -74,7 +74,9 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 	boolean previousInterleaved = false;
 	public boolean getInterleaved(){
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking about interleave")){
-			previousInterleaved = AlertDialog.query(module.containerOfModule(), "Interleaved or sequential?", "Is the matrix interleaved or sequential?", "Interleaved", "Sequential");
+			String helpString = "Sequential matrices have all of the data for each taxon on one row.  Interleaved matrices are organized in blocks, with the first block having data for, say, characters 1-100 for all taxa, then "
+					+ "a second block with data for characters 101-200 for all taxa, and so on.";
+			previousInterleaved = AlertDialog.query(module.containerOfModule(), "Interleaved or sequential?", "Is the matrix interleaved or sequential?", "Interleaved", "Sequential", 1, helpString);
 		}
 		return previousInterleaved;
 	}	

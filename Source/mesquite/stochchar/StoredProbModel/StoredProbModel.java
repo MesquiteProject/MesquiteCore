@@ -51,7 +51,10 @@ public class StoredProbModel extends ProbModelSourceLike {
   	 public boolean isPrerelease(){
   	 	return false;
   	 }
-  	 
+   	 public boolean modelFromModelSet() {
+ 	 	return true;    	 
+ }
+
 	/*.................................................................................................................*/
   	 ProbabilityModel chooseModel(Class stateClass){
 		if (!MesquiteThread.isScripting()){
