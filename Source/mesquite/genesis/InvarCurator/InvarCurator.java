@@ -36,7 +36,7 @@ public class InvarCurator extends CharRatesCurator implements EditingCurator {
 	}
 	/*.................................................................................................................*/
 	public String getNameOfModelClass() {
-		return "Proportion Invariant";
+		return "Proportion Invariable";
 	}
 	/*.................................................................................................................*/
 	public String getNEXUSNameOfModelClass() {
@@ -61,17 +61,17 @@ public class InvarCurator extends CharRatesCurator implements EditingCurator {
    	}
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Proportion Invariant Model...";
+		return "Proportion Invariable Model...";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Proportion Invariant Model";
+		return "Proportion Invariable Model";
    	 }
    	 
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Defines and maintains models that specify that a certain proportion of characters are invariant." ;
+ 		return "Defines and maintains models that specify that a certain proportion of characters are invariable." ;
    	 }
 }
 

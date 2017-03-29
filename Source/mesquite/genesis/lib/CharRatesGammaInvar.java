@@ -142,7 +142,7 @@ public class CharRatesGammaInvar extends CharRatesModel {
 	/*.................................................................................................................*/
 	/** adds items to extensible dialog box used for setting parameter values*/
 	public void addOptions(ExtensibleDialog dialog) {
-		pInvarField = dialog.addDoubleField("proportion invariant:",pInvar, 10);
+		pInvarField = dialog.addDoubleField("proportion invariable:",pInvar, 10);
 		shapeField = dialog.addDoubleField("gamma shape parameter:",shape, 10);
 		isDiscreteCheckBox = dialog.addCheckBox("discrete gamma", isDiscrete);
 		numCategoriesField = dialog.addIntegerField("number of categories:",numCategories, 4);
@@ -164,11 +164,11 @@ public class CharRatesGammaInvar extends CharRatesModel {
 		isDiscreteTemp = isDiscreteCheckBox.getState();
 		numCategoriesTemp = numCategoriesField.getValue();
 		if (!MesquiteDouble.isCombinable(pInvarTemp)) {
-			errorMessage = "The proportion of invariant characters is not valid.";
+			errorMessage = "The proportion of invariable characters is not valid.";
 			return false;
 		}
 		if (pInvarTemp<0.0 || pInvarTemp>1.0) {
-			errorMessage = "The proportion of invariant characters must be between 0.0 and 1.0";
+			errorMessage = "The proportion of invariable characters must be between 0.0 and 1.0";
 			return false;
 		}
 		if (!MesquiteDouble.isCombinable(shapeTemp)) {
@@ -267,7 +267,7 @@ public class CharRatesGammaInvar extends CharRatesModel {
  	/*.................................................................................................................*/
 	/** returns parameters of the model. */
 	public String getParameters (){
-		String s = "Proportion of invariant characters: "+ pInvar+"; the remainder follow a ";
+		String s = "Proportion of invariable characters: "+ pInvar+"; the remainder follow a ";
 		if (isDiscrete) {
 			s += "discrete gamma distribution with shape parameter = " + shape + ", with " +numCategories + " categories.";
 		}
