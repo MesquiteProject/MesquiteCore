@@ -44,9 +44,9 @@ public class SimAncestralStates extends CharHistorySource {
 		if (condition !=null && condition instanceof CompatibilityTest)
 			condition = ((CompatibilityTest)condition).getAcceptedClass();
 		if (condition!=null)
-			simulatorTask= (CharacterSimulator)hireCompatibleEmployee(CharacterSimulator.class, condition, "Character simulator");
+			simulatorTask= (CharacterSimulator)hireCompatibleEmployee(CharacterSimulator.class, condition, "Character Simulator");
 		else {
-			simulatorTask= (CharacterSimulator)hireEmployee(CharacterSimulator.class, "Character simulator");
+			simulatorTask= (CharacterSimulator)hireEmployee(CharacterSimulator.class, "Character Simulator");
 		}
 		if (simulatorTask == null) {
 			return sorry("Simulated Characters module could not be started because an appropriate simulator module could not be hired");
@@ -88,7 +88,7 @@ public class SimAncestralStates extends CharHistorySource {
 		if (checker.compare(this.getClass(), "Sets the module used to simulate character evolution", "[name of module]", commandName, "setCharacterSimulator")) {
 			CharacterSimulator temp;
 			if (dataCondition==null)
-				temp =  (CharacterSimulator)replaceEmployee(CharacterSimulator.class, arguments, "Character simulator", simulatorTask);
+				temp =  (CharacterSimulator)replaceEmployee(CharacterSimulator.class, arguments, "Character Simulator", simulatorTask);
 			else
 				temp =  (CharacterSimulator)replaceCompatibleEmployee(CharacterSimulator.class, arguments, simulatorTask, dataCondition);
 			if (temp!=null) {

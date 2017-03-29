@@ -51,9 +51,9 @@ public class SimMatricesOnTrees extends CharMatrixSource {
 		if (condition !=null && condition instanceof CompatibilityTest)
 			condition = ((CompatibilityTest)condition).getAcceptedClass();
     	 	if (condition!=null)
-    	 		charSimulatorTask= (CharacterSimulator)hireCompatibleEmployee(CharacterSimulator.class, condition, "Character simulator");
+    	 		charSimulatorTask= (CharacterSimulator)hireCompatibleEmployee(CharacterSimulator.class, condition, "Character Simulator");
     	 	else
-    	 		charSimulatorTask= (CharacterSimulator)hireEmployee(CharacterSimulator.class, "Character simulator");
+    	 		charSimulatorTask= (CharacterSimulator)hireEmployee(CharacterSimulator.class, "Character Simulator");
     	 	if (charSimulatorTask == null) {
     	 		return sorry("Simulated Matrices on Trees can't start because not appropiate character simulator module was obtained");
     	 	}
@@ -156,7 +156,7 @@ public class SimMatricesOnTrees extends CharMatrixSource {
     	  if (checker.compare(this.getClass(), "Sets the module used to simulate character evolution", "[name of module]", commandName, "setCharacterSimulator")) {
     	 		CharacterSimulator temp;
     	 		if (dataCondition==null)
-    	 			temp =  (CharacterSimulator)replaceEmployee(CharacterSimulator.class, arguments, "Character simulator", charSimulatorTask);
+    	 			temp =  (CharacterSimulator)replaceEmployee(CharacterSimulator.class, arguments, "Character Simulator", charSimulatorTask);
     	 		else
     	 			temp =  (CharacterSimulator)replaceCompatibleEmployee(CharacterSimulator.class, arguments, charSimulatorTask, dataCondition);
 	    	 	if (temp!=null) {
