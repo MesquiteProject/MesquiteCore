@@ -46,6 +46,10 @@ public abstract class OneTreeSource extends MesquiteModule  {
        	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	 public abstract void initialize(Taxa taxa);
 
+   	 /** Called to reset if needed.  E.g., This allows TreeOfContext to set context to null */
+   	 public void reset(){
+   	 }
+
    	 public abstract Tree getTree(Taxa taxa, String explanationForUser);
 
    	 public abstract Tree getTree(Taxa taxa);
