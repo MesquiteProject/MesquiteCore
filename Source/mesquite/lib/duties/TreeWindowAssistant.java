@@ -37,6 +37,9 @@ public abstract class TreeWindowAssistant extends TreeWDIAssistant  {
    	 }
 	public  abstract void setTree(Tree tree);
 	
+	public boolean rehireMeInSnapshot(){
+		return true;
+	}
 
 }
 

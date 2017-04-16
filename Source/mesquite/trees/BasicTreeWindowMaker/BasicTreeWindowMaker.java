@@ -345,7 +345,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			for (int i = 0; i < getNumberOfEmployees(); i++) {
 				Object e = getEmployeeVector().elementAt(i);
 				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA) {
-					if (((MesquiteModule)e).getSnapshot(file)!=null)   //WAYNECHECK:  I added this because this seems the only way to ensure the SOWH test is not saved
+					if (((TreeWindowAssistant)e).rehireMeInSnapshot())   
 						temp.addLine("\tnewWindowAssistant ", ((MesquiteModule) e));
 				}
 			}

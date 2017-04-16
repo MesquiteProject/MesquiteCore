@@ -3084,27 +3084,27 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return true;
 	}
 
-	static final int CS_Overall = 0;
-	static final int CS_CellStates = 1;
-	static final int CS_CORE = 1;
-	static final int CS_SpecsSets = 2;
-	static final int CS_CAssocLong = 3;
-	static final int CS_CAssocBits = 4;
-	static final int CS_CAssocDoubles = 5;
-	static final int CS_CAssocObjects = 6;
-	static final int CS_CellObjects = 7;
-	static final int CS_UNCLEAR = 7;
-	static final int CS_MName = 8;
-	static final int CS_MAnnot = 9;
-	static final int CS_CNames = 10;
-	static final int CS_CAnnots = 11;
-	static final int CS_CSelected = 12;
-	static final int CS_CellFootnotes = 13;
-	static final int CS_CellObjectsDisp = 14;
-	static final int CS_ChangedSinceSave = 15;
-	static final int CS_CharIllustr = 16;
-	static final int CS_COSMETIC = 16;
-	static final  int NUMCSC = 17;
+	public static final int CS_Overall = 0;
+	public static final int CS_CellStates = 1;
+	public static final int CS_CORE = 1;
+	public static final int CS_SpecsSets = 2;
+	public static final int CS_CAssocLong = 3;
+	public static final int CS_CAssocBits = 4;
+	public static final int CS_CAssocDoubles = 5;
+	public static final int CS_CAssocObjects = 6;
+	public static final int CS_CellObjects = 7;
+	public static final int CS_UNCLEAR = 7;
+	public static final int CS_MName = 8;
+	public static final int CS_MAnnot = 9;
+	public static final int CS_CNames = 10;
+	public static final int CS_CAnnots = 11;
+	public static final int CS_CSelected = 12;
+	public static final int CS_CellFootnotes = 13;
+	public static final int CS_CellObjectsDisp = 14;
+	public static final int CS_ChangedSinceSave = 15;
+	public static final int CS_CharIllustr = 16;
+	public static final int CS_COSMETIC = 16;
+	public static final  int NUMCSC = 17;
 	/*.................................................................................................................*/
 	/** calculates a full checksum on all aspects of the matrix, including char names and specsets, done in order of character ids.
  	Returned as array so that in future can give checksums on various components independently.  
