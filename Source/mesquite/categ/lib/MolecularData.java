@@ -563,7 +563,7 @@ public class MolecularData extends CategoricalData {
 					}
 				}
 				if (wroteMoreThanOneSymbol) {
-					alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
+					alert("Sorry, data matrix " + getName() + " can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 					return null;
 				}
 
