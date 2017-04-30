@@ -171,7 +171,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 					steps[i] = "(" + (i+1) + ") " + ((FileProcessor)fileProcessors.elementAt(i)).getNameAndParameters();
 			}
 			dialog.addList (steps, null, null, 8);
-			dialog.completeAndShowDialog("Add", "Done", "Cancel", "Done");
+			dialog.completeAndShowDialog("Add", "Process", "Cancel", "Process");
 		}
 		dialog.dispose();
 		boolean addProcess =  (buttonPressed.getValue()==0);

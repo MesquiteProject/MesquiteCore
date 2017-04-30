@@ -3395,6 +3395,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return count;
 	}
 	/*.................................................................................................................*/
+	public int getNumberApplicableInTaxon(int it, int icStart, int icEnd, boolean countMissing){
+		int count = 0;
+		for (int i = icStart; i<=icEnd; i++) {
+			if (!isInapplicable(i,it))
+				if (!isUnassigned(i, it) || countMissing)
+					count++;
+		}
+		return count;
+	}
+	/*.................................................................................................................*/
 	public int nextApplicable(int it, int ic, boolean countMissing){
 		for (int i = ic; i<numChars; i++) {
 			if (!isInapplicable(i,it))
