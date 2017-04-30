@@ -57,6 +57,69 @@ public abstract class TaxaDistance {
 		return distances;
 	}
 	
+	public double getAverageDistance() {
+		double totalDistance = 0.0;
+		int count = 0;
+		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
+			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+				if (taxon1<taxon2) {
+					double distance = getDistance(taxon1,taxon2);
+					if (MesquiteDouble.isCombinable(distance)) {
+						totalDistance+= distance;
+						count++;
+					}
+				}
+			}
+		if (count==0)
+			return 0.0;
+		return totalDistance/count;
+	}
+	
+	public double getMaximumDistance() {
+		double maximumDistance = 0.0;
+		int count = 0;
+		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
+			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+				if (taxon1<taxon2) {
+					double distance = getDistance(taxon1,taxon2);
+					if (MesquiteDouble.isCombinable(distance)) {
+						if (distance>maximumDistance)
+							maximumDistance= distance;
+					}
+				}
+			}
+		return maximumDistance;
+	}
+	
+	public double getNthLongestDistance(int n) {
+		if (n<1) return 0.0;
+		int count = 0;
+		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
+			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+				if (taxon1<taxon2) {
+					double distance = getDistance(taxon1,taxon2);
+					if (MesquiteDouble.isCombinable(distance)) {
+						count++;
+					}
+				}
+			}
+		double[] distances = new double[count];
+		count=0;
+		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
+			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+				if (taxon1<taxon2) {
+					double distance = getDistance(taxon1,taxon2);
+					if (MesquiteDouble.isCombinable(distance)) {
+						distances[count]=distance;
+						count++;
+					}
+				}
+			}
+		DoubleArray.sort(distances);
+		return distances[distances.length-n];
+		
+	}
+	
 	public void distancesToLog(){
 		MesquiteTrunk.mesquiteTrunk.logln("Sorry, this feature isn't enabled yet for this type of distance.");
 
