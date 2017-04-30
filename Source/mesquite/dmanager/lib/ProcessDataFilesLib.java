@@ -192,12 +192,12 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 	protected boolean firstResultsOverallFound = false;
 	protected StringBuffer resultsHeading = new StringBuffer();
 	/*.................................................................................................................*/
-	protected void processFile(MesquiteFile fileToRead, StringBuffer results) {
+	protected boolean processFile(MesquiteFile fileToRead, StringBuffer results) {
 		logln("Processing file " + fileToRead.getName() + " in " + fileToRead.getDirectoryName() + "...");
 		incrementMenuResetSuppression();
-		ProgressIndicator progIndicator = new ProgressIndicator(null,"Importing File "+ fileToRead.getName(), fileToRead.existingLength());
-		progIndicator.start();
-		fileToRead.linkProgressIndicator(progIndicator);
+		ProgressIndicator progIndicator2 = new ProgressIndicator(null,"Importing File "+ fileToRead.getName(), fileToRead.existingLength());
+		progIndicator2.start();
+		fileToRead.linkProgressIndicator(progIndicator2);
 		fileToRead.readMesquiteBlock = false;
 		if (fileToRead.openReading()) {
 			importer.readFile(getProject(), fileToRead, null);	
@@ -205,7 +205,12 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 			fileToRead.changeLocation(fileToRead.getDirectoryName() + "savedFiles" + MesquiteFile.fileSeparator, fileToRead.getName() + ".nex");
 
 			if (!hireProcessorsIfNeeded()){  //needs to be done here after file read in case alterers need to know if there are matrices etc in file
-				return;
+				if (progIndicator!=null) {
+					progIndicator.setAbort();
+					progIndicator.goAway();
+				}
+				decrementMenuResetSuppression();
+				return false;
 			}
 
 			boolean firstResult = true;
@@ -259,6 +264,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 
 		}
 		decrementMenuResetSuppression();
+		return true;
 	}
 
 	/*.................................................................................................................*/
@@ -271,8 +277,11 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Process file options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Process file options");
-		Checkbox autoSave = dialog.addCheckBox("Save files as NEXUS", autoNEXUSSave);
+		dialog.appendToHelpString("This dialog box provides various file-handling options for the files processed. ");
+		dialog.appendToHelpString("You can restrict which files are processed by specifying an extension, and you can ask for all the files to be resaved as NEXUS files. ");
+		dialog.appendToHelpString("Subsequent dialog boxes will provide additional processing options. ");
 		SingleLineTextField extension = dialog.addTextField ("Process only files with this extension (e.g. .nex, .fas): ", "", 5);
+		Checkbox autoSave = dialog.addCheckBox("Resave all files as NEXUS", autoNEXUSSave);
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -329,7 +338,9 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 								//	getProject().setHomeFile(file);
 								if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
 									results.setLength(0);
-									processFile( file, results);
+									boolean processFileRequestCancelled = !processFile( file, results);  
+									if (processFileRequestCancelled) 
+										return;
 									if (firstResultsOverallFound && firstResultsOverall && resultsHeading.length()>0){
 										MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", resultsHeading.toString(), true);
 										MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", StringUtil.lineEnding(), true);
