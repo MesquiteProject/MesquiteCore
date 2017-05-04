@@ -22,6 +22,7 @@ import mesquite.lib.duties.*;
 import mesquite.meristic.lib.MeristicState;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
+import mesquite.stochchar.CurrentProbModels.CurrentProbModels;
 import mesquite.stochchar.CurrentProbModelsSim.*;
 import mesquite.stochchar.lib.*;
 
