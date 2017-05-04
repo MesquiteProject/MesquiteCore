@@ -977,6 +977,8 @@ class HennigNSTATES extends HennigNonaCommand {
 			outputBuffer.append("dna");
 		else if (charData instanceof ProteinData) 
 			outputBuffer.append("prot");
+		else if (charData instanceof ContinuousData) 
+			outputBuffer.append("cont");
 		outputBuffer.append(";"+ fileInterpreter.getLineEnding());
 	}
 }
@@ -1442,6 +1444,8 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 				outputBuffer.append("nstates dna;"+fileInterpreter.getLineEnding());
 			else if (charData instanceof ProteinData) 
 				outputBuffer.append("nstates prot;"+fileInterpreter.getLineEnding());
+			else if (charData instanceof ContinuousData) 
+				outputBuffer.append("nstates cont;"+fileInterpreter.getLineEnding());
 		outputBuffer.append(getCommandName()+fileInterpreter.getLineEnding());
 		
 		
