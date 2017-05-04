@@ -13,6 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.io.InterpretTNT;
 
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.ProteinState;
+import mesquite.cont.lib.ContinuousState;
 import mesquite.io.lib.*;
 
 public class InterpretTNT extends InterpretHennig86Base {
@@ -35,6 +39,10 @@ public class InterpretTNT extends InterpretHennig86Base {
 	/*.................................................................................................................*/
 	public boolean isTNT() {
 		return true;
+	}
+	/*.................................................................................................................*/
+	public Class[] getAcceptedClasses() {
+		return new Class[] {CategoricalState.class,ProteinState.class, DNAState.class, ContinuousState.class};
 	}
 
 	/*.................................................................................................................*/

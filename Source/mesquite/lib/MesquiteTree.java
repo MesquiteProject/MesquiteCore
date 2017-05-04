@@ -2960,6 +2960,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					fromWhichNamer = 4;
 				}
 				if (taxonNumber<0){
+					/* Debugg.  DAVIDCHECK: there is a problem with this.  If you read in a Zephyr produced tree file by itself, not after
+					 * opening the file with the taxa in order, then you will likely get reticulations.  In particular, permitTONames not only
+					 * interprets "tx" as a taxon name, it presumes that the taxon number of this taxon number x.  The problem with this
+					 * is that in reading the treefile, it creates the taxa in the orders it encounters them.  If t88 is the first taxon in the first
+					 * treedescription, this will be taxon 0.  So if it reads t0, it will interpret it as taxon 0, even if it is the 99th taxon read in. 
+					 * */
 					if (MesquiteTree.permitT0Names && c != null && c.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there 
 						String number = c.substring(1, c.length());
 						int num = MesquiteInteger.fromString(number);
@@ -2992,8 +2998,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same). [" + c + "] " + s  + " " + TreeDescription);
 						else if (numReticWarnings == 5)
 							MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
-						else if (numReticWarnings <100)
+						else if (numReticWarnings <100){
 							MesquiteMessage.println("Another tree with apparent reticulations found.");
+							for (int i=0; i<taxa.getNumTaxa(); i++) {
+								Debugg.println("   "+taxa.getTaxonName(i));
+							}
+						}
 						else if (numReticWarnings == 100)
 							MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
 						setParentOfNode(termN, motherOfNode(termN), false);
