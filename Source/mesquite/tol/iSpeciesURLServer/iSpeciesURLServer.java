@@ -20,7 +20,7 @@ public class iSpeciesURLServer extends TaxonOnWebServer {
 
 	public String getURL(String taxonName) {
 		String openName = StringUtil.encodeForURL(StringUtil.replace(taxonName,' ', '+'));
-		return "http://darwin.zoology.gla.ac.uk/~rpage/ispecies/?q=" + openName + "&submit=Go";
+		return "http://ispecies.org/?q=" + openName + "&submit=Go";
 	
 	}
 

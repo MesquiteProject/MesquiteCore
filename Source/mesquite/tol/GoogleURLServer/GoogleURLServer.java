@@ -11,25 +11,26 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.tol.GenBankTaxonURLServer;
+package mesquite.tol.GoogleURLServer;
 
 import mesquite.lib.*;
-import mesquite.tol.lib.*;
+import mesquite.tol.lib.TaxonOnWebServer;
 
-public class GenBankTaxonURLServer extends TaxonOnWebServer {
+public class GoogleURLServer extends TaxonOnWebServer {
 
 	public String getURL(String taxonName) {
-		String openName = StringUtil.encodeForURL(taxonName);
-		return "http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Undef&name=" + openName + "&lvl=0&srchmode=1";
-
+		String openName = StringUtil.encodeForURL(StringUtil.replace(taxonName,' ', '+'));
+		return "https://www.google.com/search?q=" + openName;
+	
 	}
 
 	public String getName() {
-		return "GenBank Taxon";
+		return "Google";
+	}
+	
+	public String getExplanation() {
+		return "Provides a URL to a taxon in Google";
 	}
 
-	public String getExplanation() {
-		return "Provides a URL to a taxon in NCBI GenBank";
-	}
 
 }
