@@ -1044,6 +1044,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		vScroll = treePane.getVAdjustable();
 		hScroll.addAdjustmentListener(this);
 		vScroll.addAdjustmentListener(this);
+		MesquiteWindow.addKeyListener(this, treePane);
 
 		addToWindow(treeDisplay);
 		highlightedBranch = treeDisplay.getHighlightedBranchMI();
@@ -4794,7 +4795,7 @@ class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, Mouse
  * this is an attempt to get around the bug in OS X java 1.4+ in which ScrollPane scrollbars don't return their position and don't notify of adjustments. This faux-ScrollPane works reasonably well but is slower and has some graphical artifacts
  */
 
-class TreeScrollPane extends Panel implements MouseWheelListener { // HANDMADETreeScrollPane
+class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { // HANDMADETreeScrollPane
 	BasicTreeWindow window;
 
 	TWScroll hScroll, vScroll;
@@ -4812,6 +4813,7 @@ class TreeScrollPane extends Panel implements MouseWheelListener { // HANDMADETr
 		add(vScroll, BorderLayout.EAST);
 		add(port = new Panel(), BorderLayout.CENTER);
 		addMouseWheelListener(this);
+		addKeyListener(this);
 		port.setLayout(null);
 		doLayout();
 
@@ -4952,6 +4954,43 @@ class TreeScrollPane extends Panel implements MouseWheelListener { // HANDMADETr
 			window.sizeDisplay();
 		}
 
+	}
+
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void keyPressed(KeyEvent e) {
+	    int keyCode = e.getKeyCode();
+	    
+	    int amount = 0;
+	    switch( keyCode ) { 
+	        case KeyEvent.VK_UP:
+				amount = vScroll.getBlockIncrement();
+				vScroll.setValue(vScroll.getValue() - amount);
+				window.sizeDisplay();
+	            break;
+	        case KeyEvent.VK_DOWN:
+				amount = vScroll.getBlockIncrement();
+				vScroll.setValue(vScroll.getValue() + amount);
+				window.sizeDisplay();
+	            break;
+	        case KeyEvent.VK_LEFT:
+				amount = hScroll.getBlockIncrement();
+				hScroll.setValue(hScroll.getValue() - amount);
+				window.sizeDisplay();
+	            break;
+	        case KeyEvent.VK_RIGHT :
+				amount = hScroll.getBlockIncrement();
+				hScroll.setValue(hScroll.getValue() + amount);
+				window.sizeDisplay();
+	            break;
+	     }
+	} 
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
