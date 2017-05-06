@@ -21,7 +21,7 @@ import mesquite.tol.lib.TaxonOnWebServer;
 
 		public String getURL(String taxonName) {
 			String openName = StringUtil.encodeForURL(StringUtil.replace(taxonName,' ', '+'));
-			return "http://www.catalogueoflife.org/annual-checklist/search_results.php?search_string=" + openName + "&match_whole_words=on";
+			return "http://www.catalogueoflife.org/col/search/all/key/" + openName + "/fossil/0/match/1";
 		
 		}
 
