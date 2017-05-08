@@ -1214,6 +1214,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	}
 
+	public void requestFocus(){
+		treePane.requestFocus();
+	}
+
 	void setStoreTreeAsMenuItems(boolean editMode) {
 		if (treeSourceTask.nameMatches("StoredTrees")) {
 			if (editMode) {
@@ -4813,7 +4817,7 @@ class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { 
 		add(vScroll, BorderLayout.EAST);
 		add(port = new Panel(), BorderLayout.CENTER);
 		addMouseWheelListener(this);
-		addKeyListener(this);
+		//addKeyListener(this);
 		port.setLayout(null);
 		doLayout();
 
@@ -4958,39 +4962,45 @@ class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { 
 
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
+		//Debugg.println("KEYTYPED");
 		
 	}
 
 	public void keyPressed(KeyEvent e) {
 	    int keyCode = e.getKeyCode();
-	    
 	    int amount = 0;
+	    int scale = 1;
+	    if (e.isAltDown())
+	    	scale=5;
+		//Debugg.println("KEYPRESSED");
+
 	    switch( keyCode ) { 
 	        case KeyEvent.VK_UP:
 				amount = vScroll.getBlockIncrement();
-				vScroll.setValue(vScroll.getValue() - amount);
+				vScroll.setValue(vScroll.getValue() - amount*scale);
 				window.sizeDisplay();
 	            break;
 	        case KeyEvent.VK_DOWN:
 				amount = vScroll.getBlockIncrement();
-				vScroll.setValue(vScroll.getValue() + amount);
+				vScroll.setValue(vScroll.getValue() + amount*scale);
 				window.sizeDisplay();
 	            break;
 	        case KeyEvent.VK_LEFT:
 				amount = hScroll.getBlockIncrement();
-				hScroll.setValue(hScroll.getValue() - amount);
+				hScroll.setValue(hScroll.getValue() - amount*scale);
 				window.sizeDisplay();
 	            break;
 	        case KeyEvent.VK_RIGHT :
 				amount = hScroll.getBlockIncrement();
-				hScroll.setValue(hScroll.getValue() + amount);
+				hScroll.setValue(hScroll.getValue() + amount*scale);
 				window.sizeDisplay();
 	            break;
 	     }
 	} 
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+		//Debugg.println("KEYRELEASED");
+
 	}
 }
 
@@ -5296,6 +5306,7 @@ class TreeWindowPalette extends ToolPalette {
 		if (tool instanceof TreeTool)
 			treeWindow.currentTreeTool = (TreeTool) tool;
 		super.setCurrentTool(tool);
+		treeWindow.requestFocus();
 	}
 
 	void setUpBirdsEye() {

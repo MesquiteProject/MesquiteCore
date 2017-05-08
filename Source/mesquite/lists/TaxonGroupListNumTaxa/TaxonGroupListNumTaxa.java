@@ -19,12 +19,15 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lists.lib.*;
 
+
+//TODO: add choice of taxa block
+
 /* ======================================================================== */
 public class TaxonGroupListNumTaxa extends TaxonGroupListAssistant  {
 	CharacterData data=null;
 	MesquiteTable table = null;
 	Taxa taxa = null;
-	TaxonSource taxonSourceTask;
+//	TaxonSource taxonSourceTask;
 	MesquiteCommand tstC;
 	MesquiteString taxonSourceName;
 
@@ -32,7 +35,7 @@ public class TaxonGroupListNumTaxa extends TaxonGroupListAssistant  {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (getProject().getNumberTaxas()==0)
 			return sorry(getName() + " couldn't start because no blocks of taxa are available.");
-		taxonSourceTask= (TaxonSource)hireEmployee(TaxonSource.class, "Source of taxa ("+getName()+")");
+/*		taxonSourceTask= (TaxonSource)hireEmployee(TaxonSource.class, "Source of taxa ("+getName()+")");
 		if (taxonSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of taxa was obtained.");
 		//todo: doesn't use taxonSource!!!!!!!
@@ -44,6 +47,7 @@ public class TaxonGroupListNumTaxa extends TaxonGroupListAssistant  {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Taxon Source", tstC, TaxonSource.class);
 			mss.setSelected(taxonSourceName);
 		}
+		*/
 		taxa = getProject().chooseTaxa(containerOfModule(), "For which block of taxa do you want to show group membership?");
 		if (taxa==null)
 			return sorry(getName() + " couldn't start because taxa block not obtained.");
@@ -67,7 +71,7 @@ public class TaxonGroupListNumTaxa extends TaxonGroupListAssistant  {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		temp.addLine("setTaxonSource ", taxonSourceTask); 
+	//	temp.addLine("setTaxonSource ", taxonSourceTask); 
 		temp.addLine("setTaxa " + getProject().getTaxaReferenceExternal(taxa)); 
 		return temp;
 	}
@@ -102,7 +106,7 @@ public class TaxonGroupListNumTaxa extends TaxonGroupListAssistant  {
 				return taxa;
 			}
 		}
-		else  if (checker.compare(this.getClass(), "Sets the module supplying taxa", "[name of module]", commandName, "setTaxonSource")) {
+/*		else  if (checker.compare(this.getClass(), "Sets the module supplying taxa", "[name of module]", commandName, "setTaxonSource")) {
 			TaxonSource temp =   (TaxonSource)replaceEmployee(TaxonSource.class, arguments, "Source of taxa for chart", taxonSourceTask);
 			if (temp!=null) {
 				taxonSourceTask = temp;
@@ -112,6 +116,7 @@ public class TaxonGroupListNumTaxa extends TaxonGroupListAssistant  {
 			return taxonSourceTask;
 
 		}
+		*/
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;

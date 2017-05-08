@@ -1075,6 +1075,9 @@ class BasicTreeDisplay extends TreeDisplay  {
 		}
 		MesquiteWindow.uncheckDoomed(this);
 		super.mouseUp(modifiers,x,y, tool);
+		MesquiteWindow w = MesquiteWindow.windowOfItem(this);
+		w.requestFocus();
+
 	}
 }
 
