@@ -191,8 +191,13 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 	protected boolean firstResultsOverall = true;
 	protected boolean firstResultsOverallFound = false;
 	protected StringBuffer resultsHeading = new StringBuffer();
+	
+	
+	protected String getSavedFilesDirectoryPath(MesquiteFile fileToRead) {
+		return fileToRead.getDirectoryName() + "savedFiles" + MesquiteFile.fileSeparator;
+	}
 	/*.................................................................................................................*/
-	protected boolean processFile(MesquiteFile fileToRead, StringBuffer results) {
+	protected boolean processFile(MesquiteFile fileToRead, StringBuffer results, MesquiteBoolean requestToSequester) {
 		logln("Processing file " + fileToRead.getName() + " in " + fileToRead.getDirectoryName() + "...");
 		incrementMenuResetSuppression();
 		ProgressIndicator progIndicator2 = new ProgressIndicator(null,"Importing File "+ fileToRead.getName(), fileToRead.existingLength());
@@ -202,7 +207,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		if (fileToRead.openReading()) {
 			importer.readFile(getProject(), fileToRead, null);	
 			getProject().getCoordinatorModule().wrapUpAfterFileRead(fileToRead);
-			fileToRead.changeLocation(fileToRead.getDirectoryName() + "savedFiles" + MesquiteFile.fileSeparator, fileToRead.getName() + ".nex");
+			fileToRead.changeLocation(getSavedFilesDirectoryPath(fileToRead), fileToRead.getName() + ".nex");
 
 			if (!hireProcessorsIfNeeded()){  //needs to be done here after file read in case alterers need to know if there are matrices etc in file
 				if (progIndicator!=null) {
@@ -227,6 +232,11 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 						if (!success)
 							logln("Sorry,  " + alterer.getNameAndParameters() + " did not succeed in processing the file " + fileToRead.getFileName());
 						else {
+							if (alterer.pleaseSequester()) {
+								if (requestToSequester!=null)
+									requestToSequester.setValue(true);
+								alterer.setPleaseSequester(false);
+							}
 							logln("" + alterer.getNameAndParameters() + " successfully processed the file " + fileToRead.getFileName());
 							if (result.getValue() != null) {
 								firstResultsOverallFound = true;
@@ -240,7 +250,10 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 									resultsHeading.append("\t");
 									resultsHeading.append(alterer.getNameAndParameters());
 								}
+							} else if (firstResultsOverall) {
+								resultsHeading.append(alterer.getNameAndParameters()+StringUtil.lineEnding());
 							}
+
 						}
 					} else
 						logln("There was a problem processing files; one of the processors was null.");
@@ -311,9 +324,12 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 				//Hire file alterers
 
 				if (queryOptions()){
+					MesquiteBoolean requestToSequester= new MesquiteBoolean (false);
 					String[] files = directory.list();
 					progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", files.length);
 					progIndicator.start();
+					String sequesteredFileDirectoryPath = directoryPath + MesquiteFile.fileSeparator + "sequesteredFiles";
+					MesquiteFile.createDirectory(sequesteredFileDirectoryPath);
 					MesquiteFile.createDirectory(directoryPath + MesquiteFile.fileSeparator + "savedFiles");
 					String header = "Processing of files in " + directoryPath + StringUtil.lineEnding();
 					Date dnow = new Date(System.currentTimeMillis());
@@ -322,6 +338,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 					MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", header, true);
 					for (int i=0; i<files.length; i++) {
 						progIndicator.setCurrentValue(i);
+						requestToSequester.setValue(false);
 						if (progIndicator.isAborted()|| cancelProcessing) 
 							abort = true;
 						if (abort)
@@ -338,10 +355,10 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 								//	getProject().setHomeFile(file);
 								if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
 									results.setLength(0);
-									boolean processFileRequestCancelled = !processFile( file, results);  
+									boolean processFileRequestCancelled = !processFile( file, results, requestToSequester);  
 									if (processFileRequestCancelled) 
 										return;
-									if (firstResultsOverallFound && firstResultsOverall && resultsHeading.length()>0){
+									if ( firstResultsOverall && resultsHeading.length()>0){
 										MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", resultsHeading.toString(), true);
 										MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", StringUtil.lineEnding(), true);
 										firstResultsOverall = false;
@@ -351,6 +368,10 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 										MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", StringUtil.lineEnding(), true);
 									}
 									logln(" ");
+									if (requestToSequester.getValue()) {
+										File newFile = new File(sequesteredFileDirectoryPath+MesquiteFile.fileSeparator+MesquiteFile.getFileNameFromFilePath(path));
+										cFile.renameTo(newFile); 
+									}
 								}
 								
 								project.getCoordinatorModule().closeFile(file, true);

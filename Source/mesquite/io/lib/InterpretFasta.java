@@ -557,7 +557,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				outputBuffer.append(getLineEnding());
 				
 				for (int ic = 0; ic<numChars; ic++) {
-					if (!writeOnlySelectedData || (data.getSelected(ic))){
+					if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))){
 						int currentSize = outputBuffer.length();
 						boolean wroteMoreThanOneSymbol = false;
 						boolean wroteSymbol = false;
@@ -587,6 +587,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		}
 		return outputBuffer;
  	}
+	/*.................................................................................................................*/
+	public String getStandardFileExtensionForExport() {
+		return "fas";
+	}
 
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
@@ -607,7 +611,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		StringBuffer outputBuffer = getDataAsFileText(file, data);
 
 		if (outputBuffer!=null) {
-			saveExportedFileWithExtension(outputBuffer, arguments, "fas");
+			saveExportedFileWithExtension(outputBuffer, arguments, getStandardFileExtensionForExport());
 			saveExtraFiles(data);  
 			return true;
 		}

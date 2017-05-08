@@ -91,7 +91,23 @@ public abstract class TaxaDistance {
 		return maximumDistance;
 	}
 	
-	public double getNthLongestDistance(int n) {
+	public double getMinimumDistance() {
+		double minimumDistance = 1.0;
+		int count = 0;
+		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
+			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+				if (taxon1<taxon2) {
+					double distance = getDistance(taxon1,taxon2);
+					if (MesquiteDouble.isCombinable(distance)) {
+						if (distance<minimumDistance)
+							minimumDistance= distance;
+					}
+				}
+			}
+		return minimumDistance;
+	}
+	
+	public double getNthDistance(int n, boolean longest) {
 		if (n<1) return 0.0;
 		int count = 0;
 		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
@@ -116,7 +132,10 @@ public abstract class TaxaDistance {
 				}
 			}
 		DoubleArray.sort(distances);
-		return distances[distances.length-n];
+		if (longest)
+			return distances[distances.length-n];
+		else
+			return distances[n-1];
 		
 	}
 	
