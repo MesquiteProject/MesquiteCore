@@ -139,7 +139,7 @@ public abstract class TaxaDistance {
 		
 	}
 
-	public String getOrderedDistanceString() {
+	public String getDistanceString(boolean ordered) {
 		int count = 0;
 		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
 			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
@@ -162,13 +162,15 @@ public abstract class TaxaDistance {
 					}
 				}
 			}
-		DoubleArray.sort(distances);
+		if (ordered)
+			DoubleArray.sort(distances);
 		StringBuffer sb = new StringBuffer();
 		for (int i=0;i<distances.length; i++) {
 			sb.append(distances[i]+" ");
 		}
 		return sb.toString();
 	}
+
 
 	public void distancesToLog(){
 		MesquiteTrunk.mesquiteTrunk.logln("Sorry, this feature isn't enabled yet for this type of distance.");
