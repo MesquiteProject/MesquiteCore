@@ -687,6 +687,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				count++;
 		return count;
 	}
+	/** returns number of taxa in data matrix*/
+	public int getNumTaxaWithAnyApplicable(int icStart, int icEnd) {
+		int count=0;
+		for (int it=0; it<getNumTaxa(); it++) 
+			if (anyApplicableInRange(icStart, icEnd,it))
+				count++;
+		return count;
+	}
 	/** returns number of characters in data matrix*/
 	public int getNumChars() {
 		return getNumChars(true);
@@ -2076,6 +2084,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public boolean anyApplicableAfter(int ic, int it) {
 		int numChars = getNumChars();
 		for (int i = ic+1; i<numChars; i++)
+			if (!isInapplicable(i, it))
+				return true;
+		return false;
+	}
+	/*.................................................................................................................*/
+	public boolean anyApplicableInRange(int icStart, int icEnd, int it) {
+		int numChars = getNumChars();
+		for (int i = icStart; i<=icEnd; i++)
 			if (!isInapplicable(i, it))
 				return true;
 		return false;
