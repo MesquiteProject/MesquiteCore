@@ -3374,22 +3374,26 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return  getNumberApplicableInTaxon(it,countMissing)>0;
 	}
 	/*.................................................................................................................*/
-	public int numTaxaWithSomeApplicable(boolean countMissing){
+	public int numTaxaWithSomeApplicable(boolean countMissing, boolean selectedOnly, boolean countExcluded, double fractionApplicable){
 		int count = 0;
-		for (int it = 0; it<numTaxa; it++) {
-			if (someApplicableInTaxon(it,countMissing))
-				count++;
+		if (selectedOnly) {
+			for (int it = 0; it<numTaxa; it++) {
+				if (taxa.getSelected(it) && someApplicableInTaxon(it,countMissing))
+					if (fractionApplicable==1.0 || getFractionApplicableInTaxon(it, countExcluded)>=fractionApplicable)
+						count++;
+			}
+		} else {
+			for (int it = 0; it<numTaxa; it++) {
+				if (someApplicableInTaxon(it,countMissing))
+					if (fractionApplicable==1.0 || getFractionApplicableInTaxon(it, countExcluded)>=fractionApplicable)
+						count++;
+			}
 		}
 		return count;
 	}
 	/*.................................................................................................................*/
-	public int numSelectedTaxaWithSomeApplicable(boolean countMissing){
-		int count = 0;
-		for (int it = 0; it<numTaxa; it++) {
-			if (taxa.getSelected(it) && someApplicableInTaxon(it,countMissing))
-				count++;
-		}
-		return count;
+	public int numTaxaWithSomeApplicable(boolean countMissing, boolean selectedOnly){
+		return numTaxaWithSomeApplicable(countMissing, selectedOnly,true, 1.0);
 	}
 	/*.................................................................................................................*/
 	public int numSelectedTaxa(){
@@ -3399,6 +3403,28 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				count++;
 		}
 		return count;
+	}
+	/*.................................................................................................................*/
+	public double getFractionApplicableInTaxon(int it, boolean countExcluded){
+		int count = 0;
+		if (countExcluded) {
+			for (int i = 0; i<numChars; i++) {
+				if (!isInapplicable(i,it))
+					count++;
+			}
+			return 1.0*count/numChars;
+		} else {
+			int total = 0;
+			for (int i = 0; i<numChars; i++) 
+				if (isCurrentlyIncluded(i)) {
+					total++;
+					if (!isInapplicable(i,it))
+						count++;
+				}
+			if (total>0)
+				return 1.0*count/total;
+		}
+		return 0;
 	}
 	/*.................................................................................................................*/
 	public int getNumberApplicableInTaxon(int it, boolean countMissing){

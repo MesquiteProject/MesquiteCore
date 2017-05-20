@@ -516,7 +516,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		for (int ic = 0; ic<data.getNumChars(); ic++) {
 			if (!writeOnlySelectedData || (data.getSelected(ic))){
 				if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)))
-					return true;
+						return true;
 			}
 		}
 		return false;
@@ -546,43 +546,44 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		int counter = 1;
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || (taxa.getSelected(it))) && (!includeOnlyTaxaWithData || taxonHasData(data, it))){
-				
-				
-				counter = 1;
-				outputBuffer.append(">");
-				outputBuffer.append(getTaxonName(taxa,it));
-				String sup = getSupplementForTaxon(taxa, it);
-				if (StringUtil.notEmpty(sup))
-					outputBuffer.append(sup);
-				outputBuffer.append(getLineEnding());
-				
-				for (int ic = 0; ic<numChars; ic++) {
-					if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))){
-						int currentSize = outputBuffer.length();
-						boolean wroteMoreThanOneSymbol = false;
-						boolean wroteSymbol = false;
-						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
-							outputBuffer.append(getUnassignedSymbol());
-	                        counter ++;
-	                        wroteSymbol = true;
-						}
-						else if (includeGaps || (!data.isInapplicable(ic,it))) {
-							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
-							counter ++;
-							wroteSymbol = true;
-                        }
-						wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-                        if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
-                            outputBuffer.append(getLineEnding());
-                        }
+				if (fractionApplicable==1.0 || data.getFractionApplicableInTaxon(it, writeExcludedCharacters)>=fractionApplicable) {
 
-						if (wroteMoreThanOneSymbol) {
-							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-							return null;
+					counter = 1;
+					outputBuffer.append(">");
+					outputBuffer.append(getTaxonName(taxa,it));
+					String sup = getSupplementForTaxon(taxa, it);
+					if (StringUtil.notEmpty(sup))
+						outputBuffer.append(sup);
+					outputBuffer.append(getLineEnding());
+
+					for (int ic = 0; ic<numChars; ic++) {
+						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))){
+							int currentSize = outputBuffer.length();
+							boolean wroteMoreThanOneSymbol = false;
+							boolean wroteSymbol = false;
+							if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
+								outputBuffer.append(getUnassignedSymbol());
+								counter ++;
+								wroteSymbol = true;
+							}
+							else if (includeGaps || (!data.isInapplicable(ic,it))) {
+								data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+								counter ++;
+								wroteSymbol = true;
+							}
+							wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
+							if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
+								outputBuffer.append(getLineEnding());
+							}
+
+							if (wroteMoreThanOneSymbol) {
+								alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
+								return null;
+							}
 						}
 					}
+					outputBuffer.append(getLineEnding());
 				}
-				outputBuffer.append(getLineEnding());
 			}
 		}
 		return outputBuffer;

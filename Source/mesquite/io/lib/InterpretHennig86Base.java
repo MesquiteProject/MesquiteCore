@@ -462,6 +462,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
+			fractionApplicable = file.fractionApplicable;
 		}
 
 
@@ -1459,31 +1460,33 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		int countTaxa = 0;
 		for (int it = 0; it<numTaxa; it++)
 			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
-				countTaxa++;
+				if (fileInterpreter.fractionApplicable==1.0 || charData.getFractionApplicableInTaxon(it, fileInterpreter.writeExcludedCharacters)>=fileInterpreter.fractionApplicable) 
+					countTaxa++;
 		int numTaxaWrite = countTaxa;
 
 		outputBuffer.append(Integer.toString(numCharWrite)+" ");
 		outputBuffer.append(Integer.toString(numTaxaWrite)+fileInterpreter.getLineEnding());
 
 		for (int it = 0; it<numTaxa; it++){
-			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters))){
-				incrementAndUpdateProgIndicator(progIndicator,"Exporting data matrix");
-				String name = null;
-				if (ownerModule.taxonNamer!=null)
-					name = ownerModule.taxonNamer.getNameToUse(taxa,it);
-				else
-					name = (taxa.getTaxonName(it));
-				outputBuffer.append(StringUtil.tokenize(name,";") + "\t");
-				for (int ic = 0; ic<numChars; ic++) {
-					if (ownerModule.characterShouldBeIncluded(charData, ic)){
-						if (ownerModule.getConvertGapsToMissing() && charData.isInapplicable(ic, it))
-							outputBuffer.append("?");
-						else
-							appendStateToBuffer(ic, it, outputBuffer, charData);
+			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
+				if (fileInterpreter.fractionApplicable==1.0 || charData.getFractionApplicableInTaxon(it, fileInterpreter.writeExcludedCharacters)>=fileInterpreter.fractionApplicable) {
+					incrementAndUpdateProgIndicator(progIndicator,"Exporting data matrix");
+					String name = null;
+					if (ownerModule.taxonNamer!=null)
+						name = ownerModule.taxonNamer.getNameToUse(taxa,it);
+					else
+						name = (taxa.getTaxonName(it));
+					outputBuffer.append(StringUtil.tokenize(name,";") + "\t");
+					for (int ic = 0; ic<numChars; ic++) {
+						if (ownerModule.characterShouldBeIncluded(charData, ic)){
+							if (ownerModule.getConvertGapsToMissing() && charData.isInapplicable(ic, it))
+								outputBuffer.append("?");
+							else
+								appendStateToBuffer(ic, it, outputBuffer, charData);
+						}
 					}
+					outputBuffer.append(fileInterpreter.getLineEnding());
 				}
-				outputBuffer.append(fileInterpreter.getLineEnding());
-			}
 		}
 		outputBuffer.append(";"+ fileInterpreter.getLineEnding()+ fileInterpreter.getLineEnding());
 	}

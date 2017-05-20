@@ -73,7 +73,7 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 
 				//USE SYMBOLS
 				for (int ic=startChar;  ic<endChar; ic++) {
-					if (data.isCurrentlyIncluded(ic) || file.writeExcludedCharacters) {
+					if ((data.isCurrentlyIncluded(ic) || file.writeExcludedCharacters) && file.filterTaxon(data, it)) {
 						if (!data.isValid(ic, it) && invalidIC <0){
 							invalidIC = ic;
 							invalidIT = it;

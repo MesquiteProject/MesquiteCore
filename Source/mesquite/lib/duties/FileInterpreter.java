@@ -37,6 +37,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean writeOnlySelectedTaxa = false;
 	public boolean writeTaxaWithAllMissing = true;  //default changed to true as true  after 2. 75
 	public boolean writeExcludedCharacters = true;
+	public double fractionApplicable = 1.0;
 	
 	protected String filePath=null;
 
