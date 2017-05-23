@@ -418,6 +418,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
+			fractionApplicable = file.fractionApplicable;
 		}
 		int countTaxa = 0;
 		for (int it = 0; it<numTaxa; it++)

@@ -1937,10 +1937,18 @@ public class CategoricalData extends CharacterData {
 		return true;
 	}
 	/*-----------------------------------------------------------*/
-	/** checks to see if the two characters have identical distributions of states */
+	/** Sets all cells in a character to inapplicable */
 	public void clearCharacter(int ic){
 		
 		for (int it=0; it<numTaxa; it++) {
+			setToInapplicable(ic,it);
+		}
+	}
+	/*-----------------------------------------------------------*/
+	/** Sets all cells in a taxon to inapplicable */
+	public void clearTaxon(int it){
+		
+		for (int ic=0; ic<numChars; ic++) {
 			setToInapplicable(ic,it);
 		}
 	}

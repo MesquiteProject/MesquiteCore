@@ -298,7 +298,7 @@ public class ManageMeristicChars extends CharMatrixManager {
 		String taxonName="";
 		int maxNameLength = cData.getTaxa().getLongestTaxonNameLength();
 		for (int it=0; it<cData.getTaxa().getNumTaxa(); it++) {
-			if ((data.someApplicableInTaxon(it, false)|| file.writeTaxaWithAllMissing) && (!file.writeOnlySelectedTaxa || data.getTaxa().getSelected(it))){
+			if ((data.someApplicableInTaxon(it, false)|| file.writeTaxaWithAllMissing) && (!file.writeOnlySelectedTaxa || data.getTaxa().getSelected(it))&& file.filterTaxon(data, it)){
 				taxonName = cData.getTaxa().getTaxon(it).getName();
 				if (file.useStandardizedTaxonNames)
 					taxonName = "t" + it;

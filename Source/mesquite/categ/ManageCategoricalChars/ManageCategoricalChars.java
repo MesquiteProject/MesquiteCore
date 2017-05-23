@@ -429,7 +429,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		String taxonNameToWrite = "";
 		int maxNameLength = data.getTaxa().getLongestTaxonNameLength();
 		for (int it=0; it<numTaxa; it++) {
-			if ((data.someApplicableInTaxon(it, false)|| file.writeTaxaWithAllMissing) && (!file.writeOnlySelectedTaxa || data.getTaxa().getSelected(it))){
+			if ((data.someApplicableInTaxon(it, false)|| file.writeTaxaWithAllMissing) && (!file.writeOnlySelectedTaxa || data.getTaxa().getSelected(it))&& file.filterTaxon(data, it)){
 				taxonName = data.getTaxa().getTaxon(it).getName();
 				if (taxonName!=null) {
 					if (file.useStandardizedTaxonNames)
