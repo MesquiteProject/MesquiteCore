@@ -23,7 +23,7 @@ import mesquite.lib.*;
 /** A distance matrix for taxa.*/
 public abstract class TaxaDistance {
 	Taxa taxa;
-	Bits taxonBits;
+	protected Bits taxonBits;
 	public TaxaDistance(Taxa taxa){
 		this.taxa = taxa;
 	}
@@ -63,7 +63,7 @@ public abstract class TaxaDistance {
 		int count = 0;
 		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
 			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
-				if (taxon1<taxon2) {
+				if (taxon1<taxon2 && (taxonBits==null || (taxonBits.isBitOn(taxon1) && taxonBits.isBitOn(taxon2)))) {
 					double distance = getDistance(taxon1,taxon2);
 					if (MesquiteDouble.isCombinable(distance)) {
 						totalDistance+= distance;
@@ -81,7 +81,7 @@ public abstract class TaxaDistance {
 		int count = 0;
 		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
 			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
-				if (taxon1<taxon2) {
+				if (taxon1<taxon2 && (taxonBits==null || (taxonBits.isBitOn(taxon1) && taxonBits.isBitOn(taxon2)))) {
 					double distance = getDistance(taxon1,taxon2);
 					if (MesquiteDouble.isCombinable(distance)) {
 						if (distance>maximumDistance)
@@ -97,7 +97,7 @@ public abstract class TaxaDistance {
 		int count = 0;
 		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
 			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
-				if (taxon1<taxon2) {
+				if (taxon1<taxon2 && (taxonBits==null || (taxonBits.isBitOn(taxon1) && taxonBits.isBitOn(taxon2)))) {
 					double distance = getDistance(taxon1,taxon2);
 					if (MesquiteDouble.isCombinable(distance)) {
 						if (distance<minimumDistance)
@@ -113,7 +113,7 @@ public abstract class TaxaDistance {
 		int count = 0;
 		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
 			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
-				if (taxon1<taxon2) {
+				if (taxon1<taxon2 && (taxonBits==null || (taxonBits.isBitOn(taxon1) && taxonBits.isBitOn(taxon2)))) {
 					double distance = getDistance(taxon1,taxon2);
 					if (MesquiteDouble.isCombinable(distance)) {
 						count++;
@@ -124,7 +124,7 @@ public abstract class TaxaDistance {
 		count=0;
 		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
 			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
-				if (taxon1<taxon2) {
+				if (taxon1<taxon2 && (taxonBits==null || (taxonBits.isBitOn(taxon1) && taxonBits.isBitOn(taxon2)))) {
 					double distance = getDistance(taxon1,taxon2);
 					if (MesquiteDouble.isCombinable(distance)) {
 						distances[count]=distance;
@@ -144,7 +144,7 @@ public abstract class TaxaDistance {
 		int count = 0;
 		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
 			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
-				if (taxon1<taxon2) {
+				if (taxon1<taxon2 && (taxonBits==null || (taxonBits.isBitOn(taxon1) && taxonBits.isBitOn(taxon2)))) {
 					double distance = getDistance(taxon1,taxon2);
 					if (MesquiteDouble.isCombinable(distance)) {
 						count++;
@@ -155,7 +155,7 @@ public abstract class TaxaDistance {
 		count=0;
 		for (int taxon1 = 0; taxon1<getNumTaxa(); taxon1++) 
 			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
-				if (taxon1<taxon2) {
+				if (taxon1<taxon2 && (taxonBits==null || (taxonBits.isBitOn(taxon1) && taxonBits.isBitOn(taxon2)))) {
 					double distance = getDistance(taxon1,taxon2);
 					if (MesquiteDouble.isCombinable(distance)) {
 						distances[count]=distance;
