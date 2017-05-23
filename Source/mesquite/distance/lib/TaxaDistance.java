@@ -23,6 +23,7 @@ import mesquite.lib.*;
 /** A distance matrix for taxa.*/
 public abstract class TaxaDistance {
 	Taxa taxa;
+	Bits taxonBits;
 	public TaxaDistance(Taxa taxa){
 		this.taxa = taxa;
 	}
