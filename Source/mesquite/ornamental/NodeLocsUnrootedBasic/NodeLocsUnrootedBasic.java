@@ -418,7 +418,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				for (int i=0; i<daughtersUR.length; i++)
 					s+= " " + daughtersUR[i];
 			} else s+= "none";
-			Debugg.println(s);
+			//Debugg.println(s);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				reportDaughters(drawnRoot, d);
 			}

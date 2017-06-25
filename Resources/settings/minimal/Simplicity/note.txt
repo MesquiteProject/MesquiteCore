@@ -1,0 +1,1 @@
+Simplification schemes are stored in this directory.
