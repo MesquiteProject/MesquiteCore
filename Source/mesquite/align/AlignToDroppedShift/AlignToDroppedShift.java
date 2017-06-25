@@ -71,8 +71,8 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	}
 	/*.................................................................................................................*/
 	public void addExtraMenus(){
-		addCheckMenuItem(null, "Shift Dragged Sequence to Match Dragged Base to Its Counterpart in Dropped Sequence", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
-		addCheckMenuItem(null, "Shift Dragged Sequence to Match Its Counterpart to Base on which it is Dropped", makeCommand("toggleShiftToDropped",  this), shiftToDropped);
+		addCheckMenuItem(null, "Shift Dragged Sequence so that Dragged Base Matches its Counterpart", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
+		addCheckMenuItem(null, "Shift Dragged Sequence so that Base on Which it is Dropped Matches its Counterpart", makeCommand("toggleShiftToDropped",  this), shiftToDropped);
 		addMenuSeparator();
 	}
 	/*.................................................................................................................*/
