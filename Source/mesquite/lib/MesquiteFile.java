@@ -2577,6 +2577,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/*.................................................................................................................*/
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName".*/
+	public static String getFileContentsAsStringNoWarn(String relativePath) {
+		return getFileContentsAsString(relativePath, -1,100, false);
+	}
+	/*.................................................................................................................*/
+	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
+	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName".*/
 	public static String getFileContentsAsString(String relativePath) {
 		return getFileContentsAsString(relativePath, -1,100);
 	}

@@ -489,6 +489,14 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		// TODO Auto-generated method stub
 		return true;
 	}
+	
+	public boolean fatalErrorDetected() {
+		String stdErr = getStdErr();
+		if (StringUtil.notEmpty(stdErr))
+			return true;
+		return false;
+	}
+
 
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){

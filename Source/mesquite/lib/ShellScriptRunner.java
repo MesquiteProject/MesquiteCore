@@ -107,11 +107,11 @@ public class ShellScriptRunner implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public String getStdErr() {
-		return MesquiteFile.getFileContentsAsString(stErrorFilePath);
+		return MesquiteFile.getFileContentsAsStringNoWarn(stErrorFilePath);
 	}
 	/*.................................................................................................................*/
 	public String getStdOut() {
-		return MesquiteFile.getFileContentsAsString(stOutFilePath);
+		return MesquiteFile.getFileContentsAsStringNoWarn(stOutFilePath);
 	}
 
 	/*.................................................................................................................*/
@@ -182,6 +182,9 @@ public class ShellScriptRunner implements Commandable  {
 
 		if (!StringUtil.blank(runningFilePath)) {  // is file at runningFilePath; watch for its disappearance
 			while (MesquiteFile.fileExists(runningFilePath) && stillGoing){
+				if (watcher!=null && watcher.fatalErrorDetected()) {
+					return false;
+				}
 				processOutputFiles();
 				try {
 					Thread.sleep(sleepTime);
@@ -199,6 +202,9 @@ public class ShellScriptRunner implements Commandable  {
 							proc.destroy();
 						return false;  //TODO: destroy process
 					}
+				}
+				if (watcher!=null && watcher.fatalErrorDetected()) {
+					return false;
 				}
 			}
 		}/* else

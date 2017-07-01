@@ -353,6 +353,9 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 	public boolean continueShellProcess(Process proc) {
 		return true;
 	}
+	public boolean fatalErrorDetected() {
+		return false;
+	}
 
 
 
