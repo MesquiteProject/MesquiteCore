@@ -37,8 +37,8 @@ public class ShellScriptRunner implements Commandable  {
 	String runningFilePath; //reconnect
 	String[] outputFilePaths; //reconnect
 	String stOutFilePath, stErrorFilePath;
-	static String stOutFileName = "StandardOutputFile";
-	static String stErrorFileName = "StandardErrorFile";
+	public static String stOutFileName = "StandardOutputFile";
+	public static String stErrorFileName = "StandardErrorFile";
 	OutputFileProcessor outputFileProcessor; //reconnect
 	ShellScriptWatcher watcher; //reconnect
 	boolean visibleTerminal;
@@ -160,7 +160,7 @@ public class ShellScriptRunner implements Commandable  {
 			}
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);
 			externalProcessManager = new MesquiteExternalProcess(proc);
-			File outputFile = new File(stOutFilePath);
+			File outputFile = new File(stOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
 			File errorFile = new File(stErrorFilePath);
 			externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);
 		}
