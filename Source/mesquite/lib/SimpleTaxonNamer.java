@@ -128,5 +128,8 @@ public class SimpleTaxonNamer extends TaxonNamer {
 		return number;
 
 	}
+	public String getName(){
+		return "Simple Taxon Namer";
+	}
 
 }

@@ -26,6 +26,10 @@ public abstract class TaxonNamer  {
 	/** Given a taxon name "name", this method returns the taxon number this name represents. */
 	public abstract int whichTaxonNumber(Taxa taxa, String name);	
 
+	public String getName(){
+		return "";
+	}
+
 
 }
 
