@@ -768,8 +768,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	public MesquiteFile getNEXUSFileForReading(String arguments, String message){ 
 		String path = parser.getFirstToken(arguments); //optional argument
-
-
+		
+		
 		MesquiteFile file = null;
 		if (StringUtil.blank(path)) {
 			file =MesquiteFile.open(true, (String)null, message, getProject().getHomeDirectoryName());

@@ -132,6 +132,28 @@ public class ShellScriptUtil  {
 	}
 
 	/*.................................................................................................................*/
+	public static Process startProcess(String...command){
+		try {
+			ProcessBuilder pb = new ProcessBuilder(command);
+			/*Map<String, String> env = pb.environment();
+			env.put("VAR1", "myValue");
+			env.remove("OTHERVAR");
+			env.put("VAR2", env.get("VAR1") + "suffix");
+			pb.directory(new File("myDir"));
+			File log = new File("log");
+			pb.redirectErrorStream(true);
+			pb.redirectOutput(ProcessBuilder.Redirect.appendTo(log));*/
+			Process p = pb.start();
+			/*assert pb.redirectInput() == ProcessBuilder.Redirect.PIPE;
+			assert pb.redirectOutput().file() == log;
+			assert p.getInputStream().read() == -1;*/
+			return p;
+		}
+		catch (IOException e) {
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	public static Process executeScript(String scriptPath){ 
 		return executeScript(scriptPath, true);
 	}
