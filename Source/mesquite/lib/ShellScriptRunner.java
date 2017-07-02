@@ -121,11 +121,10 @@ public class ShellScriptRunner implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public void stopExecution(){
-		if (proc!=null)
-			//if (MesquiteTrunk.isJavaVersionLessThan(1.8))
-				proc.destroy();
-			//else
-			//	proc.destroyForcibly();
+		if (externalProcessManager!=null)
+			externalProcessManager.kill();
+		
+		Debugg.println("||||||||||||Request to kill the process");
 	}
 	/*.................................................................................................................*/
 	public void processOutputFiles(){
@@ -182,6 +181,7 @@ public class ShellScriptRunner implements Commandable  {
 
 		if (!StringUtil.blank(runningFilePath)) {  // is file at runningFilePath; watch for its disappearance
 			while (MesquiteFile.fileExists(runningFilePath) && stillGoing){
+
 				if (watcher!=null && watcher.fatalErrorDetected()) {
 					return false;
 				}
@@ -198,8 +198,7 @@ public class ShellScriptRunner implements Commandable  {
 				if (progressIndicator!=null){
 					progressIndicator.spin();
 					if (progressIndicator.isAborted()){
-						if (proc!=null)
-							proc.destroy();
+						externalProcessManager.kill();
 						return false;  //TODO: destroy process
 					}
 				}
