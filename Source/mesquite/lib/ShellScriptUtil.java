@@ -154,6 +154,39 @@ public class ShellScriptUtil  {
 		return null;
 	}
 	/*.................................................................................................................*/
+	public static Process startProcess(String workingDirectoryPath, String outputFilePath, String errorFilePath, String...command){
+		try {
+			ProcessBuilder pb = new ProcessBuilder(command);
+			
+		   if (StringUtil.notEmpty(workingDirectoryPath)) {
+				pb.directory(new File(workingDirectoryPath));
+		   }
+
+			File errorLog=null;
+			if (errorFilePath!=null) {
+				errorLog = new File(errorFilePath);				
+				pb.redirectError(ProcessBuilder.Redirect.appendTo(errorLog));
+			}
+
+			File log=null;
+			if (outputFilePath!=null) {
+				log = new File(outputFilePath);				
+				pb.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
+			}
+			Process p = pb.start();
+			if (log!=null)
+				assert pb.redirectOutput().file() == log;
+			if (errorLog!=null)
+				assert pb.redirectError().file() == errorLog;
+		
+			return p;
+		}
+		catch (IOException e) {
+		}
+		return null;
+	}
+
+	/*.................................................................................................................*/
 	public static Process executeScript(String scriptPath){ 
 		return executeScript(scriptPath, true);
 	}
