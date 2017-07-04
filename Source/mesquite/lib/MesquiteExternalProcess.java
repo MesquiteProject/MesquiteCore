@@ -26,6 +26,10 @@ public class MesquiteExternalProcess  {
 	FileWriter outputWriter;
 	FileWriter errorWriter;
 	Process proc;
+	String directoryPath;
+	String outputFilePath;
+	String errorFilePath;
+	
 
 	public MesquiteExternalProcess(Process proc) {
 		this.proc = proc;
@@ -38,13 +42,39 @@ public class MesquiteExternalProcess  {
 	}
 	/*.................................................................................................................*/
 
+	public void start(String directoryPath, String outputFilePath, String errorFilePath, String...command) {
+		this.directoryPath = directoryPath;
+		this.outputFilePath = outputFilePath;
+		this.errorFilePath = errorFilePath;
+		this.proc = ShellScriptUtil.startProcess(directoryPath,  outputFilePath,  errorFilePath, command);
+	}
+	
+
+	/*.................................................................................................................*/
+
 	public void setProcess(Process proc) {
 		this.proc = proc;
 	}
 	/*.................................................................................................................*/
 	public void kill () {
-		if (proc!=null)
+		if (proc!=null) {
+			try {
+				InputStream errorStream = proc.getErrorStream();
+				errorStream.close();
+				OutputStream outputStream = proc.getOutputStream();
+				outputStream.close();
+			} catch (IOException e) {
+				Debugg.println("*****couldn't close streams");
+			}
 			proc.destroy();
+			try {
+				Thread.sleep(100);
+				if (proc.isAlive())
+					proc.destroyForcibly();
+			} catch (Exception e) {
+			}
+			Debugg.println("REQUEST TO DESTROY PROCESS");
+		}
 	}
 	
 	/*.................................................................................................................*/

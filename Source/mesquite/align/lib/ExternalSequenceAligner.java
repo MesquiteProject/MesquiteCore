@@ -38,6 +38,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	Random rng;
 	public static int runs = 0;
 	ShellScriptRunner scriptRunner;
+	ExternalProcessManager externalRunner;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		rng = new Random(System.currentTimeMillis());
@@ -58,29 +59,23 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 	/*.................................................................................................................*/
 	public String getStdErr() {
-		if (scriptRunner!=null)
-			return scriptRunner.getStdErr();
+		if (externalRunner!=null)
+			return externalRunner.getStdErr();
 		return "";
 	}
 	/*.................................................................................................................*/
 	public String getStdOut() {
-		if (scriptRunner!=null)
-			return scriptRunner.getStdOut();
+		if (externalRunner!=null)
+			return externalRunner.getStdOut();
 		return "";
-	}
-
-	public boolean monitorExecution(){
-		 if (scriptRunner!=null)
-			 return scriptRunner.monitorAndCleanUpShell();
-		 return false;
 	}
 
 	public String checkStatus(){
 		return null;
 	}
 	public boolean stopExecution(){
-		if (scriptRunner!=null)
-			scriptRunner.stopExecution();
+		if (externalRunner!=null)
+			externalRunner.stopExecution();
 		//scriptRunner = null;
 		return false;
 	}
@@ -286,6 +281,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		String unique = MesquiteTrunk.getUniqueIDBase() + Math.abs(rng.nextInt());
 
 		String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  //replace this with current directory of file
+		//rootDir = "/test/";
 
 //		StringBuffer fileBuffer = getFileInBuffer(data);
 		String fileName = "tempAlign" + MesquiteFile.massageStringToFilePathSafe(unique) + getExportExtension();   //replace this with actual file name?
@@ -359,9 +355,23 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), getProgramName()+" alignment in progress");
 		progressIndicator.start();
 
-		scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, false);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
+		
+/*		scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, false);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
 		success = scriptRunner.executeInShell();
 		success = scriptRunner.monitorAndCleanUpShell(progressIndicator);
+*/
+
+		String arguments = argumentsForLogging.toString();
+		
+		arguments=StringUtil.stripBoundingWhitespace(arguments);
+		externalRunner = new ExternalProcessManager(rootDir, getProgramPath(), arguments,getName(), outputFilePaths, this, this, false);
+		//ShellScriptUtil.changeDirectory(rootDir, rootDir);
+		externalRunner.setStdOutFileName(outFileName);
+		success = externalRunner.executeInShell();
+		if (success)
+			success = externalRunner.monitorAndCleanUpShell(progressIndicator);
+		
+		
 		if (progressIndicator.isAborted()){
 			logln("Alignment aborted by user\n");
 		}
@@ -442,16 +452,16 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			if (tempDataFile!=null)
 				tempDataFile.close();
 			getProject().decrementProjectWindowSuppression();
-			if (runs == 1)
-				deleteSupportDirectory();
+		//	if (runs == 1)
+		//hghg		deleteSupportDirectory();
 			runs--;
 			data.decrementEditInhibition();
 			if (success) 
 				return aligned;
 			return null;
 		}
-		if (runs == 1)
-			deleteSupportDirectory();
+	//	if (runs == 1)
+	//hghg		deleteSupportDirectory();
 		runs--;
 		getProject().decrementProjectWindowSuppression();
 		data.decrementEditInhibition();
@@ -490,9 +500,13 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return true;
 	}
 	
+	public boolean stdErrorsAreFatal(){
+		return false;
+	}
+
 	public boolean fatalErrorDetected() {
 		String stdErr = getStdErr();
-		if (StringUtil.notEmpty(stdErr))
+		if (stdErrorsAreFatal() && StringUtil.notEmpty(stdErr))
 			return true;
 		return false;
 	}

@@ -88,12 +88,8 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	}
 	
 	public void appendDefaultOptions(StringBuffer shellScript, String inFilePath, String outFilePath, MolecularData data) {
-	if (!MesquiteTrunk.isWindows())
-		shellScript.append("  -in " + StringUtil.protectFilePathForUnix(inFilePath) + " -out " + StringUtil.protectFilePathForUnix(outFilePath));
-	else
-		shellScript.append("  -in " + StringUtil.protectFilePathForWindows(inFilePath) + " -out " + StringUtil.protectFilePathForWindows(outFilePath));
+		shellScript.append("  -in " + StringUtil.protectFilePathForUnix(inFilePath));
 	}
-
 	
 	public String getDNAExportInterpreter () {
 		return "#InterpretFastaDNA";
