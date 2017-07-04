@@ -244,7 +244,7 @@ public class ExternalProcessManager implements Commandable  {
 				return false;
 			}
 			stillGoing = watcher == null || watcher.continueShellProcess(proc);
-			if (!proc.isAlive()) {
+			if (proc!=null && !proc.isAlive()) {
 				stillGoing=false;
 				return goodExitValue(proc.exitValue(), true);
 			}
