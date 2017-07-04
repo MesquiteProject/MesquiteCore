@@ -37,7 +37,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	String programOptions = "" ;
 	Random rng;
 	public static int runs = 0;
-	ShellScriptRunner scriptRunner;
+	//ShellScriptRunner scriptRunner;
 	ExternalProcessManager externalRunner;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -452,16 +452,16 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			if (tempDataFile!=null)
 				tempDataFile.close();
 			getProject().decrementProjectWindowSuppression();
-		//	if (runs == 1)
-		//hghg		deleteSupportDirectory();
+			if (runs == 1)
+				deleteSupportDirectory();
 			runs--;
 			data.decrementEditInhibition();
 			if (success) 
 				return aligned;
 			return null;
 		}
-	//	if (runs == 1)
-	//hghg		deleteSupportDirectory();
+		if (runs == 1)
+			deleteSupportDirectory();
 		runs--;
 		getProject().decrementProjectWindowSuppression();
 		data.decrementEditInhibition();

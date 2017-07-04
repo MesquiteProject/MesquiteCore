@@ -33,7 +33,6 @@ public class ExternalProcessManager implements Commandable  {
 	String directoryPath;
 	String programCommand;
 	String programOptions;
-	boolean appendRemoveCommand;
 	String name;
 	String[] outputFilePaths; //reconnect
 	String stdOutFilePath, stdErrFilePath;
@@ -47,7 +46,6 @@ public class ExternalProcessManager implements Commandable  {
 	
 	public ExternalProcessManager(String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
 		this.directoryPath=directoryPath;
-		this.appendRemoveCommand =appendRemoveCommand;
 		this.name = name;
 		this.outputFilePaths = outputFilePaths;
 		this.outputFileProcessor = outputFileProcessor;
@@ -135,8 +133,6 @@ public class ExternalProcessManager implements Commandable  {
 	public void stopExecution(){
 		if (externalProcess!=null)
 			externalProcess.kill();
-		
-		Debugg.println("||||||||||||Request to kill the process");
 	}
 	/*.................................................................................................................*/
 	public void processOutputFiles(){
