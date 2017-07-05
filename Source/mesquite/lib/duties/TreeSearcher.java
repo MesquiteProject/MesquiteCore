@@ -88,6 +88,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
 			return getName();
 		}
 
+		public String getLogText() {
+			return "";
+		}
+
  	 }
 
 

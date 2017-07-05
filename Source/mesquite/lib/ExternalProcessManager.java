@@ -39,6 +39,7 @@ public class ExternalProcessManager implements Commandable  {
 	public String stdOutFileName = "StandardOutputFile";
 	public String stdErrFileName = "StandardErrorFile";
 	OutputFileProcessor outputFileProcessor; //reconnect
+	StdOutWatcher stdOutWatcher; //reconnect
 	ShellScriptWatcher watcher; //reconnect
 	boolean visibleTerminal;
 	long[] lastModified;
@@ -64,6 +65,9 @@ public class ExternalProcessManager implements Commandable  {
 	}
 	public void setWatcher(ShellScriptWatcher watcher){
 		this.watcher = watcher;
+	}
+	public void setStdOutWatcher(StdOutWatcher stdOutWatcher){
+		this.stdOutWatcher = stdOutWatcher;
 	}
 	public String getStdOutFilePath() {
 		return stdOutFilePath;
@@ -231,6 +235,9 @@ public class ExternalProcessManager implements Commandable  {
 				return false;
 			}
 			processOutputFiles();
+			if (stdOutWatcher !=null) 
+				stdOutWatcher.currentStdOutText(getStdOut());
+
 			try {
 				Thread.sleep(sleepTime);
 				//externalProcessManager.flushStandardOutputsReaders();

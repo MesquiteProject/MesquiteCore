@@ -48,6 +48,9 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 		}
 		return true;
 	}
+	public String getLogText() {
+		return searchTask.getLogText();
+	}
 
 	/*.................................................................................................................*/
 	public String getHTMLDescriptionOfStatus(){

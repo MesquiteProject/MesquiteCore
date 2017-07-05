@@ -40,6 +40,10 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		return null;
 	}
 	
+	public String getLogText() {
+		return "";
+	}
+	
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("autoSaveFile".equalsIgnoreCase(tag))
