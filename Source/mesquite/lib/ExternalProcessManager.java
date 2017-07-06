@@ -43,13 +43,15 @@ public class ExternalProcessManager implements Commandable  {
 	ShellScriptWatcher watcher; //reconnect
 	boolean visibleTerminal;
 	long[] lastModified;
+	MesquiteModule ownerModule;
 	MesquiteExternalProcess externalProcess;
 	
-	public ExternalProcessManager(String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
+	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
 		this.directoryPath=directoryPath;
 		this.name = name;
 		this.outputFilePaths = outputFilePaths;
 		this.outputFileProcessor = outputFileProcessor;
+		this.ownerModule = ownerModule;
 		this.programCommand = programCommand;
 		this.programOptions = programOptions;
 		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdOutFileName;
@@ -57,7 +59,7 @@ public class ExternalProcessManager implements Commandable  {
 		this.watcher = watcher;
 		this.visibleTerminal = visibleTerminal;
 	}
-	public ExternalProcessManager(){  //to be used for reconnecting
+	public ExternalProcessManager(MesquiteModule ownerModule){  //to be used for reconnecting
 	}
 
 	public void setOutputProcessor(OutputFileProcessor outputFileProcessor){
@@ -216,7 +218,7 @@ public class ExternalProcessManager implements Commandable  {
 	/*.................................................................................................................*/
 	public boolean goodExitValue(int exitValue, boolean warnIfBad) {
 		if (exitValue!=0)
-			Debugg.println("EXIT VALUE: " +exitValue);
+			ownerModule.logln("Process exit value: " +exitValue);
 		return exitValue==0;
 	}
 	/*.................................................................................................................*/
