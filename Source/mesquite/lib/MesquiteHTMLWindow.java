@@ -23,7 +23,7 @@ import javax.swing.text.html.*;
 import java.util.*;
 /* ======================================================================== */
 /** A window that displays text.  Yet to do: make it editable or not, have getText, etc.. */
-public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListener {
+public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListener, OutputTextListener {
 	MesqJEditorPane tA;
 	String assignedTitle;
 	MesquiteCommand linkTouchedCommand;
@@ -273,6 +273,9 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 				}
 			}
 		}
+	}
+	public void setOutputText(String s) {
+		setExtraPanelText(s);
 	}
 
 }

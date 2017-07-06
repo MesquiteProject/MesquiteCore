@@ -36,7 +36,7 @@ public class ShellScriptRunner implements Commandable  {
 	String name;
 	String runningFilePath; //reconnect
 	String[] outputFilePaths; //reconnect
-	String stOutFilePath, stErrorFilePath;
+	String stdOutFilePath, stdErrFilePath;
 	public static String stOutFileName = "StandardOutputFile";
 	public static String stErrorFileName = "StandardErrorFile";
 	OutputFileProcessor outputFileProcessor; //reconnect
@@ -44,6 +44,9 @@ public class ShellScriptRunner implements Commandable  {
 	boolean visibleTerminal;
 	long[] lastModified;
 	MesquiteExternalProcess externalProcessManager;
+	long stdOutLastModified = 0;
+	long stdErrLastModified = 0;
+
 	
 	public ShellScriptRunner(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
 		this.scriptPath=scriptPath;
@@ -56,8 +59,8 @@ public class ShellScriptRunner implements Commandable  {
 		this.name = name;
 		this.outputFilePaths = outputFilePaths;
 		this.outputFileProcessor = outputFileProcessor;
-		stOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stOutFileName;
-		stErrorFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stErrorFileName;
+		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stOutFileName;
+		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stErrorFileName;
 		this.watcher = watcher;
 		this.visibleTerminal = visibleTerminal;
 		
@@ -100,6 +103,12 @@ public class ShellScriptRunner implements Commandable  {
 		}
 		return null;
 	}	
+	OutputTextListener textListener;
+	
+	public  void setOutputTextListener(OutputTextListener textListener){
+		this.textListener= textListener;
+	}
+
 	public boolean isVisibleTerminal() {
 		return visibleTerminal;
 	}
@@ -108,11 +117,11 @@ public class ShellScriptRunner implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public String getStdErr() {
-		return MesquiteFile.getFileContentsAsStringNoWarn(stErrorFilePath);
+		return MesquiteFile.getFileContentsAsStringNoWarn(stdErrFilePath);
 	}
 	/*.................................................................................................................*/
 	public String getStdOut() {
-		return MesquiteFile.getFileContentsAsStringNoWarn(stOutFilePath);
+		return MesquiteFile.getFileContentsAsStringNoWarn(stdOutFilePath);
 	}
 
 	/*.................................................................................................................*/
@@ -121,11 +130,24 @@ public class ShellScriptRunner implements Commandable  {
 			lastModified[i]=0;
 	}
 	/*.................................................................................................................*/
+	public long getStdErrLastModified() {
+		File file = new File(stdErrFilePath);
+		if (file!=null)
+			return 0;
+		return file.lastModified();
+	}
+	/*.................................................................................................................*/
+	public long getStdOutLastModified() {
+		File file = new File(stdOutFilePath);
+		if (file!=null)
+			return 0;
+		return file.lastModified();
+	}
+
+	/*.................................................................................................................*/
 	public void stopExecution(){
 		if (externalProcessManager!=null)
 			externalProcessManager.kill();
-		
-		Debugg.println("||||||||||||Request to kill the process");
 	}
 	/*.................................................................................................................*/
 	public void processOutputFiles(){
@@ -160,8 +182,8 @@ public class ShellScriptRunner implements Commandable  {
 			}
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);
 			externalProcessManager = new MesquiteExternalProcess(proc);
-			File outputFile = new File(stOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
-			File errorFile = new File(stErrorFilePath);
+			File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
+			File errorFile = new File(stdErrFilePath);
 			externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);
 		}
 		catch (IOException e){
@@ -170,6 +192,20 @@ public class ShellScriptRunner implements Commandable  {
 		}
 		return true;
 	}
+	/*.................................................................................................................*/
+	public boolean stdOutModified(){
+		long lastModified = stdOutLastModified;
+		stdOutLastModified= getStdOutLastModified();
+		return stdOutLastModified!=lastModified;
+	}
+	/*.................................................................................................................*/
+	public boolean stdErrModified(){
+		long lastModified = stdErrLastModified;
+		stdErrLastModified= getStdErrLastModified();
+		return stdErrLastModified!=lastModified;
+	}
+
+
 	/*.................................................................................................................*/
 	public boolean runStillGoing() {
 		return (StringUtil.notEmpty(runningFilePath) && MesquiteFile.fileExists(runningFilePath));
@@ -190,6 +226,9 @@ public class ShellScriptRunner implements Commandable  {
 				return false;
 			}
 			processOutputFiles();
+			//if (stdOutModified()) {
+			//	textListener.setOutputText(getStdOut());
+			//}
 			try {
 				Thread.sleep(sleepTime);
 				//externalProcessManager.flushStandardOutputsReaders();

@@ -30,6 +30,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
  	public String getDutyName() {
  		return "Tree Searcher";
    	 }
+ 	
+	public  void setOutputTextListener(OutputTextListener textListener){
+	}
+
    	 
    	 public String[] getDefaultModule() {
    	 	return new String[] {"#AddAndRearrange"};

@@ -45,6 +45,9 @@ public class ExternalProcessManager implements Commandable  {
 	long[] lastModified;
 	MesquiteModule ownerModule;
 	MesquiteExternalProcess externalProcess;
+	long stdOutLastModified = 0;
+	long stdErrLastModified = 0;
+
 	
 	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
 		this.directoryPath=directoryPath;
@@ -128,6 +131,27 @@ public class ExternalProcessManager implements Commandable  {
 	/*.................................................................................................................*/
 	public String getStdOut() {
 		return MesquiteFile.getFileContentsAsStringNoWarn(stdOutFilePath);
+	}
+	
+	OutputTextListener textListener;
+	
+	public  void setOutputTextListener(OutputTextListener textListener){
+		this.textListener= textListener;
+	}
+
+	/*.................................................................................................................*/
+	public long getStdErrLastModified() {
+		File file = new File(stdErrFilePath);
+		if (file==null)
+			return 0;
+		return file.lastModified();
+	}
+	/*.................................................................................................................*/
+	public long getStdOutLastModified() {
+		File file = new File(stdOutFilePath);
+		if (file==null)
+			return 0;
+		return file.lastModified();
 	}
 
 	/*.................................................................................................................*/
@@ -222,6 +246,19 @@ public class ExternalProcessManager implements Commandable  {
 		return exitValue==0;
 	}
 	/*.................................................................................................................*/
+	public boolean stdOutModified(){
+		long lastModified = stdOutLastModified;
+		stdOutLastModified= getStdOutLastModified();
+		return stdOutLastModified!=lastModified;
+	}
+	/*.................................................................................................................*/
+	public boolean stdErrModified(){
+		long lastModified = stdErrLastModified;
+		stdErrLastModified= getStdErrLastModified();
+		return stdErrLastModified!=lastModified;
+	}
+
+	/*.................................................................................................................*/
 	/** monitors the run.   */
 	public boolean monitorAndCleanUpShell(ProgressIndicator progressIndicator){
 		lastModified=null;
@@ -236,6 +273,10 @@ public class ExternalProcessManager implements Commandable  {
 			if (watcher!=null && watcher.fatalErrorDetected()) {
 				return false;
 			}
+			//if (stdOutModified()) {  // check to see if it should be stdOut or stdErr
+			//	textListener.setOutputText(getStdOut());
+			//}
+
 			processOutputFiles();
 			if (stdOutWatcher !=null) 
 				stdOutWatcher.currentStdOutText(getStdOut());

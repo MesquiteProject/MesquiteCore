@@ -44,6 +44,9 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		return "";
 	}
 	
+	public  void setOutputTextListener(OutputTextListener textListener){
+	}
+
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("autoSaveFile".equalsIgnoreCase(tag))
