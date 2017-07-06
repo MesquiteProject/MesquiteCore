@@ -324,6 +324,7 @@ class ExtraPanelHTMLWindow extends MesquitePanel {
 		textPane.setVisible(true);
 		scrollPane = new  JScrollPane(); 
 		//scrollPane.add(textPane);
+		scrollPane.setBackground(ColorDistribution.veryLightGray);
 		scrollPane.getViewport().add(textPane,  BorderLayout.CENTER ); 
 		scrollPane.setVisible(true);
 		
@@ -344,7 +345,7 @@ class ExtraPanelHTMLWindow extends MesquitePanel {
 	}
 
 	public void setText(String s){
-		if (StringUtil.blank(s))
+		if (s==null)
 			return;
 		this.text = s;
 		if (textPane!=null) {
