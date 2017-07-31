@@ -350,7 +350,12 @@ class ExtraPanelHTMLWindow extends MesquitePanel {
 		this.text = s;
 		if (textPane!=null) {
 			textPane.setText(s);
-			textPane.setCaretPosition(s.length());
+			try {
+				textPane.setCaretPosition(s.length());
+			} catch (IllegalArgumentException e) {
+				if (MesquiteTrunk.debugMode)
+					MesquiteMessage.println("IllegalArgumentException in ExtraPanelHTMLWindow.setText, s.length = " + s.length());
+			}
 			DefaultCaret caret = (DefaultCaret) textPane.getCaret();
 			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		}
