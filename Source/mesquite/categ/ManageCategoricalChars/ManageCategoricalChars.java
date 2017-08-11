@@ -308,7 +308,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		
 		String csl = "\tCHARSTATELABELS " + StringUtil.lineEnding();
 		boolean found = false;
-		String end = " "; //StringUtil.lineEnding()
+		String end = StringUtil.lineEnding() + "\t\t"; //StringUtil.lineEnding()
 		CategoricalData dData = (CategoricalData)data;
 		for (int i = 0; i<data.getNumChars(); i++) {
 			String cslC="";
