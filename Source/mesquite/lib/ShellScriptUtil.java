@@ -187,7 +187,8 @@ public class ShellScriptUtil  {
 	}
 
 	/*.................................................................................................................*/
-	public static Process executeScript(String scriptPath){ 
+	@Deprecated
+	public  static Process executeScript(String scriptPath){ 
 		return executeScript(scriptPath, true);
 	}
 	/*.................................................................................................................*/
