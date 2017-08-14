@@ -54,7 +54,7 @@ public class CharSrcCoordIndep extends CharSourceCoord {
 		characterSourceTask = (CharSourceCoordObed)hireCompatibleEmployee(CharSourceCoordObed.class, condition, exp);
 		if (characterSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of characters was obtained.");
-		addMenuItem( "Choose Character", makeCommand("chooseCharacter",  this));
+		addMenuItem( "Choose Character...", makeCommand("chooseCharacter",  this));
 		return true;
 	}
 	/** Returns the purpose for which the employee was hired (e.g., "to reconstruct ancestral states" or "for X axis").*/

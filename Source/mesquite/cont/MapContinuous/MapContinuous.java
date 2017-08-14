@@ -64,7 +64,7 @@ public class MapContinuous extends NumbersForNodesIncr implements Incrementable 
 		if (!(NumbersForNodesIncr.class.isAssignableFrom(getHiredAs()))){
 			addMenuItem( "Next Character", makeCommand("nextCharacter",  this));
 			addMenuItem( "Previous Character", makeCommand("previousCharacter",  this));
-			addMenuItem( "Choose Character", makeCommand("chooseCharacter",  this));
+			addMenuItem( "Choose Character...", makeCommand("chooseCharacter",  this));
 		}
 		/**/
 		itemChoiceCommand = MesquiteModule.makeCommand("setItem",  this);
