@@ -19,6 +19,7 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 
 /** Manages specification of character inclusion/exclusion, including reading/writing EXSETs in NEXUS file*/
@@ -76,6 +77,39 @@ public class ManageCharInclusion extends CharSpecsSetManager {
 		return blockName.equalsIgnoreCase("SETS") || blockName.equalsIgnoreCase("ASSUMPTIONS");
 	}
    	
+	public static String nexusCoreStringForSpecsSet(CharSpecsSet specsSet, CharacterData data){
+		CharInclusionSet inclusionSet = (CharInclusionSet)specsSet;
+		String sT = "";
+		int continuing = 0;
+		int lastWritten = -1;
+		for (int ic=0; ic<data.getNumChars(); ic++) {
+			if (!inclusionSet.isBitOn(ic)) {
+				if (continuing == 0) {
+					sT += " " + CharacterStates.toExternal(ic);
+					lastWritten = ic;
+					continuing = 1;
+				}
+				else if (continuing == 1) {
+					sT += " - ";
+					continuing = 2;
+				}
+			}
+			else if (continuing>0) {
+				if (lastWritten !=ic-1){
+					sT += " " + CharacterStates.toExternal(ic-1);
+					lastWritten = ic-1;
+				}
+				else
+					lastWritten = -1;
+				continuing = 0;
+			}
+
+		}
+		if (continuing>1)
+			sT += " " + CharacterStates.toExternal(data.getNumChars()-1);
+
+		return sT;
+	}
 
 	public String nexusStringForSpecsSet(CharSpecsSet specsSet, CharacterData data, MesquiteFile file, boolean isCurrent){
 			if (specsSet ==null || !(specsSet instanceof CharInclusionSet))
@@ -83,34 +117,7 @@ public class ManageCharInclusion extends CharSpecsSetManager {
 			CharInclusionSet inclusionSet = (CharInclusionSet)specsSet;
 			String s= "";
 			if (inclusionSet!=null && (inclusionSet.getFile()==file || (inclusionSet.getFile()==null && data.getFile()==file))) {
-				String sT = "";
-				int continuing = 0;
-				int lastWritten = -1;
-				for (int ic=0; ic<data.getNumChars(); ic++) {
-					if (!inclusionSet.isBitOn(ic)) {
-						if (continuing == 0) {
-							sT += " " + CharacterStates.toExternal(ic);
-							lastWritten = ic;
-							continuing = 1;
-						}
-						else if (continuing == 1) {
-							sT += " - ";
-							continuing = 2;
-						}
-					}
-					else if (continuing>0) {
-						if (lastWritten !=ic-1){
-							sT += " " + CharacterStates.toExternal(ic-1);
-							lastWritten = ic-1;
-						}
-						else
-							lastWritten = -1;
-						continuing = 0;
-					}
-
-				}
-				if (continuing>1)
-					sT += " " + CharacterStates.toExternal(data.getNumChars()-1);
+				String sT = nexusCoreStringForSpecsSet(specsSet, data);
 				s += "EXSET ";
 				if (isCurrent)
 					s += "* ";

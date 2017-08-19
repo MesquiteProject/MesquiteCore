@@ -377,15 +377,13 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file.write(endLine);
 		}
 		file.write("\tDIMENSIONS ");
-		if (file.useSimplifiedNexus && file.useDataBlocks) {
+		if (file.useDataBlocks) {
 			int numTaxaToWrite = data.getNumTaxa();
 			if (!file.writeTaxaWithAllMissing)
 				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, file.fractionApplicable);
 			else if (file.writeOnlySelectedTaxa)
 				numTaxaToWrite = data.numSelectedTaxa();
-
-				
-				file.write(" NTAX=" + numTaxaToWrite);
+			file.write(" NTAX=" + numTaxaToWrite);
 		}
 		int numCharsToWrite;
 		if (file.writeExcludedCharacters)

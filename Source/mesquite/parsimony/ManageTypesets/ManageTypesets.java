@@ -81,26 +81,32 @@ public class ManageTypesets extends CharSpecsSetManager {
 			return false;
 		return blockName.equalsIgnoreCase("SETS") || blockName.equalsIgnoreCase("ASSUMPTIONS");
 	}
+	public static String nexusCoreStringForSpecsSet(CharSpecsSet specsSet, CharacterData data){
+		ModelSet modelSet = (ModelSet)specsSet;
+		String sT = " ";
+		boolean firstTime = true;
+		Enumeration enumeration = data.getProject().getCharacterModels().elements();
+		while (enumeration.hasMoreElements()){
+			Object obj = enumeration.nextElement();
+			CharacterModel cm = (CharacterModel)obj;
+			String q = ListableVector.getListOfMatches(modelSet.getModels(), cm, CharacterStates.toExternal(0));
+			if (q != null) {
+				if (!firstTime)
+					sT += ", ";
+				sT += StringUtil.tokenize(cm.getNEXUSName()) + ": " + q ;
+				firstTime = false;
+			}
+		}
+
+		return sT;
+	}
 	public String nexusStringForSpecsSet(CharSpecsSet specsSet, CharacterData data, MesquiteFile file, boolean isCurrent){
 		if (specsSet ==null || !(specsSet instanceof ParsimonyModelSet))
 			return null;
 		ModelSet modelSet = (ModelSet)specsSet;
 		String s= "";
 		if (modelSet !=null && (modelSet.getFile()==file || (modelSet.getFile()==null && data.getFile()==file))) {
-			String sT = " ";
-			boolean firstTime = true;
-			Enumeration enumeration = file.getProject().getCharacterModels().elements();
-			while (enumeration.hasMoreElements()){
-				Object obj = enumeration.nextElement();
-				CharacterModel cm = (CharacterModel)obj;
-				String q = ListableVector.getListOfMatches(modelSet.getModels(), cm, CharacterStates.toExternal(0));
-				if (q != null) {
-					if (!firstTime)
-						sT += ", ";
-					sT += StringUtil.tokenize(cm.getNEXUSName()) + ": " + q ;
-					firstTime = false;
-				}
-			}
+			String sT = nexusCoreStringForSpecsSet(specsSet,data);
 			if (!StringUtil.blank(sT)) {
 				s+= "TYPESET " ;
 				if (isCurrent)
