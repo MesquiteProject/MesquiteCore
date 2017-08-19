@@ -455,6 +455,17 @@ public class AlignUtil {
 			gapExtendTerminal.setValue(2);
 	}
 	
+	public static void getDefaultGapCostsLowTerminal(MesquiteInteger gapOpen, MesquiteInteger gapExtend, MesquiteInteger gapOpenTerminal, MesquiteInteger gapExtendTerminal){
+		if (gapOpen!=null)
+			gapOpen.setValue(16);
+		if (gapExtend!=null)
+			gapExtend.setValue(6);
+		if (gapOpenTerminal!=null)
+			gapOpenTerminal.setValue(1);
+		if (gapExtendTerminal!=null)
+			gapExtendTerminal.setValue(1);
+	}
+	
 	/*.................................................................................................................*/
 	public static int[][] getDefaultSubstitutionCosts(int alphabetLength){
 		

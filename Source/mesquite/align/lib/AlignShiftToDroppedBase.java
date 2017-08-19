@@ -86,7 +86,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 		addMenuSeparator();
 		addMenuItem("Save Current Settings as Defaults", MesquiteModule.makeCommand("saveDefaults", this));
 		addCheckMenuItem(null, "Ignore File Settings; Use Defaults", MesquiteModule.makeCommand("toggleIgnoreFileSettings", this), ignoreFileSettings);
-		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal); 
+		AlignUtil.getDefaultGapCostsLowTerminal(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal); 
 
 		loadPreferences();
 		preferencesProcessed = true;
@@ -222,6 +222,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 			//aligner.setUseLowMem(data.getNumChars()>aligner.getCharThresholdForLowMemory());
 			originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign);
 			aligner.setAllowNewInternalGaps(true);
+			//aligner.setGapCosts(8,3,1, 1);
 			long[][] aligned = null;
 			if (alwaysAlignEntireSequences())
 				aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);

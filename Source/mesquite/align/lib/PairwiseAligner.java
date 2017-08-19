@@ -328,6 +328,14 @@ public class PairwiseAligner  {
 		gapCostsInitialized = true;
 	}
 
+	/** Sets just the terminal gap costs*/
+	public void setTerminalGapCosts(int gapOpenTerminal, int gapExtendTerminal){
+		if (gapOpenTerminal >=0)
+			this.gapOpenTerminal = gapOpenTerminal;
+		if (gapExtendTerminal >=0)
+			this.gapExtendTerminal = gapExtendTerminal;
+	}
+
 	/** If object wasn't called with subs cost arguments, this must be called or alignment will fail*/
 	public void setSubsCostMatrix(int[][] subs){
 		this.subs = subs;
