@@ -270,7 +270,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			blocks.append(endLine);
 		}
 		blocks.append("\tDIMENSIONS ");
-		if (file!=null && file.useSimplifiedNexus && file.useDataBlocks){
+		if (file!=null && file.useDataBlocks){
 			int numTaxaToWrite = data.getNumTaxa();
 			if (!file.writeTaxaWithAllMissing)
 				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, file.fractionApplicable);
