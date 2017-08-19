@@ -29,6 +29,7 @@ public class MesquiteExternalProcess  {
 	String directoryPath;
 	String outputFilePath;
 	String errorFilePath;
+	MesquiteInteger errorCode;
 	
 
 	public MesquiteExternalProcess(Process proc) {
@@ -41,12 +42,20 @@ public class MesquiteExternalProcess  {
 		return proc;
 	}
 	/*.................................................................................................................*/
+	public int getErrorCode() {
+		if (errorCode!=null)
+			return errorCode.getValue();
+		return ShellScriptUtil.NOERROR;
+	}
+	/*.................................................................................................................*/
 
 	public void start(String directoryPath, String outputFilePath, String errorFilePath, String...command) {
 		this.directoryPath = directoryPath;
 		this.outputFilePath = outputFilePath;
 		this.errorFilePath = errorFilePath;
-		this.proc = ShellScriptUtil.startProcess(directoryPath,  outputFilePath,  errorFilePath, command);
+		errorCode = new MesquiteInteger(ShellScriptUtil.NOERROR);
+		this.proc = ShellScriptUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
+		
 	}
 	
 

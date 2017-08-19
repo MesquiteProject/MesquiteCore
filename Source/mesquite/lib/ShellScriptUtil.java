@@ -29,6 +29,9 @@ import java.io.*;
 public class ShellScriptUtil  {
 	static int sleepTime = 50;
 	public static int recoveryDelay = 0;
+	
+	public final static int NOERROR = 0;
+	public final static int PERMISSIONDENIED=13;
 
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
@@ -154,7 +157,7 @@ public class ShellScriptUtil  {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public static Process startProcess(String workingDirectoryPath, String outputFilePath, String errorFilePath, String...command){
+	public static Process startProcess(MesquiteInteger errorCode, String workingDirectoryPath, String outputFilePath, String errorFilePath, String...command){
 		try {
 			ProcessBuilder pb = new ProcessBuilder(command);
 			
@@ -178,10 +181,20 @@ public class ShellScriptUtil  {
 				assert pb.redirectOutput().file() == log;
 			if (errorLog!=null)
 				assert pb.redirectError().file() == errorLog;
+			if (errorCode!=null)
+				errorCode.setValue(NOERROR);
 		
 			return p;
 		}
 		catch (IOException e) {
+			MesquiteMessage.printLogln("IOException in attempting to start external program. \n");
+			String message = e.getMessage();
+			if (e.getMessage().indexOf("error=13")>0) {
+				message+= "\n Check to see if the external program is executable";
+				if (errorCode!=null)
+					errorCode.setValue(PERMISSIONDENIED);
+			}
+			MesquiteMessage.discreetNotifyUser(message);
 		}
 		return null;
 	}

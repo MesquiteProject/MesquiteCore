@@ -233,7 +233,7 @@ public class ExternalProcessManager implements Commandable  {
 		externalProcess = new MesquiteExternalProcess();
 		externalProcess.start(directoryPath, stdOutFilePath, stdErrFilePath, getStringArrayWithSplitting(programCommand, programOptions));
 		proc = externalProcess.getProcess();
-		return true;
+		return proc!=null;
 	}
 	/*.................................................................................................................*/
 	public boolean runStillGoing() {
