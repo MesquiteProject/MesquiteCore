@@ -69,17 +69,19 @@ public String preparePreferencesForXML () {
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
-	public boolean queryOptions(int it, int max) {
+public boolean queryOptions(int it, int max) {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryFilesDialog = new ExtensibleDialog(containerOfModule(), "Shift Other To Match",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		queryFilesDialog.addLabel("Shift Other To Match");
 		
 		if (!MesquiteInteger.isCombinable(it1) || !MesquiteInteger.isCombinable(it2) || it1>max || it2>max){
-			if (it>=max) {
+			if (it>=max) {  
 				it1=1;
 			} else
 				it1 = it+2;  // it+1 to bump it over one, +2 because of the translation to 1-based numbering
 			it2=max;
+		//	if (it2==it)
+		//	it2--;
 		}
 		IntegerField it1Field =  queryFilesDialog.addIntegerField ("First Sequence", it1, 4, 1, max);
 		IntegerField it2Field =  queryFilesDialog.addIntegerField ("Last Sequence", it2, 4, 1, max);
@@ -129,7 +131,7 @@ public String preparePreferencesForXML () {
 		MesquiteInteger firstColumn = new MesquiteInteger();  // this is the first column selected in the block
 		MesquiteInteger lastColumn = new MesquiteInteger();  // this is the last column selected
 		if (table.onlySingleRowBlockSelected(row,firstColumn, lastColumn)) {
-			if (!queryOptions(row.getValue(), data.getNumTaxa()))
+			if (!queryOptions(row.getValue(), data.getNumTaxa()-1))
 					return false;
 			MesquiteBoolean dataChanged = new MesquiteBoolean (false);
 			MesquiteInteger charAdded = new MesquiteInteger(0);
@@ -199,11 +201,11 @@ public String preparePreferencesForXML () {
     }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Shift Other To Match";
+		return "Shift Other To Match Selected";
    	 }
     		/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Shift Other To Match...";
+		return "Shift Other To Match Selected...";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
