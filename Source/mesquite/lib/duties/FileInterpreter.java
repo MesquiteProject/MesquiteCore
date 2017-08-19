@@ -320,6 +320,16 @@ public abstract class FileInterpreter extends MesquiteModule  {
 			if (fn != null){
 				fn.setValue(tempFileName);
 			}
+			MesquiteFile mf = new MesquiteFile();
+			mf.setLocation(tempFileName, tempDirectoryName, true);
+			if (mf != null){
+				if (!mf.canCreateOrRewrite()){
+					discreetAlert("Sorry, the file \"" + mf.getFileName() + "\"could not be written because of problems concerning the file system.  See diagnosis in the Mesquite Log");
+					String report = mf.diagnosePathIssues();
+					logln("DIAGNOSIS of folder and file status:\n" + report);
+					return null;
+				}
+			}
 			return tempDirectoryName+tempFileName;
 		}
 		return null;

@@ -1091,6 +1091,15 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public boolean export(FileInterpreterI exporter, MesquiteFile file, String arguments){
 		if (exporter!=null){
 			MainThread.incrementSuppressWaitWindow();
+			//check first that file can be written.
+			if (file != null){
+				if (!file.canCreateOrRewrite()){
+					discreetAlert("Sorry, the file \"" + file.getFileName() + "\"could not be exported because of problems concerning the file system.  See diagnosis in the Mesquite Log");
+					String report = file.diagnosePathIssues();
+					logln("DIAGNOSIS of folder and file status:\n" + report);
+					return false;
+				}
+			}
 			boolean success = exporter.exportFile(file, arguments); 
 			MainThread.decrementSuppressWaitWindow();
 			return success;

@@ -186,7 +186,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		FileCoordinator coord = getFileCoordinator();
 		MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(path), CommandChecker.defaultChecker); //TODO: never scripting???
-
 		TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
 		Taxa newTaxa =taxa.cloneTaxa(taxaToAlign);
 		newTaxa.addToFile(tempDataFile, null, taxaManager);
