@@ -194,8 +194,15 @@ public class RecAncestralStates extends CharHistorySource {
 		//preparing to receive mapping
 		history =currentObservedStates.adjustHistorySize(tree, history);
 		boolean success = assignTask.getMapping(im, history, resultString);
-		if (resultString!=null)
-			resultString.prepend("Character: " + currentObservedStates.getName() + "\n");
+		if (resultString!=null){
+			String ns = "Character";
+			CharacterData cd = currentObservedStates.getParentData();
+			int ic = currentObservedStates.getParentCharacter();
+			if (cd != null && ic >=0 && MesquiteInteger.isCombinable(ic))
+				ns += " " + (ic+1);
+			resultString.prepend(ns + ": " + currentObservedStates.getName() + "\n");
+		}
+		
 		if (history == null || !success) { 
 			if (resultString!=null)
 				resultString.setValue("Ancestral states not successfully reconstructed at nodes.");

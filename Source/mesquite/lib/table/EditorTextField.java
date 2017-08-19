@@ -56,7 +56,7 @@ public class EditorTextField extends TextField  {
 		setBackground(ColorDistribution.veryLightGray);
 	//	setBackground(ColorDistribution.cyan);
 		kListener = new KListener(panel.getMesquiteWindow(), this);
-		addKeyListener(kListener);
+		addKeyListener(kListener); 
 		addFocusListener(new FListener());
 	}
 	
