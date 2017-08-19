@@ -127,9 +127,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			leftBracket = "�";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");
 			rightBracket = "�"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
 		}
-		*/
-			leftBracket = "\u00AB";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");  
-			rightBracket = "\u00BB"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8"); 
+		 */
+		leftBracket = "\u00AB";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");  
+		rightBracket = "\u00BB"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8"); 
 		//}
 
 	}
@@ -261,7 +261,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			MesquiteTimer timer = new MesquiteTimer();
 			if (MesquiteTrunk.debugMode)
 				timer.start();
-				
+
 			MesquiteTrunk.suppressResetCheckMenuItems();
 			resetAllMenuPending = false;
 
@@ -1611,15 +1611,19 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 
 				if (msms.getListableFilter()==null || msms.getListableFilter().isInstance(mw) || mw instanceof CompatibilityChecker) {
 
-					boolean OK = !(mw instanceof CompatibilityChecker) || (ccc ==null && qualificationsTest == null);
-					if (!OK){  //second chance, might be compatible
-						OK = true;
-						if (qualificationsTest != null)
-							OK = qualificationsTest.isQualified(mw);
-						if (ccc != null)
-							OK = OK && ((CompatibilityChecker)mw).isCompatible(ccc, null, null);
-
-						OK = OK &&  ((CompatibilityChecker)mw).isCompatible(msms.getListableFilter(), null, null);
+					//if rejected by filter, then no go
+					boolean OK = msms.getListableFilter()==null || msms.getListableFilter().isInstance(mw);
+					//passes filter; let's check if a compatibility checker
+					if (OK){
+						OK = !(mw instanceof CompatibilityChecker) || (ccc ==null && qualificationsTest == null);
+						if (!OK){  //second chance, might be compatible
+							OK = true;
+							if (qualificationsTest != null)
+								OK = qualificationsTest.isQualified(mw);
+							if (ccc != null)
+								OK = OK && ((CompatibilityChecker)mw).isCompatible(ccc, null, null);
+							OK = OK &&  ((CompatibilityChecker)mw).isCompatible(msms.getListableFilter(), null, null);
+						}
 					}
 					if (OK){
 						int hiddenStatus = 0;
@@ -1854,7 +1858,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		}
 		else if (msms.getListableVector()!=null) {  
 			MesquiteInteger j = new MesquiteInteger(0); 
-
 			Object o = msms.getCompatibilityCheck();
 			QualificationsTest qualificationsTest = msms.getQualificationsTest();
 
@@ -2129,8 +2132,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				MesquiteMenuItem openItem = new MesquiteMenuItem("Open File...", MesquiteModule.mesquiteTrunk, MesquiteModule.mesquiteTrunk.openFileCommand);
 				openItem.setShortcut(openShortcut);
 				newMenu.add(openItem);
-		//		MesquiteMenuItem importItem = new MesquiteMenuItem("Open Special NEXUS File...", MesquiteModule.mesquiteTrunk, MesquiteModule.mesquiteTrunk.openSpecialNEXUSCommand);
-		//		newMenu.add(importItem);
+				//		MesquiteMenuItem importItem = new MesquiteMenuItem("Open Special NEXUS File...", MesquiteModule.mesquiteTrunk, MesquiteModule.mesquiteTrunk.openSpecialNEXUSCommand);
+				//		newMenu.add(importItem);
 			}
 			/*-------------- open URL menu or submenu */
 			//newMenu.add(new MesquiteMenuItem("Open URL...", MesquiteModule.mesquiteTrunk, MesquiteModule.mesquiteTrunk.openURLCommand));
@@ -2684,7 +2687,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	}
 	/*.................................................................................................................*/
 	final MesquiteSubmenu findSubmenu(Menu menu, MesquiteSubmenuSpec smSpec){
-		
+
 		if (smSpec!= null && menu!=null) {
 			for (int i=0; i<menu.getItemCount(); i++) {
 				if (smSpec.getSubmenuName().equalsIgnoreCase(menu.getItem(i).getLabel()) && menu.getItem(i) instanceof MesquiteSubmenu && ((MesquiteSubmenu)menu.getItem(i)).getOwnerModuleID() == smSpec.getOwnerModuleID()) {
