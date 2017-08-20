@@ -190,7 +190,7 @@ public class ShellScriptUtil  {
 			MesquiteMessage.printLogln("IOException in attempting to start external program. \n");
 			String message = e.getMessage();
 			if (e.getMessage().indexOf("error=13")>0) {
-				message+= "\n Check to see if the external program is executable";
+				message+= "\n\nCheck to see if the external program is executable.";
 				if (errorCode!=null)
 					errorCode.setValue(PERMISSIONDENIED);
 			}
