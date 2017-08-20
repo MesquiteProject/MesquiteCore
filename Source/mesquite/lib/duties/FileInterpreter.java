@@ -157,10 +157,6 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	}
 
 	/*.................................................................................................................*/
-	public String getStandardFileExtensionForExport() {
-		return "";
-	}
-	/*.................................................................................................................*/
 	public String preferredDataFileExtension() {
 		return "";
 	}

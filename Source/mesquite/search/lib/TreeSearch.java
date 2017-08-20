@@ -37,6 +37,9 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 		if (searchTask != null)
 			searchTask.setOutputTextListener(textListener);
 	}
+	public String getInferenceName(){
+		return searchTask.getInferenceName();
+	}
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

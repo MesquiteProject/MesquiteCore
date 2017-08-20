@@ -67,6 +67,10 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public String getHTMLDescriptionOfStatus(){
 		return getName();
 	}
+	// override to give more information
+	public String getInferenceName(){
+		return getName();
+	}
 	public boolean canGiveIntermediateResults(){
 		return false;
 	}

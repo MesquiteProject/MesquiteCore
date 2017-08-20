@@ -589,7 +589,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		return outputBuffer;
  	}
 	/*.................................................................................................................*/
-	public String getStandardFileExtensionForExport() {
+	public String preferredDataFileExtension() {  
 		return "fas";
 	}
 
@@ -612,7 +612,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		StringBuffer outputBuffer = getDataAsFileText(file, data);
 
 		if (outputBuffer!=null) {
-			saveExportedFileWithExtension(outputBuffer, arguments, getStandardFileExtensionForExport());
+			saveExportedFileWithExtension(outputBuffer, arguments, preferredDataFileExtension());
 			saveExtraFiles(data);  
 			return true;
 		}

@@ -91,6 +91,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
 		public String getHTMLDescriptionOfStatus(){
 			return getName();
 		}
+		 //Override in subclasses
+		public String getInferenceName(){
+			return getName();
+		}
 
 		public String getLogText() {
 			return "";

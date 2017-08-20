@@ -16,6 +16,9 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
+import java.awt.event.ComponentListener;
+import java.awt.event.MouseListener;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
@@ -74,6 +77,10 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 		if (showPanel)
 			showPanel();
 		resetTitle();
+	}
+	public void setExtraPanelListener(MouseListener cL){
+		Debugg.printStackTrace("cL$$$$$$$$$$$$$$$$$$$$$$$$$$$$ " + cL);
+			extraPanel.textPane.addMouseListener(cL);
 	}
 	public void showPanel(){
 		addToWindow(scrollPane);
@@ -275,6 +282,7 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 		}
 	}
 	public void setOutputText(String s) {
+		Debugg.printStackTrace();
 		setExtraPanelText(s);
 	}
 
@@ -334,7 +342,6 @@ class ExtraPanelHTMLWindow extends MesquitePanel {
 		textPane.setBounds(0, 0, getWidth(), getHeight());
 
 		textPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 9));
-
 		add(scrollPane);
 
 	}

@@ -163,6 +163,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		MesquiteProject proj = file.getProject();
 		FileCoordinator coord = getFileCoordinator();
 		exporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
+		Debugg.println("EXPORTERTASK" + exporterTask);
 		if (exporterTask == null)
 			return false;
 		Taxa taxa;
@@ -190,6 +191,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 				}
 				
 				path = path + "." + exporterTask.preferredDataFileExtension(); 
+				Debugg.println(" exporterTask.preferredDataFileExtension() " + exporterTask.preferredDataFileExtension());
 				if (!StringUtil.blank(exporterTask.preferredDataFileExtension()) && !fileName.endsWith(exporterTask.preferredDataFileExtension()))
 					fileName = fileName + "." + exporterTask.preferredDataFileExtension();
 				MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(path), CommandChecker.defaultChecker); //TODO: never scripting???
