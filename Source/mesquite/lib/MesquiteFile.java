@@ -2269,6 +2269,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		return s;
 	}	
+	
 	/*.................................................................................................................*/
 	/** Checks to see if can write to a file*/
 	public static boolean canWrite(String path) {

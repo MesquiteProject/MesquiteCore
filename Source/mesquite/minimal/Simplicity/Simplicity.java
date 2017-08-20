@@ -64,6 +64,7 @@ public class Simplicity extends SimplicityManagerModule {
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		lockSimplicity = new MesquiteBoolean(false);
+		makeInstallationSettingsPathIfNeeded();
 		
 		if (InterfaceManager.enabled)
 			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Lock In Simple Mode", makeCommand("toggleLockSimplicity",  this), lockSimplicity);
@@ -132,6 +133,7 @@ public class Simplicity extends SimplicityManagerModule {
 	}
 	/*---------------------------*/
 	public void importSettingsFiles(){
+		
 		String basePath = 		getInstallationSettingsPath();
 		StringArray custom = null;
 		File f = new File(basePath);

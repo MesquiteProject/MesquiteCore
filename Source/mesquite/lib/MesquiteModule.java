@@ -945,6 +945,18 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		//modulePath = modulePath.substring(9, modulePath.length());
 		return  base + modulePath;
 	}
+	
+	
+	/*.................................................................................................................*/
+	/** makes module's directory for installation settings (i.e., belonging to Mesquite_Folder, not to the user)*/
+	public boolean makeInstallationSettingsPathIfNeeded() {  
+		String path = getInstallationSettingsPath();
+		File mf = new File(path);
+		if (mf.exists())
+			return true;
+		return mf.mkdirs();
+	}
+
 	/*.................................................................................................................*/
 	/** returns path to this module's directory*/
 	public String getPath() {  

@@ -41,7 +41,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
 		names = new ListableVector();
-		if (!MesquiteThread.isScripting())
+		//if (!MesquiteThread.isScripting())
 			names.addElement(new MesquiteString("consensusFrequency", "consensusFrequency"), false);
 		thresholdValueToShow = new MesquiteDouble();
 		on = new MesquiteBoolean(true);  //ON is currently true always
@@ -88,6 +88,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			temp.addLine("setOn " + on.toOffOnString());
 			for (int i=0; i< names.size(); i++)
 				temp.addLine("toggleShow " + StringUtil.tokenize(((Listable)names.elementAt(i)).getName()));
+			temp.addLine("toggleShow consensusFrequency"); //given it's on by default, this will reverse previous command
 			temp.addLine("setDigits " + digits); 
 			temp.addLine("setThreshold " + thresholdValueToShow); 
 			temp.addLine("writeAsPercentage " + percentage.toOffOnString());
