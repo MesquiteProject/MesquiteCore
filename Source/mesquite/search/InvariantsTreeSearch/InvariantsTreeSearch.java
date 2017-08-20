@@ -29,6 +29,11 @@ public class InvariantsTreeSearch extends TreeSearch  {
 	public Class getHireSubchoice(){
 		return InvariantsAnalysis.class;  
 	}
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+   	public boolean requestPrimaryChoice(){
+   		return false;  
+   	}
 
 }
 
