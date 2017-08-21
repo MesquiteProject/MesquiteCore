@@ -2974,11 +2974,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					}
 				}
 			}
-			if (taxonNumber >=0){ //taxon successfully found
+			if ( taxonNumber >=0){ //taxon successfully found
 				if (taxonNumber>= nodeOfTaxon.length)
 					resetNodeOfTaxonNumbers();
 				if (taxonNumber>= nodeOfTaxon.length){
 					MesquiteMessage.warnProgrammer("taxon number too high found (" + c + "); number: "+taxonNumber);
+					taxonNumber = namer.whichTaxonNumber(taxa, c);
 					return FAILED;
 				}
 
