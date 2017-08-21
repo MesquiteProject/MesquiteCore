@@ -36,8 +36,8 @@ public class ExternalProcessManager implements Commandable  {
 	String name;
 	String[] outputFilePaths; //reconnect
 	String stdOutFilePath, stdErrFilePath;
-	public String stdOutFileName = "StandardOutputFile";
-	public String stdErrFileName = "StandardErrorFile";
+	public String stdOutFileName = ShellScriptRunner.stOutFileName;
+	public String stdErrFileName = ShellScriptRunner.stErrorFileName;
 	OutputFileProcessor outputFileProcessor; //reconnect
 	StdOutWatcher stdOutWatcher; //reconnect
 	ShellScriptWatcher watcher; //reconnect
