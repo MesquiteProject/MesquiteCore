@@ -19,12 +19,12 @@ import java.io.*;
 
 public class MesquiteExternalProcess  {
 	OutputStream inputToProcess;
-	OutputStreamWriter inputStreamsWriter;
-	BufferedWriter inputBufferedWriter;
-	StandardOutputsStreamReader errorReader;
-	StandardOutputsStreamReader outputReader;
-	FileWriter outputWriter;
-	FileWriter errorWriter;
+	//OutputStreamWriter inputStreamsWriter;
+	//BufferedWriter inputBufferedWriter;
+	//StandardOutputsStreamReader errorReader;
+	//StandardOutputsStreamReader outputReader;
+	//FileWriter outputWriter;
+	//FileWriter errorWriter;
 	Process proc;
 	String directoryPath;
 	String outputFilePath;
@@ -96,12 +96,12 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 
 	public void dispose() {
-		try {
+/*		try {
 			if (inputBufferedWriter!=null)
 				inputBufferedWriter.close();
 		}
 		catch (Exception e) {
-		}
+		}*/
 	}
 	/*.................................................................................................................*/
 
@@ -116,7 +116,8 @@ public class MesquiteExternalProcess  {
 		return false;
 	}
 	
-	public void startStandardOutputsReaders(File outputFile, File errorFile) {
+	/*
+	 * public void startStandardOutputsReaders(File outputFile, File errorFile) {
 		try { 
 			errorWriter = new FileWriter(errorFile);
 			outputWriter = new FileWriter(outputFile);
@@ -127,12 +128,17 @@ public class MesquiteExternalProcess  {
 		catch (IOException e) {
 			MesquiteMessage.warnProgrammer("IOException");
 		}
+		
 		errorReader = new StandardOutputsStreamReader(proc.getErrorStream(), errorWriter);
 		outputReader = new StandardOutputsStreamReader(proc.getInputStream(),  outputWriter);
-		errorReader.start();
-		outputReader.start();
-
+		if (errorReader!=null)
+			errorReader.start();
+		if (outputReader!=null)
+			outputReader.start();
+	
 	}
+			*/
+
 	/*.................................................................................................................*
 
 	public void flushStandardOutputsReaders() {
