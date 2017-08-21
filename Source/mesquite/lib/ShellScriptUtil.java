@@ -137,6 +137,8 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static Process startProcess(String...command){
 		try {
+			if (command==null || command.length==0 || StringUtil.blank(command[0]))
+				return null;
 			ProcessBuilder pb = new ProcessBuilder(command);
 			/*Map<String, String> env = pb.environment();
 			env.put("VAR1", "myValue");
@@ -160,8 +162,11 @@ public class ShellScriptUtil  {
 	public static Process startProcess(MesquiteInteger errorCode, String workingDirectoryPath, String outputFilePath, String errorFilePath, String...command){
 		try {
 			
-			if (command==null || command.length==0 || StringUtil.blank(command[0]))
+			if (command==null || command.length==0 || StringUtil.blank(command[0])) {
+				MesquiteMessage.printLogln("Error in attempting to start external program: commands empty. \n");
+				
 				return null;
+			}
 			ProcessBuilder pb = new ProcessBuilder(command);
 			
 		   if (StringUtil.notEmpty(workingDirectoryPath)) {
