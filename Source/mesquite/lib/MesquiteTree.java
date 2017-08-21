@@ -20,7 +20,10 @@ import java.awt.*;
 import java.math.*;
 import java.util.*;
 
+import mesquite.lib.duties.ElementManager;
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.duties.TreesManager;
 
 /* ======================================================================== */
 /** The basic Tree class of Mesquite.  Nodes are represented by integers (Object representation of nodes is too
@@ -172,6 +175,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** The constructor, passed the Taxa on which the tree is based */
 	public MesquiteTree (Taxa taxa) {
 		super(standardNumNodeSpaces(taxa));
+		numericalLabelInterpretationSet = numericalLabelInterpretationSetRUN;
+		interpretNumericalLabelsAsOnBranches = interpretNumericalLabelsAsOnBranchesRUN;
+		interpretLabelsAsNumerical = interpretLabelsAsNumericalRUN;
+		defaultValueCode = defaultValueCodeRUN;
 		totalCreated++;
 		id = totalCreated;
 		this.taxa = taxa;
@@ -197,6 +204,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	as it prepares for an exact copy of the tree even if it's currently out of date*/
 	public MesquiteTree (Taxa taxa, int numTaxa, int numNodeSpaces, long taxaVersion) {
 		super(numNodeSpaces);
+		numericalLabelInterpretationSet = numericalLabelInterpretationSetRUN;
+		interpretNumericalLabelsAsOnBranches = interpretNumericalLabelsAsOnBranchesRUN;
+		interpretLabelsAsNumerical = interpretLabelsAsNumericalRUN;
+		defaultValueCode = defaultValueCodeRUN;
 		totalCreated++;
 		id = totalCreated;
 		this.taxa = taxa;
@@ -221,6 +232,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** The constructor, passed the Taxa on which the tree is based, and a string description of the tree */
 	public MesquiteTree (Taxa taxa, String description) {
 		this(taxa);
+		numericalLabelInterpretationSet = numericalLabelInterpretationSetRUN;
+		interpretNumericalLabelsAsOnBranches = interpretNumericalLabelsAsOnBranchesRUN;
 		readTree(description);
 	}
 	public String toHTMLStringDescription(){
@@ -2768,8 +2781,51 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return total;
 	}
 	/*-----------------------------------------*/
+
+	static boolean numericalLabelInterpretationSetRUN = false;
+	boolean numericalLabelInterpretationSet = false;
+	static boolean interpretNumericalLabelsAsOnBranchesRUN = false;
+	boolean interpretNumericalLabelsAsOnBranches = false;
+	static boolean interpretLabelsAsNumericalRUN = false;
+	boolean interpretLabelsAsNumerical = false;
+	static String defaultValueCodeRUN = "";
+	String defaultValueCode = "";
+	NameReference defaultValueCodeRef = null;
+	
+	boolean checkNumericalLabelInterpretation(String c){
+		if (numericalLabelInterpretationSet){ //user has answered, therefore follow guidance
+			if (interpretLabelsAsNumerical)
+				return true;
+			return false;
+		}
+
+		if (taxa != null){
+			MesquiteProject project = taxa.getProject();
+			FileCoordinator fc = project.getCoordinatorModule();
+			TreesManager em = (TreesManager)fc.findManager(fc, TreeVector.class);
+			boolean[] interps = new boolean[4]; //0 interpret as number (vs. text); 1 interpret as on branch (vs. node); 2 remember
+			MesquiteString n = new MesquiteString(); //the code name of the value, e.g. "consensusFrequency"
+			numericalLabelInterpretationSet = em.queryAboutNumericalLabelIntepretation(interps, c, n);
+			if (numericalLabelInterpretationSet){
+				if (interps[0]){ // treat as number
+					interpretLabelsAsNumerical = true;
+					defaultValueCode = n.getValue();
+					defaultValueCodeRef = NameReference.getNameReference(defaultValueCode);
+					interpretNumericalLabelsAsOnBranches = interps[1];
+					if (interps[2]){
+						defaultValueCodeRUN = defaultValueCode;
+						interpretNumericalLabelsAsOnBranchesRUN = interpretNumericalLabelsAsOnBranches;
+						numericalLabelInterpretationSetRUN = true;
+					}
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	/*-----------------------------------------*/
 	NameReference branchNotesRef = NameReference.getNameReference("note");
-	/** Reads a token refering to a named internal node. */
+	/** Reads a token referring to a named internal node. */
 	private String readNamedInternal(String TreeDescription, String c, int sN, MesquiteInteger stringLoc){
 
 		if (convertInternalNames){
@@ -2782,9 +2838,20 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				System.out.println("Observed taxon " + c + " in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly");
 			}
 			if (cosmeticInternalNames){
-				setNodeLabel(c, sN); 
+				if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
+					double d = MesquiteDouble.fromString(c);
+					setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
+				}
+				else 
+					setNodeLabel(c, sN); 
+				
 				if (taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null)
 					taxa.getClades().addClade(c);
+				return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
+			}
+			else if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
+				double d = MesquiteDouble.fromString(c);
+				setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
 				return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
 			}
 			else {
