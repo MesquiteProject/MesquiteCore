@@ -2978,7 +2978,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				if (taxonNumber>= nodeOfTaxon.length)
 					resetNodeOfTaxonNumbers();
 				if (taxonNumber>= nodeOfTaxon.length){
-					MesquiteMessage.warnProgrammer("taxon number too high found (" + c + ")");
+					MesquiteMessage.warnProgrammer("taxon number too high found (" + c + "); number: "+taxonNumber);
 					return FAILED;
 				}
 
