@@ -25,6 +25,7 @@ import mesquite.trees.lib.*;
 are subclasses of the subclass TreeSource*/
 
 public abstract class TreeInferer extends TreeBlockFiller {
+	protected boolean userAborted=false;
 	Listened listened;
 	TWindowMaker tWindowMaker;
 	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
@@ -45,6 +46,11 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	}
 	
 	public  void setOutputTextListener(OutputTextListener textListener){
+	}
+
+	/*.................................................................................................................*/
+	public  void setUserAborted(){
+		userAborted=true;
 	}
 
 	/*.................................................................................................................*/
