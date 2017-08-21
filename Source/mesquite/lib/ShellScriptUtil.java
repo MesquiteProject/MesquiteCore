@@ -159,6 +159,9 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static Process startProcess(MesquiteInteger errorCode, String workingDirectoryPath, String outputFilePath, String errorFilePath, String...command){
 		try {
+			
+			if (command==null || command.length==0 || StringUtil.blank(command[0]))
+				return null;
 			ProcessBuilder pb = new ProcessBuilder(command);
 			
 		   if (StringUtil.notEmpty(workingDirectoryPath)) {
