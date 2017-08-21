@@ -67,14 +67,13 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 	public void kill () {
 		if (proc!=null) {
-			Debugg.println("REQUEST TO DESTROY PROCESS");
 			try {
 				InputStream errorStream = proc.getErrorStream();
 				errorStream.close();
 				OutputStream outputStream = proc.getOutputStream();
 				outputStream.close();
 			} catch (IOException e) {
-				Debugg.println("*****couldn't close streams");
+				MesquiteMessage.println("Couldn't close streams of process.");
 			}
 			proc.destroy();
 			try {
