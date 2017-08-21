@@ -184,7 +184,7 @@ public class ShellScriptRunner implements Commandable  {
 			externalProcessManager = new MesquiteExternalProcess(proc);
 			File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
 			File errorFile = new File(stdErrFilePath);
-			externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);
+			//externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);
 		}
 		catch (IOException e){
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);

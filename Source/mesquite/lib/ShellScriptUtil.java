@@ -63,7 +63,7 @@ public class ShellScriptUtil  {
 	public static String getChangeDirectoryCommand(String directory){
 		String directoryString;
 		if (MesquiteTrunk.isWindows()) {
-			directoryString = StringUtil.protectFilePathForWindows(directory);
+			directoryString = "/d "+StringUtil.protectFilePathForWindows(directory);
 		} else {
 			directoryString = StringUtil.protectFilePathForUnix(directory);
 		}

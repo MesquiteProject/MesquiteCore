@@ -33,7 +33,7 @@ public class ExportFusedPhylip extends InterpretPhylip {
 	/*.................................................................................................................*/
 	public boolean initializeExport(Taxa taxa) {  
 		if (useTranslationTable){
-			taxonNamer = new SimpleTaxonNamer();
+			taxonNamer = new SimpleNamesTaxonNamer();
 			taxonNamer.initialize(taxa);
 		}
 
@@ -105,7 +105,7 @@ public class ExportFusedPhylip extends InterpretPhylip {
 	/*.................................................................................................................*/
 	public void writeExtraFiles(Taxa taxa){
 		if (useTranslationTable) {
-			String table = ((SimpleTaxonNamer)taxonNamer).getTranslationTable(taxa);
+			String table = ((SimpleNamesTaxonNamer)taxonNamer).getTranslationTable(taxa);
 			if (StringUtil.notEmpty(table)) {
 				String filePath = getTranslationTablePath();
 				if (StringUtil.notEmpty(filePath))

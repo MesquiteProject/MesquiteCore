@@ -79,7 +79,6 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 		resetTitle();
 	}
 	public void setExtraPanelListener(MouseListener cL){
-		Debugg.printStackTrace("cL$$$$$$$$$$$$$$$$$$$$$$$$$$$$ " + cL);
 			extraPanel.textPane.addMouseListener(cL);
 	}
 	public void showPanel(){
@@ -282,7 +281,6 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 		}
 	}
 	public void setOutputText(String s) {
-		Debugg.printStackTrace();
 		setExtraPanelText(s);
 	}
 

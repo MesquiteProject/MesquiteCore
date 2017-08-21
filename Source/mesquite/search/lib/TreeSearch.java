@@ -23,6 +23,8 @@ import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public abstract class TreeSearch extends TreeInferer implements Incrementable {
+	protected TreeSearcher searchTask;
+	
 	public String getExplanation() {
 		return "Supplies trees resulting from a search to optimize some value.";
 	}
@@ -31,7 +33,6 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 		"The method to search for trees can be selected initially");
 	}
 	/*.................................................................................................................*/
-	protected TreeSearcher searchTask;
 
 	public  void setOutputTextListener(OutputTextListener textListener){
 		if (searchTask != null)
