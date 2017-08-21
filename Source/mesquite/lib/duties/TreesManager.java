@@ -51,6 +51,7 @@ public abstract class TreesManager extends FileElementManager   {
 	public abstract TreeVector makeNewTreeBlock(Taxa taxa, String name, MesquiteFile f);
 	public abstract Taxa findTaxaMatchingTable(TreeVector trees, MesquiteProject proj, MesquiteFile file, Vector table);
 	public abstract ListableVector getTreeBlockVector();
+	public abstract boolean queryAboutNumericalLabelIntepretation(boolean[] interps, String c, MesquiteString n);
 	public Class getElementClass(){
 		return TreeVector.class;
 	}
