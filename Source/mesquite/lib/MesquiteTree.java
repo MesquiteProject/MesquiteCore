@@ -2304,6 +2304,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/*-----------------------------------------*/
 	/** Returns most recent common ancestor of the terminals designated in terminals.*/
 	public int mrca(Bits terminals) { 
+		if (terminals == null)
+			return getRoot();
 		Bits nodes = new Bits(numNodeSpaces);
 		markPathsFromTerminals(terminals, nodes, getRoot());
 		int firstTerminal = terminals.firstBitOn();
@@ -3068,9 +3070,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 							MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
 						else if (numReticWarnings <100){
 							MesquiteMessage.println("Another tree with apparent reticulations found.");
-							for (int i=0; i<taxa.getNumTaxa(); i++) {
-								Debugg.println("   "+taxa.getTaxonName(i));
-							}
 						}
 						else if (numReticWarnings == 100)
 							MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");

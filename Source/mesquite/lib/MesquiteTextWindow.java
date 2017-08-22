@@ -81,7 +81,15 @@ public class MesquiteTextWindow extends MesquiteWindow implements FocusListener 
 		tA.setEditable(ed);
 	}
 	public void append(String s) {
-		tA.append(s);
+		if (tA == null)
+			return;
+		if (s == null)
+			s = "";
+		try{
+			tA.append(s);
+		}
+		catch (Exception e){
+		}
 	}
 	public void consume(int i) {
 		int L = tA.getText().length();

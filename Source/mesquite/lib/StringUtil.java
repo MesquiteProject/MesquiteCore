@@ -932,6 +932,8 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String removeFirstCharacterIfMatch(String token, char c) {
+		if (token == null)
+			return "";
 		String timmedString = token.trim();
 		if (token == null)
 			return "";
@@ -944,7 +946,6 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String removeLastCharacterIfMatch(String token, char c) {
-		String timmedString = token.trim();
 		if (token == null)
 			return "";
 		String trimmedString = token.trim();

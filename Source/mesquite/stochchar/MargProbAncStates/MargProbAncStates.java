@@ -213,7 +213,11 @@ public class MargProbAncStates extends CharStatesForNodes {
 			success=true;
 		}
 		else {
-			String s = "Likelihood calculations cannot be performed because no module was found to perform the calculations for the probability model \"" + model.getName() + "\" with the characters specified.";
+			String s = "";
+			if (model == null)
+				s = "Likelihood calculations cannot be performed because no model is specified in the calculation.";
+				else
+					s = "Likelihood calculations cannot be performed because no module was found to perform the calculations for the probability model \"" + model.getName() + "\" with the characters specified.";
 				
 			if (!warnedNoCalc) {
 				discreetAlert( s);

@@ -412,14 +412,16 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 	/*.................................................................................................................*/
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
+			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
+			CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
+		if (taxaTask == null || getProject() == null || getProject().getTaxas() == null)
+			return;
 		incrementMenuResetSuppression();
 		ProgressIndicator progIndicator = new ProgressIndicator(mf,"Importing File "+ file.getName(), file.existingLength());
 		progIndicator.start();
 		boolean fuse = parser.hasFileReadingArgument(arguments, "fuseTaxaCharBlocks");
 		file.linkProgressIndicator(progIndicator);
 		if (file.openReading()) {
-			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
-			CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
 			Taxa taxa = null;
 			if (fuse){
 				String message = "There is a taxa block in the file \"" + file.getName() + "\" being imported. Mesquite will either fuse this imported taxa block into the taxa block you select below, or it will import that taxa block as new, separate taxa block.";

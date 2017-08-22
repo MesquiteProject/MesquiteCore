@@ -212,14 +212,18 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		return false;
 	}
 	public void dispose(){
-		projPanel.dispose();
-		if (proj != null)
-			proj.removeListener(this);
-		proj = null;
-		bfc = null;
-		removeAll();
-		projPanel = null;
-		scrollPanel = null;
+		try{
+			projPanel.dispose();
+			if (proj != null)
+				proj.removeListener(this);
+			proj = null;
+			bfc = null;
+			removeAll();
+			projPanel = null;
+			scrollPanel = null;
+		}
+		catch (Exception e){
+		}
 		super.dispose();
 	}
 	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
@@ -358,7 +362,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		super.setSize(w,h);
 		resetSizes(w, h);
 	}	
-	
+
 	public static void checkSizes(Component c, int offset){
 		if (c==null)
 			return;
@@ -519,7 +523,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				((CharModelsPanel)panel).refresh();
 				e++;
 			}
-			*/
+			 */
 			ListableVector others = bfc.getProject().getOtherElements();
 			if (others.size()>0){
 				for (int i=0; i<others.size(); i++){
@@ -566,9 +570,9 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	//boolean fipOpen = false;
 	//FileIncorporatePanel fip = null;
 	public void refresh(){
-		
+
 		int sutd = sequenceUpToDate();  //integer passed to diagnose why not up to date, for debugging
-		
+
 		if (sutd==0){
 			resetSizes();
 			return;
@@ -644,11 +648,11 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 
 			}
 		}
-	/*	if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
+		/*	if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
 			addExtraPanel(panel = new CharModelsPanel(bfc, this, w));
 			panel.setLocation(0,0);
 		}
-		*/
+		 */
 		ListableVector others = bfc.getProject().getOtherElements();
 		if (others.size()>0){
 			for (int i=0; i<others.size(); i++){
@@ -768,7 +772,7 @@ class ScrollPanel extends MousePanel {
 		search = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "search.gif");
 		up = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "uparrow.gif");
 		down = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "downarrow.gif");
-	//	query = MesquiteImage.getImage(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
+		//	query = MesquiteImage.getImage(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
 		setBackground(ColorTheme.getExtInterfaceBackground());
 	}
 	public void paint(Graphics g){
@@ -777,7 +781,7 @@ class ScrollPanel extends MousePanel {
 			return;
 		g.setColor(ColorDistribution.veryLightGray);
 		g.fillRect(0,0,getWidth(), getHeight());
-	//	g.drawImage(query, 8, 8, this);
+		//	g.drawImage(query, 8, 8, this);
 		if (p.canScrollUp())
 			g.drawImage(up, scrollLeft, 18, this);
 		if (p.canScrollDown())
@@ -964,7 +968,7 @@ class NotesPanel extends ProjPanelPanel {
 			textBox.setWidth(w-24);
 		}
 	}
-	
+
 	public void paint(Graphics g){
 		if (text != null){
 			g.setColor(Color.lightGray);
@@ -972,12 +976,12 @@ class NotesPanel extends ProjPanelPanel {
 			g.setColor(ColorTheme.getExtInterfaceTextMedium());
 			if (heading != null){
 				headingBox.draw(g, 16,16);
-				
+
 				textBox.draw(g, 16,headingBox.getHeight() + 16);
 			}
 			else
 				textBox.draw(g, 16,16);
-				
+
 		}
 	}
 }
@@ -1051,7 +1055,7 @@ class TaxaPanel extends ElementPanel {
 		addCommand(true, null, "Delete Taxa Block", "Delete Taxa Block", new MesquiteCommand("deleteMe", element));
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Edit Comment", "Edit Comment", new MesquiteCommand("editComment", element));
-		
+
 	}
 
 	public String getTitleAddition(){
@@ -1063,8 +1067,8 @@ class TaxaPanel extends ElementPanel {
 			heading += "on)";
 		return heading;
 	}
-	
-	
+
+
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows an initial tree window", null, commandName, "showInitTreeWindow")) {
@@ -1099,7 +1103,7 @@ class TaxaPanel extends ElementPanel {
 			return "";
 		return Integer.toString(((Taxa)element).getNumTaxa()) + " Taxa";
 	}
-	
+
 }
 /*======================================================================== */
 class MElementPanel extends ElementPanel {
@@ -1138,7 +1142,7 @@ class MElementPanel extends ElementPanel {
 		if (numChars>1)
 			heading += "s";
 		heading += ")";
-		
+
 		return heading;
 	}
 	/*.................................................................................................................*/
@@ -1763,7 +1767,7 @@ class ElementPanel extends ProjPanelPanel {
 		if (pw == null)
 			return true;
 		ProjectPanel pp = pw.projPanel;
-	
+
 		Component c = this;
 		int x = 0;
 		while (!(c instanceof ProjectPanel)){
