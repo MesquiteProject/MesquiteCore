@@ -98,9 +98,9 @@ public String getMessageIfUserAbortRequested () {
    		return null;
    	}
    	
-	 public String getExtraTreeWindowCommands (){
+	 public String getExtraTreeWindowCommands (boolean finalTree){
 		 if (searchTask!=null)
-			 return searchTask.getExtraTreeWindowCommands();
+			 return searchTask.getExtraTreeWindowCommands(finalTree);
 		 else
 			 return "";
    	 }

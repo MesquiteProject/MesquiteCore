@@ -41,7 +41,7 @@ public abstract class TreeBlockFiller extends MesquiteModule   {
    	 }
    	 
     /** TreeBlockFillers should override this if they want special commands to be sent to a tree window if a tree window is created after they are used. */
-  	 public String getExtraTreeWindowCommands (){
+  	 public String getExtraTreeWindowCommands (boolean finalTree){
    		 return "";
    	 }
   	 

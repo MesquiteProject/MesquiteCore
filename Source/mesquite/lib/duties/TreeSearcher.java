@@ -64,7 +64,7 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	 }
 
 
-	 public String getExtraTreeWindowCommands (){
+	 public String getExtraTreeWindowCommands (boolean finalTree){
    		 return "";
    	 }
 	 public String getExtraIntermediateTreeWindowCommands (){
