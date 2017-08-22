@@ -80,6 +80,27 @@ public class AlertDialog  {
 		id.dispose();
 		return (buttonPressed.getValue()==0);
 	}
+	public static int queryLongMessage(Object parent, String title, String message, String extraMessage, String string1, String string2, String string3, int whichIsDefault, String helpString) {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog id = new ExtensibleDialog(parent, title,buttonPressed);
+		id.addLargeTextLabel(message);
+		if (StringUtil.blank(helpString) && id.isInWizard())
+			helpString = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please choose.";
+		if (StringUtil.notEmpty(extraMessage))
+			id.addTextAreaSmallFont(extraMessage, 6);
+		id.appendToHelpString(helpString);
+		String defaultButton="";
+		if (whichIsDefault == 1)
+			defaultButton=string1;
+		else if (whichIsDefault == 2)
+			defaultButton=string2;
+		else if (whichIsDefault == 3)
+			defaultButton=string3;
+		id.completeAndShowDialog(string1,string2,string3,defaultButton);
+		id.dispose();
+		return buttonPressed.getValue();
+	}
+
 	public static boolean query(Object parent, String title, String message, String okString, String cancelString, int whichIsDefault) {
 		return query(parent, title, message, okString, cancelString, whichIsDefault, null);
 	}

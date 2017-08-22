@@ -52,6 +52,9 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public  void setUserAborted(){
 		userAborted=true;
 	}
+	public String getMessageIfUserAbortRequested () {
+		return "";
+	}
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
@@ -78,6 +81,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		return getName();
 	}
 	public abstract boolean isReconnectable();
+	
+	
 	public boolean canGiveIntermediateResults(){
 		return false;
 	}

@@ -33,6 +33,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	/*.................................................................................................................*/
 	public  void setUserAborted(){
 	}
+	public String getMessageIfUserAbortRequested () {
+		return null;
+	}
+
 
 	public  void setOutputTextListener(OutputTextListener textListener){
 	}

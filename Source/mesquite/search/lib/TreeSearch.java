@@ -36,6 +36,12 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 public boolean isReconnectable(){
 	return searchTask.isReconnectable();
 }
+public String getMessageIfUserAbortRequested () {
+	if (searchTask!=null)
+		return searchTask.getMessageIfUserAbortRequested();
+	return null;
+}
+
 	/*.................................................................................................................*/
 	public  void setUserAborted(){
 		userAborted=true;
