@@ -1396,7 +1396,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public NexusBlock elementAdded(FileElement trees){
-		if (trees ==null || !(trees instanceof TreeVector))
+		if (trees ==null || !(trees instanceof TreeVector) || treesVector == null)
 			return null;
 		if (treesVector.indexOf(trees) <0) {
 			treesVector.addElement(trees, true);
