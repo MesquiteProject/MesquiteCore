@@ -55,6 +55,9 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public String getMessageIfUserAbortRequested () {
 		return "";
 	}
+	public String getMessageIfCloseFileRequested () {
+		return "";
+	}
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {

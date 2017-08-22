@@ -46,6 +46,7 @@ public class ShellScriptRunner implements Commandable  {
 	MesquiteExternalProcess externalProcessManager;
 	long stdOutLastModified = 0;
 	long stdErrLastModified = 0;
+	boolean aborted = false;
 
 	
 	public ShellScriptRunner(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
@@ -65,9 +66,8 @@ public class ShellScriptRunner implements Commandable  {
 		this.visibleTerminal = visibleTerminal;
 		
 	}
-	public ShellScriptRunner(){  //to be used for reconnecting
+	public ShellScriptRunner(){  //to be used for reconnecting DAVIDCHECK: but to read stdOut on reconnect, needs to receive stdOutFilePath
 	}
-
 	public void setOutputProcessor(OutputFileProcessor outputFileProcessor){
 		this.outputFileProcessor = outputFileProcessor;
 	}
@@ -92,6 +92,8 @@ public class ShellScriptRunner implements Commandable  {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the running file path", "[file path]", commandName, "setRunningFilePath")) {
 			runningFilePath = parser.getFirstToken(arguments);
+			stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stOutFileName;
+			stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stErrorFileName;
 		}
 		else if (checker.compare(this.getClass(), "Sets the output file paths", "[file paths]", commandName, "setOutputFilePaths")) {
 			int num = parser.getNumberOfTokens(arguments);
@@ -148,6 +150,8 @@ public class ShellScriptRunner implements Commandable  {
 	public void stopExecution(){
 		if (externalProcessManager!=null)
 			externalProcessManager.kill();
+		aborted = true;
+
 	}
 	/*.................................................................................................................*/
 	public void processOutputFiles(){
@@ -221,7 +225,8 @@ public class ShellScriptRunner implements Commandable  {
 		}
 
 		while (runStillGoing() && stillGoing){
-
+			if (aborted)
+				return false;
 			if (watcher!=null && watcher.fatalErrorDetected()) {
 				return false;
 			}
@@ -242,6 +247,7 @@ public class ShellScriptRunner implements Commandable  {
 				progressIndicator.spin();
 				if (progressIndicator.isAborted()){
 					externalProcessManager.kill();
+					aborted = true;
 					return false;  //TODO: destroy process
 				}
 			}
