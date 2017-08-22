@@ -1234,7 +1234,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else if (!MesquiteThread.isScripting() && (suppressAsk || AlertDialog.query(containerOfModule(), "Trees ready", "The trees are now ready [" + fillTask.getName() + "; name of tree block: \"" + trees.getName()+ "\"].  Would you like to open a tree window to display them?", "Yes", "No"))){
 			//send script to tree window coord to makeTreeWindow with set of taxa and then set to stored trees and this tree vector
 			int whichTreeBlock = getTreeBlockNumber(taxa, trees);
-			String extraWindowCommands = fillTask.getExtraTreeWindowCommands();
+			String extraWindowCommands = fillTask.getExtraTreeWindowCommands(true);
 			if (StringUtil.blank(extraWindowCommands))
 				extraWindowCommands="";
 			String commands = "makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It; setTreeSource  #StoredTrees;";

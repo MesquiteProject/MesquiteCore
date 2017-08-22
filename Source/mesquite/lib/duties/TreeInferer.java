@@ -113,7 +113,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the module showing the tree", "[name of module]", commandName, "setWindowMaker")) {
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
-			String commands = getExtraTreeWindowCommands();
+			String commands = getExtraTreeWindowCommands(false);
 			MesquiteWindow w = tWindowMaker.getModuleWindow();
 			
 			if (w != null){
@@ -184,7 +184,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public void showIntermediatesWindow(){
 		if (tWindowMaker == null) {
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
-			String commands = getExtraTreeWindowCommands();
+			String commands = getExtraTreeWindowCommands(false);
 			MesquiteWindow w = tWindowMaker.getModuleWindow();
 			
 			if (w != null){
