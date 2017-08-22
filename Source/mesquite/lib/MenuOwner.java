@@ -1768,8 +1768,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						countOthers2 =0;
 						count2 = 0;
 						while (count2++<128 && (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot( mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi))!=null) {
-							if (smbi.getNameForMenuItem().contains("XXX"))
-								Debugg.println("3");
 							boolean primary2 = smbi.isPrimary(mbi.getHireSubchoice());
 							int hiddenStatus2 = 0;
 							//TODO: this tokenization of the names for argument will not work if name of module includes '  -- must use full tokenization/detokenization

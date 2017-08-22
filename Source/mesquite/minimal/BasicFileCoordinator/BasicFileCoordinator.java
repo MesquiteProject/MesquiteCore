@@ -768,8 +768,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	public MesquiteFile getNEXUSFileForReading(String arguments, String message){ 
 		String path = parser.getFirstToken(arguments); //optional argument
-		
-		
+
+
 		MesquiteFile file = null;
 		if (StringUtil.blank(path)) {
 			file =MesquiteFile.open(true, (String)null, message, getProject().getHomeDirectoryName());
@@ -965,7 +965,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		incrementMenuResetSuppression();
 		if (fi!=null) {
 			if (getProject().getHomeFile() == fi) { //should ask for all files
-				if (quietly || MesquiteThread.isScripting() || !getProject().isDirty()) {
+				if (quietly || MesquiteThread.isScripting()) {
 					waitWriting(null);
 					logln("Closing " + getProject().getName());
 					getProject().isDoomed = true;
@@ -973,36 +973,43 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 				else {
 					fileCloseRequested();
-					ListableVector files = getProject().getFiles();
-					if (files != null){
+					if (!getProject().isDirty()) {
+						waitWriting(null);
+						logln("Closing " + getProject().getName());
+						getProject().isDoomed = true;
+						iQuit();
+					}
+					else {
+						ListableVector files = getProject().getFiles();
+						if (files != null){
+							Enumeration enumeration=files.elements();
+							if (enumeration != null){
+								MesquiteFile fiP;
+								while (enumeration.hasMoreElements()){
+									Object obj = enumeration.nextElement();
+									if (obj instanceof MesquiteFile) {
+										fiP = (MesquiteFile)obj;
 
-						Enumeration enumeration=files.elements();
-						if (enumeration != null){
-							MesquiteFile fiP;
-							while (enumeration.hasMoreElements()){
-								Object obj = enumeration.nextElement();
-								if (obj instanceof MesquiteFile) {
-									fiP = (MesquiteFile)obj;
-
-									if (fiP!=null && fiP.isDirty() && fiP.isLocal()) {
-										String message = "Do you want to save changes to \"" + fiP.getName() + "\" before closing?";
-										int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
-										if (q==0) {
-											logln("Writing " + fiP.getName());
-											writeFile(fiP);
-										}
-										else if (q==1) {
-											logln("File close cancelled by user");
-											decrementMenuResetSuppression();
-											return false;
+										if (fiP!=null && fiP.isDirty() && fiP.isLocal()) {
+											String message = "Do you want to save changes to \"" + fiP.getName() + "\" before closing?";
+											int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
+											if (q==0) {
+												logln("Writing " + fiP.getName());
+												writeFile(fiP);
+											}
+											else if (q==1) {
+												logln("File close cancelled by user");
+												decrementMenuResetSuppression();
+												return false;
+											}
 										}
 									}
 								}
 							}
 						}
+						logln("Closing " + getProject().getName());
+						iQuit();
 					}
-					logln("Closing " + getProject().getName());
-					iQuit();
 				}
 			}
 			else {
