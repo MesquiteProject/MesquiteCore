@@ -1522,6 +1522,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		boolean translationTableRead = false;
 		NexusBlock t =trees.addToFile(file, getProject(), this);
 		while (!StringUtil.blank(s=block.getNextFileCommand(comment))) {
+			//Debugg.println("s " + s);
 			String punc = ",";
 			String commandName = parser.getFirstToken(s);
 			if (commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK")) {

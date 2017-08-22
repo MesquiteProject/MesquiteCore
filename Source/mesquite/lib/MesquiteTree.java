@@ -2809,7 +2809,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			if (numericalLabelInterpretationSet){
 				if (interps[0]){ // treat as number
 					interpretLabelsAsNumerical = true;
-					defaultValueCode = n.getValue();
+					defaultValueCode = StringUtil.tokenize(n.getValue());
 					defaultValueCodeRef = NameReference.getNameReference(defaultValueCode);
 					interpretNumericalLabelsAsOnBranches = interps[1];
 					if (interps[2]){
@@ -3203,7 +3203,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString) {
 		deassignAssociated();
-
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
 
 		intializeTree();

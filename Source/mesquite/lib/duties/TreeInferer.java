@@ -77,6 +77,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public String getInferenceName(){
 		return getName();
 	}
+	public abstract boolean isReconnectable();
 	public boolean canGiveIntermediateResults(){
 		return false;
 	}

@@ -215,7 +215,30 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	private boolean obtainFile(String arguments){
 		fileReady = false;
 		if (ended){
-			discreetAlert("WARNING:  Attempt to use module that has ended");
+/* DAVIDCHECK: process is still alive after garli cancel and save tree:
+Note: WARNING:  Attempt to use module that has ended (ManyTreesFromFileLib)Use Trees from Separate NEXUS File
+Note: File was not obtained for Use Trees from Separate NEXUS File (path /Users/wmaddisn/Desktop/GARLI-2017.08.21-Run.9/output.best.current.tre)
+An exception was generated intentionally to show a stack trace.  It is used for debugging purposes.
+java.lang.Exception
+	at mesquite.lib.Debugg.printStackTrace(Debugg.java:54)
+	at mesquite.trees.lib.ManyTreesFromFileLib.obtainFile(ManyTreesFromFileLib.java:218)
+	at mesquite.trees.lib.ManyTreesFromFileLib.doCommand(ManyTreesFromFileLib.java:321)
+	at mesquite.zephyr.lib.GarliTrees.newTreeAvailable(GarliTrees.java:72)
+	at mesquite.zephyr.lib.GarliRunner.runFilesAvailable(GarliRunner.java:1132)
+	at mesquite.zephyr.lib.ZephyrRunner.runFilesAvailable(ZephyrRunner.java:719)
+	at mesquite.zephyr.LocalScriptRunner.LocalScriptRunner.processOutputFile(LocalScriptRunner.java:478)
+	at mesquite.lib.ShellScriptRunner.processOutputFiles(ShellScriptRunner.java:160)
+	at mesquite.lib.ShellScriptRunner.monitorAndCleanUpShell(ShellScriptRunner.java:228)
+	at mesquite.zephyr.LocalScriptRunner.LocalScriptRunner.monitorExecution(LocalScriptRunner.java:425)
+	at mesquite.zephyr.lib.ZephyrRunner.runProgramOnExternalProcess(ZephyrRunner.java:574)
+	at mesquite.zephyr.lib.GarliRunner.getTrees(GarliRunner.java:968)
+	at mesquite.zephyr.lib.ZephyrTreeSearcher.getTrees(ZephyrTreeSearcher.java:273)
+	at mesquite.zephyr.lib.ZephyrTreeSearcher.fillTreeBlock(ZephyrTreeSearcher.java:350)
+	at mesquite.search.lib.TreeSearch.fillTreeBlock(TreeSearch.java:196)
+	at mesquite.zephyr.TreeInferenceLiaison.TreeBlockThread.run(TreeInferenceLiaison.java:425)
+	 */
+			
+			discreetAlert("WARNING:  Attempt to use module that has ended (ManyTreesFromFileLib)" + getEmployerPath());
 		}
 		FileCoordinator fCoord = getFileCoordinator();
 		if (fCoord == null)

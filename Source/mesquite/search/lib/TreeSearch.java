@@ -33,7 +33,9 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 		"The method to search for trees can be selected initially");
 	}
 	/*.................................................................................................................*/
-
+public boolean isReconnectable(){
+	return searchTask.isReconnectable();
+}
 	/*.................................................................................................................*/
 	public  void setUserAborted(){
 		userAborted=true;

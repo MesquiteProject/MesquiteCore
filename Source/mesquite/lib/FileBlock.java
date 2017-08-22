@@ -119,6 +119,7 @@ public class FileBlock {
 		betweenCommandComments.setLength(0);
 		//##########################
 		String command = file.getNextCommand(status, withinCommandComments, true);
+
 		if (betweenCommandComments.length()>0 && fileComments!=null) {
 			String bcc = betweenCommandComments.toString();
 			if (ParseUtil.darkBeginsWithIgnoreCase(bcc, "!"))

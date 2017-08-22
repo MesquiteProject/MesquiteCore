@@ -43,6 +43,10 @@ public class ClusterAnalysis extends TreeInferer implements Incrementable {  //I
  		}
   		return true;
   	 }
+	
+	public boolean isReconnectable(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
