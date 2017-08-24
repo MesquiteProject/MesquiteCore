@@ -229,7 +229,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			exporter = (FileInterpreterI)coord.findEmployeeWithName(getProteinExportInterpreter());
 		if (exporter!=null) {
 			String ext = exporter.preferredDataFileExtension();
-			if (StringUtil.blank(ext))
+			if (StringUtil.blank(ext) || StringUtil.endsWithIgnoreCase(fileName, ext))
 				ext = "";
 			else
 				ext = "." + ext;
@@ -506,7 +506,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public boolean fatalErrorDetected() {
 		String stdErr = getStdErr();
 		if (stdErrorsAreFatal() && StringUtil.notEmpty(stdErr))
-			return true;
+			return false;
 		return false;
 	}
 
