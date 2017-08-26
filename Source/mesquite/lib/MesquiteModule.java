@@ -22,8 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.lang.StringEscapeUtils;
-
+import org.apache.commons.lang3.StringEscapeUtils;
 import mesquite.lib.duties.*;
 import mesquite.tol.lib.BaseHttpRequestMaker;
 import edu.stanford.ejalbert.*;  //for Browserlauncher

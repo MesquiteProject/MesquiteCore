@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.awt.*;
 import java.io.UnsupportedEncodingException;
@@ -1469,7 +1468,7 @@ public class StringUtil {
 		if ("".equals(s)) {
 			return "";
 		}
-		return StringEscapeUtils.escapeXml(s);
+		return StringEscapeUtils.escapeXml10(s);
 	}
 	/*.................................................................................................................*/
 	public static String cleanXMLEscapeCharacters(String s) {
