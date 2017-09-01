@@ -1204,7 +1204,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*  */
 	public void writeFile(MesquiteFile nMF){
 		if (!MesquiteThread.isScripting() && nMF.getDirectoryName() == null){
-			nMF.changeLocation("Save file");
+			boolean success = nMF.changeLocation("Save file");
+			if (!success)
+				return;
 		}
 		broadcastFileAboutToBeSaved(this, nMF);
 		Runtime rt = Runtime.getRuntime();
