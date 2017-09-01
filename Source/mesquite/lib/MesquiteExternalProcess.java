@@ -19,12 +19,12 @@ import java.io.*;
 
 public class MesquiteExternalProcess  {
 	OutputStream inputToProcess;
-	//OutputStreamWriter inputStreamsWriter;
-	//BufferedWriter inputBufferedWriter;
-	//StandardOutputsStreamReader errorReader;
-	//StandardOutputsStreamReader outputReader;
-	//FileWriter outputWriter;
-	//FileWriter errorWriter;
+	OutputStreamWriter inputStreamsWriter;
+	BufferedWriter inputBufferedWriter;
+	StandardOutputsStreamReader errorReader;
+	StandardOutputsStreamReader outputReader;
+	FileWriter outputWriter;
+	FileWriter errorWriter;
 	Process proc;
 	String directoryPath;
 	String outputFilePath;
@@ -115,8 +115,7 @@ public class MesquiteExternalProcess  {
 		return false;
 	}
 	
-	/*
-	 * public void startStandardOutputsReaders(File outputFile, File errorFile) {
+	 public void startStandardOutputsReaders(File outputFile, File errorFile) {
 		try { 
 			errorWriter = new FileWriter(errorFile);
 			outputWriter = new FileWriter(outputFile);
@@ -136,7 +135,8 @@ public class MesquiteExternalProcess  {
 			outputReader.start();
 	
 	}
-			*/
+	 /*
+	 *		*/
 
 	/*.................................................................................................................*
 
