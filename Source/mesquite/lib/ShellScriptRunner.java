@@ -184,11 +184,11 @@ public class ShellScriptRunner implements Commandable  {
 					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
 				//+StringUtil.lineEnding()+ShellScriptUtil.getExitCommand()
 			}
-			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);
+			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal); 
 			externalProcessManager = new MesquiteExternalProcess(proc);
 			File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
 			File errorFile = new File(stdErrFilePath);
-			//externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);
+			externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);  
 		}
 		catch (IOException e){
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);

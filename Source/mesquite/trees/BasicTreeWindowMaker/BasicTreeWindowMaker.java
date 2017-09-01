@@ -724,7 +724,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	public boolean isSubstantive() {
 		return true;
 	}
-
 	/* ................................................................................................................. */
 	boolean downInTree = false;
 

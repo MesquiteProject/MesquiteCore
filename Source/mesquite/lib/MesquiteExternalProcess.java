@@ -115,7 +115,7 @@ public class MesquiteExternalProcess  {
 		return false;
 	}
 	
-	 public void startStandardOutputsReaders(File outputFile, File errorFile) {
+	public void startStandardOutputsReaders(File outputFile, File errorFile) {
 		try { 
 			errorWriter = new FileWriter(errorFile);
 			outputWriter = new FileWriter(outputFile);
@@ -126,7 +126,6 @@ public class MesquiteExternalProcess  {
 		catch (IOException e) {
 			MesquiteMessage.warnProgrammer("IOException");
 		}
-		
 		errorReader = new StandardOutputsStreamReader(proc.getErrorStream(), errorWriter);
 		outputReader = new StandardOutputsStreamReader(proc.getInputStream(),  outputWriter);
 		if (errorReader!=null)
@@ -135,9 +134,7 @@ public class MesquiteExternalProcess  {
 			outputReader.start();
 	
 	}
-	 /*
-	 *		*/
-
+	
 	/*.................................................................................................................*
 
 	public void flushStandardOutputsReaders() {
