@@ -669,8 +669,8 @@ public class Mesquite extends MesquiteTrunk
 		/* */
 		addMenuItem(MesquiteTrunk.fileMenu, "Check Now for Notices/Installs...", new MesquiteCommand("checkNotices", this));
 		if (MesquiteTrunk.phoneHome){
-			PhoneHomeThread pht = new PhoneHomeThread();
-			pht.start();
+			phoneHomeThread = new PhoneHomeThread();
+			phoneHomeThread.start();
 		}
 		/**/
 
