@@ -172,9 +172,13 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 										"Yes", "No"))
 					return;
 				Vector blocks = new Vector();
+				int count = 0;
 				while (table.anyColumnSelected()) {
+					count++;
 					int lastOfBlock = table.lastColumnSelected();
 					int firstOfBlock = table.startOfLastColumnBlockSelected();
+					if (count % 50 == 0)
+						logln("Deleting characters, block " + count);
 					if (lastOfBlock >= 0) {
 						for (int i = firstOfBlock; i <= lastOfBlock; i++)
 							table.deselectColumn(i);

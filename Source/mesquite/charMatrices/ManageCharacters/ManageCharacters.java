@@ -208,6 +208,9 @@ public class ManageCharacters extends CharactersManager {
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "-", null);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "List of Character Matrices", makeCommand("showDatasList",  this));
+		MesquiteCommand ccm= makeCommand("showDatasList" ,  this);
+		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "Concatenate Character Matrices...", ccm);
+		ccm.setDefaultArguments("concat");
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "Delete Character Matrices...", makeCommand("deleteMatrices",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "New Empty Matrix...", makeCommand("newMatrix",  this));
 		getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "Make New Matrix from", makeCommand("newFilledMatrix",  this), CharMatrixFiller.class);
@@ -948,13 +951,15 @@ public class ManageCharacters extends CharactersManager {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Shows list of data matrices", null, commandName, "showDatasList")) {
+			String concatMessage = "To concatenate matrices, select their rows in the List of Character Matrices window, and choose List>Utilities>Concatenate Selected Matrices.";
 			//Check to see if already has lister for this
-			boolean found = false;
 			for (int i = 0; i<getNumberOfEmployees(); i++) {
 				Object e=getEmployeeVector().elementAt(i);
 				if (e instanceof ManagerAssistant)
 					if (((ManagerAssistant)e).getName().equals("Character Matrices List")) {
 						((ManagerAssistant)e).getModuleWindow().setVisible(true);
+						if ("concat".equalsIgnoreCase(arguments))
+							discreetAlert(concatMessage);
 						return e;
 					}
 			}
@@ -966,6 +971,8 @@ public class ManageCharacters extends CharactersManager {
 			lister.showListWindow(null);
 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
 				lister.getModuleWindow().setVisible(true);
+			if ("concat".equalsIgnoreCase(arguments))
+				discreetAlert(concatMessage);
 			return lister;
 		}
 		else if (checker.compare(this.getClass(), "Deletes matrices from the project", null, commandName, "deleteMatrices")) {

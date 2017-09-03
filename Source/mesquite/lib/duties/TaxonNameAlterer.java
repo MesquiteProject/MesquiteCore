@@ -69,10 +69,15 @@ public abstract class TaxonNameAlterer extends MesquiteModule  {
    		this.taxa = taxa;
    		this.table = table;
    	
-		if (!getOptions(taxa, first))			return false;
+		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking for file to save"))
+			if (!getOptions(taxa, first))
+				return false;
 			
 		boolean anyChanged = false;
-		boolean okDoIt = !taxa.anySelected() && !table.anythingSelected();
+		
+		boolean okDoIt = !taxa.anySelected();
+		if (table != null)
+			okDoIt = okDoIt && !table.anythingSelected();
 		for (int it=0; it<taxa.getNumTaxa(); it++){
 			
 			if ((okDoIt || taxa.getSelected(it) || table.isRowSelected(it) || table.isRowNameSelected(it)) && alterName(taxa, it))				anyChanged = true;
