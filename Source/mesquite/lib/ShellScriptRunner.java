@@ -196,7 +196,7 @@ public class ShellScriptRunner implements Commandable  {
 			}
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);  
 			externalProcessManager = new MesquiteExternalProcess(proc);
-		File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
+			File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
 			File errorFile = new File(stdErrFilePath);
 			if (getStartOutputReaders())
 				externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);   
