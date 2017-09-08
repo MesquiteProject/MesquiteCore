@@ -280,6 +280,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	Image fileIm;
 	ScrollPanel scroll;
 	NotesPanel notesPanel = null;
+	int maxLinesOfAnyElementInPanel = 50; //Debugg.println
 	public ProjectPanel(ProjectWindow w, MesquiteProject proj, BasicFileCoordinator bfc){ 
 		super();
 		this.w = w;
@@ -431,7 +432,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			return 2001;
 		e++;
 		if (proj.taxas.size()>0){
-			for (int i = 0; i< proj.taxas.size(); i++){
+			for (int i = 0; i< proj.taxas.size() && i<maxLinesOfAnyElementInPanel; i++){
 				Taxa t = (Taxa)proj.taxas.elementAt(i);
 				if (e>= elements.size())
 					return 3;
@@ -443,7 +444,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				panel.repaint();
 				e++;
 				if (proj.getNumberCharMatricesVisible(t)>0){
-					for (int k = 0; k<proj.getNumberCharMatricesVisible(t); k++){
+					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && k<maxLinesOfAnyElementInPanel; k++){  //Debugg.println 
 						CharacterData data = proj.getCharacterMatrixVisible(t, k);
 						if (data.isUserVisible()){
 							if (e>= elements.size())
@@ -458,7 +459,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					}
 				}
 				if (proj.getNumberOfFileElements(TreeVector.class)>0){
-					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class); k++){
+					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && k<maxLinesOfAnyElementInPanel; k++){
 						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
 						if (e>= elements.size())
 							return 7;
@@ -483,7 +484,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			}*/
 			ListableVector others = bfc.getProject().getOtherElements();
 			if (others.size()>0){
-				for (int i=0; i<others.size(); i++){
+				for (int i=0; i<others.size() && i<maxLinesOfAnyElementInPanel; i++){
 					FileElement f = (FileElement)others.elementAt(i);
 					/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 						if (((ListableVector)f).size()>0){
@@ -616,12 +617,12 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		panel.setOpen(false);
 		panel.setLocation(0,0);
 		if (proj.taxas.size()>0){
-			for (int i = 0; i< proj.taxas.size(); i++){
+			for (int i = 0; i< proj.taxas.size() && i<maxLinesOfAnyElementInPanel; i++){
 				Taxa t = (Taxa)proj.taxas.elementAt(i);
 				addExtraPanel(panel = new TaxaPanel(bfc, this, w, t));
 				panel.setLocation(0,0);
 				if (proj.getNumberCharMatricesVisible(t)>0){
-					for (int k = 0; k<proj.getNumberCharMatricesVisible(t); k++){
+					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && k<maxLinesOfAnyElementInPanel; k++){
 						CharacterData data = proj.getCharacterMatrixVisible(t, k);
 						if (data.isUserVisible()){
 							if (data instanceof MolecularData)
@@ -637,7 +638,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					}
 				}
 				if (proj.getNumberOfFileElements(TreeVector.class)>0){
-					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class); k++){
+					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && k<maxLinesOfAnyElementInPanel; k++){
 						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
 						if (trees.getTaxa() == t){
 							addExtraPanel(panel = new TreesRPanel(bfc, this, w, trees));
@@ -655,7 +656,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		 */
 		ListableVector others = bfc.getProject().getOtherElements();
 		if (others.size()>0){
-			for (int i=0; i<others.size(); i++){
+			for (int i=0; i<others.size() && i<maxLinesOfAnyElementInPanel; i++){
 				FileElement f = (FileElement)others.elementAt(i);
 				/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 					if (((ListableVector)f).size()>0){
