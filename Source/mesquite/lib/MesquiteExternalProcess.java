@@ -126,6 +126,10 @@ public class MesquiteExternalProcess  {
 		catch (IOException e) {
 			MesquiteMessage.warnProgrammer("IOException");
 		}
+		Debugg.println("\n|||||||||||||||");
+		Debugg.println("errorWriter: "+ errorWriter);
+		Debugg.println("outputWriter: "+ outputWriter);
+		Debugg.println("\n|||||||||||||||");
 		errorReader = new StandardOutputsStreamReader(proc.getErrorStream(), errorWriter);
 		outputReader = new StandardOutputsStreamReader(proc.getInputStream(),  outputWriter);
 		if (errorReader!=null)
