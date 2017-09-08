@@ -15,6 +15,8 @@ package mesquite.lib;
 
 import java.io.*;
 
+import org.apache.commons.io.input.*;
+
 
 
 
@@ -31,7 +33,7 @@ public class MesquiteExternalProcess  {
 	String outputFilePath;
 	String errorFilePath;
 	MesquiteInteger errorCode;
-	
+
 
 	public MesquiteExternalProcess(Process proc) {
 		this.proc = proc;
@@ -56,9 +58,9 @@ public class MesquiteExternalProcess  {
 		this.errorFilePath = errorFilePath;
 		errorCode = new MesquiteInteger(ShellScriptUtil.NOERROR);
 		this.proc = ShellScriptUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
-		
+
 	}
-	
+
 
 	/*.................................................................................................................*/
 
@@ -85,7 +87,7 @@ public class MesquiteExternalProcess  {
 			}
 		}
 	}
-	
+
 	/*.................................................................................................................*/
 	public int exitValue () {
 		if (proc!=null)
@@ -96,7 +98,7 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 
 	public void dispose() {
-/*		try {
+		/*		try {
 			if (inputBufferedWriter!=null)
 				inputBufferedWriter.close();
 		}
@@ -115,7 +117,7 @@ public class MesquiteExternalProcess  {
 		}
 		return false;
 	}
-	
+
 	public void startStandardOutputsReaders(File outputFile, File errorFile) {
 		try { 
 			errorWriter = new FileWriter(errorFile);
@@ -131,15 +133,13 @@ public class MesquiteExternalProcess  {
 		Debugg.println("errorWriter: "+ errorWriter);
 		Debugg.println("outputWriter: "+ outputWriter);
 		Debugg.println("\n|||||||||||||||");
-		errorReader = new StandardOutputsStreamReader(proc.getErrorStream(), errorWriter);
-		outputReader = new StandardOutputsStreamReader(proc.getInputStream(),  outputWriter);
-		if (errorReader!=null)
-			errorReader.start();
-		if (outputReader!=null)
-			outputReader.start();
-	
+		errorReader = new StandardOutputsStreamReader(errorFile, errorWriter);
+		outputReader = new StandardOutputsStreamReader(outputFile,  outputWriter);
+        Tailer errorFileTailer = Tailer.create(errorFile, errorReader, 500);
+        Tailer outputFileTailer = Tailer.create(outputFile, outputReader, 500);
+
 	}
-	
+
 	/*.................................................................................................................*
 
 	public void flushStandardOutputsReaders() {
@@ -152,7 +152,7 @@ public class MesquiteExternalProcess  {
 			}
 		}
 	}
-	
+
 	public void endStandardOutputsReaders() {
 		if (fos!=null) {
 			try { 
@@ -194,40 +194,27 @@ public class MesquiteExternalProcess  {
 }
 
 
-class StandardOutputsStreamReader extends Thread {
-	InputStream is;
+class StandardOutputsStreamReader extends TailerListenerAdapter {
+	File fileToTail;
 	FileWriter os;
 
 
-	StandardOutputsStreamReader(InputStream is, FileWriter os) {
-		this.is = is;
+	StandardOutputsStreamReader(File fileToTail, FileWriter os) {
+		this.fileToTail = fileToTail;
 		this.os = os;
 	}
-	StandardOutputsStreamReader(InputStream is) {
-		this(is, null);
-	}
-	public void run() {
+
+	public void handle(String line) {
 		try {
-		/*	PrintWriter pw = null;
 			if (os != null)
-				pw = new PrintWriter(os);
-*/
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
-			String line=null;
-			while ( (line = br.readLine()) != null) {
-				if (os != null) {
-					os.write(line+StringUtil.lineEnding());
-				}
-			}
-			if (os != null) {
-				os.flush();
-				os.close();
-			}
+				os.write(line+StringUtil.lineEnding());
 		} catch (IOException ioe) {
 			ioe.printStackTrace();  
 		}
+		//os.flush();
+		//os.close();
 	}
+
 
 
 }
