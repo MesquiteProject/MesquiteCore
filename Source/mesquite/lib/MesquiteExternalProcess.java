@@ -132,11 +132,11 @@ public class MesquiteExternalProcess  {
 		Debugg.println("\n|||||||||||||||");
 		Debugg.println("errorWriter: "+ errorWriter);
 		Debugg.println("outputWriter: "+ outputWriter);
-		Debugg.println("\n|||||||||||||||");
+		Debugg.println("|||||||||||||||\n");
 		errorReader = new StandardOutputsStreamReader(errorFile, errorWriter);
 		outputReader = new StandardOutputsStreamReader(outputFile,  outputWriter);
-        Tailer errorFileTailer = Tailer.create(errorFile, errorReader, 500);
-        Tailer outputFileTailer = Tailer.create(outputFile, outputReader, 500);
+		errorReader.start();
+		outputReader.start();
 
 	}
 
@@ -193,29 +193,49 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 }
 
-
-class StandardOutputsStreamReader extends TailerListenerAdapter {
+class StandardOutputsStreamListener extends TailerListenerAdapter {
 	File fileToTail;
-	FileWriter os;
+	FileWriter destinationFile;
 
 
-	StandardOutputsStreamReader(File fileToTail, FileWriter os) {
+	StandardOutputsStreamListener(File fileToTail, FileWriter destinationFile) {
 		this.fileToTail = fileToTail;
-		this.os = os;
+		this.destinationFile = destinationFile;
 	}
 
 	public void handle(String line) {
 		try {
-			if (os != null)
-				os.write(line+StringUtil.lineEnding());
+			if (destinationFile != null) {
+				destinationFile.write(line+StringUtil.lineEnding());
+				Debugg.println("||| " + line);
+			}
 		} catch (IOException ioe) {
 			ioe.printStackTrace();  
 		}
 		//os.flush();
 		//os.close();
 	}
+}
 
+class StandardOutputsStreamReader extends Thread {
+	File fileToTail;
+	FileWriter destinationFile;
 
+	StandardOutputsStreamReader(File fileToTail, FileWriter destinationFile) {
+		this.fileToTail = fileToTail;
+		this.destinationFile = destinationFile;
+	}
+	
+	public void run ()  {
+		StandardOutputsStreamListener listener = new StandardOutputsStreamListener(fileToTail, destinationFile);
+		Tailer tailer = Tailer.create(fileToTail, listener, 500);
+		try { while (true) {
+			sleep(500);
+		}
+		} catch (InterruptedException e) {
+		}
+
+	}
 
 }
 
