@@ -416,7 +416,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	}
 		else if (checker.compare(this.getClass(), "Sets the target value", null, commandName, "setTargetValue")) {
 			String target = ParseUtil.getFirstToken(arguments, new MesquiteInteger(0));
-			if (StringUtil.blank(target)){
+			if (StringUtil.blank(target) && !MesquiteThread.isScripting()){
 				target = MesquiteString.queryShortString(this, "Target string for magic wand", "Enter target string for magic wand", targetValue);
 				if (target == null)
 					return null;
