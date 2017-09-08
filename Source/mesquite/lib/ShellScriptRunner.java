@@ -47,6 +47,7 @@ public class ShellScriptRunner implements Commandable  {
 	long stdOutLastModified = 0;
 	long stdErrLastModified = 0;
 	boolean aborted = false;
+	boolean startOutputReaders = true;
 
 	
 	public ShellScriptRunner(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
@@ -60,13 +61,12 @@ public class ShellScriptRunner implements Commandable  {
 		this.name = name;
 		this.outputFilePaths = outputFilePaths;
 		this.outputFileProcessor = outputFileProcessor;
-		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stOutFileName;
-		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stErrorFileName;
+		setOutErrFilePaths();
 		this.watcher = watcher;
 		this.visibleTerminal = visibleTerminal;
 		
 	}
-	public ShellScriptRunner(){  //to be used for reconnecting DAVIDCHECK: but to read stdOut on reconnect, needs to receive stdOutFilePath
+	public ShellScriptRunner(){  //to be used for reconnecting; note that stdOutFilePath via setRunningFilePath command stored in snapshot
 	}
 	public void setOutputProcessor(OutputFileProcessor outputFileProcessor){
 		this.outputFileProcessor = outputFileProcessor;
@@ -74,6 +74,17 @@ public class ShellScriptRunner implements Commandable  {
 	public void setWatcher(ShellScriptWatcher watcher){
 		this.watcher = watcher;
 	}
+	public void setOutErrFilePaths(){
+		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stOutFileName;
+		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stErrorFileName;
+	}
+	public boolean getStartOutputReaders() {
+		return startOutputReaders;
+	}
+	public void setStartOutputReaders(boolean startOutputReaders) {
+		this.startOutputReaders = startOutputReaders;
+	}
+
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
@@ -92,8 +103,7 @@ public class ShellScriptRunner implements Commandable  {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the running file path", "[file path]", commandName, "setRunningFilePath")) {
 			runningFilePath = parser.getFirstToken(arguments);
-			stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stOutFileName;
-			stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stErrorFileName;
+			setOutErrFilePaths();
 		}
 		else if (checker.compare(this.getClass(), "Sets the output file paths", "[file paths]", commandName, "setOutputFilePaths")) {
 			int num = parser.getNumberOfTokens(arguments);
@@ -188,7 +198,8 @@ public class ShellScriptRunner implements Commandable  {
 			externalProcessManager = new MesquiteExternalProcess(proc);
 			File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
 			File errorFile = new File(stdErrFilePath);
-			externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);   
+			if (getStartOutputReaders())
+				externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);   
 		}
 		catch (IOException e){
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);
