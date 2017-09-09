@@ -129,11 +129,11 @@ public class ShellScriptRunner implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public String getStdErr() {
-		return MesquiteFile.getFileContentsAsStringNoWarn(stdErrFilePath);
+		return externalProcessManager.getStdErrContents();
 	}
 	/*.................................................................................................................*/
 	public String getStdOut() {
-		return MesquiteFile.getFileContentsAsStringNoWarn(stdOutFilePath);
+		return externalProcessManager.getStdOutContents();
 	}
 
 	/*.................................................................................................................*/
@@ -157,13 +157,6 @@ public class ShellScriptRunner implements Commandable  {
 	}
 
 	/*.................................................................................................................*/
-	public void stopExecution(){
-		if (externalProcessManager!=null)
-			externalProcessManager.kill();
-		aborted = true;
-
-	}
-	/*.................................................................................................................*/
 	public void processOutputFiles(){
 		if (outputFileProcessor!=null && outputFilePaths!=null && lastModified !=null) {
 			String[] paths = outputFileProcessor.modifyOutputPaths(outputFilePaths);
@@ -179,7 +172,7 @@ public class ShellScriptRunner implements Commandable  {
 	}
 
 	/*.................................................................................................................*/
-	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
+	/** Executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
 	public boolean executeInShell(){
 		proc = null;
@@ -198,8 +191,8 @@ public class ShellScriptRunner implements Commandable  {
 			externalProcessManager = new MesquiteExternalProcess(proc);
 			File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
 			File errorFile = new File(stdErrFilePath);
-			if (getStartOutputReaders())
-				externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);   
+//			if (getStartOutputReaders())
+			externalProcessManager.startFileTailers(outputFile, errorFile);   
 				
 		}
 		catch (IOException e){
@@ -207,6 +200,13 @@ public class ShellScriptRunner implements Commandable  {
 			return false;
 		}
 		return true;
+	}
+	/*.................................................................................................................*/
+	public void stopExecution(){
+		if (externalProcessManager!=null)
+			externalProcessManager.kill();
+		aborted = true;
+
 	}
 	/*.................................................................................................................*/
 	public boolean stdOutModified(){
