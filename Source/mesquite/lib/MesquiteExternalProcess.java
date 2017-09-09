@@ -187,4 +187,43 @@ public class MesquiteExternalProcess  {
 }
 
 
+class StandardOutputsStreamReader extends Thread {
+	InputStream is;
+	FileWriter os;
+
+
+	StandardOutputsStreamReader(InputStream is, FileWriter os) {
+		this.is = is;
+		this.os = os;
+	}
+	StandardOutputsStreamReader(InputStream is) {
+		this(is, null);
+	}
+	public void run() {
+		try {
+		/*	PrintWriter pw = null;
+			if (os != null)
+				pw = new PrintWriter(os);
+*/
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+			String line=null;
+			while ( (line = br.readLine()) != null) {
+				if (os != null) {
+					os.write(line+StringUtil.lineEnding());
+				}
+			}
+			if (os != null) {
+				os.flush();
+				os.close();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();  
+		}
+	}
+
+
+}
+
+
 
