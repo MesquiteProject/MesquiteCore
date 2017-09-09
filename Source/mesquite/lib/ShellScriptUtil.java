@@ -48,6 +48,14 @@ public class ShellScriptUtil  {
 			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
 	}
 
+	/*.................................................................................................................*/
+	public static String getAppendStringAsFile(String path, String contents) {
+		if (MesquiteTrunk.isWindows())
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
+		else
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
+	}
+
 	/*.................................................................................................................*
     	String getAliasCommand(String alias, String expansion){
     		return "alias " +StringUtil.protectForUnix(alias) + " " + StringUtil.protectForUnix(expansion) +StringUtil.lineEnding();
