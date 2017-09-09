@@ -46,7 +46,7 @@ public class MesquiteExternalProcess  {
 	public int getErrorCode() {
 		if (errorCode!=null)
 			return errorCode.getValue();
-		return ShellScriptUtil.NOERROR;
+		return ProcessUtil.NOERROR;
 	}
 	/*.................................................................................................................*/
 
@@ -54,8 +54,8 @@ public class MesquiteExternalProcess  {
 		this.directoryPath = directoryPath;
 		this.outputFilePath = outputFilePath;
 		this.errorFilePath = errorFilePath;
-		errorCode = new MesquiteInteger(ShellScriptUtil.NOERROR);
-		this.proc = ShellScriptUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
+		errorCode = new MesquiteInteger(ProcessUtil.NOERROR);
+		this.proc = ProcessUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
 
 	}
 
