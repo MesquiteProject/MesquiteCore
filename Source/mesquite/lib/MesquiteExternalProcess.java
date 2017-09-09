@@ -129,10 +129,6 @@ public class MesquiteExternalProcess  {
 		catch (IOException e) {
 			MesquiteMessage.warnProgrammer("IOException");
 		}
-		Debugg.println("\n|||||||||||||||");
-		Debugg.println("errorWriter: "+ errorWriter);
-		Debugg.println("outputWriter: "+ outputWriter);
-		Debugg.println("|||||||||||||||\n");
 		errorReader = new StandardOutputsStreamReader(errorFile, errorWriter);
 		outputReader = new StandardOutputsStreamReader(outputFile,  outputWriter);
 		errorReader.start();
@@ -217,7 +213,7 @@ class StandardOutputsStreamListener extends TailerListenerAdapter {
 	}
 }
 
-class StandardOutputsStreamReader extends Thread {
+class StandardOutputsStreamReader  {
 	File fileToTail;
 	FileWriter destinationFile;
 
@@ -226,15 +222,10 @@ class StandardOutputsStreamReader extends Thread {
 		this.destinationFile = destinationFile;
 	}
 	
-	public void run ()  {
+	public void start ()  {
 		StandardOutputsStreamListener listener = new StandardOutputsStreamListener(fileToTail, destinationFile);
 		Tailer tailer = Tailer.create(fileToTail, listener, 500);
-		try { while (true) {
-			sleep(500);
-		}
-		} catch (InterruptedException e) {
-		}
-
+		Debugg.println("^^^^^^^^^^  Starting StandardOutputsStreamReader");
 	}
 
 }
