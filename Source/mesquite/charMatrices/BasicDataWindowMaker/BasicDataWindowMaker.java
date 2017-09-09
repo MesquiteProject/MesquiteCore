@@ -1874,7 +1874,9 @@ public void requestFocus(){
 					boolean a = tda.alterTaxonNames(taxa, getTable());
 					ownerModule.fireEmployee(tda);
 					if (a) {
+						table.redrawRowNames();
 						taxa.notifyListeners(this, new Notification(NAMES_CHANGED, undoReference));
+
 					}
 				}
 			}
@@ -2360,10 +2362,12 @@ public void requestFocus(){
 	/* ................................................................................................................. */
 	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
 	public void changed(Object caller, Object obj, Notification notification) {
-		if (caller instanceof BasicDataWindow || caller instanceof MatrixTable)
+		int code = Notification.getCode(notification);
+		if (caller == this)
+			return;
+		if ((caller instanceof BasicDataWindow || caller instanceof MatrixTable) && code != MesquiteListener.SELECTION_CHANGED && code != MesquiteListener.NAMES_CHANGED)
 			return;
 		UndoReference undoReference = Notification.getUndoReference(notification);
-		int code = Notification.getCode(notification);
 		int[] parameters = Notification.getParameters(notification);
 		if (obj instanceof Taxa && (Taxa) obj == data.getTaxa()) {
 			Taxa taxa = (Taxa) obj;

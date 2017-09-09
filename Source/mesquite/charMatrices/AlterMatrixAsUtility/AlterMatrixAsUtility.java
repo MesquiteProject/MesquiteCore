@@ -64,8 +64,15 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (test.isCompatible(data, getProject(), this)){
-   				logln("About to alter matrix \"" + data.getName() + "\"");
-				boolean a = tda.alterData(data, null, null, null);
+				logln("About to alter matrix \"" + data.getName() + "\"");
+				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
+				boolean a = tda.alterData(data, null, null, alteredDataParameters);
+				if (a){
+					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
+					if (alteredDataParameters.getSubcodes()!=null)
+						notification.setSubcodes(alteredDataParameters.getSubcodes());
+					data.notifyListeners(this, notification);
+				}
 				firstTime = false;
 			}
 		}
