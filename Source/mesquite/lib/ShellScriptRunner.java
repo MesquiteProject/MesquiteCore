@@ -129,11 +129,11 @@ public class ShellScriptRunner implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public String getStdErr() {
-		return MesquiteFile.getFileContentsAsStringNoWarn(stdErrFilePath);
+		return externalProcessManager.getStdErrContents();
 	}
 	/*.................................................................................................................*/
 	public String getStdOut() {
-		return MesquiteFile.getFileContentsAsStringNoWarn(stdOutFilePath);
+		return externalProcessManager.getStdOutContents();
 	}
 
 	/*.................................................................................................................*/

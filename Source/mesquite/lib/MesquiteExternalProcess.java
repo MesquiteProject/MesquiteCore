@@ -24,10 +24,8 @@ public class MesquiteExternalProcess  {
 	OutputStream inputToProcess;
 	OutputStreamWriter inputStreamsWriter;
 	BufferedWriter inputBufferedWriter;
-	StandardOutputsStreamReader errorReader;
-	StandardOutputsStreamReader outputReader;
-	FileWriter outputWriter;
-	FileWriter errorWriter;
+	OutputFileTailer errorReader;
+	OutputFileTailer outputReader;
 	Process proc;
 	String directoryPath;
 	String outputFilePath;
@@ -119,21 +117,20 @@ public class MesquiteExternalProcess  {
 	}
 
 	public void startStandardOutputsReaders(File outputFile, File errorFile) {
-		try { 
-			errorWriter = new FileWriter(errorFile);
-			outputWriter = new FileWriter(outputFile);
-		} 
-		catch (FileNotFoundException e) {
-			MesquiteMessage.warnProgrammer("Output file not found");
-		}
-		catch (IOException e) {
-			MesquiteMessage.warnProgrammer("IOException");
-		}
-		errorReader = new StandardOutputsStreamReader(errorFile, errorWriter);
-		outputReader = new StandardOutputsStreamReader(outputFile,  outputWriter);
+		errorReader = new OutputFileTailer(errorFile);
+		outputReader = new OutputFileTailer(outputFile);
 		errorReader.start();
 		outputReader.start();
-
+	}
+	public String getStdErrContents() {
+		if (errorReader!=null)
+			return errorReader.getFileContents();
+		return null;
+	}
+	public String getStdOutContents() {
+		if (outputReader!=null)
+			return outputReader.getFileContents();
+		return null;
 	}
 
 	/*.................................................................................................................*
@@ -189,44 +186,5 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 }
 
-class StandardOutputsStreamListener extends TailerListenerAdapter {
-	File fileToTail;
-	FileWriter destinationFile;
 
-
-	StandardOutputsStreamListener(File fileToTail, FileWriter destinationFile) {
-		this.fileToTail = fileToTail;
-		this.destinationFile = destinationFile;
-	}
-
-	public void handle(String line) {
-		try {
-			if (destinationFile != null) {
-				destinationFile.write(line+StringUtil.lineEnding());
-				Debugg.println("||| " + line);
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();  
-		}
-		//os.flush();
-		//os.close();
-	}
-}
-
-class StandardOutputsStreamReader  {
-	File fileToTail;
-	FileWriter destinationFile;
-
-	StandardOutputsStreamReader(File fileToTail, FileWriter destinationFile) {
-		this.fileToTail = fileToTail;
-		this.destinationFile = destinationFile;
-	}
-	
-	public void start ()  {
-		StandardOutputsStreamListener listener = new StandardOutputsStreamListener(fileToTail, destinationFile);
-		Tailer tailer = Tailer.create(fileToTail, listener, 500);
-		Debugg.println("^^^^^^^^^^  Starting StandardOutputsStreamReader");
-	}
-
-}
 
