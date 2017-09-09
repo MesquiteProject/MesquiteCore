@@ -8,6 +8,7 @@ import org.apache.commons.io.input.TailerListenerAdapter;
 public class OutputFileTailer {
 	File fileToTail;
 	StringBuffer fileContents;
+	Tailer tailer;
 
 	OutputFileTailer(File fileToTail) {
 		this.fileToTail = fileToTail;
@@ -16,8 +17,11 @@ public class OutputFileTailer {
 	
 	public void start ()  {
 		OutputFileListener listener = new OutputFileListener(this);
-		Tailer tailer = Tailer.create(fileToTail, listener, 500);
-		Debugg.println("^^^^^^^^^^  Starting StandardOutputsStreamReader");
+		tailer = Tailer.create(fileToTail, listener, 500);
+	}
+	public void stop() {
+		if (tailer!=null)
+				tailer.stop();
 	}
 
 	public void appendToFileContents(String s) {
@@ -39,7 +43,6 @@ class OutputFileListener extends TailerListenerAdapter {
 	public void handle(String line) {
 			if (tailer != null) {
 				tailer.appendToFileContents(line+StringUtil.lineEnding());
-				Debugg.println("||| " + line);
 			}
 	}
 }

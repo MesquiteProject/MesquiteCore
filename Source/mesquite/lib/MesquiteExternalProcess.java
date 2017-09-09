@@ -73,6 +73,8 @@ public class MesquiteExternalProcess  {
 				errorStream.close();
 				OutputStream outputStream = proc.getOutputStream();
 				outputStream.close();
+				endFileTailers();
+
 			} catch (IOException e) {
 				MesquiteMessage.println("Couldn't close streams of process.");
 			}
@@ -96,12 +98,7 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 
 	public void dispose() {
-		/*		try {
-			if (inputBufferedWriter!=null)
-				inputBufferedWriter.close();
-		}
-		catch (Exception e) {
-		}*/
+		endFileTailers();
 	}
 	/*.................................................................................................................*/
 
@@ -115,13 +112,22 @@ public class MesquiteExternalProcess  {
 		}
 		return false;
 	}
+	public void endFileTailers() {
+		if (outputReader!=null)
+			 outputReader.stop();
+		if (errorReader!=null)
+			 errorReader.stop();
+	}
 
-	public void startStandardOutputsReaders(File outputFile, File errorFile) {
+
+	public void startFileTailers(File outputFile, File errorFile) {
 		errorReader = new OutputFileTailer(errorFile);
 		outputReader = new OutputFileTailer(outputFile);
 		errorReader.start();
 		outputReader.start();
 	}
+	/*.................................................................................................................*/
+
 	public String getStdErrContents() {
 		if (errorReader!=null)
 			return errorReader.getFileContents();
@@ -132,96 +138,6 @@ public class MesquiteExternalProcess  {
 			return outputReader.getFileContents();
 		return null;
 	}
-
-	/*.................................................................................................................*
-
-	public void flushStandardOutputsReaders() {
-		if (fos!=null) {
-			try { 
-				fos.flush();
-			} 
-			catch (IOException e) {
-				MesquiteMessage.warnProgrammer("IOException on standard output file.");
-			}
-		}
-	}
-
-	public void endStandardOutputsReaders() {
-		if (fos!=null) {
-			try { 
-				fos.close();      
-			} 
-			catch (IOException e) {
-				MesquiteMessage.warnProgrammer("IOException on standard output file.");
-			}
-		}
-	}
-
-
-	/*.................................................................................................................*
-	public void sendStringToProcess(String s) {
-		if (proc==null)
-			return;
-		if (inputToProcess==null)
-			inputToProcess = proc.getOutputStream();
-		if (inputToProcess!=null && inputStreamsWriter==null)
-			inputStreamsWriter = new OutputStreamWriter(inputToProcess);
-		if (inputToProcess==null || inputStreamsWriter==null)
-			return;
-		if (inputBufferedWriter==null)
-			inputBufferedWriter = new BufferedWriter(inputStreamsWriter);
-		if (inputBufferedWriter==null)
-			return;
-		try {
-			try {
-				inputBufferedWriter.write(s);
-			} finally {
-				inputBufferedWriter.flush();
-				//	inputBufferedWriter.close();
-			} 
-		} catch (Exception e) {
-		}
-
-	}
-	/*.................................................................................................................*/
-}
-
-
-class StandardOutputsStreamReader extends Thread {
-	InputStream is;
-	FileWriter os;
-
-
-	StandardOutputsStreamReader(InputStream is, FileWriter os) {
-		this.is = is;
-		this.os = os;
-	}
-	StandardOutputsStreamReader(InputStream is) {
-		this(is, null);
-	}
-	public void run() {
-		try {
-		/*	PrintWriter pw = null;
-			if (os != null)
-				pw = new PrintWriter(os);
-*/
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
-			String line=null;
-			while ( (line = br.readLine()) != null) {
-				if (os != null) {
-					os.write(line+StringUtil.lineEnding());
-				}
-			}
-			if (os != null) {
-				os.flush();
-				os.close();
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();  
-		}
-	}
-
 
 }
 

@@ -233,17 +233,22 @@ public class ShellScriptUtil  {
 					scriptPath = scriptPath.replaceAll("//", "/");
 					pathArray = new String[] {scriptPath};
 				}
+				proc = Runtime.getRuntime().exec(pathArray);
 			}
 			else if (MesquiteTrunk.isLinux()) {
 				// remove double slashes or things won't execute properly
 				scriptPath = scriptPath.replaceAll("//", "/");
 				pathArray = new String[] {scriptPath};
-				//proc = Runtime.getRuntime().exec(pathArray);
-			} else {
+				proc = Runtime.getRuntime().exec(pathArray);
+			} else {  // Windows
 				scriptPath = "\"" + scriptPath + "\"";
-				pathArray = new String[] {"cmd", "/c", scriptPath};
+				if (visibleTerminal)
+					proc = Runtime.getRuntime().exec("cmd /c start \"\" " + scriptPath);
+				else {
+					pathArray = new String[] {"cmd", "/c", scriptPath};
+					proc = Runtime.getRuntime().exec(pathArray);
+				}
 			}
-			proc = Runtime.getRuntime().exec(pathArray);
 		}  catch (IOException e) {
 			MesquiteMessage.println("Script execution failed. " + e.getMessage());
 			return null;
