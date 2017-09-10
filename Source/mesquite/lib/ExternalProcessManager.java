@@ -47,6 +47,7 @@ public class ExternalProcessManager implements Commandable  {
 	MesquiteExternalProcess externalProcess;
 	long stdOutLastModified = 0;
 	long stdErrLastModified = 0;
+	boolean badExitCode = false;
 
 	
 	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
@@ -65,6 +66,9 @@ public class ExternalProcessManager implements Commandable  {
 	public ExternalProcessManager(MesquiteModule ownerModule){  //to be used for reconnecting
 	}
 
+	public boolean exitCodeIsBad() {
+		return badExitCode;
+	}
 	public void setOutputProcessor(OutputFileProcessor outputFileProcessor){
 		this.outputFileProcessor = outputFileProcessor;
 	}
@@ -241,8 +245,9 @@ public class ExternalProcessManager implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public boolean goodExitValue(int exitValue, boolean warnIfBad) {
-		if (exitValue!=0)
+		if (exitValue!=0) {
 			ownerModule.logln("Process exit value: " +exitValue);
+		}
 		return exitValue==0;
 	}
 	/*.................................................................................................................*/
@@ -292,7 +297,12 @@ public class ExternalProcessManager implements Commandable  {
 			stillGoing = watcher == null || watcher.continueShellProcess(proc);
 			if (proc!=null && !proc.isAlive()) {
 				stillGoing=false;
-				return goodExitValue(proc.exitValue(), true);
+				boolean goodValue = goodExitValue(proc.exitValue(), true);
+				if (!goodValue) {
+					MesquiteMessage.discreetNotifyUser(name + " quit because of an error. Please examine StandardOutputFile and StandardErrorFile in the analysis directory for information.");
+				}
+				badExitCode = !goodValue;
+				return goodValue;
 			}
 			if (progressIndicator!=null){
 				progressIndicator.spin();
