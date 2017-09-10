@@ -125,7 +125,8 @@ public abstract class RESTCommunicator implements XMLPreferencesProcessor {
 			if (getPassword()!=null)
 				passwordString.setValue(getPassword());
 			String help = "You need an account on the "+getSystemName()+" REST system to use this service.  To register, go to " + getRegistrationURL();
-			new UserNamePasswordDialog(ownerModule.containerOfModule(), "Sign in to "+getSystemName(), help, getRegistrationURL(), "Username", "Password", answer, usernameString, passwordString);
+			String registrationHint = "Touch on the web link icon on the left to register for this service.";
+			new UserNamePasswordDialog(ownerModule.containerOfModule(), "Sign in to "+getSystemName(), help, getRegistrationURL(), registrationHint, "Username", "Password", answer, usernameString, passwordString);
 			if (answer.getValue()){
 				setUserName(usernameString.getValue());
 				setPassword(passwordString.getValue());
