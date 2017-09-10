@@ -99,11 +99,19 @@ public class ShellScriptRunner implements Commandable  {
 		return temp;
 	}
 	Parser parser = new Parser();
+	boolean reconnectToExternal = false;
+
+	/*.................................................................................................................*/
+	public void pleaseReconnectToExternalProcess() {
+		reconnectToExternal=true;
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the running file path", "[file path]", commandName, "setRunningFilePath")) {
 			runningFilePath = parser.getFirstToken(arguments);
 			setOutErrFilePaths();
+			if (reconnectToExternal)
+				reconnectToExternalProcess();
 		}
 		else if (checker.compare(this.getClass(), "Sets the output file paths", "[file paths]", commandName, "setOutputFilePaths")) {
 			int num = parser.getNumberOfTokens(arguments);
@@ -172,9 +180,13 @@ public class ShellScriptRunner implements Commandable  {
 	}
 
 	/*.................................................................................................................*/
-	public void restartExternalProcess() {
+	public void reconnectToExternalProcess() {
 		externalProcessManager = new MesquiteExternalProcess();
-	
+		setOutErrFilePaths();
+		File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
+		File errorFile = new File(stdErrFilePath);
+		externalProcessManager.startFileTailers(outputFile, errorFile);   
+
 	}
 	/*.................................................................................................................*/
 	/** Executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
