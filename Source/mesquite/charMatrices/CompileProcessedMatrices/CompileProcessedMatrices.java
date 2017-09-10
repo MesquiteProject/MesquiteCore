@@ -12,7 +12,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.charMatrices.CompileMatrices; 
+package mesquite.charMatrices.CompileProcessedMatrices; 
 
 import java.awt.FileDialog;
 import java.util.Vector;
@@ -22,7 +22,7 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class CompileMatrices extends FileProcessor {
+public class CompileProcessedMatrices extends FileProcessor {
 	String saveFile = null;
 	String tempFile = null;
 	TaxonNameAlterer nameAlterer;
@@ -37,11 +37,11 @@ public class CompileMatrices extends FileProcessor {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){
-		return true; //not really, but to force checking of prerelease
+		return false; 
 	}
 
 	/** if returns true, then requests to remain on even after alterFile is called.  Default is false*/
@@ -128,20 +128,7 @@ public class CompileMatrices extends FileProcessor {
 		return true;
 
 	}
-	/*
-BEGIN CHARACTERS;
-	TITLE  Character_Matrix;
-	DIMENSIONS  NCHAR=20;
-	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1 2 3";
-	MATRIX
-	SarindaCutleri.MRB193                  10102101111111010100
-	SitticusPalustris.d030                 11012010011010100100
-	ThiodinineIndetEcuador.MRB024          01100010121100211100
-	FreyaDecorata.d211                     01111110000101010111
-	TrydarssusCfNobilitatus.MRB270         00010010121100110101
-;
-END;
-	 */
+
 
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -152,12 +139,12 @@ END;
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Compile Matrices into One File";
+		return "Compile Processed Matrices into One File";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Compiles matrices from each file into a combined NEXUS file." ;
+		return "Compiles matrices from each file processed into a combined NEXUS file." ;
 	}
 
 }
