@@ -110,8 +110,10 @@ public class ShellScriptRunner implements Commandable  {
 		if (checker.compare(this.getClass(), "Sets the running file path", "[file path]", commandName, "setRunningFilePath")) {
 			runningFilePath = parser.getFirstToken(arguments);
 			setOutErrFilePaths();
-			if (reconnectToExternal)
+			if (reconnectToExternal) {
 				reconnectToExternalProcess();
+				reconnectToExternal = false;
+			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the output file paths", "[file paths]", commandName, "setOutputFilePaths")) {
 			int num = parser.getNumberOfTokens(arguments);
