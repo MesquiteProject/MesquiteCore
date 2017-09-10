@@ -12,8 +12,9 @@
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
 	<classpathentry kind="src" path="Source"/>
 	<classpathentry exported="true" kind="lib" path="jars/commons-codec-1.6.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Java 1.8"/>
 	<classpathentry exported="true" kind="lib" path="jars/gson-2.6.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="jars/httpclient-4.3.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/commons-io-2.5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>

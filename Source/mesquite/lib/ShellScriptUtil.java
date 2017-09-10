@@ -30,8 +30,6 @@ public class ShellScriptUtil  {
 	static int sleepTime = 50;
 	public static int recoveryDelay = 0;
 	
-	public final static int NOERROR = 0;
-	public final static int PERMISSIONDENIED=13;
 
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
@@ -46,6 +44,14 @@ public class ShellScriptUtil  {
 			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
 		else
 			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
+	}
+
+	/*.................................................................................................................*/
+	public static String getAppendStringAsFile(String path, String contents) {
+		if (MesquiteTrunk.isWindows())
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
+		else
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
 	}
 
 	/*.................................................................................................................*
@@ -134,78 +140,6 @@ public class ShellScriptUtil  {
 		return null;
 	}
 
-	/*.................................................................................................................*/
-	public static Process startProcess(String...command){
-		try {
-			if (command==null || command.length==0 || StringUtil.blank(command[0]))
-				return null;
-			ProcessBuilder pb = new ProcessBuilder(command);
-			/*Map<String, String> env = pb.environment();
-			env.put("VAR1", "myValue");
-			env.remove("OTHERVAR");
-			env.put("VAR2", env.get("VAR1") + "suffix");
-			pb.directory(new File("myDir"));
-			File log = new File("log");
-			pb.redirectErrorStream(true);
-			pb.redirectOutput(ProcessBuilder.Redirect.appendTo(log));*/
-			Process p = pb.start();
-			/*assert pb.redirectInput() == ProcessBuilder.Redirect.PIPE;
-			assert pb.redirectOutput().file() == log;
-			assert p.getInputStream().read() == -1;*/
-			return p;
-		}
-		catch (IOException e) {
-		}
-		return null;
-	}
-	/*.................................................................................................................*/
-	public static Process startProcess(MesquiteInteger errorCode, String workingDirectoryPath, String outputFilePath, String errorFilePath, String...command){
-		try {
-			
-			if (command==null || command.length==0 || StringUtil.blank(command[0])) {
-				MesquiteMessage.printLogln("Error in attempting to start external program: commands empty. \n");
-				
-				return null;
-			}
-			ProcessBuilder pb = new ProcessBuilder(command);
-			
-		   if (StringUtil.notEmpty(workingDirectoryPath)) {
-				pb.directory(new File(workingDirectoryPath));
-		   }
-
-			File errorLog=null;
-			if (errorFilePath!=null) {
-				errorLog = new File(errorFilePath);				
-				pb.redirectError(ProcessBuilder.Redirect.appendTo(errorLog));
-			}
-
-			File log=null;
-			if (outputFilePath!=null) {
-				log = new File(outputFilePath);				
-				pb.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
-			}
-			Process p = pb.start();
-			if (log!=null)
-				assert pb.redirectOutput().file() == log;
-			if (errorLog!=null)
-				assert pb.redirectError().file() == errorLog;
-			if (errorCode!=null)
-				errorCode.setValue(NOERROR);
-		
-			return p;
-		}
-		catch (IOException e) {
-			MesquiteMessage.printLogln("IOException in attempting to start external program. \n");
-			String message = e.getMessage();
-			if (e.getMessage().indexOf("error=13")>0) {
-				message+= "\n\nCheck to see if the external program is executable.";
-				if (errorCode!=null)
-					errorCode.setValue(PERMISSIONDENIED);
-			}
-			MesquiteMessage.discreetNotifyUser(message);
-		}
-		return null;
-	}
 
 	/*.................................................................................................................*/
 	@Deprecated
@@ -225,17 +159,22 @@ public class ShellScriptUtil  {
 					scriptPath = scriptPath.replaceAll("//", "/");
 					pathArray = new String[] {scriptPath};
 				}
+				proc = Runtime.getRuntime().exec(pathArray);
 			}
 			else if (MesquiteTrunk.isLinux()) {
 				// remove double slashes or things won't execute properly
 				scriptPath = scriptPath.replaceAll("//", "/");
 				pathArray = new String[] {scriptPath};
-				//proc = Runtime.getRuntime().exec(pathArray);
-			} else {
+				proc = Runtime.getRuntime().exec(pathArray);
+			} else {  // Windows
 				scriptPath = "\"" + scriptPath + "\"";
-				pathArray = new String[] {"cmd", "/c", scriptPath};
+				if (visibleTerminal)
+					proc = Runtime.getRuntime().exec("cmd /c start \"\" " + scriptPath);
+				else {
+					pathArray = new String[] {"cmd", "/c", scriptPath};
+					proc = Runtime.getRuntime().exec(pathArray);
+				}
 			}
-			proc = Runtime.getRuntime().exec(pathArray);
 		}  catch (IOException e) {
 			MesquiteMessage.println("Script execution failed. " + e.getMessage());
 			return null;

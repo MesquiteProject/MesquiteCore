@@ -28,7 +28,7 @@ public class UserNamePasswordDialog extends ExtensibleDialog {
 
 
 
-	public UserNamePasswordDialog (MesquiteWindow parent,  String title, String helpString, String helpURL, String label1, String label2, MesquiteBoolean answer,  MesquiteString str1, MesquiteString str2) {
+	public UserNamePasswordDialog (MesquiteWindow parent,  String title, String helpString, String helpURL, String hint, String label1, String label2, MesquiteBoolean answer,  MesquiteString str1, MesquiteString str2) {
 		super(parent,title);
 		this.passWord = str2;
 		this.userName = str1;
@@ -47,6 +47,8 @@ public class UserNamePasswordDialog extends ExtensibleDialog {
 		addBlankLine();
 
 		passwordField = addPasswordField(label2,passWord.getValue(), 20);
+
+		addLabelSmallText(hint);
 
 		passwordField.requestFocus();
 

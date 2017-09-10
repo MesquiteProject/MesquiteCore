@@ -363,7 +363,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		String arguments = argumentsForLogging.toString();
 		
 		arguments=StringUtil.stripBoundingWhitespace(arguments);
-		externalRunner = new ExternalProcessManager(this, rootDir, getProgramPath(), arguments,getName(), outputFilePaths, this, this, false);
+		externalRunner = new ExternalProcessManager(this, rootDir, getProgramPath(), arguments,getName(), outputFilePaths, this, this, true);
 		//ShellScriptUtil.changeDirectory(rootDir, rootDir);
 		externalRunner.setStdOutFileName(outFileName);
 		success = externalRunner.executeInShell();
