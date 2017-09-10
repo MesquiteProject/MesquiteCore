@@ -299,7 +299,8 @@ public class ExternalProcessManager implements Commandable  {
 				stillGoing=false;
 				boolean goodValue = goodExitValue(proc.exitValue(), true);
 				if (!goodValue) {
-					MesquiteMessage.discreetNotifyUser(name + " quit because of an error. Please examine StandardOutputFile and StandardErrorFile in the analysis directory for information.");
+					String message = name + " quit because of an error. Please examine StandardOutputFile and StandardErrorFile in the analysis directory for information.";
+					AlertWithLinkToDirectory alert = new AlertWithLinkToDirectory(ownerModule.containerOfModule(),"Error in executing "+name, message, directoryPath);
 				}
 				badExitCode = !goodValue;
 				return goodValue;
