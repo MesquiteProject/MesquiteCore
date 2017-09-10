@@ -17,7 +17,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
 
 /*===============================================*/
 /** A dialog box to allow the user to enter a username and password for authentication. */
@@ -26,14 +25,6 @@ public class AlertWithLinkToDirectory extends ExtensibleDialog implements Action
 	Button directoryButton;
 	String directoryPath;
 	
-	/*.................................................................................................................*
-	public void addDirectoryButton () {
-		Panel buttons = new Panel();
-		addExtraButtons(buttons, this);
-		directoryButton=addAListenedButton("Show Directory",buttons,this);
-		addToDialog(buttons);			
-	}
-
 	/*.................................................................................................................*/
 	public void addDirectoryButton () {
 		
@@ -48,16 +39,12 @@ public class AlertWithLinkToDirectory extends ExtensibleDialog implements Action
 		super(parent,title);
 		this.directoryPath = directoryPath;
 		
+		addTextArea(message, 5);
 		
-		addTextArea(message, 4);
-		
-		nullifyAddPanel();
+		//nullifyAddPanel();
 		addDirectoryButton();
 
-		//addLabelSmallText(hint);
-
 		completeAndShowDialog ("OK", null,true, this);
-		//completeAndShowDialog (true, this);
 
 		boolean ok = (query()==0);
 		if (ok) {
@@ -66,7 +53,6 @@ public class AlertWithLinkToDirectory extends ExtensibleDialog implements Action
 
 	}
 	/*.................................................................................................................*/
-	/** This displays the help note.  If you override this, make sure you call super.actionPerformed(e) at the end of your method so that the help system still works */
 	public  void actionPerformed(ActionEvent e) {
 		if  ("Show Directory".equals(e.getActionCommand())) {
 			MesquiteFile.showDirectory(directoryPath);
