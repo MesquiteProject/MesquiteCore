@@ -104,6 +104,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
+		if (tWindowMaker == null)
+			return null;
 		Snapshot temp = new Snapshot();
 		temp.addLine("setWindowMaker " , tWindowMaker);
 		return temp;
