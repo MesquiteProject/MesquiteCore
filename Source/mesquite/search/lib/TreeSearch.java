@@ -88,8 +88,8 @@ public String getMessageIfUserAbortRequested () {
 	}
 
 	public void abortFilling(){
-		stopInference();
-		abort = true;
+		if (stopInference())
+			abort = true;
 	}
 
    	public Reconnectable getReconnectable(){

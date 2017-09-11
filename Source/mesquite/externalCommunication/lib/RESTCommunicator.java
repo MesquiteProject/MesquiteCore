@@ -17,6 +17,7 @@ public abstract class RESTCommunicator implements XMLPreferencesProcessor {
 	protected String[] outputFilePaths; //local copies of files
 	protected MesquiteModule ownerModule;
 	protected boolean verbose = MesquiteTrunk.debugMode;
+	protected boolean aborted = false;
 
 	protected OutputFileProcessor outputFileProcessor; // for reconnection
 	protected ShellScriptWatcher watcher; // for reconnection
@@ -41,6 +42,13 @@ public abstract class RESTCommunicator implements XMLPreferencesProcessor {
 	}
 	public boolean useAPITestUser() {
 		return false;
+	}
+	public boolean isAborted() {
+		return aborted;
+	}
+
+	public void setAborted(boolean aborted) {
+		this.aborted = aborted;
 	}
 
 	/*.................................................................................................................*/
