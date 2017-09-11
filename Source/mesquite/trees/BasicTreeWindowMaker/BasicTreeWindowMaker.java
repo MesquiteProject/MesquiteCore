@@ -4961,7 +4961,6 @@ class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { 
 
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		//Debugg.println("KEYTYPED");
 		
 	}
 
@@ -4971,7 +4970,6 @@ class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { 
 	    int scale = 1;
 	    if (e.isAltDown())
 	    	scale=5;
-		//Debugg.println("KEYPRESSED");
 
 	    switch( keyCode ) { 
 	        case KeyEvent.VK_UP:
@@ -4998,7 +4996,6 @@ class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { 
 	} 
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		//Debugg.println("KEYRELEASED");
 
 	}
 }

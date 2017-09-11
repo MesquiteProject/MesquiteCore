@@ -418,7 +418,6 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				for (int i=0; i<daughtersUR.length; i++)
 					s+= " " + daughtersUR[i];
 			} else s+= "none";
-			//Debugg.println(s);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				reportDaughters(drawnRoot, d);
 			}
@@ -444,8 +443,8 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			if (daughtersUR==null) return;
 
 			//double daylightInThisPair = 0.0;
-			//	Debugg.println("\n\n\n centerNode: " + node);
-			//	Debugg.println("    daylightPerDaughter: " + daylightPerDaughter);
+			//	//Debug.println("\n\n\n centerNode: " + node);
+			//	//Debug.println("    daylightPerDaughter: " + daylightPerDaughter);
 			double totalDaylight = 0.0;
 
 			//int daughterUR = tree.firstDaughterOfNode(node); // use firstDaughter as the first daughter for comparison
@@ -485,17 +484,17 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		}
 			//shiftAmount[0] += cumulativeShift[daughtersUR.length-1];
 
-	/*		Debugg.println("\n    centerNode: " + node);
+	/*		//Debug.println("\n    centerNode: " + node);
 			for (int i =0; i<daughtersUR.length; i++) {
 				int leftDaughter = i;
 				int rightDaughter = i+1;
 			//	int prevRightDaughter = i;
 				if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
 					rightDaughter = 0;
-				Debugg.println("         pair: " + daughtersUR[leftDaughter] + "   " + daughtersUR[rightDaughter] + "   (" + leftDaughter + "  " + rightDaughter+")");
-				Debugg.println("         original shift: " + originalShiftAmount[i]);
-				Debugg.println("         shift: " + shiftAmount[i]);
-			//	Debugg.println("         cumulativeShift: " + cumulativeShift[i]);
+				//Debug.println("         pair: " + daughtersUR[leftDaughter] + "   " + daughtersUR[rightDaughter] + "   (" + leftDaughter + "  " + rightDaughter+")");
+				//Debug.println("         original shift: " + originalShiftAmount[i]);
+				//Debug.println("         shift: " + shiftAmount[i]);
+			//	//Debug.println("         cumulativeShift: " + cumulativeShift[i]);
 		}
 
 */
@@ -546,9 +545,9 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 
 				if (!equalized && false) {
-					if (!equalized)
-						Debugg.println("\n\n  •|•|•|•|•|•|•|•|•|  Not Equalized •|•|•|•|•|•|");
-					Debugg.println("  centerNode: " + node);
+					//if (!equalized)
+						//Debug.println("\n\n  •|•|•|•|•|•|•|•|•|  Not Equalized •|•|•|•|•|•|");
+					//Debug.println("  centerNode: " + node);
 					double cumulative = 0.0;
 					for (int i =0; i<daughtersUR.length; i++) {
 						int leftDaughter = i;
@@ -556,20 +555,20 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 						if (rightDaughter>=daughtersUR.length)  // we are at the end, need to go back to the start
 							rightDaughter = 0;
 						double daylightInThisPair = daylightBetweenNodes (drawnRoot, daughtersUR[leftDaughter],daughtersUR[rightDaughter], node);  // start out with daylight between nother node and first daughter
-						Debugg.println("\n    pair: " + daughtersUR[leftDaughter] + "   " + daughtersUR[rightDaughter] + "   (" + leftDaughter + "  " + rightDaughter+")");
-						Debugg.println("       daylightPerDaughter: " + daylightPerDaughter);
-						Debugg.println("       beforeRotateDaylight " + originalDaylightInDaughter[rightDaughter]);
-						Debugg.println("         original shift: " + originalShiftAmount[rightDaughter] + "            expected difference: " + (daylightPerDaughter-(originalDaylightInDaughter[rightDaughter]+originalShiftAmount[rightDaughter])));
-						Debugg.println("         shift: " + shiftAmount[rightDaughter]+"            expected difference: " + (daylightPerDaughter-(originalDaylightInDaughter[rightDaughter]+shiftAmount[rightDaughter])));
-						Debugg.println("       afterRotateDaylight " + daylightInThisPair + "            observed difference: " + (daylightPerDaughter-daylightInThisPair));
+						//Debug.println("\n    pair: " + daughtersUR[leftDaughter] + "   " + daughtersUR[rightDaughter] + "   (" + leftDaughter + "  " + rightDaughter+")");
+						//Debug.println("       daylightPerDaughter: " + daylightPerDaughter);
+						//Debug.println("       beforeRotateDaylight " + originalDaylightInDaughter[rightDaughter]);
+						//Debug.println("         original shift: " + originalShiftAmount[rightDaughter] + "            expected difference: " + (daylightPerDaughter-(originalDaylightInDaughter[rightDaughter]+originalShiftAmount[rightDaughter])));
+						//Debug.println("         shift: " + shiftAmount[rightDaughter]+"            expected difference: " + (daylightPerDaughter-(originalDaylightInDaughter[rightDaughter]+shiftAmount[rightDaughter])));
+						//Debug.println("       afterRotateDaylight " + daylightInThisPair + "            observed difference: " + (daylightPerDaughter-daylightInThisPair));
 
 						//	cumulative +=shiftAmount[rightDaughter];
 					}
 					double newDaylight = calculateDaylightForNode(drawnRoot, node);
-					Debugg.println("       old total daylight " + daylight);
-					Debugg.println("       new total daylight " + newDaylight);
+					//Debug.println("       old total daylight " + daylight);
+					//Debug.println("       new total daylight " + newDaylight);
 
-					Debugg.println("");
+					//Debug.println("");
 				}
 
 				/*
@@ -584,16 +583,16 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 						shiftAmount[count+1] +=shiftAmount[count];
 					daylightInThisPair = daylightBetweenNodes (drawnRoot, daughterUR,nextDaughterUR, node);  // start out with daylight between nother node and first daughter
 					if (daylightInThisPair-daylightPerDaughter>	daylightTolerancePerNode) {
-							Debugg.println("\n  •|•|•|•|•|•|•|•|•|  Not Equalized •|•|•|•|•|•|");
-							Debugg.println("  centerNode: " + node);
-							Debugg.println("    pair: " + daughterUR + " " + nextDaughterUR);
-							Debugg.println("    daylightPerDaughter: " + daylightPerDaughter + " afterRotateDaylight " + daylightInThisPair);
-							Debugg.println("    shift: " + shiftAmount[count]);
-							Debugg.println("    firstDaughterUR: "+firstDaughterUR);
+							//Debug.println("\n  •|•|•|•|•|•|•|•|•|  Not Equalized •|•|•|•|•|•|");
+							//Debug.println("  centerNode: " + node);
+							//Debug.println("    pair: " + daughterUR + " " + nextDaughterUR);
+							//Debug.println("    daylightPerDaughter: " + daylightPerDaughter + " afterRotateDaylight " + daylightInThisPair);
+							//Debug.println("    shift: " + shiftAmount[count]);
+							//Debug.println("    firstDaughterUR: "+firstDaughterUR);
 					}
 
-		//	Debugg.println("    daylightPerDaughter: " + daylightPerDaughter);
-	//				Debugg.println("  after rotate: "+"    pair: " + daughterUR + " " + nextDaughterUR + "      shift: " + shiftAmount[count] + " daylight " + daylightInThisPair);
+		//	//Debug.println("    daylightPerDaughter: " + daylightPerDaughter);
+	//				//Debug.println("  after rotate: "+"    pair: " + daughterUR + " " + nextDaughterUR + "      shift: " + shiftAmount[count] + " daylight " + daylightInThisPair);
 					double daylightNEW = calculateDaylightForNode(drawnRoot, node);
 					daughterUR = nextDaughterUR;
 					count++;
@@ -602,7 +601,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				}	
 				 */	
 				//		if (count!= numDaughters)
-				//			Debugg.println("  •|•|•|•|•|•|•|•|•|  NumDaughters different node " + node +" •|•|•|•|•|•|");
+				//			//Debug.println("  •|•|•|•|•|•|•|•|•|  NumDaughters different node " + node +" •|•|•|•|•|•|");
 
 			}
 
@@ -681,11 +680,11 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 		double value = Math.abs(angle1 - angle2);
 		if (value>Math.PI) {
-			//Debugg.println("    daylight between nodes " + node1 + " and " + node2 + ": " + value + " (centernode: " + centerNode+")");
+			//Debug.println("    daylight between nodes " + node1 + " and " + node2 + ": " + value + " (centernode: " + centerNode+")");
 			value =2*Math.PI-value;
 		}
 		if (centerNode==52) {
-			//Debugg.println("    daylight between nodes " + node1 + " and " + node2 + ": " + value + " (centernode: " + centerNode+") LEFT: " + leftD + " RIGHT " + rightD);
+			//Debug.println("    daylight between nodes " + node1 + " and " + node2 + ": " + value + " (centernode: " + centerNode+") LEFT: " + leftD + " RIGHT " + rightD);
 		}
 		return value;
 	}
@@ -721,7 +720,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		double angle2 = Math.atan2(rdy,rdx);
 		double diff = angle1 - angle2;
 		if (diff<0) {
-			//			Debugg.println(" centernode: " + centerNode + ", leftNode: " +leftNode + ", rightNode: " + rightNode);
+			//			//Debug.println(" centernode: " + centerNode + ", leftNode: " +leftNode + ", rightNode: " + rightNode);
 		}
 		double value = Math.abs(angle1 - angle2);
 		if (value>Math.PI) {
@@ -758,9 +757,9 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		if (tree.nodeExists(node)) {
 			double value = angleToNode(centerNode,node);
 			if ((node==26|| node==9) && centerNode==0 && false) {
-				Debugg.println("||| LEFTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
-				Debugg.println("       leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
-				Debugg.println("");
+				//Debug.println("||| LEFTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
+				//Debug.println("       leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
+				//Debug.println("");
 			}
 			boolean record = false;
 			if (!rangeCrossesZero(leftMaxAngle,rightMaxAngle)) {
@@ -801,9 +800,9 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			}
 			if (record) {
 				if (node==0) {
-					Debugg.println("••••••••  NODE 0 ••••••••••");
-					Debugg.println("        LEFTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
-					Debugg.println("        leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
+					//Debug.println("••••••••  NODE 0 ••••••••••");
+					//Debug.println("        LEFTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
+					//Debug.println("        leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
 				}
 				maxNode.setValue(node);
 				maxAngle.setValue(value);
@@ -826,9 +825,9 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		if (tree.nodeExists(node)) {
 			double value = angleToNode(centerNode,node);
 			if ((node==2 || node == 51) && centerNode==3 && false) {
-				//		Debugg.println("||| RIGHTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
-				//		Debugg.println("       leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
-				Debugg.println("");
+				//		//Debug.println("||| RIGHTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
+				//		//Debug.println("       leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
+				//Debug.println("");
 			}
 			boolean record = false;
 			if (!rangeCrossesZero(leftMaxAngle,rightMaxAngle)) {
@@ -871,9 +870,9 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			}
 			if (record) {
 				if (node==0) {
-					Debugg.println("••••••••  NODE 0 ••••••••••");
-					Debugg.println("        RIGHTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
-					Debugg.println("        leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
+					//Debug.println("••••••••  NODE 0 ••••••••••");
+					//Debug.println("        RIGHTMOST    node " + node + " centerNode " + centerNode+ " angleToNode " + value + " maxAngle " + maxAngle.getValue());
+					//Debug.println("        leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle);
 				}
 				maxNode.setValue(node);
 				maxAngle.setValue(value);
@@ -956,7 +955,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 		double value = angleBetweenNodes(centerNode, leftD, rightD);
 	 	if (centerNode==52) {
-		 	Debugg.println("    daylight between nodes " + node1 + " and " + node2 + ": " + value + " (centernode: " + centerNode+") LEFT: " + leftD + " RIGHT " + rightD);
+		 	//Debug.println("    daylight between nodes " + node1 + " and " + node2 + ": " + value + " (centernode: " + centerNode+") LEFT: " + leftD + " RIGHT " + rightD);
 	 	}
 		return value;
 	}
@@ -968,36 +967,36 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		centerNodeToCheck = false;
 		if (centerNodeToCheck) {
 			//	if ((centerNode==3 && leftDaughter==2 && rightDaughter==4) && false) {
-			Debugg.println("\n CENTERNODE: " + centerNode);
-			Debugg.println("      leftDaughter: " + leftDaughter + "  rightDaughter " + rightDaughter);
+			//Debug.println("\n CENTERNODE: " + centerNode);
+			//Debug.println("      leftDaughter: " + leftDaughter + "  rightDaughter " + rightDaughter);
 		}
 		double leftMaxAngle = angleToNode(centerNode,leftDaughter);
 		double rightMaxAngle = angleToNode(centerNode,rightDaughter);
 		if (centerNode==23 && leftDaughter==25 && rightDaughter==19) {
-			//Debugg.println("      leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle +"\n");
+			//Debug.println("      leftMaxAngle " + leftMaxAngle + " rightMaxAngle " + rightMaxAngle +"\n");
 		}
 		int nodeToLeft = rightmostNode(leftDaughter,centerNode, leftMaxAngle, rightMaxAngle);
 		int nodeToRight = leftmostNode(rightDaughter,centerNode, leftMaxAngle, rightMaxAngle);
 		if (nodeToLeft==0 && true) {
-			Debugg.println("••••••••  NODE TO LEFT 0 ••••••••••");
-			Debugg.println("        centerNode " + centerNode+ " leftDaughter " + leftDaughter + " rightDaughter " + rightDaughter);
+			//Debug.println("••••••••  NODE TO LEFT 0 ••••••••••");
+			//Debug.println("        centerNode " + centerNode+ " leftDaughter " + leftDaughter + " rightDaughter " + rightDaughter);
 		}
 		if (nodeToRight==0 && true) {
-			Debugg.println("••••••••  NODE TO RIGHT 0 ••••••••••");
-			Debugg.println("        centerNode " + centerNode+ " leftDaughter " + leftDaughter + " rightDaughter " + rightDaughter);
+			//Debug.println("••••••••  NODE TO RIGHT 0 ••••••••••");
+			//Debug.println("        centerNode " + centerNode+ " leftDaughter " + leftDaughter + " rightDaughter " + rightDaughter);
 		}
 
 
 		double daylight = angleBetweenNodes(centerNode, nodeToLeft, nodeToRight);
 		if (centerNodeToCheck) {
-			Debugg.println("      nodeToLeft: " + nodeToLeft + "  nodeToRight " + nodeToRight);
-			Debugg.println("      daylight angle: " + daylight);
-			//Debugg.println("      leftMaxAngle: " + leftMaxAngle + "  rightMaxAngle " + rightMaxAngle);
+			//Debug.println("      nodeToLeft: " + nodeToLeft + "  nodeToRight " + nodeToRight);
+			//Debug.println("      daylight angle: " + daylight);
+			//Debug.println("      leftMaxAngle: " + leftMaxAngle + "  rightMaxAngle " + rightMaxAngle);
 		}
 		if (daylight<0) {
-			Debugg.println("••••••••  DAYLIGHT<0  ••••••••••");
-			Debugg.println("   CENTERNODE: " + centerNode);
-			Debugg.println("      leftDaughter: " + leftDaughter + "  rightDaughter " + rightDaughter);
+			//Debug.println("••••••••  DAYLIGHT<0  ••••••••••");
+			//Debug.println("   CENTERNODE: " + centerNode);
+			//Debug.println("      leftDaughter: " + leftDaughter + "  rightDaughter " + rightDaughter);
 		}
 			
 		return daylight;
@@ -1091,10 +1090,10 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		double lastDaylightInTree = 0.0;
 
 		MesquiteDouble daylight = new MesquiteDouble(0.0);
-		//Debugg.println(" |||||||||||||  \n\n ");
+		//Debug.println(" |||||||||||||  \n\n ");
 
 		calculateDaylight(drawnRoot, drawnRoot, daylight);
-		//Debugg.println(" Daylight initial: " + daylight.getValue());
+		//Debug.println(" Daylight initial: " + daylight.getValue());
 		lastDaylightInTree = daylight.getValue();
 
 		int count = 0;
@@ -1105,11 +1104,11 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			daylight.setValue(0.0);
 			nodeRotatedDuringEqualization= false;
 			equalizeDaylight(drawnRoot, drawnRoot);
-			//Debugg.println("\n (AFTER EQUALIZE)\n");
+			//Debug.println("\n (AFTER EQUALIZE)\n");
 			daylight.setValue(0.0);
 
 			calculateDaylight(drawnRoot, drawnRoot, daylight);
-			//Debugg.println("       Daylight " + (count+1) + ": " +daylight.getValue());
+			//Debug.println("       Daylight " + (count+1) + ": " +daylight.getValue());
 			daylightInTree = daylight.getValue();
 			if (!nodeRotatedDuringEqualization)
 				break;
@@ -1259,8 +1258,8 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		if (shiftH!=0 || shiftV != 0)
 			shift(drawnRoot,shiftH, shiftV);
 
-		//		Debugg.println(" node 46: " +  location[46].getX() + " " + location[46].getY());
-		//		Debugg.println(" node 47: " +  location[47].getX() + " " + location[47].getY());
+		//		//Debug.println(" node 46: " +  location[46].getX() + " " + location[46].getY());
+		//		//Debug.println(" node 47: " +  location[47].getX() + " " + location[47].getY());
 
 
 	}
@@ -1341,7 +1340,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			calculateEqualAreaAngleSectors (drawnRoot);
 
 			//		for (int i = 1; i<tree.getNumNodeSpaces(); i++) 
-			//			Debugg.println("node " + i + ": " + angleOfSector[i]);
+			//			//Debug.println("node " + i + ": " + angleOfSector[i]);
 			//int fdN = tree.firstDaughterOfNode(drawnRoot);
 			//angle[fdN] = angleOfFirstLeftDaughterOfDrawnRoot;
 			calculateEqualAreaAngles(drawnRoot);
@@ -1349,13 +1348,13 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				angle[i]= -angle[i];
 			convertAnglesToNodeLocs(drawnRoot);
 
-			//Debugg.println("\n ==========");
+			//Debug.println("\n ==========");
 
 			adjustDaylight(drawnRoot);
 
 			condenseTree(drawnRoot);
 
-			//Debugg.println("-------- After Condense ");
+			//Debug.println("-------- After Condense ");
 
 			//terminalTaxaLocs(drawnRoot);
 			//calcNodeLocs (drawnRoot);
