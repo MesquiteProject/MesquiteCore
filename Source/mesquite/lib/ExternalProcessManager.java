@@ -298,7 +298,7 @@ public class ExternalProcessManager implements Commandable  {
 			if (proc!=null && !proc.isAlive()) {
 				stillGoing=false;
 				boolean goodValue = goodExitValue(proc.exitValue(), true);
-				if (!goodValue & !ownerModule.isDoomed()) {
+				if (!goodValue && !ownerModule.isDoomed() && !watcher.userAborted()) {
 					String message = name + " quit, possibly because of an error ("+proc.exitValue()+"). Please examine StandardOutputFile and StandardErrorFile in the analysis directory for information.";
 					AlertWithLinkToDirectory alert = new AlertWithLinkToDirectory(ownerModule.containerOfModule(),"Error in executing "+name, message, directoryPath);
 				}

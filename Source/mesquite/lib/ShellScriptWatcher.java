@@ -17,6 +17,8 @@ public interface ShellScriptWatcher {
 
 	public boolean continueShellProcess(Process proc);
 	
+	public boolean userAborted();
+	
 	public boolean fatalErrorDetected();
 
 }

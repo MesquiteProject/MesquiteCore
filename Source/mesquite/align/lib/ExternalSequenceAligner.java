@@ -69,6 +69,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			return externalRunner.getStdOut();
 		return "";
 	}
+	public boolean userAborted(){
+		return false;
+	}
 
 	public String checkStatus(){
 		return null;
