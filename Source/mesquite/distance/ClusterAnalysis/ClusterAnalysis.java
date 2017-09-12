@@ -148,7 +148,7 @@ public class ClusterAnalysis extends TreeInferer implements Incrementable {  //I
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Cluster analysis";
+		return "Cluster Analysis";
    	 }
 	/*.................................................................................................................*/
   	 public String getExplanation() {
