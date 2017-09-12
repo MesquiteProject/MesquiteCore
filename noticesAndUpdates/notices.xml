@@ -13,21 +13,21 @@
 			<forVersion>320</forVersion>
 			<noticeNumber>19</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[A new version of Mesquite is available, version 3.2, with various bug fixes, performance improvements, and new features.  We strongly urge that you update to the new version by downloading it from 
+			<message><![CDATA[A new version of Mesquite is available, version 3.3, with various bug fixes, performance improvements, and new features.  We strongly urge that you update to the new version by downloading it from 
 			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
 		</notice>
 		<notice>
 			<forVersion>311</forVersion>
 			<noticeNumber>19</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[A new version of Mesquite is available, version 3.2, with various bug fixes, performance improvements, and new features.  We strongly urge that you update to the new version by downloading it from 
+			<message><![CDATA[A new version of Mesquite is available, version 3.3, with various bug fixes, performance improvements, and new features.  We strongly urge that you update to the new version by downloading it from 
 			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
 		</notice>
 		<notice>
 			<forVersion>310</forVersion>
 			<noticeNumber>19</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Your version of Mesquite has bugs in how it writes codon positions of sequence matrices.  There is an update available to solve this, version 3.2.  We strongly urge that you update to a new version by downloading it from 
+			<message><![CDATA[Your version of Mesquite has bugs in how it writes codon positions of sequence matrices.  There is an update available to solve this, version 3.3.  We strongly urge that you update to a new version by downloading it from 
 			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
 		</notice>
 		<notice>
