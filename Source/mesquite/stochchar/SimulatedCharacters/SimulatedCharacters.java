@@ -47,9 +47,9 @@ public class SimulatedCharacters extends CharacterSource {
 		if (condition !=null && condition instanceof CompatibilityTest)
 			condition = ((CompatibilityTest)condition).getAcceptedClass();
     	 	if (condition!=null)
-    	 		simulatorTask= (CharacterSimulator)hireCompatibleEmployee(CharacterSimulator.class, condition, "Character simulator");
+    	 		simulatorTask= (CharacterSimulator)hireCompatibleEmployee(CharacterSimulator.class, condition, "Character Simulator");
     	 	else
-    	 		simulatorTask= (CharacterSimulator)hireEmployee(CharacterSimulator.class, "Character simulator");
+    	 		simulatorTask= (CharacterSimulator)hireEmployee(CharacterSimulator.class, "Character Simulator");
     	 	if (simulatorTask == null) {
     	 		return sorry("Simulated Characters could not be started because an appropriate simulator module could not be hired");
     	 	}
@@ -118,7 +118,7 @@ public class SimulatedCharacters extends CharacterSource {
     		 if (checker.compare(this.getClass(), "Sets the module used to simulate character evolution", "[name of module]", commandName, "setCharacterSimulator")) {
     	 		CharacterSimulator temp;
     	 		if (dataCondition==null)
-    	 			temp =  (CharacterSimulator)replaceEmployee(CharacterSimulator.class, arguments, "Character simulator", simulatorTask);
+    	 			temp =  (CharacterSimulator)replaceEmployee(CharacterSimulator.class, arguments, "Character Simulator", simulatorTask);
     	 		else
     	 			temp =  (CharacterSimulator)replaceCompatibleEmployee(CharacterSimulator.class, arguments, simulatorTask, dataCondition);
 	    	 	if (temp!=null) {
@@ -203,7 +203,7 @@ public class SimulatedCharacters extends CharacterSource {
 
 		seed.setValue(charSeed(currentChar));
 		lastTree = treeTask.getTree(taxa);
-		CharacterDistribution states = simulatorTask.getSimulatedCharacter(null, lastTree, seed); //1. 06: had passed states back in, which caused problems for employers requiring multiple
+		CharacterDistribution states = simulatorTask.getSimulatedCharacter(null, lastTree, seed, ic); //1. 06: had passed states back in, which caused problems for employers requiring multiple
 		if (simulatorTask.isDoomed())
 				return null;
    		if (states!=null)

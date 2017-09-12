@@ -12,15 +12,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-public class SimpleTaxonNamer extends TaxonNamer {
-	String[] translationTable= null;
+public class SimpleNamesTaxonNamer extends TaxonNamer {
 	int[] numberTranslationTable= null;
 	
-	public SimpleTaxonNamer() {
-	}
-	public boolean initialize(Taxa taxa){
-		getTranslationTable(taxa);
-		return true;
+	public SimpleNamesTaxonNamer() {
 	}
 	public String getNameToUse(Taxon taxon){
 		return "t" + taxon.getNumber();  
@@ -28,50 +23,7 @@ public class SimpleTaxonNamer extends TaxonNamer {
 	public String getNameToUse(Taxa taxa, int it){
 		return "t"+it;
 	}
-	/** Given a taxon name "name", this method returns the taxon number this name represents. 
-	This one is based upon the contents of the translation file only. */
-	public boolean loadTranslationTable(Taxa taxa, String translationFile){
-		if (taxa==null || StringUtil.blank(translationFile))
-			return false;
-		if (translationTable==null || translationTable.length!=taxa.getNumTaxa())
-			translationTable = new String[taxa.getNumTaxa()];
-		Parser parser = new Parser(translationFile);
-		Parser subParser = new Parser();
-		String line = parser.getRawNextDarkLine();
-
-		boolean abort = false;
-		subParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
-		subParser.setWhitespaceString("\t");
-		subParser.setPunctuationString("");
-
-
-		while (!StringUtil.blank(line) && !abort) {
-			String taxonNameInUse = subParser.getFirstToken();  //taxon Name
-			String originalTaxonName = subParser.getNextToken();
-			int taxonNumber = taxa.whichTaxonNumber(originalTaxonName);
-			if (taxonNumber>=0 && taxonNumber<translationTable.length && MesquiteInteger.isCombinable(taxonNumber))
-				translationTable[taxonNumber] = taxonNameInUse;
-
-			line = parser.getRawNextDarkLine();
-			subParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
-		}	
-		return true;
-	}
 	
-	/** Given a taxon name "name", this method returns the taxon number this name represents. 
-	This one is based upon the contents of the translation table created from the translation file only. The translation table 
-	is an array of the names, and the taxon number is then the index into that array for a particular name. */
-	public int whichTaxonNumberFromTranslationTable(Taxa taxa, String name){
-		if (StringUtil.blank(name) || translationTable==null || translationTable.length!=taxa.getNumTaxa())
-			return -1;
-		for (int it=0; it<translationTable.length; it++){
-			if (name.equalsIgnoreCase(translationTable[it])) {  //we've found the one we want
-				return it;
-			}
-		}
-		return -1;
-	}
-
 	/** Given a taxon number in another numbering system system, this method returns the taxon number in the main taxon numbering system. 
 	This one is based upon the contents of the number translation table. This is a reverse of the standard translation table; 
 	it is an array of taxon numbers, and the index into that array is the taxon number in the other system. */
@@ -125,8 +77,13 @@ public class SimpleTaxonNamer extends TaxonNamer {
 			number = whichTaxonNumberFromNumberTranslationTable(taxa, MesquiteInteger.fromString(name));
 		if (number<0 || !MesquiteInteger.isCombinable(number))
 			number = whichTaxonNumberDefault(taxa, name);
+		if (!MesquiteInteger.isCombinable(number))
+			return -1;
 		return number;
 
+	}
+	public String getName(){
+		return "Simple Taxon Namer";
 	}
 
 }

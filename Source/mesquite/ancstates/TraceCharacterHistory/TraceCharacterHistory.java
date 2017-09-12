@@ -103,7 +103,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 		mm.setShortcut(KeyEvent.VK_RIGHT); //right
 		mm = addMenuItem( "Previous " + historyTask.getHistoryTypeName(), makeCommand("previousCharacter",  this));
 		mm.setShortcut(KeyEvent.VK_LEFT); //right
-		addMenuItem( "Choose " + historyTask.getHistoryTypeName(), makeCommand("chooseCharacter",  this));
+		addMenuItem( "Choose " + historyTask.getHistoryTypeName() + "...", makeCommand("chooseCharacter",  this));
 		if (enableStore)
 			addMenuItem( "Store History...", makeCommand("storeHistory",  this));
 		addCheckMenuItem(null, "Show Legend", makeCommand("toggleShowLegend",  this), showLegend);

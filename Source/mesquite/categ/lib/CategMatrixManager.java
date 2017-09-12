@@ -51,7 +51,7 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 		int invalidIC = -1;
 		int invalidIT = -1;
 		for (int it=0; it<data.getTaxa().getNumTaxa(); it++) {
-			if ((file.writeTaxaWithAllMissing || data.someApplicableInTaxon(it, false)) && (!file.writeOnlySelectedTaxa || data.getTaxa().getSelected(it))){
+			if ((file.writeTaxaWithAllMissing || data.someApplicableInTaxon(it, false)) && (!file.writeOnlySelectedTaxa || data.getTaxa().getSelected(it))&& file.filterTaxon(data, it)){
 				taxonName = data.getTaxa().getTaxon(it).getName();
 				if (taxonName!=null) {
 					if (file.useStandardizedTaxonNames)
@@ -73,7 +73,7 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 
 				//USE SYMBOLS
 				for (int ic=startChar;  ic<endChar; ic++) {
-					if (data.isCurrentlyIncluded(ic) || file.writeExcludedCharacters) {
+					if ((data.isCurrentlyIncluded(ic) || file.writeExcludedCharacters) ) {
 						if (!data.isValid(ic, it) && invalidIC <0){
 							invalidIC = ic;
 							invalidIT = it;

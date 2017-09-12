@@ -215,7 +215,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	private boolean obtainFile(String arguments){
 		fileReady = false;
 		if (ended){
-			discreetAlert("WARNING:  Attempt to use module that has ended");
+			discreetAlert("WARNING:  Attempt to use module that has ended (ManyTreesFromFileLib)" + getEmployerPath());
 		}
 		FileCoordinator fCoord = getFileCoordinator();
 		if (fCoord == null)
@@ -1043,9 +1043,9 @@ class FIleCheckThread extends Thread {
 
 		while (!abort){
 			try {
-				Thread.sleep(200);
+				Thread.sleep(1000);
 				if (treeFile != null){
-					long mod = treeFile.lastModified();
+					long mod = MesquiteFile.fileOrDirectoryLastModified(treeFile.getPath());
 					long length = treeFile.length();
 					if (mod > lastModified) {
 						ownerModule.fileModified(length - lastLength);

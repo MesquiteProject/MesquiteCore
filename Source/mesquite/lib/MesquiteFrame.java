@@ -750,7 +750,11 @@ public class MesquiteFrame extends Frame implements Commandable {
 		}
 		w.reconnectGraphics();
 		invalidate();
-		validate();
+		try {
+			validate();
+		}
+		catch (Exception e){
+		}
 
 	}
 

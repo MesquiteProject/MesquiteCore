@@ -117,7 +117,7 @@ public class MainThread extends MesquiteThread {
 							setCurrent(pc.id);
 							patience = 5;
 							boolean loggerSet = false;
-							if (c.getSupplementalLogger() != null && logger == null){
+							if (c != null && c.getSupplementalLogger() != null && logger == null){
 								MesquiteThread.setLoggerCurrentThread(c.getSupplementalLogger());
 								loggerSet = true;
 							}

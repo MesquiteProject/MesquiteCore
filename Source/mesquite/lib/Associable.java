@@ -1154,6 +1154,13 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			setSelected(i,select);
 	}
 	/*-----------------------------------------*/
+	/** Sets whether or not the parts specified by the incoming Bits is selected */
+	public void setSelected(Bits partBits, boolean select) {
+		for (int i=0;  i<partBits.getSize(); i++) // this is depending upon setSelected to check if it is within bounds
+			if (partBits.isBitOn(i))
+				setSelected(i,select);
+	}
+	/*-----------------------------------------*/
 	/** Returns whether the part is selected */
 	public boolean getSelected(int part) {
 		if (!inBounds(part))

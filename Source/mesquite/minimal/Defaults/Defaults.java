@@ -35,10 +35,10 @@ public class Defaults extends MesquiteInit  {
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(DefaultsAssistant.class, "Modules are used to assist with setting defaults.",
-		"The defaults are presented in the Defaults submenu of the File menu.");
+				"The defaults are presented in the Defaults submenu of the File menu.");
 	}
 	/*.................................................................................................................*/
-	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode,  taxonTruncTrees, taxonT0Trees, tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; //, useDotPrefs
+	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode,  taxonTruncTrees, taxonT0Trees, taxonT0TreesWarned, tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; //, useDotPrefs
 	MesquiteString themeName;
 	StringArray themes;
 	/*.................................................................................................................*/
@@ -53,6 +53,7 @@ public class Defaults extends MesquiteInit  {
 		//tilePopouts = new MesquiteBoolean(MesquiteFrame.popIsTile);
 		taxonTruncTrees = new MesquiteBoolean(true);
 		taxonT0Trees = new MesquiteBoolean(true);
+		taxonT0TreesWarned = new MesquiteBoolean(false);
 		debugMode = new MesquiteBoolean(false);
 		phoneHome = new MesquiteBoolean(MesquiteTrunk.phoneHome);
 		errorReports = new MesquiteBoolean(MesquiteTrunk.reportErrors);
@@ -78,8 +79,8 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use Log Window for Commands", makeCommand("toggleConsoleMode",  this), console);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Log All Commands", makeCommand("toggleLogAll",  this), logAll);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Previous Logs Saved...", makeCommand("setNumPrevLog",  this));
-		
-		
+
+
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "-", null);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use \"Other Choices\" for Secondary Choices", makeCommand("toggleOtherChoices",  this), useOtherChoices);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Secondary Choices Shown By Default in Dialog Boxes", makeCommand("toggleSecondaryChoicesOnInDialogs",  this), secondaryChoicesOnInDialogs);
@@ -87,7 +88,7 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use Stored Characters/Matrices by Default", makeCommand("toggleStoredAsDefault",  this), CharacterSource.storedAsDefault);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Calculations if Matrices Used are Deleted (req. restart)", makeCommand("toggleCloseIfMatrixDeleted",  this), CharacterSource.closeIfMatrixDeleted);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Delay on Script File Recovery...", makeCommand("setDelayScriptFileRecovery",  this));
-//		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Tree Window if Tree Block Used is Deleted", makeCommand("toggleCloseIfTreeBlockDeleted",  this), TreeSource.closeIfTreeBlockDeleted);
+		//		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Tree Window if Tree Block Used is Deleted", makeCommand("toggleCloseIfTreeBlockDeleted",  this), TreeSource.closeIfTreeBlockDeleted);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "-", null);
 		if (!MesquiteTrunk.isMacOSX())
 			MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Forget Default Web Browser", makeCommand("forgetBrowser",  this));
@@ -96,10 +97,10 @@ public class Defaults extends MesquiteInit  {
 		themeName = new MesquiteString(themes.getValue(ColorTheme.THEME));  //this helps the menu keep track of checkmenuitems
 		mTheme.setSelected(themeName);
 
-		
+
 		MesquiteSubmenuSpec sm = FontUtil.getFontSubmenuSpec(MesquiteTrunk.defaultsSubmenu, "Default Font", MesquiteTrunk.mesquiteTrunk,this);
 		sm.setFilterable(false);
-		
+
 		sm = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.defaultsSubmenu,"Default Font Size", makeCommand("setDefaultFontSize",  this), MesquiteSubmenu.getFontSizeList());		
 		sm.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "-", null);
@@ -111,7 +112,7 @@ public class Defaults extends MesquiteInit  {
 			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Suppress Inverted Highlights", makeCommand("toggleXORMode",  this), suppressXORMode);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Ask for Random Number Seeds", makeCommand("toggleAskSeed",  this), askSeed);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Partial Names in Tree Reading", makeCommand("togglePartNamesTrees",  this), taxonTruncTrees);
-		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit t0, t1, Names in Tree Reading", makeCommand("toggleT0NamesTrees",  this), taxonT0Trees);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit t0=taxon 1, t1=taxon 2, etc. Names in Tree Reading", makeCommand("toggleT0NamesTrees",  this), taxonT0Trees);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Matrix Limits for Undo...", makeCommand("setMaxMatrixSizeUndo",  this));
 
 		//comment out debug mode menu item for users 
@@ -127,7 +128,7 @@ public class Defaults extends MesquiteInit  {
 		storePreferences();
 		super.endJob();
 	}
-	
+
 	/*.................................................................................................................*/
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>1) {
@@ -139,7 +140,7 @@ public class Defaults extends MesquiteInit  {
 				}
 			}
 			//if (prefs.length>2 && prefs[2] !=null) //post 2. 01 changed name to switch factory default to false
-		//		useOtherChoices.setValue("useOther".equalsIgnoreCase(prefs[2]));
+			//		useOtherChoices.setValue("useOther".equalsIgnoreCase(prefs[2]));
 			if (prefs.length>3 && prefs[3] !=null)
 				MesquiteTrunk.suggestedDirectory = prefs[3];
 			if (prefs.length>4 && prefs[4] !=null)
@@ -196,9 +197,24 @@ public class Defaults extends MesquiteInit  {
 		}
 		else if ("taxonT0Trees".equalsIgnoreCase(tag)){
 			taxonT0Trees.setValue(content);
+			if (taxonT0Trees.getValue() && !taxonT0TreesWarned.getValue()){
+				String message ="Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (now, or in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.";
+				if (MesquiteThread.isScripting())
+					logln(message);
+				else {
+					boolean answer = AlertDialog.query(containerOfModule(), "Tree reading", message, "OK, permit t0...", "No, be careful, turn off", 2);
+					if (!answer)
+						taxonT0Trees.setValue(false);
+				}
+				taxonT0TreesWarned.setValue(true);
+			}
+
 			MesquiteTree.permitT0Names = taxonT0Trees.getValue();
 		}
-	/*	else if ("tilePopouts".equalsIgnoreCase(tag)){
+		else if ("taxonT0TreesWarned".equalsIgnoreCase(tag)){
+			taxonT0TreesWarned.setValue(content);
+		}
+		/*	else if ("tilePopouts".equalsIgnoreCase(tag)){
 			tilePopouts.setValue(content);
 			MesquiteFrame.popIsTile = tilePopouts.getValue();
 		}*/
@@ -283,6 +299,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
 		StringUtil.appendXMLTag(buffer, 2, "suppressXORMode", suppressXORMode);   
 		StringUtil.appendXMLTag(buffer, 2, "taxonTruncTrees", taxonTruncTrees);   
+		StringUtil.appendXMLTag(buffer, 2, "taxonT0TreesWarned", taxonT0TreesWarned);   
 		StringUtil.appendXMLTag(buffer, 2, "taxonT0Trees", taxonT0Trees);   
 		StringUtil.appendXMLTag(buffer, 2, "tabbedWindows", tabbedWindows);   
 		StringUtil.appendXMLTag(buffer, 2, "respectFileSpecificResourceWidth", respectFileSpecificResourceWidth);   
@@ -295,9 +312,9 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "showSecondaryChoicesInDialogs", secondaryChoicesOnInDialogs);   
 		StringUtil.appendXMLTag(buffer, 2, "subChoicesOnInDialogs", subChoicesOnInDialogs);   
 		StringUtil.appendXMLTag(buffer, 2, "consoleMode", console);   
-			StringUtil.appendXMLTag(buffer, 2, "storedAsDefault", CharacterSource.storedAsDefault);   
-			StringUtil.appendXMLTag(buffer, 2, "closeIfMatrixDeleted", CharacterSource.closeIfMatrixDeleted);   
-			//StringUtil.appendXMLTag(buffer, 2, "closeIfTreeBlockDeleted", TreeSource.closeIfTreeBlockDeleted);   
+		StringUtil.appendXMLTag(buffer, 2, "storedAsDefault", CharacterSource.storedAsDefault);   
+		StringUtil.appendXMLTag(buffer, 2, "closeIfMatrixDeleted", CharacterSource.closeIfMatrixDeleted);   
+		//StringUtil.appendXMLTag(buffer, 2, "closeIfTreeBlockDeleted", TreeSource.closeIfTreeBlockDeleted);   
 		return buffer.toString();
 	}
 	/*.................................................................................................................*
@@ -401,12 +418,12 @@ public class Defaults extends MesquiteInit  {
 				fontSize = MesquiteInteger.queryInteger(containerOfModule(), "Font size", "Font size for window", MesquiteWindow.defaultFont.getSize(), 4, 256);
 			if (!MesquiteInteger.isCombinable(fontSize))
 				return null;
-				MesquiteFrame.resourcesFontSize = fontSize;
-				for (int i = 0; i< MesquiteTrunk.getProjectList().getNumProjects(); i++){
-					MesquiteProject proj = MesquiteTrunk.getProjectList().getProject(i);
-					proj.getCoordinatorModule().refreshGraphicsProjectWindow();
-				}
-				storePreferences();
+			MesquiteFrame.resourcesFontSize = fontSize;
+			for (int i = 0; i< MesquiteTrunk.getProjectList().getNumProjects(); i++){
+				MesquiteProject proj = MesquiteTrunk.getProjectList().getProject(i);
+				proj.getCoordinatorModule().refreshGraphicsProjectWindow();
+			}
+			storePreferences();
 		}
 		else if (checker.compare(getClass(), "Forgets the default web browser", null, commandName, "forgetBrowser")) {
 			browserString = null;
@@ -444,8 +461,8 @@ public class Defaults extends MesquiteInit  {
 				MesquiteInteger maxNumTaxa=new MesquiteInteger(MesquiteTrunk.maxNumMatrixUndoTaxa);
 				MesquiteInteger maxNumChars = new MesquiteInteger(MesquiteTrunk.maxNumMatrixUndoChars);
 				String helpString = "For some operations in the data editor to be undone, the entire data matrix needs to be remembered beforehand.  However, for large matrices, this can require more "
-					+"memory than Mesquite has.  By default, Mesquite disallows this whole-matrix undo capability if the number of taxa exceeds 1000 and the number of characters exceeds 15000. "
-					+" You can change these maxima here.  Note that BOTH values need to be exceeded for whole-matrix Undo to be disabled.  To specify that all matrices should fully undoable, enter a value of -1.";
+						+"memory than Mesquite has.  By default, Mesquite disallows this whole-matrix undo capability if the number of taxa exceeds 1000 and the number of characters exceeds 15000. "
+						+" You can change these maxima here.  Note that BOTH values need to be exceeded for whole-matrix Undo to be disabled.  To specify that all matrices should fully undoable, enter a value of -1.";
 				MesquiteInteger.queryTwoIntegers(containerOfModule(), "Maximum size of fully undoable matrix", "Maximum number of taxa", "Maximum number of characters",  answer,  maxNumTaxa,  maxNumChars,-1,Integer.MAX_VALUE,-1, Integer.MAX_VALUE, helpString);
 				if (!answer.getValue() || !maxNumTaxa.isCombinable() || ! maxNumChars.isCombinable()) 
 					return null;
@@ -466,7 +483,7 @@ public class Defaults extends MesquiteInit  {
 			MesquiteFrame.respectFileSpecificResourceWidth = respectFileSpecificResourceWidth.getValue();
 			storePreferences();
 		}
-	/*	else if (checker.compare(getClass(), "Sets whether to tile windows popped out, instead of pop them out to separate windows", null, commandName, "toggleTilePopouts")) {
+		/*	else if (checker.compare(getClass(), "Sets whether to tile windows popped out, instead of pop them out to separate windows", null, commandName, "toggleTilePopouts")) {
 			tilePopouts.toggleValue(null);
 			MesquiteFrame.popIsTile = tilePopouts.getValue();
 			storePreferences();
@@ -542,6 +559,11 @@ public class Defaults extends MesquiteInit  {
 		else if (checker.compare(getClass(), "Sets whether to permit taxon names being expressed as t0, t1, t2 in trees", null, commandName, "toggleT0NamesTrees")) {
 			taxonT0Trees.toggleValue(null);
 			MesquiteTree.permitT0Names = taxonTruncTrees.getValue();
+			if (taxonT0Trees.getValue() && !taxonT0TreesWarned.getValue()){
+				discreetAlert("Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.");
+				taxonT0TreesWarned.setValue(true);
+			}
+
 			resetAllMenuBars();
 			storePreferences();
 			return taxonT0Trees;
@@ -576,7 +598,7 @@ public class Defaults extends MesquiteInit  {
 			storePreferences();
 			return CharacterSource.closeIfMatrixDeleted;
 		}
-	/*	else if (checker.compare(getClass(), "Sets whether to close a tree window automatically if the tree block it uses is deleted", null, commandName, "toggleCloseIfTreeBlockDeleted")) {
+		/*	else if (checker.compare(getClass(), "Sets whether to close a tree window automatically if the tree block it uses is deleted", null, commandName, "toggleCloseIfTreeBlockDeleted")) {
 			TreeSource.closeIfTreeBlockDeleted.toggleValue(null);
 			storePreferences();
 			return TreeSource.closeIfTreeBlockDeleted;

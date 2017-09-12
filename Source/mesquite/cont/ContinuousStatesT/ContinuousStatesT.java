@@ -199,7 +199,10 @@ public class ContinuousStatesT extends NumberForTaxonIncr {
 			int maxnum = characterSourceTask.getNumberOfCharacters(taxa);
 			if (currentChar>= maxnum)
 				currentChar = maxnum-1;
-			observedStates = (ContinuousDistribution)characterSourceTask.getCharacter(taxa, currentChar);
+			Object o = characterSourceTask.getCharacter(taxa, currentChar);
+			if (!(o instanceof ContinuousDistribution))
+					return;
+			observedStates = (ContinuousDistribution)o;
 			currentTaxa = taxa;
 			lastCharRetrieved = currentChar;
 		}

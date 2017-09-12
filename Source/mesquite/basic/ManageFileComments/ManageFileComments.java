@@ -23,6 +23,7 @@ import mesquite.lib.duties.*;
 public class ManageFileComments extends FileInit {
 	boolean turnedOn=false;
 	Vector windows;
+	MesquiteSubmenuSpec mss = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		windows = new Vector();
@@ -34,7 +35,7 @@ public class ManageFileComments extends FileInit {
    	 }
  	/** A method called immediately after the file has been read in.*/
  	public void projectEstablished() {
-		getFileCoordinator().addSubmenu(MesquiteTrunk.editMenu, "Edit Comment", makeCommand("editFileComment", this), getProject().getFiles());
+		mss = getFileCoordinator().addSubmenu(MesquiteTrunk.editMenu, "Edit Comment", makeCommand("editFileComment", this), getProject().getFiles());
 		super.projectEstablished();
  	}
   	 
@@ -241,6 +242,8 @@ public class ManageFileComments extends FileInit {
 				windowGoAway((MesquiteTextWindow)windows.elementAt(i));
 				((MesquiteTextWindow)windows.elementAt(i)).dispose();
 			}
+		    getFileCoordinator().deleteMenuItem(mss);
+		    		 
 		super.endJob();
 	
   	 }

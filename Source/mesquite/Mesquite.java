@@ -38,24 +38,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2017. Mesquite: A modular system for evolutionary analysis.  Version 3.2.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2017. Mesquite: A modular system for evolutionary analysis.  Version 3.3.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.2";
+		return "3.3";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 320;
+		return 330;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.2;
+		return 3.3;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "January 2017"; //"April 2007";
+		return "September 2017"; //"April 2007";
 	}
 	
 	/*.................................................................................................................*/
@@ -552,6 +552,8 @@ public class Mesquite extends MesquiteTrunk
 					s += " version " + mmi.getPackageVersion();
 				if (mmi.getPackageBuildNumber() > 0)
 					s += " build " + mmi.getPackageBuildNumber();
+				if (StringUtil.notEmpty(mmi.getPackageDateReleased()))
+					s += ", " + mmi.getPackageDateReleased();
 				if (!StringUtil.blank(mmi.getPackageAuthors()))
 					s += " (by " + mmi.getPackageAuthors() + ")";
 				if (!StringUtil.blank(mmi.getPackageCitation()))
@@ -667,8 +669,8 @@ public class Mesquite extends MesquiteTrunk
 		/* */
 		addMenuItem(MesquiteTrunk.fileMenu, "Check Now for Notices/Installs...", new MesquiteCommand("checkNotices", this));
 		if (MesquiteTrunk.phoneHome){
-			PhoneHomeThread pht = new PhoneHomeThread();
-			pht.start();
+			phoneHomeThread = new PhoneHomeThread();
+			phoneHomeThread.start();
 		}
 		/**/
 

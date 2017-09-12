@@ -15,17 +15,23 @@ package mesquite.lib;
 
 import java.io.*;
 
+import org.apache.commons.io.input.*;
+
+
 
 
 public class MesquiteExternalProcess  {
 	OutputStream inputToProcess;
 	OutputStreamWriter inputStreamsWriter;
 	BufferedWriter inputBufferedWriter;
-	StandardOutputsStreamReader errorReader;
-	StandardOutputsStreamReader outputReader;
-	FileWriter outputWriter;
-	FileWriter errorWriter;
+	OutputFileTailer errorReader;
+	OutputFileTailer outputReader;
 	Process proc;
+	String directoryPath;
+	String outputFilePath;
+	String errorFilePath;
+	MesquiteInteger errorCode;
+
 
 	public MesquiteExternalProcess(Process proc) {
 		this.proc = proc;
@@ -37,24 +43,71 @@ public class MesquiteExternalProcess  {
 		return proc;
 	}
 	/*.................................................................................................................*/
+	public int getErrorCode() {
+		if (errorCode!=null)
+			return errorCode.getValue();
+		return ProcessUtil.NOERROR;
+	}
+	/*.................................................................................................................*/
+
+	public void restart(String directoryPath, String outputFilePath, String errorFilePath) {
+		this.directoryPath = directoryPath;
+		this.outputFilePath = outputFilePath;
+		this.errorFilePath = errorFilePath;
+		errorCode = new MesquiteInteger(ProcessUtil.NOERROR);
+
+	}
+	/*.................................................................................................................*/
+
+	public void start(String directoryPath, String outputFilePath, String errorFilePath, String...command) {
+		this.directoryPath = directoryPath;
+		this.outputFilePath = outputFilePath;
+		this.errorFilePath = errorFilePath;
+		errorCode = new MesquiteInteger(ProcessUtil.NOERROR);
+		this.proc = ProcessUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
+
+	}
+
+
+	/*.................................................................................................................*/
 
 	public void setProcess(Process proc) {
 		this.proc = proc;
 	}
 	/*.................................................................................................................*/
 	public void kill () {
-		proc.destroy();
+		if (proc!=null) {
+			try {
+				InputStream errorStream = proc.getErrorStream();
+				errorStream.close();
+				OutputStream outputStream = proc.getOutputStream();
+				outputStream.close();
+				endFileTailers();
+
+			} catch (IOException e) {
+				MesquiteMessage.println("Couldn't close streams of process.");
+			}
+			proc.destroy();
+			try {
+				Thread.sleep(100);
+				if (proc.isAlive())
+					proc.destroyForcibly();
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	/*.................................................................................................................*/
+	public int exitValue () {
+		if (proc!=null)
+			return proc.exitValue();
+		return 0;
 	}
 
 	/*.................................................................................................................*/
 
 	public void dispose() {
-		try {
-			if (inputBufferedWriter!=null)
-				inputBufferedWriter.close();
-		}
-		catch (Exception e) {
-		}
+		endFileTailers();
 	}
 	/*.................................................................................................................*/
 
@@ -68,113 +121,34 @@ public class MesquiteExternalProcess  {
 		}
 		return false;
 	}
-	
-	public void startStandardOutputsReaders(File outputFile, File errorFile) {
-		try { 
-			errorWriter = new FileWriter(errorFile);
-			outputWriter = new FileWriter(outputFile);
-		} 
-		catch (FileNotFoundException e) {
-			MesquiteMessage.warnProgrammer("Output file not found");
-		}
-		catch (IOException e) {
-			MesquiteMessage.warnProgrammer("IOException");
-		}
-		errorReader = new StandardOutputsStreamReader(proc.getErrorStream(), errorWriter);
-		outputReader = new StandardOutputsStreamReader(proc.getInputStream(),  outputWriter);
+	public void endFileTailers() {
+		if (outputReader!=null)
+			 outputReader.stop();
+		if (errorReader!=null)
+			 errorReader.stop();
+	}
+
+
+	public void startFileTailers(File outputFile, File errorFile) {
+		errorReader = new OutputFileTailer(errorFile);
+		outputReader = new OutputFileTailer(outputFile);
 		errorReader.start();
 		outputReader.start();
-
-	}
-	/*.................................................................................................................*
-
-	public void flushStandardOutputsReaders() {
-		if (fos!=null) {
-			try { 
-				fos.flush();
-			} 
-			catch (IOException e) {
-				MesquiteMessage.warnProgrammer("IOException on standard output file.");
-			}
-		}
-	}
-	
-	public void endStandardOutputsReaders() {
-		if (fos!=null) {
-			try { 
-				fos.close();      
-			} 
-			catch (IOException e) {
-				MesquiteMessage.warnProgrammer("IOException on standard output file.");
-			}
-		}
-	}
-
-
-	/*.................................................................................................................*
-	public void sendStringToProcess(String s) {
-		if (proc==null)
-			return;
-		if (inputToProcess==null)
-			inputToProcess = proc.getOutputStream();
-		if (inputToProcess!=null && inputStreamsWriter==null)
-			inputStreamsWriter = new OutputStreamWriter(inputToProcess);
-		if (inputToProcess==null || inputStreamsWriter==null)
-			return;
-		if (inputBufferedWriter==null)
-			inputBufferedWriter = new BufferedWriter(inputStreamsWriter);
-		if (inputBufferedWriter==null)
-			return;
-		try {
-			try {
-				inputBufferedWriter.write(s);
-			} finally {
-				inputBufferedWriter.flush();
-				//	inputBufferedWriter.close();
-			} 
-		} catch (Exception e) {
-		}
-
 	}
 	/*.................................................................................................................*/
+
+	public String getStdErrContents() {
+		if (errorReader!=null)
+			return errorReader.getFileContents();
+		return null;
+	}
+	public String getStdOutContents() {
+		if (outputReader!=null)
+			return outputReader.getFileContents();
+		return null;
+	}
+
 }
 
 
-class StandardOutputsStreamReader extends Thread {
-	InputStream is;
-	FileWriter os;
-
-
-	StandardOutputsStreamReader(InputStream is, FileWriter os) {
-		this.is = is;
-		this.os = os;
-	}
-	StandardOutputsStreamReader(InputStream is) {
-		this(is, null);
-	}
-	public void run() {
-		try {
-		/*	PrintWriter pw = null;
-			if (os != null)
-				pw = new PrintWriter(os);
-*/
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
-			String line=null;
-			while ( (line = br.readLine()) != null) {
-				if (os != null) {
-					os.write(line+StringUtil.lineEnding());
-				}
-			}
-			if (os != null) {
-				os.flush();
-				os.close();
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();  
-		}
-	}
-
-
-}
 

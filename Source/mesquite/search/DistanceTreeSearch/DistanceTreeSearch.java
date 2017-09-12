@@ -29,6 +29,10 @@ public class DistanceTreeSearch extends TreeSearch  {
 	public boolean requestPrimaryChoice(){
 		return false;
 	}
+	/*.................................................................................................................*/
+	public boolean isReconnectable(){
+		return false;
+	}
 
 	/*.................................................................................................................*/
 	public Class getHireSubchoice(){

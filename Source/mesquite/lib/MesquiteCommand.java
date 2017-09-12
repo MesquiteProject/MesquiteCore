@@ -93,7 +93,9 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	public void setLogger(Logger logger){
 		this.logger = logger;
 	}
-	
+	public String toString(){
+		return "command " + commandName + " to " + ownerObject;
+	}
 	public void notifyDoing(String s){
 		if (logger !=null)
 			logger.logln("Doing command " + commandName + " (" + s + ")");

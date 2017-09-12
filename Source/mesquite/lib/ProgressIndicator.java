@@ -169,8 +169,10 @@ public class ProgressIndicator implements Abortable {
 	}
 	/*.................................................................................................................*/
 	public boolean isAborted () {
-		if (t.dlog!=null)
-			return t.dlog.wasButtonHit() && buttonMode > 0;
+		if (t.dlog!=null) {
+			boolean abort = t.dlog.wasButtonHit() && buttonMode > 0;
+			return abort;
+		}
 			else
 				return false;
 	}

@@ -350,7 +350,10 @@ class PlotOperator extends TreeDisplayDrawnExtra implements Commandable {
 		}
 
 		//check for missing and fail if missing?
-		charsStates = (MContinuousHistory)plotModule.allCharsTask.calculateStates(tree, plotModule.characterSourceTask.getCurrentMatrix(tree), charsStates, resultString);
+		Object o = plotModule.allCharsTask.calculateStates(tree, plotModule.characterSourceTask.getCurrentMatrix(tree), charsStates, resultString);
+		if (!(o instanceof MContinuousHistory))
+			return;
+		charsStates = (MContinuousHistory)o;
 		messageString.setValue("Ancestral forms reconstructed by: " + plotModule.allCharsTask.getNameAndParameters() + "\n\nCharacters from: " + plotModule.characterSourceTask.getNameAndParameters());
 		if (charsStates == null)
 			return;

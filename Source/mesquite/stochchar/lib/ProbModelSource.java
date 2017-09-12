@@ -35,6 +35,7 @@ public abstract class ProbModelSource extends CharacterModelSource  {
    	 public String[] getDefaultModule() {
    	 	return new String[] {"#CurrentProbModels"};
    	 }
+
 }
 
 

@@ -30,5 +30,10 @@ public class MolecularState extends CategoricalState{
 		super();
 		set = inapplicable;
 	}
+	/*..........................................CategoricalState.....................................*/
+	/**returns the class of the corresponding (i.e. of same data type) CharacterData object (in this case, CategoricalData.class). */
+	public Class getCharacterDataClass() {
+		return MolecularData.class;
+	}
 }
 

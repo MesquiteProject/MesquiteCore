@@ -50,9 +50,9 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 		if (condition !=null && condition instanceof CompatibilityTest)
 			condition = ((CompatibilityTest)condition).getAcceptedClass();
     	 	if (condition!=null)
-    	 		simulatorTask= (CharacterSimulator)hireCompatibleEmployee(CharacterSimulator.class, condition, "Character simulator");
+    	 		simulatorTask= (CharacterSimulator)hireCompatibleEmployee(CharacterSimulator.class, condition, "Character Simulator");
     	 	else
-    	 		simulatorTask= (CharacterSimulator)hireEmployee(CharacterSimulator.class, "Character simulator");
+    	 		simulatorTask= (CharacterSimulator)hireEmployee(CharacterSimulator.class, "Character Simulator");
     	 	if (simulatorTask == null) {
     	 		return sorry("Simulated Matrices could not start because no appropriate simulator module could be obtained");
     	 	}
@@ -132,7 +132,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
     	 	if (checker.compare(this.getClass(), "Sets the module used to simulate character evolution", "[name of module]", commandName, "setCharacterSimulator")) {
    	 		CharacterSimulator temp;
     	 		if (dataCondition==null)
-    	 			temp =  (CharacterSimulator)replaceEmployee(CharacterSimulator.class, arguments, "Character simulator", simulatorTask);
+    	 			temp =  (CharacterSimulator)replaceEmployee(CharacterSimulator.class, arguments, "Character Simulator", simulatorTask);
     	 		else
     	 			temp =  (CharacterSimulator)replaceCompatibleEmployee(CharacterSimulator.class, arguments, simulatorTask, dataCondition);
 	    	 	if (temp!=null) {
@@ -229,7 +229,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 			numChars = simulatorTask.getMaximumNumChars(taxa); //not quite right; should have separate maxnum
 	 		if (!MesquiteThread.isScripting() && !MesquiteInteger.isCombinable(numChars)){
 	 		
-				int defaultNumChars = simulatorTask.getDefaultNumChars();
+				int defaultNumChars = simulatorTask.getDefaultNumChars(taxa);
 				numChars = MesquiteInteger.queryInteger(containerOfModule(), "Number of characters in matrix", "Number of characters to simulate:", defaultNumChars, 1, 1000000, false);
 
 		 		if (!MesquiteInteger.isCombinable(numChars))
@@ -295,9 +295,10 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 			//TODO: getSimulatedCharacter should be passed scripting and should be initializable
 			if (states!=null && states instanceof AdjustableDistribution)
 				((AdjustableDistribution)states).setParentCharacter(ic);
-			states = simulatorTask.getSimulatedCharacter(states, tree, seed); 
+			states = simulatorTask.getSimulatedCharacter(states, tree, seed, ic); 
  	 		matrix.transferFrom(ic, states);
  	 	}
+		simulatorTask.cleanupAfterSimulation(matrix);
    		matrix.setName("Matrix #" + CharacterStates.toExternal(currentDataSet)  + " simulated by " + simulatorTask.getName());
    		matrix.setAnnotation(accumulateParameters(" "), false);
    		matrix.setBasisTree(tree);

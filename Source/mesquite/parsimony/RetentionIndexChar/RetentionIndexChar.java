@@ -16,6 +16,9 @@ package mesquite.parsimony.RetentionIndexChar;
 
 import java.util.*;
 import java.awt.*;
+
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.RequiresAnyCategoricalData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -74,6 +77,11 @@ public class RetentionIndexChar extends NumberForCharAndTree {
 	   	clearResultAndLastResult(result);
 		if (resultString!=null)
 			resultString.setValue("");
+	   	if (!(observedStates instanceof CategoricalDistribution)){
+			if (resultString != null)
+				resultString.setValue("R.I. is calculated only for categorical characters.");
+	   		return;
+	   	}
 		if (observedStates==null || tree == null || !(tree instanceof MesquiteTree)) {
 			return;
 		}
@@ -119,6 +127,10 @@ public class RetentionIndexChar extends NumberForCharAndTree {
 	}
 	public boolean showCitation(){
 		return true;
+	}
+	
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyCategoricalData();
 	}
 
 }

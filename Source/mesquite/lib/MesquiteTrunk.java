@@ -18,6 +18,7 @@ import java.awt.*;
 
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.trunk.PhoneHomeThread;
 import mesquite.trunk.ProjectTreeWindow;
 
 import java.util.*;
@@ -153,7 +154,8 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean phoneHome = true;
 	public static boolean reportErrors = true;
 	public static boolean reportUse = true;
-
+	public static PhoneHomeThread phoneHomeThread;
+	
 	/** The panel in which all Mesquite "windows" fit if run as applet embedded in page.*/
 	public Panel embeddedPanel;
 
@@ -262,6 +264,10 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/*.................................................................................................................*/
 	public static boolean isJavaVersionLessThan(double queryVersion){
 		return getJavaVersionAsDouble() < queryVersion;
+	}
+	/*.................................................................................................................*/
+	public static boolean isJavaGreaterThanOrEqualTo(double queryVersion){
+		return getJavaVersionAsDouble() >= queryVersion;
 	}
 	
 	/*.................................................................................................................*/

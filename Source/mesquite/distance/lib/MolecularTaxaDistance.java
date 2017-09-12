@@ -76,6 +76,8 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 		public double[][] calcPairwiseDistance(int taxon1, int taxon2, MesquiteDouble N, MesquiteDouble D){
 			if (catStates==null)
 				return null;
+			if (taxonBits!=null && (!taxonBits.isBitOn(taxon1) || !taxonBits.isBitOn(taxon2)))
+				return null;
 			int numChars = catStates.getNumChars();
 			int numStates = getMaxState()+1;
 			double[][] fxy = new double[numStates][numStates];

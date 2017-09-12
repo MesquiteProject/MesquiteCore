@@ -240,10 +240,7 @@ public class ManageProteinChars extends CategMatrixManager {
 		if (file!=null && file.useSimplifiedNexus && file.useDataBlocks){
 			int numTaxaToWrite = data.getNumTaxa();
 			if (!file.writeTaxaWithAllMissing)
-				if (file.writeOnlySelectedTaxa)
-					numTaxaToWrite = data.numSelectedTaxaWithSomeApplicable(false);
-				else
-					numTaxaToWrite = data.numTaxaWithSomeApplicable(false);
+				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, file.fractionApplicable);
 			else if (file.writeOnlySelectedTaxa)
 				numTaxaToWrite = data.numSelectedTaxa();
 			blocks.append(" NTAX=" + numTaxaToWrite);
@@ -275,7 +272,7 @@ public class ManageProteinChars extends CategMatrixManager {
 
 		writeNexusMatrix(data, cB, blocks, file, progIndicator);
 
-		if (!file.useSimplifiedNexus  && !file.useConservativeNexus){
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus && !NexusBlock.suppressNEXUSIDS){
 			String idsCommand = getIDsCommand(data);
 			if (!StringUtil.blank(idsCommand))
 				blocks.append("\t" + idsCommand + StringUtil.lineEnding());

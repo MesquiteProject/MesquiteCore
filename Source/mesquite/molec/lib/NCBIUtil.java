@@ -196,7 +196,7 @@ public class NCBIUtil {
 			seq = "%3E" + StringUtil.encodeForURL(sequenceName) + "%0D%0A"+seq;
 
 		if (!StringUtil.blank(seq) && (seq.length()>49)) {
-			String url = "http://www.ncbi.nlm.nih.gov/blast/Blast.cgi?"+ getMesquiteGenBankURLMarker();
+			String url = "https://www.ncbi.nlm.nih.gov/blast/Blast.cgi?"+ getMesquiteGenBankURLMarker();
 			url += "&DATABASE=nr&FORMAT_TYPE=HTML";
 			url += "&PROGRAM=" + blastType;
 			url += "&CLIENT=web&SERVICE=plain&PAGE=";
@@ -234,7 +234,7 @@ public class NCBIUtil {
 	}
 	/*.................................................................................................................*/
 	public static String getGetQueryURL(String rid, int numDesc, int maxHits, double eValueCutoff){
-		String url = "http://www.ncbi.nlm.nih.gov/blast/Blast.cgi?"+NCBIUtil.getMesquiteGenBankURLMarker();
+		String url = "https://www.ncbi.nlm.nih.gov/blast/Blast.cgi?"+NCBIUtil.getMesquiteGenBankURLMarker();
 		url += "&CMD=Get&RID="+rid+"&FORMAT_TYPE=XML";
 		if (eValueCutoff>-0.5)
 			url += "&EXPECT="+eValueCutoff;
@@ -252,7 +252,7 @@ public class NCBIUtil {
 	/*.................................................................................................................*/
 	public static URL getFetchTaxonomyAddress(String taxid)
 	throws MalformedURLException {
-		String query = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?"+getMesquiteGenBankURLMarker() +"&db=taxonomy&id="+taxid+"&retmode=xml";
+		String query = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?"+getMesquiteGenBankURLMarker() +"&db=taxonomy&id="+taxid+"&retmode=xml";
 		return new URL(query);
 	}
 	/*.................................................................................................................*/
@@ -265,7 +265,7 @@ public class NCBIUtil {
 			query += "protein";
 		query += "&id="+uid+"&retmode=xml";
 
-		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?" + query);
+		return new URL("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?" + query);
 	}
 	/*.................................................................................................................*/
 	public static URL getFetchSequenceAddress(String uid, String fileFormat, String retMode, boolean isNucleotides)
@@ -285,7 +285,7 @@ public class NCBIUtil {
 		
 		query += "&id="+uid+"&rettype="+format+retM+"&retmax=1";
 
-		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?" + query);
+		return new URL("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?" + query);
 	}
 	/*.................................................................................................................*/
 	public static URL getFetchSequenceAddress(String uid, String fileFormat, boolean isNucleotides)
@@ -307,7 +307,7 @@ public class NCBIUtil {
 			query += "protein";
 		query+= "&retmode=xml&term="+accessionNumber;
 
-		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?" + query);
+		return new URL("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?" + query);
 	}
 	/*.................................................................................................................*/
 	public static URL getEUtilsAddressForIDToAccession(String ID, boolean nucleotides)
@@ -319,13 +319,13 @@ public class NCBIUtil {
 			query += "protein";
 		query+= "&id="+ID;
 
-		//		http://eutils.ncbi.nlm.nih.gov/efetch.fcgi?db=nucleotide&id=91092690&retmode=xml
-		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?" + query + "&retmode=xml");
+		//		https://eutils.ncbi.nlm.nih.gov/efetch.fcgi?db=nucleotide&id=91092690&retmode=xml
+		return new URL("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?" + query + "&retmode=xml");
 	}
 	/*.................................................................................................................*/
 	public static URL getEUtilsAddressForProtToNuc(String id)
 	throws MalformedURLException {
-		String query = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?"+ getMesquiteGenBankURLMarker() + "&dbfrom=protein&db=nucleotide&id=\""+id +"\"";
+		String query = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?"+ getMesquiteGenBankURLMarker() + "&dbfrom=protein&db=nucleotide&id=\""+id +"\"";
 		return new URL(query);
 	}
 	/*.................................................................................................................*/
@@ -908,7 +908,7 @@ public class NCBIUtil {
 					sb.append((char) c);
 				}
 				in.close();
-
+				
 				MesquiteInteger responseTime = new MesquiteInteger();
 				String rid = getRID(sb.toString(), responseTime);
 				//		logln("   Expected time of completion of BLAST is " + responseTime.toString()+ " seconds.", true);

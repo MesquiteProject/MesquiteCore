@@ -29,6 +29,7 @@ import java.io.*;
 public class ShellScriptUtil  {
 	static int sleepTime = 50;
 	public static int recoveryDelay = 0;
+	
 
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
@@ -43,6 +44,14 @@ public class ShellScriptUtil  {
 			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
 		else
 			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
+	}
+
+	/*.................................................................................................................*/
+	public static String getAppendStringAsFile(String path, String contents) {
+		if (MesquiteTrunk.isWindows())
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
+		else
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
 	}
 
 	/*.................................................................................................................*
@@ -60,7 +69,7 @@ public class ShellScriptUtil  {
 	public static String getChangeDirectoryCommand(String directory){
 		String directoryString;
 		if (MesquiteTrunk.isWindows()) {
-			directoryString = StringUtil.protectFilePathForWindows(directory);
+			directoryString = "/d "+StringUtil.protectFilePathForWindows(directory);
 		} else {
 			directoryString = StringUtil.protectFilePathForUnix(directory);
 		}
@@ -131,8 +140,10 @@ public class ShellScriptUtil  {
 		return null;
 	}
 
+
 	/*.................................................................................................................*/
-	public static Process executeScript(String scriptPath){ 
+	@Deprecated
+	public  static Process executeScript(String scriptPath){ 
 		return executeScript(scriptPath, true);
 	}
 	/*.................................................................................................................*/
@@ -148,17 +159,22 @@ public class ShellScriptUtil  {
 					scriptPath = scriptPath.replaceAll("//", "/");
 					pathArray = new String[] {scriptPath};
 				}
+				proc = Runtime.getRuntime().exec(pathArray);
 			}
 			else if (MesquiteTrunk.isLinux()) {
 				// remove double slashes or things won't execute properly
 				scriptPath = scriptPath.replaceAll("//", "/");
 				pathArray = new String[] {scriptPath};
-				//proc = Runtime.getRuntime().exec(pathArray);
-			} else {
+				proc = Runtime.getRuntime().exec(pathArray);
+			} else {  // Windows
 				scriptPath = "\"" + scriptPath + "\"";
-				pathArray = new String[] {"cmd", "/c", scriptPath};
+				if (visibleTerminal)
+					proc = Runtime.getRuntime().exec("cmd /c start \"\" " + scriptPath);
+				else {
+					pathArray = new String[] {"cmd", "/c", scriptPath};
+					proc = Runtime.getRuntime().exec(pathArray);
+				}
 			}
-			proc = Runtime.getRuntime().exec(pathArray);
 		}  catch (IOException e) {
 			MesquiteMessage.println("Script execution failed. " + e.getMessage());
 			return null;

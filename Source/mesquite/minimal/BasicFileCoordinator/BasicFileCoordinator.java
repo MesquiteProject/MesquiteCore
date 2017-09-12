@@ -965,7 +965,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		incrementMenuResetSuppression();
 		if (fi!=null) {
 			if (getProject().getHomeFile() == fi) { //should ask for all files
-				if (quietly || MesquiteThread.isScripting() || !getProject().isDirty()) {
+				if (quietly || MesquiteThread.isScripting()) {
 					waitWriting(null);
 					logln("Closing " + getProject().getName());
 					getProject().isDoomed = true;
@@ -973,36 +973,43 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 				else {
 					fileCloseRequested();
-					ListableVector files = getProject().getFiles();
-					if (files != null){
+					if (!getProject().isDirty()) {
+						waitWriting(null);
+						logln("Closing " + getProject().getName());
+						getProject().isDoomed = true;
+						iQuit();
+					}
+					else {
+						ListableVector files = getProject().getFiles();
+						if (files != null){
+							Enumeration enumeration=files.elements();
+							if (enumeration != null){
+								MesquiteFile fiP;
+								while (enumeration.hasMoreElements()){
+									Object obj = enumeration.nextElement();
+									if (obj instanceof MesquiteFile) {
+										fiP = (MesquiteFile)obj;
 
-						Enumeration enumeration=files.elements();
-						if (enumeration != null){
-							MesquiteFile fiP;
-							while (enumeration.hasMoreElements()){
-								Object obj = enumeration.nextElement();
-								if (obj instanceof MesquiteFile) {
-									fiP = (MesquiteFile)obj;
-
-									if (fiP!=null && fiP.isDirty() && fiP.isLocal()) {
-										String message = "Do you want to save changes to \"" + fiP.getName() + "\" before closing?";
-										int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
-										if (q==0) {
-											logln("Writing " + fiP.getName());
-											writeFile(fiP);
-										}
-										else if (q==1) {
-											logln("File close cancelled by user");
-											decrementMenuResetSuppression();
-											return false;
+										if (fiP!=null && fiP.isDirty() && fiP.isLocal()) {
+											String message = "Do you want to save changes to \"" + fiP.getName() + "\" before closing?";
+											int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
+											if (q==0) {
+												logln("Writing " + fiP.getName());
+												writeFile(fiP);
+											}
+											else if (q==1) {
+												logln("File close cancelled by user");
+												decrementMenuResetSuppression();
+												return false;
+											}
 										}
 									}
 								}
 							}
 						}
+						logln("Closing " + getProject().getName());
+						iQuit();
 					}
-					logln("Closing " + getProject().getName());
-					iQuit();
 				}
 			}
 			else {
@@ -1091,6 +1098,15 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public boolean export(FileInterpreterI exporter, MesquiteFile file, String arguments){
 		if (exporter!=null){
 			MainThread.incrementSuppressWaitWindow();
+			//check first that file can be written.
+			if (file != null){
+				if (!file.canCreateOrRewrite()){
+					discreetAlert("Sorry, the file \"" + file.getFileName() + "\"could not be exported because of problems concerning the file system.  See diagnosis in the Mesquite Log");
+					String report = file.diagnosePathIssues();
+					logln("DIAGNOSIS of folder and file status:\n" + report);
+					return false;
+				}
+			}
 			boolean success = exporter.exportFile(file, arguments); 
 			MainThread.decrementSuppressWaitWindow();
 			return success;
@@ -1188,7 +1204,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*  */
 	public void writeFile(MesquiteFile nMF){
 		if (!MesquiteThread.isScripting() && nMF.getDirectoryName() == null){
-			nMF.changeLocation("Save file");
+			boolean success = nMF.changeLocation("Save file");
+			if (!success)
+				return;
 		}
 		broadcastFileAboutToBeSaved(this, nMF);
 		Runtime rt = Runtime.getRuntime();

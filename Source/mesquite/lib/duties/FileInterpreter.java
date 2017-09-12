@@ -37,6 +37,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean writeOnlySelectedTaxa = false;
 	public boolean writeTaxaWithAllMissing = true;  //default changed to true as true  after 2. 75
 	public boolean writeExcludedCharacters = true;
+	public double fractionApplicable = 1.0;
 	
 	protected String filePath=null;
 
@@ -314,6 +315,16 @@ public abstract class FileInterpreter extends MesquiteModule  {
 				dir.setValue(tempDirectoryName);
 			if (fn != null){
 				fn.setValue(tempFileName);
+			}
+			MesquiteFile mf = new MesquiteFile();
+			mf.setLocation(tempFileName, tempDirectoryName, true);
+			if (mf != null){
+				if (!mf.canCreateOrRewrite()){
+					discreetAlert("Sorry, the file \"" + mf.getFileName() + "\"could not be written because of problems concerning the file system.  See diagnosis in the Mesquite Log");
+					String report = mf.diagnosePathIssues();
+					logln("DIAGNOSIS of folder and file status:\n" + report);
+					return null;
+				}
 			}
 			return tempDirectoryName+tempFileName;
 		}

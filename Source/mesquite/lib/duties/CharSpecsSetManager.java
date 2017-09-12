@@ -18,6 +18,7 @@ import java.util.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 
 
 /* ======================================================================== */
@@ -59,7 +60,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		return true;
 	}
 	/*.................................................................................................................*/
-	protected boolean writeLinkWithCharacterMatrixName(MesquiteFile file, CharacterData data){
+	public static boolean writeLinkWithCharacterMatrixName(MesquiteFile file, CharacterData data){
 		return (file.getProject().getNumberCharMatrices()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data));
 	}
 	
@@ -149,6 +150,10 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		}
 		return s;
    	}
+	public static String nexusCoreStringForSpecsSet(CharSpecsSet specsSet, CharacterData data){
+		return "";
+	}
+
 	/*.................................................................................................................*/
 	public abstract String nexusStringForSpecsSet(CharSpecsSet specsSet, mesquite.lib.characters.CharacterData data, MesquiteFile file, boolean isCurrent);
 	/*.................................................................................................................*/

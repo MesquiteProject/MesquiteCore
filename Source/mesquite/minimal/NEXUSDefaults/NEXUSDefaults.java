@@ -28,22 +28,25 @@ public class NEXUSDefaults extends DefaultsAssistant {
 	}
 	/*.................................................................................................................*/
 	MesquiteBoolean suppressTitleLink;
+	MesquiteBoolean suppressIDS;
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		suppressTitleLink = new MesquiteBoolean(false);
+		suppressIDS = new MesquiteBoolean(false);
 		loadPreferences();
 		addMenuItemToDefaults( "Automatic NEXUS backups...", makeCommand("autobackup",  this));
-		addCheckMenuItemToDefaults( null, "Suppress TITLE in NEXUS files", makeCommand("toggleSuppress",  this), suppressTitleLink);
+		addCheckMenuItemToDefaults( null, "Suppress TITLE and LINK in NEXUS files", makeCommand("toggleSuppress",  this), suppressTitleLink);
+		addCheckMenuItemToDefaults( null, "Suppress IDs and BLOCKIDs in NEXUS files", makeCommand("toggleSuppressIDS",  this), suppressIDS);
 		return true;
 	}
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>0) {
 			if (prefs[0].equals("suppress")) {
 				suppressTitleLink.setValue(true);
-				NexusBlock.suppressTITLESANDLINKS = true;
+				NexusBlock.suppressNEXUSTITLESANDLINKS = true;
 			}
 			else  {
 				suppressTitleLink.setValue(false);
-				NexusBlock.suppressTITLESANDLINKS = false;
+				NexusBlock.suppressNEXUSTITLESANDLINKS = false;
 			}
 			if (prefs.length>1){
 				int numBackups = MesquiteInteger.fromString(prefs[1]);
@@ -56,13 +59,20 @@ public class NEXUSDefaults extends DefaultsAssistant {
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "suppressTitleLink", suppressTitleLink);   
+		StringUtil.appendXMLTag(buffer, 2, "suppressIDS", suppressIDS);   
 		StringUtil.appendXMLTag(buffer, 2, "numBackups", NexusBlock.numBackups);  
 		return buffer.toString();
 	}
 	
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("suppressTitleLink".equalsIgnoreCase(tag))
+		if ("suppressTitleLink".equalsIgnoreCase(tag)) {
 			suppressTitleLink.setValue(content);
+			NexusBlock.suppressNEXUSTITLESANDLINKS = suppressTitleLink.getValue();
+		}
+		else if ("suppressIDS".equalsIgnoreCase(tag)) {
+			suppressIDS.setValue(content);
+			NexusBlock.suppressNEXUSIDS = suppressIDS.getValue();
+		}
 		else if ("numBackups".equalsIgnoreCase(tag))
 			NexusBlock.numBackups = MesquiteInteger.fromString(content);
 	}
@@ -75,10 +85,19 @@ public class NEXUSDefaults extends DefaultsAssistant {
 			boolean current = suppressTitleLink.getValue();
 			suppressTitleLink.toggleValue(parser.getFirstToken(arguments));
 			if (current!=suppressTitleLink.getValue()) {
-				NexusBlock.suppressTITLESANDLINKS = suppressTitleLink.getValue();
+				NexusBlock.suppressNEXUSTITLESANDLINKS = suppressTitleLink.getValue();
 				storePreferences();
 			}
 			return suppressTitleLink;
+		}
+		else if (checker.compare(this.getClass(), "Sets whether ID and BLOCKID commands are to be suppressed where possible in saving NEXUS files", "[on = suppress; off = no]", commandName, "toggleSuppressIDS")) {  
+			boolean current = suppressIDS.getValue();
+			suppressIDS.toggleValue(parser.getFirstToken(arguments));
+			if (current!=suppressIDS.getValue()) {
+				NexusBlock.suppressNEXUSIDS = suppressIDS.getValue();
+				storePreferences();
+			}
+			return suppressIDS;
 		}
 		else if (checker.compare(getClass(), "Sets the number of previous backups", "[num backups]", commandName, "autobackup")) {
 			int numBackups = MesquiteInteger.fromString(arguments);

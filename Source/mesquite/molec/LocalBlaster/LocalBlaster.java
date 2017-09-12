@@ -33,6 +33,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 	String[] databaseArray = null;
 	int numDatabases = 0;
 
+
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		programOptions = "";
 		timer.start();
@@ -46,6 +47,10 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 
 	public  int getUpperLimitMaxHits(){
 		return 100;
+	}
+
+	public boolean userAborted(){
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -352,6 +357,9 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 
 	public boolean continueShellProcess(Process proc) {
 		return true;
+	}
+	public boolean fatalErrorDetected() {
+		return false;
 	}
 
 

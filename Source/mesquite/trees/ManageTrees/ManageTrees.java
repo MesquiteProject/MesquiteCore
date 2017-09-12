@@ -15,7 +15,12 @@ package mesquite.trees.ManageTrees;
 /*~~  */
 
 import java.util.*;
+
+import javax.swing.JLabel;
+
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.*;
 
 import mesquite.lib.*;
@@ -23,7 +28,7 @@ import mesquite.lib.duties.*;
 
 
 /** Manages blocks of trees, including reading the NEXUS blocks of trees */
-public class ManageTrees extends TreesManager {
+public class ManageTrees extends TreesManager implements ItemListener {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.lists.TreesList.TreesList.class, "This manages the List of Trees windows.",
 				"It is activated automatically. ");
@@ -65,6 +70,67 @@ public class ManageTrees extends TreesManager {
 		autoSaveInference = new MesquiteBoolean(false);
 		loadPreferences();
 		return true;
+	}
+
+	/*.................................................................................................................*/
+	RadioButtons interpretation, branchesOrNodes;
+	TextField nameField;
+	JLabel otherNameLabel, bOn;
+	public boolean queryAboutNumericalLabelIntepretation(boolean[] interps, String c, MesquiteString n){
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "How to interpret numbers in tree description",  buttonPressed);
+		queryDialog.addLargeTextLabel("A tree being read includes numbers written as node labels (e.g., \"" + c + "\"). " +
+				"Some programs write special information, e.g. bootstrap frequency or posterior probabilities, as node labels. " +
+				" Please indicate how you want these numbers to be interpreted.");
+		queryDialog.addLabel("Interpretation:", Label.LEFT);
+		String[] names = new String[]{"Treat as text", "Bootstrap frequency",  "Posterior probability", "Consensus frequency", "Other"};
+		interpretation = queryDialog.addRadioButtons(names, 0);
+		interpretation.addItemListener(this);
+		otherNameLabel = queryDialog.addLabel("If Other, give a short name for these numbers (no punctuation!):", Label.LEFT);
+		nameField = queryDialog.addTextField("otherValue", 30);
+		bOn = queryDialog.addLabel("If Other, please indicate whether the number is associated with the nodes or the branches between the nodes:", Label.LEFT);
+		String[] branchNode = new String[]{"Nodes", "Branches"};
+		branchesOrNodes = queryDialog.addRadioButtons(branchNode, 0);
+
+		queryDialog.addHorizontalLine(2);
+		Checkbox remember = queryDialog.addCheckBox ("Remember this interpretation for the rest of this Mesquite run", false);
+		itemStateChanged(null);
+		queryDialog.completeAndShowDialog(true);
+
+		boolean ok = (queryDialog.query()==0);
+
+		String name = "";
+		if (ok) {
+			int interp = interpretation.getValue();
+			interps[0] = interp >0;
+			if (interp == 1)
+				name = "bootstrapFrequency";
+			else if (interp == 2)
+				name = "posteriorProbability";
+			else if (interp == 3)
+				name = "consensusFrequency";
+			else if (interp == 4){
+				name = nameField.getText();
+				if (StringUtil.blank(name)){
+					name = "otherValue";
+				}
+				interps[1] = branchesOrNodes.getValue() == 1;
+			}
+			interps[2] = remember.getState();
+			n.setValue(name);
+			
+		}
+		queryDialog.dispose();
+		return ok;
+	}
+	/*.................................................................................................................*/
+	public void itemStateChanged(ItemEvent arg0) {
+		boolean en = interpretation.getValue()==4;
+		nameField.setEnabled(en);	
+		branchesOrNodes.setEnabled(0, en);	
+		branchesOrNodes.setEnabled(1, en);	
+		otherNameLabel.setEnabled(en);
+		bOn.setEnabled(en);
 	}
 
 	public void elementsReordered(ListableVector v){
@@ -155,7 +221,7 @@ public class ManageTrees extends TreesManager {
 					treeBlock.dispose();
 				}
 			}
-/*
+			/*
 			boolean someDeleted = true;
 			while (someDeleted){
 				someDeleted = false;
@@ -168,7 +234,7 @@ public class ManageTrees extends TreesManager {
 					}
 				}
 			}
-			*/
+			 */
 			resetAllMenuBars();
 
 		}
@@ -369,7 +435,7 @@ public class ManageTrees extends TreesManager {
 						tw.getParentFrame().showFrontWindow();
 						return null;
 					}
-					
+
 
 					//not shown; need to make new tree window
 					CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
@@ -1168,7 +1234,7 @@ public class ManageTrees extends TreesManager {
 		else if (!MesquiteThread.isScripting() && (suppressAsk || AlertDialog.query(containerOfModule(), "Trees ready", "The trees are now ready [" + fillTask.getName() + "; name of tree block: \"" + trees.getName()+ "\"].  Would you like to open a tree window to display them?", "Yes", "No"))){
 			//send script to tree window coord to makeTreeWindow with set of taxa and then set to stored trees and this tree vector
 			int whichTreeBlock = getTreeBlockNumber(taxa, trees);
-			String extraWindowCommands = fillTask.getExtraTreeWindowCommands();
+			String extraWindowCommands = fillTask.getExtraTreeWindowCommands(true);
 			if (StringUtil.blank(extraWindowCommands))
 				extraWindowCommands="";
 			String commands = "makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It; setTreeSource  #StoredTrees;";
@@ -1227,7 +1293,7 @@ public class ManageTrees extends TreesManager {
 	public TreeVector getTreeBlockByUniqueID(String uniqueID){  //this uses the temporary run-time id of the tree vector
 		if (treesVector==null || uniqueID == null)
 			return null;
-		
+
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector trees = (TreeVector)treesVector.elementAt(j);
 			if (uniqueID.equals(trees.getUniqueID()))
@@ -1278,7 +1344,7 @@ public class ManageTrees extends TreesManager {
 	}
 	/*.................................................................................................................*/
 	public int getTreeBlockNumber(TreeVector trees){//OK for doomed
-			return getTreeBlockNumber(null, trees);
+		return getTreeBlockNumber(null, trees);
 	}
 	/*.................................................................................................................*/
 	public int getNumberTreeBlocks(Taxa taxa){ //OK for doomed
@@ -1314,7 +1380,7 @@ public class ManageTrees extends TreesManager {
 			if (!trees.isDoomed())
 				count++;
 		}
-	return count;
+		return count;
 	}
 	/*.................................................................................................................*/
 	public TreeVector makeNewTreeBlock(Taxa taxa, String name, MesquiteFile f){
@@ -1330,7 +1396,7 @@ public class ManageTrees extends TreesManager {
 	}
 	/*.................................................................................................................*/
 	public NexusBlock elementAdded(FileElement trees){
-		if (trees ==null || !(trees instanceof TreeVector))
+		if (trees ==null || !(trees instanceof TreeVector) || treesVector == null)
 			return null;
 		if (treesVector.indexOf(trees) <0) {
 			treesVector.addElement(trees, true);
@@ -1690,13 +1756,15 @@ public class ManageTrees extends TreesManager {
 		if (trees.getAnnotation()!=null) 
 			block.append("[!" + StringUtil.tokenize(trees.getAnnotation()) + "]");
 		block.append(endLine);
-		if (!NexusBlock.suppressTITLESANDLINKS){
+		if (!NexusBlock.suppressNEXUSTITLESANDLINKS){
 			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
 			block.append(endLine);
+		}
+		if (!NexusBlock.suppressNEXUSIDS){
 			block.append("\tID " + StringUtil.tokenize(trees.getUniqueID()));
 			block.append(endLine);
 		}
-		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressTITLESANDLINKS)) {
+		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressNEXUSTITLESANDLINKS)) {
 			block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 			block.append(endLine);
 		}

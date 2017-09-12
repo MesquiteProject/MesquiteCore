@@ -31,6 +31,10 @@ public class OtherTreeSearch extends TreeSearch  {
 		return "Supplies trees resulting from other criteria.";
 	}
 	/*.................................................................................................................*/
+	public boolean isReconnectable(){
+		return false;
+	}
+	/*.................................................................................................................*/
 	public Class getHireSubchoice(){
 		return TreeSearcher.class;  
 	}

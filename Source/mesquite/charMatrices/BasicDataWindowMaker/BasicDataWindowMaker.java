@@ -1776,7 +1776,7 @@ public void requestFocus(){
 			MesquiteInteger io = new MesquiteInteger(0);
 			int shiftAmount = MesquiteInteger.fromString(arguments, io);
 
-			if (!MesquiteInteger.isCombinable(shiftAmount) && !MesquiteThread.isScripting()) {
+			if (!(MesquiteInteger.isCombinable(shiftAmount) || shiftAmount==0) && !MesquiteThread.isScripting()) {
 				String helpString ="Enter the amount to shift the block.  If you enter a positive number, the block will be shifted through that many characters to the right; a negative number, to the left. ";
 				helpString+="The block will not be shifted over top of existing data; it will only be moved through gaps.  If you request a shift larger than can be accommodated, then ";
 				helpString += "the block will be shifted as far as possible without overwriting data.";
@@ -1784,7 +1784,7 @@ public void requestFocus(){
 				shiftAmount = MesquiteInteger.queryInteger(ownerModule.containerOfModule(), "Move Selected Block", "Number of characters to shift selected block", helpString, 1, MesquiteInteger.unassigned, MesquiteInteger.unassigned);
 			}
 			
-			if (MesquiteInteger.isCombinable(shiftAmount)) {
+			if (MesquiteInteger.isCombinable(shiftAmount) && shiftAmount!=0) {
 				MesquiteBoolean dataChanged = new MesquiteBoolean();
 				MesquiteInteger charAdded = new MesquiteInteger();
 				MesquiteInteger distanceMoved = new MesquiteInteger();
@@ -1874,7 +1874,9 @@ public void requestFocus(){
 					boolean a = tda.alterTaxonNames(taxa, getTable());
 					ownerModule.fireEmployee(tda);
 					if (a) {
+						table.redrawRowNames();
 						taxa.notifyListeners(this, new Notification(NAMES_CHANGED, undoReference));
+
 					}
 				}
 			}
@@ -2360,10 +2362,12 @@ public void requestFocus(){
 	/* ................................................................................................................. */
 	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
 	public void changed(Object caller, Object obj, Notification notification) {
-		if (caller instanceof BasicDataWindow || caller instanceof MatrixTable)
+		int code = Notification.getCode(notification);
+		if (caller == this)
+			return;
+		if ((caller instanceof BasicDataWindow || caller instanceof MatrixTable) && code != MesquiteListener.SELECTION_CHANGED && code != MesquiteListener.NAMES_CHANGED)
 			return;
 		UndoReference undoReference = Notification.getUndoReference(notification);
-		int code = Notification.getCode(notification);
 		int[] parameters = Notification.getParameters(notification);
 		if (obj instanceof Taxa && (Taxa) obj == data.getTaxa()) {
 			Taxa taxa = (Taxa) obj;

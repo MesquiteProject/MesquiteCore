@@ -30,9 +30,13 @@ public abstract class ProbModelSourceSim extends ProbModelSource  {
  	public String getDutyName() {
  		return "Probability Model Source (For simulations)";
    	 }
-   	 public String[] getDefaultModule() {
-   	 	return new String[] {"#StoredProbModelSim"};
-   	 }
+  	 public String[] getDefaultModule() {
+    	 	return new String[] {"#StoredProbModelSim"};
+    	 }
+   	 public boolean modelFromModelSet() {
+ 	 	return false;    	 
+ }
+
 }
 
 

@@ -150,7 +150,7 @@ public class MesquiteNumber implements Listable, WithStringDetails{
 			return (int)(longValue);
 		else if (valueClass == DOUBLE)
 			return (int)doubleValue;
-//		return java.lang.Math.round(doubleValue);
+		//		return java.lang.Math.round(doubleValue);
 		else return 0;
 	}
 	/*...........................................................*/
@@ -247,6 +247,23 @@ public class MesquiteNumber implements Listable, WithStringDetails{
 				catch (NumberFormatException e2) {
 					setToUnassigned();
 				}
+			}
+		}
+	}
+	public static boolean isNumber(String s) {
+		if (StringUtil.blank(s))
+			return false;
+		try {
+			int d = Integer.parseInt(s);
+			return true;
+		}
+		catch (NumberFormatException e) {
+			try {
+				double d = Double.valueOf(s);
+				return true;
+			}
+			catch (NumberFormatException e2) {
+				return false;
 			}
 		}
 	}
@@ -569,7 +586,7 @@ public class MesquiteNumber implements Listable, WithStringDetails{
 	public void divideBy(MesquiteNumber toDivide) {
 		if (watchpoint) MesquiteMessage.printStackTrace("MesquiteNumber changed value (divideBy)  " + toDivide);
 		if (toDivide!=null) {
-			
+
 			if (toDivide.valueClass==INT)
 				divideBy(toDivide.intValue);
 			else if (toDivide.valueClass == LONG)
@@ -976,7 +993,7 @@ public class MesquiteNumber implements Listable, WithStringDetails{
 			temp |= putByteInLong(bytes[i], i);
 		}
 		return temp
-		;
+				;
 	}
 	public static long putByteInLong(byte b, int whichByte){
 		long L = ((long) b) & 0x00000000000000FFL;
@@ -1194,7 +1211,7 @@ public class MesquiteNumber implements Listable, WithStringDetails{
 		}
 		sb.append("]");
 		return sb.toString();
-		
+
 	}
 	/*--------------------------------STRINGS--------------------------*/
 	/** Returns string representation of the names*/
@@ -1251,7 +1268,7 @@ public class MesquiteNumber implements Listable, WithStringDetails{
 		else return "";
 	}
 	public String toString(int digits, boolean allowExponentialNotation) {
-		
+
 		if (isUnassigned())
 			return "?"; //changed from "unassigned" June 02
 		else if (isInfinite())

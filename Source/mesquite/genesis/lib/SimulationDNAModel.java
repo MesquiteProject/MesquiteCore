@@ -43,6 +43,7 @@ public class SimulationDNAModel extends ProbabilityDNAModel  {
 	Button editEquilStatesButton;
 	Button editCharRatesButton; 
 	Button editRateMatrixButton;
+	boolean noCheckFlag = false;
 	
  	/*.................................................................................................................*/
 	public SimulationDNAModel (String name, Class dataClass, CategProbModelCurator curator){
@@ -54,6 +55,15 @@ public class SimulationDNAModel extends ProbabilityDNAModel  {
 	public String getModelTypeName(){
 		return "Simulation DNA Model";
 	}
+ 	/*.................................................................................................................*/
+	public void clearNoCheckFlag(){
+		noCheckFlag=false;
+	}
+ 	/*.................................................................................................................*/
+	public void setNoCheckFlag(boolean noCheckFlag){
+		this.noCheckFlag=noCheckFlag;
+	}
+
  	/*.................................................................................................................*/
 	public CharRatesModel initCharRatesModel(){
 		return null;
@@ -108,6 +118,8 @@ public class SimulationDNAModel extends ProbabilityDNAModel  {
 	}
 	/*.................................................................................................................*/
  	public void recalcAfterSetMCharactersStatesHolder (){
+   	 	if (noCheckFlag)
+   	 		return;
    	 	if (getRootStatesModel()!= null)
 			getRootStatesModel().recalcAfterSetMCharactersStatesHolder();
   	 	if (getEquilStatesModel()!= null)

@@ -30,6 +30,17 @@ public abstract class TreeSearcher extends MesquiteModule  {
  	public String getDutyName() {
  		return "Tree Searcher";
    	 }
+	/*.................................................................................................................*/
+	public  void setUserAborted(){
+	}
+	public String getMessageIfUserAbortRequested () {
+		return null;
+	}
+
+
+	public  void setOutputTextListener(OutputTextListener textListener){
+	}
+
    	 
    	 public String[] getDefaultModule() {
    	 	return new String[] {"#AddAndRearrange"};
@@ -53,7 +64,7 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	 }
 
 
-	 public String getExtraTreeWindowCommands (){
+	 public String getExtraTreeWindowCommands (boolean finalTree){
    		 return "";
    	 }
 	 public String getExtraIntermediateTreeWindowCommands (){
@@ -86,6 +97,14 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	 //Override in subclasses
 		public String getHTMLDescriptionOfStatus(){
 			return getName();
+		}
+		 //Override in subclasses
+		public String getInferenceName(){
+			return getName();
+		}
+
+		public String getLogText() {
+			return "";
 		}
 
  	 }

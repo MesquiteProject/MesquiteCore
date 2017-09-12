@@ -23,6 +23,8 @@ import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public abstract class TreeSearch extends TreeInferer implements Incrementable {
+	protected TreeSearcher searchTask;
+	
 	public String getExplanation() {
 		return "Supplies trees resulting from a search to optimize some value.";
 	}
@@ -31,7 +33,28 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 		"The method to search for trees can be selected initially");
 	}
 	/*.................................................................................................................*/
-	protected TreeSearcher searchTask;
+public boolean isReconnectable(){
+	return searchTask.isReconnectable();
+}
+public String getMessageIfUserAbortRequested () {
+	if (searchTask!=null)
+		return searchTask.getMessageIfUserAbortRequested();
+	return null;
+}
+
+	/*.................................................................................................................*/
+	public  void setUserAborted(){
+		userAborted=true;
+		searchTask.setUserAborted();
+	}
+
+	public  void setOutputTextListener(OutputTextListener textListener){
+		if (searchTask != null)
+			searchTask.setOutputTextListener(textListener);
+	}
+	public String getInferenceName(){
+		return searchTask.getInferenceName();
+	}
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -48,6 +71,9 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 		}
 		return true;
 	}
+	public String getLogText() {
+		return searchTask.getLogText();
+	}
 
 	/*.................................................................................................................*/
 	public String getHTMLDescriptionOfStatus(){
@@ -62,8 +88,8 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 	}
 
 	public void abortFilling(){
-		stopInference();
-		abort = true;
+		if (stopInference())
+			abort = true;
 	}
 
    	public Reconnectable getReconnectable(){
@@ -72,9 +98,9 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
    		return null;
    	}
    	
-	 public String getExtraTreeWindowCommands (){
+	 public String getExtraTreeWindowCommands (boolean finalTree){
 		 if (searchTask!=null)
-			 return searchTask.getExtraTreeWindowCommands();
+			 return searchTask.getExtraTreeWindowCommands(finalTree);
 		 else
 			 return "";
    	 }

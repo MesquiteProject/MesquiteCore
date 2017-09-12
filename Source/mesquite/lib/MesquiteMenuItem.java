@@ -46,7 +46,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 		super();
 		addActionListener(this);
 		if (itemName == null) {
-			MesquiteMessage.printStackTrace("Menu item with null name: ownerModule " + ownerModule);
+			MesquiteMessage.printStackTrace("Menu item with null name: ownerModule " + ownerModule +" command " + command);
 			this.setLabel("untitled");
 		}
 		else

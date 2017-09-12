@@ -412,14 +412,16 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 	/*.................................................................................................................*/
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
+			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
+			CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
+		if (taxaTask == null || getProject() == null || getProject().getTaxas() == null)
+			return;
 		incrementMenuResetSuppression();
 		ProgressIndicator progIndicator = new ProgressIndicator(mf,"Importing File "+ file.getName(), file.existingLength());
 		progIndicator.start();
 		boolean fuse = parser.hasFileReadingArgument(arguments, "fuseTaxaCharBlocks");
 		file.linkProgressIndicator(progIndicator);
 		if (file.openReading()) {
-			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
-			CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
 			Taxa taxa = null;
 			if (fuse){
 				String message = "There is a taxa block in the file \"" + file.getName() + "\" being imported. Mesquite will either fuse this imported taxa block into the taxa block you select below, or it will import that taxa block as new, separate taxa block.";
@@ -516,7 +518,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		for (int ic = 0; ic<data.getNumChars(); ic++) {
 			if (!writeOnlySelectedData || (data.getSelected(ic))){
 				if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)))
-					return true;
+						return true;
 			}
 		}
 		return false;
@@ -546,47 +548,52 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		int counter = 1;
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || (taxa.getSelected(it))) && (!includeOnlyTaxaWithData || taxonHasData(data, it))){
-				
-				
-				counter = 1;
-				outputBuffer.append(">");
-				outputBuffer.append(getTaxonName(taxa,it));
-				String sup = getSupplementForTaxon(taxa, it);
-				if (StringUtil.notEmpty(sup))
-					outputBuffer.append(sup);
-				outputBuffer.append(getLineEnding());
-				
-				for (int ic = 0; ic<numChars; ic++) {
-					if (!writeOnlySelectedData || (data.getSelected(ic))){
-						int currentSize = outputBuffer.length();
-						boolean wroteMoreThanOneSymbol = false;
-						boolean wroteSymbol = false;
-						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
-							outputBuffer.append(getUnassignedSymbol());
-	                        counter ++;
-	                        wroteSymbol = true;
-						}
-						else if (includeGaps || (!data.isInapplicable(ic,it))) {
-							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
-							counter ++;
-							wroteSymbol = true;
-                        }
-						wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-                        if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
-                            outputBuffer.append(getLineEnding());
-                        }
+				if (fractionApplicable==1.0 || data.getFractionApplicableInTaxon(it, writeExcludedCharacters)>=fractionApplicable) {
 
-						if (wroteMoreThanOneSymbol) {
-							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-							return null;
+					counter = 1;
+					outputBuffer.append(">");
+					outputBuffer.append(getTaxonName(taxa,it));
+					String sup = getSupplementForTaxon(taxa, it);
+					if (StringUtil.notEmpty(sup))
+						outputBuffer.append(sup);
+					outputBuffer.append(getLineEnding());
+
+					for (int ic = 0; ic<numChars; ic++) {
+						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))){
+							int currentSize = outputBuffer.length();
+							boolean wroteMoreThanOneSymbol = false;
+							boolean wroteSymbol = false;
+							if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
+								outputBuffer.append(getUnassignedSymbol());
+								counter ++;
+								wroteSymbol = true;
+							}
+							else if (includeGaps || (!data.isInapplicable(ic,it))) {
+								data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+								counter ++;
+								wroteSymbol = true;
+							}
+							wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
+							if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
+								outputBuffer.append(getLineEnding());
+							}
+
+							if (wroteMoreThanOneSymbol) {
+								alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
+								return null;
+							}
 						}
 					}
+					outputBuffer.append(getLineEnding());
 				}
-				outputBuffer.append(getLineEnding());
 			}
 		}
 		return outputBuffer;
  	}
+	/*.................................................................................................................*/
+	public String preferredDataFileExtension() {  
+		return "fas";
+	}
 
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
@@ -607,7 +614,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		StringBuffer outputBuffer = getDataAsFileText(file, data);
 
 		if (outputBuffer!=null) {
-			saveExportedFileWithExtension(outputBuffer, arguments, "fas");
+			saveExportedFileWithExtension(outputBuffer, arguments, preferredDataFileExtension());
 			saveExtraFiles(data);  
 			return true;
 		}

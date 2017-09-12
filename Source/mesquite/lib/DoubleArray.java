@@ -34,7 +34,7 @@ public class DoubleArray implements Listable  {
 	//intially for MesquiteTree to know if info applies to node or branch ancestral to node
 	boolean between = false;
 	public void setBetweenness(boolean b){
-		between = true;  
+		between = b;  
 	}
 	public boolean isBetween(){
 		return between;

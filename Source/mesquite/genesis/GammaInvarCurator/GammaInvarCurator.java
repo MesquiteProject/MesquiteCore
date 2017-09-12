@@ -65,7 +65,7 @@ public class GammaInvarCurator extends CharRatesCurator implements EditingCurato
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Defines and maintains Gamma rate variation models with a proportion of invariant characters." ;
+ 		return "Defines and maintains Gamma rate variation models with a proportion of invariable characters." ;
    	 }
 }
 

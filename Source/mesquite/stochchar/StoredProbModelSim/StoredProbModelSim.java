@@ -227,7 +227,7 @@ public class StoredProbModelSim extends ProbModelSourceSim {
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Stored Probability Model for Simulation";
+		return "Single Stored Probability Model for Simulation";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/

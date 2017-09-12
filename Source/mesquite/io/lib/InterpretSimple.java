@@ -58,14 +58,15 @@ public abstract class InterpretSimple extends FileInterpreterI {
 	/*.................................................................................................................*/
 	boolean badImportWarningGiven = false;
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
+		TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
+		CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
+		if (taxaTask == null || getProject() == null || getProject().getTaxas() == null)
+			return;
 		incrementMenuResetSuppression();
 		ProgressIndicator progIndicator = new ProgressIndicator(mf,"Importing File "+ file.getName(), file.existingLength());
 		progIndicator.start();
 		file.linkProgressIndicator(progIndicator);
 		if (file.openReading()) {
-			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
-			CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
-
 			Taxa taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CharacterData data = (CharacterData)createData(charTask,taxa);
@@ -105,15 +106,15 @@ public abstract class InterpretSimple extends FileInterpreterI {
 								}
 								((CategoricalData)data).setState(ic, numTaxa, c);    // setting state to that specified by character c
 								if (CategoricalState.isImpossible(((CategoricalData)data).getState(ic,numTaxa))){
-						   			data.badImport = true;
+									data.badImport = true;
 									MesquiteTrunk.errorReportedDuringRun = true;
 									if (!badImportWarningGiven) {
 										if (data instanceof DNAData)
 											discreetAlert("THE DATA WILL BE INCORRECTLY IMPORTED.  The imported sequence includes symbols not interpretable as DNA sequence data.  If this file is a protein data file, please use the protein interpreter. " + 
-											"Also, please ensure this is not an rtf or zip file or other format that is not simple text.  This warning may not be given again, but you may see subsequent warnings about impossible states.");
+													"Also, please ensure this is not an rtf or zip file or other format that is not simple text.  This warning may not be given again, but you may see subsequent warnings about impossible states.");
 										else
 											discreetAlert("THE DATA WILL BE INCORRECTLY IMPORTED.  The imported sequence includes symbols not interpretable as Protein sequence data.  If this file is a DNA data file, please use the DNA interpreter. " + 
-											"Also, please ensure this is not an rtf or zip file or other format that is not simple text.  This warning may not be given again, but you may see subsequent warnings about impossible states.");
+													"Also, please ensure this is not an rtf or zip file or other format that is not simple text.  This warning may not be given again, but you may see subsequent warnings about impossible states.");
 									}
 									badImportWarningGiven = true;
 								}

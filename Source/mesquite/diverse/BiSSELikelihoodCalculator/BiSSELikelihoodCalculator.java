@@ -127,7 +127,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		rootModes.setValue(ROOT_USEPRIOR, "Use Root State Frequencies as Prior");
 		rootModeName = new MesquiteString(rootModes.getValue(rootMode));  //this helps the menu keep track of checkmenuitems
 
-		postBean("startJob", false);
+		postBean("startJob");
 		//	if (showRootModeChoices){
 		/*Treatment of prior at root; currently user interface hidden unless preferences file put in place*/
 		//	MesquiteSubmenuSpec mssr = addSubmenu(null, "Root Reconstruction", makeCommand("setRootMode", this), rootModes); 

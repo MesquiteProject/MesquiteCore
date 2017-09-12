@@ -115,7 +115,7 @@ public class AboutWindow extends MesquiteWindow implements WindowListener {
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
 	they can reset their titles properly*/
 	public void resetTitle(){
-		setTitle("Mesquite Startup Window");
+		setTitle("About Mesquite");
 	}
 	/** Returns menu location for item to bring the window to the for (0 = custom or don't show; 1 = system area of Windows menu; 2 = after system area of Windows menu)*/
 	public int getShowMenuLocation(){

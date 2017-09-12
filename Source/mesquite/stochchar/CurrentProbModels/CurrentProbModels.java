@@ -12,7 +12,6 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.stochchar.CurrentProbModels;
-/*~~  */
 
 import java.util.*;
 import java.awt.*;
@@ -45,6 +44,10 @@ public class CurrentProbModels extends ProbModelSourceLike {
 	public boolean isPrerelease() {
 		return false;
   	 }
+  	 public boolean modelFromModelSet() {
+ 	 	return true;    	 
+ }
+
 	/*.................................................................................................................*/
 	public void endJob() {
 		getProject().getCentralModelListener().removeListener(this);

@@ -45,7 +45,7 @@ public class MesquiteFileUtil {
 			rootDir = module.createEmptySupportDirectory(directoryCreated) + MesquiteFile.fileSeparator;  //replace this with current directory of file
 		else if (location == BESIDE_HOME_FILE) {
 			String dir = module.getProject().getHomeFile().getDirectoryName();
-			String path = dir + name;
+			String path = dir + StringUtil.cleanseStringOfFancyChars(name, false, true);
 			if (createUniqueDatedName) {
 				path+= "-" + StringUtil.getDateDayOnly() + suffix;
 				path = MesquiteFile.getUniqueNumberedPath(path);

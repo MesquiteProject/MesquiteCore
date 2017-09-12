@@ -16,6 +16,9 @@ package mesquite.parsimony.ConsistIndexMatrix;
 
 import java.util.*;
 import java.awt.*;
+
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.categ.lib.RequiresAnyCategoricalData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -70,7 +73,11 @@ public class ConsistIndexMatrix extends NumberForMatrixAndTree {
 		if (resultString !=null)
 			resultString.setValue("");
 	   	clearResultAndLastResult(result);
-
+	   	if (!(matrix instanceof MCategoricalDistribution)){
+			if (resultString != null)
+				resultString.setValue("C.I. is calculated only for categorical matrices.");
+	   		return;
+	   	}
 		if (matrix==null || tree == null || !(tree instanceof MesquiteTree)) {
 			return;
 		}
@@ -106,6 +113,9 @@ public class ConsistIndexMatrix extends NumberForMatrixAndTree {
 	}
 	public boolean showCitation(){
 		return true;
+	}
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyCategoricalData();
 	}
 }
 

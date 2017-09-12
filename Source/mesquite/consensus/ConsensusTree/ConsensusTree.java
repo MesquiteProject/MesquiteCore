@@ -140,7 +140,7 @@ public class ConsensusTree extends TreeSource {
 		int numTrees = treeSource.getNumberOfTrees(taxa);
 		if (MesquiteInteger.isInfinite(numTrees)){
 			if (numTreesItem == null) {
-				numTreesItem = addMenuItem( "Number of  Trees for Consensus...", makeCommand("assignNumTrees",  this));
+				numTreesItem = addMenuItem( "Number of Trees for Consensus...", makeCommand("assignNumTrees",  this));
 				resetContainingMenuBar();
 			}
 			if (MesquiteInteger.isCombinable(numTreesAssigned))

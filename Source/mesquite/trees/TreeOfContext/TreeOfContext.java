@@ -43,7 +43,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 	   			return sorry("Sorry, " + whatIsMyPurpose()+ " you need to have an open Tree Window to serve as a source of a current tree; no appropriate Tree Window could be found.  You may request a Tree Window from the Trees menu.  The Multi Tree window is not appropriate, as it does not show a single current tree."); //TODO: should alert user
 	   		}
 	   		}
-   		context = null; // the check on context had been just to ensure that there was something
+  		context = null; // the check on context had been just to ensure that there was something
 		addMenuItem("Display Tree (used by " + getEmployer().getName() +")", makeCommand("showContext", this));
   		return true;
   	}
@@ -70,6 +70,11 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 
  	 	return temp;
   	 }
+ 	/*.................................................................................................................*/
+   	public void reset(){
+   		context=null;
+   	}
+
 	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
     	 	if (checker.compare(this.getClass(), "Sets the context identification code of this module (this is used internally in saving scripts to ensure users of the context reconnect to the correct tree context", "[code string]", commandName, "setContextID")) {

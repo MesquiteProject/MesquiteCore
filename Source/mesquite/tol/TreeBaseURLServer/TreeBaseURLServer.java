@@ -30,6 +30,10 @@ public class TreeBaseURLServer extends TaxonOnWebServer {
 		return "TreeBase";
 	}
 
+	public boolean loadModule() {
+		return false;
+	}
+
 	public String getExplanation() {
 		return "Provides a URL to a taxon in TreeBase";
 	}

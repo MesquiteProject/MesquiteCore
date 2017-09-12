@@ -111,6 +111,7 @@ public class ManageDATAblock extends MesquiteModule {
 			else if (commandName.equalsIgnoreCase("MATRIX")) {
 				if (data==null) {
 					alert("Error in NEXUS file:  Matrix without FORMAT statement");
+					return null;
 				}
 				else if (data.getMatrixManager()!=null) {
 					if (data.interleaved) {

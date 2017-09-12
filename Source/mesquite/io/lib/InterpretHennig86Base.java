@@ -25,6 +25,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.io.lib.*;
 import mesquite.categ.lib.*;
+import mesquite.cont.lib.*;
 import mesquite.parsimony.lib.*;
 
 
@@ -58,9 +59,13 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		availableCommands = new HennigNonaCommand[numCommands];
-		acceptedClasses = new Class[] {CategoricalState.class,ProteinState.class, DNAState.class};
+		acceptedClasses = getAcceptedClasses();
 		initializeCommands();
 		return true;  //make this depend on taxa reader being found?)
+	}
+	/*.................................................................................................................*/
+	public Class[] getAcceptedClasses() {
+		return new Class[] {CategoricalState.class,ProteinState.class, DNAState.class};
 	}
 	/*.................................................................................................................*/
 	public String preferredDataFileExtension() {
@@ -430,14 +435,17 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	}	
 
 	/*.................................................................................................................*/
-	public CategoricalData findDataToExport(MesquiteFile file, String arguments) { 
-		return (CategoricalData)getProject().chooseData(containerOfModule(), file, null, acceptedClasses, "Select data to export");
+	public CharacterData findDataToExport(MesquiteFile file, String arguments) { 
+		return (CharacterData)getProject().chooseData(containerOfModule(), file, null, acceptedClasses, "Select data to export");
 	}
 	/*.................................................................................................................*/
-	public int getNumExportTotal(Taxa taxa, CategoricalData data) {  
+	public int getNumExportTotal(Taxa taxa, CharacterData data) {  
 		int exportTotalElements = 0;
 		exportTotalElements+= taxa.getNumTaxa();   // for XREAD
-		if (data.hasStateNames()|| data.characterNamesExist()) {
+		CategoricalData catData = null;
+		if (data instanceof CategoricalData)
+			catData = (CategoricalData)data;
+		if (catData==null || (catData.hasStateNames()|| catData.characterNamesExist())) {
 			exportTotalElements+= data.getNumChars();   // for CNAMES
 		}
 		return exportTotalElements;
@@ -445,13 +453,16 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	/*.................................................................................................................*/
 	public StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		Taxa taxa = data.getTaxa();
-		CategoricalData catData = (CategoricalData)data;
+		CategoricalData catData = null;
+		if (data instanceof CategoricalData)
+			catData = (CategoricalData)data;
 		HennigXDREAD dread = (HennigXDREAD)availableCommands[0];
 		HennigXDREAD xread = (HennigXDREAD)availableCommands[1];
 		
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
+			fractionApplicable = file.fractionApplicable;
 		}
 
 
@@ -462,7 +473,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 			dread.appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
 		else
 			xread.appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
-		if (catData.hasStateNames()|| data.characterNamesExist())
+		if (catData==null || (catData.hasStateNames()|| data.characterNamesExist()))
 			availableCommands[cnamesElement].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
 
 		availableCommands[2].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);  //ccode
@@ -473,7 +484,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		Arguments args = new Arguments(new Parser(arguments), true);
 		boolean usePrevious = args.parameterExists("usePrevious");
 
-		CategoricalData  data = findDataToExport(file, arguments);
+		CharacterData  data = findDataToExport(file, arguments);
 		if (data ==null) {
 			showLogWindow(true);
 			logln("WARNING: No suitable data available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
@@ -740,13 +751,12 @@ class HennigCCODE extends HennigNonaCommand {
 	}
 	/*.................................................................................................................*/
 	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
-		CategoricalData data = (CategoricalData)charData;
-		int numChars = data.getNumChars();
+		int numChars = charData.getNumChars();
 		String ccode="";
 
 //		writing the character weights
-		CharWeightSet weightSet = (CharWeightSet) data.getCurrentSpecsSet(CharWeightSet.class);
-		CharInclusionSet processedSet= new CharInclusionSet("", data.getNumChars(), data); // temporary specset
+		CharWeightSet weightSet = (CharWeightSet) charData.getCurrentSpecsSet(CharWeightSet.class);
+		CharInclusionSet processedSet= new CharInclusionSet("", charData.getNumChars(), charData); // temporary specset
 		for (int ic=0; ic<numChars; ic++) 
 			processedSet.setSelected(ic, false);
 
@@ -758,11 +768,11 @@ class HennigCCODE extends HennigNonaCommand {
 		int outerLoopCharNumber = -1;
 		int innerLoopCharNumber = 0;
 		
-		int lastCharIncluded = ownerModule.getLastCharacterToBeIncluded(data);
+		int lastCharIncluded = ownerModule.getLastCharacterToBeIncluded(charData);
 
 		if (weightSet != null)
 			while (ic< numChars) {
-				if (ownerModule.characterShouldBeIncluded(data, ic)){
+				if (ownerModule.characterShouldBeIncluded(charData, ic)){
 					outerLoopCharNumber++;
 					if (weightSet.isUnassigned(ic))
 						icWeight = 1;  //unassigned treated as 1
@@ -777,7 +787,7 @@ class HennigCCODE extends HennigNonaCommand {
 						boolean foundFirstBreak = false;
 						innerLoopCharNumber = outerLoopCharNumber;
 						for (int icFollow=ic+1; icFollow<numChars; icFollow++) {
-							if (ownerModule.characterShouldBeIncluded(data, icFollow)){
+							if (ownerModule.characterShouldBeIncluded(charData, icFollow)){
 								innerLoopCharNumber++;
 								int icFollowWeight = 0;
 								if (weightSet.isUnassigned(icFollow))
@@ -819,7 +829,7 @@ class HennigCCODE extends HennigNonaCommand {
 		ccodePart = "";
 
 //		now to write which characters are unordered (non-additive)
-		ParsimonyModelSet modelSet= (ParsimonyModelSet)data.getCurrentSpecsSet(ParsimonyModelSet.class);
+		ParsimonyModelSet modelSet= (ParsimonyModelSet)charData.getCurrentSpecsSet(ParsimonyModelSet.class);
 
 		String nonDefaultName = "ordered";
 		if (ownerModule.additiveIsDefault())
@@ -829,7 +839,7 @@ class HennigCCODE extends HennigNonaCommand {
 		counter = 0;
 		if (modelSet!=null)
 			while (ic<numChars) {
-				if (ownerModule.characterShouldBeIncluded(data, ic)) {
+				if (ownerModule.characterShouldBeIncluded(charData, ic)) {
 					if (nonDefaultName.equalsIgnoreCase(modelSet.getModel(ic).getName())) {
 						if (firstTime) {
 							if (ownerModule.additiveIsDefault())
@@ -839,9 +849,9 @@ class HennigCCODE extends HennigNonaCommand {
 							firstTime=false;
 						}
 						scopeStart=counter;
-						while (ic<numChars && ((nonDefaultName.equalsIgnoreCase(modelSet.getModel(ic).getName())) ||  !ownerModule.characterShouldBeIncluded(data,ic)  )) {
+						while (ic<numChars && ((nonDefaultName.equalsIgnoreCase(modelSet.getModel(ic).getName())) ||  !ownerModule.characterShouldBeIncluded(charData,ic)  )) {
 							ic++;
-							if (ownerModule.characterShouldBeIncluded(data, ic))
+							if (ownerModule.characterShouldBeIncluded(charData, ic))
 								counter++;
 						}
 						if (ic>=lastCharIncluded)
@@ -859,23 +869,23 @@ class HennigCCODE extends HennigNonaCommand {
 			ccode += ccodePart+" *";
 		ccodePart = "";
 
-		CharInclusionSet inclusionSet= (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
+		CharInclusionSet inclusionSet= (CharInclusionSet)charData.getCurrentSpecsSet(CharInclusionSet.class);
 
 		firstTime=true;
 		ic = 0;
 		counter = 0;
 		if (inclusionSet!=null)
 			while (ic<numChars) {
-				if (ownerModule.characterShouldBeIncluded(data, ic)) {
+				if (ownerModule.characterShouldBeIncluded(charData, ic)) {
 					if (!inclusionSet.isBitOn(ic)) {   // i.e, bit is off
 						if (firstTime) {
 							ccodePart+=" ] ";
 							firstTime=false;
 						}
 						scopeStart=counter;
-						while (ic<numChars && ((!inclusionSet.isBitOn(ic)) ||  !ownerModule.characterShouldBeIncluded(data,ic)  )) {
+						while (ic<numChars && ((!inclusionSet.isBitOn(ic)) ||  !ownerModule.characterShouldBeIncluded(charData,ic)  )) {
 							ic++;
-							if (ownerModule.characterShouldBeIncluded(data, ic))
+							if (ownerModule.characterShouldBeIncluded(charData, ic))
 								counter++;
 						}
 						if (ic>=lastCharIncluded)
@@ -925,10 +935,9 @@ class HennigQUOTE extends HennigNonaCommand {
 	}
 	/*.................................................................................................................*/
 	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
-		CategoricalData data = (CategoricalData)charData;
-		if (!StringUtil.blank(data.getAnnotation())) {
+		if (!StringUtil.blank(charData.getAnnotation())) {
 			outputBuffer.append(getCommandName()+" ");
-			outputBuffer.append(data.getAnnotation());
+			outputBuffer.append(charData.getAnnotation());
 			outputBuffer.append(";"+ fileInterpreter.getLineEnding()+ fileInterpreter.getLineEnding());
 		}
 	}
@@ -969,6 +978,8 @@ class HennigNSTATES extends HennigNonaCommand {
 			outputBuffer.append("dna");
 		else if (charData instanceof ProteinData) 
 			outputBuffer.append("prot");
+		else if (charData instanceof ContinuousData) 
+			outputBuffer.append("cont");
 		outputBuffer.append(";"+ fileInterpreter.getLineEnding());
 	}
 }
@@ -1035,32 +1046,34 @@ class HennigCNAMES extends HennigNonaCommand {
 	}
 	/*.................................................................................................................*/
 	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
-		CategoricalData data = (CategoricalData)charData;
+		CategoricalData catData = null;
+		if (charData instanceof CategoricalData)
+			catData = (CategoricalData)charData;
 		outputBuffer.append(getCommandName()+fileInterpreter.getLineEnding());
-		int numChars = data.getNumChars();
+		int numChars = charData.getNumChars();
 		int counter = 0;
 
 		for (int ic = 0; ic<numChars; ic++) {
 
-			if (ownerModule.characterShouldBeIncluded(data, ic) &&(data.characterHasName(ic)||data.hasStateNames(ic))) {
+			if (ownerModule.characterShouldBeIncluded(charData, ic) &&(charData.characterHasName(ic)|| (catData!=null && catData.hasStateNames(ic)))) {
 				incrementAndUpdateProgIndicator(progIndicator,"Exporting character and state names");
 				outputBuffer.append("{"+counter+" ");
-				if (data.characterHasName(ic))
-					outputBuffer.append(StringUtil.tokenize(data.getCharacterName(ic),";"));
-				else if (data.hasStateNames(ic))
+				if (charData.characterHasName(ic))
+					outputBuffer.append(StringUtil.tokenize(charData.getCharacterName(ic),";"));
+				else if (catData!=null && catData.hasStateNames(ic))
 					outputBuffer.append(StringUtil.tokenize("Character_" + (ic+1),";"));
 
-				if (data.hasStateNames(ic)) {
-					for (int stateNumber = 0; stateNumber<=data.maxStateWithName(ic); stateNumber++) {
-						if (data.hasStateName(ic,stateNumber))
-							outputBuffer.append(" " + StringUtil.tokenize(data.getStateName(ic,stateNumber),";"));
+				if (catData!=null && catData.hasStateNames(ic)) {
+					for (int stateNumber = 0; stateNumber<=catData.maxStateWithName(ic); stateNumber++) {
+						if (catData.hasStateName(ic,stateNumber))
+							outputBuffer.append(" " + StringUtil.tokenize(catData.getStateName(ic,stateNumber),";"));
 						else
 							outputBuffer.append(" " + "_");
 					}
 				}
 				outputBuffer.append(";" + fileInterpreter.getLineEnding());
 			}
-			if (ownerModule.characterShouldBeIncluded(data,ic))
+			if (ownerModule.characterShouldBeIncluded(charData,ic))
 				counter++;
 		}
 
@@ -1123,8 +1136,7 @@ class HennigCOMMENTS extends HennigNonaCommand {
 	}
 	/*.................................................................................................................*/
 	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
-		CategoricalData data = (CategoricalData)charData;
-		int numChars = data.getNumChars();
+		int numChars = charData.getNumChars();
 		int numTaxa = taxa.getNumTaxa();
 		int charCounter = 0;
 		int totalCounter = 0;
@@ -1134,8 +1146,8 @@ class HennigCOMMENTS extends HennigNonaCommand {
 		for (int it = 0; it<numTaxa; it++){
 			charCounter = 0;
 			for (int ic = 0; ic<numChars; ic++) {
-				if (ownerModule.characterShouldBeIncluded(data, ic)) {
-					String note = data.getAnnotation(ic, it);
+				if (ownerModule.characterShouldBeIncluded(charData, ic)) {
+					String note = charData.getAnnotation(ic, it);
 					if (note !=null){
 						outputBuffer.append("{"+it+" " + charCounter + " ");
 						outputBuffer.append(note);
@@ -1404,27 +1416,37 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 			return stateString+standardTNTSymbolForState(CategoricalState.minimum(s));
 	}
 	/*.................................................................................................................*/
-	public void appendStateToBuffer(int ic, int it, StringBuffer outputBuffer, CategoricalData data){
+	public void appendStateToBuffer(int ic, int it, StringBuffer outputBuffer, CharacterData data){
+		CategoricalData catData = null;
+		if (data instanceof CategoricalData)
+			catData= (CategoricalData)data;
 		if (ownerModule.isTNT()){
-			if (data instanceof MolecularData)
-				data.statesIntoStringBuffer(ic, it, outputBuffer, " ", "[", "]");
-			else 
-				outputBuffer.append(statesToStringDefaultSymbols(data, ic,it,'[',']', ' ', ' '));
+			if (catData!=null) {
+				if (data instanceof MolecularData)
+					catData.statesIntoStringBuffer(ic, it, outputBuffer, " ", "[", "]");
+				else
+					outputBuffer.append(statesToStringDefaultSymbols(catData, ic,it,'[',']', ' ', ' '));
+			}
+			else if (data instanceof ContinuousData) {
+				data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+				outputBuffer.append(" ");
+			}
 		}
-		else
-			outputBuffer.append(statesToStringDefaultSymbols(data, ic,it,'[',']',(char)Character.UNASSIGNED, (char)Character.UNASSIGNED));
+		else if (catData!=null) 
+			outputBuffer.append(statesToStringDefaultSymbols(catData, ic,it,'[',']',(char)Character.UNASSIGNED, (char)Character.UNASSIGNED));
 	}
 	/*.................................................................................................................*/
 	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
-		CategoricalData data = (CategoricalData)charData;
 		int numTaxa = taxa.getNumTaxa();
-		int numChars = data.getNumChars();
+		int numChars = charData.getNumChars();
 
 		if (ownerModule.isTNT())
 			if (charData instanceof DNAData) 
 				outputBuffer.append("nstates dna;"+fileInterpreter.getLineEnding());
 			else if (charData instanceof ProteinData) 
 				outputBuffer.append("nstates prot;"+fileInterpreter.getLineEnding());
+			else if (charData instanceof ContinuousData) 
+				outputBuffer.append("nstates cont;"+fileInterpreter.getLineEnding());
 		outputBuffer.append(getCommandName()+fileInterpreter.getLineEnding());
 		
 		
@@ -1432,37 +1454,39 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 /*		if (!fileInterpreter.writeExcludedCharacters)
 			numCharWrite =data.numCharsCurrentlyIncluded(fileInterpreter.writeOnlySelectedData);
 		else
-*/			numCharWrite = data.numberSelected(fileInterpreter.writeOnlySelectedData);
+*/			numCharWrite = charData.numberSelected(fileInterpreter.writeOnlySelectedData);
 		
 		
 		int countTaxa = 0;
 		for (int it = 0; it<numTaxa; it++)
-			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || data.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
-				countTaxa++;
+			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
+				if (fileInterpreter.fractionApplicable==1.0 || charData.getFractionApplicableInTaxon(it, fileInterpreter.writeExcludedCharacters)>=fileInterpreter.fractionApplicable) 
+					countTaxa++;
 		int numTaxaWrite = countTaxa;
 
 		outputBuffer.append(Integer.toString(numCharWrite)+" ");
 		outputBuffer.append(Integer.toString(numTaxaWrite)+fileInterpreter.getLineEnding());
 
 		for (int it = 0; it<numTaxa; it++){
-			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || data.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters))){
-				incrementAndUpdateProgIndicator(progIndicator,"Exporting data matrix");
-				String name = null;
-				if (ownerModule.taxonNamer!=null)
-					name = ownerModule.taxonNamer.getNameToUse(taxa,it);
-				else
-					name = (taxa.getTaxonName(it));
-				outputBuffer.append(StringUtil.tokenize(name,";") + "\t");
-				for (int ic = 0; ic<numChars; ic++) {
-					if (ownerModule.characterShouldBeIncluded(data, ic)){
-						if (ownerModule.getConvertGapsToMissing() && data.isInapplicable(ic, it))
-							outputBuffer.append("?");
-						else
-							appendStateToBuffer(ic, it, outputBuffer, data);
+			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
+				if (fileInterpreter.fractionApplicable==1.0 || charData.getFractionApplicableInTaxon(it, fileInterpreter.writeExcludedCharacters)>=fileInterpreter.fractionApplicable) {
+					incrementAndUpdateProgIndicator(progIndicator,"Exporting data matrix");
+					String name = null;
+					if (ownerModule.taxonNamer!=null)
+						name = ownerModule.taxonNamer.getNameToUse(taxa,it);
+					else
+						name = (taxa.getTaxonName(it));
+					outputBuffer.append(StringUtil.tokenize(name,";") + "\t");
+					for (int ic = 0; ic<numChars; ic++) {
+						if (ownerModule.characterShouldBeIncluded(charData, ic)){
+							if (ownerModule.getConvertGapsToMissing() && charData.isInapplicable(ic, it))
+								outputBuffer.append("?");
+							else
+								appendStateToBuffer(ic, it, outputBuffer, charData);
+						}
 					}
+					outputBuffer.append(fileInterpreter.getLineEnding());
 				}
-				outputBuffer.append(fileInterpreter.getLineEnding());
-			}
 		}
 		outputBuffer.append(";"+ fileInterpreter.getLineEnding()+ fileInterpreter.getLineEnding());
 	}

@@ -2231,9 +2231,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (startOfDifference == current.getMenuCount() && startOfDifference == target.getMenuCount())
 			return;
 		for (int it= current.getMenuCount()-1; it>=startOfDifference; it--){
-			Menu m = current.getMenu(it);
+			try{
+				Menu m = current.getMenu(it);
 			disposeMenuComponent(m);
 			current.remove(it);
+			}
+			catch (NullPointerException e){
+			}
 		}
 		Menu[] toTransfer = new Menu[target.getMenuCount()-startOfDifference+1];
 		int k = 0;

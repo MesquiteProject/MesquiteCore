@@ -19,6 +19,7 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 
 /** Manages specifications of character weights, including reading the NEXUS command for WTSETs */
@@ -74,6 +75,57 @@ public class ManageCharWeights extends CharSpecsSetManager {
 			return false;
 		return blockName.equalsIgnoreCase("SETS") || blockName.equalsIgnoreCase("ASSUMPTIONS");
 	}
+	
+	public static String nexusCoreStringForSpecsSet(CharSpecsSet specsSet, CharacterData data){
+		CharWeightSet wtSet = (CharWeightSet)specsSet;
+		String sT = " ";
+		int numChars = data.getNumChars();
+		NumberArray distinctWeights = new NumberArray(numChars);
+		distinctWeights.deassignArray();
+		MesquiteNumber weight = new MesquiteNumber();
+		MesquiteNumber secondWeight = new MesquiteNumber();
+		boolean firstTime = true;
+		for (int iw = 0; iw<numChars; iw++){
+			wtSet.placeValue(iw, weight);
+			if (distinctWeights.findValue(weight)<0){
+				int continuing = 1;
+				distinctWeights.setOpenValue(weight);
+				int lastWritten = -1;
+				if (!firstTime)
+					sT += ", ";
+				firstTime = false;
+				sT += weight.toString() + ": " + CharacterStates.toExternal(iw);
+				for (int ic=iw+1; ic<data.getNumChars(); ic++) {
+					wtSet.placeValue(ic, secondWeight);
+					if (secondWeight.equals( weight)) {
+						if (continuing == 0) {
+							sT += " " + CharacterStates.toExternal(ic);
+							lastWritten = ic;
+							continuing = 1;
+						}
+						else if (continuing == 1) {
+							sT += " - ";
+							continuing = 2;
+						}
+					}
+					else if (continuing>0) {
+						if (lastWritten!= ic-1) {
+							sT += " " + CharacterStates.toExternal(ic-1);
+							lastWritten = ic-1;
+						}
+						else
+							lastWritten = -1;
+						continuing = 0;
+					}
+
+				}
+				if (continuing>1)
+					sT += " " + CharacterStates.toExternal(data.getNumChars()-1) + " ";
+			}
+		} 
+		return sT;
+	}
+
 	/*.................................................................................................................*/
 	public String nexusStringForSpecsSet(CharSpecsSet specsSet, CharacterData data, MesquiteFile file, boolean isCurrent){
 		if (specsSet ==null || !(specsSet instanceof CharWeightSet))
@@ -81,51 +133,9 @@ public class ManageCharWeights extends CharSpecsSetManager {
 		CharWeightSet wtSet = (CharWeightSet)specsSet;
 		String s= "";
 		if (wtSet !=null && (wtSet.getFile()==file || (wtSet.getFile()==null && data.getFile()==file))) {
-			String sT = " ";
-			int numChars = data.getNumChars();
-			NumberArray distinctWeights = new NumberArray(numChars);
-			distinctWeights.deassignArray();
-			MesquiteNumber weight = new MesquiteNumber();
-			MesquiteNumber secondWeight = new MesquiteNumber();
-			boolean firstTime = true;
-			for (int iw = 0; iw<numChars; iw++){
-				wtSet.placeValue(iw, weight);
-				if (distinctWeights.findValue(weight)<0){
-					int continuing = 1;
-					distinctWeights.setOpenValue(weight);
-					int lastWritten = -1;
-					if (!firstTime)
-						sT += ", ";
-					firstTime = false;
-					sT += weight.toString() + ": " + CharacterStates.toExternal(iw);
-					for (int ic=iw+1; ic<data.getNumChars(); ic++) {
-						wtSet.placeValue(ic, secondWeight);
-						if (secondWeight.equals( weight)) {
-							if (continuing == 0) {
-								sT += " " + CharacterStates.toExternal(ic);
-								lastWritten = ic;
-								continuing = 1;
-							}
-							else if (continuing == 1) {
-								sT += " - ";
-								continuing = 2;
-							}
-						}
-						else if (continuing>0) {
-							if (lastWritten!= ic-1) {
-								sT += " " + CharacterStates.toExternal(ic-1);
-								lastWritten = ic-1;
-							}
-							else
-								lastWritten = -1;
-							continuing = 0;
-						}
-
-					}
-					if (continuing>1)
-						sT += " " + CharacterStates.toExternal(data.getNumChars()-1) + " ";
-				}
-			} 
+			
+			String sT = nexusCoreStringForSpecsSet(specsSet, data);
+			
 			if (!StringUtil.blank(sT)) {
 				s+= "WTSET " ;
 				if (isCurrent)

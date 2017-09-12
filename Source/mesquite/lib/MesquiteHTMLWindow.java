@@ -16,29 +16,42 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
+import java.awt.event.ComponentListener;
+import java.awt.event.MouseListener;
+
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.text.*;
 import javax.swing.text.html.*;
 import java.util.*;
 /* ======================================================================== */
 /** A window that displays text.  Yet to do: make it editable or not, have getText, etc.. */
-public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListener {
+public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListener, OutputTextListener {
 	MesqJEditorPane tA;
 	String assignedTitle;
 	MesquiteCommand linkTouchedCommand;
 	Vector pastTexts = new Vector();
 	MHTMLControl controls;
+	ExtraPanelHTMLWindow extraPanel;
+	boolean showExtraPanel = false;
+
 	JScrollPane scrollPane;
 	MesquiteWindow dataWindow;
 	boolean showBack = true;
 	int controlHeight = 0;
+	static int defaultExtraPanelHeight = 240;
+	int extraPanelHeight = defaultExtraPanelHeight;
 	boolean backEnabled = true;
 	public MesquiteHTMLWindow(MesquiteModule module, MesquiteCommand linkTouchedCommand, String assignedTitle, boolean showInfoBar) {
 		this(module, linkTouchedCommand, assignedTitle, true, showInfoBar);
 	}
 	public MesquiteHTMLWindow(MesquiteModule module, MesquiteCommand linkTouchedCommand, String assignedTitle, boolean showPanel, boolean showInfoBar) {
+		this(module, linkTouchedCommand, assignedTitle, showPanel, showInfoBar, false);
+	}
+	public MesquiteHTMLWindow(MesquiteModule module, MesquiteCommand linkTouchedCommand, String assignedTitle, boolean showPanel, boolean showInfoBar, boolean showExtraPanel) {
 		super(module, showInfoBar);// ���
 		this.assignedTitle = assignedTitle;
+		this.showExtraPanel = showExtraPanel;
 		setTitle(assignedTitle);
 		//setBackground(Color.white);
 		//setWindowSize(600, 400);
@@ -55,9 +68,18 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 		showBack = (linkTouchedCommand != null);
 		scrollPane = new  JScrollPane(); 
 		scrollPane.getViewport().add( tA,  BorderLayout.CENTER ); 
+		if (showExtraPanel) {
+			extraPanelHeight = defaultExtraPanelHeight;
+			extraPanel = new ExtraPanelHTMLWindow(this);
+		} else
+			extraPanelHeight = 0;
+
 		if (showPanel)
 			showPanel();
 		resetTitle();
+	}
+	public void setExtraPanelListener(MouseListener cL){
+			extraPanel.textPane.addMouseListener(cL);
 	}
 	public void showPanel(){
 		addToWindow(scrollPane);
@@ -68,7 +90,11 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 			controls.setBounds(0, 0, getWidth(), controlHeight);
 			controls.setBackground(Color.white);
 		}
-		scrollPane.setBounds(0, controlHeight, getWidth(), getHeight() - controlHeight);
+		if (showExtraPanel) {
+			addToWindow(extraPanel);
+			extraPanel.setBounds(0,getHeight()-extraPanelHeight, getWidth(), extraPanelHeight);
+		}
+		scrollPane.setBounds(0, controlHeight, getWidth(), getHeight() - controlHeight-extraPanelHeight);
 	}
 	public void setLinkTouchedCommand(MesquiteCommand c){
 		linkTouchedCommand = c;
@@ -80,6 +106,25 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 	public void resetTitle(){
 		setTitle(assignedTitle);
 	}
+	/*.................................................................................................................*/
+	/** Returns the height available for HTML 
+	 * */
+	public int getAvailableHeight(){
+		if (showExtraPanel) {
+			extraPanelHeight = defaultExtraPanelHeight;
+		} else
+			extraPanelHeight = 0;
+		return getHeight()-extraPanelHeight;
+	}
+	
+	public boolean showExtraPanel() {
+		return showExtraPanel;
+	}
+	public void setShowExtraPanel(boolean showExtraPanel) {
+		this.showExtraPanel = showExtraPanel;
+	}
+
+
 	/*.................................................................................................................*/
 	public void setDataWindow(MesquiteWindow w){
 		this.dataWindow = w;
@@ -112,8 +157,18 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 		//tA.repaint();
 		if (showBack)
 			controls.repaint();
+		if (showExtraPanel && extraPanel!=null)
+			extraPanel.repaint();
 	}
+	public synchronized void setExtraPanelText(String s) {
+		if (showExtraPanel && extraPanel!=null)
+			extraPanel.setText(s);
+	}
+
+
 	void goBack(){
+		if (pastTexts==null)
+			return;
 		if (backEnabled && pastTexts.size() <= 1)
 			return;
 		String t = (String)pastTexts.lastElement();
@@ -149,12 +204,21 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 	public void windowResized(){
 		super.windowResized();
 		if (scrollPane!=null){
-			scrollPane.setBounds(0, controlHeight, getWidth(), getHeight() - controlHeight);
+			if (showBack)
+				controls.setBounds(0, 0, getWidth(), controlHeight);
+			if (showExtraPanel) {
+				extraPanelHeight = defaultExtraPanelHeight;
+				if (extraPanel!=null){
+					extraPanel.setBounds(0,getHeight()-extraPanelHeight, getWidth(), extraPanelHeight);
+					extraPanel.windowResized();
+				}
+			} else
+				extraPanelHeight = 0;
+			scrollPane.setBounds(0, controlHeight, getWidth(), getHeight() - controlHeight-extraPanelHeight);
 			scrollPane.invalidate();
 			scrollPane.validate();
 			
-			if (showBack)
-				controls.setBounds(0, 0, getWidth(), controlHeight);
+
 		}
 	}
 
@@ -166,9 +230,17 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 	public void setWindowSize(int width, int height) {
 		super.setWindowSize(width, height);
 		if (scrollPane!=null){
-			scrollPane.setBounds(0, controlHeight, getWidth(), getHeight() - controlHeight);
 			if (showBack)
 				controls.setBounds(0, 0, getWidth(), controlHeight);
+			if (showExtraPanel) {
+				extraPanelHeight = defaultExtraPanelHeight;
+				if (extraPanel!=null){
+					extraPanel.setBounds(0,getHeight()-extraPanelHeight, getWidth(), extraPanelHeight);
+					extraPanel.windowResized();
+				}
+			} else
+				extraPanelHeight = 0;
+			scrollPane.setBounds(0, controlHeight, getWidth(), getHeight() - controlHeight-extraPanelHeight);
 		}
 	}
 	/*.................................................................................................................*/
@@ -208,6 +280,9 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 			}
 		}
 	}
+	public void setOutputText(String s) {
+		setExtraPanelText(s);
+	}
 
 }
 class MHTMLControl extends MesquitePanel {
@@ -237,4 +312,60 @@ class MHTMLControl extends MesquitePanel {
 		g.fillRect(0,getBounds().height -2,getBounds().width, 4);
 	}
 }
+
+class ExtraPanelHTMLWindow extends MesquitePanel {
+	MesquiteHTMLWindow window;
+	MesqJEditorPane textPane;
+	JScrollPane scrollPane;
+	String text;
+	int scrollWidth = 0;
+	int scrollHeight = 0;
+
+	public ExtraPanelHTMLWindow (MesquiteHTMLWindow window){
+		this.window = window;
+		textPane = new MesqJEditorPane("text/plain", "");
+		textPane.setEditable(false);
+		textPane.setBackground(ColorDistribution.veryLightGray);
+		textPane.setForeground(Color.black);
+		textPane.setVisible(true);
+		scrollPane = new  JScrollPane(); 
+		//scrollPane.add(textPane);
+		scrollPane.setBackground(ColorDistribution.veryLightGray);
+		scrollPane.getViewport().add(textPane,  BorderLayout.CENTER ); 
+		scrollPane.setVisible(true);
+		
+		scrollHeight = 12;
+		scrollWidth = 12;
+		scrollPane.setBounds(0, 0, getWidth(), getHeight());
+		textPane.setBounds(0, 0, getWidth(), getHeight());
+
+		textPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 9));
+		add(scrollPane);
+
+	}
+	/*.................................................................................................................*/
+	public void windowResized(){
+		textPane.setBounds(0, 0, getWidth(), getHeight());
+		scrollPane.setBounds(0, 0, getWidth(), getHeight());
+	}
+
+	public void setText(String s){
+		if (s==null)
+			return;
+		this.text = s;
+		if (textPane!=null) {
+			textPane.setText(s);
+			try {
+				textPane.setCaretPosition(s.length());
+			} catch (IllegalArgumentException e) {
+				if (MesquiteTrunk.debugMode)
+					MesquiteMessage.println("IllegalArgumentException in ExtraPanelHTMLWindow.setText, s.length = " + s.length());
+			}
+			DefaultCaret caret = (DefaultCaret) textPane.getCaret();
+			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		}
+
+	}
+}
+
 

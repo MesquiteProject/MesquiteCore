@@ -53,6 +53,18 @@ public class StringUtil {
 	public static String getUniqueObjectID(){
 		return "Mesquite"+ MesquiteTrunk.mesquiteTrunk.getVersion() + URL+startupTimeMillis;
 	}
+			/* ................................................................................................................. */
+	public static String getIntegerAsStringWithLeadingZeros(int number, int digitsDesired) {
+		String result = MesquiteInteger.toString(number);
+		int toAdd = digitsDesired-result.length();
+		if (number<0)
+			toAdd --;
+		if (toAdd>0)
+			for (int i=0; i<toAdd; i++)
+				result="0"+result;
+		return result;
+	}
+
 		/* ................................................................................................................. */
 	public static String[] getLines(String s) {
 		s = StringUtil.replace(s, "\r\n", "\r");
@@ -920,6 +932,8 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String removeFirstCharacterIfMatch(String token, char c) {
+		if (token == null)
+			return "";
 		String timmedString = token.trim();
 		if (token == null)
 			return "";
@@ -932,7 +946,6 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String removeLastCharacterIfMatch(String token, char c) {
-		String timmedString = token.trim();
 		if (token == null)
 			return "";
 		String trimmedString = token.trim();
@@ -1622,7 +1635,9 @@ public class StringUtil {
 		return sb.toString();
 	}
 	
-/** This is a general method to take a string, and remove any "fancy" characters in it.  Accented characters are converted
+
+
+	/** This is a general method to take a string, and remove any "fancy" characters in it.  Accented characters are converted
  * to their unaccented equivalent.  If some of the stricter variants are used (e.g., if onlyAlphaNumeric is true), then all characters 
  * other than letters and numbers are removed (or converted to underscores if alphaNumericAndUnderscore is true).
  * */
@@ -1639,12 +1654,12 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 	if (onlyAlphaNumeric) {
 		s = s.replaceAll("[^a-zA-Z0-9]", "");
 	}
-
-	if (alphaNumericAndUnderscore) {
-		s = s.replaceAll("[^a-zA-Z0-9_]", "");
+	else if (alphaNumericAndUnderscore) {
+		s = s.replaceAll("[^a-zA-Z0-9_]", "_");
 	}
 	return s;
 }
+
 	/*.................................................................................................................*/
 	public static String cleanseStringOfFancyChars(String s){
 		return cleanseStringOfFancyChars(s,false, false);

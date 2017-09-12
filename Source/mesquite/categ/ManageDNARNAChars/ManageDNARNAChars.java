@@ -270,13 +270,10 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			blocks.append(endLine);
 		}
 		blocks.append("\tDIMENSIONS ");
-		if (file!=null && file.useSimplifiedNexus && file.useDataBlocks){
+		if (file!=null && file.useDataBlocks){
 			int numTaxaToWrite = data.getNumTaxa();
 			if (!file.writeTaxaWithAllMissing)
-				if (file.writeOnlySelectedTaxa)
-					numTaxaToWrite = data.numSelectedTaxaWithSomeApplicable(false);
-				else
-					numTaxaToWrite = data.numTaxaWithSomeApplicable(false);
+				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, file.fractionApplicable);
 			else if (file.writeOnlySelectedTaxa)
 				numTaxaToWrite = data.numSelectedTaxa();
 			blocks.append(" NTAX=" + numTaxaToWrite);
@@ -314,7 +311,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		blocks.append( StringUtil.lineEnding());
 		if (!file.useSimplifiedNexus && !file.useConservativeNexus){
 			String idsCommand = null;
-			if (!StringUtil.blank(data.getUniqueID()))
+			if (!file.useSimplifiedNexus  && !file.useConservativeNexus && !StringUtil.blank(data.getUniqueID()) && !NexusBlock.suppressNEXUSIDS)
 				idsCommand = "BLOCKID " + data.getUniqueID() + ";" + StringUtil.lineEnding();
 			if (!StringUtil.blank(idsCommand))
 				blocks.append("\t" + idsCommand + StringUtil.lineEnding());

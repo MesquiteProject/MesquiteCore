@@ -31,6 +31,10 @@ public class OldStyleTreeSearch extends TreeSearch  {
 		return "Supplies trees resulting from tree searches.";
 	}
 	/*.................................................................................................................*/
+	public boolean isReconnectable(){
+		return false;
+	}
+	/*.................................................................................................................*/
 	public Class getHireSubchoice(){
 		return TreeSearcher.class;  
 	}

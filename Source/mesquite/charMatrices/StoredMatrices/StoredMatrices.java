@@ -49,7 +49,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 				return sorry("There are no stored matrices of the requested type available");
 			}
 			if (getHiredAs() != (CharMatrixObedSource.class)) {	//not hired as a obedient source 
-				mss = addSubmenu(null, "Stored Matrix" + sPurpose, makeCommand("setDataSet",  this), (ListableVector)getProject().datas);
+				mss = addSubmenu(null, "Stored Matrix " + sPurpose, makeCommand("setDataSet",  this), (ListableVector)getProject().datas); 
 				mss.setSelected(dataName);
 				setDataClass(dataClass);
 			}
@@ -61,7 +61,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 			}
 			dataName = new MesquiteString();
 			if (getHiredAs() != (CharMatrixObedSource.class)) {	//not hired as a obedient source  
-				mss = addSubmenu(null, "Stored Matrix" + sPurpose, makeCommand("setDataSet",  this), (ListableVector)getProject().datas);
+				mss = addSubmenu(null, "Stored Matrix " + sPurpose, makeCommand("setDataSet",  this), (ListableVector)getProject().datas);
 				mss.setSelected(dataName);
 			}
 		}

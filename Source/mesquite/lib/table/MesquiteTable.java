@@ -4923,7 +4923,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			return isColumnNameSelectedAnyWay(column);
 
 		if (columnLegal(column) && rowLegal(row))
-			return (cellsSelected[0].isBitOn(row * numColumnsTotal + column)) || isRowSelected(row) || isColumnSelected(column);
+			return  isRowSelected(row) || isColumnSelected(column) || (cellsSelected[0].isBitOn(row * numColumnsTotal + column)) ;
 		return false;
 	}
 

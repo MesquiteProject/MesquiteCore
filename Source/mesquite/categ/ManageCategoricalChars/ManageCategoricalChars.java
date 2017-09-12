@@ -308,7 +308,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		
 		String csl = "\tCHARSTATELABELS " + StringUtil.lineEnding();
 		boolean found = false;
-		String end = " "; //StringUtil.lineEnding()
+		String end = StringUtil.lineEnding() + "\t\t"; //StringUtil.lineEnding()
 		CategoricalData dData = (CategoricalData)data;
 		for (int i = 0; i<data.getNumChars(); i++) {
 			String cslC="";
@@ -377,18 +377,13 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file.write(endLine);
 		}
 		file.write("\tDIMENSIONS ");
-		if (file.useSimplifiedNexus && file.useDataBlocks) {
+		if (file.useDataBlocks) {
 			int numTaxaToWrite = data.getNumTaxa();
 			if (!file.writeTaxaWithAllMissing)
-				if (file.writeOnlySelectedTaxa)
-					numTaxaToWrite = data.numSelectedTaxaWithSomeApplicable(false);
-				else
-					numTaxaToWrite = data.numTaxaWithSomeApplicable(false);
+				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, file.fractionApplicable);
 			else if (file.writeOnlySelectedTaxa)
 				numTaxaToWrite = data.numSelectedTaxa();
-
-				
-				file.write(" NTAX=" + numTaxaToWrite);
+			file.write(" NTAX=" + numTaxaToWrite);
 		}
 		int numCharsToWrite;
 		if (file.writeExcludedCharacters)
@@ -432,7 +427,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		String taxonNameToWrite = "";
 		int maxNameLength = data.getTaxa().getLongestTaxonNameLength();
 		for (int it=0; it<numTaxa; it++) {
-			if ((data.someApplicableInTaxon(it, false)|| file.writeTaxaWithAllMissing) && (!file.writeOnlySelectedTaxa || data.getTaxa().getSelected(it))){
+			if ((data.someApplicableInTaxon(it, false)|| file.writeTaxaWithAllMissing) && (!file.writeOnlySelectedTaxa || data.getTaxa().getSelected(it))&& file.filterTaxon(data, it)){
 				taxonName = data.getTaxa().getTaxon(it).getName();
 				if (taxonName!=null) {
 					if (file.useStandardizedTaxonNames)

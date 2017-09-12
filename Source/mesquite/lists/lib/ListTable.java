@@ -315,20 +315,25 @@ public class ListTable extends MesquiteTable {
 		if (!window.interceptCellTouch(column, row, modifiers)){
 		
 			if (window.getCurrentTool()== window.arrowTool)  {
-				
-					ListAssistant assistant = window.findAssistant(column);
+				ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
-						Graphics g = getGraphics();
-						if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
-							if (assistant.isCellEditable(row))
-								super.cellTouched(column, row, regionInCellH,  regionInCellV,  modifiers,  clickCount);
-							else
-								rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+					Graphics g = getGraphics();
+					if (clickCount>1 && assistant.isCellEditable(row)){   //added Aug 2017 to allow doubleclicking in tables and then editing
+						window.setCurrentTool(window.ibeamTool);
+						window.getPalette().setCurrentTool(window.ibeamTool); 
+						editMatrixCell(column,row);
+					} else 
+					if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
+						if (assistant.isCellEditable(row)) {
+							super.cellTouched(column, row, regionInCellH,  regionInCellV,  modifiers,  clickCount);
 						}
+						else
+							rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+					}
 				}
 				else
 					rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
-				
+
 			}
 			else
 				((TableTool)window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);

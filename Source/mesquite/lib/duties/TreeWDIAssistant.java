@@ -34,6 +34,7 @@ public abstract class TreeWDIAssistant extends MesquiteModule  {
 	public Object getResultsHeading(){
 		return null;
 	}
+	
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns writable Results", null, commandName, "getWritableResults")) {

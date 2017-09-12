@@ -20,7 +20,10 @@ import java.awt.*;
 import java.math.*;
 import java.util.*;
 
+import mesquite.lib.duties.ElementManager;
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.duties.TreesManager;
 
 /* ======================================================================== */
 /** The basic Tree class of Mesquite.  Nodes are represented by integers (Object representation of nodes is too
@@ -135,7 +138,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** True if tree reading permits truncated taxon names */
 	public static boolean permitTruncTaxNames = true;
 	/** True if tree reading permits taxon names to be expressed as t0, t1, etc.*/
-	public static boolean permitT0Names = true;
+	public static boolean permitT0Names = false;
 	/** If true, then taxa block is enlarged when unfamiliar taxon name encountered */
 	private boolean permitTaxaBlockEnlargement = false;
 	/** 0 if polytomies in tree treated as hard, 1 if soft, 2 if not yet assigned */
@@ -172,6 +175,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** The constructor, passed the Taxa on which the tree is based */
 	public MesquiteTree (Taxa taxa) {
 		super(standardNumNodeSpaces(taxa));
+		numericalLabelInterpretationSet = numericalLabelInterpretationSetRUN;
+		interpretNumericalLabelsAsOnBranches = interpretNumericalLabelsAsOnBranchesRUN;
+		interpretLabelsAsNumerical = interpretLabelsAsNumericalRUN;
+		defaultValueCode = defaultValueCodeRUN;
 		totalCreated++;
 		id = totalCreated;
 		this.taxa = taxa;
@@ -197,6 +204,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	as it prepares for an exact copy of the tree even if it's currently out of date*/
 	public MesquiteTree (Taxa taxa, int numTaxa, int numNodeSpaces, long taxaVersion) {
 		super(numNodeSpaces);
+		numericalLabelInterpretationSet = numericalLabelInterpretationSetRUN;
+		interpretNumericalLabelsAsOnBranches = interpretNumericalLabelsAsOnBranchesRUN;
+		interpretLabelsAsNumerical = interpretLabelsAsNumericalRUN;
+		defaultValueCode = defaultValueCodeRUN;
 		totalCreated++;
 		id = totalCreated;
 		this.taxa = taxa;
@@ -221,6 +232,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** The constructor, passed the Taxa on which the tree is based, and a string description of the tree */
 	public MesquiteTree (Taxa taxa, String description) {
 		this(taxa);
+		numericalLabelInterpretationSet = numericalLabelInterpretationSetRUN;
+		interpretNumericalLabelsAsOnBranches = interpretNumericalLabelsAsOnBranchesRUN;
 		readTree(description);
 	}
 	public String toHTMLStringDescription(){
@@ -2275,9 +2288,24 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return getRoot();
 	}
+	/** Returns true if the first node is an ancestor of the second node.*/
+	public boolean isAncestor(int potentialAncestor, int node){
+		int mN = motherOfNode(node);
+		while (nodeExists(mN)){
+			if (mN==potentialAncestor)
+				return true;
+			if (mN==subRoot)
+				return false;
+			mN = motherOfNode(mN);
+		}
+		return false;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns most recent common ancestor of the terminals designated in terminals.*/
 	public int mrca(Bits terminals) { 
+		if (terminals == null)
+			return getRoot();
 		Bits nodes = new Bits(numNodeSpaces);
 		markPathsFromTerminals(terminals, nodes, getRoot());
 		int firstTerminal = terminals.firstBitOn();
@@ -2352,10 +2380,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else
 			return candidate;
 	}
-	/*-----------------------------------------*/
-	/** Returns the first (left-most) daughter of node in an UNROOTED sense where the node
-	is treated as descendant from anc. This is one of the UR procedures, designed
-	to allow unrooted style traversal through the tree*/
+	/*-----------------------------------------* WAYNECHECK
+
 	public  int lastDaughterOfNodeUR(int anc, int node) {
 		if (!nodeExists(node) && !nodeExists(anc))
 			return 0;
@@ -2367,6 +2393,28 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return prev;
 	}
+	*/
+	
+	/** Returns the first (left-most) daughter of node in an UNROOTED sense where the node
+	is treated as descendant from anc. This is one of the UR procedures, designed
+	to allow unrooted style traversal through the tree*/
+
+	public  int lastDaughterOfNodeUR(int anc, int node) {
+		if (!nodeExists(node) && !nodeExists(anc))
+			return 0;
+		int first = firstDaughterOfNodeUR(anc, node);
+		int prev = first;
+		
+		int current = first;
+		while (nodeExists(current)) {
+			prev = current;
+			current = nextSisterOfNodeUR(anc, node, current);
+			if (current==first)
+				return prev;
+		}
+		return prev;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns what node number in Mesquite's standard rooted sense corresponds to the anc-node branch.*/
 	public  int nodeOfBranchUR(int anc, int node) {
@@ -2377,6 +2425,32 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else
 			return 0;
 	}
+	
+	/** Returns all of the "daughters" of a node, treating the tree as unrooted.  That is, it returns as
+	 * one of the daughters the mother of the node (which should be the the last entry in the array). 
+	 * If you pass into root the MRCA of a subtree containing "node", then it will treat
+	 * that subtree as unrooted.  Note:  if node is not the root or a descendant of root, then this will return null */
+	public int[] daughtersOfNodeUR (int root, int node){  
+		if (nodeIsInternal(node) && (!getRooted() || isAncestor(root, node) || root==node)){
+			int numDaughters = numberOfDaughtersOfNode(node);
+			if (node!=root)
+				numDaughters ++;
+			int[] daughters = new int[numDaughters];
+			int firstDaughterUR = firstDaughterOfNode(node); // use firstDaughter as the first daughter 
+			int nextDaughterUR = firstDaughterUR;
+			int count=0;
+			while (nodeExists(nextDaughterUR)) {
+				daughters[count]=nextDaughterUR;
+				nextDaughterUR = nextAroundUR(node, nextDaughterUR);
+				if (nextDaughterUR==firstDaughterUR)  // we are back where we started
+					break;
+				count++;
+			}		
+			return daughters;
+		}
+		return null;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns whether any branchLengths are assigned.*/
 	private boolean lengthsAssigned(int node) { 
@@ -2709,8 +2783,51 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return total;
 	}
 	/*-----------------------------------------*/
+
+	static boolean numericalLabelInterpretationSetRUN = false;
+	boolean numericalLabelInterpretationSet = false;
+	static boolean interpretNumericalLabelsAsOnBranchesRUN = false;
+	boolean interpretNumericalLabelsAsOnBranches = false;
+	static boolean interpretLabelsAsNumericalRUN = false;
+	boolean interpretLabelsAsNumerical = false;
+	static String defaultValueCodeRUN = "";
+	String defaultValueCode = "";
+	NameReference defaultValueCodeRef = null;
+	
+	boolean checkNumericalLabelInterpretation(String c){
+		if (numericalLabelInterpretationSet){ //user has answered, therefore follow guidance
+			if (interpretLabelsAsNumerical)
+				return true;
+			return false;
+		}
+
+		if (taxa != null){
+			MesquiteProject project = taxa.getProject();
+			FileCoordinator fc = project.getCoordinatorModule();
+			TreesManager em = (TreesManager)fc.findManager(fc, TreeVector.class);
+			boolean[] interps = new boolean[4]; //0 interpret as number (vs. text); 1 interpret as on branch (vs. node); 2 remember
+			MesquiteString n = new MesquiteString(); //the code name of the value, e.g. "consensusFrequency"
+			numericalLabelInterpretationSet = em.queryAboutNumericalLabelIntepretation(interps, c, n);
+			if (numericalLabelInterpretationSet){
+				if (interps[0]){ // treat as number
+					interpretLabelsAsNumerical = true;
+					defaultValueCode = StringUtil.tokenize(n.getValue());
+					defaultValueCodeRef = NameReference.getNameReference(defaultValueCode);
+					interpretNumericalLabelsAsOnBranches = interps[1];
+					if (interps[2]){
+						defaultValueCodeRUN = defaultValueCode;
+						interpretNumericalLabelsAsOnBranchesRUN = interpretNumericalLabelsAsOnBranches;
+						numericalLabelInterpretationSetRUN = true;
+					}
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	/*-----------------------------------------*/
 	NameReference branchNotesRef = NameReference.getNameReference("note");
-	/** Reads a token refering to a named internal node. */
+	/** Reads a token referring to a named internal node. */
 	private String readNamedInternal(String TreeDescription, String c, int sN, MesquiteInteger stringLoc){
 
 		if (convertInternalNames){
@@ -2723,9 +2840,20 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				System.out.println("Observed taxon " + c + " in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly");
 			}
 			if (cosmeticInternalNames){
-				setNodeLabel(c, sN); 
+				if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
+					double d = MesquiteDouble.fromString(c);
+					setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
+				}
+				else 
+					setNodeLabel(c, sN); 
+				
 				if (taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null)
 					taxa.getClades().addClade(c);
+				return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
+			}
+			else if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
+				double d = MesquiteDouble.fromString(c);
+				setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
 				return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
 			}
 			else {
@@ -2901,6 +3029,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					fromWhichNamer = 4;
 				}
 				if (taxonNumber<0){
+					/* Debugg.  WAYNECHECK: DAVIDCHECK: there is a problem with this.  If you read in a Zephyr produced tree file by itself, not after
+					 * opening the file with the taxa in order, then you will likely get reticulations.  In particular, permitTONames not only
+					 * interprets "tx" as a taxon name, it presumes that the taxon number of this taxon number x.  The problem with this
+					 * is that in reading the treefile, it creates the taxa in the orders it encounters them.  If t88 is the first taxon in the first
+					 * treedescription, this will be taxon 0.  So if it reads t0, it will interpret it as taxon 0, even if it is the 99th taxon read in. 
+					 * */
 					if (MesquiteTree.permitT0Names && c != null && c.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there 
 						String number = c.substring(1, c.length());
 						int num = MesquiteInteger.fromString(number);
@@ -2909,11 +3043,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					}
 				}
 			}
-			if (taxonNumber >=0){ //taxon successfully found
+			if ( taxonNumber >=0){ //taxon successfully found
 				if (taxonNumber>= nodeOfTaxon.length)
 					resetNodeOfTaxonNumbers();
 				if (taxonNumber>= nodeOfTaxon.length){
-					MesquiteMessage.warnProgrammer("taxon number too high found (" + c + ")");
+					MesquiteMessage.warnProgrammer("taxon number too high found (" + c + "); number: "+taxonNumber);
+					taxonNumber = namer.whichTaxonNumber(taxa, c);
 					return FAILED;
 				}
 
@@ -2933,8 +3068,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same). [" + c + "] " + s  + " " + TreeDescription);
 						else if (numReticWarnings == 5)
 							MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
-						else if (numReticWarnings <100)
+						else if (numReticWarnings <100){
 							MesquiteMessage.println("Another tree with apparent reticulations found.");
+						}
 						else if (numReticWarnings == 100)
 							MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
 						setParentOfNode(termN, motherOfNode(termN), false);
@@ -3066,7 +3202,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString) {
 		deassignAssociated();
-
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
 
 		intializeTree();

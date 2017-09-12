@@ -167,7 +167,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 					numToAdd = data.getNumCharsIncluded();
 				int currentTotNumChars = totNumChars + numToAdd;
 
-				buffer.append(": " + (totNumChars+1) + "-" + numToAdd);
+				buffer.append(": " + (totNumChars+1) + "-" + currentTotNumChars);
 
 				if (simplifyNames)
 					MBpartitionBuffer.append(lineEnding + "\tcharset " + StringUtil.simplifyIfNeededForOutput(data.getName(),true) + " = " + (totNumChars+1) + "-" + (currentTotNumChars) + ";");

@@ -179,6 +179,8 @@ public interface Tree extends Listable {
 	public int nextInPostorder(int node);
 	/** Returns first node in postorder traversal.*/
 	public int firstInPostorder();
+	/** Returns true if the first node is an ancestor of the second node.*/
+	public boolean isAncestor(int potentialAncestor, int node); 
 	/** Returns most recent common ancestor of two branches.*/
 	public int mrca(int branchA, int branchB); 
 	/** Returns most recent common ancestor of the terminals designated in terminals.*/
@@ -223,6 +225,12 @@ public interface Tree extends Listable {
 	public  int lastDaughterOfNodeUR(int anc, int node);
 	/** Returns what node number in Mesquite's standard rooted sense corresponds to the anc-node branch.*/
 	public  int nodeOfBranchUR(int anc, int node);
+	/** Returns all of the "daughters" of a node, treating the tree as unrooted.  That is, it returns as
+	 * one of the daughters the mother of the node (which should be the the last entry in the array). 
+	 * If you pass into root the MRCA of a subtree containing "node", then it will treat
+	 * that subtree as unrooted.  Note:  if node is not the root or a descendant of root, then this will return null */
+	public int[] daughtersOfNodeUR (int root, int node);
+	
 	//============virtual taxon deletion ==================
 	/** Marks taxon (and any nodes required by it) as deleted virtually in the boolean array.  Used in conjunction with subsequent
 	 * traversals that ignore the deleted area, e.g. for ignoring taxa with missing data.*/

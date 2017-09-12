@@ -24,6 +24,7 @@ import mesquite.lib.characters.*;
 /**This is superclass of modules to alter a file (e.g. to process matrices within the file).*/
 
 public abstract class FileProcessor extends MesquiteModule  {
+	boolean sequester = false;
 
    	 public Class getDutyClass() {
    	 	return FileProcessor.class;
@@ -43,6 +44,16 @@ public abstract class FileProcessor extends MesquiteModule  {
    	/** Called to process file. Override this or the next*/
    	public  boolean processFile(MesquiteFile file){
    		return true;
+   	}
+  	
+	/*.................................................................................................................*/
+   	/** If a processor wants, it can request to have the file sequestered once all processing is done*/
+   	public  boolean pleaseSequester(){
+   		return sequester;
+   	}
+	/*.................................................................................................................*/
+   	public  void setPleaseSequester(boolean sequester){
+   		this.sequester= sequester;
    	}
   	
 	/*.................................................................................................................*/

@@ -687,6 +687,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				count++;
 		return count;
 	}
+	/** returns number of taxa in data matrix*/
+	public int getNumTaxaWithAnyApplicable(int icStart, int icEnd) {
+		int count=0;
+		for (int it=0; it<getNumTaxa(); it++) 
+			if (anyApplicableInRange(icStart, icEnd,it))
+				count++;
+		return count;
+	}
 	/** returns number of characters in data matrix*/
 	public int getNumChars() {
 		return getNumChars(true);
@@ -2080,6 +2088,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				return true;
 		return false;
 	}
+	/*.................................................................................................................*/
+	public boolean anyApplicableInRange(int icStart, int icEnd, int it) {
+		int numChars = getNumChars();
+		for (int i = icStart; i<=icEnd; i++)
+			if (!isInapplicable(i, it))
+				return true;
+		return false;
+	}
 
 	public boolean removeTaxaThatAreEntirelyGaps(){
 		boolean removedSome = false;
@@ -3084,27 +3100,27 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return true;
 	}
 
-	static final int CS_Overall = 0;
-	static final int CS_CellStates = 1;
-	static final int CS_CORE = 1;
-	static final int CS_SpecsSets = 2;
-	static final int CS_CAssocLong = 3;
-	static final int CS_CAssocBits = 4;
-	static final int CS_CAssocDoubles = 5;
-	static final int CS_CAssocObjects = 6;
-	static final int CS_CellObjects = 7;
-	static final int CS_UNCLEAR = 7;
-	static final int CS_MName = 8;
-	static final int CS_MAnnot = 9;
-	static final int CS_CNames = 10;
-	static final int CS_CAnnots = 11;
-	static final int CS_CSelected = 12;
-	static final int CS_CellFootnotes = 13;
-	static final int CS_CellObjectsDisp = 14;
-	static final int CS_ChangedSinceSave = 15;
-	static final int CS_CharIllustr = 16;
-	static final int CS_COSMETIC = 16;
-	static final  int NUMCSC = 17;
+	public static final int CS_Overall = 0;
+	public static final int CS_CellStates = 1;
+	public static final int CS_CORE = 1;
+	public static final int CS_SpecsSets = 2;
+	public static final int CS_CAssocLong = 3;
+	public static final int CS_CAssocBits = 4;
+	public static final int CS_CAssocDoubles = 5;
+	public static final int CS_CAssocObjects = 6;
+	public static final int CS_CellObjects = 7;
+	public static final int CS_UNCLEAR = 7;
+	public static final int CS_MName = 8;
+	public static final int CS_MAnnot = 9;
+	public static final int CS_CNames = 10;
+	public static final int CS_CAnnots = 11;
+	public static final int CS_CSelected = 12;
+	public static final int CS_CellFootnotes = 13;
+	public static final int CS_CellObjectsDisp = 14;
+	public static final int CS_ChangedSinceSave = 15;
+	public static final int CS_CharIllustr = 16;
+	public static final int CS_COSMETIC = 16;
+	public static final  int NUMCSC = 17;
 	/*.................................................................................................................*/
 	/** calculates a full checksum on all aspects of the matrix, including char names and specsets, done in order of character ids.
  	Returned as array so that in future can give checksums on various components independently.  
@@ -3358,22 +3374,26 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return  getNumberApplicableInTaxon(it,countMissing)>0;
 	}
 	/*.................................................................................................................*/
-	public int numTaxaWithSomeApplicable(boolean countMissing){
+	public int numTaxaWithSomeApplicable(boolean countMissing, boolean selectedOnly, boolean countExcluded, double fractionApplicable){
 		int count = 0;
-		for (int it = 0; it<numTaxa; it++) {
-			if (someApplicableInTaxon(it,countMissing))
-				count++;
+		if (selectedOnly) {
+			for (int it = 0; it<numTaxa; it++) {
+				if (taxa.getSelected(it) && someApplicableInTaxon(it,countMissing))
+					if (fractionApplicable==1.0 || getFractionApplicableInTaxon(it, countExcluded)>=fractionApplicable)
+						count++;
+			}
+		} else {
+			for (int it = 0; it<numTaxa; it++) {
+				if (someApplicableInTaxon(it,countMissing))
+					if (fractionApplicable==1.0 || getFractionApplicableInTaxon(it, countExcluded)>=fractionApplicable)
+						count++;
+			}
 		}
 		return count;
 	}
 	/*.................................................................................................................*/
-	public int numSelectedTaxaWithSomeApplicable(boolean countMissing){
-		int count = 0;
-		for (int it = 0; it<numTaxa; it++) {
-			if (taxa.getSelected(it) && someApplicableInTaxon(it,countMissing))
-				count++;
-		}
-		return count;
+	public int numTaxaWithSomeApplicable(boolean countMissing, boolean selectedOnly){
+		return numTaxaWithSomeApplicable(countMissing, selectedOnly,true, 1.0);
 	}
 	/*.................................................................................................................*/
 	public int numSelectedTaxa(){
@@ -3385,9 +3405,41 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return count;
 	}
 	/*.................................................................................................................*/
+	public double getFractionApplicableInTaxon(int it, boolean countExcluded){
+		int count = 0;
+		if (countExcluded) {
+			for (int i = 0; i<numChars; i++) {
+				if (!isInapplicable(i,it))
+					count++;
+			}
+			return 1.0*count/numChars;
+		} else {
+			int total = 0;
+			for (int i = 0; i<numChars; i++) 
+				if (isCurrentlyIncluded(i)) {
+					total++;
+					if (!isInapplicable(i,it))
+						count++;
+				}
+			if (total>0)
+				return 1.0*count/total;
+		}
+		return 0;
+	}
+	/*.................................................................................................................*/
 	public int getNumberApplicableInTaxon(int it, boolean countMissing){
 		int count = 0;
 		for (int i = 0; i<numChars; i++) {
+			if (!isInapplicable(i,it))
+				if (!isUnassigned(i, it) || countMissing)
+					count++;
+		}
+		return count;
+	}
+	/*.................................................................................................................*/
+	public int getNumberApplicableInTaxon(int it, int icStart, int icEnd, boolean countMissing){
+		int count = 0;
+		for (int i = icStart; i<=icEnd; i++) {
 			if (!isInapplicable(i,it))
 				if (!isUnassigned(i, it) || countMissing)
 					count++;

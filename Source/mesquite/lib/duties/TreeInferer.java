@@ -25,6 +25,7 @@ import mesquite.trees.lib.*;
 are subclasses of the subclass TreeSource*/
 
 public abstract class TreeInferer extends TreeBlockFiller {
+	protected boolean userAborted=false;
 	Listened listened;
 	TWindowMaker tWindowMaker;
 	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
@@ -40,6 +41,24 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		return null;
 	}
 	
+	public String getLogText() {
+		return "";
+	}
+	
+	public  void setOutputTextListener(OutputTextListener textListener){
+	}
+
+	/*.................................................................................................................*/
+	public  void setUserAborted(){
+		userAborted=true;
+	}
+	public String getMessageIfUserAbortRequested () {
+		return "";
+	}
+	public String getMessageIfCloseFileRequested () {
+		return "";
+	}
+
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("autoSaveFile".equalsIgnoreCase(tag))
@@ -60,6 +79,13 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public String getHTMLDescriptionOfStatus(){
 		return getName();
 	}
+	// override to give more information
+	public String getInferenceName(){
+		return getName();
+	}
+	public abstract boolean isReconnectable();
+	
+	
 	public boolean canGiveIntermediateResults(){
 		return false;
 	}
@@ -78,6 +104,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
+		if (tWindowMaker == null)
+			return null;
 		Snapshot temp = new Snapshot();
 		temp.addLine("setWindowMaker " , tWindowMaker);
 		return temp;
@@ -87,7 +115,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the module showing the tree", "[name of module]", commandName, "setWindowMaker")) {
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
-			String commands = getExtraTreeWindowCommands();
+			String commands = getExtraTreeWindowCommands(false);
 			MesquiteWindow w = tWindowMaker.getModuleWindow();
 			
 			if (w != null){
@@ -158,7 +186,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public void showIntermediatesWindow(){
 		if (tWindowMaker == null) {
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
-			String commands = getExtraTreeWindowCommands();
+			String commands = getExtraTreeWindowCommands(false);
 			MesquiteWindow w = tWindowMaker.getModuleWindow();
 			
 			if (w != null){
