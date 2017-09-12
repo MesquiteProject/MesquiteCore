@@ -138,7 +138,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** True if tree reading permits truncated taxon names */
 	public static boolean permitTruncTaxNames = true;
 	/** True if tree reading permits taxon names to be expressed as t0, t1, etc.*/
-	public static boolean permitT0Names = true;
+	public static boolean permitT0Names = false;
 	/** If true, then taxa block is enlarged when unfamiliar taxon name encountered */
 	private boolean permitTaxaBlockEnlargement = false;
 	/** 0 if polytomies in tree treated as hard, 1 if soft, 2 if not yet assigned */
@@ -3029,7 +3029,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					fromWhichNamer = 4;
 				}
 				if (taxonNumber<0){
-					/* Debugg.  DAVIDCHECK: there is a problem with this.  If you read in a Zephyr produced tree file by itself, not after
+					/* Debugg.  WAYNECHECK: DAVIDCHECK: there is a problem with this.  If you read in a Zephyr produced tree file by itself, not after
 					 * opening the file with the taxa in order, then you will likely get reticulations.  In particular, permitTONames not only
 					 * interprets "tx" as a taxon name, it presumes that the taxon number of this taxon number x.  The problem with this
 					 * is that in reading the treefile, it creates the taxa in the orders it encounters them.  If t88 is the first taxon in the first
