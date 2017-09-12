@@ -38,7 +38,7 @@ public class Defaults extends MesquiteInit  {
 		"The defaults are presented in the Defaults submenu of the File menu.");
 	}
 	/*.................................................................................................................*/
-	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode,  taxonTruncTrees, taxonT0Trees, tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; //, useDotPrefs
+	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode,  taxonTruncTrees, taxonT0Trees, taxonT0TreesWarned, tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; //, useDotPrefs
 	MesquiteString themeName;
 	StringArray themes;
 	/*.................................................................................................................*/
@@ -53,6 +53,7 @@ public class Defaults extends MesquiteInit  {
 		//tilePopouts = new MesquiteBoolean(MesquiteFrame.popIsTile);
 		taxonTruncTrees = new MesquiteBoolean(true);
 		taxonT0Trees = new MesquiteBoolean(true);
+		taxonT0TreesWarned = new MesquiteBoolean(false);
 		debugMode = new MesquiteBoolean(false);
 		phoneHome = new MesquiteBoolean(MesquiteTrunk.phoneHome);
 		errorReports = new MesquiteBoolean(MesquiteTrunk.reportErrors);
@@ -196,6 +197,11 @@ public class Defaults extends MesquiteInit  {
 		}
 		else if ("taxonT0Trees".equalsIgnoreCase(tag)){
 			taxonT0Trees.setValue(content);
+			if (taxonT0Trees.getValue() && !taxonT0TreesWarned.getValue()){
+				discreetAlert("Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.");
+				taxonT0TreesWarned.setValue(true);
+			}
+				
 			MesquiteTree.permitT0Names = taxonT0Trees.getValue();
 		}
 	/*	else if ("tilePopouts".equalsIgnoreCase(tag)){
@@ -542,6 +548,11 @@ public class Defaults extends MesquiteInit  {
 		else if (checker.compare(getClass(), "Sets whether to permit taxon names being expressed as t0, t1, t2 in trees", null, commandName, "toggleT0NamesTrees")) {
 			taxonT0Trees.toggleValue(null);
 			MesquiteTree.permitT0Names = taxonTruncTrees.getValue();
+			if (taxonT0Trees.getValue() && !taxonT0TreesWarned.getValue()){
+				discreetAlert("Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.");
+				taxonT0TreesWarned.setValue(true);
+			}
+			
 			resetAllMenuBars();
 			storePreferences();
 			return taxonT0Trees;
