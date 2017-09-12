@@ -204,6 +204,9 @@ public class Defaults extends MesquiteInit  {
 				
 			MesquiteTree.permitT0Names = taxonT0Trees.getValue();
 		}
+		else if ("taxonT0TreesWarned".equalsIgnoreCase(tag)){
+			taxonT0TreesWarned.setValue(content);
+		}
 	/*	else if ("tilePopouts".equalsIgnoreCase(tag)){
 			tilePopouts.setValue(content);
 			MesquiteFrame.popIsTile = tilePopouts.getValue();
@@ -289,6 +292,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
 		StringUtil.appendXMLTag(buffer, 2, "suppressXORMode", suppressXORMode);   
 		StringUtil.appendXMLTag(buffer, 2, "taxonTruncTrees", taxonTruncTrees);   
+		StringUtil.appendXMLTag(buffer, 2, "taxonT0TreesWarned", taxonT0TreesWarned);   
 		StringUtil.appendXMLTag(buffer, 2, "taxonT0Trees", taxonT0Trees);   
 		StringUtil.appendXMLTag(buffer, 2, "tabbedWindows", tabbedWindows);   
 		StringUtil.appendXMLTag(buffer, 2, "respectFileSpecificResourceWidth", respectFileSpecificResourceWidth);   

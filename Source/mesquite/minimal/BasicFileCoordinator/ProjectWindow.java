@@ -280,7 +280,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	Image fileIm;
 	ScrollPanel scroll;
 	NotesPanel notesPanel = null;
-	int maxLinesOfAnyElementInPanel = 50; //Debugg.println
+	int maxLinesOfAnyElementInPanel = 50; //  Limit added Sept 2017, for genomic datasets.  In future reform Project panel. 
 	public ProjectPanel(ProjectWindow w, MesquiteProject proj, BasicFileCoordinator bfc){ 
 		super();
 		this.w = w;
@@ -444,7 +444,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				panel.repaint();
 				e++;
 				if (proj.getNumberCharMatricesVisible(t)>0){
-					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && k<maxLinesOfAnyElementInPanel; k++){  //Debugg.println 
+					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && k<maxLinesOfAnyElementInPanel; k++){   
 						CharacterData data = proj.getCharacterMatrixVisible(t, k);
 						if (data.isUserVisible()){
 							if (e>= elements.size())
