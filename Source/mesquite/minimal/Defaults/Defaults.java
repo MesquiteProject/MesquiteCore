@@ -198,7 +198,7 @@ public class Defaults extends MesquiteInit  {
 		else if ("taxonT0Trees".equalsIgnoreCase(tag)){
 			taxonT0Trees.setValue(content);
 			if (taxonT0Trees.getValue() && !taxonT0TreesWarned.getValue()){
-				String message ="Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.";
+				String message ="Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (now, or in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.";
 				if (MesquiteThread.isScripting())
 					logln(message);
 				else {
