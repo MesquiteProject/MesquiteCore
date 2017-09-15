@@ -36,7 +36,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	boolean includeGaps = false;
 	String programOptions = "" ;
 	Random rng;
-	boolean scriptBased = false;
+	protected boolean scriptBased = false;
 	public static int runs = 0;
 	ShellScriptRunner scriptRunner;
 	ExternalProcessManager externalRunner;
@@ -46,6 +46,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		programOptions = getDefaultProgramOptions();
 		loadPreferences();
 		scriptBased = MesquiteTrunk.isJavaVersionLessThan(1.7);
+		scriptBased = true;
 		return true;
 	}
 	public abstract String getProgramCommand();
@@ -358,10 +359,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			argumentsForLogging.append(" " + programOptions + " "+ getQueryProgramOptions());
 		}
 		shellScript.append(StringUtil.lineEnding());
-//		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
+		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
 
 		String scriptPath = rootDir + "alignerScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
-		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), false);
+		if (scriptBased)
+			MesquiteFile.putFileContents(scriptPath, shellScript.toString(), false);
 		
 		logln("Requesting the operating system to run " + getProgramName());
 		logln("Location of  " + getProgramName()+ ": " + getProgramPath());
@@ -373,9 +375,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		progressIndicator.start();
 
 		if (scriptBased) {
-			scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, false);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
+			scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, true);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
 			success = scriptRunner.executeInShell();
-			success = scriptRunner.monitorAndCleanUpShell(progressIndicator);
+			if (success)
+				success = scriptRunner.monitorAndCleanUpShell(progressIndicator);
 		} else {
 			String arguments = argumentsForLogging.toString();
 
@@ -401,7 +404,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
 			CommandRecord scr = new CommandRecord(true);
 			MesquiteThread.setCurrentCommandRecord(scr);
-			String failureText = StringUtil.tokenize("Output file containing aligned sequences $$$$$$$$$");
+			String failureText = StringUtil.tokenize("Output file containing aligned sequences ");
 			if (data instanceof DNAData)
 				tempDataFile = (MesquiteFile)coord.doCommand("linkFileExp", failureText +" " + StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getDNAImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 			else
