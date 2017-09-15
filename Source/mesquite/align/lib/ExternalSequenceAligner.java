@@ -46,7 +46,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		programOptions = getDefaultProgramOptions();
 		loadPreferences();
 		scriptBased = MesquiteTrunk.isJavaVersionLessThan(1.7);
-		scriptBased = true;
 		return true;
 	}
 	public abstract String getProgramCommand();
