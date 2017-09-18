@@ -47,12 +47,12 @@ public class Defaults extends MesquiteInit  {
 		askSeed = new MesquiteBoolean(false);
 		console = new MesquiteBoolean(MesquiteTrunk.mesquiteTrunk.logWindow.isConsoleMode());
 		logAll = new MesquiteBoolean(MesquiteCommand.logEverything);
-		suppressXORMode = new MesquiteBoolean(false);
+		suppressXORMode = new MesquiteBoolean(GraphicsUtil.useXOR);
 		wizards = new MesquiteBoolean(MesquiteDialog.useWizards);
 		tabbedWindows = new MesquiteBoolean(MesquiteWindow.compactWindows);
 		//tilePopouts = new MesquiteBoolean(MesquiteFrame.popIsTile);
-		taxonTruncTrees = new MesquiteBoolean(true);
-		taxonT0Trees = new MesquiteBoolean(true);
+		taxonTruncTrees = new MesquiteBoolean(MesquiteTree.permitTruncTaxNames);
+		taxonT0Trees = new MesquiteBoolean(MesquiteTree.permitT0Names);
 		taxonT0TreesWarned = new MesquiteBoolean(false);
 		debugMode = new MesquiteBoolean(false);
 		phoneHome = new MesquiteBoolean(MesquiteTrunk.phoneHome);

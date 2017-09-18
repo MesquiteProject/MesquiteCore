@@ -86,6 +86,10 @@ public class PhoneHomeThread extends Thread {
 			if (!StringUtil.blank(mmi.getHomePhoneNumber())) {
 				try {
 					int rec = phoneRecords.indexOfByName("#" + mmi.getClassName()); 
+					if (MesquiteTrunk.debugMode){
+						MesquiteTrunk.mesquiteTrunk.logln("Checking server for notices regarding " + mmi.getPackageName());
+					}
+					
 					PhoneHomeRecord phoneHomeRecord;
 					if (!MesquiteInteger.isCombinable(rec) || rec<0) {// this module is not the phone records 
 						phoneHomeRecord = new PhoneHomeRecord("#"+mmi.getClassName());
