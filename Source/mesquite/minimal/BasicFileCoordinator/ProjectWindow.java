@@ -695,6 +695,9 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				int requestedlHeight = panel.getRequestedHeight(w);
 				if(i>0)
 					vertical += panel.requestSpacer();
+				if (panel instanceof NotesPanel){
+					requestedlHeight = max-vertical - 15;
+				}
 				if (vertical < max && vertical+requestedlHeight<max) {
 					panel.setBounds(0, vertical, w, requestedlHeight);
 					panel.setVisible(true);
