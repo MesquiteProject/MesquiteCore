@@ -55,17 +55,23 @@ public abstract class TaxaBitsSet extends BitsSpecsSet implements TaxaSpecsSet {
 		return super.swapParts(first, second);
 	}
 	/*.................................................................................................................*/
-	public String getStringList(String delimiter, boolean simplify){  
+	public String getStringList(String delimiter, boolean useT0System){  
 		StringBuffer sb= new StringBuffer();
 		boolean first = true;
 		for (int i=0; i<getNumberOfParts(); i++)
-			if (isPresent(i))
+			if (isPresent(i)) {
+				String taxonName = "";
+				if (!useT0System) 
+					taxonName=taxa.getName(i);
+				else
+					taxonName="t"+i;
 				if (first){
-					sb.append(taxa.getName(i));
+					sb.append(taxonName);
 					first = false;
 				}
 				else
-					sb.append(delimiter + taxa.getName(i));
+					sb.append(delimiter + taxonName);
+			}
 		return sb.toString();
 
 	}
