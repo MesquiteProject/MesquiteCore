@@ -3189,7 +3189,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	}
 
 	/*.................................................................................................................*/
-	/** Shows the File in the finder or Windows Explorer" */
+	/** Returns whether a directory can be shown in the OS's file browser." */
+	public static boolean canShowDirectory() {
+		return (MesquiteTrunk.isMacOSX() || MesquiteTrunk.isWindows());
+	}
+	/*.................................................................................................................*/
+	/** Shows the directory specified in path in the Finder or Windows Explorer" */
 	public static void showDirectory(String path) {
 		if (path == null)
 			return;
