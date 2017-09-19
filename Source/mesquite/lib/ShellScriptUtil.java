@@ -82,17 +82,23 @@ public class ShellScriptUtil  {
 		else
 			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding();
 	}
-	/*.................................................................................................................*/
-	public static boolean exitCommandIsAvailable(){
-		if (MesquiteTrunk.isMacOSX()){
-			return false;
-		}
-		return true;
+	
+	/** This returns whether or not an exit command for shell scripts is available
+	 * in the OS.  This is used to close terminal windows by user choice.  However, because visible terminals are
+	 * only used in Windows and Mac, and because the Mac's Terminal can't easily be closed,
+	 * this only returns true for Windows. 
+	 */
+	public static boolean exitCommandIsAvailableAndUseful(){
+		if (MesquiteTrunk.isWindows())
+			return true;
+		return false;
 	}
-	/*.................................................................................................................*/
+	
+	/** This returns the exit command that might be used to quit a visible terminal window from within itself. 
+	 */
 	public static String getExitCommand(){
 		if (MesquiteTrunk.isMacOSX()){
-			return "osascript -e 'quit app \"Terminal\"' saving no";
+			return "osascript -e 'quit app \"Terminal\"'";  // doesn't fully work as will prompt user
 		}
 		else
 			return "exit ";
