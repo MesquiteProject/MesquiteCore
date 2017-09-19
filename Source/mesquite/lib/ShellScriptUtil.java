@@ -83,12 +83,19 @@ public class ShellScriptUtil  {
 			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
+	public static boolean exitCommandIsAvailable(){
+		if (MesquiteTrunk.isMacOSX()){
+			return false;
+		}
+		return true;
+	}
+	/*.................................................................................................................*/
 	public static String getExitCommand(){
-		if (MesquiteTrunk.isWindows()){
-			return "";
+		if (MesquiteTrunk.isMacOSX()){
+			return "osascript -e 'quit app \"Terminal\"' saving no";
 		}
 		else
-			return "exit " +StringUtil.lineEnding();
+			return "exit ";
 	}
 	/*.................................................................................................................*/
 	public static String getSetFileTypeCommand(String filePath){
