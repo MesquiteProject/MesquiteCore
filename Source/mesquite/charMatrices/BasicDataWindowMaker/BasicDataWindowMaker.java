@@ -1364,6 +1364,8 @@ public void requestFocus(){
 	/* ................................................................................................................. */
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Renames the matrix", "[name of matrix]", commandName, "renameMatrix")) {
+			MesquiteInteger mi=null;
+			mi.setValue(8); //Debugg.println
 			String token = ParseUtil.getFirstToken(arguments, new MesquiteInteger(0));
 			if (StringUtil.blank(token) && !MesquiteThread.isScripting()) {
 				token = MesquiteString.queryString(this, "Rename matrix", "New Name of Matrix:", data.getName(), 2);

@@ -261,7 +261,7 @@ public class ProjectRead implements Runnable {
 				MesquiteTrunk.mesquiteTrunk.discreetAlert("OutofMemoryError.  See file startingMesquiteAndMemoryAllocation.txt in the Mesquite_Folder for information on how to increase memory allocated to Mesquite.");
 			else if (!(e instanceof ThreadDeath)){
 				MesquiteFile.throwableToLog(this, e);
-				MesquiteDialog.closeWizard();
+				MesquiteDialog.closeWizard(); 
 				MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, "File reading could not be completed because an exception or error occurred (i.e. a crash; " + e.getClass() + "). If you save any files, you might best use Save As... in case data were lost or file saving doesn't work properly.");
 			}
 			MesquiteModule.decrementMenuResetSuppression();

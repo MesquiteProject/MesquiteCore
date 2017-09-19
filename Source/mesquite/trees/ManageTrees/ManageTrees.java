@@ -295,7 +295,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		if (file == null || file == getProject().getHomeFile()){
+		if (treesVector != null && (file == null || file == getProject().getHomeFile())){
 			for (int i = 0; i< treesVector.size(); i++) {
 				TreeVector trees = (TreeVector)treesVector.elementAt(i);
 				Snapshot fromTrees = trees.getSnapshot(file);
