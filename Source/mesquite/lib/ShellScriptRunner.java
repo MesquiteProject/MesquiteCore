@@ -77,6 +77,9 @@ public class ShellScriptRunner implements Commandable  {
 		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stOutFileName;
 		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stErrorFileName;
 	}
+	public static boolean localScriptRunsCanDisplayTerminalWindow(){
+		return !MesquiteTrunk.isLinux();
+	}
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
