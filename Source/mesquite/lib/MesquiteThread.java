@@ -562,6 +562,15 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	}
 
 	/*.................................................................................................................*/
+	public static void pauseForMilliseconds(double milliseconds){   
+		try {
+			Thread.sleep((int)(milliseconds)); 
+		}
+		catch (InterruptedException e) {
+			return;
+		}
+	}
+	/*.................................................................................................................*/
 	public static void pauseForSeconds(double seconds){   
 		try {
 			Thread.sleep((int)(1000*seconds)); 

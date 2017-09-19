@@ -1711,6 +1711,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 
 	public String checkIntegrity(){
+		if (!MesquiteThread.isThreadBelongingToMesquite())
+			return null;
 		String warning = null;
 		if (taxa == null)
 			return null;
