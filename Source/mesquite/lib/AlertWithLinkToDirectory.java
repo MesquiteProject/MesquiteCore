@@ -42,7 +42,8 @@ public class AlertWithLinkToDirectory extends ExtensibleDialog implements Action
 		addTextArea(message, 5);
 		
 		//nullifyAddPanel();
-		addDirectoryButton();
+		if (MesquiteFile.canShowDirectory())
+			addDirectoryButton();
 
 		completeAndShowDialog ("OK", null,true, this);
 
