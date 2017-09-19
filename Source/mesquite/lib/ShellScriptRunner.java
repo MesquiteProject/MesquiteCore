@@ -132,11 +132,15 @@ public class ShellScriptRunner implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public String getStdErr() {
-		return externalProcessManager.getStdErrContents();
+		if (externalProcessManager!=null)
+			return externalProcessManager.getStdErrContents();
+		return "";
 	}
 	/*.................................................................................................................*/
 	public String getStdOut() {
-		return externalProcessManager.getStdOutContents();
+		if (externalProcessManager!=null)
+			return externalProcessManager.getStdOutContents();
+		return "";
 	}
 
 	/*.................................................................................................................*/
