@@ -13,7 +13,7 @@
 			<forVersion>330</forVersion>
 			<noticeNumber>20</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[A new version of Mesquite is available, version 3.31, with various bug fixes, performance improvements, and new features.  We strongly urge that you update to the new version by downloading it from 
+			<message><![CDATA[A new version of Mesquite is available, version 3.31, with various bug fixes.  We urge that you update to the new version by downloading it from 
 			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
 		</notice>
 		<notice>
