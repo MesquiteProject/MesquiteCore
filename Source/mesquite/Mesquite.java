@@ -42,7 +42,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.31+";
+		return "3.31";
 	}
 
 	/*.................................................................................................................*/
@@ -70,7 +70,7 @@ public class Mesquite extends MesquiteTrunk
 	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -1774,7 +1774,7 @@ public class Mesquite extends MesquiteTrunk
 			logln("This will crash: " +mi.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Checks for notices or installs at the location specified", null, commandName, "checkNotices")) {
-			noticeLocation = MesquiteString.queryString(containerOfModule(), "Notices Location", "Indicate URL to notices file to be checked.  (For instance, for Mesquite the default notices file is at " + getHomePhoneNumber() + ")", noticeLocation);
+			noticeLocation = MesquiteString.queryString(containerOfModule(), "Notices Location", "Indicate URL to notices file to be checked.  (For instance, for Mesquite the default notices file is at " + getHomePhoneNumber() + ")\n\nNote: There may be a delay as Mesquite waits for the response from the server.", noticeLocation);
 			PhoneHomeUtil.checkForNotices(noticeLocation); 
 			PhoneHomeUtil.adHocRecord = null;
 			resetAllMenuBars();

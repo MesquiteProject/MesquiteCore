@@ -499,7 +499,7 @@ public class PhoneHomeUtil {
 		int lastNotice = phoneHomeRecord.getLastNotice();
 		int lastVersionNoticed = phoneHomeRecord.getLastVersionNoticed();
 
-		String name = mmi.getName();
+		//String name = mmi.getName();
 		
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",noticesFromHome);
 		if (root==null)
