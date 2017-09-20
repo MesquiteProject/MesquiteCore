@@ -160,13 +160,13 @@ public abstract class PackageIntro extends MesquiteModule implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	/** Returns the  integer version of the MesquiteCore version  that this package requires to function*/
-	public int getMinimumMesquiteVersionNumberRequired(){
-		return 100;  
+	public int getMinimumMesquiteVersionRequiredInt(){
+		return 100;  //set to correct number just before release
 	}
 	/*.................................................................................................................*/
 	/** Returns the String version of the MesquiteCore version number that this package requires to function*/
-	public String getMinimumMesquiteVersionStringRequired(){
-		return "1.00";  
+	public String getMinimumMesquiteVersionRequired(){
+		return "1.00";  //set to correct number just before release
 	}
 	/*.................................................................................................................*/
 	/** Returns the integer version of Mesquite for which this package was first released*/

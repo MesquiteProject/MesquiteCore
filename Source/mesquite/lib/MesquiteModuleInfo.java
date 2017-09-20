@@ -132,6 +132,9 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 			this.packageURL = (( PackageIntroInterface)mb).getPackageURL();
 			isPackageIntro = true;
 			hideable = (( PackageIntroInterface)mb).getHideable();
+			if ((( PackageIntroInterface)mb).getMinimumMesquiteVersionRequiredInt()> MesquiteTrunk.mesquiteTrunk.getVersionInt())
+				MesquiteTrunk.mesquiteTrunk.discreetAlert("The package " + packageName 
+						+ " requires a newer version of Mesquite (at least version " + (( PackageIntroInterface)mb).getMinimumMesquiteVersionRequired() + "). The package might not function properly and may cause crashes.");
  		}
   		mb.mesquiteStartup();
 		this.nexusBlockTest = mb.getNexusBlockTest();//�

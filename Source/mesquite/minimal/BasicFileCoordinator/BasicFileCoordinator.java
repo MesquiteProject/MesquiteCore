@@ -105,6 +105,17 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			MesquiteTrunk.suggestedDirectory = prefs[0];
 		}
 	}
+	/*.................................................................................................................*/
+	/** Returns the  integer version of the MesquiteCore version  that this package requires to function*/
+	public int getMinimumMesquiteVersionRequiredInt(){
+		return 100;  
+	}
+	/*.................................................................................................................*/
+	/** Returns the String version of the MesquiteCore version number that this package requires to function*/
+	public String getMinimumMesquiteVersionRequired(){
+		return "1.00";  
+	}
+	/*.................................................................................................................*/
 	private MesquiteModule hireInit( Class dutyClass, String name){
 		if (mesquiteTrunk.mesquiteModulesInfoVector.findModule(dutyClass, name) == null)
 			return null;
