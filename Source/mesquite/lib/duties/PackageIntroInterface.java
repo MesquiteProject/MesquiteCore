@@ -60,6 +60,12 @@ public interface PackageIntroInterface  {
 	public int getVersionOfFirstRelease();
 	
 	public boolean getHideable();
+	/*.................................................................................................................*/
+	/** Returns the  integer version of the MesquiteCore version  that this package requires to function*/
+	public int getMinimumMesquiteVersionRequiredInt();
+	/*.................................................................................................................*/
+	/** Returns the String version of the MesquiteCore version number that this package requires to function*/
+	public String getMinimumMesquiteVersionRequired();
 }
 
 

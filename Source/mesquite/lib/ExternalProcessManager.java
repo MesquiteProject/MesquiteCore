@@ -93,6 +93,18 @@ public class ExternalProcessManager implements Commandable  {
 		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdErrFileName;
 	}
 
+
+	public static boolean isAlive(Process proc) {
+		if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(1.8)) 
+			return proc.isAlive();
+	try {
+			proc.exitValue();
+			return false;
+		} catch (Exception e) {
+			return true;
+		}
+		
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
@@ -233,6 +245,8 @@ public class ExternalProcessManager implements Commandable  {
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
 	public boolean executeInShell(){
+		if (MesquiteTrunk.isJavaVersionLessThan(1.7))
+			return false;
 		proc = null;
 		externalProcess = new MesquiteExternalProcess();
 		externalProcess.start(directoryPath, stdOutFilePath, stdErrFilePath, getStringArrayWithSplitting(programCommand, programOptions));
@@ -295,7 +309,7 @@ public class ExternalProcessManager implements Commandable  {
 				return false;
 			}
 			stillGoing = watcher == null || watcher.continueShellProcess(proc);
-			if (proc!=null && !proc.isAlive()) {
+			if (proc!=null && !isAlive(proc)) {
 				stillGoing=false;
 				boolean goodValue = goodExitValue(proc.exitValue(), true);
 				if (!goodValue && !ownerModule.isDoomed() && !watcher.userAborted()) {

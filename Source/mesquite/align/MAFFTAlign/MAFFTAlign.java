@@ -230,7 +230,10 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	}
 
 	public void appendDefaultOptions(StringBuffer shellScript, String inFilePath, String outFilePath, MolecularData data) {
-			shellScript.append("  " + StringUtil.protectFilePathForUnix(inFilePath));
+			if (scriptBased)
+				shellScript.append("  " + StringUtil.protectFilePathForUnix(inFilePath) + " > " + outFilePath);
+			else
+				shellScript.append("  " + StringUtil.protectFilePathForUnix(inFilePath));
 	}
 	
 	public String getDNAExportInterpreter () {

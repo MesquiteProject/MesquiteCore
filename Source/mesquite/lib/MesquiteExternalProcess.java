@@ -90,7 +90,7 @@ public class MesquiteExternalProcess  {
 			proc.destroy();
 			try {
 				Thread.sleep(100);
-				if (proc.isAlive())
+				if (ExternalProcessManager.isAlive(proc))
 					proc.destroyForcibly();
 			} catch (Exception e) {
 			}

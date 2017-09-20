@@ -68,12 +68,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "12 September 2017";
+		return "21 September 2017";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.3";
+		return "3.31";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -86,7 +86,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 854;  
+		return 858;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -133,6 +133,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.11  = 766 released 3 December 2016,  fix of miswriting of codon positions
 	//3.20  = 801 released 1 January 2017
 	//3.30  = 854 released 12 Sept 2017
+	//3.31  = 858 released 20 Sept 2017
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
@@ -1116,6 +1117,17 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
 	public void exceptionAlert(Throwable e, String s) {
+		String incompatibilityMessage = null;
+		if (e instanceof NoSuchMethodError){
+			incompatibilityMessage = "An error indicates that you may have a package installed that is incompatible "
+					+ "with this version of Mesquite. Please check your add-on packages like Zephyr, Chromaseq, etc. to ensure they are up to date,"
+					+ " and that you are using an up to date version of Mesquite.";
+		}
+		else if (e instanceof NoClassDefFoundError){
+			incompatibilityMessage = "An error indicates that you may have an incomplete version of Mesquite, or a package installed that is incompatible "
+					+ "with this version of Mesquite. Please check your add-on packages like Zephyr, Chromaseq, etc. to ensure they are up to date,"
+					+ " and that you are using an up to date version of Mesquite.  You may need to reinstall Mesquite.";
+		}
 		MesquiteTrunk.errorReportedDuringRun = true;
 		StackTraceElement[] stt = e.getStackTrace();
 		String rep = MesquiteException.lastLocMessage() + "\n";
@@ -1131,6 +1143,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			((MesquiteThread)t).doCleanUp();
 		logln(s);
 		if (!PhoneHomeUtil.phoneHomeSuccessful || !MesquiteTrunk.reportErrors || MesquiteTrunk.suppressErrorReporting){
+			if (incompatibilityMessage != null)
+				discreetAlert(incompatibilityMessage);
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 			return;
@@ -1154,6 +1168,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 
 		}
 		else {
+			if (incompatibilityMessage != null)
+				discreetAlert(incompatibilityMessage);
 			int resp = AlertDialog.query(containerOfModule(), "Crash", s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "OK, Send and Force Quit", "Close without sending");
 			if (resp < 2)
 				reportCrashToHome(e, s);

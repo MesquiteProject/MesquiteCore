@@ -176,7 +176,10 @@ public class MesquiteDialogParent extends JDialog implements Identifiable {
 			MesquiteDialog.currentWizard = null;
 		if (b && isWizard)
 			MesquiteDialog.currentWizard = this;
+		if (b) {
+			pleaseBringToFront();  //This is a workaround to the problem of a more recent dialog box dropping behind an older one.  PUts on different thread.
 		super.setVisible(b);
+		}
 	}
 
 	public void hideForCalculation(){

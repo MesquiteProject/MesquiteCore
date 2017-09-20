@@ -230,11 +230,11 @@ public class PhoneHomeUtil {
 					appliesToBuild =  appliesToBuild && (forBuildNumberEqualOrLess >= MesquiteModule.getBuildNumber());
 
 				if (MesquiteInteger.isCombinable(forPackageVersionExactly)) 
-					appliesToBuild =  appliesToBuild && (forPackageVersionExactly == mmi.getVersionInt());
+					appliesToBuild =  appliesToBuild && (forPackageVersionExactly == mmi.getPackageVersionInt());
 				if (MesquiteInteger.isCombinable(forPackageVersionEqualOrGreater)) 
-					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrGreater <= mmi.getVersionInt());
+					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrGreater <= mmi.getPackageVersionInt());
 				if (MesquiteInteger.isCombinable(forPackageVersionEqualOrLess))  
-					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrLess >= mmi.getVersionInt());
+					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrLess >= mmi.getPackageVersionInt());
 
 			}
 
@@ -499,7 +499,8 @@ public class PhoneHomeUtil {
 		int lastNotice = phoneHomeRecord.getLastNotice();
 		int lastVersionNoticed = phoneHomeRecord.getLastVersionNoticed();
 
-
+		String name = mmi.getName();
+		
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",noticesFromHome);
 		if (root==null)
 			return null;

@@ -36,14 +36,16 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	boolean includeGaps = false;
 	String programOptions = "" ;
 	Random rng;
+	protected boolean scriptBased = false;
 	public static int runs = 0;
-	//ShellScriptRunner scriptRunner;
+	ShellScriptRunner scriptRunner;
 	ExternalProcessManager externalRunner;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		rng = new Random(System.currentTimeMillis());
 		programOptions = getDefaultProgramOptions();
 		loadPreferences();
+		scriptBased = MesquiteTrunk.isJavaVersionLessThan(1.7);
 		return true;
 	}
 	public abstract String getProgramCommand();
@@ -59,16 +61,25 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 	/*.................................................................................................................*/
 	public String getStdErr() {
-		if (externalRunner!=null)
+		if (scriptBased){
+			if (scriptRunner!=null)
+				return scriptRunner.getStdErr();
+		}
+		else if (externalRunner!=null)
 			return externalRunner.getStdErr();
 		return "";
 	}
 	/*.................................................................................................................*/
 	public String getStdOut() {
-		if (externalRunner!=null)
+		if (scriptBased){
+			if (scriptRunner!=null)
+				return scriptRunner.getStdOut();
+		}
+		else if (externalRunner!=null)
 			return externalRunner.getStdOut();
 		return "";
 	}
+
 	public boolean userAborted(){
 		return false;
 	}
@@ -77,9 +88,13 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return null;
 	}
 	public boolean stopExecution(){
-		if (externalRunner!=null)
+		if (scriptBased){
+			if (scriptRunner!=null)
+				scriptRunner.stopExecution();
+		}
+		else if (externalRunner!=null) {
 			externalRunner.stopExecution();
-		//scriptRunner = null;
+		}
 		return false;
 	}
 	
@@ -343,10 +358,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			argumentsForLogging.append(" " + programOptions + " "+ getQueryProgramOptions());
 		}
 		shellScript.append(StringUtil.lineEnding());
-//		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
+		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
 
 		String scriptPath = rootDir + "alignerScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
-		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), false);
+		if (scriptBased)
+			MesquiteFile.putFileContents(scriptPath, shellScript.toString(), false);
 		
 		logln("Requesting the operating system to run " + getProgramName());
 		logln("Location of  " + getProgramName()+ ": " + getProgramPath());
@@ -357,22 +373,22 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), getProgramName()+" alignment in progress");
 		progressIndicator.start();
 
-		
-/*		scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, false);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
-		success = scriptRunner.executeInShell();
-		success = scriptRunner.monitorAndCleanUpShell(progressIndicator);
-*/
+		if (scriptBased) {
+			scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, true);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
+			success = scriptRunner.executeInShell();
+			if (success)
+				success = scriptRunner.monitorAndCleanUpShell(progressIndicator);
+		} else {
+			String arguments = argumentsForLogging.toString();
 
-		String arguments = argumentsForLogging.toString();
-		
-		arguments=StringUtil.stripBoundingWhitespace(arguments);
-		externalRunner = new ExternalProcessManager(this, rootDir, getProgramPath(), arguments,getName(), outputFilePaths, this, this, true);
-		//ShellScriptUtil.changeDirectory(rootDir, rootDir);
-		externalRunner.setStdOutFileName(outFileName);
-		success = externalRunner.executeInShell();
-		if (success)
-			success = externalRunner.monitorAndCleanUpShell(progressIndicator);
-		
+			arguments=StringUtil.stripBoundingWhitespace(arguments);
+			externalRunner = new ExternalProcessManager(this, rootDir, getProgramPath(), arguments,getName(), outputFilePaths, this, this, true);
+			//ShellScriptUtil.changeDirectory(rootDir, rootDir);
+			externalRunner.setStdOutFileName(outFileName);
+			success = externalRunner.executeInShell();
+			if (success)
+				success = externalRunner.monitorAndCleanUpShell(progressIndicator);
+		}
 		
 		if (progressIndicator.isAborted()){
 			logln("Alignment aborted by user\n");
@@ -387,7 +403,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
 			CommandRecord scr = new CommandRecord(true);
 			MesquiteThread.setCurrentCommandRecord(scr);
-			String failureText = StringUtil.tokenize("Output file containing aligned sequences $$$$$$$$$");
+			String failureText = StringUtil.tokenize("Output file containing aligned sequences ");
 			if (data instanceof DNAData)
 				tempDataFile = (MesquiteFile)coord.doCommand("linkFileExp", failureText +" " + StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getDNAImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 			else
