@@ -122,13 +122,13 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 							}
 						}
 					}
-					if (notMatched.length()>0){
-						logln("\nNames not matched\n");
-						logln(notMatched.toString());
-					}
 					if (matched.length()>0){
 						logln("\nNames matched\n");
 						logln(matched.toString());
+					}
+					if (notMatched.length()>0){
+						logln("\nNames not matched\n");
+						logln(notMatched.toString());
 					}
 					return part;
 				}
