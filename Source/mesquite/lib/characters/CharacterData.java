@@ -1480,10 +1480,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 	}
-	/*-----------------------------------------------------------*/
-	public boolean equalizeStateNames(CharacterData oData, int oic, int ic){
-		return false;
-	}
 
 	/*-----------------------------------------------------------*/
 	public void equalizeCharacter(CharacterData oData, int oic, int ic){
@@ -1491,10 +1487,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		CharacterState cs2 = null;
 		if (oData.characterNames != null && oic<oData.characterNames.length){
 			characterNames[ic] = oData.characterNames[oic];
-			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
-		}
-		//WAYNECHECK why is this not working?
-		if (equalizeStateNames(oData,  oic,  ic)) {  // added October 2017 DRM 
 			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
 		}
 		
