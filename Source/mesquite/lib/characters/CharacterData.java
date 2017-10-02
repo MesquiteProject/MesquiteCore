@@ -1481,14 +1481,23 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 	}
 	/*-----------------------------------------------------------*/
+	public boolean equalizeStateNames(CharacterData oData, int oic, int ic){
+		return false;
+	}
+
+	/*-----------------------------------------------------------*/
 	public void equalizeCharacter(CharacterData oData, int oic, int ic){
 		//doesn't yet incorporate colors, etc
 		CharacterState cs2 = null;
 		if (oData.characterNames != null && oic<oData.characterNames.length){
 			characterNames[ic] = oData.characterNames[oic];
 			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
-
 		}
+		//WAYNECHECK why is this not working?
+		if (equalizeStateNames(oData,  oic,  ic)) {  // added October 2017 DRM 
+			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
+		}
+		
 		for (int it = 0; it<getNumTaxa(); it++){
 			incrementSuppressHistoryStamp();
 			int oit = oData.getTaxa().findEquivalentTaxon(getTaxa(), it);

@@ -19,6 +19,7 @@ import java.util.zip.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
@@ -322,6 +323,22 @@ public class CategoricalData extends CharacterData {
 		data.resetCellMetadata();
 		return data;
 	}
+	/*-----------------------------------------------------------*/
+	//WAYNECHECK why is this not working?
+	public boolean equalizeStateNames(CharacterData oData, int oic, int ic){
+		boolean namesChanged = false;
+		for (int state=0; state < CategoricalState.maxCategoricalState; state++) {
+			if (((CategoricalData)oData).hasStateName(oic, state)) {
+				String name = ((CategoricalData)oData).getStateName(oic, state);
+				if (StringUtil.notEmpty(name)) {
+					setStateName(ic, state, name);
+					namesChanged = true;
+				}
+			}
+		}
+		return namesChanged;
+	}
+
 	/*..........................................  CategoricalData  ..................................................*/
 	/**clone this CharacterData and return new copy.  Does not clone the associated specs sets etc.*/ //TODO: here should use super.setToClone(data) to handle specssets etc.???
 	public CharacterData cloneData(){
