@@ -88,7 +88,7 @@ public class SequenceLength extends NumberForTaxon {
 		observedStates = matrixSourceTask.getCurrentMatrix(taxa);
 	}
 
-	public void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString){
+	public  void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString){
 		if (result==null)
 			return;
 		result.setToUnassigned();
@@ -110,7 +110,7 @@ public class SequenceLength extends NumberForTaxon {
 			CharacterState cs = null;
 			int seqLen = 0;
 			for (int ic=0; ic<numChars; ic++) {
-				if (countExcluded.getValue() || (incl == null || incl.isBitOn(ic))){  // adjusted 2. 01 to consider inclusion  // added control in 3.0
+				if (countExcluded.getValue() || (incl == null || incl.isBitOn(ic)) && observedStates!=null){  // adjusted 2. 01 to consider inclusion  // added control in 3.0
 					cs = observedStates.getCharacterState(cs, ic, it);
 					if (!cs.isInapplicable())
 						seqLen++;
