@@ -73,18 +73,22 @@ public boolean queryOptions(int it, int max) {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryFilesDialog = new ExtensibleDialog(containerOfModule(), "Shift Other To Match",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		queryFilesDialog.addLabel("Shift Other To Match");
-		
+				
 		if (!MesquiteInteger.isCombinable(it1) || !MesquiteInteger.isCombinable(it2) || it1>max || it2>max){
-			if (it>=max) {  
-				it1=1;
-			} else
-				it1 = it+2;  // it+1 to bump it over one, +2 because of the translation to 1-based numbering
-			it2=max;
+			if (it>=max) {  // then it1 has to go back to first taxon
+				it1=0;
+				it2=it-1;
+			} else {
+				it1 = it+1;  // it+1 to bump it over selected one
+				it2=max;  // 
+			}
 		//	if (it2==it)
 		//	it2--;
 		}
-		IntegerField it1Field =  queryFilesDialog.addIntegerField ("First Sequence", it1, 4, 1, max);
-		IntegerField it2Field =  queryFilesDialog.addIntegerField ("Last Sequence", it2, 4, 1, max);
+		if (it2<it1)
+			it2=it1;
+		IntegerField it1Field =  queryFilesDialog.addIntegerField ("First Sequence",(it1+1), 4, 1, max+1);
+		IntegerField it2Field =  queryFilesDialog.addIntegerField ("Last Sequence", (it2+1), 4, 1, max+1);
 		DoubleField matchFractionField = queryFilesDialog.addDoubleField ("Fraction of Match", matchFraction, 6, 0.00001, 1.0);
 		
 		Checkbox reverseSequencesCheckBox = queryFilesDialog.addCheckBox("Reverse complement sequences if necessary", reverseComplementIfNecessary);
@@ -92,8 +96,8 @@ public boolean queryOptions(int it, int max) {
 		queryFilesDialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			matchFraction = matchFractionField.getValue();
-			it1 = it1Field.getValue();
-			it2 = it2Field.getValue();
+			it1 = it1Field.getValue()-1;
+			it2 = it2Field.getValue()-1;
 			reverseComplementIfNecessary = reverseSequencesCheckBox.getState();
 			storePreferences();
 		}
@@ -143,7 +147,7 @@ public boolean queryOptions(int it, int max) {
 			boolean match=false;
 			int totalAddedToStart = 0;
 			boolean someAdded = false;
-			for (int it = it1-1; it<=it2-1; it++) {  // must subtract 1 off of it1 and it2 as these are 1-based numbers
+			for (int it = it1; it<=it2; it++) {  
 				if (row.getValue()!=it) {
 					match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);
 					if (reverseComplementIfNecessary && !match && data instanceof DNAData) {
