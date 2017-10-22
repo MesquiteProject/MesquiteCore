@@ -2907,14 +2907,24 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return nodeInfo;
 	}
 	
+	private boolean predefinedDouble(String TreeDescription, MesquiteInteger stringLoc){
+		int p = stringLoc.getValue();
+		String key=ParseUtil.getToken(TreeDescription, stringLoc);
+		stringLoc.setValue(p);
+		if (key == null)
+			return false;
+		if (key.equalsIgnoreCase("bootstrapFrequency") || key.equalsIgnoreCase("posteriorProbability") || key.equalsIgnoreCase("consensusFrequency"))
+			return true;
+		return false;
+	}
 	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
 		if (readingMrBayesConTree) {
 			String c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">", false) + ">";  //get next token
 			c = retokenizeMrBayesConTreeNodeInfo(c);
-			readAssociated(c, node, new MesquiteInteger(0), null, ",=>{}");
+			readAssociated(c, node, new MesquiteInteger(0), null, ",=>{}", predefinedDouble(TreeDescription, stringLoc));
 			ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
 		} else
-			readAssociated(TreeDescription, node, stringLoc);
+			readAssociated(TreeDescription, node, stringLoc, null, null, predefinedDouble(TreeDescription, stringLoc));
 
 	}
 	/*...............................................  read tree ....................................................*/
