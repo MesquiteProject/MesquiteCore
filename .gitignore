@@ -1,4 +1,10 @@
 Mesquite_Folder/
+# Workspace files #
+###################
+*.iml
+.project
+.settings/
+
 # Compiled source #
 ###################
 *.com
@@ -39,3 +45,4 @@ Thumbs.db
 .gitignore
 /.classpath
 /.gitignore
+/target/
