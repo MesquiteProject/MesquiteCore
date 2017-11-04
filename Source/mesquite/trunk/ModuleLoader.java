@@ -163,9 +163,10 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					}
 				}
 				catch(java.io.IOException e){ 
-					System.out.println("IOE in loading extra classes in Mesquite_Support_Files");
+					MesquiteMessage.printLogln("\n\nIOE in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
 				}
 				catch(Throwable e){  //to permit function under Java 1.1
+					MesquiteMessage.printLogln("\n\nException in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
 				}
 				}
 			mesquite.mesquiteModulesInfoVector.filterAllDutyDefaults();
@@ -209,6 +210,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 						getModules("mesquite", path+ MesquiteFile.fileSeparator  + "mesquite", "", 0, null, false, true);  //do the directories in config
 					}
 					catch(IOException e){
+						mesquite.logln("IOException loading modules from "+tagContent +" "+ e.getMessage());
 					}
 				}
 				tagContent = parser.getNextXMLTaggedContent(nextTag);
@@ -583,7 +585,13 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
    	 }
    	 static boolean warnedError = false;
    	 CommandChecker moduleChecker = new CommandChecker();
-	/*.................................................................................................................*/
+ 	/*.................................................................................................................*/
+   	Class loadMesquiteModule(String path, String packageName, String filename, String classname) throws IOException, ClassNotFoundException {
+   		return Class.forName(packageName + classname);
+   		//return ClassPathHacker.loadModule(path, filename);
+   	}
+   	 
+   	/*.................................................................................................................*/
 	public void loadMesquiteModuleClassFiles (File thisFile, String pathname, String packageName, String filename) {
 		String classname=StringUtil.getAllButLastItem(filename, ".");
 		String directoryName=StringUtil.getLastItem(pathname, MesquiteFile.fileSeparator);
@@ -597,7 +605,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
 				lastTried = packageName + classname;
 //classTime.start();
-				c= Class.forName(packageName + classname);
+				c= loadMesquiteModule(pathSlash, packageName, filename, classname);
 //classTime.end();
 				if (lastTried.equals("mesquite.Mesquite")){
 				}

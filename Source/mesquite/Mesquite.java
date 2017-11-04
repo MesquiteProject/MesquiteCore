@@ -2505,7 +2505,7 @@ public class Mesquite extends MesquiteTrunk
 				textEdgeCompensationHeight = 7; //6 on mac; 7 on pc
 				textEdgeCompensationWidth = 22; //12 on mac; 28 on pc
 			}
-			mesq.registerMacHandlers();
+			//mesq.registerMacHandlers();
 			if (MesquiteTrunk.debugMode)
 				System.out.println("main constructor 4");
 			MainThread.mainThread = new MainThread();
