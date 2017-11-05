@@ -2197,6 +2197,18 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return false;
 	}	
 	/*.................................................................................................................*/
+	/** Checks to see if path leads to a directory*/
+	public static boolean directoryExists(String path) {
+		if (path != null) {
+			if (path.indexOf("//")>=0)
+				MesquiteMessage.printStackTrace("double // in path " + path);  
+			File testing = new File(path);
+			if (testing.exists() && testing.isDirectory())
+				return true;
+		}
+		return false;
+	}	
+	/*.................................................................................................................*/
 	/** Checks to see if path leads to a file that is not a directory*/
 	public static String getAvailableFileName(String directoryName, String fileNameBase) {
 		if (!fileExists(directoryName,fileNameBase))

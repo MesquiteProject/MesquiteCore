@@ -36,7 +36,7 @@ public class ModuleLoader {
 MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,otherTime, classTime;
 	/*.................................................................................................................*/
 	public void init(String configFile, ListableVector configurations, boolean useMinimal) {
-	this.configurations = configurations;
+		this.configurations = configurations;
 		mesquite.mesquiteModulesInfoVector = new ModulesInfoVector();
 		MesquiteModuleInfo mBI = new MesquiteModuleInfo(Mesquite.class, mesquite, new CommandChecker(), mesquite.getPath());
 		mesquite.mesquiteModulesInfoVector.addElement(mBI, false);
@@ -186,6 +186,31 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		}
 	}
 	
+	public static String[] getClasspathEntries(boolean directoriesOnly) {
+		String classpath = System.getProperty("java.class.path");
+		String[] classpathEntries = classpath.split(File.pathSeparator);
+		if (directoriesOnly) {
+			int count =0;
+			for (int i=0; i<classpathEntries.length; i++) {
+				if (MesquiteFile.directoryExists(classpathEntries[i])) {
+					count++;
+				}
+			}
+			String[] justDirectories =null;
+			if (count>0) {
+				justDirectories = new String[count];
+				count =0;
+				for (int i=0; i<classpathEntries.length; i++) {
+					if (MesquiteFile.directoryExists(classpathEntries[i])) {
+						justDirectories[count] = classpathEntries[i];
+						count++;
+					}
+				}
+			}
+			classpathEntries=justDirectories;
+		}
+		return classpathEntries;
+	}
 						
 	void addModulesAtPaths(String relativeTo, String xmlPathsFileContents){
 		if (xmlPathsFileContents == null)return;
