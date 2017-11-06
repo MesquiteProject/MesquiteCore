@@ -20,16 +20,27 @@ public class ClassPathHacker {
 
 	private static final Class[] parameters = new Class[]{URL.class};
 	
-	public static Class loadModule(String path, String name) throws IOException, ClassNotFoundException {
+ static Class loadModule(String path, String name) throws IOException, ClassNotFoundException {
 		File f = new File(path);
 		URI uri = f.toURI();
 		URLClassLoader loader = new URLClassLoader(new URL[] {uri.toURL()});
 		return loader.loadClass(name);
 	}
 
-	public static void addFile(String s) throws IOException {
+	 static void addFile(String s) throws IOException {
 		File f = new File(s);
 		addFile(f);
+	}
+	
+	public static void addJarFileToClassPath(String s) throws IOException {
+		File f = new File(s);
+		URI uri = f.toURI();
+		if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(9.0)) {
+			Instrumentation instrumentation = ByteBuddyAgent.install();
+			instrumentation.appendToSystemClassLoaderSearch(new JarFile(f));
+		} else {
+			addURL(uri.toURL());
+		}
 	}
 	
 	static void addFile(File f) throws IOException {
@@ -46,7 +57,7 @@ public class ClassPathHacker {
 	}
 	
 	
-	public static void addURL(URL u) throws IOException {
+	 static void addURL(URL u) throws IOException {
 		URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
 		Class sysclass = URLClassLoader.class;
 
