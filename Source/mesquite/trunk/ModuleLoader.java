@@ -144,31 +144,32 @@ public class ModuleLoader {
 				targetDirectories.setValue(numStandard + numStandardExtra+4, "mesquite.macros");//TODO: avoid macros in all contexts!
 				targetDirectories.setValue(numStandard + numStandardExtra+5, "mesquite.configs");  //TODO: avoid configs in all contexts!
 				getModules("mesquite", MesquiteModule.getRootPath() + "mesquite", "", 0, targetDirectories, false, true); //next, add to the target directories and do everything but them
-				/*try {
-					ClassPathHacker.addFile(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator  + "classes");
-					getModules("mesquite", MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classes" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
-					ClassPathHacker.addFile(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
-					getModules("mesquite", MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
+				if (MesquiteTrunk.isJavaVersionLessThan(9.0)) {
+					try {
+						ClassPathHacker.addFile(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator  + "classes");
+						getModules("mesquite", MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classes" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
+						ClassPathHacker.addFile(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
+						getModules("mesquite", MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
 
-					String classPathsFileMF = null; 
-					if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.xml")){
-						classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.getRootPath() + "classpaths.xml");
+						String classPathsFileMF = null; 
+						if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.xml")){
+							classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.getRootPath() + "classpaths.xml");
 
-						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
+							addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
 
+						}
+						if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + "classpaths.xml")){
+							classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classpaths.xml");
+							addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);
+						}
 					}
-					if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + "classpaths.xml")){
-						classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classpaths.xml");
-						addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);
+					catch(java.io.IOException e){ 
+						MesquiteMessage.printLogln("\n\nIOE in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
+					}
+					catch(Throwable e){  //to permit function under Java 1.1
+						MesquiteMessage.printLogln("\n\nException in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
 					}
 				}
-				catch(java.io.IOException e){ 
-					MesquiteMessage.printLogln("\n\nIOE in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
-				}
-				catch(Throwable e){  //to permit function under Java 1.1
-					MesquiteMessage.printLogln("\n\nException in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
-				}
-				*/
 			}
 			mesquite.mesquiteModulesInfoVector.filterAllDutyDefaults();
 			mesquite.mesquiteModulesInfoVector.accumulateAllVersions();
@@ -213,7 +214,7 @@ public class ModuleLoader {
 		return classpathEntries;
 	}
 
-	/*
+	
 	void addModulesAtPaths(String relativeTo, String xmlPathsFileContents){
 		if (xmlPathsFileContents == null)return;
 
@@ -245,7 +246,22 @@ public class ModuleLoader {
 
 
 	}
-*/
+	void addModulesInJarsInDirectory(String path){
+
+		try{
+			DirectInit.loadJarsInDirectories(path, mesquite.jarFilesLoaded);
+			ClassPathHacker.addFile(path);	
+
+			mesquite.logln("\n\nAdditional modules loaded from " + path);
+			getModules("mesquite", path+ MesquiteFile.fileSeparator  + "mesquite", "", 0, null, false, true);  //do the directories in config
+		}
+		catch(IOException e){
+			mesquite.logln("IOException loading modules from "+path +" "+ e.getMessage());
+		}
+
+
+	}
+
 
 
 

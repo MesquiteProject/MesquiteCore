@@ -2409,7 +2409,7 @@ public class Mesquite extends MesquiteTrunk
 	private void registerMacHandlers(){
 		if (!MesquiteWindow.GUIavailable)
 			return;
-		else if (MesquiteTrunk.isMacOSX()) {
+		else if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.isJavaVersionLessThan(9.0)) {  //java9
 			fileHandler = new EAWTHandler(this);
 			((EAWTHandler)fileHandler).register();
 		}
@@ -2505,7 +2505,7 @@ public class Mesquite extends MesquiteTrunk
 				textEdgeCompensationHeight = 7; //6 on mac; 7 on pc
 				textEdgeCompensationWidth = 22; //12 on mac; 28 on pc
 			}
-			mesq.registerMacHandlers();
+			mesq.registerMacHandlers();   
 			if (MesquiteTrunk.debugMode)
 				System.out.println("main constructor 4");
 			MainThread.mainThread = new MainThread();
@@ -2518,6 +2518,7 @@ public class Mesquite extends MesquiteTrunk
 
 			// initialize the applet
 			mesquiteTrunk.init();
+
 			//EMBEDDED: include this  
 			((Mesquite)mesquiteTrunk).start(); 
 
