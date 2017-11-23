@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite;
 
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
@@ -21,6 +22,10 @@ import java.io.*;
 import java.net.*;
 
 import javax.imageio.ImageIO;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.apple.mrj.MRJFileUtils;
 import com.apple.mrj.MRJOSType;
@@ -107,6 +112,17 @@ public class Mesquite extends MesquiteTrunk
 	HPanel browser;
 	ListableVector configurations;
 	private  FileOpener fileHandler;
+	private ArrayList<String> mesquiteJarEntries = new ArrayList<String>();
+	private HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<String, ArrayList<String>>();
+	private static ClassLoader mesquiteClassLoader = null;
+
+	public static ClassLoader getMesquiteClassLoader() { return mesquiteClassLoader; }
+
+	public ArrayList<String> getMesquiteJarEntries() { return mesquiteJarEntries; }
+
+	public HashMap<String, ArrayList<String>> getMesquiteJarModules() {
+		return mesquiteJarModules;
+	}
 
 	/*.................................................................................................................*/
 	public void endJob() {
