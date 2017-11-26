@@ -147,14 +147,22 @@ public class PopupStateSelector extends DataWindowAssistantI  {
 	}
 
 
+	static int missingResponse = -200;
+	static int inapplicableResponse = -201;
 
 	/*.................................................................................................................*/
 	private void addStateNamesToPopup(int ic) {
 		int responseNumber = 0;
-		
+
 		for (int i=0; i<CategoricalState.maxCategoricalState && i<data.maxStateWithName(ic)+4; i++) {
 			addToPopup(data.getStateName(ic, i), responseNumber++);
 		}
+
+		popup.addSeparator();
+		addToPopup(" ?", missingResponse);
+		addToPopup(" -", inapplicableResponse);
+
+
 	}
 	/*.................................................................................................................*/
 
@@ -195,16 +203,29 @@ public class PopupStateSelector extends DataWindowAssistantI  {
 		else if (checker.compare(this.getClass(), "Responds to choice of popup menu", "[choice number]", commandName, "respond")) {
 			MesquiteInteger io = new MesquiteInteger(0);
 			int response = MesquiteInteger.fromString(arguments, io);
-			fillState = new CategoricalState(CategoricalState.makeSet(response));
-			if ((table.isCellSelected(columnTouched, rowTouched))||(table.isRowSelected(rowTouched))||(table.isColumnSelected(columnTouched))) {
-				paintSelectedCells(table, data); // the touched cell or column is selected; therefore, just fill the selection.
-				columnTouched= -2;
-				rowTouched= -2;
+			fillState=null;
+			if (response == missingResponse) {
+				fillState = new CategoricalState();
+				fillState.setToUnassigned();
 			}
-			else {
-				paintSelectedCells(table, data); // the touched cell or column is selected; therefore, just fill the selection.
-				columnTouched= -2;
-				rowTouched= -2;
+			else if (response == inapplicableResponse) {
+				fillState = new CategoricalState();
+				fillState.setToInapplicable();
+			}
+			else if (response>=0)			
+				fillState = new CategoricalState(CategoricalState.makeSet(response));
+
+			if (fillState!=null) {
+				if ((table.isCellSelected(columnTouched, rowTouched))||(table.isRowSelected(rowTouched))||(table.isColumnSelected(columnTouched))) {
+					paintSelectedCells(table, data); // the touched cell or column is selected; therefore, just fill the selection.
+					columnTouched= -2;
+					rowTouched= -2;
+				}
+				else {
+					paintSelectedCells(table, data); // the touched cell or column is selected; therefore, just fill the selection.
+					columnTouched= -2;
+					rowTouched= -2;
+				}
 			}
 		}
 
