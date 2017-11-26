@@ -24,14 +24,17 @@ import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
-public class PopupStateSelector extends DataWindowAssistantI implements ToolKeyListener {
+public class PopupStateSelector extends DataWindowAssistantI  {
 	TableTool popupStateSelectorTool;
 	CategoricalData data;
 	MesquiteTable table;
 	MesquiteCommand keyCommand;
-	int firstColumnTouched = -2;
-	int firstRowTouched = -2;
+	int columnTouched = -2;
+	int rowTouched = -2;
+	MesquiteWindow window;
 	CategoricalState fillState;
+	MesquitePopup popup;
+	MesquiteCommand respondCommand;
 
 	public String getFunctionIconPath(){
 		return getPath() + "quickKeySelector.gif";
@@ -39,13 +42,18 @@ public class PopupStateSelector extends DataWindowAssistantI implements ToolKeyL
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		if (containerOfModule() instanceof MesquiteWindow) {
-			popupStateSelectorTool = new TableTool(this, "quickKeySelector", getPath(), "quickKeySelector.gif", 4,4,"Select and type", "This tool allows you to select cells; any keystrokes will then be entered into selected cells.", MesquiteModule.makeCommand("fillTouchCell",  this), null, null);  //MesquiteModule.makeCommand("quickKeySelectorTouch",  this) 
-			popupStateSelectorTool.setToolKeyListener(this);
-			popupStateSelectorTool.setUseTableTouchRules(true);
+			popupStateSelectorTool = new TableTool(this, "popUpStateSelector", getPath(), "popUpStateSelector.gif", 4,4,"Popup State Entry", "This tool allows you to set entrie.", MesquiteModule.makeCommand("touchCell",  this), null, null);   
+			popupStateSelectorTool.setWorksOnColumnNames(false);
+			popupStateSelectorTool.setWorksOnRowNames(false);
+			popupStateSelectorTool.setWorksOnMatrixPanel(true);
+			popupStateSelectorTool.setWorksOnCornerPanel(false);
+			//popupStateSelectorTool.setUseTableTouchRules(true);
 			//quickKeySelectorTool.setAllowAnnotate(true);
-			((MesquiteWindow)containerOfModule()).addTool(popupStateSelectorTool);
-			popupStateSelectorTool.setPopUpOwner(this);
-			setUseMenubar(false); //menu available by touching oning button
+			window = (MesquiteWindow)containerOfModule();
+			window.addTool(popupStateSelectorTool);
+			respondCommand = makeCommand("respond", this);
+			//		popupStateSelectorTool.setPopUpOwner(this);
+			//		setUseMenubar(false); //menu available by touching oning button
 		}
 		else return false;
 		return true;
@@ -61,7 +69,7 @@ public class PopupStateSelector extends DataWindowAssistantI implements ToolKeyL
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
@@ -80,14 +88,27 @@ public class PopupStateSelector extends DataWindowAssistantI implements ToolKeyL
 		return "Provides a tool with which to quickly enter data.  If this tool is active, then typing a key will cause that value to be entered into all selected cells.";
 	}
 	/*.................................................................................................................*/
+	void addToPopup(String s,int response){
+		if (popup==null)
+			return;
+		popup.addItem(s, this, respondCommand, Integer.toString(response));
+	}
+	/*.................................................................................................................*/
+	void addToPopup(String s,MesquiteCommand command, int response){
+		if (popup==null)
+			return;
+		popup.addItem(s, this, command, Integer.toString(response));
+	}
+
+	/*.................................................................................................................*/
 	public void paintSelectedCells(MesquiteTable table, CharacterData data) {
-		
+
 		UndoReference undoReference = new UndoReference(data,this, new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 
 		if (fillState != null) {
 			boolean success = false;
 			if (table.anyCellSelected()) {
-				if (table.isCellSelected(firstColumnTouched, firstRowTouched)) {
+				if (table.isCellSelected(columnTouched, rowTouched)) {
 					for (int i=0; i<table.getNumColumns(); i++)
 						for (int j=0; j<table.getNumRows(); j++)
 							if (table.isCellSelected(i,j)) {
@@ -97,7 +118,7 @@ public class PopupStateSelector extends DataWindowAssistantI implements ToolKeyL
 				}
 			}
 			if (table.anyRowSelected()) {
-				if (table.isRowSelected(firstRowTouched)) {
+				if (table.isRowSelected(rowTouched)) {
 					for (int j=0; j<table.getNumRows(); j++) {
 						if (table.isRowSelected(j))
 							for (int i=0; i<table.getNumColumns(); i++)
@@ -107,7 +128,7 @@ public class PopupStateSelector extends DataWindowAssistantI implements ToolKeyL
 				}
 			}
 			if (table.anyColumnSelected()) {
-				if (table.isColumnSelected(firstColumnTouched)) {
+				if (table.isColumnSelected(columnTouched)) {
 					for (int i=0; i<table.getNumColumns(); i++){
 						if (table.isColumnSelected(i))
 							for (int j=0; j<table.getNumRows(); j++) 
@@ -124,31 +145,66 @@ public class PopupStateSelector extends DataWindowAssistantI implements ToolKeyL
 
 		}
 	}
+
+
+
+	/*.................................................................................................................*/
+	private void addStateNamesToPopup(int ic) {
+		int responseNumber = 0;
+		
+		for (int i=0; i<CategoricalState.maxCategoricalState && i<data.maxStateWithName(ic)+4; i++) {
+			addToPopup(data.getStateName(ic, i), responseNumber++);
+		}
+	}
 	/*.................................................................................................................*/
 
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Fill touched cell or selected cells with current paint states", "[column touched] [row touched]", commandName, "fillTouchCell")) {
+		if (checker.compare(this.getClass(), "Fill touched cell or selected cells with current paint states", "[column touched] [row touched]", commandName, "touchCell")) {
 			if (table!=null && data !=null){
 				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
 				MesquiteInteger io = new MesquiteInteger(0);
-				firstColumnTouched= MesquiteInteger.fromString(arguments, io);
-				firstRowTouched= MesquiteInteger.fromString(arguments, io);
-				fillState = new CategoricalState(0);
 
-				if (!table.rowLegal(firstRowTouched)|| !table.columnLegal(firstColumnTouched))
+				columnTouched= MesquiteInteger.fromString(arguments, io);
+				rowTouched= MesquiteInteger.fromString(arguments, io);
+				if (popup==null)
+					popup = new MesquitePopup(table.getMatrixPanel());
+				popup.removeAll();
+
+				addStateNamesToPopup(columnTouched);
+
+				if (!table.rowLegal(rowTouched)|| !table.columnLegal(columnTouched))
 					return null;
-				if ((table.isCellSelected(firstColumnTouched, firstRowTouched))||(table.isRowSelected(firstRowTouched))||(table.isColumnSelected(firstColumnTouched))) {
-					paintSelectedCells(table, data); // the touched cell or column is selected; therefore, just fill the selection.
-					firstColumnTouched= -2;
-					firstRowTouched= -2;
+
+				if ((table.isCellSelected(columnTouched, rowTouched))||(table.isRowSelected(rowTouched))||(table.isColumnSelected(columnTouched))) {
+					table.deSelectAndRedrawOutsideBlock(columnTouched, 0, columnTouched, table.getNumRows()-1);
 				}
 				else {
-					table.selectCell(firstColumnTouched, firstRowTouched);
-					table.deSelectAndRedrawOutsideBlock(firstColumnTouched, firstRowTouched, firstColumnTouched, firstRowTouched);
+					table.selectCell(columnTouched, rowTouched);
+					table.redrawCell(columnTouched, rowTouched);
+					table.deSelectAndRedrawOutsideBlock(columnTouched, rowTouched, columnTouched, rowTouched);
 				}
+
+				popup.showPopup(table.getBounds().x+table.getColumnX(columnTouched), table.getBounds().y+table.getRowY(rowTouched));
+
+
+			}
+		}
+		else if (checker.compare(this.getClass(), "Responds to choice of popup menu", "[choice number]", commandName, "respond")) {
+			MesquiteInteger io = new MesquiteInteger(0);
+			int response = MesquiteInteger.fromString(arguments, io);
+			fillState = new CategoricalState(CategoricalState.makeSet(response));
+			if ((table.isCellSelected(columnTouched, rowTouched))||(table.isRowSelected(rowTouched))||(table.isColumnSelected(columnTouched))) {
+				paintSelectedCells(table, data); // the touched cell or column is selected; therefore, just fill the selection.
+				columnTouched= -2;
+				rowTouched= -2;
+			}
+			else {
+				paintSelectedCells(table, data); // the touched cell or column is selected; therefore, just fill the selection.
+				columnTouched= -2;
+				rowTouched= -2;
 			}
 		}
 
