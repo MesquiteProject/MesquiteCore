@@ -61,7 +61,7 @@ public class PopupStateSelector extends DataWindowAssistantI  {
 	/*.................................................................................................................*/
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
 	public CompatibilityTest getCompatibilityTest(){
-		return new RequiresAnyCategoricalData();
+		return new RequiresExactlyCategoricalData();
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){
@@ -154,7 +154,7 @@ public class PopupStateSelector extends DataWindowAssistantI  {
 	private void addStateNamesToPopup(int ic) {
 		int responseNumber = 0;
 
-		for (int i=0; i<CategoricalState.maxCategoricalState && i<data.maxStateWithName(ic)+4; i++) {
+		for (int i=0; i<CategoricalState.maxCategoricalState && i<data.maxStateWithName(ic)+5; i++) {
 			addToPopup(data.getStateName(ic, i), responseNumber++);
 		}
 
