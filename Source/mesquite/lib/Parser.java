@@ -426,6 +426,12 @@ public class Parser extends StringUtil {
 		return getNextToken();
 	}
 	/*............................................  ....................................................*/
+	/** returns first token from string; afterward sets pos to end of token; excluding square bracket comments*/
+	public String getFirstRawToken() {
+		pos.setValue(0);
+		return getUnalteredToken(false);
+	}
+	/*............................................  ....................................................*/
 	/** returns first index of occurence of target token; useful to find if token is in string*/
 	public int tokenIndexOfIgnoreCase(String line, String target) {
 		if (target == null || line == null)
