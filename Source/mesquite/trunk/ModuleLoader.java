@@ -115,12 +115,12 @@ public class ModuleLoader {
 					mesquite.alert("Some packages requested in the configuration file were not found.  These are:\n" + notFound);
 
 				/* added by Paul Lewis */
-		/*		String classPathsFileMF = null; 
+				String classPathsFileMF = null; 
 				if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.xml")){
 					classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.getRootPath() + "classpaths.xml");
 					addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
 				}
-*/
+
 			}
 			else {
 				int numStandard = MesquiteTrunk.standardPackages.length; 
@@ -152,33 +152,32 @@ public class ModuleLoader {
 				targetDirectories.setValue(0, "pluginPackages.zephyr");
 				getModulesFromJar(targetDirectories, true);
 
-				if (MesquiteTrunk.isJavaVersionLessThan(9.0)) {
-					try {
-						ClassPathHacker.addFile(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator  + "classes");
-						getModules("mesquite", MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classes" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
-						ClassPathHacker.addFile(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
-						getModules("mesquite", MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
+				try {
+					ClassPathHacker.addFile(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator  + "classes");
+					getModules("mesquite", MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classes" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
+					ClassPathHacker.addFile(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
+					getModules("mesquite", MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
 
-						String classPathsFileMF = null; 
-						if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.xml")){
-							classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.getRootPath() + "classpaths.xml");
+					String classPathsFileMF = null; 
+					if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.xml")){
+						classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.getRootPath() + "classpaths.xml");
 
-							addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
+						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
 
-						}
-						if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + "classpaths.xml")){
-							classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classpaths.xml");
-							addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);
-						}
 					}
-					catch(java.io.IOException e){ 
-						MesquiteMessage.printLogln("\n\nIOE in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
-					}
-					catch(Throwable e){  //to permit function under Java 1.1
-						MesquiteMessage.printLogln("\n\nException in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
+					if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + "classpaths.xml")){
+						classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classpaths.xml");
+						addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);
 					}
 				}
+				catch(java.io.IOException e){ 
+					MesquiteMessage.printLogln("\n\nIOE in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
+				}
+				catch(Throwable e){  //to permit function under Java 1.1
+					MesquiteMessage.printLogln("\n\nException in loading extra classes in Mesquite_Support_Files: " + e.getMessage());
+				}
 			}
+			
 			mesquite.mesquiteModulesInfoVector.filterAllDutyDefaults();
 			mesquite.mesquiteModulesInfoVector.accumulateAllVersions();
 			//timer.end();
