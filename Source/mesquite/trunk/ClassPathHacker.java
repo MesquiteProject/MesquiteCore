@@ -14,10 +14,10 @@ public class ClassPathHacker {
 		File f = new File(s);
 		addFile(f);
 	}
-	public static void addFileForModule(String s) throws IOException {
-		/*File f = new File(s);
+	public static void addFileForModules(String s) throws IOException {  //method currently distinct only by name, to isolate loading of modules
+		File f = new File(s);
 		addFile(f);
-		*/
+		
 	}
 	
 	public static void addFile(File f) throws IOException {
