@@ -166,6 +166,8 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					System.out.println("IOE in loading extra classes in Mesquite_Support_Files");
 				}
 				catch(Throwable e){  //to permit function under Java 1.1
+					MesquiteMessage.println("\n");
+					MesquiteMessage.println("Exception in loading other classes: "+e.getMessage());
 				}
 				}
 			mesquite.mesquiteModulesInfoVector.filterAllDutyDefaults();
