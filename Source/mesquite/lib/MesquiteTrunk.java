@@ -254,8 +254,12 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/** Returns the first three characters of "java.version" as a double; e.g., "1.4.1" is returned as the double 1.4 */
 	public static double getJavaVersionAsDouble(){
 		try {
-			Double versionDouble = Double.valueOf(System.getProperty("java.version").substring(0,3));
-			return versionDouble.doubleValue();
+			String s = System.getProperty("java.version");
+			if (StringUtil.notEmpty(s) && s.indexOf(".")>0) {
+				Double versionDouble = Double.valueOf(System.getProperty("java.version").substring(0,3));
+				return versionDouble.doubleValue();
+			} else
+				return MesquiteDouble.fromString(s);
 		}
 		catch (NumberFormatException e) {
 			return 0.0;
