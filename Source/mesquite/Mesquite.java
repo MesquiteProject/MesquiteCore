@@ -2410,8 +2410,12 @@ public class Mesquite extends MesquiteTrunk
 		if (!MesquiteWindow.GUIavailable)
 			return;
 		else if (MesquiteTrunk.isMacOSX()) {
-			fileHandler = new EAWTHandler(this);
-			((EAWTHandler)fileHandler).register();
+			try {
+				fileHandler = new EAWTHandler(this);
+				((EAWTHandler)fileHandler).register();
+
+			} catch (NoSuchMethodError e) {
+			}
 		}
 	}
 
