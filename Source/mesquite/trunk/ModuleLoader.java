@@ -145,9 +145,9 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				targetDirectories.setValue(numStandard + numStandardExtra+5, "mesquite.configs");  //TODO: avoid configs in all contexts!
 				getModules("mesquite", MesquiteModule.getRootPath() + "mesquite", "", 0, targetDirectories, false, true); //next, add to the target directories and do everything but them
 				try {
-					ClassPathHacker.addFile(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator  + "classes");
+					ClassPathHacker.addFileForModule(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator  + "classes");
 					getModules("mesquite", MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classes" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
-					ClassPathHacker.addFile(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
+					ClassPathHacker.addFileForModule(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
 					getModules("mesquite", MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
 					
 					String classPathsFileMF = null; 
@@ -203,7 +203,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					try{
 						String path = MesquiteFile.composePath(relativeTo, tagContent) ; //here you pass the ith thing in the list
 						DirectInit.loadJarsInDirectories(path, mesquite.jarFilesLoaded);
-						ClassPathHacker.addFile(path);	
+						ClassPathHacker.addFileForModule(path);	
 
 						mesquite.logln("\n\nAdditional modules loaded from " + path);
 						getModules("mesquite", path+ MesquiteFile.fileSeparator  + "mesquite", "", 0, null, false, true);  //do the directories in config
