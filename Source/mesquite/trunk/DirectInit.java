@@ -38,7 +38,7 @@ public class DirectInit {
 			if (f.exists() && f.isDirectory()){
 				String[] jars = f.list();
 				if (jars.length>0)
-					buffer.append("Incorporated from " + directoryPath +" ");
+					buffer.append("Jar files incorporated from " + directoryPath +": ");
 				for (int i = 0; i< jars.length; i++) {
 					if (jars[i] != null && !jars[i].startsWith(".")){
 						String path = jarsPath + "/" + jars[i];

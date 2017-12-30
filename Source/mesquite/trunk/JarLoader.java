@@ -26,10 +26,10 @@ public class JarLoader {
 			if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(9.0)) {
 				Instrumentation instrumentation = ByteBuddyAgent.install();
 				instrumentation.appendToSystemClassLoaderSearch(new JarFile(f));
-				jarAdded = true;
 			} else {
 				addURL(uri.toURL());
 			}
+			jarAdded = true;
 		} catch (IOException e) {
 			System.out.println("\nIOException\n");
 		}
