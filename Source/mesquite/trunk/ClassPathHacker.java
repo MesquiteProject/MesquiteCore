@@ -2,8 +2,11 @@
 
 package mesquite.trunk;
 import java.lang.reflect.*;
+
 import java.io.*;
 import java.net.*;
+
+import mesquite.lib.MesquiteFile;
 
 
 public class ClassPathHacker {
@@ -14,22 +17,16 @@ public class ClassPathHacker {
 		File f = new File(s);
 		addFile(f);
 	}
-	public static void addFileForModules(String s) throws IOException {  //method currently distinct only by name, to isolate loading of modules
-		File f = new File(s);
-		addFile(f);
-		
-	}
-	
 	public static void addFile(File f) throws IOException {
-	addURL(f.toURL());
+		addURL(f.toURL());
 	}
 	/**/
-	
+
 	public static void addURL(URL u) throws IOException {
-			
+
 		URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
 		Class sysclass = URLClassLoader.class;
-	
+
 		try {
 			Method method = sysclass.getDeclaredMethod("addURL",parameters);
 			method.setAccessible(true);
@@ -39,8 +36,9 @@ public class ClassPathHacker {
 			t.printStackTrace();
 			throw new IOException("Error, could not add URL to system classloader");
 		}
-					
+
 	}
+
 
 }
 
