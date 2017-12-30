@@ -45,7 +45,8 @@ public class DirectInit {
 						buffer.append(" " + jars[i]);
 						boolean jarLoaded = JarLoader.addJarFileToClassPath(path);
 						if (jarLoaded) {
-							System.out.println("Jar file added to classpath: " + path);
+							if (MesquiteTrunk.debugMode)
+								System.out.println("Jar file added to classpath: " + path);
 							jarsLoaded=true;
 						}
 					}
