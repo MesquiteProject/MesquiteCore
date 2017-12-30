@@ -24,7 +24,17 @@ public class JarLoader {
 			File f = new File(s);
 			URI uri = f.toURI();
 			if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(9.0)) {
-				Instrumentation instrumentation = ByteBuddyAgent.install();
+
+				Instrumentation instrumentation = null;
+				try {
+					Class byteBuddyClass = MesquiteTrunk.basicClassLoader.loadClass("net.bytebuddy.agent.ByteBuddyAgent");
+					Method installMethod = byteBuddyClass.getDeclaredMethod("install", null);
+					instrumentation = (Instrumentation)installMethod.invoke(null,null);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				//	Instrumentation instrumentation = ByteBuddyAgent.install();
 				instrumentation.appendToSystemClassLoaderSearch(new JarFile(f));
 			} else {
 				addURL(uri.toURL());

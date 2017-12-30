@@ -2610,23 +2610,39 @@ public class Mesquite extends MesquiteTrunk
 			URL u =null;
 			URL[] us= null;
 			u =mesquiteDirectory.toURL();
+			int num = 1;
+			String[] jars = null;
+			String jarsPath = mesquiteDirectoryPath + System.getProperty("file.separator") +"jars";
+			File jarsDirectory = new File(jarsPath);
+			if (jarsDirectory.exists() && jarsDirectory.isDirectory()){
+				jars = jarsDirectory.list();
+				num += jars.length;
+			}
 			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + "classpaths.txt";
 			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
-			if (paths == null || paths.length == 0){
-				return new URLClassLoader(new URL[]{u});
-			}
-			else {
-				us = new URL[paths.length + 1];
-				us[0] = u;
-				if (paths != null){
-					for (int i = 0; i<paths.length; i++){
-						String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
-						File d = new File(absPath);
-						us[i+1] = d.toURL();
-					}
+			if (paths != null)
+				num += paths.length;
+			us = new URL[num];
+			us[0] = u;
+			int count = 1;
+			if (paths != null){
+				for (int i = 0; i<paths.length; i++){
+					String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
+					File d = new File(absPath);
+					us[i+1] = d.toURL();
+					System.out.println("********" + d.toURL());
+					count++;
 				}
-				return new URLClassLoader(us);
 			}
+			if (jars != null || jars.length == 0){
+				for (int i = 0; i<jars.length; i++){
+					String absPath = jarsPath + System.getProperty("file.separator") + jars[i];
+					File d = new File(absPath);
+					us[count++] = d.toURL();
+					System.out.println("********" + d.toURL());
+				}
+			}
+			return new URLClassLoader(us);
 
 		} 
 		catch (Throwable t) {
