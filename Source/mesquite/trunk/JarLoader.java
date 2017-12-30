@@ -30,6 +30,7 @@ public class JarLoader {
 					Class byteBuddyClass = MesquiteTrunk.basicClassLoader.loadClass("net.bytebuddy.agent.ByteBuddyAgent");
 					Method installMethod = byteBuddyClass.getDeclaredMethod("install", null);
 					instrumentation = (Instrumentation)installMethod.invoke(null,null);
+					jarAdded = true;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -38,8 +39,8 @@ public class JarLoader {
 				instrumentation.appendToSystemClassLoaderSearch(new JarFile(f));
 			} else {
 				addURL(uri.toURL());
+				jarAdded = true;
 			}
-			jarAdded = true;
 		} catch (IOException e) {
 			System.out.println("\nIOException\n");
 		}
