@@ -312,7 +312,7 @@ public class Mesquite extends MesquiteTrunk
 			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath());
 		}
 
-		
+
 		//loading jar files
 		DirectInit di = new DirectInit(this);
 
@@ -2612,16 +2612,21 @@ public class Mesquite extends MesquiteTrunk
 			u =mesquiteDirectory.toURL();
 			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + "classpaths.txt";
 			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
-			us = new URL[paths.length + 1];
-			us[0] = u;
-			if (paths != null){
-				for (int i = 0; i<paths.length; i++){
-					String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
-					File d = new File(absPath);
-					us[i+1] = d.toURL();
-				}
+			if (paths == null || paths.length == 0){
+				return new URLClassLoader(new URL[]{u});
 			}
-			return new URLClassLoader(us);
+			else {
+				us = new URL[paths.length + 1];
+				us[0] = u;
+				if (paths != null){
+					for (int i = 0; i<paths.length; i++){
+						String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
+						File d = new File(absPath);
+						us[i+1] = d.toURL();
+					}
+				}
+				return new URLClassLoader(us);
+			}
 
 		} 
 		catch (Throwable t) {
