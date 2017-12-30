@@ -61,12 +61,7 @@ public URLClassLoader getClassLoaderForDirectory(String filePath, String classPa
 				gmcl = MesquiteTrunk.starter.getClass().getDeclaredMethod("getClassLoader", argTypes);
 				loader = (URLClassLoader)gmcl.invoke(MesquiteTrunk.starter, new Object[]{u});
 				Debugg.println("%%%%%%%%%%%LOADER FROM STARTER " + loader);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
-			catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

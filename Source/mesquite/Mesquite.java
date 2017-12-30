@@ -313,12 +313,7 @@ public class Mesquite extends MesquiteTrunk
 			try {
 				gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
 				basicClassLoader = (URLClassLoader)gmcl.invoke(starter, null);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
-			catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
