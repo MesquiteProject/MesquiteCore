@@ -34,6 +34,8 @@ with the trunk. */
 public abstract class MesquiteTrunk extends MesquiteModule  
 {
 	public static boolean startedAsLibrary = false;
+	public static Object starter; //the start.Mesquite class that may have started Mesquite; to get class loaders (Java 1.9 and above; 2017)
+	public static ClassLoader basicClassLoader;  //The URLClassLoader that is pointed to Mesquite_Folder/mesquite
 	//turns on checking of classes in FileElement, NexusBlock and MesquiteCommand (possibly others), to detect memory leaks
 	public static final boolean checkMemory = false;  
 	public static boolean attemptingToQuit = false;

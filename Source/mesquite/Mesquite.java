@@ -18,6 +18,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.*;
 
 import javax.imageio.ImageIO;
@@ -57,7 +59,7 @@ public class Mesquite extends MesquiteTrunk
 	public String getDateReleased() {
 		return "September 2017"; //"April 2007";
 	}
-	
+
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
@@ -293,6 +295,34 @@ public class Mesquite extends MesquiteTrunk
 		}
 		if (verboseStartup) System.out.println("main init 6");
 
+
+		if (starter == null){ // because of Java 9 classloading issues, rely on starter class?
+			File f = new File(MesquiteModule.getRootPath() + "mesquite");
+			URL uf;
+			try {
+				uf = f.toURL();
+				URL[] u = {uf};
+				basicClassLoader = new URLClassLoader(u);
+			} catch (MalformedURLException e) {
+				//Debugg.println
+			}
+		}
+		else {
+			//	Class[] argTypes = new Class[] {};
+			Method gmcl;
+			try {
+				gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
+				basicClassLoader = (URLClassLoader)gmcl.invoke(starter, null);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			}
+
+		}
 		//loading jar files
 		DirectInit di = new DirectInit(this);
 
@@ -705,7 +735,7 @@ public class Mesquite extends MesquiteTrunk
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
 		if (MesquiteTrunk.debugMode)
 			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
-		
+
 	} 
 
 	/*.................................................................................................................*/
@@ -1292,7 +1322,7 @@ public class Mesquite extends MesquiteTrunk
 		return newProject(pathname, 1, false, originalArguments,  importerSubclass);
 	}
 	/*.................................................................................................................*/
-	
+
 	public MesquiteProject openFile(String pathname){
 		return newProject(pathname, 1,  false, null, null);
 	}
@@ -1453,11 +1483,11 @@ public class Mesquite extends MesquiteTrunk
 		wcre = MesquiteWindow.classesCreated;
 		wct = MesquiteWindow.countsOfClasses;
 		wctf = MesquiteWindow.countsOfClassesFinalized;
-			logln("Window classes created     " );
-			for (int i=0; i<wcre.size(); i++){
-				logln("    " + wcre.elementAt(i) + "  created: " + wct.elementAt(i) + "  finalized: " + wctf.elementAt(i));
-			}
-		
+		logln("Window classes created     " );
+		for (int i=0; i<wcre.size(); i++){
+			logln("    " + wcre.elementAt(i) + "  created: " + wct.elementAt(i) + "  finalized: " + wctf.elementAt(i));
+		}
+
 		Vector cre, fin, ct, ctd;
 		cre = FileElement.classesCreated;
 		fin = FileElement.classesFinalized;
@@ -1549,39 +1579,39 @@ public class Mesquite extends MesquiteTrunk
 		StringBuffer sb = new StringBuffer();
 		int count=0;
 		String prevPackageName="";
-	    Vector<String> vector = new Vector<String>();
-	    
-	    for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
-	    	MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
-	    	if (mmi.loadModule()) {
-	    		if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
-	    			prevPackageName=mmi.getPackageName();
-	    			if (prevPackageName!=null){
-	    				Collections.sort(vector);
-	    				for(int j=0; j < vector.size(); j++){
-	    					sb.append(vector.get(j));
-	    				}
-	    				vector.clear();
-	    				sb.append("<hr>");
-	    				String vers = mmi.getVersion();
-	    				if (vers == null)
-	    					vers = "";
-	    				if (StringUtil.blank(vers))
-	    					sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
-	    				else
-	    					sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
-	    			}
-	    		}
-	    		vector.add("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
-	    		count++;
-	    	}
-	    } 
-	    if (!vector.isEmpty()) {
-	    	Collections.sort(vector);
-	    	for(int j=0; j < vector.size(); j++){
-	    		sb.append(vector.get(j));
-	    	}
-	    }
+		Vector<String> vector = new Vector<String>();
+
+		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
+			MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
+			if (mmi.loadModule()) {
+				if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
+					prevPackageName=mmi.getPackageName();
+					if (prevPackageName!=null){
+						Collections.sort(vector);
+						for(int j=0; j < vector.size(); j++){
+							sb.append(vector.get(j));
+						}
+						vector.clear();
+						sb.append("<hr>");
+						String vers = mmi.getVersion();
+						if (vers == null)
+							vers = "";
+						if (StringUtil.blank(vers))
+							sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
+						else
+							sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
+					}
+				}
+				vector.add("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
+				count++;
+			}
+		} 
+		if (!vector.isEmpty()) {
+			Collections.sort(vector);
+			for(int j=0; j < vector.size(); j++){
+				sb.append(vector.get(j));
+			}
+		}
 		String allModulesHTML = " <title>Modules in Mesquite</title>";
 		allModulesHTML += "<body>";
 		allModulesHTML += "<h1>List of All Installed Modules in Mesquite</h1>";
@@ -1829,7 +1859,7 @@ public class Mesquite extends MesquiteTrunk
 			storePreferences();
 			discreetAlert("You will need to restart Mesquite to load all of the modules");
 		}
-		
+
 		else if (checker.compare(this.getClass(), "Opens file on disk.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file] - if parameter absent then presents user with dialog box to choose file", commandName, "openFile")) {
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
 			String completeArguments = arguments;
@@ -2565,8 +2595,8 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("main constructor 6");
 		if (about !=null && mesquiteTrunk.getProjectList()!=null && mesquiteTrunk.getProjectList().getNumProjects()>0 && defaultHideMesquiteWindow)
 			about.hide();
-		
-		
+
+
 	}
 
 	/*.................................................................................................................*
@@ -2576,6 +2606,12 @@ public class Mesquite extends MesquiteTrunk
 		OMStartupThread t = new OMStartupThread(args);
 		t.start();
 		return true;
+	}
+	 */
+	public static void mainViaStarter(String args[], Object starter){
+		MesquiteTrunk.mesquiteTrunk.starter = starter;
+		main(args);
+
 	}
 	/*.................................................................................................................*/
 	public static void main(String args[])
