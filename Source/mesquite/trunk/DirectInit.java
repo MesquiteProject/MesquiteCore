@@ -41,7 +41,7 @@ public class DirectInit {
 					if (jars[i] != null && !jars[i].startsWith(".")){
 						String path = jarsPath + "/" + jars[i];
 						buffer.append(" " + jars[i]);
-					ClassPathHacker.addFile(path);
+					JarLoader.addJarFileToClassPath(path);
 					System.out.println("Jar file added to classpath: " + path);
 					}
 				}
