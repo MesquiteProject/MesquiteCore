@@ -142,7 +142,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 
-	static boolean startedFromOSXJava17Executable = false; 
+	static boolean startedFromNestedStarter = false; 
 	/*.................................................................................................................*/
 	public void init()
 	{
@@ -185,7 +185,7 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("@ " + loc);
 
 			try {
-				if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
+				if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
 					loc = StringUtil.encodeForAppBuilderURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
@@ -200,10 +200,13 @@ public class Mesquite extends MesquiteTrunk
 		else {
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			System.out.println("startedFromNestedStarter = " + startedFromNestedStarter); //Debugg.println
 			System.out.println("@ " + loc);
 			try {
-				if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
+				if (startedFromNestedStarter) //for OS X executable built by Oracle appBundler
 					loc = StringUtil.encodeForAppBuilderURL(loc);
+				//else
+				//	loc = StringUtil.encodeForAppBuilderURL(loc);  //Debugg.println for Java9
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -2462,8 +2465,12 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.noBeans = true;
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
-					else if (args[i].equals("-mq17"))
-						startedFromOSXJava17Executable = true;
+					else if (args[i].equals("-mq17")) {
+						MesquiteMessage.warnUser("This executable is not compatible with current Mesquite");
+						startedFromNestedStarter = true;
+					}
+					else if (args[i].equals("-nestedStarter"))
+						startedFromNestedStarter = true;
 					else if (args[i].equals("-d"))
 						MesquiteTrunk.debugMode = true;
 					else if (args[i].equals("--version"))

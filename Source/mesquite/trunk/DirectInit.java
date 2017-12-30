@@ -23,10 +23,12 @@ public class DirectInit {
 	
 	public DirectInit(MesquiteTrunk mesquite){
 		/* This will be used to load jar files at runtime*/
-		loadJars(mesquite.getRootPath(), mesquite.jarFilesLoaded);
+		if (!loadJars(mesquite.getRootPath(), mesquite.jarFilesLoaded))
+			mesquite.discreetAlert("Unable to load jars. Mesquite will not function.");
 		loadJarsInDirectories(mesquite.getRootPath() + MesquiteFile.fileSeparator + "mesquite", mesquite.jarFilesLoaded);
 	}
-	public static void loadJars(String directoryPath, StringBuffer buffer){
+	public static boolean loadJars(String directoryPath, StringBuffer buffer){
+		boolean jarsLoaded = false;
 		try {
 			String jarsPath = directoryPath;
 			if (!jarsPath.endsWith(MesquiteFile.fileSeparator) && !jarsPath.endsWith("/"))
@@ -36,13 +38,17 @@ public class DirectInit {
 			if (f.exists() && f.isDirectory()){
 				String[] jars = f.list();
 				if (jars.length>0)
-					buffer.append("Incorporated from " + directoryPath +" ");
+					buffer.append("Jar files incorporated from " + directoryPath +": ");
 				for (int i = 0; i< jars.length; i++) {
 					if (jars[i] != null && !jars[i].startsWith(".")){
 						String path = jarsPath + "/" + jars[i];
 						buffer.append(" " + jars[i]);
-					JarLoader.addJarFileToClassPath(path);
-					System.out.println("Jar file added to classpath: " + path);
+						boolean jarLoaded = JarLoader.addJarFileToClassPath(path);
+						if (jarLoaded) {
+							if (MesquiteTrunk.debugMode)
+								System.out.println("Jar file added to classpath: " + path);
+							jarsLoaded=true;
+						}
 					}
 				}
 				buffer.append("\n\n");
@@ -51,6 +57,7 @@ public class DirectInit {
 		catch (Throwable t){
 			System.out.println("DirectInit error " + t);
 		}
+		return jarsLoaded;
 	}
 	public static void loadJarsInDirectories(String path, StringBuffer buffer){ //path has no slash at the end of it
 		File f = new File(path);  //  
