@@ -299,28 +299,20 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 6");
 
 
-		if (starter == null){ // because of Java 9 classloading issues, rely on starter class?
-			File f = new File(MesquiteModule.getRootPath() + "mesquite");
-			URL uf;
+		if (starter != null){ // because of Java 9 classloading issues, rely on starter class to make class loader if it exists
 			try {
-				uf = f.toURL();
-				URL[] u = {uf};
-				basicClassLoader = new URLClassLoader(u);
-			} catch (MalformedURLException e) {
-				//Debugg.println
-			}
-		}
-		else {
-			//	Class[] argTypes = new Class[] {};
-			Method gmcl;
-			try {
-				gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
+				Method gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
 				basicClassLoader = (URLClassLoader)gmcl.invoke(starter, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 		}
+		if (basicClassLoader == null){ 
+			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath());
+		}
+
+		
 		//loading jar files
 		DirectInit di = new DirectInit(this);
 
@@ -2610,10 +2602,37 @@ public class Mesquite extends MesquiteTrunk
 		return true;
 	}
 	 */
+	/*.................................................................................................................*/
+	/*2017: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
+	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath){
+		try {
+			File mesquiteDirectory = new File(mesquiteDirectoryPath);		
+			URL u =null;
+			URL[] us= null;
+			u =mesquiteDirectory.toURL();
+			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + "classpaths.txt";
+			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
+			us = new URL[paths.length + 1];
+			us[0] = u;
+			if (paths != null){
+				for (int i = 0; i<paths.length; i++){
+					String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
+					File d = new File(absPath);
+					us[i+1] = d.toURL();
+				}
+			}
+			return new URLClassLoader(us);
+
+		} 
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	public static void mainViaStarter(String args[], Object starter){
 		MesquiteTrunk.mesquiteTrunk.starter = starter;
 		main(args);
-
 	}
 	/*.................................................................................................................*/
 	public static void main(String args[])
