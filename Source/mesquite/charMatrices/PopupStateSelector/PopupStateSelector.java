@@ -37,23 +37,19 @@ public class PopupStateSelector extends DataWindowAssistantI  {
 	MesquiteCommand respondCommand;
 
 	public String getFunctionIconPath(){
-		return getPath() + "quickKeySelector.gif";
+		return getPath() + "popUpStateSelector.gif";
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		if (containerOfModule() instanceof MesquiteWindow) {
-			popupStateSelectorTool = new TableTool(this, "popUpStateSelector", getPath(), "popUpStateSelector.gif", 4,4,"Popup State Entry", "This tool allows you to set entrie.", MesquiteModule.makeCommand("touchCell",  this), null, null);   
+			popupStateSelectorTool = new TableTool(this, "popUpStateSelector", getPath(), "popUpStateSelector.gif", 4,4,"Popup Menu State Entry", "This tool allows you to set states in a cell using a popup menu.", MesquiteModule.makeCommand("touchCell",  this), null, null);   
 			popupStateSelectorTool.setWorksOnColumnNames(false);
 			popupStateSelectorTool.setWorksOnRowNames(false);
 			popupStateSelectorTool.setWorksOnMatrixPanel(true);
 			popupStateSelectorTool.setWorksOnCornerPanel(false);
-			//popupStateSelectorTool.setUseTableTouchRules(true);
-			//quickKeySelectorTool.setAllowAnnotate(true);
 			window = (MesquiteWindow)containerOfModule();
 			window.addTool(popupStateSelectorTool);
 			respondCommand = makeCommand("respond", this);
-			//		popupStateSelectorTool.setPopUpOwner(this);
-			//		setUseMenubar(false); //menu available by touching oning button
 		}
 		else return false;
 		return true;
@@ -69,7 +65,7 @@ public class PopupStateSelector extends DataWindowAssistantI  {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
@@ -81,11 +77,11 @@ public class PopupStateSelector extends DataWindowAssistantI  {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "P Entry";
+		return "Popup Menu State Entry";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Provides a tool with which to quickly enter data.  If this tool is active, then typing a key will cause that value to be entered into all selected cells.";
+		return "Provides a tool with which to quickly enter data by providing a popup menu of states.";
 	}
 	/*.................................................................................................................*/
 	void addToPopup(String s,int response){
@@ -149,18 +145,19 @@ public class PopupStateSelector extends DataWindowAssistantI  {
 
 	static int missingResponse = -200;
 	static int inapplicableResponse = -201;
+	static int extraMenuItems = 5;
 
 	/*.................................................................................................................*/
 	private void addStateNamesToPopup(int ic) {
 		int responseNumber = 0;
 
-		for (int i=0; i<CategoricalState.maxCategoricalState && i<data.maxStateWithName(ic)+5; i++) {
+		for (int i=0; i<CategoricalState.maxCategoricalState && i<data.maxStateWithName(ic)+extraMenuItems; i++) {
 			addToPopup(data.getStateName(ic, i), responseNumber++);
 		}
 
 		popup.addSeparator();
-		addToPopup(" ?", missingResponse);
-		addToPopup(" -", inapplicableResponse);
+		addToPopup(" " + data.getUnassignedSymbol(), missingResponse);
+		addToPopup(" " + data.getInapplicableSymbol(), inapplicableResponse);
 
 
 	}
@@ -232,6 +229,14 @@ public class PopupStateSelector extends DataWindowAssistantI  {
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
+	}
+
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 340;  
 	}
 
 }
