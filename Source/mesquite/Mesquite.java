@@ -182,7 +182,6 @@ public class Mesquite extends MesquiteTrunk
 				System.out.println("Not a recognized separator in path to Mesquite class!");
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			System.out.println("@ " + loc);
 
 			try {
 				if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
@@ -200,8 +199,6 @@ public class Mesquite extends MesquiteTrunk
 		else {
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			System.out.println("startedFromNestedStarter = " + startedFromNestedStarter); //Debugg.println
-			System.out.println("@ " + loc);
 			try {
 				if (startedFromNestedStarter) //for OS X executable built by Oracle appBundler
 					loc = StringUtil.encodeForAppBuilderURL(loc);
@@ -2469,8 +2466,6 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteMessage.warnUser("This executable is not compatible with current Mesquite");
 						startedFromNestedStarter = true;
 					}
-					else if (args[i].equals("-nestedStarter"))
-						startedFromNestedStarter = true;
 					else if (args[i].equals("-d"))
 						MesquiteTrunk.debugMode = true;
 					else if (args[i].equals("--version"))
@@ -2630,7 +2625,6 @@ public class Mesquite extends MesquiteTrunk
 					String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
 					File d = new File(absPath);
 					us[i+1] = d.toURL();
-					System.out.println("********" + d.toURL());
 					count++;
 				}
 			}
@@ -2639,7 +2633,6 @@ public class Mesquite extends MesquiteTrunk
 					String absPath = jarsPath + System.getProperty("file.separator") + jars[i];
 					File d = new File(absPath);
 					us[count++] = d.toURL();
-					System.out.println("********" + d.toURL());
 				}
 			}
 			return new URLClassLoader(us);
@@ -2653,6 +2646,7 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	public static void mainViaStarter(String args[], Object starter){
 		MesquiteTrunk.mesquiteTrunk.starter = starter;
+		startedFromNestedStarter = true;
 		main(args);
 	}
 	/*.................................................................................................................*/
