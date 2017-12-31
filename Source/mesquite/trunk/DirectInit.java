@@ -23,8 +23,7 @@ public class DirectInit {
 	
 	public DirectInit(MesquiteTrunk mesquite){
 		/* This will be used to load jar files at runtime*/
-		if (!loadJars(mesquite.getRootPath(), mesquite.jarFilesLoaded))
-			mesquite.discreetAlert("Unable to load jars. Mesquite will not function.");
+		loadJars(mesquite.getRootPath(), mesquite.jarFilesLoaded);
 		loadJarsInDirectories(mesquite.getRootPath() + MesquiteFile.fileSeparator + "mesquite", mesquite.jarFilesLoaded);
 	}
 	public static boolean loadJars(String directoryPath, StringBuffer buffer){
