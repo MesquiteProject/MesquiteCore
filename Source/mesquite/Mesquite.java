@@ -298,6 +298,7 @@ public class Mesquite extends MesquiteTrunk
 			try {
 				Method gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
 				basicClassLoader = (URLClassLoader)gmcl.invoke(starter, null);
+				System.out.println("Received URLClassLoader from start.Mesquite");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -305,11 +306,14 @@ public class Mesquite extends MesquiteTrunk
 		}
 		if (basicClassLoader == null){ 
 			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath());
+			System.out.println("No URLClassLoader received from start.Mesquite; made one after startup");
 		}
 
+		System.out.println("Current class loader " + this.getClass().getClassLoader());
+		System.out.println("Module class loader " + basicClassLoader);
 
 		//loading jar files
-		DirectInit di = new DirectInit(this);
+		//DirectInit di = new DirectInit(this); Debugg.println
 
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
@@ -2595,44 +2599,65 @@ public class Mesquite extends MesquiteTrunk
 		return true;
 	}
 	 */ 
+
+	static void collectAllJars(String path, Vector jars){
+		File dir = new File(path);
+		if (dir.exists() && dir.isDirectory()){
+			String[] subs = dir.list();
+			if (subs != null && subs.length>0){
+				for (int i = 0; i<subs.length; i++){
+					if (subs[i].equals("jars")){
+						String jarsPath = path + System.getProperty("file.separator") + "jars";
+						System.out.println("   Collecting jars from <" + jarsPath + ">");
+						File jarsDirectory = new File(jarsPath);
+						if (jarsDirectory.exists() && jarsDirectory.isDirectory()){
+							String[] jarsList = jarsDirectory.list();
+							if (jarsList != null && jarsList.length > 0){
+								for (int k = 0; k<jarsList.length; k++){
+									String absPath = jarsPath + System.getProperty("file.separator") + jarsList[k];
+									File d = new File(absPath);
+									try {
+										jars.addElement(d.toURL());
+									} catch (MalformedURLException e) {
+										e.printStackTrace();
+									}
+								}
+							}
+						}
+
+					}
+					else
+						collectAllJars(path + System.getProperty("file.separator") + subs[i], jars);
+				}
+			}
+		}
+
+	}
 	/*.................................................................................................................*/
 	/*2017: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
 	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath){
 		try {
+			Vector urls = new Vector();
 			File mesquiteDirectory = new File(mesquiteDirectoryPath);		
 			URL u =null;
-			URL[] us= null;
-			u =mesquiteDirectory.toURL();
-			int num = 1;
-			String[] jars = null;
-			String jarsPath = mesquiteDirectoryPath + System.getProperty("file.separator") +"jars";
-			File jarsDirectory = new File(jarsPath);
-			if (jarsDirectory.exists() && jarsDirectory.isDirectory()){
-				jars = jarsDirectory.list();
-				num += jars.length;
-			}
+			System.out.println("     <" + mesquiteDirectory + ">");
+			urls.addElement(mesquiteDirectory.toURL());
+			collectAllJars(mesquiteDirectoryPath, urls);
 			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + "classpaths.txt";
 			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
-			if (paths != null)
-				num += paths.length;
-			us = new URL[num];
-			us[0] = u;
-			int count = 1;
 			if (paths != null){
 				for (int i = 0; i<paths.length; i++){
 					String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
 					File d = new File(absPath);
-					us[i+1] = d.toURL();
-					count++;
+					collectAllJars(absPath, urls);
+					urls.addElement(d.toURL());
 				}
 			}
-			if (jars != null || jars.length == 0){
-				for (int i = 0; i<jars.length; i++){
-					String absPath = jarsPath + System.getProperty("file.separator") + jars[i];
-					File d = new File(absPath);
-					us[count++] = d.toURL();
-				}
+			URL[] us= new URL[urls.size()];
+			for (int i = 0; i<urls.size(); i++){
+				us[i] = (URL)urls.elementAt(i);
 			}
+
 			return new URLClassLoader(us);
 
 		} 

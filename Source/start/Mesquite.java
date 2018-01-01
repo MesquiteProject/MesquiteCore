@@ -43,13 +43,13 @@ public class Mesquite {
 		System.out.println("Location of executable start class: " + loc);
 		if (loc.startsWith("file:")){
 				loc = loc.substring(5, loc.length());
-				loc = decodeFromURL(loc); 
 		}
+		loc = decodeFromURL(loc); 
 		
 		/*Find Mesquite_Folder by moving upwards until signature folders are found
 		 * Mesquite_Folder must contain "mesquite", "images", and "start"*/
 		loc = findMesquite_Folder(loc);
-		//Started from a jar file within an OS X application bundle, loc is initially within <bundle>/Contents/Java/<jar>/start/Mesquite.class
+		//If started from a jar file within an OS X application bundle, loc is initially within <bundle>/Contents/Java/<jar>/start/Mesquite.class
 		
 		File mesquiteDirectory = new File(loc);		
 		System.out.println("Mesquite Folder: " + loc + " (exists = " + mesquiteDirectory.exists() + ")");
