@@ -312,9 +312,6 @@ public class Mesquite extends MesquiteTrunk
 		System.out.println("Current class loader " + this.getClass().getClassLoader());
 		System.out.println("Module class loader " + basicClassLoader);
 
-		//loading jar files
-		//DirectInit di = new DirectInit(this); Debugg.println
-
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
 			if (!preferencesSet) {

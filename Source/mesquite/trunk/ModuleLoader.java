@@ -242,7 +242,6 @@ public class ModuleLoader {
 			String line = pathsFileContents[i];
 			if (!StringUtil.blank(line) && !line.startsWith("#")){
 				String path = MesquiteFile.composePath(relativeTo, line) ; //here you pass the ith thing in the list
-				//DirectInit.loadJarsInDirectories(path, mesquite.jarFilesLoaded);
 				ClassLoader loader = getClassLoaderForDirectory(path, "");
 				mesquite.logln("\n\nAdditional modules loaded from " + path);
 				getModules(loader, "mesquite", path+ MesquiteFile.fileSeparator  + "mesquite", "", 0, null, false, true);  //do the directories in config
@@ -437,7 +436,6 @@ public class ModuleLoader {
 					if (MesquiteFile.fileOrDirectoryExists(filePathName + MesquiteFile.fileSeparator + "jars")){
 						StringBuffer buffer =new StringBuffer();
 						buffer.append("\n");
-						DirectInit.loadJars(filePathName + MesquiteFile.fileSeparator + "jars", buffer);
 						mesquite.logln(buffer.toString());
 					}
 				}
