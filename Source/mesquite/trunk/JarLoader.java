@@ -11,8 +11,6 @@ import mesquite.lib.MesquiteTrunk;
 
 import java.io.File;
 
-import net.bytebuddy.agent.ByteBuddyAgent;
-
 public class JarLoader {
 	private static final Class[] parameters = new Class[]{URL.class};
 
