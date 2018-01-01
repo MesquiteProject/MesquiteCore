@@ -10,7 +10,6 @@ Mesquite_Folder/
 *.com
 *.class
 *.dll
-*.exe
 *.o
 *.so
 
@@ -24,7 +23,6 @@ Mesquite_Folder/
 *.iso
 *.rar
 *.tar
-*.zip
 
 # Logs and databases #
 ######################

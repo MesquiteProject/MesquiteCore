@@ -305,7 +305,7 @@ public class Mesquite extends MesquiteTrunk
 
 		}
 		if (basicClassLoader == null){ 
-			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath());
+			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath(), null);
 			System.out.println("No URLClassLoader received from start.Mesquite; made one after startup");
 		}
 
@@ -2632,7 +2632,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	/*2017: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
-	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath){
+	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath, URLClassLoader classLoader){
 		try {
 			//Make a vector to hold all the URLs of classpaths
 			Vector urls = new Vector();
@@ -2665,13 +2665,24 @@ public class Mesquite extends MesquiteTrunk
 				}
 				return sysloader;
 			}
-			//if  1.7 or after then make a new class loader and use that
-			URL[] us= new URL[urls.size()];
-			for (int i = 0; i<urls.size(); i++){
-				us[i] = (URL)urls.elementAt(i);
-			}
+			else if (classLoader == null){
+				//if  1.7 or after then make a new class loader and use that
+				URL[] us= new URL[urls.size()];
+				for (int i = 0; i<urls.size(); i++){
+					us[i] = (URL)urls.elementAt(i);
+				}
 
-			return new URLClassLoader(us);
+				return new URLClassLoader(us);
+			}
+			else {
+				//if  URLClassLoader is presented, use that
+				Method method = classLoader.getClass().getDeclaredMethod("addURL",new Class[]{URL.class});
+				method.setAccessible(true);
+				for (int i = 0; i<urls.size(); i++){
+					method.invoke(classLoader,new Object[]{ (URL)urls.elementAt(i) });
+				}
+				return classLoader;
+			}
 
 		} 
 		catch (Throwable t) {

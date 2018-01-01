@@ -63,11 +63,11 @@ public class Mesquite {
 			URL[] us= null;
 			u =mesquiteDirectory.toURL();
 			URL[] forMF = {u};
-			URLClassLoader fileClassLoader = new URLClassLoader(forMF);
-			Class mesquiteFileClass = fileClassLoader.loadClass("mesquite.Mesquite");
-			Class[] argTypesMCL = new Class[] {String.class};
+			basicLoader = new URLClassLoader(forMF, null);
+			Class mesquiteFileClass = basicLoader.loadClass("mesquite.Mesquite");
+			Class[] argTypesMCL = new Class[] {String.class, URLClassLoader.class};
 			Method makeClassLoader = mesquiteFileClass.getDeclaredMethod("makeModuleClassLoader", argTypesMCL);
-			basicLoader = (URLClassLoader)makeClassLoader.invoke(null, new Object[]{loc});
+			basicLoader = (URLClassLoader)makeClassLoader.invoke(null, new Object[]{loc, basicLoader});
 		} 
 		catch (Throwable t) {
 			t.printStackTrace();
