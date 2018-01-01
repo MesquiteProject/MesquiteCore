@@ -2634,29 +2634,38 @@ public class Mesquite extends MesquiteTrunk
 	/*2017: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
 	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath){
 		try {
+			//Make a vector to hold all the URLs of classpaths
 			Vector urls = new Vector();
 			File mesquiteDirectory = new File(mesquiteDirectoryPath);		
 			URL u =null;
 			System.out.println("     <" + mesquiteDirectory + ">");
+			//Add the basic Mesquite_Folder to the classpath
 			urls.addElement(mesquiteDirectory.toURL());
+			//Accumulate all jars in Mesquite_Folder to classpath
 			collectAllJars(mesquiteDirectoryPath, urls);
 			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + "classpaths.txt";
 			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
 			if (paths != null){
+				//Go through each package listed in classpaths.txt
 				for (int i = 0; i<paths.length; i++){
-					String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
-					File d = new File(absPath);
-					collectAllJars(absPath, urls);
-					urls.addElement(d.toURL());
+					if (!paths[i].startsWith("#")){ //paths can be commented out with leading #
+						String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
+						File d = new File(absPath);
+						//Add the jars in the package to the classpath
+						collectAllJars(absPath, urls);
+						//Add the package directory to the classpath
+						urls.addElement(d.toURL());
+					}
 				}
 			}
-			if (getJavaVersionAsDouble()<=1.6){
+			if (getJavaVersionAsDouble()<1.7){ //if before 1.7 or before then add to the system class loader in the old fashioned way
 				URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
 				for (int i = 0; i<urls.size(); i++){
 					JarLoader.addURL((URL)urls.elementAt(i));
 				}
 				return sysloader;
 			}
+			//if  1.7 or after then make a new class loader and use that
 			URL[] us= new URL[urls.size()];
 			for (int i = 0; i<urls.size(); i++){
 				us[i] = (URL)urls.elementAt(i);
