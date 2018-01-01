@@ -40,41 +40,6 @@ public class ModuleLoader {
 	MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,otherTime, classTime;
 	public ClassLoader getClassLoaderForDirectory(String filePath, String classPath){
 		return MesquiteTrunk.basicClassLoader;
-		/*	if (filePath == null)
-		return null;
-
-	File f = new File(filePath);
-	if (!f.exists())
-		return null;
-	URL uf;
-	try {
-		uf = f.toURL();
-		URL[] u = {uf};
-		URLClassLoader loader = null;
-		if (MesquiteTrunk.starter == null){
-			loader = new URLClassLoader(u);
-		}
-		else {
-			Method gmcl;
-			try {
-				Debugg.println("%%%%%%%%%%%GCL " + u[0].toString());
-				Class[] argTypes = new Class[] { URL[].class};
-				Debugg.println("    %%%%%%%%%%%1 " + u[0].toString());
-				gmcl = MesquiteTrunk.starter.getClass().getDeclaredMethod("getClassLoader", argTypes);
-				Debugg.println("    %%%%%%%%%%%2 " + u[0].toString());
-				loader = (URLClassLoader)gmcl.invoke(MesquiteTrunk.starter, new Object[]{u});
-				Debugg.println("    %%%%%%%%%%%3 " + loader);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		if (loader == null){
-			loader = new URLClassLoader(u);
-		}
-		return loader;
-	} catch (MalformedURLException e) {
-	}
-	return null;*/
 	}
 
 	/*.................................................................................................................*/
@@ -188,12 +153,8 @@ public class ModuleLoader {
 				targetDirectories.setValue(numStandard + numStandardExtra+5, "mesquite.configs");  //TODO: avoid configs in all contexts!
 				getModules(MesquiteTrunk.basicClassLoader, "mesquite", MesquiteModule.getRootPath() + "mesquite", "", 0, targetDirectories, false, true); //next, add to the target directories and do everything but them
 				try {
-					//Debugg.println(following must be checked);
 					ClassLoader loaderMSFMODULES = getClassLoaderForDirectory(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator  + "classes", "");
-					//ClassPathHacker.addFileForModules(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator  + "classes");
 					getModules(loaderMSFMODULES, "mesquite", MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classes" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
-					//Debugg.println(following must be checked);
-					//ClassPathHacker.addFileForModules(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
 					ClassLoader loaderAMMMODULES = getClassLoaderForDirectory(MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "");
 					getModules(loaderAMMMODULES, "mesquite", MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
 
@@ -204,7 +165,6 @@ public class ModuleLoader {
 						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
 
 					}
-					//Debugg.println disable the following
 					if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + "classpaths.txt")){
 						classPathsFileMF = MesquiteFile.getFileContentsAsStrings(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classpaths.txt");
 						addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);

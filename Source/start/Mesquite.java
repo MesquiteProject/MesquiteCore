@@ -14,9 +14,9 @@ import java.lang.ClassLoader;
  * 
  * History: In older Javas, application bundles/executables could set their initial classpath to outside the bundle, but in Java 1.7 on MacOS
  * that became prohibited. This starter was therefore built to live inside application bundle, and it would manually find mesquite.Mesquite outside the
- * application bundle, and start it using the system class loader. This could work because the system was also a URLClassLoader, and therefore
+ * application bundle, and start it using the system class loader. This could work because the system classloader was also a URLClassLoader, and therefore
  * could have Mesquite's classpath added at runtime. With Java 1.9 that changed, and
- * the system ClassLoader could no longer add classpaths after startup. Thus, this starter had to change to make its own URLClassLoader, and also find
+ * the system ClassLoader could no longer add classpaths after startup. Thus, this starter had to make its own URLClassLoader, and also find
  * and add all the various possible classpaths.
  * 
  * Because (as of Java 1.9) Mesquite needs to use a custom classloader for its modules and jars, this starter is now the required way to start Mesquite.
@@ -54,10 +54,10 @@ public class Mesquite {
 		File mesquiteDirectory = new File(loc);		
 		System.out.println("Mesquite Folder: " + loc + " (exists = " + mesquiteDirectory.exists() + ")");
 
-		/*First, building basic class loader that will be used to load mesquite.Mesquite from the Mesquite_Folder
+		/*First, build a basic class loader that will be used to load mesquite.Mesquite from the Mesquite_Folder
 		and also passed to Mesquite to use in loading modules. This basic class loader needs to have already 
 		added the URLs to the extra module directories specified in classpaths.txt. 
-		It asks Mesquite to make the class loader to handle all of this.*/ 
+		It asks Mesquite to handle much of this.*/ 
 		try {
 			URL u =null;
 			URL[] us= null;
@@ -86,6 +86,7 @@ public class Mesquite {
 		
 
 	}
+	/*-------------------------*/
 	String findMesquite_Folder(String loc){
 		while (loc.length() > 0){
 			File here = new File(loc);	
@@ -95,10 +96,10 @@ public class Mesquite {
 					return loc;
 			}
 			loc = stripLast(loc);
-				
 		}
 		return null;
 	}
+	/*-------------------------*/
 	boolean itemFound(String[] list, String item){
 		if (list == null || item == null)
 			return false;
@@ -107,9 +108,11 @@ public class Mesquite {
 				return true;
 		return false;
 	}
+	/*-------------------------*/
 	public ClassLoader getMesquiteClassLoader(){
 			return basicLoader;
 	}
+	/*-------------------------*/
 	static String stripLast(String s){
 		return s.substring(0, s.lastIndexOf("/"));
 	}

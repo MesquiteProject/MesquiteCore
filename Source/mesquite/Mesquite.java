@@ -2597,6 +2597,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	 */ 
 
+	/*.................................................................................................................*/
 	static void collectAllJars(String path, Vector jars){
 		File dir = new File(path);
 		if (dir.exists() && dir.isDirectory()){
@@ -2605,7 +2606,7 @@ public class Mesquite extends MesquiteTrunk
 				for (int i = 0; i<subs.length; i++){
 					if (subs[i].equals("jars")){
 						String jarsPath = path + System.getProperty("file.separator") + "jars";
-						System.out.println("   Collecting jars from <" + jarsPath + ">");
+						System.out.println("    Registering jars in<" + jarsPath + ">");
 						File jarsDirectory = new File(jarsPath);
 						if (jarsDirectory.exists() && jarsDirectory.isDirectory()){
 							String[] jarsList = jarsDirectory.list();
@@ -2628,7 +2629,19 @@ public class Mesquite extends MesquiteTrunk
 				}
 			}
 		}
-
+	}
+	
+	static void addClasspathsHere(Vector urls, String absPath){
+		System.out.println("    Registering path to <" + absPath + ">");
+		File d = new File(absPath);
+		//Add the jars in the package to the classpath
+		collectAllJars(absPath, urls);
+		//Add the package directory to the classpath
+		try {
+			urls.addElement(d.toURL());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 	/*.................................................................................................................*/
 	/*2017: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
@@ -2638,7 +2651,7 @@ public class Mesquite extends MesquiteTrunk
 			Vector urls = new Vector();
 			File mesquiteDirectory = new File(mesquiteDirectoryPath);		
 			URL u =null;
-			System.out.println("     <" + mesquiteDirectory + ">");
+			System.out.println("Setting up class loader for <" + mesquiteDirectory + ">");
 			//Add the basic Mesquite_Folder to the classpath
 			urls.addElement(mesquiteDirectory.toURL());
 			//Accumulate all jars in Mesquite_Folder to classpath
@@ -2648,16 +2661,17 @@ public class Mesquite extends MesquiteTrunk
 			if (paths != null){
 				//Go through each package listed in classpaths.txt
 				for (int i = 0; i<paths.length; i++){
-					if (!paths[i].startsWith("#")){ //paths can be commented out with leading #
-						String absPath = MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]);
-						File d = new File(absPath);
-						//Add the jars in the package to the classpath
-						collectAllJars(absPath, urls);
-						//Add the package directory to the classpath
-						urls.addElement(d.toURL());
-					}
+					if (!paths[i].startsWith("#")) //paths can be commented out with leading #
+						addClasspathsHere(urls, MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]));
 				}
 			}
+			//Adding stuff from Mesquite_Folder/additionalMesquiteModules
+			addClasspathsHere(urls, MesquiteFile.composePath(mesquiteDirectoryPath, "additionalMesquiteModules"));
+			
+			//Adding stuff from Mesquite_Support_Files/classes
+			addClasspathsHere(urls, System.getProperty("user.home") + System.getProperty("file.separator") + "Mesquite_Support_Files" + System.getProperty("file.separator") + "classes");
+			
+			
 			if (getJavaVersionAsDouble()<1.7){ //if before 1.7 or before then add to the system class loader in the old fashioned way
 				URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
 				for (int i = 0; i<urls.size(); i++){
@@ -2665,17 +2679,16 @@ public class Mesquite extends MesquiteTrunk
 				}
 				return sysloader;
 			}
-			else if (classLoader == null){
-				//if  1.7 or after then make a new class loader and use that
+			else if (classLoader == null){ //If no class loader was supplied, make one and give it the URLs for classpaths
+				//(the drawback of this is that as a new class loader, it may not be used for mesquite.Mesquite
 				URL[] us= new URL[urls.size()];
 				for (int i = 0; i<urls.size(); i++){
 					us[i] = (URL)urls.elementAt(i);
 				}
-
 				return new URLClassLoader(us);
 			}
 			else {
-				//if  URLClassLoader is presented, use that
+				//if  URLClassLoader is presented, use that and add to it, bypassing the protected status of addURL by using reflection
 				Method method = classLoader.getClass().getDeclaredMethod("addURL",new Class[]{URL.class});
 				method.setAccessible(true);
 				for (int i = 0; i<urls.size(); i++){
@@ -2691,6 +2704,7 @@ public class Mesquite extends MesquiteTrunk
 		return null;
 	}
 	/*.................................................................................................................*/
+	/* Because of Classloader issues in Java 1.9, Mesquite 3.4+ start up via start.Mesquite which then calls this method as if it were Mesquite's main class.*/
 	public static void mainViaStarter(String args[], Object starter){
 		MesquiteTrunk.mesquiteTrunk.starter = starter;
 		startedFromNestedStarter = true;
@@ -2701,99 +2715,6 @@ public class Mesquite extends MesquiteTrunk
 	{
 		MesquiteWindow.GUIavailable = !MesquiteWindow.headless;
 		mesquiteTrunk = new Mesquite(args);
-		/*
-		if (args !=null){
-			for (int i=0; i<args.length; i++)
-				if (args[i]!=null){
-					if (args[i].equals("-w"))
-						MesquiteWindow.suppressAllWindows = true;
-					else if (args[i].equals("-b"))
-						MesquiteTrunk.consoleListenSuppressed = true;
-				}
-		}
-		MesquiteWindow.componentsPainted = new ClassVector();//for detecting efficiency problems
-		Listened.classes = new ClassVector();//for detecting efficiency problems
-		Listened.classesNotified = new ClassVector();//for detecting efficiency problems
-		try { //code testing for GUI from Kevin Herrboldt via java-dev@lists.apple.com
-			Frame foo = new Frame();
-
-			if (foo==null)
-				MesquiteWindow.GUIavailable = false;// no GUI available, need to be non-gui
-			else {
-				foo.pack();
-				foo.getToolkit();       // will throw exception if unable to open GUI
-			}
-		} catch (Throwable t) {
-			MesquiteWindow.GUIavailable = false;// no GUI available, need to be non-gui
-		}
-		try { 
-			String mrj = System.getProperty("mrj.version");
-			if (!StringUtil.blank(mrj) && (mrj.startsWith("3.0") || mrj.startsWith("3.1"))) //Java2D turned off for OS X prior to 10.2 because of bugs
-				MesquiteWindow.Java2Davailable = false;
-			else {
-				BasicStroke bs = new BasicStroke();
-				MesquiteWindow.Java2Davailable = bs !=null;
-			}
-		} catch (Throwable t) {
-			MesquiteWindow.Java2Davailable = false;
-		}
-		MesquiteWindow.pdfOutputAvailable = MesquiteTrunk.isJavaVersionLessThan(1.3);
-		try {
-			MesquiteTrunk.startupShutdownThread = Thread.currentThread();
-			incrementMenuResetSuppression();
-			isApplication = true;
-
-			// create a new instance of this applet 
-			mesquiteTrunk = new Mesquite();
-			Mesquite mesq = (Mesquite)mesquiteTrunk;  //for easy of reference below
-			mesq.registerMacHandlers();
-			MainThread.mainThread = new MainThread();
-			MainThread.mainThread.start();
-			prepareMesquite();
-
-			// initialize the applet
-			mesquiteTrunk.init();
-			//EMBEDDED: include this  
-			((Mesquite)mesquiteTrunk).start(); 
-
-			// open the files requested at startup
-			if (args.length>0) {
-				// report arguments
-				String s = "Arguments: ";
-				for ( int i = 0; i < args.length; i++ ) {
-					s += " [ " + args[i] + " ]";
-				}
-				MesquiteTrunk.mesquiteTrunk.logln(s);
-
-				for ( int i = 0; i < args.length; i++ ) {
-					if (args[i]!=null && !args[i].startsWith("-"))
-						mesquiteTrunk.openFile(args[i]);
-				}
-			}
-
-			mesquiteTrunk.resetAllMenuBars();
-			MesquiteTrunk.startupShutdownThread = null;
-			decrementMenuResetSuppression();
-		}
-		catch (Exception e){
-			if (!Mesquite.mesquiteExiting){
-				MesquiteFile.throwableToLog(null, e);
-				MesquiteMessage.warnProgrammer("Exception caught in Mesquite: " + e.getMessage());
-				MesquiteModule.showLogWindow();
-			}
-		}
-		catch (Error e){
-			if (!Mesquite.mesquiteExiting){
-				MesquiteFile.throwableToLog(null, e);
-				MesquiteMessage.warnProgrammer("Error caught in Mesquite: " + e.getMessage());
-				MesquiteModule.showLogWindow();
-				throw e;
-			}
-
-		}
-		if (about !=null && mesquiteTrunk.getProjectList()!=null && mesquiteTrunk.getProjectList().getNumProjects()>0 && defaultHideMesquiteWindow)
-			about.hide();
-		 */
 	}
 
 
