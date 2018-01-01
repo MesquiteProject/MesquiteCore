@@ -2650,6 +2650,13 @@ public class Mesquite extends MesquiteTrunk
 					urls.addElement(d.toURL());
 				}
 			}
+			if (getJavaVersionAsDouble()<=1.6){
+				URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
+				for (int i = 0; i<urls.size(); i++){
+					JarLoader.addURL((URL)urls.elementAt(i));
+				}
+				return sysloader;
+			}
 			URL[] us= new URL[urls.size()];
 			for (int i = 0; i<urls.size(); i++){
 				us[i] = (URL)urls.elementAt(i);
