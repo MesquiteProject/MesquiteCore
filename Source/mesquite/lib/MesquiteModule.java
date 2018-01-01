@@ -1125,7 +1125,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else if (e instanceof NoClassDefFoundError){
 			incompatibilityMessage = "An error indicates that you may have an incomplete version of Mesquite, or a package installed that is incompatible "
 					+ "with this version of Mesquite. Please check your add-on packages like Zephyr, Chromaseq, etc. to ensure they are up to date,"
-					+ " and that you are using an up to date version of Mesquite.  You may need to reinstall Mesquite. " + MesquiteTrunk.basicClassLoader + " " + ClassLoader.getSystemClassLoader();
+					+ " and that you are using an up to date version of Mesquite.  You may need to reinstall Mesquite. @@@@@@@@@@@@" + MesquiteTrunk.basicClassLoader + " " + ClassLoader.getSystemClassLoader();
 		}//Debugg.println
 		MesquiteTrunk.errorReportedDuringRun = true;
 		StackTraceElement[] stt = e.getStackTrace();
