@@ -2679,8 +2679,9 @@ public class Mesquite extends MesquiteTrunk
 				}
 				return sysloader;
 			}
-			else if (classLoader == null){ //If no class loader was supplied, make one and give it the URLs for classpaths
-				//(the drawback of this is that as a new class loader, it may not be used for mesquite.Mesquite
+			else if (classLoader == null || MesquiteTrunk.isMacOSX()){ //Debugg.println or if not Windows?
+				//If no class loader was supplied, make one and give it the URLs for classpaths
+				//(the drawback of this is that as a new class loader, it may not be used for mesquite.Mesquite)
 				URL[] us= new URL[urls.size()];
 				for (int i = 0; i<urls.size(); i++){
 					us[i] = (URL)urls.elementAt(i);
