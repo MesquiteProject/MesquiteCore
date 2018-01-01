@@ -2665,13 +2665,12 @@ public class Mesquite extends MesquiteTrunk
 				}
 				return sysloader;
 			}
-			else if (classLoader == null){
+			else if (classLoader == null || MesquiteTrunk.isMacOSX()){ //Debugg.println or if not Windows?
 				//if  1.7 or after then make a new class loader and use that
 				URL[] us= new URL[urls.size()];
 				for (int i = 0; i<urls.size(); i++){
 					us[i] = (URL)urls.elementAt(i);
 				}
-
 				return new URLClassLoader(us);
 			}
 			else {
