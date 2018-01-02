@@ -2672,7 +2672,7 @@ public class Mesquite extends MesquiteTrunk
 			addClasspathsHere(urls, System.getProperty("user.home") + System.getProperty("file.separator") + "Mesquite_Support_Files" + System.getProperty("file.separator") + "classes");
 			
 			
-			if (getJavaVersionAsDouble()<1.7){ //if before 1.7 or before then add to the system class loader in the old fashioned way
+			if (getJavaVersionAsDouble()<1.9){ //if before 1.9 or before then add to the system class loader in the old fashioned way
 				URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
 				for (int i = 0; i<urls.size(); i++){
 					JarLoader.addURL((URL)urls.elementAt(i));
