@@ -92,7 +92,7 @@ public class ModuleLoader {
 				directoryTotal =  mesquite.numDirectories;
 			showMessage(true, "Looking for modules", directoryTotal, 0);
 			loadMesquiteModuleClassFiles(MesquiteTrunk.basicClassLoader, f, path, "mesquite.minimal.BasicFileCoordinator." , "BasicFileCoordinator.class");
-			mesquite.logln("Modules loading from directory " + MesquiteModule.getRootPath() + "mesquite/");
+			mesquite.logln("Modules loading from directory " + MesquiteModule.getRootPath() + "mesquite" + MesquiteFile.fileSeparator);
 
 			StringBuffer report =  new StringBuffer(5000);
 			MesquiteModule.mesquiteTrunk.logln(report.toString());

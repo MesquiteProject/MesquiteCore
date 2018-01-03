@@ -279,7 +279,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			closeWindowMenuItemSpec = new MesquiteMenuItemSpec(null, "Close Window", getOwnerModule(), closeWindowCommand);
 		else
 			closeWindowMenuItemSpec = new MesquiteMenuItemSpec(null, "Close Tab", getOwnerModule(), closeWindowCommand);
-		MesquiteProject proj = ownerModule.getProject();
+		MesquiteProject proj = null;
+		if (ownerModule == null)
+			MesquiteMessage.warnProgrammer("ownerModule of window null in init " + getClass());
+		else
+			proj = ownerModule.getProject();
 		if (proj != null)
 			closeAllMenuItemSpec = new MesquiteMenuItemSpec(null, "Close All Tabs Of Project", getOwnerModule(), new MesquiteCommand("closeAllWindows", getOwnerModule().getFileCoordinator()));
 
