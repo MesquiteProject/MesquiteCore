@@ -997,7 +997,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (s==null)
 			return null;
 		else
-			return s + "images/";
+			return s + "images" + MesquiteFile.fileSeparator ;
 	}
 	/*.................................................................................................................*/
 	public static String getSizedRootImageFilePath(int s, String imageFileName){

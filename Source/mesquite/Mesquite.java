@@ -380,18 +380,19 @@ public class Mesquite extends MesquiteTrunk
 		setModuleWindow(logWindow);
 		if (verboseStartup) System.out.println("main init 13");
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) {
-			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquiteBeta.gif");
+			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "mesquiteBeta.gif");
 		}
 		else
-			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquite.gif");
+			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "mesquite.gif");
 
 		BufferedImage equiv = null;
 		try {
-			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
+			
+			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "equivocal.gif"));
+			GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
 		} catch (IOException e) {
 			MesquiteMessage.println(" IOException trying to read equivocal texture ");
 		}
-		GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
 
 		if (verboseStartup) System.out.println("main init 14");
 		MediaTracker mt = new MediaTracker(logWindow.getOuterContentsArea());
@@ -1184,13 +1185,13 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteButton.onImage[i]=  MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/colors/" + i + "blank-on.gif");  
 		}
 		 */
-		InfoBar.triangleImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/infoBarTriangle.gif");  
-		InfoBar.triangleImageDown=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/triangleDown.gif");  
-		InfoBar.releaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/release.gif");  
-		InfoBar.prereleaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/prerelease.gif");  
-		ExplanationArea.plusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationPlus.gif");  
-		ExplanationArea.minusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationMinus.gif");  
-		ExplanationArea.minusOffImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationMinusOff.gif");  
+		InfoBar.triangleImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "infoBarTriangle.gif");  
+		InfoBar.triangleImageDown=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "triangleDown.gif");  
+		InfoBar.releaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "release.gif");  
+		InfoBar.prereleaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "prerelease.gif");  
+		ExplanationArea.plusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "explanationPlus.gif");  
+		ExplanationArea.minusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "explanationMinus.gif");  
+		ExplanationArea.minusOffImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "explanationMinusOff.gif");  
 	}
 	/*.................................................................................................................*/
 	public String getName() {
