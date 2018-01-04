@@ -174,9 +174,18 @@ public class Mesquite extends MesquiteTrunk
 		//finding mesquite directory
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
 		String loc = cl.getResource("mesquite/Mesquite.class").getPath();
+		URL mesquiteDirectoryURL = cl.getResource("mesquite/Mesquite.class");
+		try {
+			URI mesquiteDirectoryURI = mesquiteDirectoryURL.toURI();  // convert to URI so that encoding is taken care of properly
+			loc = mesquiteDirectoryURI.getPath();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 
+
+		
 		String sepp = MesquiteFile.fileSeparator;
-		if (loc.indexOf(sepp)<0){
+		if (loc.indexOf(sepp)<0){  // the current OS's file separate is NOT present, therefore must presume it is the "/" which is what ClassLoader should return anyway
 			sepp = "/";
 			if (loc.indexOf(sepp)<0)
 				System.out.println("Not a recognized separator in path to Mesquite class!");
@@ -184,23 +193,20 @@ public class Mesquite extends MesquiteTrunk
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 
 			try {
-				if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
+				
+				//if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
 					loc = StringUtil.encodeForAppBuilderURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-
-
-
-
 		}
 		else {
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			try {
-				if (startedFromNestedStarter) //for OS X executable built by Oracle appBundler
+				//if (startedFromNestedStarter) //for OS X executable built by Oracle appBundler
 					loc = StringUtil.encodeForAppBuilderURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
