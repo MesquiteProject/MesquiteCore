@@ -173,16 +173,14 @@ public class Mesquite extends MesquiteTrunk
 
 		//finding mesquite directory
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
-		String loc = cl.getResource("mesquite/Mesquite.class").getPath();
 		URL mesquiteDirectoryURL = cl.getResource("mesquite/Mesquite.class");
+		String loc = mesquiteDirectoryURL.getPath();   // ideally we would never use this version of loc, but let's get it anyway.  As you can see below, we need to really get it from the URI, not the URL
 		try {
 			URI mesquiteDirectoryURI = mesquiteDirectoryURL.toURI();  // convert to URI so that encoding is taken care of properly
-			loc = mesquiteDirectoryURI.getPath();
+			loc = mesquiteDirectoryURI.getPath();  // then get the path
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-
-
 		
 		String sepp = MesquiteFile.fileSeparator;
 		if (loc.indexOf(sepp)<0){  // the current OS's file separate is NOT present, therefore must presume it is the "/" which is what ClassLoader should return anyway
@@ -193,9 +191,8 @@ public class Mesquite extends MesquiteTrunk
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 
 			try {
-				
 				//if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForAppBuilderURL(loc);
+				loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -207,7 +204,7 @@ public class Mesquite extends MesquiteTrunk
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			try {
 				//if (startedFromNestedStarter) //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForAppBuilderURL(loc);
+				loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
