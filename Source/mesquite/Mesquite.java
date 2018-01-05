@@ -181,9 +181,18 @@ public class Mesquite extends MesquiteTrunk
 			loc = mesquiteDirectoryURI.getPath();  // then get the path
 		} catch (URISyntaxException e) {
 			/*DAVIDCHECK: 
-			This exception gets thrown on Mac 1.8 with .command file or via java -jar Mesquite.jar if path has space in it (space is claimed to be an illegal character)
-			It does not get thrown via java -cp . start.Mesquite
-			It may have no consequence, as loc is correct then anyway, and so it uses that.
+			5 January
+			This exception gets thrown on Mac if path has space on it in these conditions
+			— java 1.8, 9.0 with .command file
+			— java 1.8, 9.0 via java -jar Mesquite.jar if path has space in it (space is claimed to be an illegal character)
+			It does not get thrown
+			— java 1.8 via java -cp . start.Mesquite
+			It may have no consequence, as loc is correct then anyway, and so it uses that and loads fine.
+			
+			Mesquite successfully starts (with or without these exceptions) under all cases I tried on Mac with Java 1.8, 9.0 
+			EXCEPT under 9.0 on Eclipse and
+			EXCEPT under 9.0 via java -cp . start.Mesquite.
+			This was an old case I thought we'd squashed, but it's back. ByteBuddy should fix it.
 			*/
 			e.printStackTrace();
 		}
@@ -2677,14 +2686,14 @@ public class Mesquite extends MesquiteTrunk
 			addClasspathsHere(urls, jars, System.getProperty("user.home") + System.getProperty("file.separator") + "Mesquite_Support_Files" + System.getProperty("file.separator") + "classes");
 			
 			
-			if (getJavaVersionAsDouble()<1.9){ //if before 1.9 or before then add to the system class loader in the old fashioned way
+			if (getJavaVersionAsDouble()<1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
 				URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
 				for (int i = 0; i<urls.size(); i++){
 					JarLoader.addURL((URL)urls.elementAt(i));
 				}
 				return sysloader;
 			}
-			//Java 1.9 or above. Add all URLs to a URLClassLoader (for modules at least) but then also add jars  manually with ByteBuddy, just in case.
+			//Java 9.0 or above. Add all URLs to a URLClassLoader (for modules at least) but then also add jars  manually with ByteBuddy, just in case.
 			if (classLoader == null || MesquiteTrunk.isMacOSX()){ //Debugg.println or if not Windows?
 				//If no class loader was supplied, make one and give it the URLs for classpaths
 				//(the drawback of this is that as a new class loader, it may not be used for mesquite.Mesquite)
@@ -2709,7 +2718,7 @@ public class Mesquite extends MesquiteTrunk
 			 * find the jars of packages added via classpaths.txt. For this reason we now use ByteBuddy to add the jars to the system classpath.*/
 			
 			//Now to add jars to system class loader via ByteBuddy
-			//DAVIDCHECK: here
+			//DAVIDCHECK: add ByteBuddy stuff here. Paths are stored as strings in Vector of strings called jars
 			
 			return classLoader;
 
@@ -2720,7 +2729,7 @@ public class Mesquite extends MesquiteTrunk
 		return null;
 	}
 	/*.................................................................................................................*/
-	/* Because of Classloader issues in Java 1.9, Mesquite 3.4+ start up via start.Mesquite which then calls this method as if it were Mesquite's main class.*/
+	/* Because of Classloader issues in Java 9.0, Mesquite 3.4+ start up via start.Mesquite which then calls this method as if it were Mesquite's main class.*/
 	public static void mainViaStarter(String args[], Object starter){
 		MesquiteTrunk.mesquiteTrunk.starter = starter;
 		startedFromNestedStarter = true;
