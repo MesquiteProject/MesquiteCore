@@ -187,30 +187,22 @@ public class Mesquite extends MesquiteTrunk
 			sepp = "/";
 			if (loc.indexOf(sepp)<0)
 				System.out.println("Not a recognized separator in path to Mesquite class!");
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
+		}
+		loc = loc.substring(0, loc.lastIndexOf(sepp));  //go down one level
+		loc = loc.substring(0, loc.lastIndexOf(sepp));  // go down another level
 
-			try {
-				//if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
-				loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
-				URI uri = new URI(loc);
-				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
+		mesquiteDirectory = new File(loc);
+
+		/*
+		try {
+			//if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
+			loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
+			URI uri = new URI(loc);
+			mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		}
-		else {
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			try {
-				//if (startedFromNestedStarter) //for OS X executable built by Oracle appBundler
-				loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
-				URI uri = new URI(loc);
-				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-		}
+		*/
 
 		if (mesquiteDirectory == null){
 			StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
