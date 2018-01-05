@@ -175,7 +175,6 @@ public class Mesquite extends MesquiteTrunk
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
 		URL mesquiteDirectoryURL = cl.getResource("mesquite/Mesquite.class");
 		String loc = mesquiteDirectoryURL.getPath();   // ideally we would never use this version of loc, but let's get it anyway.  As you can see below, we need to really get it from the URI, not the URL
-		Debugg.println("|||||||||| loc 1: " + loc);
 		try {
 			URI mesquiteDirectoryURI = mesquiteDirectoryURL.toURI();  // convert to URI so that encoding is taken care of properly
 			loc = mesquiteDirectoryURI.getPath();  // then get the path
@@ -188,22 +187,30 @@ public class Mesquite extends MesquiteTrunk
 			sepp = "/";
 			if (loc.indexOf(sepp)<0)
 				System.out.println("Not a recognized separator in path to Mesquite class!");
-		}
-		loc = loc.substring(0, loc.lastIndexOf(sepp));  //go down one level
-		loc = loc.substring(0, loc.lastIndexOf(sepp));  // go down another level
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
 
-		mesquiteDirectory = new File(loc);
-
-		/*
-		try {
-			//if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
-			loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
-			URI uri = new URI(loc);
-			mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			try {
+				//if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
+				loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
+				URI uri = new URI(loc);
+				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
 		}
-		*/
+		else {
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			try {
+				//if (startedFromNestedStarter) //for OS X executable built by Oracle appBundler
+				loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
+				URI uri = new URI(loc);
+				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
 
 		if (mesquiteDirectory == null){
 			StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
@@ -2653,7 +2660,7 @@ public class Mesquite extends MesquiteTrunk
 			urls.addElement(mesquiteDirectory.toURL());
 			//Accumulate all jars in Mesquite_Folder to classpath
 			collectAllJars(mesquiteDirectoryPath, urls);
-			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + MesquiteModule.classpathsFileName;
+			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + "classpaths.txt";
 			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
 			if (paths != null){
 				//Go through each package listed in classpaths.txt
