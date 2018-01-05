@@ -175,6 +175,7 @@ public class Mesquite extends MesquiteTrunk
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
 		URL mesquiteDirectoryURL = cl.getResource("mesquite/Mesquite.class");
 		String loc = mesquiteDirectoryURL.getPath();   // ideally we would never use this version of loc, but let's get it anyway.  As you can see below, we need to really get it from the URI, not the URL
+		Debugg.println("|||||||||| loc 1: " + loc);
 		try {
 			URI mesquiteDirectoryURI = mesquiteDirectoryURL.toURI();  // convert to URI so that encoding is taken care of properly
 			loc = mesquiteDirectoryURI.getPath();  // then get the path
