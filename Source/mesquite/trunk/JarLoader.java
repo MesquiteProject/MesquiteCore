@@ -25,7 +25,8 @@ public class JarLoader {
 
 				Instrumentation instrumentation = null;
 				try {
-					Class byteBuddyClass = MesquiteTrunk.basicClassLoader.loadClass("net.bytebuddy.agent.ByteBuddyAgent");
+					URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
+					Class byteBuddyClass = sysloader.loadClass("net.bytebuddy.agent.ByteBuddyAgent");
 					Method installMethod = byteBuddyClass.getDeclaredMethod("install", null);
 					instrumentation = (Instrumentation)installMethod.invoke(null,null);
 					jarAdded = true;
