@@ -174,8 +174,7 @@ public class Mesquite extends MesquiteTrunk
 		//finding mesquite directory
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
 		URL mesquiteDirectoryURL = cl.getResource("mesquite/Mesquite.class");
-		String loc = mesquiteDirectoryURL.getPath();   // ideally we would never use this version of loc, but let's get it anyway.  As you can see below, we need to really get it from the URI, not the URL
-		Debugg.println("|||||||||| loc 1: " + loc);
+		String loc = "";
 		try {
 			URI mesquiteDirectoryURI = mesquiteDirectoryURL.toURI();  // convert to URI so that encoding is taken care of properly 
 			loc = mesquiteDirectoryURI.getPath();  // then get the path
@@ -194,7 +193,9 @@ public class Mesquite extends MesquiteTrunk
 			EXCEPT under 9.0 via java -cp . start.Mesquite.
 			This was an old case I thought we'd squashed, but it's back. ByteBuddy should fix it.
 			*/
-			e.printStackTrace();
+			loc = mesquiteDirectoryURL.getPath();    // have to give it something, and this shouuld work at this point
+			if (MesquiteTrunk.debugMode)
+				e.printStackTrace();
 		}
 		
 		String sepp = MesquiteFile.fileSeparator;
