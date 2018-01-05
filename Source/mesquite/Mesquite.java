@@ -2719,9 +2719,12 @@ public class Mesquite extends MesquiteTrunk
 			
 			//Now to add jars to system class loader via ByteBuddy
 			//DAVIDCHECK: add ByteBuddy stuff here. Paths are stored as strings in Vector of strings called jars
-			
+			String jarPath="";
+			for (int i = 0; i<jars.size(); i++){
+				jarPath = (String)jars.elementAt(i);
+				JarLoader.addJarFileToClassPath(jarPath);
+			}
 			return classLoader;
-
 		} 
 		catch (Throwable t) {
 			t.printStackTrace();
