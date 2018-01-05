@@ -2729,7 +2729,7 @@ public class Mesquite extends MesquiteTrunk
 		catch (Throwable t) {
 			t.printStackTrace();
 		}
-		return null;
+		return classLoader;
 	}
 	/*.................................................................................................................*/
 	/* Because of Classloader issues in Java 9.0, Mesquite 3.4+ start up via start.Mesquite which then calls this method as if it were Mesquite's main class.*/

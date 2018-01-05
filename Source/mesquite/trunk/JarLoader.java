@@ -25,7 +25,7 @@ public class JarLoader {
 
 				Instrumentation instrumentation = null;
 				try {
-					URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
+					ClassLoader sysloader = ClassLoader.getSystemClassLoader();
 					Class byteBuddyClass = sysloader.loadClass("net.bytebuddy.agent.ByteBuddyAgent");
 					Method installMethod = byteBuddyClass.getDeclaredMethod("install", null);
 					instrumentation = (Instrumentation)installMethod.invoke(null,null);
