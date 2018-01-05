@@ -189,8 +189,8 @@ public class Mesquite extends MesquiteTrunk
 			if (loc.indexOf(sepp)<0)
 				System.out.println("Not a recognized separator in path to Mesquite class!");
 		}
-		loc = loc.substring(0, loc.lastIndexOf(sepp));  //go down one level
-		loc = loc.substring(0, loc.lastIndexOf(sepp));  // go down another level
+		loc = loc.substring(0, loc.lastIndexOf(sepp));  //get rid of /Mesquite.class
+		loc = loc.substring(0, loc.lastIndexOf(sepp));  // go down a level to Mesquite_Folder
 
 		mesquiteDirectory = new File(loc);
 
