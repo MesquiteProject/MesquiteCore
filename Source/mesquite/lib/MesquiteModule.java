@@ -180,6 +180,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** true if does extra check for module compatibility at startup.*/
 	public static boolean checkMethodsAtStartup = false;
 
+	/** The file name of the file that contains additional classpaths to load.*/
+	public static String classpathsFileName="classpaths.txt";  
+
 	public static final int NEXTRELEASE = Integer.MAX_VALUE;
 
 	/** this is for modules to store their last MesquiteNumber result for later use; intended for NumberForItem subclasses */

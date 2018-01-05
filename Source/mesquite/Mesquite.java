@@ -2660,7 +2660,7 @@ public class Mesquite extends MesquiteTrunk
 			urls.addElement(mesquiteDirectory.toURL());
 			//Accumulate all jars in Mesquite_Folder to classpath
 			collectAllJars(mesquiteDirectoryPath, urls);
-			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + "classpaths.txt";
+			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + MesquiteModule.classpathsFileName;
 			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
 			if (paths != null){
 				//Go through each package listed in classpaths.txt

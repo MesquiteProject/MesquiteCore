@@ -121,8 +121,8 @@ public class ModuleLoader {
 
 				/* added by Paul Lewis */
 				String[] classPathsFileMF = null; 
-				if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.txt")){
-					classPathsFileMF = MesquiteFile.getFileContentsAsStrings(MesquiteModule.getRootPath() + "classpaths.txt");
+				if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName)){
+					classPathsFileMF = MesquiteFile.getFileContentsAsStrings(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName);
 					addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
 				}
 
@@ -159,14 +159,14 @@ public class ModuleLoader {
 					getModules(loaderAMMMODULES, "mesquite", MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
 
 					String[] classPathsFileMF = null; 
-					if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.txt")){
-						classPathsFileMF = MesquiteFile.getFileContentsAsStrings(MesquiteModule.getRootPath() + "classpaths.txt");
+					if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName)){
+						classPathsFileMF = MesquiteFile.getFileContentsAsStrings(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName);
 
 						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
 
 					}
-					if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + "classpaths.txt")){
-						classPathsFileMF = MesquiteFile.getFileContentsAsStrings(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classpaths.txt");
+					if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + MesquiteModule.classpathsFileName)){
+						classPathsFileMF = MesquiteFile.getFileContentsAsStrings(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + MesquiteModule.classpathsFileName);
 						addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);
 					}
 				}
