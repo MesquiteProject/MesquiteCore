@@ -177,9 +177,14 @@ public class Mesquite extends MesquiteTrunk
 		String loc = mesquiteDirectoryURL.getPath();   // ideally we would never use this version of loc, but let's get it anyway.  As you can see below, we need to really get it from the URI, not the URL
 		Debugg.println("|||||||||| loc 1: " + loc);
 		try {
-			URI mesquiteDirectoryURI = mesquiteDirectoryURL.toURI();  // convert to URI so that encoding is taken care of properly
+			URI mesquiteDirectoryURI = mesquiteDirectoryURL.toURI();  // convert to URI so that encoding is taken care of properly 
 			loc = mesquiteDirectoryURI.getPath();  // then get the path
 		} catch (URISyntaxException e) {
+			/*DAVIDCHECK: 
+			This exception gets thrown on Mac 1.8 with .command file or via java -jar Mesquite.jar if path has space in it (space is claimed to be an illegal character)
+			It does not get thrown via java -cp . start.Mesquite
+			It may have no consequence, as loc is correct then anyway, and so it uses that.
+			*/
 			e.printStackTrace();
 		}
 		
@@ -2595,24 +2600,26 @@ public class Mesquite extends MesquiteTrunk
 	 */ 
 
 	/*.................................................................................................................*/
-	static void collectAllJars(String path, Vector jars){
+	//DavidCheck: the following 3 methods were all changed
+	static void collectAllJars(String path, Vector urls, Vector jars){
 		File dir = new File(path);
 		if (dir.exists() && dir.isDirectory()){
 			String[] subs = dir.list();
 			if (subs != null && subs.length>0){
 				for (int i = 0; i<subs.length; i++){
 					if (subs[i].equals("jars")){
-						String jarsPath = path + System.getProperty("file.separator") + "jars";
-						System.out.println("    Registering jars in<" + jarsPath + ">");
+						String jarsPath = MesquiteFile.composePath(path, "jars");
+						System.out.println("    Registering jars in <" + jarsPath + ">");
 						File jarsDirectory = new File(jarsPath);
 						if (jarsDirectory.exists() && jarsDirectory.isDirectory()){
 							String[] jarsList = jarsDirectory.list();
 							if (jarsList != null && jarsList.length > 0){
 								for (int k = 0; k<jarsList.length; k++){
-									String absPath = jarsPath + System.getProperty("file.separator") + jarsList[k];
+									String absPath = MesquiteFile.composePath(jarsPath, jarsList[k]);
+									jars.addElement(absPath);
 									File d = new File(absPath);
 									try {
-										jars.addElement(d.toURL());
+										urls.addElement(d.toURL());
 									} catch (MalformedURLException e) {
 										e.printStackTrace();
 									}
@@ -2622,17 +2629,17 @@ public class Mesquite extends MesquiteTrunk
 
 					}
 					else
-						collectAllJars(path + System.getProperty("file.separator") + subs[i], jars);
+						collectAllJars(MesquiteFile.composePath(path, subs[i]), urls, jars);
 				}
 			}
 		}
 	}
 	
-	static void addClasspathsHere(Vector urls, String absPath){
+	static void addClasspathsHere(Vector urls, Vector jars, String absPath){
 		System.out.println("    Registering path to <" + absPath + ">");
 		File d = new File(absPath);
 		//Add the jars in the package to the classpath
-		collectAllJars(absPath, urls);
+		collectAllJars(absPath, urls, jars);
 		//Add the package directory to the classpath
 		try {
 			urls.addElement(d.toURL());
@@ -2644,29 +2651,30 @@ public class Mesquite extends MesquiteTrunk
 	/*Dec 17: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
 	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath, URLClassLoader classLoader){
 		try {
-			//Make a vector to hold all the URLs of classpaths
-			Vector urls = new Vector();
+			
+			Vector urls = new Vector(); //A vector to hold all the URLs of classpaths
+			Vector jars = new Vector(); //A vector to hold all the paths to jar files
 			File mesquiteDirectory = new File(mesquiteDirectoryPath);		
 			URL u =null;
 			System.out.println("Setting up class loader for <" + mesquiteDirectory + ">");
 			//Add the basic Mesquite_Folder to the classpath
 			urls.addElement(mesquiteDirectory.toURL());
 			//Accumulate all jars in Mesquite_Folder to classpath
-			collectAllJars(mesquiteDirectoryPath, urls);
-			String classpathstxt = mesquiteDirectoryPath + System.getProperty("file.separator") + MesquiteModule.classpathsFileName;
+			collectAllJars(mesquiteDirectoryPath, urls, jars);
+			String classpathstxt = MesquiteFile.composePath(mesquiteDirectoryPath , MesquiteModule.classpathsFileName);
 			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
 			if (paths != null){
 				//Go through each package listed in classpaths.txt
 				for (int i = 0; i<paths.length; i++){
 					if (!paths[i].startsWith("#")) //paths can be commented out with leading #
-						addClasspathsHere(urls, MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]));
+						addClasspathsHere(urls, jars, MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]));
 				}
 			}
 			//Adding stuff from Mesquite_Folder/additionalMesquiteModules
-			addClasspathsHere(urls, MesquiteFile.composePath(mesquiteDirectoryPath, "additionalMesquiteModules"));
+			addClasspathsHere(urls, jars, MesquiteFile.composePath(mesquiteDirectoryPath, "additionalMesquiteModules"));
 			
 			//Adding stuff from Mesquite_Support_Files/classes
-			addClasspathsHere(urls, System.getProperty("user.home") + System.getProperty("file.separator") + "Mesquite_Support_Files" + System.getProperty("file.separator") + "classes");
+			addClasspathsHere(urls, jars, System.getProperty("user.home") + System.getProperty("file.separator") + "Mesquite_Support_Files" + System.getProperty("file.separator") + "classes");
 			
 			
 			if (getJavaVersionAsDouble()<1.9){ //if before 1.9 or before then add to the system class loader in the old fashioned way
@@ -2676,14 +2684,15 @@ public class Mesquite extends MesquiteTrunk
 				}
 				return sysloader;
 			}
-			else if (classLoader == null || MesquiteTrunk.isMacOSX()){ //Debugg.println or if not Windows?
+			//Java 1.9 or above. Add all URLs to a URLClassLoader (for modules at least) but then also add jars  manually with ByteBuddy, just in case.
+			if (classLoader == null || MesquiteTrunk.isMacOSX()){ //Debugg.println or if not Windows?
 				//If no class loader was supplied, make one and give it the URLs for classpaths
 				//(the drawback of this is that as a new class loader, it may not be used for mesquite.Mesquite)
 				URL[] us= new URL[urls.size()];
 				for (int i = 0; i<urls.size(); i++){
 					us[i] = (URL)urls.elementAt(i);
 				}
-				return new URLClassLoader(us);
+				classLoader = new URLClassLoader(us);
 			}
 			else {
 				//if  URLClassLoader is presented, use that and add to it, bypassing the protected status of addURL by using reflection
@@ -2692,8 +2701,17 @@ public class Mesquite extends MesquiteTrunk
 				for (int i = 0; i<urls.size(); i++){
 					method.invoke(classLoader,new Object[]{ (URL)urls.elementAt(i) });
 				}
-				return classLoader;
 			}
+			/*The above will generate a classloader that can load all the modules, since they are loaded explicitly with this class loader by ModuleLoader. 
+			 * However, the jars may or may not be loaded, because they aren't loaded manually by Mesquite, but rather automatically by the current class loader when needed. 
+			 * If the current classloader isn't the URL one made here, then jars loading can fail. The one known case as of
+			 * January 2O18 is when run under Eclipse and Java 1.9. Eclipse supplies its own classloader; it can find the core jars as they are in the project's build path, but it can't
+			 * find the jars of packages added via classpaths.txt. For this reason we now use ByteBuddy to add the jars to the system classpath.*/
+			
+			//Now to add jars to system class loader via ByteBuddy
+			//DAVIDCHECK: here
+			
+			return classLoader;
 
 		} 
 		catch (Throwable t) {

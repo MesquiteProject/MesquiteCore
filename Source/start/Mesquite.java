@@ -81,6 +81,7 @@ public class Mesquite {
 			main.invoke(null, new Object[]{args, this});
 		} 
 		catch (Throwable t) {
+			System.out.println("There appears to be a problem starting Mesquite.");
 			t.printStackTrace();
 		}
 		
