@@ -6,6 +6,7 @@ import java.lang.reflect.*;
 import java.lang.Class;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Vector;
 import java.lang.ClassLoader;
 
 /*This class is used to start Mesquite. 
@@ -34,10 +35,12 @@ public class Mesquite {
 	}
 	
 	void startMesquite(String args[]){
-
+		Vector startupNotices = new Vector();
 		ClassLoader cl = start.Mesquite.class.getClassLoader();
 		String loc = cl.getResource("start/Mesquite.class").getPath();
 		System.out.println("Starting Mesquite with Java: " + System.getProperty("java.version"));
+		startupNotices.addElement("start.Mesquite: Location of executable start class: " + loc);
+		
 		System.out.println("Location of executable start class: " + loc);
 		if (loc.startsWith("file:")){
 				loc = loc.substring(5, loc.length());
@@ -51,6 +54,7 @@ public class Mesquite {
 		
 		File mesquiteDirectory = new File(loc);		
 		System.out.println("Mesquite Folder: " + loc + " (exists = " + mesquiteDirectory.exists() + ")");
+		startupNotices.addElement("start.Mesquite: Mesquite Folder: " + loc);
 
 		/*First, build a basic class loader that will be used to load mesquite.Mesquite from the Mesquite_Folder
 		and also passed to Mesquite to use in loading modules. This basic class loader needs to have already 
@@ -77,9 +81,9 @@ public class Mesquite {
 			if (basicLoader == null)
 				basicLoader = new URLClassLoader(forMF, null);
 			Class mesquiteFileClass = basicLoader.loadClass("mesquite.Mesquite");
-			Class[] argTypesMCL = new Class[] {String.class, URLClassLoader.class};
+			Class[] argTypesMCL = new Class[] {String.class, URLClassLoader.class, Vector.class};
 			Method makeClassLoader = mesquiteFileClass.getDeclaredMethod("makeModuleClassLoader", argTypesMCL);
-			basicLoader = (URLClassLoader)makeClassLoader.invoke(null, new Object[]{loc, basicLoader});
+			basicLoader = (URLClassLoader)makeClassLoader.invoke(null, new Object[]{loc, basicLoader, startupNotices});
 		} 
 		catch (Throwable t) {
 			t.printStackTrace();
