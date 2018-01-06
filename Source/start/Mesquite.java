@@ -1,9 +1,7 @@
 package start;
 
 import java.io.File;
-
-
-
+import java.io.IOException;
 import java.lang.reflect.*;
 import java.lang.Class;
 import java.net.URL;
@@ -63,7 +61,21 @@ public class Mesquite {
 			URL[] us= null;
 			u =mesquiteDirectory.toURL();
 			URL[] forMF = {u};
-			basicLoader = new URLClassLoader(forMF, null);
+			ClassLoader current = ClassLoader.getSystemClassLoader();
+			if (current instanceof URLClassLoader){
+				basicLoader = (URLClassLoader)current;
+				Class sysclass = URLClassLoader.class;
+
+				try {
+					Method method = sysclass.getDeclaredMethod("addURL",new Class[]{URL.class});
+					method.setAccessible(true);
+					method.invoke(basicLoader,new Object[]{ u });
+				}
+				catch (Throwable t) {
+				}
+			}
+			if (basicLoader == null)
+				basicLoader = new URLClassLoader(forMF, null);
 			Class mesquiteFileClass = basicLoader.loadClass("mesquite.Mesquite");
 			Class[] argTypesMCL = new Class[] {String.class, URLClassLoader.class};
 			Method makeClassLoader = mesquiteFileClass.getDeclaredMethod("makeModuleClassLoader", argTypesMCL);

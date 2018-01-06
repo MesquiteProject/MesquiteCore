@@ -321,6 +321,8 @@ public class Mesquite extends MesquiteTrunk
 
 		System.out.println("Current class loader " + this.getClass().getClassLoader());
 		System.out.println("Module class loader " + basicClassLoader);
+		startupNotices.addElement("Current class loader " + this.getClass().getClassLoader());
+		startupNotices.addElement("Module class loader " + basicClassLoader);
 
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
@@ -533,7 +535,7 @@ public class Mesquite extends MesquiteTrunk
 
 		logln(" ");
 
-
+		//NOTE: debugMode isn't set until modules are loaded
 
 		/* loading in modules (MesquiteModules) */
 		MesquiteModule.mesquiteTrunk = this;
@@ -705,6 +707,12 @@ public class Mesquite extends MesquiteTrunk
 		decrementMenuResetSuppression();
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) 
 			logln("\nTHIS IS A PRERELEASE (BETA) VERSION: We discourage you from publishing results with this version of Mesquite, unless you check with the authors.\n");
+		if (debugMode){ 
+			logln("############### Startup Notices ###############");
+			for (int i=0; i<startupNotices.size(); i++)
+				logln((String)startupNotices.elementAt(i));
+			logln("########################################");
+		}
 
 		if (logWindow!=null) {
 			if (logWindow.isConsoleMode()){
@@ -2618,6 +2626,7 @@ public class Mesquite extends MesquiteTrunk
 					if (subs[i].equals("jars")){
 						String jarsPath = MesquiteFile.composePath(path, "jars");
 						System.out.println("    Registering jars in <" + jarsPath + ">");
+						startupNotices.addElement("    Registering jars in <" + jarsPath + ">");
 						File jarsDirectory = new File(jarsPath);
 						if (jarsDirectory.exists() && jarsDirectory.isDirectory()){
 							String[] jarsList = jarsDirectory.list();
@@ -2644,6 +2653,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	
 	static void addClasspathsHere(Vector urls, Vector jars, String absPath){
+		startupNotices.addElement("    Registering path to <" + absPath + ">");
 		System.out.println("    Registering path to <" + absPath + ">");
 		File d = new File(absPath);
 		//Add the jars in the package to the classpath
@@ -2655,6 +2665,7 @@ public class Mesquite extends MesquiteTrunk
 			e.printStackTrace();
 		}
 	}
+	static Vector startupNotices = new Vector();
 	/*.................................................................................................................*/
 	/*Dec 17: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
 	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath, URLClassLoader classLoader){
@@ -2664,6 +2675,7 @@ public class Mesquite extends MesquiteTrunk
 			Vector jars = new Vector(); //A vector to hold all the paths to jar files
 			File mesquiteDirectory = new File(mesquiteDirectoryPath);		
 			URL u =null;
+			startupNotices.addElement("Setting up class loader for <" + mesquiteDirectory + ">");
 			System.out.println("Setting up class loader for <" + mesquiteDirectory + ">");
 			//Add the basic Mesquite_Folder to the classpath
 			urls.addElement(mesquiteDirectory.toURL());
@@ -2734,11 +2746,13 @@ public class Mesquite extends MesquiteTrunk
 	/* Because of Classloader issues in Java 9.0, Mesquite 3.4+ start up via start.Mesquite which then calls this method as if it were Mesquite's main class.*/
 	public static void mainViaStarter(String args[], Object starter){
 		MesquiteTrunk.mesquiteTrunk.starter = starter;
+		startupNotices.addElement("Mesquite started via starter class");
 		main(args);
 	}
 	/*.................................................................................................................*/
 	public static void main(String args[])
 	{
+		startupNotices.addElement("Mesquite Startup arguments:" + StringArray.toString(args));
 		MesquiteWindow.GUIavailable = !MesquiteWindow.headless;
 		mesquiteTrunk = new Mesquite(args);
 	}
