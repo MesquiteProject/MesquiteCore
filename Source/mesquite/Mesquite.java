@@ -308,7 +308,12 @@ public class Mesquite extends MesquiteTrunk
 			try {
 				Method gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
 				basicClassLoader = (URLClassLoader)gmcl.invoke(starter, null);
-				System.out.println("Received URLClassLoader from start.Mesquite");
+				if (basicClassLoader!= null)
+					System.out.println("Received URLClassLoader from start.Mesquite");
+				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
+				startupNotices = (Vector)gsn.invoke(starter, null);
+				if (startupNotices != null)
+					System.out.println("Received startupNotices from start.Mesquite");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -318,7 +323,7 @@ public class Mesquite extends MesquiteTrunk
 			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath(), null, new Vector());
 			System.out.println("No URLClassLoader received from start.Mesquite; made one after startup");
 		}
-
+		
 		addToStartupNotices("Current class loader " + this.getClass().getClassLoader());
 		addToStartupNotices("Module class loader " + basicClassLoader);
 

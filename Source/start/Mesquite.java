@@ -34,8 +34,8 @@ public class Mesquite {
 		m.startMesquite(args);
 	}
 	
+	Vector startupNotices = new Vector();
 	void startMesquite(String args[]){
-		Vector startupNotices = new Vector();
 		ClassLoader cl = start.Mesquite.class.getClassLoader();
 		String loc = cl.getResource("start/Mesquite.class").getPath();
 		System.out.println("Starting Mesquite with Java: " + System.getProperty("java.version"));
@@ -128,6 +128,10 @@ public class Mesquite {
 	/*-------------------------*/
 	public ClassLoader getMesquiteClassLoader(){
 			return basicLoader;
+	}
+	/*-------------------------*/
+	public Vector getStartupNotices(){
+			return startupNotices;
 	}
 	/*-------------------------*/
 	static String stripLast(String s){
