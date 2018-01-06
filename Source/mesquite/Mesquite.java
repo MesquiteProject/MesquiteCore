@@ -142,7 +142,6 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 
-	static boolean startedFromNestedStarter = false; 
 	/*.................................................................................................................*/
 	public void init()
 	{
@@ -604,7 +603,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		logln(" ");
 
-		String ackn = "Mesquite makes use BrowserLauncher by Eric Albert,  corejava.Format by Horstmann & Cornell, and iText by Lowagie & Soares  .";
+		String ackn = "Mesquite makes use BrowserLauncher by Eric Albert,  corejava.Format by Horstmann & Cornell, ByteBuddy (http://bytebuddy.net), and iText by Lowagie & Soares  .";
 		ackn += "  Some modules make use of JAMA by The MathWorks and NIST, and JSci by Mark Hale, Jaco van Kooten and others (see Mesquite source code for details).";
 		ackn += "  The PAL library by Drummond and Strimmer is used by the GTR substitution model for DNA sequence simulations.";
 		if (MesquiteTrunk.isWindows())
@@ -2475,7 +2474,6 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.startedFromExecutable = true;
 					else if (args[i].equals("-mq17")) {
 						MesquiteMessage.warnUser("This executable is not compatible with current Mesquite");
-						startedFromNestedStarter = true;
 					}
 					else if (args[i].equals("-d"))
 						MesquiteTrunk.debugMode = true;
@@ -2736,7 +2734,6 @@ public class Mesquite extends MesquiteTrunk
 	/* Because of Classloader issues in Java 9.0, Mesquite 3.4+ start up via start.Mesquite which then calls this method as if it were Mesquite's main class.*/
 	public static void mainViaStarter(String args[], Object starter){
 		MesquiteTrunk.mesquiteTrunk.starter = starter;
-		startedFromNestedStarter = true;
 		main(args);
 	}
 	/*.................................................................................................................*/
