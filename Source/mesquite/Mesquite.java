@@ -186,17 +186,17 @@ public class Mesquite extends MesquiteTrunk
 			It does not get thrown
 			— java 1.8 via java -cp . start.Mesquite
 			It may have no consequence, as loc is correct then anyway, and so it uses that and loads fine.
-			
+
 			Mesquite successfully starts (with or without these exceptions) under all cases I tried on Mac with Java 1.8, 9.0 
 			EXCEPT under 9.0 on Eclipse and
 			EXCEPT under 9.0 via java -cp . start.Mesquite.
 			This was an old case I thought we'd squashed, but it's back. ByteBuddy should fix it.
-			*/
+			 */
 			loc = mesquiteDirectoryURL.getPath();    // have to give it something, and this shouuld work at this point
 			if (MesquiteTrunk.debugMode)
 				e.printStackTrace();
 		}
-		
+
 		String sepp = MesquiteFile.fileSeparator;
 		if (loc.indexOf(sepp)<0){  // the current OS's file separate is NOT present, therefore must presume it is the "/" which is what ClassLoader should return anyway
 			sepp = "/";
@@ -217,7 +217,7 @@ public class Mesquite extends MesquiteTrunk
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		*/
+		 */
 
 		if (mesquiteDirectory == null){
 			StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
@@ -326,7 +326,7 @@ public class Mesquite extends MesquiteTrunk
 			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath(), null, new Vector());
 			System.out.println("No URLClassLoader received from start.Mesquite; made one after startup");
 		}
-		
+
 		addToStartupNotices("Current class loader " + this.getClass().getClassLoader());
 		addToStartupNotices("Module class loader " + basicClassLoader);
 
@@ -399,7 +399,7 @@ public class Mesquite extends MesquiteTrunk
 
 		BufferedImage equiv = null;
 		try {
-			
+
 			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "equivocal.gif"));
 			GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
 		} catch (IOException e) {
@@ -714,7 +714,7 @@ public class Mesquite extends MesquiteTrunk
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) 
 			logln("\nTHIS IS A PRERELEASE (BETA) VERSION: We discourage you from publishing results with this version of Mesquite, unless you check with the authors.\n");
 		if (debugMode){ 
-				logln("############### Startup Notices ###############");
+			logln("############### Startup Notices ###############");
 			for (int i=0; i<startupNotices.size(); i++)
 				if (startupNotices == null)
 					logln(" startupNotices null");
@@ -2660,7 +2660,12 @@ public class Mesquite extends MesquiteTrunk
 		}
 	}
 	static void addToStartupNotices(String s){
-		if (startupNotices == null){
+		if (startupNotices == null && starter != null){ // because of Java 9 classloading issues, rely on starter class to make class loader if it exists
+			try {
+				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
+				startupNotices = (Vector)gsn.invoke(starter, null);
+			} catch (Exception e) {
+			}
 		}
 		if (startupNotices != null)
 			startupNotices.addElement(s);
@@ -2684,7 +2689,7 @@ public class Mesquite extends MesquiteTrunk
 	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath, URLClassLoader classLoader, Vector v){
 		startupNotices = v;
 		try {
-			
+
 			Vector urls = new Vector(); //A vector to hold all the URLs of classpaths
 			Vector jars = new Vector(); //A vector to hold all the paths to jar files
 			File mesquiteDirectory = new File(mesquiteDirectoryPath);		
@@ -2705,11 +2710,11 @@ public class Mesquite extends MesquiteTrunk
 			}
 			//Adding stuff from Mesquite_Folder/additionalMesquiteModules
 			addClasspathsHere(urls, jars, MesquiteFile.composePath(mesquiteDirectoryPath, "additionalMesquiteModules"));
-			
+
 			//Adding stuff from Mesquite_Support_Files/classes
 			addClasspathsHere(urls, jars, System.getProperty("user.home") + System.getProperty("file.separator") + "Mesquite_Support_Files" + System.getProperty("file.separator") + "classes");
-			
-			
+
+
 			if (getJavaVersionAsDouble()<1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
 				URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
 				for (int i = 0; i<urls.size(); i++){
@@ -2740,7 +2745,7 @@ public class Mesquite extends MesquiteTrunk
 			 * If the current classloader isn't the URL one made here, then jars loading can fail. The one known case as of
 			 * January 2O18 is when run under Eclipse and Java 1.9. Eclipse supplies its own classloader; it can find the core jars as they are in the project's build path, but it can't
 			 * find the jars of packages added via classpaths.txt. For this reason we now use ByteBuddy to add the jars to the system classpath.*/
-			
+
 			//Now to add jars to system class loader via ByteBuddy
 			//DAVIDCHECK: add ByteBuddy stuff here. Paths are stored as strings in Vector of strings called jars
 			String jarPath="";
