@@ -306,14 +306,17 @@ public class Mesquite extends MesquiteTrunk
 
 		if (starter != null){ // because of Java 9 classloading issues, rely on starter class to make class loader if it exists
 			try {
-				Method gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
-				basicClassLoader = (URLClassLoader)gmcl.invoke(starter, null);
-				if (basicClassLoader!= null)
-					System.out.println("Received URLClassLoader from start.Mesquite");
 				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
 				startupNotices = (Vector)gsn.invoke(starter, null);
 				if (startupNotices != null)
 					System.out.println("Received startupNotices from start.Mesquite");
+				//the following could thro
+				Method gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
+				Object obj = gmcl.invoke(starter, null);
+				if (obj instanceof URLClassLoader)
+					basicClassLoader = (URLClassLoader)obj;
+				if (basicClassLoader!= null)
+					System.out.println("Received URLClassLoader from start.Mesquite");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -711,9 +714,12 @@ public class Mesquite extends MesquiteTrunk
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) 
 			logln("\nTHIS IS A PRERELEASE (BETA) VERSION: We discourage you from publishing results with this version of Mesquite, unless you check with the authors.\n");
 		if (debugMode){ 
-			logln("############### Startup Notices ###############");
+				logln("############### Startup Notices ###############");
 			for (int i=0; i<startupNotices.size(); i++)
-				logln((String)startupNotices.elementAt(i));
+				if (startupNotices == null)
+					logln(" startupNotices null");
+				else
+					logln((String)startupNotices.elementAt(i));
 			logln("########################################");
 		}
 
@@ -2628,7 +2634,6 @@ public class Mesquite extends MesquiteTrunk
 				for (int i = 0; i<subs.length; i++){
 					if (subs[i].equals("jars")){
 						String jarsPath = MesquiteFile.composePath(path, "jars");
-						System.out.println("    Registering jars in <" + jarsPath + ">");
 						addToStartupNotices("    Registering jars in <" + jarsPath + ">");
 						File jarsDirectory = new File(jarsPath);
 						if (jarsDirectory.exists() && jarsDirectory.isDirectory()){
@@ -2655,6 +2660,8 @@ public class Mesquite extends MesquiteTrunk
 		}
 	}
 	static void addToStartupNotices(String s){
+		if (startupNotices == null){
+		}
 		if (startupNotices != null)
 			startupNotices.addElement(s);
 		System.out.println(s);
