@@ -2681,7 +2681,7 @@ public class Mesquite extends MesquiteTrunk
 
 	static Vector startupNotices = null;
 	/*.................................................................................................................*/
-	/*Dec 17: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
+	/*Dec 2O17: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
 	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath, URLClassLoader classLoader, Vector v){
 		startupNotices = v;
 		if (MesquiteTrunk.debugMode)
@@ -2737,6 +2737,7 @@ public class Mesquite extends MesquiteTrunk
 			else {
 				addToStartupNotices(" Java version is 9.0 or later; using URLClassLoader supplied by start.Mesquite and adding to it.");
 				//if  URLClassLoader is presented, use that and add to it, bypassing the protected status of addURL by using reflection
+				// NOTE: this generates a warning, and should be eventually eliminated when we can figure out how. It's currently needed when run on Windows
 				Method method = classLoader.getClass().getDeclaredMethod("addURL",new Class[]{URL.class});
 				method.setAccessible(true);
 				for (int i = 0; i<urls.size(); i++){
@@ -2749,7 +2750,7 @@ public class Mesquite extends MesquiteTrunk
 			 * January 2O18 is when run under Eclipse and Java 1.9. Eclipse supplies its own classloader; it can find the core jars as they are in the project's build path, but it can't
 			 * find the jars of packages added via classpaths.txt. For this reason we now use ByteBuddy to add the jars to the system classpath.*/
 
-			//Now to add jars to system class loader via ByteBuddy
+			//Now to add jars to system class loader via ByteBuddy. This will not always be needed, as in some contexts the jars having been added to certain classloaders in the above code will suffice
 			addToStartupNotices(" Adding jars to system classloader via ByteBuddy, just in case");
 			String jarPath="";
 			for (int i = 0; i<jars.size(); i++){
