@@ -2670,6 +2670,15 @@ public class Mesquite extends MesquiteTrunk
 			e.printStackTrace();
 		}
 	}
+	/*.................................................................................................................*/
+	public static String correctClassPath(String path) {
+		if (MesquiteTrunk.isWindows()) {
+			return path.replace("/", "\\");
+		} else  {
+			return path.replace("\\", "/");
+		}
+	}
+
 	static Vector startupNotices = null;
 	/*.................................................................................................................*/
 	/*Dec 17: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
@@ -2692,8 +2701,10 @@ public class Mesquite extends MesquiteTrunk
 			if (paths != null){
 				//Go through each package listed in classpaths.txt
 				for (int i = 0; i<paths.length; i++){
-					if (!paths[i].startsWith("#")) //paths can be commented out with leading #
-						addClasspathsHere(urls, jars, MesquiteFile.composePath(mesquiteDirectoryPath, paths[i]));
+					if (!paths[i].startsWith("#")) { //paths can be commented out with leading #
+						
+						addClasspathsHere(urls, jars, MesquiteFile.composePath(mesquiteDirectoryPath, correctClassPath(paths[i])));
+					}
 				}
 			}
 			//Adding stuff from Mesquite_Folder/additionalMesquiteModules
@@ -2712,7 +2723,7 @@ public class Mesquite extends MesquiteTrunk
 				return sysloader;
 			}
 			//Java 9.0 or above. Add all URLs to a URLClassLoader (for modules at least) but then also add jars  manually with ByteBuddy, just in case.
-			if (classLoader == null || MesquiteTrunk.isMacOSX()){ //Debugg.println or if not Windows?
+			if (classLoader == null || MesquiteTrunk.isMacOSX()) { //MesquiteTrunk.isMacOSX()){ //Debugg.println or if not Windows?
 				addToStartupNotices(" Java version is 9.0 or later; making new URLClassLoader for modules.");
 				//If no class loader was supplied, make one and give it the URLs for classpaths
 				//(the drawback of this is that as a new class loader, it may not be used for mesquite.Mesquite)

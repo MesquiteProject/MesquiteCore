@@ -58,11 +58,15 @@ public class ModuleLoader {
 		otherTime= new MesquiteTimer();
 		classTime = new MesquiteTimer();
 		verboseStartup = MesquiteFile.fileExists(MesquiteModule.getRootPath() + "verbose");
-		//Debugg.println
-		System.out.println("$$$ Loading modules using classloader " + MesquiteTrunk.basicClassLoader);
-		System.out.println("$$$ URLClassLoader.class in ModuleLoader " + URLClassLoader.class);
 		
-			if (MesquiteTrunk.basicClassLoader!= null){
+		if (MesquiteTrunk.debugMode) {
+			System.out.println("$$$ Loading modules using classloader " + MesquiteTrunk.basicClassLoader);
+			System.out.println("$$$ URLClassLoader.class in ModuleLoader " + URLClassLoader.class);
+		}
+		
+		if (MesquiteTrunk.basicClassLoader== null)
+			System.out.println("Loading modules: MesquiteTrunk.basicClassLoader is null");
+		else if (MesquiteTrunk.debugMode) {
 			System.out.println("Loading modules using classloader " + MesquiteTrunk.basicClassLoader);
 			if (MesquiteTrunk.basicClassLoader instanceof URLClassLoader){
 				System.out.println("  URLs of classpaths: ");
@@ -72,10 +76,7 @@ public class ModuleLoader {
 					System.out.println("   " + urls[i]);
 				}
 			}
-			}
-			else
-				System.out.println("Loading modules: MesquiteTrunk.basicClassLoader is null");
-				
+		}
 
 		if (MesquiteTrunk.isApplet()) {
 			System.out.println("Error: attempt to use applet as application");
@@ -214,11 +215,11 @@ public class ModuleLoader {
 		}
 	}
 
-
+	
 	void addModulesAtPaths(String relativeTo, String[] pathsFileContents){
 		if (pathsFileContents == null)return;
 		for (int i = 0; i<pathsFileContents.length; i++){
-			String line = pathsFileContents[i];
+			String line = Mesquite.correctClassPath(pathsFileContents[i]);
 			if (!StringUtil.blank(line) && !line.startsWith("#")){
 				String path = MesquiteFile.composePath(relativeTo, line) ; //here you pass the ith thing in the list
 				ClassLoader loader = getClassLoaderForDirectory(path, "");
