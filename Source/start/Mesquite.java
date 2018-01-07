@@ -1,31 +1,39 @@
 package start;
 
 import java.io.File;
-
-
-
 import java.lang.reflect.*;
 import java.lang.Class;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Vector;
 import java.lang.ClassLoader;
 
-/*This class is used to start Mesquite. 
+/*This class is used to start Mesquite.  It used to be used only in executable bundles, but it is now the required way to start Mesquite,
+ * because (as of Java 9) Mesquite needs to use a custom classloader for its modules.
  * 
  * History: In older Javas, application bundles/executables could set their initial classpath to outside the bundle, but in Java 1.7 on MacOS
  * that became prohibited. This starter was therefore built to live inside application bundle, and it would manually find mesquite.Mesquite outside the
  * application bundle, and start it using the system class loader. This could work because the system classloader was also a URLClassLoader, and therefore
- * could have Mesquite's classpath added at runtime. With Java 1.9 that changed, and
+ * could have Mesquite's classpath added at runtime by reflection-hacking into addURL. With Java 1.9 that changed, and
  * the system ClassLoader could no longer add classpaths after startup. Thus, this starter had to make its own URLClassLoader, and also find
  * and add all the various possible classpaths.
  * 
- * Because (as of Java 1.9) Mesquite needs to use a custom classloader for its modules and jars, this starter is now the required way to start Mesquite.
+ * The scenario is this:
+ * 1. start.Mesquite is instantiated and startMesquite is called
+ * 2. startMesquite finds the basic Mesquite classpath (i.e. Mesquite_Folder) in order to be able to ask mesquite.Mesquite to supply a class loader with all classpaths added
+ * 3. makeModuleClassLoader in mesquite.Mesquite adds classpaths for the basic Mesquite_Folder classpath, the directories indicated by classpaths.txt, and supplementary locations (support files/classes, additionalModules)
+ * Also added are any jars found in jars/ directories.  See mesquite.Mesquite.makeModuleClassLoader for details (e.g., when ByteBuddy is used).
+ * 4. This is all complex because different running conditions generate different configurations:
+ * —Under Javas before 9.0, the system class loader is a URLClassLoader and so the extra classpaths can be added at runtime. We end up with a single class loader, the system one.
+ * —Under Java 9, the modules are always loaded by the URLClassLoader created by makeModuleClassLoader (for macOS & Linxu) or here (Windows). 
  * 
- * Use: 
- * For executable bundles (MacOS Oracle bundlers, Launch4J bundlers) this can be compiled to a jar that is then used by the bundlers.
+ * startMesquite then uses the classloader made to instantiate mesquite_Mesquite and call its main method. Mesquite then goes on to use the classloader to use modules.
  * 
- * For starting Mesquite by command line: simply ask to start start.Mesquite as main class
- */
+ * Starting regimes: 
+ * Eclipse: set start.Mesquite as main class
+ * 
+ *	For all other execution, this class and ByteBuddy classes need to be bundled into a jar file, and that is used to start Mesquite. See Executables folder for instructions.
+  */
 
 public class Mesquite {
 	URLClassLoader basicLoader;
@@ -35,11 +43,13 @@ public class Mesquite {
 		m.startMesquite(args);
 	}
 	
+	Vector startupNotices = new Vector();
 	void startMesquite(String args[]){
-
 		ClassLoader cl = start.Mesquite.class.getClassLoader();
 		String loc = cl.getResource("start/Mesquite.class").getPath();
 		System.out.println("Starting Mesquite with Java: " + System.getProperty("java.version"));
+		startupNotices.addElement("start.Mesquite: Location of executable start class: " + loc);
+		
 		System.out.println("Location of executable start class: " + loc);
 		if (loc.startsWith("file:")){
 				loc = loc.substring(5, loc.length());
@@ -53,6 +63,7 @@ public class Mesquite {
 		
 		File mesquiteDirectory = new File(loc);		
 		System.out.println("Mesquite Folder: " + loc + " (exists = " + mesquiteDirectory.exists() + ")");
+		startupNotices.addElement("start.Mesquite: Mesquite Folder: " + loc);
 
 		/*First, build a basic class loader that will be used to load mesquite.Mesquite from the Mesquite_Folder
 		and also passed to Mesquite to use in loading modules. This basic class loader needs to have already 
@@ -63,11 +74,26 @@ public class Mesquite {
 			URL[] us= null;
 			u =mesquiteDirectory.toURL();
 			URL[] forMF = {u};
-			basicLoader = new URLClassLoader(forMF, null);
+			ClassLoader current = ClassLoader.getSystemClassLoader();
+			System.out.println("$$$ URLClassLoader.class in start.Mesquite " + URLClassLoader.class); //Debugg.println
+			if (current instanceof URLClassLoader){
+				basicLoader = (URLClassLoader)current;
+				Class sysclass = URLClassLoader.class;
+
+				try {
+					Method method = sysclass.getDeclaredMethod("addURL",new Class[]{URL.class});
+					method.setAccessible(true);
+					method.invoke(basicLoader,new Object[]{ u });
+				}
+				catch (Throwable t) {
+				}
+			}
+			if (basicLoader == null)
+				basicLoader = new URLClassLoader(forMF, null);
 			Class mesquiteFileClass = basicLoader.loadClass("mesquite.Mesquite");
-			Class[] argTypesMCL = new Class[] {String.class, URLClassLoader.class};
+			Class[] argTypesMCL = new Class[] {String.class, URLClassLoader.class, Vector.class};
 			Method makeClassLoader = mesquiteFileClass.getDeclaredMethod("makeModuleClassLoader", argTypesMCL);
-			basicLoader = (URLClassLoader)makeClassLoader.invoke(null, new Object[]{loc, basicLoader});
+			basicLoader = (URLClassLoader)makeClassLoader.invoke(null, new Object[]{loc, basicLoader, startupNotices});
 		} 
 		catch (Throwable t) {
 			t.printStackTrace();
@@ -81,6 +107,7 @@ public class Mesquite {
 			main.invoke(null, new Object[]{args, this});
 		} 
 		catch (Throwable t) {
+			System.out.println("There appears to be a problem starting Mesquite.");
 			t.printStackTrace();
 		}
 		
@@ -111,6 +138,10 @@ public class Mesquite {
 	/*-------------------------*/
 	public ClassLoader getMesquiteClassLoader(){
 			return basicLoader;
+	}
+	/*-------------------------*/
+	public Vector getStartupNotices(){
+			return startupNotices;
 	}
 	/*-------------------------*/
 	static String stripLast(String s){
