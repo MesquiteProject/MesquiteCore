@@ -58,7 +58,10 @@ public class ModuleLoader {
 		otherTime= new MesquiteTimer();
 		classTime = new MesquiteTimer();
 		verboseStartup = MesquiteFile.fileExists(MesquiteModule.getRootPath() + "verbose");
-		//if (MesquiteTrunk.debugMode){
+		//Debugg.println
+		System.out.println("$$$ Loading modules using classloader " + MesquiteTrunk.basicClassLoader);
+		System.out.println("$$$ URLClassLoader.class in ModuleLoader " + URLClassLoader.class);
+		
 			if (MesquiteTrunk.basicClassLoader!= null){
 			System.out.println("Loading modules using classloader " + MesquiteTrunk.basicClassLoader);
 			if (MesquiteTrunk.basicClassLoader instanceof URLClassLoader){
@@ -73,7 +76,7 @@ public class ModuleLoader {
 			else
 				System.out.println("Loading modules: MesquiteTrunk.basicClassLoader is null");
 				
-	//	}
+
 		if (MesquiteTrunk.isApplet()) {
 			System.out.println("Error: attempt to use applet as application");
 		}

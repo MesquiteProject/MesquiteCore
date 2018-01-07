@@ -76,6 +76,7 @@ public class Mesquite {
 			u =mesquiteDirectory.toURL();
 			URL[] forMF = {u};
 			ClassLoader current = ClassLoader.getSystemClassLoader();
+			System.out.println("$$$ URLClassLoader.class in start.Mesquite " + URLClassLoader.class); //Debugg.println
 			if (current instanceof URLClassLoader){
 				basicLoader = (URLClassLoader)current;
 				Class sysclass = URLClassLoader.class;

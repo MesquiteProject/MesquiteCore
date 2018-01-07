@@ -2675,6 +2675,7 @@ public class Mesquite extends MesquiteTrunk
 	/*Dec 17: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
 	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath, URLClassLoader classLoader, Vector v){
 		startupNotices = v;
+		System.out.println("$$$ URLClassLoader.class in makeModuleClassLoader " + URLClassLoader.class); //Debugg.println
 		try {
 
 			Vector urls = new Vector(); //A vector to hold all the URLs of classpaths
