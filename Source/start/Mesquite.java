@@ -1,7 +1,6 @@
 package start;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.*;
 import java.lang.Class;
 import java.net.URL;
@@ -14,17 +13,28 @@ import java.lang.ClassLoader;
  * History: In older Javas, application bundles/executables could set their initial classpath to outside the bundle, but in Java 1.7 on MacOS
  * that became prohibited. This starter was therefore built to live inside application bundle, and it would manually find mesquite.Mesquite outside the
  * application bundle, and start it using the system class loader. This could work because the system classloader was also a URLClassLoader, and therefore
- * could have Mesquite's classpath added at runtime. With Java 1.9 that changed, and
+ * could have Mesquite's classpath added at runtime by reflection-hacking into addURL. With Java 1.9 that changed, and
  * the system ClassLoader could no longer add classpaths after startup. Thus, this starter had to make its own URLClassLoader, and also find
  * and add all the various possible classpaths.
  * 
- * Because (as of Java 1.9) Mesquite needs to use a custom classloader for its modules and jars, this starter is now the required way to start Mesquite.
+ * Because (as of Java 9) Mesquite needs to use a custom classloader for its modules, this starter is now the required way to start Mesquite.
  * 
- * Use: 
- * For executable bundles (MacOS Oracle bundlers, Launch4J bundlers) this can be compiled to a jar that is then used by the bundlers.
+ * The scenario is this:
+ * start.Mesquite is instantiated and calls startMesquite
+ * startMesquite finds the basic Mesquite classpath (i.e. Mesquite_Folder) in order to be able to ask mesquite.Mesquite to supply a class loader with all classpaths added
+ * makeModuleClassLoader in mesquite.Mesquite adds classpaths for the basic Mesquite_Folder classpath, the directories indicated by classpaths.txt, and supplementary locations (support files/classes, additionalModules)
+ * Also added are any jars found in jars/ directories.  See mesquite.Mesquite.makeModuleClassLoader for details (e.g., when ByteBuddy is used).
+ * This is all complex because different running conditions generate different configurations:
+ * —Under Javas before 9.0, the system class loader is a URLClassLoader and so the extra classpaths can be added at runtime. We end up with a single class loader, the system on.
+ * —Under Java 9, the modules are always loaded by the URLClassLoader created by makeModuleClassLoader. 
  * 
- * For starting Mesquite by command line: simply ask to start start.Mesquite as main class
- */
+ * startMesquite then uses the classloader made to instantiate mesquite_Mesquite and call its main method. Mesquite then goes on to use the classloader to use modules.
+ * 
+ * Starting regimes: 
+ * Eclipse: set start.Mesquite as main class
+ * 
+ *	For all other execution, this class and ByteBuddy classes need to be bundled into a jar file, and that is used to start Mesquite. See Executables folder for instructions.
+  */
 
 public class Mesquite {
 	URLClassLoader basicLoader;

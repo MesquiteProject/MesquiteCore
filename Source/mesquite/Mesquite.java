@@ -178,20 +178,6 @@ public class Mesquite extends MesquiteTrunk
 			URI mesquiteDirectoryURI = mesquiteDirectoryURL.toURI();  // convert to URI so that encoding is taken care of properly 
 			loc = mesquiteDirectoryURI.getPath();  // then get the path
 		} catch (URISyntaxException e) {
-			/*DAVIDCHECK: 
-			5 January
-			This exception gets thrown on Mac if path has space on it in these conditions
-			— java 1.8, 9.0 with .command file
-			— java 1.8, 9.0 via java -jar Mesquite.jar if path has space in it (space is claimed to be an illegal character)
-			It does not get thrown
-			— java 1.8 via java -cp . start.Mesquite
-			It may have no consequence, as loc is correct then anyway, and so it uses that and loads fine.
-
-			Mesquite successfully starts (with or without these exceptions) under all cases I tried on Mac with Java 1.8, 9.0 
-			EXCEPT under 9.0 on Eclipse and
-			EXCEPT under 9.0 via java -cp . start.Mesquite.
-			This was an old case I thought we'd squashed, but it's back. ByteBuddy should fix it.
-			 */
 			loc = mesquiteDirectoryURL.getPath();    // have to give it something, and this shouuld work at this point
 			if (MesquiteTrunk.debugMode)
 				e.printStackTrace();
@@ -2665,6 +2651,7 @@ public class Mesquite extends MesquiteTrunk
 				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
 				startupNotices = (Vector)gsn.invoke(starter, null);
 			} catch (Exception e) {
+					System.out.println("Failed to get startup notices vector");
 			}
 		}
 		if (startupNotices != null)
@@ -2716,6 +2703,7 @@ public class Mesquite extends MesquiteTrunk
 
 
 			if (getJavaVersionAsDouble()<1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
+				addToStartupNotices(" Java version is before 9.0; using system class loader for modules and jars.");
 				URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
 				for (int i = 0; i<urls.size(); i++){
 					JarLoader.addURL((URL)urls.elementAt(i));
@@ -2724,6 +2712,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 			//Java 9.0 or above. Add all URLs to a URLClassLoader (for modules at least) but then also add jars  manually with ByteBuddy, just in case.
 			if (classLoader == null || MesquiteTrunk.isMacOSX()){ //Debugg.println or if not Windows?
+				addToStartupNotices(" Java version is 9.0 or later; making new URLClassLoader for modules.");
 				//If no class loader was supplied, make one and give it the URLs for classpaths
 				//(the drawback of this is that as a new class loader, it may not be used for mesquite.Mesquite)
 				URL[] us= new URL[urls.size()];
@@ -2733,6 +2722,7 @@ public class Mesquite extends MesquiteTrunk
 				classLoader = new URLClassLoader(us);
 			}
 			else {
+				addToStartupNotices(" Java version is 9.0 or later; using URLClassLoader supplied by start.Mesquite and adding to it.");
 				//if  URLClassLoader is presented, use that and add to it, bypassing the protected status of addURL by using reflection
 				Method method = classLoader.getClass().getDeclaredMethod("addURL",new Class[]{URL.class});
 				method.setAccessible(true);
@@ -2747,7 +2737,7 @@ public class Mesquite extends MesquiteTrunk
 			 * find the jars of packages added via classpaths.txt. For this reason we now use ByteBuddy to add the jars to the system classpath.*/
 
 			//Now to add jars to system class loader via ByteBuddy
-			//DAVIDCHECK: add ByteBuddy stuff here. Paths are stored as strings in Vector of strings called jars
+			addToStartupNotices(" Adding jars to system classloader via ByteBuddy, just in case");
 			String jarPath="";
 			for (int i = 0; i<jars.size(); i++){
 				jarPath = (String)jars.elementAt(i);
@@ -2761,7 +2751,7 @@ public class Mesquite extends MesquiteTrunk
 		return classLoader;
 	}
 	/*.................................................................................................................*/
-	/* Because of Classloader issues in Java 9.0, Mesquite 3.4+ start up via start.Mesquite which then calls this method as if it were Mesquite's main class.*/
+	/* See start.Mesquite.java for an overview of how Mesquite starts up post-2O17*/
 	public static void mainViaStarter(String args[], Object starter){
 		MesquiteTrunk.mesquiteTrunk.starter = starter;
 		addToStartupNotices("Mesquite started via starter class");
