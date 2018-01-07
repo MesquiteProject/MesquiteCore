@@ -194,14 +194,15 @@ public class Mesquite extends MesquiteTrunk
 
 		mesquiteDirectory = new File(loc);
 
-		/*
-		try {
-			//if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
-			loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
-			URI uri = new URI(loc);
-			mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+/*
+			try {
+				//if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
+				loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
+				URI uri = new URI(loc);
+				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
 		}
 		 */
 
