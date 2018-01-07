@@ -2684,9 +2684,8 @@ public class Mesquite extends MesquiteTrunk
 	/*Dec 17: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
 	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath, URLClassLoader classLoader, Vector v){
 		startupNotices = v;
-		//if (MesquiteTrunk.debugMode)
+		if (MesquiteTrunk.debugMode)
 			System.out.println("$$$ URLClassLoader.class in makeModuleClassLoader " + URLClassLoader.class); 
-		System.out.println("$$$  makeModuleClassLoader 1"); 
 		try {
 
 			Vector urls = new Vector(); //A vector to hold all the URLs of classpaths
@@ -2714,7 +2713,6 @@ public class Mesquite extends MesquiteTrunk
 
 			//Adding stuff from Mesquite_Support_Files/classes
 			addClasspathsHere(urls, jars, System.getProperty("user.home") + System.getProperty("file.separator") + "Mesquite_Support_Files" + System.getProperty("file.separator") + "classes");
-			System.out.println("$$$  makeModuleClassLoader 2"); 
 
 
 			if (getJavaVersionAsDouble()<1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
@@ -2725,10 +2723,8 @@ public class Mesquite extends MesquiteTrunk
 				}
 				return sysloader;
 			}
-			System.out.println("$$$  makeModuleClassLoader 3"); 
 			//Java 9.0 or above. Add all URLs to a URLClassLoader (for modules at least) but then also add jars  manually with ByteBuddy, just in case.
-			ClassLoader inputClassLoader = classLoader;
-			if (classLoader == null || true) {// || MesquiteTrunk.isMacOSX()) {  //Debugg.println or if not Windows?
+			if (classLoader == null  || MesquiteTrunk.isMacOSX()  || MesquiteTrunk.isLinux()) { 
 				addToStartupNotices(" Java version is 9.0 or later; making new URLClassLoader for modules.");
 				//If no class loader was supplied, make one and give it the URLs for classpaths
 				//(the drawback of this is that as a new class loader, it may not be used for mesquite.Mesquite)
@@ -2737,7 +2733,6 @@ public class Mesquite extends MesquiteTrunk
 					us[i] = (URL)urls.elementAt(i);
 				}
 				classLoader = new URLClassLoader(us);
-				System.out.println("$$$  makeModuleClassLoader 4"); 
 			}
 			else {
 				addToStartupNotices(" Java version is 9.0 or later; using URLClassLoader supplied by start.Mesquite and adding to it.");
@@ -2755,17 +2750,12 @@ public class Mesquite extends MesquiteTrunk
 			 * find the jars of packages added via classpaths.txt. For this reason we now use ByteBuddy to add the jars to the system classpath.*/
 
 			//Now to add jars to system class loader via ByteBuddy
-			System.out.println("$$$  makeModuleClassLoader 5"); 
 			addToStartupNotices(" Adding jars to system classloader via ByteBuddy, just in case");
 			String jarPath="";
 			for (int i = 0; i<jars.size(); i++){
 				jarPath = (String)jars.elementAt(i);
-				ClassLoader originalClassLoader = classLoader;
-				JarLoader.addJarFileToClassPath(inputClassLoader, jarPath);
-				JarLoader.addJarFileToClassPath(classLoader, jarPath);
-				JarLoader.addJarFileToClassPath(null, jarPath);
+				JarLoader.addJarFileToClassPath(jarPath);
 			}
-			System.out.println("$$$  makeModuleClassLoader 6"); 
 			return classLoader;
 		} 
 		catch (Throwable t) {

@@ -16,7 +16,7 @@ public class JarLoader {
 	private static final Class[] parameters = new Class[]{URL.class};
 	static boolean noClassDefWarningGiven = false;
 
-	public static boolean addJarFileToClassPath(ClassLoader classLoader, String s)  {
+	public static boolean addJarFileToClassPath(String s)  {
 		boolean jarAdded = false;
 		try {
 			File f = new File(s);
@@ -25,10 +25,8 @@ public class JarLoader {
 
 				Instrumentation instrumentation = null;
 				try {
-					ClassLoader loader = ClassLoader.getSystemClassLoader();
-					if (classLoader!=null)
-						loader = classLoader;
-					Class byteBuddyClass = loader.loadClass("net.bytebuddy.agent.ByteBuddyAgent");
+					ClassLoader sysloader = ClassLoader.getSystemClassLoader();
+					Class byteBuddyClass = sysloader.loadClass("net.bytebuddy.agent.ByteBuddyAgent");
 					Method installMethod = byteBuddyClass.getDeclaredMethod("install", null);
 					instrumentation = (Instrumentation)installMethod.invoke(null,null);
 					jarAdded = true;
