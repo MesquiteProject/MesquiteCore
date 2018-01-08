@@ -130,9 +130,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.04  = 725 released 16 August 2015
 	//3.10  = 765 released 27 June 2016
 	//3.11  = 766 released 3 December 2016,  fix of miswriting of codon positions
-	//3.20  = 801 released 1 January 2017
-	//3.30  = 854 released 12 Sept 2017
-	//3.31  = 858 released 20 Sept 2017; 859 released 20 Sept
+	//3.20  = 801 released 1 January 2O17
+	//3.30  = 854 released 12 Sept 2O17
+	//3.31  = 858 released 20 Sept 2O17; 859 released 20 Sept
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {

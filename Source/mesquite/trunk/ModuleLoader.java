@@ -609,7 +609,7 @@ public class ModuleLoader {
 			try {
 				Class c = null;
 				//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
-				//note: as of 29 dec 2017 going back to ClassLoader
+				//note: as of 29 dec 2O17 going back to ClassLoader
 				lastTried = packageName + classname;
 				//classTime.start();
 
