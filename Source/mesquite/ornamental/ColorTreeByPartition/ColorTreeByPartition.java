@@ -113,7 +113,8 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 			if (partitions != null){
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawOnTree(tree, d, g);
-				treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, colors[node], g);
+				if (colors[node].anyColors())
+					treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, colors[node], g);
 			}
 		}
 	}
