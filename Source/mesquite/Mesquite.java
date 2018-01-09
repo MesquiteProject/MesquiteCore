@@ -2738,6 +2738,13 @@ public class Mesquite extends MesquiteTrunk
 				addToStartupNotices(" Java version is 9.0 or later; using URLClassLoader supplied by start.Mesquite and adding to it.");
 				//if  URLClassLoader is presented, use that and add to it, bypassing the protected status of addURL by using reflection
 				// NOTE: this generates a warning, and should be eventually eliminated when we can figure out how. It's currently needed when run on Windows
+				/* Here is the warning:
+	WARNING: An illegal reflective access operation has occurred
+	WARNING: Illegal reflective access by mesquite.Mesquite (file:/Users/david/Documents/Mesquite Workspace/MesquiteCore/Mesquite_Folder/) to method java.net.URLClassLoader.addURL(java.net.URL)
+	WARNING: Please consider reporting this to the maintainers of mesquite.Mesquite
+	WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+	WARNING: All illegal access operations will be denied in a future release
+				 */
 				Method method = classLoader.getClass().getDeclaredMethod("addURL",new Class[]{URL.class});
 				method.setAccessible(true);
 				for (int i = 0; i<urls.size(); i++){
