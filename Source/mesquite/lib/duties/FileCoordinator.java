@@ -16,6 +16,7 @@ package mesquite.lib.duties;
 import java.awt.*;
 
 import mesquite.lib.*;
+import mesquite.minimal.BasicFileCoordinator.ProjectWindow;
 
 /* ======================================================================== */
 /**
@@ -23,6 +24,9 @@ import mesquite.lib.*;
  */
 
 public abstract class FileCoordinator extends MesquiteModule {
+	public static boolean maxLinesOfAnyElementInPanelQueried = false; // has this been set by the user?
+	public static int maxLinesOfAnyElementInPanel = 50; //starts here; if exceeded and hasn't been previously set, then asks user for value. Preferences saved by mesquite.minimal.Defaults
+	
 	public boolean getSearchableAsModule(){
 		return false;
 	}

@@ -43,7 +43,7 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 		searchDataOnly = data;
 		searchBox = new TextArea("", 1, 8, TextArea.SCROLLBARS_NONE);
 		add(searchBox);
-		searchBox.setBounds(0, 1, 130, 14);
+		searchBox.setBounds(0, 1, 130, 14);  
 		searchBox.setVisible(true);
 		searchBox.setFont(smallFont);
 		searchBox.addKeyListener(new KIListener(this));

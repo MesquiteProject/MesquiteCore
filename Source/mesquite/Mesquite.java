@@ -18,14 +18,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.*;
 
 import javax.imageio.ImageIO;
 
-import com.apple.mrj.MRJFileUtils;
-import com.apple.mrj.MRJOSType;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;

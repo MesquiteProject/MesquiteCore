@@ -38,7 +38,8 @@ public class Defaults extends MesquiteInit  {
 				"The defaults are presented in the Defaults submenu of the File menu.");
 	}
 	/*.................................................................................................................*/
-	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode,  taxonTruncTrees, taxonT0Trees, taxonT0TreesWarned, tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; //, useDotPrefs
+	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode,  taxonTruncTrees, taxonT0TreesWarned, taxonT0Trees;
+	MesquiteBoolean tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; 
 	MesquiteString themeName;
 	StringArray themes;
 	/*.................................................................................................................*/
@@ -105,6 +106,7 @@ public class Defaults extends MesquiteInit  {
 		sm.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "-", null);
 
+		MesquiteTrunk.mesquiteTrunk.addMenuItem(MesquiteTrunk.defaultsSubmenu,"Maximum # Items in Project Panel...", makeCommand("setProjectPanelMaxItems",  this));		
 		sm = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.defaultsSubmenu,"Project Panel Font Size", makeCommand("setProjectPanelFontSize",  this), MesquiteSubmenu.getFontSizeList());		
 		sm.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use File-Specific Project Panel Width", makeCommand("respectFileSpecificResourceWidth",  this), respectFileSpecificResourceWidth);
@@ -214,6 +216,15 @@ public class Defaults extends MesquiteInit  {
 		else if ("taxonT0TreesWarned".equalsIgnoreCase(tag)){
 			taxonT0TreesWarned.setValue(content);
 		}
+		else if ("maxLinesOfAnyElementInPanelQueried".equalsIgnoreCase(tag)){
+			MesquiteBoolean q = new MesquiteBoolean();
+			q.setValue(content);
+			FileCoordinator.maxLinesOfAnyElementInPanelQueried = q.getValue();
+		}
+		else if ("maxLinesOfAnyElementInPanel".equalsIgnoreCase(tag)) {
+			int m = MesquiteInteger.fromString(content);
+			FileCoordinator.maxLinesOfAnyElementInPanel = m;
+		}
 		/*	else if ("tilePopouts".equalsIgnoreCase(tag)){
 			tilePopouts.setValue(content);
 			MesquiteFrame.popIsTile = tilePopouts.getValue();
@@ -294,6 +305,8 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "defaultFont", MesquiteWindow.defaultFont.getName());  
 		StringUtil.appendXMLTag(buffer, 2, "defaultFontSize", MesquiteWindow.defaultFont.getSize());
 		StringUtil.appendXMLTag(buffer, 2, "resourcesFontSize", MesquiteFrame.resourcesFontSize);
+		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfAnyElementInPanel", FileCoordinator.maxLinesOfAnyElementInPanel);
+		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfAnyElementInPanelQueried", FileCoordinator.maxLinesOfAnyElementInPanelQueried);
 		StringUtil.appendXMLTag(buffer, 2, "useOtherChoicesInMenus", useOtherChoices);   
 		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.suggestedDirectory);
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
@@ -411,6 +424,17 @@ public class Defaults extends MesquiteInit  {
 				MesquiteTrunk.mesquiteTrunk.storePreferences();
 				discreetAlert("The change in color theme will occur the next time you start Mesquite");
 			}
+		}
+		else if (checker.compare(getClass(), "Sets the maximum number of items of a particular type in Project Panel", "[number]", commandName, "setProjectPanelMaxItems")) {
+			int num = MesquiteInteger.fromFirstToken(arguments, new MesquiteInteger(0));
+			if (!MesquiteInteger.isCombinable(num))
+				num= MesquiteInteger.queryInteger(containerOfModule(), "Maximum items of a kind in project panel", "To save memory and time, Mesquite limits how many items" 
+			+ " of a particular kind are shown in the project panel. If you'd like to change the limit, indicate a new maximum. You will need to restart Mesquite for the change to take effect.", FileCoordinator.maxLinesOfAnyElementInPanel);
+			if (!MesquiteInteger.isCombinable(num))
+				return null;
+			FileCoordinator.maxLinesOfAnyElementInPanel = num;
+			FileCoordinator.maxLinesOfAnyElementInPanelQueried = true;
+			storePreferences();
 		}
 		else if (checker.compare(getClass(), "Sets the font size of project panel", "[font size]", commandName, "setProjectPanelFontSize")) {
 			int fontSize = MesquiteInteger.fromFirstToken(arguments, new MesquiteInteger(0));

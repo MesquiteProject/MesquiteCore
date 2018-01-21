@@ -36,7 +36,7 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	BasicFileCoordinator bfc;
 	ProjectPanel projPanel;
 	ScrollPanel scrollPanel;
-	int scrollHeight = 26;
+	int scrollHeight = 26; 
 	int scrollWidth = 54;
 	/*.................................................................................................................*/
 	public ProjectWindow(FileCoordinator  ownerModule){
@@ -278,9 +278,8 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	BasicFileCoordinator bfc;
 	ProjectWindow w;
 	Image fileIm;
-	ScrollPanel scroll;
+	ScrollPanel scrollPanel;
 	NotesPanel notesPanel = null;
-	int maxLinesOfAnyElementInPanel = 50; //  Limit added Sept 2O17, for genomic datasets.  In future reform Project panel. 
 	public ProjectPanel(ProjectWindow w, MesquiteProject proj, BasicFileCoordinator bfc){ 
 		super();
 		this.w = w;
@@ -378,6 +377,22 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 
 	}
 
+	boolean elementInBounds(int k, String typeName){
+		if ( k<FileCoordinator.maxLinesOfAnyElementInPanel)
+			return true;
+		if (!FileCoordinator.maxLinesOfAnyElementInPanelQueried){ //setting hasn't yet been made
+			int m = MesquiteInteger.queryInteger(w, "Maximum items of a kind in project panel", "Your file has more than " + FileCoordinator.maxLinesOfAnyElementInPanel + " " + typeName +
+					". To save memory and time, Mesquite limits how many are shown in the project panel. If you'd like to change the limit, indicate a new maximum. You can always change this maximum " 
+					+ " via the menu item File>Defaults>Maximum # Items in Project Panel...", FileCoordinator.maxLinesOfAnyElementInPanel);
+		
+			if (MesquiteInteger.isCombinable(m) && MesquiteInteger.isPositive(m)){
+				FileCoordinator.maxLinesOfAnyElementInPanel = m;
+				FileCoordinator.maxLinesOfAnyElementInPanelQueried = true;
+			}
+		}
+		return k<FileCoordinator.maxLinesOfAnyElementInPanel;
+	}
+	//===============================================
 	int count = 0;
 	int sequenceUpToDate(){
 		if (bfc.isDoomed())
@@ -432,7 +447,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			return 2001;
 		e++;
 		if (proj.taxas.size()>0){
-			for (int i = 0; i< proj.taxas.size() && i<maxLinesOfAnyElementInPanel; i++){
+			for (int i = 0; i< proj.taxas.size() && elementInBounds(i, "taxa blocks"); i++){
 				Taxa t = (Taxa)proj.taxas.elementAt(i);
 				if (e>= elements.size())
 					return 3;
@@ -444,7 +459,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				panel.repaint();
 				e++;
 				if (proj.getNumberCharMatricesVisible(t)>0){
-					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && k<maxLinesOfAnyElementInPanel; k++){   
+					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){   
 						CharacterData data = proj.getCharacterMatrixVisible(t, k);
 						if (data.isUserVisible()){
 							if (e>= elements.size())
@@ -459,7 +474,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					}
 				}
 				if (proj.getNumberOfFileElements(TreeVector.class)>0){
-					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && k<maxLinesOfAnyElementInPanel; k++){
+					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
 						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
 						if (e>= elements.size())
 							return 7;
@@ -484,7 +499,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			}*/
 			ListableVector others = bfc.getProject().getOtherElements();
 			if (others.size()>0){
-				for (int i=0; i<others.size() && i<maxLinesOfAnyElementInPanel; i++){
+				for (int i=0; i<others.size(); i++){
 					FileElement f = (FileElement)others.elementAt(i);
 					/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 						if (((ListableVector)f).size()>0){
@@ -617,12 +632,12 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		panel.setOpen(false);
 		panel.setLocation(0,0);
 		if (proj.taxas.size()>0){
-			for (int i = 0; i< proj.taxas.size() && i<maxLinesOfAnyElementInPanel; i++){
+			for (int i = 0; i< proj.taxas.size() && elementInBounds(i, "taxa blocks"); i++){
 				Taxa t = (Taxa)proj.taxas.elementAt(i);
 				addExtraPanel(panel = new TaxaPanel(bfc, this, w, t));
 				panel.setLocation(0,0);
 				if (proj.getNumberCharMatricesVisible(t)>0){
-					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && k<maxLinesOfAnyElementInPanel; k++){
+					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){
 						CharacterData data = proj.getCharacterMatrixVisible(t, k);
 						if (data.isUserVisible()){
 							if (data instanceof MolecularData)
@@ -638,7 +653,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					}
 				}
 				if (proj.getNumberOfFileElements(TreeVector.class)>0){
-					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && k<maxLinesOfAnyElementInPanel; k++){
+					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
 						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
 						if (trees.getTaxa() == t){
 							addExtraPanel(panel = new TreesRPanel(bfc, this, w, trees));
@@ -656,7 +671,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		 */
 		ListableVector others = bfc.getProject().getOtherElements();
 		if (others.size()>0){
-			for (int i=0; i<others.size() && i<maxLinesOfAnyElementInPanel; i++){
+			for (int i=0; i<others.size(); i++){
 				FileElement f = (FileElement)others.elementAt(i);
 				/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 					if (((ListableVector)f).size()>0){
@@ -717,12 +732,13 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 
 				if (panel instanceof TaxaPanel && highestTaxaPanel == 0)
 					highestTaxaPanel = vertical;
-				vertical += requestedlHeight;
+				if (requestedlHeight >=0)
+					vertical += requestedlHeight;
 				lowestPanel = vertical;
 			}
 		}
-		if (scroll != null)
-			scroll.repaint();
+		if (scrollPanel != null)
+			scrollPanel.repaint();
 		MesquiteWindow.rpAll(this);
 	}
 	boolean canScrollUp(){
@@ -742,6 +758,8 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			scrollOffset = 0;
 		if (was != scrollOffset)
 			resetSizes();
+		if (scrollPanel!=null)
+			scrollPanel.repaint();
 	}
 	void scrollUp(){
 		if (scrollOffset==0 && lowestPanel < getHeight())
@@ -752,6 +770,8 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			scrollOffset = elements.size()-1;
 		if (was != scrollOffset)
 			resetSizes();
+		if (scrollPanel!=null)
+			scrollPanel.repaint();
 	}
 
 }
@@ -761,16 +781,19 @@ class ScrollPanel extends MousePanel {
 	Image up, down, search; // query;
 	int scrollLeft = 38;
 	HelpSearchStrip searchStrip;
+	int searchWidth = 130;
+	int searchX = 20;
+	int vOff = 4;
 
 	public ScrollPanel(ProjectPanel p){
 		super();
 		this.p = p;
-		p.scroll = this;
+		p.scrollPanel = this;
 		setLayout(null);
 		searchStrip = new HelpSearchStrip(p.w, true);
 		add(searchStrip);
-		searchStrip.setSize(120, 15);
-		searchStrip.setLocation(20, 0);
+		searchStrip.setSize(searchWidth, 15); 
+		searchStrip.setLocation(searchX, vOff);
 		searchStrip.setVisible(true);
 		searchStrip.setText("");
 		search = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "search.gif");
@@ -780,19 +803,16 @@ class ScrollPanel extends MousePanel {
 		setBackground(ColorTheme.getExtInterfaceBackground());
 	}
 	public void paint(Graphics g){
-		g.drawImage(search, 4, 0, this);
+		g.drawImage(search, 4, vOff, this);
+		g.setColor(Color.darkGray);
+		g.drawLine(0, 0, getWidth(), 0);
 		if (!p.canScrollUp() && !p.canScrollDown())
 			return;
-		g.setColor(ColorDistribution.veryLightGray);
-		g.fillRect(0,0,getWidth(), getHeight());
-		//	g.drawImage(query, 8, 8, this);
-		if (p.canScrollUp())
-			g.drawImage(up, scrollLeft, 18, this);
+		if (p.canScrollUp()){ 
+			g.drawImage(up, searchX+searchWidth+4, vOff, this);
+		}
 		if (p.canScrollDown())
-			g.drawImage(down, scrollLeft+22, 18, this);
-		g.setColor(Color.gray);
-		g.fillRect(0,0,getWidth(), 3);
-		//g.fillRect(getWidth()-3,0,3, getHeight());
+			g.drawImage(down, searchX+searchWidth+26, vOff, this);
 	}
 	/*public void setSize(int w, int h){
 		super.setSize(w, h);
@@ -807,10 +827,10 @@ class ScrollPanel extends MousePanel {
 		if (y<=16 && x < 20) {
 			searchStrip.search();
 		}
-		else if (y>=8 && y<=26 && x>= scrollLeft && x < scrollLeft + 18) {
+		else if (y>=vOff && y<=vOff+26 && x>= searchX+searchWidth+4 && x < searchX+searchWidth + 22) {
 			p.scrollUp();
 		}
-		else if (y>=8 && y<=26 && x>= scrollLeft+22 && x < scrollLeft + 40) {
+		else if (y>=vOff && y<=vOff+26 && x>= searchX+searchWidth+26 && x < searchX+searchWidth + 44) {
 			p.scrollDown();
 		}
 	}
