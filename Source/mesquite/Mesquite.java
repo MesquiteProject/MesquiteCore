@@ -37,20 +37,20 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2017. Mesquite: A modular system for evolutionary analysis.  Version 3.31.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.40.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.31+";
+		return "3.40";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 331;
+		return 340;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.31;
+		return 3.40;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
@@ -69,7 +69,7 @@ public class Mesquite extends MesquiteTrunk
 	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
