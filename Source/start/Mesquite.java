@@ -1,3 +1,17 @@
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+ */
+
 package start;
 
 import java.io.File;
@@ -8,14 +22,14 @@ import java.net.URLClassLoader;
 import java.util.Vector;
 import java.lang.ClassLoader;
 
-/*This class is used to start Mesquite.  It used to be used only in executable bundles, but it is now the required way to start Mesquite,
+/*This class is used to start Mesquite.  It is now the expected way to start Mesquite, whether in executables or not,
  * because (as of Java 9) Mesquite needs to use a custom classloader for its modules.
  * 
  * History: In older Javas, application bundles/executables could set their initial classpath to outside the bundle, but in Java 1.7 on MacOS
  * that became prohibited. This starter was therefore built to live inside application bundle, and it would manually find mesquite.Mesquite outside the
  * application bundle, and start it using the system class loader. This could work because the system classloader was also a URLClassLoader, and therefore
  * could have Mesquite's classpath added at runtime by reflection-hacking into addURL. With Java 1.9 that changed, and
- * the system ClassLoader could no longer add classpaths after startup. Thus, this starter had to make its own URLClassLoader, and also find
+ * the system ClassLoader was no longer a URLClassLoader and could no longer add classpaths after startup. Thus, this starter had to make its own URLClassLoader, and also find
  * and add all the various possible classpaths.
  * 
  * The scenario is this:
@@ -25,14 +39,13 @@ import java.lang.ClassLoader;
  * Also added are any jars found in jars/ directories.  See mesquite.Mesquite.makeModuleClassLoader for details (e.g., when ByteBuddy is used).
  * 4. This is all complex because different running conditions generate different configurations:
  * —Under Javas before 9.0, the system class loader is a URLClassLoader and so the extra classpaths can be added at runtime. We end up with a single class loader, the system one.
- * —Under Java 9, the modules are always loaded by the URLClassLoader created by makeModuleClassLoader (for macOS & Linxu) or here (Windows). 
+ * —Under Java 9, the modules are always loaded by the URLClassLoader created here and filled in by makeModuleClassLoader. 
  * 
- * startMesquite then uses the classloader made to instantiate mesquite_Mesquite and call its main method. Mesquite then goes on to use the classloader to use modules.
+ * startMesquite then uses the classloader to instantiate mesquite_Mesquite and call its main method. Mesquite then goes on to use the classloader to use modules.
  * 
  * Starting regimes: 
  * Eclipse: set start.Mesquite as main class
- * 
- *	For all other execution, this class and ByteBuddy classes need to be bundled into a jar file, and that is used to start Mesquite. See Executables folder for instructions.
+ * For all other execution, this class and ByteBuddy classes need to be bundled into a jar file, and that is used to start Mesquite. See Executables folder for instructions.
   */
 
 public class Mesquite {
@@ -75,7 +88,6 @@ public class Mesquite {
 			u =mesquiteDirectory.toURL();
 			URL[] forMF = {u};
 			ClassLoader current = ClassLoader.getSystemClassLoader();
-			System.out.println("$$$ URLClassLoader.class in start.Mesquite " + URLClassLoader.class); //Debugg.println
 			if (current instanceof URLClassLoader){
 				basicLoader = (URLClassLoader)current;
 				Class sysclass = URLClassLoader.class;
