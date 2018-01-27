@@ -1,10 +1,15 @@
 Mesquite_Folder/
+# Workspace files #
+###################
+*.iml
+.project
+.settings/
+
 # Compiled source #
 ###################
 *.com
 *.class
 *.dll
-*.exe
 *.o
 *.so
 
@@ -18,7 +23,6 @@ Mesquite_Folder/
 *.iso
 *.rar
 *.tar
-*.zip
 
 # Logs and databases #
 ######################
@@ -39,3 +43,4 @@ Thumbs.db
 .gitignore
 /.classpath
 /.gitignore
+/target/

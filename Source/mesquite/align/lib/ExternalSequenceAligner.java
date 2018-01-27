@@ -70,6 +70,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return "";
 	}
 	/*.................................................................................................................*/
+	public boolean useDefaultStdOutFileName() {
+		return false;
+	}
+	/*.................................................................................................................*/
 	public String getStdOut() {
 		if (scriptBased){
 			if (scriptRunner!=null)
@@ -384,7 +388,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			arguments=StringUtil.stripBoundingWhitespace(arguments);
 			externalRunner = new ExternalProcessManager(this, rootDir, getProgramPath(), arguments,getName(), outputFilePaths, this, this, true);
 			//ShellScriptUtil.changeDirectory(rootDir, rootDir);
-			externalRunner.setStdOutFileName(outFileName);
+			if (useDefaultStdOutFileName())
+				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+			else
+				externalRunner.setStdOutFileName(outFileName);
 			success = externalRunner.executeInShell();
 			if (success)
 				success = externalRunner.monitorAndCleanUpShell(progressIndicator);

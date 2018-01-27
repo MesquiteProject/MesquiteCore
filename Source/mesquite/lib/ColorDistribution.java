@@ -425,6 +425,10 @@ public class ColorDistribution {
 		return sequential;
 	}
 	/** get the total number of colors assigned*/
+	public boolean anyColors() {
+		return !(numColors== 0 || colors == null || colors.length == 0);
+	}
+	/** get the total number of colors assigned*/
 	public int getNumColors() {
 		return numColors;
 	}

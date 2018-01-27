@@ -548,10 +548,14 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return s + ">";
 	}
 	public void readAssociated(String assocString, int node, MesquiteInteger pos){
-		readAssociated(assocString,node,pos, (String)null, (String)null);
+		readAssociated(assocString,node,pos, (String)null, (String)null, false);
 		
 	}
 	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation){
+		readAssociated(assocString, node, pos, whitespace, punctuation, false);
+	}
+	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation, boolean forceNumberToDouble){
+		
 		if (pos==null || node>numParts || node<0 || StringUtil.blank(assocString))
 			return;
 		String key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
@@ -599,7 +603,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				ObjectArray bb = getWhichAssociatedObject(nr);
 				bb.setValue(node, stored);
 			}
-			else if (value.indexOf(".")>=0 && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos)) { //treat as double 
+			else if ((forceNumberToDouble && MesquiteNumber.isNumber(value)) || ((value.indexOf(".")>=0) && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos))) { //treat as double 
 				NameReference nrEx= NameReference.getNameReference(key);   // fixed in 3.01
 				DoubleArray bb = getWhichAssociatedDouble(nrEx);       //Finding doubles if they exist
 				if (bb == null) {

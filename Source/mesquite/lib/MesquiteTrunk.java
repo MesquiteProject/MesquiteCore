@@ -34,6 +34,8 @@ with the trunk. */
 public abstract class MesquiteTrunk extends MesquiteModule  
 {
 	public static boolean startedAsLibrary = false;
+	public static Object starter; //the start.Mesquite class that may have started Mesquite; to get class loaders (Java 1.9 and above; 2O18)
+	public static ClassLoader basicClassLoader;  //The URLClassLoader that is pointed to Mesquite_Folder/mesquite
 	//turns on checking of classes in FileElement, NexusBlock and MesquiteCommand (possibly others), to detect memory leaks
 	public static final boolean checkMemory = false;  
 	public static boolean attemptingToQuit = false;
@@ -254,8 +256,12 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/** Returns the first three characters of "java.version" as a double; e.g., "1.4.1" is returned as the double 1.4 */
 	public static double getJavaVersionAsDouble(){
 		try {
-			Double versionDouble = Double.valueOf(System.getProperty("java.version").substring(0,3));
-			return versionDouble.doubleValue();
+			String s = System.getProperty("java.version");
+			if (StringUtil.notEmpty(s) && s.indexOf(".")>0) {
+				Double versionDouble = Double.valueOf(System.getProperty("java.version").substring(0,3));
+				return versionDouble.doubleValue();
+			} else
+				return MesquiteDouble.fromString(s);
 		}
 		catch (NumberFormatException e) {
 			return 0.0;

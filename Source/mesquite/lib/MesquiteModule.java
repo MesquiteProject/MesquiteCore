@@ -22,8 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.lang.StringEscapeUtils;
-
+import org.apache.commons.lang3.StringEscapeUtils;
 import mesquite.lib.duties.*;
 import mesquite.tol.lib.BaseHttpRequestMaker;
 import edu.stanford.ejalbert.*;  //for Browserlauncher
@@ -68,12 +67,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "21 September 2017";
+		return "27 January 2018";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.31";
+		return "3.40";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -86,7 +85,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 859;  
+		return 877;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -131,9 +130,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.04  = 725 released 16 August 2015
 	//3.10  = 765 released 27 June 2016
 	//3.11  = 766 released 3 December 2016,  fix of miswriting of codon positions
-	//3.20  = 801 released 1 January 2017
-	//3.30  = 854 released 12 Sept 2017
-	//3.31  = 858 released 20 Sept 2017
+	//3.20  = 801 released 1 January 2O17
+	//3.30  = 854 released 12 Sept 2O17
+	//3.31  = 858 released 20 Sept 2O17; 859 released 20 Sept
+	//3.40  = 877 released 27 Jan 2O18
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
@@ -180,6 +180,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	protected static String browserString = null;	
 	/** true if does extra check for module compatibility at startup.*/
 	public static boolean checkMethodsAtStartup = false;
+
+	/** The file name of the file that contains additional classpaths to load.*/
+	public static String classpathsFileName="classpaths.txt";  
 
 	public static final int NEXTRELEASE = Integer.MAX_VALUE;
 
@@ -998,7 +1001,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (s==null)
 			return null;
 		else
-			return s + "images/";
+			return s + "images" + MesquiteFile.fileSeparator ;
 	}
 	/*.................................................................................................................*/
 	public static String getSizedRootImageFilePath(int s, String imageFileName){

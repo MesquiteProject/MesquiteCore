@@ -318,7 +318,7 @@ public class ListTable extends MesquiteTable {
 				ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
 					Graphics g = getGraphics();
-					if (clickCount>1 && assistant.isCellEditable(row)){   //added Aug 2017 to allow doubleclicking in tables and then editing
+					if (clickCount>1 && assistant.isCellEditable(row)){   //added Aug 2O17 to allow doubleclicking in tables and then editing
 						window.setCurrentTool(window.ibeamTool);
 						window.getPalette().setCurrentTool(window.ibeamTool); 
 						editMatrixCell(column,row);

@@ -213,7 +213,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 			subParser.setString(line);
 			subParser.setWhitespaceString("\t");
 			subParser.setPunctuationString("");
-			String code = subParser.getFirstToken();
+			String code = subParser.getFirstRawToken();
 			if (sampleCodeString.equalsIgnoreCase(code)) {
 				String fileName = subParser.getNextToken();
 				String sequenceName=subParser.getNextToken();

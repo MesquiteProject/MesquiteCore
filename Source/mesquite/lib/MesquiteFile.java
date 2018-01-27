@@ -1223,7 +1223,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return relativeTo;
 		int count;
 		int lastSlashCount=0;
-
+		
 		for (count = 0; count< relativeTo.length() && count<path.length() && relativeTo.charAt(count)==path.charAt(count); count++){
 			if (relativeTo.charAt(count)=='/' ||containedAt(relativeTo, fileSeparator, count))
 				lastSlashCount = count+1;  // we will want to take the part from just past the slash onward
@@ -2515,10 +2515,45 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return null;
 	}
 	/*.................................................................................................................*/
+	public static String[] getFileContentsAsStringsForStarter(String relativePath) {
+		DataInputStream stream;
+		Vector v = new Vector();
+		String[] s = null;
+		StringBuffer sBb= new StringBuffer(100);
+		MesquiteInteger remnant = new MesquiteInteger(-1);
+			try {
+				stream = new DataInputStream(new FileInputStream(relativePath));
+				String newS = " ";
+				while (newS != null) {
+					newS =readLine(stream, sBb, remnant);
+					if (newS != null)
+						v.addElement(newS);
+				}
+				if (v.size()!=0) {
+					s = new String[v.size()];
+					int count = 0;
+					Enumeration e = v.elements();
+					while (e.hasMoreElements()) {
+						Object obj = e.nextElement();
+						s[count]= (String)obj;
+						count++;
+					}
+				}
+			}
+			catch( FileNotFoundException e ) {
+				System.out.println("File Busy or Not Found (r5) : " + relativePath);
+				return null;
+			} 
+			catch( IOException e ) {
+				System.out.println("IO Exception found (r5): " + relativePath + "   " + e.getMessage());
+				return null;
+			}
+			return s;
+	}
+	/*.................................................................................................................*/
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
 	public static String[] getFileContentsAsStrings(String relativePath) {
-
 		return getFileContentsAsStrings(relativePath, true);
 	}
 	/*.................................................................................................................*/

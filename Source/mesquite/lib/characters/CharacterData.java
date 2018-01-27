@@ -1480,6 +1480,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 	}
+
 	/*-----------------------------------------------------------*/
 	public void equalizeCharacter(CharacterData oData, int oic, int ic){
 		//doesn't yet incorporate colors, etc
@@ -1487,8 +1488,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (oData.characterNames != null && oic<oData.characterNames.length){
 			characterNames[ic] = oData.characterNames[oic];
 			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
-
 		}
+		
 		for (int it = 0; it<getNumTaxa(); it++){
 			incrementSuppressHistoryStamp();
 			int oit = oData.getTaxa().findEquivalentTaxon(getTaxa(), it);

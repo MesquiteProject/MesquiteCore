@@ -18,12 +18,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.*;
 
 import javax.imageio.ImageIO;
 
-import com.apple.mrj.MRJFileUtils;
-import com.apple.mrj.MRJOSType;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -38,26 +37,26 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2017. Mesquite: A modular system for evolutionary analysis.  Version 3.31.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.40.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.31";
+		return "3.40";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 331;
+		return 340;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.31;
+		return 3.40;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "September 2017"; //"April 2007";
+		return "January 2018"; //"April 2007";
 	}
-	
+
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
@@ -140,7 +139,6 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 
-	static boolean startedFromOSXJava17Executable = false; 
 	/*.................................................................................................................*/
 	public void init()
 	{
@@ -171,43 +169,38 @@ public class Mesquite extends MesquiteTrunk
 
 		//finding mesquite directory
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
-		String loc = cl.getResource("mesquite/Mesquite.class").getPath();
+		URL mesquiteDirectoryURL = cl.getResource("mesquite/Mesquite.class");
+		String loc = "";
+		try {
+			URI mesquiteDirectoryURI = mesquiteDirectoryURL.toURI();  // convert to URI so that encoding is taken care of properly 
+			loc = mesquiteDirectoryURI.getPath();  // then get the path
+		} catch (URISyntaxException e) {
+			loc = mesquiteDirectoryURL.getPath();    // have to give it something, and this shouuld work at this point
+			if (MesquiteTrunk.debugMode)
+				e.printStackTrace();
+		}
 
 		String sepp = MesquiteFile.fileSeparator;
-		if (loc.indexOf(sepp)<0){
+		if (loc.indexOf(sepp)<0){  // the current OS's file separate is NOT present, therefore must presume it is the "/" which is what ClassLoader should return anyway
 			sepp = "/";
 			if (loc.indexOf(sepp)<0)
 				System.out.println("Not a recognized separator in path to Mesquite class!");
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			System.out.println("@ " + loc);
-
-			try {
-				if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForAppBuilderURL(loc);
-				URI uri = new URI(loc);
-				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-
-
-
-
 		}
-		else {
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			System.out.println("@ " + loc);
-			try {
-				if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForAppBuilderURL(loc);
-				URI uri = new URI(loc);
-				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
+		loc = loc.substring(0, loc.lastIndexOf(sepp));  //get rid of /Mesquite.class
+		loc = loc.substring(0, loc.lastIndexOf(sepp));  // go down a level to Mesquite_Folder
+
+		mesquiteDirectory = new File(loc);
+
+		/*
+		try {
+			//if (startedFromNestedStarter)  //for OS X executable built by Oracle appBundler
+			loc = StringUtil.encodeURIPath(loc);  // not sure why this is needed, but it seems to be
+			URI uri = new URI(loc);
+			mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		}
+		 */
 
 		if (mesquiteDirectory == null){
 			StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
@@ -293,8 +286,32 @@ public class Mesquite extends MesquiteTrunk
 		}
 		if (verboseStartup) System.out.println("main init 6");
 
-		//loading jar files
-		DirectInit di = new DirectInit(this);
+
+		if (starter != null){ // because of Java 9 classloading issues, rely on starter class to make class loader if it exists
+			try {
+				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
+				startupNotices = (Vector)gsn.invoke(starter, null);
+				if (startupNotices != null)
+					System.out.println("Received startupNotices from start.Mesquite");
+				//the following could thro
+				Method gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
+				Object obj = gmcl.invoke(starter, null);
+				if (obj instanceof URLClassLoader)
+					basicClassLoader = (URLClassLoader)obj;
+				if (basicClassLoader!= null)
+					System.out.println("Received URLClassLoader from start.Mesquite");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		if (basicClassLoader == null){ 
+			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath(), null, new Vector());
+			System.out.println("No URLClassLoader received from start.Mesquite; made one after startup");
+		}
+
+		addToStartupNotices("Current class loader " + this.getClass().getClassLoader());
+		addToStartupNotices("Module class loader " + basicClassLoader);
 
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
@@ -344,7 +361,7 @@ public class Mesquite extends MesquiteTrunk
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2017 W. Maddison and D. Maddison\n");
+		logInitString  += ("Copyright (c) 1997-2018 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
@@ -358,18 +375,19 @@ public class Mesquite extends MesquiteTrunk
 		setModuleWindow(logWindow);
 		if (verboseStartup) System.out.println("main init 13");
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) {
-			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquiteBeta.gif");
+			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "mesquiteBeta.gif");
 		}
 		else
-			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquite.gif");
+			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "mesquite.gif");
 
 		BufferedImage equiv = null;
 		try {
-			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
+
+			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "equivocal.gif"));
+			GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
 		} catch (IOException e) {
 			MesquiteMessage.println(" IOException trying to read equivocal texture ");
 		}
-		GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
 
 		if (verboseStartup) System.out.println("main init 14");
 		MediaTracker mt = new MediaTracker(logWindow.getOuterContentsArea());
@@ -506,7 +524,7 @@ public class Mesquite extends MesquiteTrunk
 
 		logln(" ");
 
-
+		//NOTE: debugMode isn't set until modules are loaded
 
 		/* loading in modules (MesquiteModules) */
 		MesquiteModule.mesquiteTrunk = this;
@@ -576,7 +594,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		logln(" ");
 
-		String ackn = "Mesquite makes use of BrowserLauncher by Eric Albert,  corejava.Format by Horstmann & Cornell, and iText by Lowagie & Soares  .";
+		String ackn = "Mesquite makes use BrowserLauncher by Eric Albert,  corejava.Format by Horstmann & Cornell, ByteBuddy (http://bytebuddy.net), and iText by Lowagie & Soares  .";
 		ackn += "  Some modules make use of JAMA by The MathWorks and NIST, and JSci by Mark Hale, Jaco van Kooten and others (see Mesquite source code for details).";
 		ackn += "  The PAL library by Drummond and Strimmer is used by the GTR substitution model for DNA sequence simulations.";
 		if (MesquiteTrunk.isWindows())
@@ -678,6 +696,15 @@ public class Mesquite extends MesquiteTrunk
 		decrementMenuResetSuppression();
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) 
 			logln("\nTHIS IS A PRERELEASE (BETA) VERSION: We discourage you from publishing results with this version of Mesquite, unless you check with the authors.\n");
+		if (debugMode){ 
+			logln("############### Startup Notices ###############");
+			for (int i=0; i<startupNotices.size(); i++)
+				if (startupNotices == null)
+					logln(" startupNotices null");
+				else
+					logln((String)startupNotices.elementAt(i));
+			logln("########################################");
+		}
 
 		if (logWindow!=null) {
 			if (logWindow.isConsoleMode()){
@@ -705,7 +732,7 @@ public class Mesquite extends MesquiteTrunk
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
 		if (MesquiteTrunk.debugMode)
 			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
-		
+
 	} 
 
 	/*.................................................................................................................*/
@@ -1162,13 +1189,13 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteButton.onImage[i]=  MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/colors/" + i + "blank-on.gif");  
 		}
 		 */
-		InfoBar.triangleImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/infoBarTriangle.gif");  
-		InfoBar.triangleImageDown=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/triangleDown.gif");  
-		InfoBar.releaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/release.gif");  
-		InfoBar.prereleaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/prerelease.gif");  
-		ExplanationArea.plusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationPlus.gif");  
-		ExplanationArea.minusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationMinus.gif");  
-		ExplanationArea.minusOffImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationMinusOff.gif");  
+		InfoBar.triangleImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "infoBarTriangle.gif");  
+		InfoBar.triangleImageDown=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "triangleDown.gif");  
+		InfoBar.releaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "release.gif");  
+		InfoBar.prereleaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "prerelease.gif");  
+		ExplanationArea.plusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "explanationPlus.gif");  
+		ExplanationArea.minusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "explanationMinus.gif");  
+		ExplanationArea.minusOffImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "explanationMinusOff.gif");  
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -1292,7 +1319,7 @@ public class Mesquite extends MesquiteTrunk
 		return newProject(pathname, 1, false, originalArguments,  importerSubclass);
 	}
 	/*.................................................................................................................*/
-	
+
 	public MesquiteProject openFile(String pathname){
 		return newProject(pathname, 1,  false, null, null);
 	}
@@ -1453,11 +1480,11 @@ public class Mesquite extends MesquiteTrunk
 		wcre = MesquiteWindow.classesCreated;
 		wct = MesquiteWindow.countsOfClasses;
 		wctf = MesquiteWindow.countsOfClassesFinalized;
-			logln("Window classes created     " );
-			for (int i=0; i<wcre.size(); i++){
-				logln("    " + wcre.elementAt(i) + "  created: " + wct.elementAt(i) + "  finalized: " + wctf.elementAt(i));
-			}
-		
+		logln("Window classes created     " );
+		for (int i=0; i<wcre.size(); i++){
+			logln("    " + wcre.elementAt(i) + "  created: " + wct.elementAt(i) + "  finalized: " + wctf.elementAt(i));
+		}
+
 		Vector cre, fin, ct, ctd;
 		cre = FileElement.classesCreated;
 		fin = FileElement.classesFinalized;
@@ -1549,39 +1576,39 @@ public class Mesquite extends MesquiteTrunk
 		StringBuffer sb = new StringBuffer();
 		int count=0;
 		String prevPackageName="";
-	    Vector<String> vector = new Vector<String>();
-	    
-	    for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
-	    	MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
-	    	if (mmi.loadModule()) {
-	    		if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
-	    			prevPackageName=mmi.getPackageName();
-	    			if (prevPackageName!=null){
-	    				Collections.sort(vector);
-	    				for(int j=0; j < vector.size(); j++){
-	    					sb.append(vector.get(j));
-	    				}
-	    				vector.clear();
-	    				sb.append("<hr>");
-	    				String vers = mmi.getVersion();
-	    				if (vers == null)
-	    					vers = "";
-	    				if (StringUtil.blank(vers))
-	    					sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
-	    				else
-	    					sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
-	    			}
-	    		}
-	    		vector.add("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
-	    		count++;
-	    	}
-	    } 
-	    if (!vector.isEmpty()) {
-	    	Collections.sort(vector);
-	    	for(int j=0; j < vector.size(); j++){
-	    		sb.append(vector.get(j));
-	    	}
-	    }
+		Vector<String> vector = new Vector<String>();
+
+		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
+			MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
+			if (mmi.loadModule()) {
+				if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
+					prevPackageName=mmi.getPackageName();
+					if (prevPackageName!=null){
+						Collections.sort(vector);
+						for(int j=0; j < vector.size(); j++){
+							sb.append(vector.get(j));
+						}
+						vector.clear();
+						sb.append("<hr>");
+						String vers = mmi.getVersion();
+						if (vers == null)
+							vers = "";
+						if (StringUtil.blank(vers))
+							sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
+						else
+							sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
+					}
+				}
+				vector.add("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
+				count++;
+			}
+		} 
+		if (!vector.isEmpty()) {
+			Collections.sort(vector);
+			for(int j=0; j < vector.size(); j++){
+				sb.append(vector.get(j));
+			}
+		}
 		String allModulesHTML = " <title>Modules in Mesquite</title>";
 		allModulesHTML += "<body>";
 		allModulesHTML += "<h1>List of All Installed Modules in Mesquite</h1>";
@@ -1829,7 +1856,7 @@ public class Mesquite extends MesquiteTrunk
 			storePreferences();
 			discreetAlert("You will need to restart Mesquite to load all of the modules");
 		}
-		
+
 		else if (checker.compare(this.getClass(), "Opens file on disk.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file] - if parameter absent then presents user with dialog box to choose file", commandName, "openFile")) {
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
 			String completeArguments = arguments;
@@ -2410,8 +2437,12 @@ public class Mesquite extends MesquiteTrunk
 		if (!MesquiteWindow.GUIavailable)
 			return;
 		else if (MesquiteTrunk.isMacOSX()) {
-			fileHandler = new EAWTHandler(this);
-			((EAWTHandler)fileHandler).register();
+			try {
+				fileHandler = new EAWTHandler(this);
+				((EAWTHandler)fileHandler).register();
+
+			} catch (NoSuchMethodError e) {
+			}
 		}
 	}
 
@@ -2441,8 +2472,9 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.noBeans = true;
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
-					else if (args[i].equals("-mq17"))
-						startedFromOSXJava17Executable = true;
+					else if (args[i].equals("-mq17")) {
+						MesquiteMessage.warnUser("This executable is not compatible with current Mesquite");
+					}
 					else if (args[i].equals("-d"))
 						MesquiteTrunk.debugMode = true;
 					else if (args[i].equals("--version"))
@@ -2561,8 +2593,8 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("main constructor 6");
 		if (about !=null && mesquiteTrunk.getProjectList()!=null && mesquiteTrunk.getProjectList().getNumProjects()>0 && defaultHideMesquiteWindow)
 			about.hide();
-		
-		
+
+
 	}
 
 	/*.................................................................................................................*
@@ -2573,104 +2605,182 @@ public class Mesquite extends MesquiteTrunk
 		t.start();
 		return true;
 	}
+	 */ 
+
+	/*.................................................................................................................*/
+	//DavidCheck: the following 3 methods were all changed
+	static void collectAllJars(String path, Vector urls, Vector jars){
+		File dir = new File(path);
+		if (dir.exists() && dir.isDirectory()){
+			String[] subs = dir.list();
+			if (subs != null && subs.length>0){
+				for (int i = 0; i<subs.length; i++){
+					if (subs[i].equals("jars")){
+						String jarsPath = MesquiteFile.composePath(path, "jars");
+						addToStartupNotices("    Registering jars in <" + jarsPath + ">");
+						File jarsDirectory = new File(jarsPath);
+						if (jarsDirectory.exists() && jarsDirectory.isDirectory()){
+							String[] jarsList = jarsDirectory.list();
+							if (jarsList != null && jarsList.length > 0){
+								for (int k = 0; k<jarsList.length; k++){
+									String absPath = MesquiteFile.composePath(jarsPath, jarsList[k]);
+									jars.addElement(absPath);
+									File d = new File(absPath);
+									try {
+										urls.addElement(d.toURL());
+									} catch (MalformedURLException e) {
+										e.printStackTrace();
+									}
+								}
+							}
+						}
+
+					}
+					else
+						collectAllJars(MesquiteFile.composePath(path, subs[i]), urls, jars);
+				}
+			}
+		}
+	}
+	static void addToStartupNotices(String s){
+		if (startupNotices == null && starter != null){ // because of Java 9 classloading issues, rely on starter class to make class loader if it exists
+			try {
+				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
+				startupNotices = (Vector)gsn.invoke(starter, null);
+			} catch (Exception e) {
+					System.out.println("Failed to get startup notices vector");
+			}
+		}
+		if (startupNotices != null)
+			startupNotices.addElement(s);
+		System.out.println(s);
+	}
+	static void addClasspathsHere(Vector urls, Vector jars, String absPath){
+		addToStartupNotices("    Registering path to <" + absPath + ">");
+		File d = new File(absPath);
+		//Add the jars in the package to the classpath
+		collectAllJars(absPath, urls, jars);
+		//Add the package directory to the classpath
+		try {
+			urls.addElement(d.toURL());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
+	/*.................................................................................................................*/
+	public static String correctClassPath(String path) {
+		if (MesquiteTrunk.isWindows()) {
+			return path.replace("/", "\\");
+		} else  {
+			return path.replace("\\", "/");
+		}
+	}
+
+	static Vector startupNotices = null;
+	/*.................................................................................................................*/
+	/*Dec 2O17: to deal with shift in Java 9 that system class loader is no longer a URL class loader, we need to make our own for module loader, that adds paths to modules*/
+	public static URLClassLoader makeModuleClassLoader(String mesquiteDirectoryPath, URLClassLoader classLoader, Vector v){
+		startupNotices = v;
+		if (MesquiteTrunk.debugMode)
+			System.out.println("$$$ URLClassLoader.class in makeModuleClassLoader " + URLClassLoader.class); 
+		try {
+
+			Vector urls = new Vector(); //A vector to hold all the URLs of classpaths
+			Vector jars = new Vector(); //A vector to hold all the paths to jar files
+			File mesquiteDirectory = new File(mesquiteDirectoryPath);		
+			URL u =null;
+			addToStartupNotices("Setting up class loader for <" + mesquiteDirectory + ">");
+			//Add the basic Mesquite_Folder to the classpath
+			urls.addElement(mesquiteDirectory.toURL());
+			//Accumulate all jars in Mesquite_Folder to classpath
+			collectAllJars(mesquiteDirectoryPath, urls, jars);
+			String classpathstxt = MesquiteFile.composePath(mesquiteDirectoryPath , MesquiteModule.classpathsFileName);
+			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
+			if (paths != null){
+				//Go through each package listed in classpaths.txt
+				for (int i = 0; i<paths.length; i++){
+					if (!paths[i].startsWith("#")) { //paths can be commented out with leading #
+						
+						addClasspathsHere(urls, jars, MesquiteFile.composePath(mesquiteDirectoryPath, correctClassPath(paths[i])));
+					}
+				}
+			}
+			//Adding stuff from Mesquite_Folder/additionalMesquiteModules
+			addClasspathsHere(urls, jars, MesquiteFile.composePath(mesquiteDirectoryPath, "additionalMesquiteModules"));
+
+			//Adding stuff from Mesquite_Support_Files/classes
+			addClasspathsHere(urls, jars, System.getProperty("user.home") + System.getProperty("file.separator") + "Mesquite_Support_Files" + System.getProperty("file.separator") + "classes");
+
+
+			if (getJavaVersionAsDouble()<1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
+				addToStartupNotices(" Java version is before 9.0; using system class loader for modules and jars.");
+				URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
+				for (int i = 0; i<urls.size(); i++){
+					JarLoader.addURL((URL)urls.elementAt(i));
+				}
+				return sysloader;
+			}
+			//Java 9.0 or above. Add all URLs to a URLClassLoader (for modules at least) but then also add jars  manually with ByteBuddy, just in case.
+			if (classLoader == null  || MesquiteTrunk.isMacOSX()  || MesquiteTrunk.isLinux()) { 
+				addToStartupNotices(" Java version is 9.0 or later; making new URLClassLoader for modules.");
+				//If no class loader was supplied, make one and give it the URLs for classpaths
+				//(the drawback of this is that as a new class loader, it may not be used for mesquite.Mesquite)
+				URL[] us= new URL[urls.size()];
+				for (int i = 0; i<urls.size(); i++){
+					us[i] = (URL)urls.elementAt(i);
+				}
+				classLoader = new URLClassLoader(us);
+			}
+			else {
+				addToStartupNotices(" Java version is 9.0 or later; using URLClassLoader supplied by start.Mesquite and adding to it.");
+				//if  URLClassLoader is presented, use that and add to it, bypassing the protected status of addURL by using reflection
+				// NOTE: this generates a warning, and should be eventually eliminated when we can figure out how. It's currently needed when run on Windows
+				/* Here is the warning:
+	WARNING: An illegal reflective access operation has occurred
+	WARNING: Illegal reflective access by mesquite.Mesquite (file:/Users/david/Documents/Mesquite Workspace/MesquiteCore/Mesquite_Folder/) to method java.net.URLClassLoader.addURL(java.net.URL)
+	WARNING: Please consider reporting this to the maintainers of mesquite.Mesquite
+	WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+	WARNING: All illegal access operations will be denied in a future release
+				 */
+				Method method = classLoader.getClass().getDeclaredMethod("addURL",new Class[]{URL.class});
+				method.setAccessible(true);
+				for (int i = 0; i<urls.size(); i++){
+					method.invoke(classLoader,new Object[]{ (URL)urls.elementAt(i) });
+				}
+			}
+			/*The above will generate a classloader that can load all the modules, since they are loaded explicitly with this class loader by ModuleLoader. 
+			 * However, the jars may or may not be loaded, because they aren't loaded manually by Mesquite, but rather automatically by the current class loader when needed. 
+			 * If the current classloader isn't the URL one made here, then jars loading can fail. The one known case as of
+			 * January 2O18 is when run under Eclipse and Java 1.9. Eclipse supplies its own classloader; it can find the core jars as they are in the project's build path, but it can't
+			 * find the jars of packages added via classpaths.txt. For this reason we now use ByteBuddy to add the jars to the system classpath.*/
+
+			//Now to add jars to system class loader via ByteBuddy. This will not always be needed, as in some contexts the jars having been added to certain classloaders in the above code will suffice
+			addToStartupNotices(" Adding jars to system classloader via ByteBuddy, just in case");
+			String jarPath="";
+			for (int i = 0; i<jars.size(); i++){
+				jarPath = (String)jars.elementAt(i);
+				JarLoader.addJarFileToClassPath(jarPath);
+			}
+			return classLoader;
+		} 
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return classLoader;
+	}
+	/*.................................................................................................................*/
+	/* See start.Mesquite.java for an overview of how Mesquite starts up post-2O17*/
+	public static void mainViaStarter(String args[], Object starter){
+		MesquiteTrunk.mesquiteTrunk.starter = starter;
+		addToStartupNotices("Mesquite started via starter class");
+		main(args);
+	}
 	/*.................................................................................................................*/
 	public static void main(String args[])
 	{
+		addToStartupNotices("Mesquite Startup arguments:" + StringArray.toString(args));
 		MesquiteWindow.GUIavailable = !MesquiteWindow.headless;
 		mesquiteTrunk = new Mesquite(args);
-		/*
-		if (args !=null){
-			for (int i=0; i<args.length; i++)
-				if (args[i]!=null){
-					if (args[i].equals("-w"))
-						MesquiteWindow.suppressAllWindows = true;
-					else if (args[i].equals("-b"))
-						MesquiteTrunk.consoleListenSuppressed = true;
-				}
-		}
-		MesquiteWindow.componentsPainted = new ClassVector();//for detecting efficiency problems
-		Listened.classes = new ClassVector();//for detecting efficiency problems
-		Listened.classesNotified = new ClassVector();//for detecting efficiency problems
-		try { //code testing for GUI from Kevin Herrboldt via java-dev@lists.apple.com
-			Frame foo = new Frame();
-
-			if (foo==null)
-				MesquiteWindow.GUIavailable = false;// no GUI available, need to be non-gui
-			else {
-				foo.pack();
-				foo.getToolkit();       // will throw exception if unable to open GUI
-			}
-		} catch (Throwable t) {
-			MesquiteWindow.GUIavailable = false;// no GUI available, need to be non-gui
-		}
-		try { 
-			String mrj = System.getProperty("mrj.version");
-			if (!StringUtil.blank(mrj) && (mrj.startsWith("3.0") || mrj.startsWith("3.1"))) //Java2D turned off for OS X prior to 10.2 because of bugs
-				MesquiteWindow.Java2Davailable = false;
-			else {
-				BasicStroke bs = new BasicStroke();
-				MesquiteWindow.Java2Davailable = bs !=null;
-			}
-		} catch (Throwable t) {
-			MesquiteWindow.Java2Davailable = false;
-		}
-		MesquiteWindow.pdfOutputAvailable = MesquiteTrunk.isJavaVersionLessThan(1.3);
-		try {
-			MesquiteTrunk.startupShutdownThread = Thread.currentThread();
-			incrementMenuResetSuppression();
-			isApplication = true;
-
-			// create a new instance of this applet 
-			mesquiteTrunk = new Mesquite();
-			Mesquite mesq = (Mesquite)mesquiteTrunk;  //for easy of reference below
-			mesq.registerMacHandlers();
-			MainThread.mainThread = new MainThread();
-			MainThread.mainThread.start();
-			prepareMesquite();
-
-			// initialize the applet
-			mesquiteTrunk.init();
-			//EMBEDDED: include this  
-			((Mesquite)mesquiteTrunk).start(); 
-
-			// open the files requested at startup
-			if (args.length>0) {
-				// report arguments
-				String s = "Arguments: ";
-				for ( int i = 0; i < args.length; i++ ) {
-					s += " [ " + args[i] + " ]";
-				}
-				MesquiteTrunk.mesquiteTrunk.logln(s);
-
-				for ( int i = 0; i < args.length; i++ ) {
-					if (args[i]!=null && !args[i].startsWith("-"))
-						mesquiteTrunk.openFile(args[i]);
-				}
-			}
-
-			mesquiteTrunk.resetAllMenuBars();
-			MesquiteTrunk.startupShutdownThread = null;
-			decrementMenuResetSuppression();
-		}
-		catch (Exception e){
-			if (!Mesquite.mesquiteExiting){
-				MesquiteFile.throwableToLog(null, e);
-				MesquiteMessage.warnProgrammer("Exception caught in Mesquite: " + e.getMessage());
-				MesquiteModule.showLogWindow();
-			}
-		}
-		catch (Error e){
-			if (!Mesquite.mesquiteExiting){
-				MesquiteFile.throwableToLog(null, e);
-				MesquiteMessage.warnProgrammer("Error caught in Mesquite: " + e.getMessage());
-				MesquiteModule.showLogWindow();
-				throw e;
-			}
-
-		}
-		if (about !=null && mesquiteTrunk.getProjectList()!=null && mesquiteTrunk.getProjectList().getNumProjects()>0 && defaultHideMesquiteWindow)
-			about.hide();
-		 */
 	}
 
 

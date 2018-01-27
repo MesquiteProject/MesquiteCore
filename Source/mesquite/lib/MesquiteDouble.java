@@ -828,7 +828,7 @@ public class MesquiteDouble implements Listable {
 		EnglishDecimalFormatSymbols formatSymbols = new EnglishDecimalFormatSymbols();
 		
 		if (allowExponentialNotation && (digits>0 || d>=1.0)){   // only allow exponentional if digits are > 0, or, if 0, value is greater than 1
-			if (d>=100000 || d<lowerLimit)   // change from 10000 to 100000 March 2017
+			if (d>=100000 || d<lowerLimit)   // change from 10000 to 100000 March 2O17
 				myFormatter = new DecimalFormat("0."+dec+"E0",formatSymbols);
 			else 
 				myFormatter = new DecimalFormat("#."+dec,formatSymbols);

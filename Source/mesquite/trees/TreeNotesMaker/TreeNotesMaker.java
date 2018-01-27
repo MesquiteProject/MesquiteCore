@@ -268,7 +268,7 @@ class TreeNote extends ResizableLegend {
 	Font font=null;
 	
 	static {
-		dropDownArrow = Toolkit.getDefaultToolkit().getImage(MesquiteModule.getRootPath() +"images/menuDropArrow.gif");
+		dropDownArrow = Toolkit.getDefaultToolkit().getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "menuDropArrow.gif");
 	}
 
 	public TreeNote(TreeNotesMaker ownerModule, TreeNotesOperator notesOperator) {
@@ -282,7 +282,7 @@ class TreeNote extends ResizableLegend {
 		textBox = new StringInABox(sb, getFont(), noteWidth);
 		checkHeight = true;
 		if (dropDownArrow==null)
-			dropDownArrow = Toolkit.getDefaultToolkit().getImage(MesquiteModule.getRootPath() +"images/menuDropArrow.gif");
+			dropDownArrow = Toolkit.getDefaultToolkit().getImage(MesquiteModule.getRootPath() +"images" + MesquiteFile.fileSeparator + "menuDropArrow.gif");
 		setSize(noteWidth, noteHeight);
 	}
 	

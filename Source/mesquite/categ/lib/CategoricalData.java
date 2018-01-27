@@ -19,6 +19,7 @@ import java.util.zip.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
@@ -322,6 +323,7 @@ public class CategoricalData extends CharacterData {
 		data.resetCellMetadata();
 		return data;
 	}
+
 	/*..........................................  CategoricalData  ..................................................*/
 	/**clone this CharacterData and return new copy.  Does not clone the associated specs sets etc.*/ //TODO: here should use super.setToClone(data) to handle specssets etc.???
 	public CharacterData cloneData(){
@@ -1957,15 +1959,17 @@ public class CategoricalData extends CharacterData {
 		//state names
 		if (oData instanceof CategoricalData){
 			CategoricalData cData = (CategoricalData)oData;
-			if (cData.stateNames == null)
-				stateNames = null;
+			if (cData.stateNames == null) {  // incoming stateNames is null
+				if (stateNames!=null)  // this state names is not null, so lets set the values to null
+					for (int is = 0; is<= CategoricalState.maxCategoricalState; is++) 
+							setStateName(ic, is, null);
+			}
 			else {
 				for (int is = 0; is<= CategoricalState.maxCategoricalState; is++) {
-					if (cData.hasStateName(oic, is)){
-						String s = cData.getStateName(oic, is);
-						if (!StringUtil.blank(s))
-							setStateName(ic, is, s);
-					}
+					if (cData.hasStateName(oic, is))
+						setStateName(ic, is, cData.getStateName(oic, is));
+					else 
+						setStateName(ic, is, null);
 				}
 			} 
 			for (int is = 0; is<= CategoricalState.maxCategoricalState; is++) {

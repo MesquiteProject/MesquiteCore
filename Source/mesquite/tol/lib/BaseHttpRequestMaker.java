@@ -36,8 +36,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.lang.StringEscapeUtils;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.dom4j.*;
 import org.dom4j.io.*;
 
@@ -60,7 +60,7 @@ public class BaseHttpRequestMaker {
 		HttpClient client = new HttpClient();
 		GetMethod method = new GetMethod(URI);
 		NameValuePair[] pairs = new NameValuePair[1];
-		pairs[0] = new NameValuePair("build", StringEscapeUtils.escapeHtml("\t" + s + "\tOS =\t" + System.getProperty("os.name") + "\t" + System.getProperty("os.version") + "\tjava =\t" + System.getProperty("java.version") +"\t" + System.getProperty("java.vendor")));
+		pairs[0] = new NameValuePair("build", StringEscapeUtils.escapeHtml3("\t" + s + "\tOS =\t" + System.getProperty("os.name") + "\t" + System.getProperty("os.version") + "\tjava =\t" + System.getProperty("java.version") +"\t" + System.getProperty("java.vendor")));
 		method.setQueryString(pairs);
 
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
@@ -71,11 +71,11 @@ public class BaseHttpRequestMaker {
 	public static boolean postToServer(String s, String URI, StringBuffer response) {
 		HttpClient client = new HttpClient();
 		PostMethod method = new PostMethod(URI);
-		method.addParameter("OS", StringEscapeUtils.escapeHtml(System.getProperty("os.name") + "\t" + System.getProperty("os.version")));
-		method.addParameter("JVM", StringEscapeUtils.escapeHtml(System.getProperty("java.version") +"\t" + System.getProperty("java.vendor")));
+		method.addParameter("OS", StringEscapeUtils.escapeHtml3(System.getProperty("os.name") + "\t" + System.getProperty("os.version")));
+		method.addParameter("JVM", StringEscapeUtils.escapeHtml3(System.getProperty("java.version") +"\t" + System.getProperty("java.vendor")));
 		NameValuePair post = new NameValuePair();
 		post.setName("post");
-		post.setValue(StringEscapeUtils.escapeHtml(s));
+		post.setValue(StringEscapeUtils.escapeHtml3(s));
 		method.addParameter(post);
 
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
