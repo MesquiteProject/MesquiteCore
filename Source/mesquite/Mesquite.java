@@ -69,7 +69,7 @@ public class Mesquite extends MesquiteTrunk
 	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
