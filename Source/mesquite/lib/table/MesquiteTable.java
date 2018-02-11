@@ -5662,7 +5662,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		int amount = e.getScrollAmount();  //verticalScrollPageIncrement, numColumnsVisible
 		boolean blockScroll = e.getScrollType()==MouseWheelEvent.WHEEL_BLOCK_SCROLL;
 		boolean vert = !e.isShiftDown();
-		boolean upleft=e.getWheelRotation()<0;
+		boolean upleft=false;
+		if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(1.7)) // this and following line are to fix the bug in Java 8 update 161
+			upleft = e.getPreciseWheelRotation()<0;
+		else 
+			upleft = e.getWheelRotation()<0;
 		if (vert) {
 			if (blockScroll) 
 				amount=verticalScrollPageIncrement;
@@ -5671,8 +5675,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				if (vertScroll.getValue()==0)
 					amount=0;
 			}
-			if (amount!=0)
-				setValue(vertScroll, vertScroll.getValue()+amount);
+			if (amount!=0) {
+				int newAmount=vertScroll.getValue()+amount;
+				setValue(vertScroll, newAmount);
+			}
 		} else {
 			if (blockScroll) 
 				amount=numColumnsVisible-1;
@@ -5681,8 +5687,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				if (horizScroll.getValue()==0)
 					amount=0;
 			}
-			if (amount!=0)
-				setValue(horizScroll, horizScroll.getValue()+amount);
+			if (amount!=0) {
+				int newAmount=horizScroll.getValue()+amount;
+				setValue(horizScroll, newAmount);
+			}
 		}
 
 	}
