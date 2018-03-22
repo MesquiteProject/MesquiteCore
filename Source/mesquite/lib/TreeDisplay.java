@@ -431,10 +431,44 @@ public void setTreeDrawing(TreeDrawing td) {
 	public void setAllowReorientation(boolean allow) {
 		allowReorient = allow;
 	}
-	/*.................................................................................................................*/
-	public boolean getAllowReorientation() {
-		return allowReorient;
+	/**return a text version of information on tree*/
+	private void branchLengthsOnTree(Tree tree, int node, String[] nodeStrings){
+		if (tree.nodeIsInternal(node)){
+			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) 
+				branchLengthsOnTree(tree, daughter, nodeStrings);
+		}
+		nodeStrings[node]= ""+tree.getBranchLength(node);
 	}
+
+	/*.................................................................................................................*/
+	public String branchLengthsAtNodes(Tree tree, int node){
+		if (!tree.hasBranchLengths())
+			return "";
+		if (!tree.nodeInTree(node))
+			node = tree.getRoot();
+		String[] nodeStrings= new String[tree.getNumNodeSpaces()];
+		branchLengthsOnTree(tree, node, nodeStrings);
+		StringBuffer buff = new StringBuffer(50);
+		for (int i=0; i<nodeStrings.length; i++) {
+			String nodeType = "Terminal";
+			if (!tree.nodeIsTerminal(i))
+				nodeType="Internal";
+			if (!StringUtil.blank(nodeStrings[i])) {
+				buff.append("node " + i + ": \t" + nodeType+"\t");
+				buff.append(nodeStrings[i] + "\n");
+			}
+		}
+
+		if (StringUtil.notEmpty(buff.toString()))
+			return "Branch lengths\nNode\tTerm/Int\tLength" + "\n\n" + buff.toString();
+		return "";
+	}
+
+	/*.................................................................................................................*/
+	public String getBranchLengthList(Tree tree) {
+		return branchLengthsAtNodes(tree,tree.getRoot());
+	}
+	/*.................................................................................................................*/
 	public String getTextVersion() {
 		if (tree==null || treeDrawing == null)
 			return "";
@@ -449,6 +483,9 @@ public void setTreeDrawing(TreeDrawing td) {
 			s+= "\n" + buff.toString();
 		else
 			s+= "\nTree with node numbers:\n" + buff.toString();
+		String branchLengths = getBranchLengthList(tree);
+		if (StringUtil.notEmpty(branchLengths))
+			s+=branchLengths;
 		if (extras != null) {
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {
