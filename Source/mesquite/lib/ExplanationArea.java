@@ -225,11 +225,13 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	public boolean getFocusSuppression(){
 		return focusSuppressed;
 	}
+	public static int explanationCount=0;
 	public void setExplanation(String text){
 		if (text == null)  
 			text = "";
-		annotatable = null;
-		String current = explTextArea.getText();
+		annotatable = null;  
+		explanationCount++;
+		String current = explTextArea.getText(); 
 		explanationSet = text;
 		if (text!=null && current!=null && !text.equals(current)){
 			explTextArea.setText(text);

@@ -5658,7 +5658,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		this.showRowNames = showRowNames;
 	}
 
-	public void mouseWheelMoved(MouseWheelEvent e) {
+	public synchronized void mouseWheelMoved(MouseWheelEvent e) {
 		int amount = e.getScrollAmount();  //verticalScrollPageIncrement, numColumnsVisible
 		boolean blockScroll = e.getScrollType()==MouseWheelEvent.WHEEL_BLOCK_SCROLL;
 		boolean vert = !e.isShiftDown();
@@ -5676,8 +5676,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 					amount=0;
 			}
 			if (amount!=0) {
+				MesquiteWindow mw = MesquiteWindow.windowOfItem(this);
+				mw.setSuppressExplanationAreaUpdates(true);
 				int newAmount=vertScroll.getValue()+amount;
 				setValue(vertScroll, newAmount);
+				mw.setSuppressExplanationAreaUpdates(false);
 			}
 		} else {
 			if (blockScroll) 
@@ -5688,8 +5691,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 					amount=0;
 			}
 			if (amount!=0) {
+				MesquiteWindow mw = MesquiteWindow.windowOfItem(this);
+				mw.setSuppressExplanationAreaUpdates(true);
 				int newAmount=horizScroll.getValue()+amount;
 				setValue(horizScroll, newAmount);
+				mw.setSuppressExplanationAreaUpdates(false);
 			}
 		}
 
