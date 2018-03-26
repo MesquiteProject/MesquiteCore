@@ -114,7 +114,7 @@ public class CodonPositionsSet  extends CharNumSet {
 								writeSeparator=false;
 							}
 
-							list += " " + CharacterStates.toExternal(count+offset) + " - " +  CharacterStates.toExternal(lastThird+offset) + "\\3";
+							list += " " + CharacterStates.toExternal(count+offset) + "-" +  CharacterStates.toExternal(lastThird+offset) + "\\3";
 							ic = charNumberOfLastThird.getValue();
 							count = lastThird;
 						
