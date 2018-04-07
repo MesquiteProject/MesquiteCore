@@ -59,6 +59,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 	public boolean hasSpecificationTokens(){
 		return true;
 	}
+
 	/*.................................................................................................................*/
 	public static boolean writeLinkWithCharacterMatrixName(MesquiteFile file, CharacterData data){
 		return (file.getProject().getNumberCharMatrices()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data));
@@ -185,6 +186,14 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		}
 		return null;
 	}
+	
+	public  CharSelectionSet getSpecSetFromName(CharacterData data, String name){
+		SpecsSetVector ssv = data.getSpecSetsVector(CharSelectionSet.class);
+		if (ssv==null)
+			return null;
+		return (CharSelectionSet)ssv.getElement(name);
+	}
+
 	/*.................................................................................................................*/
 	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
 		if (appropriateBlockForReading(blockName)) { 
@@ -293,6 +302,14 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 								else {
 									lastChar = whichChar;
 									setSpecification(specsSet, specification,whichChar);
+								}
+							} else { // it might be a character set.  Added April 2018 DRM
+								CharSelectionSet charSet = getSpecSetFromName(data,token);
+								if (charSet!=null) {
+									for (whichChar = 0; whichChar<data.getNumChars(); whichChar++) {
+										if (charSet.isBitOn(whichChar))
+											setSpecification(specsSet, specification,whichChar);
+									}
 								}
 							}
 						}
