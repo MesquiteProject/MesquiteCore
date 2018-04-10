@@ -56,6 +56,8 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 	public abstract boolean appropriateBlockForReading(String blockName);
 	public abstract Object getSpecification(String token);
 	public abstract void setSpecification(SpecsSet specsSet, Object specification, int ic);
+	
+	/** Returns whether or not the NEXUS command has category tokens before character lists, e.g. the weight, or the partition name */
 	public boolean hasSpecificationTokens(){
 		return true;
 	}
@@ -194,6 +196,13 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		return (CharSelectionSet)ssv.getElement(name);
 	}
 
+	
+	public  static Bits getCharBitsFromName(String name){
+		return null;
+	}
+
+	
+
 	/*.................................................................................................................*/
 	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
 		if (appropriateBlockForReading(blockName)) { 
@@ -253,6 +262,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		 		SpecsSet specsSet= getNewSpecsSet(nameOfSpecsSet, data);
 		 		specsSet.setNexusBlockStored(blockName);
 				
+		 		//=======================
 				int lastChar = -1;
 				boolean join = false;
 				boolean nextIsCharList = !hasSpecificationTokens();
@@ -321,6 +331,8 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 					token = ParseUtil.getToken(command, startCharT); 
 				}
 				
+		 		//=======================
+
 				if (isDefault) {
 					if (!"UNTITLED".equals(specsSet.getName())) {
 			 			data.storeSpecsSet(specsSet, getElementClass());
