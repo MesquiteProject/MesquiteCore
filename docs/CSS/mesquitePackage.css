@@ -1,6 +1,6 @@
 body  {
- 	background:#e8e3cf;
-	color: #963;
+ 	background:#ffffff;
+	color: #454;
 	margin: 0; /* it's good practice to zero the margin and padding of the body element to account for differing browser defaults */
 	padding: 5;
 	text-align: center; /* this centers the container in IE 5* browsers. The text is then set to the left aligned default in the #container selector */
@@ -14,18 +14,17 @@ body  {
 
 .thrColFixHdr #container { 
 	width: 80%;  /* using 20px less than a full 800px width allows for browser chrome and avoids a horizontal scroll bar */
- 	background:#f4f0e2;
+ 	background:#f3f3f3;
 	margin: 0 auto; /* the auto margins (in conjunction with a width) center the page */
-	border: 1px solid #963;
+	border: 1px solid #777;
 	text-align: left; /* this overrides the text-align: center on the body element. */
 } 
 .thrColFixHdr #header { 
- 	background:#f4f0e2;
- 	background-image: url(../images/viewer4.png);
+ 	background:#f3f3f3;
 	background-position:bottom;
 	background-position:left;
  	background-repeat: no-repeat;
-	border-bottom: 1px solid #963;
+	border-bottom: 1px solid #777;
 	padding: 0 10px 0 10px;  /* this padding matches the left alignment of the elements in the divs that appear beneath it. If an image is used in the #header instead of text, you may want to remove the padding. */
 } 
 
@@ -36,7 +35,7 @@ body  {
 .thrColFixHdr #sidebar1 {
 	float: left; /* since this element is floated, a width must be given */
 	width: 120px; /* the actual width of this div, in standards-compliant browsers, or standards mode in Internet Explorer will include the padding and border in addition to the width */
-	background:#f4f0e2;
+	background:#f3f3f3;
 	padding: 10px; /* padding keeps the content of the div away from the edges */
 }
 .thrColFixHdr #mainContent {
@@ -56,7 +55,7 @@ body  {
 
 .thrColFixHdr #footer { 
 	padding: 0 10px 0 20px; /* this padding matches the left alignment of the elements in the divs that appear above it. */
- 	background:#f4f0e2;
+ 	background:#f3f3f3;
 	font-size:10px;
 
 } 
@@ -81,7 +80,7 @@ body  {
 #PackageTitle {
 	font-size: 36px;
 	text-align: left;
- 	text-shadow: #444444 3px 3px 2px;
+ 	text-shadow: #aaaaaa 3px 3px 2px;
 }
 #subtitle {
 	font-size: 18px;
@@ -92,23 +91,23 @@ body  {
 }
 #NonCollapsiblePanel {
 	margin: 2px;
-	border-bottom: solid #DFBC95 thin;
+	border-bottom: solid #DDDDDD thin;
 	padding: 0px;
 /*	border: solid 1px #DFBC95; */
 	font-family:Verdana, Lucida, Arial, sans-serif; 
- 	background:#f4f0e2;
-	color: #963; 
+ 	background:#f3f3f3;
+	color: #454; 
 	font-weight: bold;
 }
 #NonCollapsiblePanel a {
 	margin: 2px;
-	border-bottom: solid #DFBC95 thin;
+	border-bottom: solid #DDDDDD thin;
 	padding: 0px;
 /*	border: solid 1px #DFBC95; */
 	font-family:Verdana, Lucida, Arial, sans-serif; 
 	font-weight: bold;
- 	background:#f4f0e2;
-	color: #963; 
+ 	background:#f3f3f3;
+	color: #454; 
 	text-decoration: none;
 }
 
@@ -134,12 +133,12 @@ body  {
 }
 
 betaNote {
-	color: #606;
+	color: #666;
 }
 betaMssage {
 	font-size: 18px;
 	font-style: oblique;
-	color: #00F;
+	color: #000;
 }
 .thrColFixHdr #container #mainContent p strong {
 	font-weight: bold;
