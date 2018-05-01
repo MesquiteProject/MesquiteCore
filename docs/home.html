@@ -5,7 +5,7 @@
 
 
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Acknowledgements</title>
+<title>Mesquite Manual</title>
 <!-- InstanceEndEditable -->
 
 <![endif]--><!--[if IE]>
@@ -39,7 +39,7 @@
     <table width="100%" border="0" cellpadding="4">
   <tr>
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
-    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Acknowledgements<!-- InstanceEndEditable --></div></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" --><!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
     <td width="14%">Version 3.41<br />
       3 May 2018<br /></td>
@@ -193,39 +193,40 @@
 
   <div id="mainContent">
     
-<!-- InstanceBeginEditable name="content" -->
-    
-    
-<h1 id="toc0"><a name="Acknowledgements"></a>Acknowledgements</h1>
- Mesquite has been developed with the assistance of a Fellowship to WPM from the David and Lucile Packard Foundation, an NSERC Discovery grant to WPM, NSF support via the <a class="wiki_link_ext" href="http://www.phylo.org/" rel="nofollow">CIPRES project</a>, and NSF grant DEB 1258220 to DRM, and the patience of our families.<br />
+<!-- InstanceBeginEditable name="content" --><br />
 <br />
-The following are gratefully acknowledged for direct assistance with Mesquite's programming or source code. David Swofford helped with the implementation of the likelihood calculations, and supplied code for the optimization routines. John Huelsenbeck gave us portions of the code used in calculation of change probabilities for the Ti/Tv rate matrix model. Lars Rosengreen helped us prepare the code for compilation by means other than Codewarrior. <span style="line-height: 1.5;">Rutger Vos has led the development of NeXML for Mesquite, which is not yet integrated into the standard packages, but we look forward to making it so. </span><br />
+<h1 id="toc0"><a name="Mesquite: A modular system for evolutionary analysis"></a><span style="font-size: 130%;">Mesquite: A modular system for evolutionary analysis</span></h1>
+ <h1 id="toc1"><a name="Current release version: 3.4 [download]"></a>Version: 3.41</h1>
+ <br />
+Mesquite is modular, extendible software for evolutionary biology, designed to help biologists organize and analyze comparative data about organisms. Its emphasis is on phylogenetic analysis, but some of its modules concern population genetics, while others do non-phylogenetic multivariate analysis. Because it is modular, the analyses available depend on the modules installed.<br />
 <br />
-We offer our thanks to the many users who have given suggestions and bug reports. We would like to single out Michel Laurin, Jonathan Coddington, and Kojun Kanda for extensive feedback. Maureen O'Leary gave advice on the use of Mesquite for large morphological data matrices. Thanks to Karen Cranston for her suggestion to use Wikispaces for the documentation. <br />
 <br />
-Mesquite has benefitted from support to Wayne Maddison and David Maddison by the University of Arizona, the University of British Columbia, Oregon State University, and the Wissenschaftskolleg zu Berlin.<br />
+<div style="text-align: center"><a href="/file/view/analysesMedleyLg.jpg"><img src="files/analysesMedley.jpg" alt="analysesMedley.jpg" width="737" height="260" ;" title="analysesMedley.jpg" /></a></div><br />
 <br />
-
-
-<table class="wiki_table">
-    <tr>
-        <td><a href="http://www.arizona.edu/" rel="nofollow"><img src="files/a_logo.gif" alt="a_logo.gif" title="a_logo.gif" /></a><br />
-</td>
-        <td><a href="http://www.ubc.ca/" rel="nofollow"><img src="files/ubc_blue.gif" alt="ubc_blue.gif" title="ubc_blue.gif" /></a><br />
-</td>
-        <td><a href="http://oregonstate.edu" target="_blank" rel="nofollow"><img src="files/OSULogo.gif" alt="OSULogo.gif" title="OSULogo.gif" /></a><br />
-</td>
-        <td><a href="http://www.phylo.org/" rel="nofollow"><img src="files/logo_cipres.gif" alt="logo_cipres.gif" title="logo_cipres.gif" /></a><br />
-</td>
-        <td><a href="http://www.nsf.gov/" rel="nofollow"><img src="files/nsf4c.jpg" alt="nsf4c.jpg" title="nsf4c.jpg" style="height: 109px; width: 109px;" /></a><br />
-</td>
-        <td><a href="http://www.nserc-crsng.gc.ca/" rel="nofollow"><img src="files/NSERClogo.jpg" alt="NSERClogo.jpg" title="NSERClogo.jpg" style="height: 110px; width: 113px;" /></a><br />
-</td>
-        <td><a href="http://www.wiko-berlin.de/" rel="nofollow"><img src="files/wiko_logo_grau.gif" alt="wiko_logo_grau.gif" title="wiko_logo_grau.gif" /></a><br />
-</td>
-    </tr>
-</table>
-
+<span style="line-height: 1.5;">Mesquite also has many features for managing and processing data, including processing of chromatograms, sequence alignment, editing of morphometric data, and others.</span><br />
+<br />
+<div style="text-align: center"><a href="/file/view/HomePageData.jpg"><img src="files/HomePageData.jpg" alt="HomePageData.jpg" width="739" height="253"  title="HomePageData.jpg" /></a></div><br />
+<span style="line-height: 1.5;">More examples of Mesquite's features can be found in <a class="wiki_link" href="Introduction%20to%20Mesquite.html">What Mesquite Does</a>. There is also an outline of <a class="wiki_link" href="Mesquite%27s%20Features.html">Mesquite's features.</a> Additional packages can be installed to <a class="wiki_link" href="Additional%20Mesquite%20Packages.html">extend Mesquite's capabilities</a> to interacting with RAxML and other tree-inference programs, processing chromatograms and making base calls, tree set visualization, and so on.</span><br />
+<br />
+This wiki introduces you to the Mesquite system for analysis in evolutionary biology. Its organization follows the manual of Mesquite 2.75, but we are planning to restructure it to serve as a better introduction to Mesquite's use. Some aspects of this documentation may be out of date, for example referring to menus that have moved or been renamed. If you find an obsolete reference, please contact us at <strong>info {at} mesquiteproject.org</strong>.<br />
+<br />
+<h2 id="toc2"><a name="Current release version: 3.4 [download]-Getting started"></a>Getting started</h2>
+ To begin using Mesquite on the Mac OS, Unix/Linux or Windows, see the <a class="wiki_link" href="Installation.html">installation instructions</a>. We encourage you to explore the example files in the &quot;examples&quot; directory of the Mesquite_Folder.<br />
+<br />
+Once you have installed Mesquite, we recommend that you read the <a class="wiki_link" href="Learning%20how%20to%20use%20Mesquite.html">Learning Mesquite</a> page to learn how best to become familiar Mesquite. And, although reading the documentation on this wiki will help, not all features are described here. <span style="line-height: 1.5;">Because many analyses are possible and those available depend on what modules are installed and loaded, a comprehensive manual cannot easily be written. For this reason, many analyses available in Mesquite are not included in any written manual. It is thus important to learn how to discover Mesquite's capabilities from the program itself, and documented on t</span>he <a class="wiki_link" href="Learning%20how%20to%20use%20Mesquite.html">Learning Mesquite</a> page. <span style="line-height: 1.5;">You are encouraged to explore, and invent new analyses. </span><br />
+<br />
+<span style="line-height: 1.5;">Should you wish to install additional features that are beyond the core Mesquite installation, please see the page on <a class="wiki_link" href="Additional%20Mesquite%20Packages.html">Installing Additional Packages</a>. </span><br />
+<br />
+<h2 id="toc3"><a name="Current release version: 3.4 [download]-Mesquite is complex, but it is approachable"></a>Mesquite is complex, but it is approachable</h2>
+ Because its modularity, and the zeal of the development team, Mesquite has many, many options. This give it a lot of power, as it enables complex, custom-built analyses, but it also means that it can be rather complex if you only want to do something simple. The interface is also a bit unusual, and needs to be learned. However, by reading the documentation, watching the <a class="wiki_link_ext" href="https://www.youtube.com/channel/UCfSmgC0O_dWLI0PEoXZbS4Q" rel="nofollow">Youtube videos</a>, and following through the example files, you will find that it can be quite approachable.<br />
+<br />
+<h2 id="toc4"><a name="Current release version: 3.4 [download]-If you encounter problems"></a>If you encounter problems</h2>
+ We encourage you to report bugs or misbehaviour of Mesquite. You may find a problem that seems so obvious to you that you expect we must have seen it. Please report it anyway, because perhaps it occurs only in particular circumstances that we didn't test, or it occurs with a combination of options that we haven't tested recently. The <a class="wiki_link" href="Bugs%20and%20Troubleshooting.html">Bugs and Troubleshooting</a> page has more details on reporting bugs.<br />
+<br />
+<h2 id="toc5"><a name="Current release version: 3.4 [download]-Conventions of this wiki"></a>Conventions of this manual</h2>
+ For compactness, we will use a special convention to refer to menu items. For example,File&gt;Save File refers to the Save File menu item of the File menu. (Tree Window)Display&gt;Tree Form&gt;Diagonal Tree refers to the Diagonal Tree menu item of the Tree Form submenu of the Display menu that is associated with the Tree Window. By referring to a menu as &quot;associated with&quot; a window, we mean that that menu is present in the menu bar at the top of the screen when the window is frontmost (on the MacOS), or that the menu is embedded within the window (on the Windows OS and most other operating systems).<br />
+<br />
+<h3 id="toc6"> </h3>
 <!-- InstanceEndEditable -->
 
     

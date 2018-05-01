@@ -1,0 +1,411 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/MesquiteTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Managing Molecular Data</title>
+<!-- InstanceEndEditable -->
+
+<![endif]--><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.thrColFixHdr #sidebar2, .thrColFixHdr #sidebar1 { padding-top: 30px; }
+.thrColFixHdr #mainContent { zoom: 1; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<style type="text/css">
+<!--
+-->
+</style>
+<link href="CSS/mesquitePackage.css" rel="stylesheet" type="text/css" />
+<link href="SpryAssets/SpryCollapsiblePanel.css" rel="stylesheet" type="text/css" />
+
+<script src="SpryAssets/SpryCollapsiblePanel.js" type="text/javascript"></script>
+<script type="text/javascript" src="SpryAssets/SpryURLUtils.js"></script>
+<script type="text/javascript" src="javascript/mesquite.js"></script>
+
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+</head>
+
+<body bgcolor="#ffffff" class="thrColFixHdr" >
+
+<div id="container">
+  <div id="header">
+    <table width="100%" border="0" cellpadding="4">
+  <tr>
+    <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Managing Molecular Data<!-- InstanceEndEditable --></div></td>
+    <td width="2%">&nbsp;</td>
+    <td width="14%">Version 3.41<br />
+      3 May 2018<br /></td>
+  </tr>
+</table>
+
+</div>
+  
+  
+<div id="sidebar1">
+  
+  
+  
+  
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('http://mesquiteproject.github.io/MesquiteCore')">Mesquite Website Home</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('home.html')">Introduction to Mesquite</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Installation.html')">Download & Installation</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('History%20of%20New%20Features.html')">Recent Changes</a>
+  </div>
+
+  <div id="OverviewOfMesquitePanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Overview of Mesquite</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquite%27s%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingStartedPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Started</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Installation.html');">Download and Installation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Additional%20Mesquite%20Packages.html');">Additional Packages</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Beginning%20Mesquite.html');">Beginning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Example%20Files.html');">Example Files</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="BasicMesquiteOperationPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Basic Mesquite Operations</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Files.html');">Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Menus.html');">Menus</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Windows.html');">Windows</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Charts.html');">Charts</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Selection.html');">Selection</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Modules.html');">Modules</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TaxaTreesCharactersPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Taxa, Trees &amp; Characters</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Characters%20&%20Matrices.html');">Characters &amp; Matrices</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Taxa.html');">Taxa</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Trees.html');">Trees</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="AnalysesPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Analyses</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Studies%20of%20Tree%20Topology.html');">Studies of Tree Topology</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="WorkflowsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Workflows</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingHelpPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Help</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Learning%20how%20to%20use%20Mesquite.html');">Learning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Bugs%20and%20Troubleshooting.html');">Bugs &amp; Troubleshooting</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Getting%20Help.html');">Getting Help</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Suggesting%20New%20Features.html');">Your Suggestions</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Glossary.html');">Glossary</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('FAQ.html');">FAQ</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TechnicalDetailsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Technical Details</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developer%27s%20Documentation.html');">Developer's Documentation</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="HistoryPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">History</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('History%20of%20Mesquite.html');">History of Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Why%20Mesquite%3F.html');">Why Mesquite?</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('History%20of%20New%20Features.html');">New Features & Bug List</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Release%20Dates.html');">Release Dates</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="PublishingResultsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Publishing Results</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Documenting%20Your%20Work.html');">Documenting your work</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('How%20to%20Cite%20Mesquite.html');">Citing Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Publishing%20Results.html');">Publishing results</a></td></tr>
+		</table>
+    </div>
+  </div>
+
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Acknowledgements.html')">Acknowledgments</a>
+  </div>
+
+<h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+
+  <div id="mainContent">
+    
+<!-- InstanceBeginEditable name="content" -->
+    
+    
+<h1 id="toc0"><a name="Managing Molecular Data"></a>Managing Molecular Data</h1>
+ Molecular data (DNA or protein sequences) can be edited, manipulated, simulated and analyzed in various ways in Mesquite. Most of the features discussed elsewhere concerning editing and analysis of general categorical data also apply to molecular data; here we focus on features specifically designed for sequence data.<br />
+<br />
+<h3 id="toc1"><a name="Managing Molecular Data--Contents"></a>Contents</h3>
+ <ul><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#editing">Editing molecular data</a><ul><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#altertransform">Alter/Transform Tools</a></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#alignment">Alignment</a></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#finding">Finding sequences</a></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#sequencedisplay">Display of sequences</a></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#consensus">Consensus sequences</a></li></ul></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#fusing">Combining molecular matrices and sequences</a><ul><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#addingTaxa">Adding new taxa/sequences</a><ul><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#includetaxafromfile">Include Taxa from File</a></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#dragAndDrop">Drag and Drop</a></li></ul></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#addingGenes">Adding genes</a><ul><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#concatMatrices">Concatenate Matrices</a></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#fusedMatrices">Fused Matrix Export</a></li></ul></li></ul></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#managing">Other tools for managing molecular matrices</a><ul><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#archivenames">Alternative Taxon Names</a></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#translate">Translate to protein</a></li></ul></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#codonpositions">Codon Positions</a></li><li><a class="wiki_link" href="Managing%20Molecular%20Data.html#geneticcodes">Genetic Codes</a></li></ul><br />
+<div style="text-align: center"><img src="files/DNAMatrix.gif" alt="DNAMatrix.gif" title="DNAMatrix.gif" /></div><br />
+<h2 id="toc2"><a name="Managing Molecular Data-Editing molecular data"></a><a name="editing"></a>Editing molecular data</h2>
+ Molecular data can be imported from files of NBRF, FASTA, GenBank/GenPept, PHYLIP, CLUSTAL, and simple table format. It can also be exported to some of these formats.<br />
+The <a class="wiki_link" href="Characters%20%26%20Matrices.html#editor">Character Matrix Editor</a> can be used to edit a molecular sequence matrix. Standard ambiguity codes are allowed.<br />
+<h3 id="toc3"><a name="Managing Molecular Data-Editing molecular data-Alter/Transform Tools"></a><a name="altertransform"></a>Alter/Transform Tools</h3>
+ The following can be applied to all or the selected portions of a molecular sequence matrix in the Character Matrix Editor. These are available under the Alter/Transform submenu of the Matrix menu (some of these may be under &quot;Other Choices&quot;):<br />
+<ul><li>Reverse Complement (DNA matrix only) — reverses the order of contiguously selected blocks of sequence and complements the sequence</li><li>Collapse Gaps — collapses gaps in the selected block by pushing all sites to the left, to to yield unaligned sequences</li><li>Remove Gaps-Only Characters — Removes from the matrix all characters that consist of nothing but gaps.</li><li>Shift Other to Match — Shifts other sequences to match a region in a selected sequences; described in the manual for the <a class="wiki_link" href="http://mesquitealign.wikispaces.com/home">Align package</a>.</li><li>Shift To Minimize Stop Codons — Shifts each sequence 0, 1, or 2 bases so as to minimize the number of stop codons. The amount each sequence will be shifted will vary from sequence to sequence. This feature requires that <a class="wiki_link" href="Managing%20Molecular%20Data.html#codonpositions">codon positions</a> be designated.</li><li>Convert Uncertainties to Polymorphisms — Converts all uncertainties in the selection to polymorphisms. For example, for a nucleotide sequence, a Y (C or T) will be converted into &quot;C andT&quot;.</li><li>Convert Polymorphisms to Uncertainties — Converts all polymorphisms in the selection to uncertainty. For example, for a nucleotide sequence, a cell that has both C and T will be converted into &quot;C or T&quot;, i.e., Y.</li><li>Convert to RY — Converts A and G to R, and C and T, in a nucleotide sequence</li><li>Arbitrarily Resolve State Ambiguity — Any cell that has partial uncertainty in the state (e.g., &quot;Y&quot;, which is C or T) will be resolved into one of its states, chosen randomly. Thus, a Y will be converted to a C with 50% probability, and to a T with 50%.</li><li>Nucleotide complement (DNA matrix only) — enters the complementary sequence into the selected cells</li><li>Trim Terminal Gap Characters — deletes characters at edges of matrix that are gaps-only.</li></ul>Other options may appear; see the page on <a class="wiki_link" href="Characters%20%26%20Matrices.html">characters</a> for standard choices in this submenu. You can also apply the other editing tools described for <a class="wiki_link" href="Characters%20%26%20Matrices.html">character matrices</a>.<br />
+<br />
+The view of the matrix can be adjusted in various ways in the Display menu. Cells can be colored according to the state at the site (Color Cells submenu, Character State) or according to a value like the GC bias (Color Cells submenu,Cell Value; can request this coloring to use a moving window). Examples of this are shown below. The Display menu contains other options such as a Bird's eye view which makes the cells narrow to show more of the sequences.<br />
+<br />
+Copy Sequence (at bottom of Edit menu) copies the selected cells of the matrix into the computer's clipboard as a sequence. That is, whereas the standard Copy would place into the clipboard selected pieces of the matrix in tab-delimited text format (e.g., if the sequence AATCA is selected, &quot;A-tab-A-tab-T-tab-C-tab-A&quot; would be copied), this modified Copy Sequence command does not include tabs (thus, &quot;AATCA&quot; would be copied). This style of copying is useful when interacting with programs like <a class="wiki_link_ext" href="http://www.genecodes.com/" rel="nofollow">Sequencher (TM)</a>. For instance, if you want to find a piece of sequence in a matrix in Mesquite within a chromatogram viewer of Sequencher, do the following: select the sequence in Mesquite, choose Copy Sequence, then go to Sequencher, select Find Bases, and paste the sequence as the search string.<br />
+<br />
+<h3 id="toc4"><a name="Managing Molecular Data-Editing molecular data-Alignment"></a><a name="alignment"></a>Alignment</h3>
+ The <a class="wiki_link" href="http://mesquitealign.wikispaces.com/home">Align</a> package contains utilities for sequence alignment. These include manual alignment tools (for shifting blocks of sequence, for example), and automated tools (e.g., sending a region of the matrix to ClustalW to align, or a pairwise alignment tool in the editor that will align one sequence to another). See the <a class="wiki_link" href="http://mesquitealign.wikispaces.com/home">Align</a> manual for more details.<br />
+<h3 id="toc5"><a name="Managing Molecular Data-Editing molecular data-Finding Sequences"></a><a name="finding"></a>Finding Sequences</h3>
+ You have several options to find sequences in a matrix.<br />
+<span style="line-height: 1.5;">Pieces of sequences can be found using the Find Sequence and Find All Sequences submenus of the Edit menu. The current options are:</span><br />
+<ul><li>Matching Sequence: This finds sequences matching a target sequence the user enters. The search allows a certain number of mismatches. Optionally, it can search for the reverse, complement and reverse complement of the target sequence.</li><li>Maintain Target Match: This highlights and maintains highlighted the first occurence of a given sequence in a given taxon. First, you are asked which taxon to search in. Then, it displays a panel like this:<br />
+<img src="files/maintainTargetMatch.jpg" alt="maintainTargetMatch.jpg" title="maintainTargetMatch.jpg" /><br />
+underneath the matrix. The first button (red X) is to close the panel; the second pauses the search; the third allows you to select another taxon as your focus. If you type a sequence into the text area, the matching sequence (if any) will be highlighted in the matrix. Mesquite is constantly monitoring this text, and so you don't need to give any command to find again if you change the text. This is useful if working with a program like Sequencher. If you see a stretch of sequence while viewing chromatograms that you'd like to find in the matrix in Mesquite, type in the sequence into the text box and you will quickly be taken to it in the taxon.</li><li>Maintain Clipboard Match: This is similar to Maintain Target Match, except that it obtains the search string not from the text area but from the clipboard. If the clipboard changes, the function will automatically find the sequence again in the matrix. This is useful if working with a program like Sequencher. If you turn on Maintain Clipboard Match, then you can copy stretches of a sequence within Sequencher, and Mesquite will automatically highlight it, without your having to return to Mesquite or give any other command to it. (Mesquite is constantly monitoring the clipboard to see if it changes).</li></ul><h2 id="toc6"><a name="Managing Molecular Data-Combining molecular matrices or sequences"></a><a name="fusing"></a>Combining molecular matrices or sequences</h2>
+ Often you have sequences in different matrices, and you need to fuse them into a single matrix for analyses. You may be adding new sequences from an existing gene, or you may be adding new genes for existing taxa.<br />
+<h3 id="toc7"><a name="Managing Molecular Data-Combining molecular matrices or sequences-Adding new taxa/sequences"></a><a name="addingTaxa"></a>Adding new taxa/sequences</h3>
+ If you want to take two matrices and concatenate them vertically, i.e. add new taxa to an existing set of gene sequences, then you can do it either from a menu or using Drag and Drop.<br />
+
+
+<table class="wiki_table">
+    <tr>
+        <td style="text-align: center;"><div style="text-align: center"><img src="files/gene1beforeConcat.jpg" alt="gene1beforeConcat.jpg" title="gene1beforeConcat.jpg" style="height: 58px; width: 72px;" /></div></td>
+        <td style="text-align: center;"><img src="files/genePQRBeforeInclude.jpg" alt="genePQRBeforeInclude.jpg" title="genePQRBeforeInclude.jpg" /><br />
+</td>
+        <td style="text-align: center;"><img src="files/becomesArrow.gif" alt="becomesArrow.gif" title="becomesArrow.gif" /><br />
+</td>
+        <td style="text-align: center;"><div style="text-align: center"><img src="files/genesAfterInclude.jpg" alt="genesAfterInclude.jpg" title="genesAfterInclude.jpg" /></div></td>
+    </tr>
+</table>
+
+<br />
+<ul><li><a name="includetaxafromfile"></a>Merge Taxa &amp; Matrices from File: In the Taxa&amp;Trees menu, this function reads in an external file and attempts to concatenate taxa from the file onto taxa blocks of the current file, and also to add their data to existing matrices. This is useful to add new gene sequences to an existing file. File formats that can be incorporated are NEXUS, NBRF, and FASTA. This incorporation will NOT preserve the associated information of the external NEXUS file such as footnotes for the taxa and characters. The procedure for using this is:<ol><li>Open the first file.</li><li>Select Merge Taxa &amp;Matrices from File. It will ask you to which taxa block you want to fuse the taxa block being read. Select the taxa block to which the new sequences are to be added.</li><li>If it warns you that there are duplicate taxon names, then you may be making a mistake. Note in the example above, the taxon names are all different in the two files. If there are some shared taxa between the two files but the sequences are of the same gene, then if you use this procedure you will overwrite the old sequences with the new. If you are dealing with two different genes, see the section on Adding Genes below.</li><li>Then it will ask you to &quot;Select matrix with which to fuse the matrix being read.&quot; If the new matrix being read in concerns the same gene as the first file, then you will probably want to select that matrix in the first file and hit OK. (You would hit Cancel if the second file being read in contained a different gene; see Adding Genes below.)</li><li>It should then append the new sequences to your matrix.</li></ol></li><li><a name="dragAndDrop"></a>Drag and Drop: If you drag FASTA, GenBank/GenPept, or NBRF files onto a Character Matrix Editor showing sequence data, the sequences in these files will be added to the matrix as new taxa. All files that you drag and drop in one operation must be of the the same file format.</li></ul><h3 id="toc8"><a name="Managing Molecular Data-Combining molecular matrices or sequences-Adding genes"></a><a name="addingGenes"></a>Adding genes</h3>
+ There are two aspects to bringing together data from two separate genes: first, to bring the sequences from the two genes into the same file as two separate matrices, and second, to concatenate them into a single matrix. Here we will explain how to bring them into the same file; in the next section we will explain how to concatenate the matrices.<br />
+Our goal is to bring the two sequence matrices into a common file and belonging to a common block of taxa. That way, if you subsequently edit taxon names or add and delete taxa, these changes will affect both matrices synchronously.<br />
+If you have two files, each with sequences from a different gene but with identical blocks of taxa (i.e. the list of taxa is the same and with the exact same names), then you can open one file first, then use Include File to bring the second matrix into the same file. This will result in both matrices belonging to the same taxa block.<br />
+If you have two files, each with sequences from a different gene but with blocks of taxa that are non-identical because taxon names are different, then the only mechanism in Mesquite to bring them together in Mesquite currently is to use Fused Matrix Export (NEXUS) described under Concatenating Genes.<br />
+If you have two files, each with sequences from a different gene but with blocks of taxa that are non-identical because of differing taxon inclusion, then you can use Merge Taxa &amp; Matrices from File to bring the two files together. This requires that any taxa that are shared between the two files have the exact same names. This is the procedure:<br />
+<ol><li>First, open the one file. Then select Merge Taxa &amp; Matrices from File from the Taxa &amp; Trees menu, and choose the second file.</li><li>You will be asked &quot;To which block of taxa do you want to fuse the taxa being read in?&quot;. In most cases you will have just one choice, the taxa block in your first file; choose it and hit OK.</li><li>It may warn you that there are duplicate taxon names; click OK because you were expecting taxon names to be the same in the two files.</li><li>Then it will ask you to &quot;Select matrix with which to fuse the matrix being read.&quot; If the new matrix being read in concerns a different gene, then you will probably want to hit Cancel so as to make a new matrix for these sequences. (You would hit OK if the second file being read in contained the same gene but new taxa; see Adding New Taxa/Sequences above.)</li><li>You should now have a file with one taxa block and two matrices:</li></ol><br />
+
+
+<table class="wiki_table">
+    <tr>
+        <td><span style="display: block; text-align: center;">File 1:<br />
+<img src="files/gene1beforeConcat.jpg" alt="gene1beforeConcat.jpg" title="gene1beforeConcat.jpg" /><br />
+</span><br />
+</td>
+        <td>File 2:<br />
+<img src="files/gene2beforeConcat.jpg" alt="gene2beforeConcat.jpg" title="gene2beforeConcat.jpg" /><br />
+</td>
+        <td><img src="files/becomesArrow.gif" alt="becomesArrow.gif" title="becomesArrow.gif" /><br />
+</td>
+        <td><span style="display: block; text-align: center;">Merged File:<br />
+<img src="files/genesAfterMerge.jpg" alt="genesAfterMerge.jpg" title="genesAfterMerge.jpg" /><br />
+</span><br />
+</td>
+    </tr>
+</table>
+
+<h3 id="toc9"><a name="Managing Molecular Data-Combining molecular matrices or sequences-Concatenating genes"></a><a name="concatGenes"></a>Concatenating genes</h3>
+ If you want to take two sequence matrices and concatenate them horizontally to make long sequences including both genes, then how you do this depends on whether your taxa have the exact same names in the two matrices, or not.<br />
+
+
+<table class="wiki_table">
+    <tr>
+        <td><img src="files/gene1beforeConcat.jpg" alt="gene1beforeConcat.jpg" title="gene1beforeConcat.jpg" /><br />
+</td>
+        <td><img src="files/gene2beforeConcat.jpg" alt="gene2beforeConcat.jpg" title="gene2beforeConcat.jpg" /><br />
+</td>
+        <td><img src="files/becomesArrow.gif" alt="becomesArrow.gif" title="becomesArrow.gif" /><br />
+</td>
+        <td><img src="files/genesAfterConcat.jpg" alt="genesAfterConcat.jpg" title="genesAfterConcat.jpg" /><br />
+</td>
+    </tr>
+</table>
+
+<br />
+<ul><li><a name="concatMatrices"></a>Concatenate Matrices: After you have brought the two matrices into the same file and belonging to the same taxa block using the methods described above under Adding Genes, to concatenate the two matrices go to the Character Matrix editor of one of the matrices. Select (Character Matrix Editor)Matrix&gt;Utilities&gt;Concatenate Matrices to fuse the second matrix into it. After concatenation, the first matrix will have the second matrix's sequences added terminally. The second matrix will still exist on its own; you may want to delete it or close its file (if it was in a linked file).</li><li><a name="fusedMatrices"></a>Fused Matrix Export (NEXUS): If the corresponding taxa have different names in the two matrices, then this is the easiest method to fuse, although it can also be useful when taxon names are the same. It is a special file exporter that can fuse matrices of different genes as it exports. It is available by choosing Export in the File menu. If you have a single taxa block with multiple matrices attached to it (e.g., one for each gene), then this exporter will write a single combined matrix with the sequences of different genes concatenated for each taxon. It will also write CHARPARTITION and CHARSETs to record which section of the fused matrix corresponds to which source matrix. It will also write a MrBayes block with that program's partitioning commands. If the different matrices are of mixed type (DNA, protein, non-molecular categorical) then you have a choice between reducing them to simple categorical data or maintaining a mixed matrix (suitable for MrBayes). Often however, you will have slightly different names for the sequences of different genes, and these may therefore exist in the file represented by different taxa blocks. For instance, you may have a taxa block with taxa &quot;A1&quot;, &quot;B1&quot;, and &quot;C1&quot; with corresponding matrix for COI sequences (gene 1) from species A, B and C, and another taxa block with taxa &quot;B2&quot;, &quot;C2&quot;, and &quot;D2&quot; for 28S sequences (gene 2) from the same species. You want to fuse them as follows:</li></ul>
+
+<table class="wiki_table">
+    <tr>
+        <td><img src="files/gene1beforeConcat2.jpg" alt="gene1beforeConcat2.jpg" title="gene1beforeConcat2.jpg" /><br />
+</td>
+        <td><img src="files/gene2beforeInclude.jpg" alt="gene2beforeInclude.jpg" title="gene2beforeInclude.jpg" /><br />
+</td>
+        <td><img src="files/becomesArrow.gif" alt="becomesArrow.gif" title="becomesArrow.gif" /><br />
+</td>
+        <td><img src="files/genesAfterConcat.jpg" alt="genesAfterConcat.jpg" title="genesAfterConcat.jpg" /><br />
+</td>
+    </tr>
+</table>
+
+The Fused Matrix exporter permits you to export these into a single matrix as long as you have indicated how the sequences correspond to one another. To do this, we suggest you create a new taxa block representing the species or specimens. In this example, create a taxa block &quot;Species&quot; with taxa A, B and C. This will be the &quot;master block of taxa&quot; that will organize the export. (Alternatively, you could choose one of the genes' taxa blocks as the master block.) <a class="wiki_link" href="Gene%20Trees.html#newassociation">Set up a Taxa Association</a> between the master block of taxa and each of the other blocks of taxa. With the first Taxa Association between species and Gene 1 indicate that &quot;A1&quot; belongs with species A, &quot;B1&quot; belongs with species B, and &quot;C1&quot; belongs with species C. Set up the species-Gene 2 association similarly. The two taxa association will look like this in the List of Taxa window for the master taxa block:<br />
+<img src="files/assocBeforeFusedExport.gif" alt="assocBeforeFusedExport.gif" title="assocBeforeFusedExport.gif" /><br />
+Then when you choose Fused Matrix Export, choose Species as your master taxa. The exporter will then find all of the data corresponding to each species, either under the species taxon itself or under one of the linked taxa indicated by the Taxa Association, and compose a fused matrix. If a single master taxon has more than one corresponding taxa in one of the other matrices, the data are merged using the same rules as for <a class="wiki_link" href="Characters%20%26%20Matrices.html#mergetaxa">Merge Taxa</a>.<br />
+<h2 id="toc10"><a name="Managing Molecular Data-Other Tools for Managing Molecular matrices"></a><a name="managing"></a>Other Tools for Managing Molecular matrices</h2>
+ Managing sequences in different matrices, especially if from different genes, can be difficult. Several functions assist in this. These features are not restricted to molecular data, but we anticipate most of their use will be with sequences.<br />
+<br />
+<ul><li><a name="archivenames"></a>Alternative Taxon Names: This feature allows you to have several alternative naming schemes for taxa, e.g. one set of names that includes your specimen codes, another set that uses formal taxonomic names (for publication), another set whose names are condensed for exporting the file to programs like CLUSTAL that can handle only short names, and so on. For details see <a class="wiki_link" href="Taxa.html#alternativeNames">here</a>.</li><li><a name="translate"></a>Translation to protein: a new matrix of amino acids, derived by translation from existing protein-coding DNA matrix, can be formed by choosing Characters&gt;Make New Matrix from&gt;Translate DNA to Protein. This request that <a class="wiki_link" href="Managing%20Molecular%20Data.html#codonpositions">codon positions</a>, and the correct <a class="wiki_link" href="Managing%20Molecular%20Data.html#geneticcodes">genetic code</a>, be assigned.</li></ul><h3 id="toc11"><a name="Managing Molecular Data-Other Tools for Managing Molecular matrices-Display of Sequences"></a><a name="sequencedisplay"></a>Display of Sequences</h3>
+ Protein-coding sequences can be colored by the amino acid into which a triplet would be translated (under the genetic code for that triplet) by choosing Display&gt;Color Cells&gt;Color Nucleotide by Amino Acid.<br />
+<h3 id="toc12"><a name="Managing Molecular Data-Other Tools for Managing Molecular matrices-Consensus Sequences"></a><a name="consensus"></a>Consensus Sequences</h3>
+ Consensus Sequences can be displayed above the character matrix by choosing Display&gt;Add Info Strip&gt;Consensus Sequence Strip, as indicated below by the arrows:<br />
+<br />
+<div style="text-align: center"><img src="files/consensus.gif" alt="consensus.gif" title="consensus.gif" /></div><br />
+In the above examples, two consensus sequences strips are displayed, with slightly different options.<br />
+Options are available by touching on the consensus sequence:<br />
+<br />
+<div style="text-align: center"><img src="files/consensusAA.gif" alt="consensusAA.gif" title="consensusAA.gif" /></div><br />
+<br />
+<h2 id="toc13"><a name="Managing Molecular Data-Codon Positions"></a><a name="codonpositions"></a>Codon Positions</h2>
+ You can assign codon positions to a portion of a sequence by the following steps:<br />
+<ul><li>Open the character list window by choosing Characters&gt;List of Characters.</li><li>In the list window, select the characters whose position you wish to designate (choose Select All from the Edit menu if you wish to select all characters).</li><li>Touch on the title box (&quot;Codon Position&quot;) of the Codon Position column, and a menu will drop down. That menu will have a submenu, called &quot;Set Codon Position&quot;, that contains various options for setting codon positions.</li></ul><br />
+This is explained in the following video:<br />
+<br />
+<div style="margin-left: auto; margin-right: auto; display: block; width: 504px; height: 377px;"><iframe width="504" height="377" src="//www.youtube.com/embed/YsotPrE0KwE" frameborder="0" allowfullscreen></iframe></div><br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<h2 id="toc14"><a name="Managing Molecular Data-Genetic Codes"></a><a name="geneticcodes"></a>Genetic Codes</h2>
+ The genetic code for sequence data can be specified in Mesquite's List of Characters window (by choosing List of Characters, and then Columns&gt;Current Genetic Codes, or with a data matrix frontmost, Matrix&gt;Genetic Codes...). Genetic codes are assigned to individual characters (thus allowing one to have a mixed matrix of mitochondrial and nuclear data, for example). To assign a genetic code, choose select the characters, and use the popup menu of the title of the &quot;Genetic Code&quot; column in the List of Characters window.<br />
+The genetic code affects, among other things, the Translate DNA to Protein command, as well as the coloring of nucleotide sequences if Color Nucleotide by Amino Acid is chosen.
+<!-- InstanceEndEditable -->
+
+    
+    
+    </div>
+	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<script type="text/javascript">
+<!--
+
+
+var OverviewOfMesquitePanel = null;
+var GettingStartedPanel = null;
+var BasicMesquiteOperationPanel = null;
+var TaxaTreesCharactersPanel = null;
+var AnalysesPanel = null;
+var WorkflowsPanel = null;
+var GettingHelpPanel = null;
+var TechnicalDetailsPanel = null;
+var HistoryPanel = null;
+var PublishingResultsPanel = null;
+
+if (qsParm['BasicMesquiteOperationPanel']=='open')
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: true});
+else
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: false});
+	
+if (qsParm['OverviewOfMesquitePanel']=='open')
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: true});
+else
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: false});
+	
+if (qsParm['GettingStartedPanel']=='open')
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: true});
+else
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: false});
+
+if (qsParm['TaxaTreesCharactersPanel']=='open')
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: true});
+else
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: false});
+
+if (qsParm['AnalysesPanel']=='open')
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: true});
+else
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: false});
+
+if (qsParm['WorkflowsPanel']=='open')
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: true});
+else
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: false});
+
+if (qsParm['GettingHelpPanel']=='open')
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: true});
+else
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: false});
+    
+if (qsParm['TechnicalDetailsPanel']=='open')
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: true});
+else
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: false});
+
+if (qsParm['HistoryPanel']=='open')
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: true});
+else
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: false});
+if (qsParm['PublishingResultsPanel']=='open')
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: true});
+else
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: false});
+
+
+//-->
+</script>
+</body>
+<!-- InstanceEnd --></html>

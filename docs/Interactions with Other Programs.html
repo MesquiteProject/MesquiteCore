@@ -5,7 +5,7 @@
 
 
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Acknowledgements</title>
+<title>Interactions with Other Programs</title>
 <!-- InstanceEndEditable -->
 
 <![endif]--><!--[if IE]>
@@ -39,7 +39,7 @@
     <table width="100%" border="0" cellpadding="4">
   <tr>
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
-    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Acknowledgements<!-- InstanceEndEditable --></div></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Interactions with Other Programs<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
     <td width="14%">Version 3.41<br />
       3 May 2018<br /></td>
@@ -196,36 +196,27 @@
 <!-- InstanceBeginEditable name="content" -->
     
     
-<h1 id="toc0"><a name="Acknowledgements"></a>Acknowledgements</h1>
- Mesquite has been developed with the assistance of a Fellowship to WPM from the David and Lucile Packard Foundation, an NSERC Discovery grant to WPM, NSF support via the <a class="wiki_link_ext" href="http://www.phylo.org/" rel="nofollow">CIPRES project</a>, and NSF grant DEB 1258220 to DRM, and the patience of our families.<br />
+<h1 id="toc0"><a name="Interaction with Other Programs"></a>Interaction with Other Programs</h1>
+ Mesquite needs to be able to interact with various other programs because typically it depends on them for inference of phylogenetic trees. The programs can interact through sharing files, or in a few cases directly.<br />
 <br />
-The following are gratefully acknowledged for direct assistance with Mesquite's programming or source code. David Swofford helped with the implementation of the likelihood calculations, and supplied code for the optimization routines. John Huelsenbeck gave us portions of the code used in calculation of change probabilities for the Ti/Tv rate matrix model. Lars Rosengreen helped us prepare the code for compilation by means other than Codewarrior. <span style="line-height: 1.5;">Rutger Vos has led the development of NeXML for Mesquite, which is not yet integrated into the standard packages, but we look forward to making it so. </span><br />
+<h2 id="toc1"><a name="Interaction with Other Programs-Direct interactions with RAxML, GARLI, PAUP*, and TNT"></a>Direct interactions with RAxML, GARLI, PAUP*, and TNT</h2>
+ If you wish to have the ability to have RAxML, GARLI, PAUP*, and TNT run from within Mesquite, with Mesquite monitoring the analysis and harvesting the results at the end, you may wish to consider installing the <a class="wiki_link" href="http://mesquitezephyr.wikispaces.com/home">Zephyr</a> package.<br />
 <br />
-We offer our thanks to the many users who have given suggestions and bug reports. We would like to single out Michel Laurin, Jonathan Coddington, and Kojun Kanda for extensive feedback. Maureen O'Leary gave advice on the use of Mesquite for large morphological data matrices. Thanks to Karen Cranston for her suggestion to use Wikispaces for the documentation. <br />
+<h2 id="toc2"><a name="Interaction with Other Programs-Importing/exporting files"></a><a name="import"></a>Importing/exporting files</h2>
+ Mesquite by default currently uses the NEXUS format for files. Other programs such as MacClade, PAUP, MrBayes and NDE all deal with NEXUS files, but there may be some commands not handled by all programs. Mesquite has in addition importers and exporters for various other file formats. You can import a file by requesting to open it; Mesquite will ask you to identify its file format. You can export a file using the Export item in the File menu.<br />
+<a name="macclade"></a>MacClade — MacClade may not be able to read all of the information in a NEXUS file written by Mesquite, especially if it has multiple character or taxa blocks. You may need to simplify the file (e.g. delete some taxa blocks) for it to be read. Also, you could export the file as a Simplified NEXUS file for reading by MacClade.<br />
+<a name="paup"></a>PAUP* — You might want to change PAUP's setting to &quot;Issue Warning and continue&quot; under &quot;Warnings &amp; errors&quot; (set errorstop = no) so that PAUP does not complain about IDs commands within taxa blocks. You may find it helps to turn off Mesquite's TITLE commands using the menu item under Defaults in the File menu. Another alternative is to export the file as a Simplified NEXUS file.<br />
+<a name="NDE"></a>NDE — NDE currently cannot handle some commands in the NEXUS files that Mesquite may write, including the TITLE command. If NDE warns you about this, turn off Mesquite's TITLE commands using the menu item under Defaults in the File menu.<br />
 <br />
-Mesquite has benefitted from support to Wayne Maddison and David Maddison by the University of Arizona, the University of British Columbia, Oregon State University, and the Wissenschaftskolleg zu Berlin.<br />
+<h2 id="toc3"><a name="Interaction with Other Programs-MrBayes interactions"></a><a name="mrbayes"></a>MrBayes interactions</h2>
+ There are two special file exporters useful for work with MrBayes: first, there is an exporterExport NEXUS for MrBayes that uses a simplified NEXUS format. It also composes a MrBayes block that includes character partitioning. A second exporter, <a class="wiki_link" href="Managing%20Molecular%20Data.html#fusedMatrices">Fused Matrix Export (NEXUS),</a>can fuse different matrices in the course of exporting, create mixed matrices and include MrBayes blocks.<br />
+There is a special Tree Source (<a name="mrbayestrees"></a>MrBayes Trees...) that can read a MrBayes tree file as MrBayes is producing it. If the option is so set, Mesquite can respond to new trees being added to the file. Thus, if you have a chart showing a value (say, Felsenstein's contrast correlation) over trees coming in from a MrBayes analysis, the chart will get updated when a new tree is added. In the Tree window you can also ask to retrieve only the last tree in the file, and this will update as new trees are added. If MrBayes' .p files are in the same directory as its .t files, then MrBayes Trees will attach to the trees the tree score from MrBayes. This will be available as a NumberForTree &quot;MrBayes Score&quot;.<br />
+A variant on MrBayes Trees is MrBayes Max. A-Post. Tree, which uses the .p file to find the tree with maximum posterior probability.<br />
 <br />
-
-
-<table class="wiki_table">
-    <tr>
-        <td><a href="http://www.arizona.edu/" rel="nofollow"><img src="files/a_logo.gif" alt="a_logo.gif" title="a_logo.gif" /></a><br />
-</td>
-        <td><a href="http://www.ubc.ca/" rel="nofollow"><img src="files/ubc_blue.gif" alt="ubc_blue.gif" title="ubc_blue.gif" /></a><br />
-</td>
-        <td><a href="http://oregonstate.edu" target="_blank" rel="nofollow"><img src="files/OSULogo.gif" alt="OSULogo.gif" title="OSULogo.gif" /></a><br />
-</td>
-        <td><a href="http://www.phylo.org/" rel="nofollow"><img src="files/logo_cipres.gif" alt="logo_cipres.gif" title="logo_cipres.gif" /></a><br />
-</td>
-        <td><a href="http://www.nsf.gov/" rel="nofollow"><img src="files/nsf4c.jpg" alt="nsf4c.jpg" title="nsf4c.jpg" style="height: 109px; width: 109px;" /></a><br />
-</td>
-        <td><a href="http://www.nserc-crsng.gc.ca/" rel="nofollow"><img src="files/NSERClogo.jpg" alt="NSERClogo.jpg" title="NSERClogo.jpg" style="height: 110px; width: 113px;" /></a><br />
-</td>
-        <td><a href="http://www.wiko-berlin.de/" rel="nofollow"><img src="files/wiko_logo_grau.gif" alt="wiko_logo_grau.gif" title="wiko_logo_grau.gif" /></a><br />
-</td>
-    </tr>
-</table>
-
+Mesquite can also read the tree files produced by <strong>MrBayes's sumt</strong> command. This allows you to visualize the values on branches, such as the Bayesian Posterior Probability saved into the tree description by MrBayes. To do this, you will need to open the file using the File&gt;Open Other&gt;<strong>Special NEXUS</strong> ... command, and ask when queried to using the &quot;Import MrBayes Consensus Tree File&quot; feature. This will tell Mesquite that the trees being read in are annotated using MrBayes extensions to the tree description format. To see the values for each node, go to a treewindow displaying the tree, and choose either Display&gt;Node-Associated Values&gt;Choose Values to Show (which will give you the choice to show &quot;prob&quot; (the Bayesian Posterior Probability), &quot;probstddev&quot;, &quot;lengthmean&quot;, and &quot;lengthmedian&quot;), or Display&gt;Node-Associated Text&gt;Choose Associated Text to Show (with will give you the choice to show &quot;probrange&quot;, &quot;prob+-sd&quot;, or &quot;length95%HPD&quot;). You may wish to turn off drawing of the values on the terminal branches, by unchecking &quot;Show on Terminal Branches&quot; in the Node-Associated Values or Node-Associated Text menu items.<br />
+<br />
+<h2 id="toc4"><a name="Interaction with Other Programs-Alignment Programs"></a><a name="clustalAlign"></a>Alignment Programs</h2>
+ Mesquite can call on MAFFT, Muscle, or CLUSTAL to conduct an alignment of a selected region of the matrix. Y<span style="line-height: 1.5;">ou may find it useful to use </span><a class="wiki_link" href="Managing%20Molecular%20Data.html#archivenames">Alternative Taxon Names</a><span style="line-height: 1.5;"> and </span><a class="wiki_link" href="Taxa.html#renamingtaxa">Condense Taxon Names</a><span style="line-height: 1.5;"> before using an alignment program, for they may difficulty with punctuation or long names.</span>
 <!-- InstanceEndEditable -->
 
     

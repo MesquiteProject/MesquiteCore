@@ -1,0 +1,467 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/MesquiteTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Characters &amp; Matrices</title>
+<!-- InstanceEndEditable -->
+
+<![endif]--><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.thrColFixHdr #sidebar2, .thrColFixHdr #sidebar1 { padding-top: 30px; }
+.thrColFixHdr #mainContent { zoom: 1; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<style type="text/css">
+<!--
+-->
+</style>
+<link href="CSS/mesquitePackage.css" rel="stylesheet" type="text/css" />
+<link href="SpryAssets/SpryCollapsiblePanel.css" rel="stylesheet" type="text/css" />
+
+<script src="SpryAssets/SpryCollapsiblePanel.js" type="text/javascript"></script>
+<script type="text/javascript" src="SpryAssets/SpryURLUtils.js"></script>
+<script type="text/javascript" src="javascript/mesquite.js"></script>
+
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+</head>
+
+<body bgcolor="#ffffff" class="thrColFixHdr" >
+
+<div id="container">
+  <div id="header">
+    <table width="100%" border="0" cellpadding="4">
+  <tr>
+    <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Characters &amp; Matrices<!-- InstanceEndEditable --></div></td>
+    <td width="2%">&nbsp;</td>
+    <td width="14%">Version 3.41<br />
+      3 May 2018<br /></td>
+  </tr>
+</table>
+
+</div>
+  
+  
+<div id="sidebar1">
+  
+  
+  
+  
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('http://mesquiteproject.github.io/MesquiteCore')">Mesquite Website Home</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('home.html')">Introduction to Mesquite</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Installation.html')">Download & Installation</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('History%20of%20New%20Features.html')">Recent Changes</a>
+  </div>
+
+  <div id="OverviewOfMesquitePanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Overview of Mesquite</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquite%27s%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingStartedPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Started</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Installation.html');">Download and Installation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Additional%20Mesquite%20Packages.html');">Additional Packages</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Beginning%20Mesquite.html');">Beginning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Example%20Files.html');">Example Files</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="BasicMesquiteOperationPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Basic Mesquite Operations</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Files.html');">Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Menus.html');">Menus</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Windows.html');">Windows</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Charts.html');">Charts</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Selection.html');">Selection</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Modules.html');">Modules</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TaxaTreesCharactersPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Taxa, Trees &amp; Characters</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Characters%20&%20Matrices.html');">Characters &amp; Matrices</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Taxa.html');">Taxa</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Trees.html');">Trees</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="AnalysesPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Analyses</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Studies%20of%20Tree%20Topology.html');">Studies of Tree Topology</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="WorkflowsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Workflows</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingHelpPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Help</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Learning%20how%20to%20use%20Mesquite.html');">Learning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Bugs%20and%20Troubleshooting.html');">Bugs &amp; Troubleshooting</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Getting%20Help.html');">Getting Help</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Suggesting%20New%20Features.html');">Your Suggestions</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Glossary.html');">Glossary</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('FAQ.html');">FAQ</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TechnicalDetailsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Technical Details</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developer%27s%20Documentation.html');">Developer's Documentation</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="HistoryPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">History</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('History%20of%20Mesquite.html');">History of Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Why%20Mesquite%3F.html');">Why Mesquite?</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('History%20of%20New%20Features.html');">New Features & Bug List</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Release%20Dates.html');">Release Dates</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="PublishingResultsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Publishing Results</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Documenting%20Your%20Work.html');">Documenting your work</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('How%20to%20Cite%20Mesquite.html');">Citing Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Publishing%20Results.html');">Publishing results</a></td></tr>
+		</table>
+    </div>
+  </div>
+
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Acknowledgements.html')">Acknowledgments</a>
+  </div>
+
+<h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+
+  <div id="mainContent">
+    
+<!-- InstanceBeginEditable name="content" -->
+    
+    
+<h1 id="toc0"><a name="Characters &amp; Matrices"></a>Characters &amp; Matrices</h1>
+ Characters and their character states are means by which to describe the features of organisms. Mesquite supports characters whose states are categorical (discrete and not necessarily ordered), continuous (decimal-valued measurements) or meristic (counts). Special versions of categorical characters exist for DNA, RNA and protein sequence data. For more details specific to those types of characters, see the pages on <a class="wiki_link" href="Managing%20Molecular%20Data.html">molecular</a> and <a class="wiki_link" href="Managing%20Continuous%20Data.html">continuous</a> characters. Categorical characters other than molecular characters can have 55 states. Meristic characters are whole numbers (and can be negative).<br />
+Characters can exist within matrices that are stored in a data file. Thus, one matrix may store a series of categorical characters to describe phenotypic features. A separate matrix may store continous characters describing measurements taken from the organisms, while a third matrix may store DNA sequence data, in which each aligned site is treated as a character (Mesquite currently treats unaligned data as if it were aligned, though the alignment can be ignored). Each matrix may have only a single type of character, but a data file may contain more than one matrix.<br />
+Characters can also exist outside of matrices. For instance, characters may be created by <a class="wiki_link" href="Simulations%20%26%20Randomizations.html">simulations and randomizations</a> or by <a class="wiki_link" href="Analyzing%20Continuous%20Characters.html#ord">ordinations</a> and used directly in calculations, without at any point being captured in a matrix and stored in a file. Thus, the &quot;<a name="source"></a>Source of Characters&quot; used for a calculation can be either matrices stored in the file, or characters generated on-the-fly by simulations or randomizations, or ordinations. For this reason, Mesquite by default asks you what Source of Characters to use when characters or matrices are needed. Because some novice users may find this request confusing, you can set Mesquite to choose Stored Characters or Stored Matrices by default, without asking, by selecting the &quot;Use Stored Characters/Matrices by Default&quot; item in the Defaults submenu of the File menu.<br />
+Most of this manual page concerns characters/matrices stored in the data file.<br />
+<ul><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#types">Types of character matrices</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#creating">Creating a character matrix</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#deleting">Deleting and renaming character matrices</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#editor">The Character Matrix Editor</a><ul><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#undo">Undo</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#adding">Adding, deleting, renaming and sorting taxa and characters</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#entering">Entering character data</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#selecting">Selecting taxa, characters and cells of the matrix</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#searching">Searching the matrix</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#copy">Copy/paste</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#editing">Editing Names of Characters and States</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#annotations">Annotations</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#coloring">Coloring cells of the matrix</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#alter">Alterations and Transformations</a></li></ul></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#changing">Changing the attributes of characters</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#charting">Charting information about Characters</a></li><li><a class="wiki_link" href="Characters%20%26%20Matrices.html#listingMatrices">Listing all character matrices</a></li></ul><h3 id="toc1"><a name="Characters &amp; Matrices--Types of Character Matrices"></a><a name="types"></a>Types of Character Matrices</h3>
+ The standard types of character matrices available in Mesquite are:<br />
+<ul><li>Standard Categorical Matrices — States are discrete, not necessarily ordered. Characters can have as many as 55 states, whose symbols by default are 0 - 9, A - H, K - N, P - Z, a - h, k - n, p - z. Polymorphisms (e.g., state 0 and 2) are indicated by 0&amp;2; uncertainty (e.g., state 0 or 2) is indicated by 0/2. A completely unknown state is indicated by ? by default. If the character is inapplicable to that taxon, the symbol is - by default. State names can be assigned using Edit State Names.<br />
+<img src="files/categEG.jpg" alt="categEG.jpg" title="categEG.jpg" /></li><li>DNA/RNA matrices — Four states, A, C, G, T or A, C, G, U. Standard ambiguity codes (e.g., R = A or G) can be used. By default, unknown state is ?, gap is -. More information on editing DNA data is given <a class="wiki_link_ext" href="file:///Users/david/Documents/Mesquite_Workspace/MesquiteCore/Mesquite_Folder/docs/mesquite/molecular/molecular.html" rel="nofollow">here</a>.<br />
+<img src="files/DNAEG.jpg" alt="DNAEG.jpg" title="DNAEG.jpg" /></li><li>Protein matrices — Standard symbols for amino acids. By default, unknown state is ?, gap is -. More information on editing protein data is given <a class="wiki_link_ext" href="file:///Users/david/Documents/Mesquite_Workspace/MesquiteCore/Mesquite_Folder/docs/mesquite/molecular/molecular.html" rel="nofollow">here</a>.</li><li>Continuous matrices — States are continuous values (e.g. 1.02, 3e-4). A matrix can have multiple items, such as x, y or min, max. Items can be added using the menu items under Matrix&gt;Utilities, or using the matrix information panel (shown using the blue &quot;i&quot; at lower left of the matrix). A special type of continuous matrix, Geographic, has two characters (latitude, longitude). More information on continous data is given <a class="wiki_link" href="Managing%20Continuous%20Data.html">here</a>.<br />
+<img src="files/contEG.jpg" alt="contEG.jpg" title="contEG.jpg" /></li><li>Meristic matrices — States are whole numbers (and can be negative). If the character is inapplicable to that taxon is indicated by an x, not &quot;-&quot; as in other data types, to avoid confusion with the minus sign. Missing data is indicated by a question mark (?). Meristic matrices can have multiple items, which can be added using the matrix information panel (shown using the blue &quot;i&quot; at lower left of the matrix).<br />
+<img src="files/merEG.jpg" alt="merEG.jpg" title="merEG.jpg" /></li></ul><br />
+<h3 id="toc2"><a name="Characters &amp; Matrices--Creating a character matrix"></a>Creating a character matrix</h3>
+ There are several ways to create a character matrix to be stored in the file. Most simply, you can create a blank (empty) matrix by choosing Characters&gt;New Empty Matrix. In the dialog box that appears, name the character matrix and specify the number of characters. You will also need to choose the sort of data the matrix will contain (standard categorical, DNA (or RNA) sequence data, continuous, or protein sequence data). Normally, you will create an empty matrix if you are about to start entering observations about organisms.<br />
+It is also possible to create character matrices that are already filled with character states. For instance, if you want to make a duplicate of an existing character matrix, select Characters&gt;Make New Matrix From&gt;Stored Matrices. If you want to create a matrix from the contents of the clipboard, select Characters&gt;Make New Matrix From&gt;Clipboard. Other choices available under Characters&gt;Make New Matrix From&gt; allow you to make and store matrices resulting from simulations of character evolution, randomizations of existing matrices, or other sources.<br />
+Character matrices can also be read from files, including those in NEXUS and other formats that can be imported.<br />
+<h3 id="toc3"><a name="Characters &amp; Matrices--Deleting and renaming matrices"></a>Deleting and renaming matrices</h3>
+ There are three places you can rename and delete character matrices: in the Character Matrix Editor, in the List of Character Matrices window, and in the Project Panel.<br />
+In the Character Matrix Editor the Current Matrix submenu at the top of the matrix menu has menu items for renaming or deleting the matrix shown in the window.<br />
+In the List of Character Matrices window (available in the Characters menu), you can rename a matrix by editing its name directly. To delete matrices, select the rows corresponding to the matrices to be deleted, and selectList&gt;Delete Selected Character Matrices.<br />
+To rename a matrix from the Project Panel at the left side of your windows, touch on the name of the matrix until a drop down menu appears:<br />
+<img src="files/renameDeleteMatrix.jpg" alt="renameDeleteMatrix.jpg" title="renameDeleteMatrix.jpg" /><br />
+<br />
+Choose Rename Matrix from this menu to rename the matrix. You can also use this drop-down menu to delete a matrix.<br />
+<h2 id="toc4"><a name="Characters &amp; Matrices-The Character Matrix Editor"></a>The Character Matrix Editor</h2>
+ Once you have a character matrix, you may edit it using Mesquite's Character Matrix Editor, available at the top of the Characters menu. This is a spreadsheet editor, similar in style to MacClade's. While the Mesquite editor can handle continuous data and has special utilities, for instance to compare matrices, it lacks MacClade's sophisticated features for viewing and alignment of molecular sequence data. Because MacClade and Mesquite share the NEXUS file format, for most data files you will be able to edit matrices in either program to use in the other. Below are instructions as to how to edit a character matrix. Most of the editing can be done in the Character Matrix Editor, but some changes can be made in other windows.<br />
+The Character Matrix Editor is controlled by the Matrix and Select menus, and by the tools in the palette at left. The Matrix menu contains items to change column widths (the Display submenu), change cell coloring, and to alter the character data.<br />
+You can request a panel to show information about the matrix and its characters by touching on the blue &quot;i&quot; (<img src="files/showInfo.gif" alt="showInfo.gif" title="showInfo.gif" />) at upper right or lower left of the matrix.<br />
+You can have more than one Matrix Editor visible for working on the same matrix. To get a second Editor, choose Extra Matrix Editor from the Characters menu. This may be useful if you want to have the editors set to different views (e.g., one on Birds eye view, or colored as translated to protein).<br />
+Note that currently some changes you make to a character matrix cannot be undone!<br />
+<br />
+<table class="captionBox"><tr><td class="captionedImage"><img src="files/BracteonMatrix.jpg" alt="BracteonMatrix.jpg" title="BracteonMatrix.jpg" style="height: 435px; width: 930px;" /></td></tr><tr><td class="imageCaption">The Character Matrix Editor showing morphological data</td></tr></table><br />
+<table class="captionBox"><tr><td class="captionedImage"><img src="files/PrimatemtDNA.jpg" alt="PrimatemtDNA.jpg" title="PrimatemtDNA.jpg" style="height: 386px; width: 883px;" /></td></tr><tr><td class="imageCaption">The Character Matrix Editor showing DNA sequences</td></tr></table><br />
+<br />
+<br />
+There are buttons at the lower left of the Character Matrix Editor to open the List of Characters window (<img src="files/listC.gif" alt="listC.gif" title="listC.gif" />) and the List of Taxa window (<img src="files/listT.gif" alt="listT.gif" title="listT.gif" />). Reciprocally, the List of Characters window has a button (<img src="files/matrix.gif" alt="matrix.gif" title="matrix.gif" />) to show the Character Matrix Editor.<br />
+<h3 id="toc5"><a name="Characters &amp; Matrices-The Character Matrix Editor-Undo"></a>Undo</h3>
+ Mesquite's character matrix editor has some ability to undo the last change made, depending on what that change was. You can request Undo in the Edit menu. Currently, deleting character cannot be undone, nor can deleting taxa. We are working to expand the scope of what can be undone. (If inability to undo concerns you, you may want to turn on automatic NEXUS backup in the Defaults submenu of the File menu, and save frequently.)<br />
+<h3 id="toc6"><a name="Characters &amp; Matrices-The Character Matrix Editor-Adding, deleting, renaming, merging and sorting taxa and characters"></a>Adding, deleting, renaming, merging and sorting taxa and characters</h3>
+ There are several methods for adding taxa or characters to an existing matrix. To add taxa, either choose(Character Matrix) Matrix&gt;Add Taxa... or (Taxa) List&gt;Add Taxa... to add taxa to the end of the matrix, or use the Add Taxa tool (<img src="files/addTaxaTool.gif" alt="addTaxaTool.gif" title="addTaxaTool.gif" />) in the character matrix to add taxa at the point in the matrix that is touched. To add characters, either choose (Character Matrix) Matrix&gt;Add Characters... to add characters to the end of the matrix, or use the Add Characters tool (<img src="files/addCharsTool.gif" alt="addCharsTool.gif" title="addCharsTool.gif" />) in the character matrix to add characters at the point in the matrix that is touched.<br />
+To delete existing taxa, either select the taxa in the Taxa List Window (by touching on the taxon's number at the far left), and choose (Taxa) List&gt;Delete Selected Taxa, or select the entire row for the taxa to be deleted (by touching on the taxon's number at the far left) in the Character Matrix and choose (Character Matrix) Matrix&gt;Delete Selected.<br />
+To delete existing characters, either select the characters in the List of Characters Window (by touching on the character's number at the far left), and choose (Characters) List&gt;Delete Selected Characters, or select the entire row for the characters to be deleted (by touching on the characters's number at the far left) in the Character Matrix and choose (Character Matrix) Matrix&gt;Delete Selected.<br />
+To rename taxa or characters, choose the I-beam tool (<img src="files/iBeamTool.gif" alt="iBeamTool.gif" title="iBeamTool.gif" />) in the Taxa List Window, List of Characters Window, or Character Matrix Window, select the name to be edited, and type the new name.<br />
+Taxa can be merged using Merge Taxa in the Taxon Utilities submenu of the Matrix menu. This will also merge their character states in any matrices. If the two taxa have the same states, this state is used for the fused taxon. If one of the two taxa has missing data or a gap (inapplicable), but the other has a state, the other's state is used (e.g., ? + A = A). If one has a gap and the other missing data, the result is missing data. If the two taxa have differing states which are single states or polymorphic, a polymorphism results(e.g., A + G = A&amp;G). If the two taxa have differing states and at least one is ambiguous, an uncertainty results, unless the ambiguity is entirely contained within the polymorphism of the other (e.g., A&amp;C + C/T = A/C/T; A&amp;C&amp;T + C/T = A&amp;C&amp;T).<br />
+To change the order of characters, you can select and drag entire characters in the List of Characters Window or the Character Matrix Editor. You can also us the sort tool (<img src="files/sortTool.gif" alt="sortTool.gif" title="sortTool.gif" />) to sort characters automatically in alphabetical or numerical order of the column or row on which you touch in these windows.<br />
+<h3 id="toc7"><a name="Characters &amp; Matrices-The Character Matrix Editor-Entering character data"></a>Entering character data</h3>
+ You can enter character data either one cell at a time, or using tools that allow entry of multiple cells at once. Tools available are shown in the following table.<br />
+<br />
+
+
+<table class="wiki_table">
+    <tr>
+        <td>Tool<br />
+</td>
+        <td>Action<br />
+</td>
+    </tr>
+    <tr>
+        <td><img src="files/iBeamTool.gif" alt="iBeamTool.gif" title="iBeamTool.gif" /><br />
+</td>
+        <td>I-beam<br />
+</td>
+        <td>Selects individual cell and allows you to edit the contents of the cell as you would any standard text.<br />
+</td>
+    </tr>
+    <tr>
+        <td><img src="files/keySelector.gif" alt="keySelector.gif" title="keySelector.gif" /><br />
+</td>
+        <td>Select and Type<br />
+</td>
+        <td>If this tool is active, typing a key will cause that single value to be entered into all selected cells. Cells can be selected with this tool; by holding down the Shift or Command keys, multiple cells can be selected.<br />
+</td>
+    </tr>
+    <tr>
+        <td><img src="files/paintBucket.gif" alt="paintBucket.gif" title="paintBucket.gif" /><br />
+</td>
+        <td>Paint Bucket<br />
+</td>
+        <td>This tool will quickly fill a block of cells with a particular state. The state (&quot;paint&quot;) can be chosen by touching the Eye Dropper on a cell of the appropriate state, or by choosing Set Fill States from the Paint Bucket's drop-down menu.<br />
+</td>
+    </tr>
+    <tr>
+        <td><img src="files/eyeDropper.gif" alt="eyeDropper.gif" title="eyeDropper.gif" /><br />
+</td>
+        <td>Eye Dropper<br />
+</td>
+        <td>This tool, when touched on a cell in the matrix, sets the Paint Bucket's &quot;paint&quot; to the states in that cell.<br />
+</td>
+    </tr>
+</table>
+
+<h3 id="toc8"><a name="Characters &amp; Matrices-The Character Matrix Editor-Selecting taxa, characters and cells of the matrix"></a>Selecting taxa, characters and cells of the matrix</h3>
+ Mesquite has several tools for selecting taxa, characters, or data cells, as described in the following table.<br />
+<br />
+
+
+<table class="wiki_table">
+    <tr>
+        <td>Tool<br />
+</td>
+        <td>Action<br />
+</td>
+    </tr>
+    <tr>
+        <td><img src="files/arrow.gif" alt="arrow.gif" title="arrow.gif" /><br />
+</td>
+        <td>Arrow<br />
+</td>
+        <td>Selects individual or multiple cells. To add or subtract cells to an existing selection, hold down the Command (or Apple) key as you touch on a cell. To extend a selection to encompass a solid block of cells, hold down the Shift key as you touch on a cell.<br />
+</td>
+    </tr>
+    <tr>
+        <td><img src="files/wand.gif" alt="wand.gif" title="wand.gif" /><br />
+</td>
+        <td>Wand<br />
+</td>
+        <td>By default, selects all cells possessing the same valued state as the cell touched. That is, if you touch it on a cell with state &quot;1&quot;, all cells in the entire matrix with state &quot;1&quot; will be selected. However, using the drop-down menu, you can ask it to choose all cells with a value greater than that touched, or less than. By default, this tool selects cells throughout the entire matrix. Using the drop-down menu, you can ask to to restrict the select to a single taxon, or a single character. Holding down the Shift key will add the new cell to the existing selection. Holding down the Command (or Apple) key will add the new cells to the existing selection if you touch on a cell that is not selected, and will remove the cells from the existing selection if the cell is already selected.<br />
+</td>
+    </tr>
+    <tr>
+        <td><img src="files/taxWand.gif" alt="taxWand.gif" title="taxWand.gif" /><br />
+</td>
+        <td>Taxon Wand<br />
+</td>
+        <td>By default, selects all taxa possessing the same state within the character touched as that in the cell touched. However, using the drop-down menu, you can ask it to choose all taxa with a value greater than that touched, or less than. Holding down the Shift key will add the new taxa to the existing selection. Holding down the Command (or Apple) key will add the new taxa to the existing selection if you touch on a taxon that is not selected, and will remove the taxa from the existing selection if the taxon is already selected.<br />
+</td>
+    </tr>
+    <tr>
+        <td><img src="files/charWand.gif" alt="charWand.gif" title="charWand.gif" /><br />
+</td>
+        <td>Character Wand<br />
+</td>
+        <td>By default, selects all characters possessing the same state within the character touched as that in the cell touched. However, using the drop-down menu, you can ask it to choose all characters with a value greater than that touched, or less than. Holding down the Shift key will add the new characters to the existing selection. Holding down the Command (or Apple) key will add the new characters to the existing selection if you touch on a character that is not selected, and will remove the characters from the existing selection if the character is already selected.<br />
+</td>
+    </tr>
+</table>
+
+Taxa, characters and cells can also be selected using items in the Select menu of the Character Matrix Editor. These allow you to select variable characters, to select stretches of sequence matching a currently selected stretch, to reverse the current selection, and perform other changes to the selection.<br />
+<h3 id="toc9"><a name="Characters &amp; Matrices-The Character Matrix Editor-Searching the matrix"></a>Searching the matrix</h3>
+ The contents of the matrix can be searched in two ways. First, enter the text you're searching for in the Search area in the Project Panel (at left of the window) and hit the magnifying glass icon.<br />
+Second, you can search the matrix using the Find commands in the Edit menu, and the Select by Search in the Select menu. In the Edit menu, Find String... selects the first instance cell in the matrix containing the given string of text. It searches first taxon names, the character names, the the character states within the matrix. You can find subsequent instances using the Find Again command. Find All selects all those cells containing a given string. Find Footnote operates like Find String, except that it highlights cells that contain footnotes with the given text. (To find text within the more elaborate Annotations, you will need to call up an annotations window using the Annotate (pencil) tool in the character matrix editor, then choose Find Annotation in the Notes menu.)<br />
+<h3 id="toc10"><a name="Characters &amp; Matrices-The Character Matrix Editor-Copy/paste"></a>Copy/paste</h3>
+ You can copy taxon and character names from one region of the matrix to another and from one matrix to another. You can also copy one or more cells in the matrix to the Clipboard, and paste them into another region of the matrix, or into another matrix. Mesquite allows you to do with discontinuous selections, as long as the number of cells selected in the first taxon that is selected while copying is the same as the number of cells selected in the first taxon that is selected while pasting, and the same for subsequent taxa. That is, if you select two cells in taxon 3, one cell in taxon 5, and four cells in taxon 7, and copy this to the Clipboard, then when you paste, you must select two cells in the first taxon in which to paste, one in the next, and four in the last.<br />
+Mesquite will not let you paste a block of cells into the matrix while you have selected a differently shaped block in the matrix. However, if you attempt to do that, Mesquite will offer to change the selection so that covers the same number of cells as in the selection. You may then attempt again to paste.<br />
+<h3 id="toc11"><a name="Characters &amp; Matrices-The Character Matrix Editor-Editing Names of Characters and States"></a>Editing Names of Characters and States</h3>
+ Character names can be assigned either by editing the column headings in the Character Matrix Editor, or by editing the character names directly in the List of Characters window.<br />
+The State Names Editor, available by choosing (Character Matrix) Matrix&gt;Edit State Names, allows you to name the states of categorical characters. It will not be available if your matrix is specified as nucleotide or protein data. You can change the orientation (states by characters, or characters by states) of the State Names Editor by touching the double arrow at the top left of the window. Footnotes can be attached to particular states by selecting the state and typing the footnote in the annotation area at the bottom of the window.<br />
+<h3 id="toc12"><a name="Characters &amp; Matrices-The Character Matrix Editor-Annotations"></a>Annotations</h3>
+ You can annotate the character matrix by attaching simple footnotes, more elaborate annotations, or colors to the taxa, characters or cells of the matrix. Simple footnotes can be attached by selecting the cell with the arrow or I-beam tool, then going to the white annotation area at the bottom of the window and entering the footnote. More elaborate annotations and colors can be attached using the Annotations Panel, available by selecting Show Annotations Panel in the Display menu. Currently the footnotes and annotations systems are separate in Mesquite — the footnotes appear in the annotation area at the bottom of many windows; the elaborate Annotations appear in a panel embedded in the Character Matrix Editor. An example data file with annotations is at Mesquite_Folder/examples/Basic_Examples/characters/11a-annotations.nex<br />
+The annotations panel appears at the right side of the window, as follows:<br />
+<img src="files/cellPictures.jpg" alt="cellPictures.jpg" title="cellPictures.jpg" /><br />
+<br />
+The annotations panel above shows the annotations (if any) associated with a given taxon, character or cell in the matrix (depending on what was selected with the annotation (pencil) tool). Notes can be added or deleted using the (+) or trash buttons at the top left. One image can be added to each note, and labels can be added to the images using the I-beam cursor. To control appearance of these labels, right click or control-click on the label to get a drop down menu adjusting the font, color and other properties of the label. The label's pointer can be relocated using the Adjust Pointer tool. Other features of the annotations can be accessed using the Annotations submenu of the Display menu. You can search for annotations containing text using the Find Annotation menu item of the Annotations submenu.<br />
+<h3 id="toc13"><a name="Characters &amp; Matrices-The Character Matrix Editor-Coloring cells of the matrix"></a>Coloring cells of the matrix</h3>
+ Cells or their text can be colored. The default background cell color is chosen in the (Character Matrix) Display&gt;Background Color submenu. Colors to distinguish different cells can be specified using the items in the(Character Matrix) Display&gt;Color Cells and (Character Matrix) Display&gt;Color Text submenus. These submenus specify the color to be used for the background of the cell, or for the text within the cell, according to the following criteria:<br />
+<ul><li>Character value — A cell is colored according to a value for the entire character, such as parsimony character steps.</li><li>Cell value — A cell is colored according to a value for that particular cell. For instance, with DNA sequence data, the cells can be colored blue if the site is G or C, white if A or T. By selecting (Character Matrix) Matrix&gt;Moving Window (for colors)..., you can set the size of the moving window over which GC content is averaged. Other cell values are available for amino acid properties (e.g., hydrophobicity)</li><li>Excluded — A cell is colored gray if its character is excluded.</li><li>Footnote present— A cell is colored green if it has a footnote.</li><li>Character State — A cell is colored according to the character state (e.g. different colors for A, C, G, T)</li><li>Annotation attached — A cell is colored green if annotation (not footnotes, but the full complex annotations) are attached to it.</li><li>Assigned Colors — A cell is shown with color as assigned by the paintbrush tool (<img src="files/colorBranch.gif" alt="colorBranch.gif" title="colorBranch.gif" />). To assign a color to a cell, click on the cell with the paintbrush. Touch and hold the button in the tool palette to obtain a menu to select the color used, remove colors or color all selected cells.</li></ul>When cells are colored, you may request a legend for the colors by selecting Show Color Legend in the Display menu, or by touching the small button(<img src="files/colorLegend.gif" alt="colorLegend.gif" title="colorLegend.gif" />) at lower left of the Matrix Editor (beneath the taxon names). If you double click on a color in the matrix, the editor will move to a cell with that color.<br />
+<h3 id="toc14"><a name="Characters &amp; Matrices-The Character Matrix Editor-Alterations and Transformations"></a>Alterations and Transformations</h3>
+ The following are available in the Alter/Transform menu of the Matrix menu to modify the cells or characters of a matrix:<br />
+<ul><li>Filling selected cells with a specified state: Choose (Character Matrix) Matrix&gt;Alter/Transform&gt;Fill</li><li>Filling selected cells with random states with equal frequency for all states: Choose (Character Matrix) Matrix&gt;Alter/Transform&gt;Random Fill</li><li>Randomly reshuffle the states within a character among the selected taxa: Choose (Character Matrix) Matrix&gt;Alter/Transform&gt;Shuffle states among taxa</li><li>For nucleotide sequence data, convert the entries in each cell into their complement: Choose (Character Matrix) Matrix&gt;Alter/Transform&gt;Nucleotide complement</li><li>Reversing a selected molecular sequence: Choose (Character Matrix) Matrix&gt;Alter/Transform&gt;Reverse Sequence</li><li>Removing characters consisting of nothing but gaps: Choose (Character Matrix) Matrix&gt;Alter/Transform&gt;Remove Gaps-Only Characters</li><li>Removing invariant characters: Choose (Character Matrix) Matrix&gt;Alter/Transform&gt;Remove Invariant Characters</li></ul><h3 id="toc15"><a name="Characters &amp; Matrices-The Character Matrix Editor-Changing the attributes of characters"></a>Changing the attributes of characters</h3>
+ A character, in addition to having states assigned in each of the terminal taxa, may also have other attributes. For instance, a character is marked as included or excluded, and it has assumptions attributed to it, such as a weight and a parsimony model of evolution. These attributes are used in various calculations. They may be assigned in the List of Characters windows, available in the Characters menu.<br />
+<img src="files/ListWindow.jpg" alt="ListWindow.jpg" title="ListWindow.jpg" /><br />
+<br />
+In the List of Characters window, columns refer to inclusion, parsimony model and probability model (for likelihood calculations). Other columns can be requested for Group Membership, Weight, and (for DNA data) Codon Position. You can ask to show a column using the Columns menu. For each of these columns, the assigned attribute can be changed by first either selecting the characters to be changed (if only some characters are to be altered) or selecting the attribute's column (if all characters are to be altered). Then, by touching the name of the column (where an inverted black triangle should appear), a drop down menu appears that allows you to make the appropriate specification.<br />
+For each of the attributes other than group membership, the bottom three menu items are to store to the file the current specification as a named specification set (like saving a typeset or weightset in MacClade), to replace an existing specification set with the current one, or to load a stored specification set to become the current.<br />
+The following are the options specific to each column:<br />
+<ul><li>Inclusion - Include, Exclude, and Reverse allow you to change character inclusion. Reverse changes excluded to included and vice versa. Characters that are excluded don't participate in treelength and many other calculations. Exclusion is not universally respected by the calculations, for some calculations use even characters that are excluded.</li><li>Parsimony model - The Model submenu allows you to select a parsimony model to assign to the characters, for use in parsimony calculations.</li><li>Probability model - The Model submenu allows you to select a probability model to assign to the characters, for use in likelihood calculations and simulations.</li><li>Group Membership - The image above shows Group Membership in the last column. The discussion on <a class="wiki_link" href="Characters%20%26%20Matrices.html#charpartitions">Character Partitions</a> discusses this feature in depth.</li><li>Weight - With the Set weight menu item you can set the weight assigned to the character. This is used currently on in treelength calculations.</li><li>Codon Positions — This column is available for DNA data. The drop down menu allows you to assign positions.</li></ul><h3 id="toc16"> </h3>
+ <h3 id="toc17"><a name="Characters &amp; Matrices-The Character Matrix Editor-Character Partitions"></a><a name="charpartition"></a>Character Partitions</h3>
+ Character partitions are defined by specifying the groups to which the characters belonged.<br />
+<br />
+To assign characters to groups, you must first create groups using New Group. For instance, you could create a group Adult Characters and another group Larval Characters. Then, you can assign character to the group using the Set Group submenu. You can also edit the color of the group, and rename the group. The group color is useful to distinguish characters of different groups, for instance in charts or in the Character Matrix editor. You can manage your character groups by in the List of Character Group Labels menu available in the Characters menu.<br />
+<br />
+The groups to which the characters are assigned defines the current character partition. To store group assignments as a named character partition, touch on the &quot;Group&quot; title in the List of Characters Window. In the popup menu that appears, choose &quot;Store current partition...&quot;. In this menu you can also replace a previously named partition with the current partition<span style="background-color: #ffffff;">, or load a previously defined partition and your current partition.</span><br />
+<br />
+<span style="background-color: #ffffff;">Here is a video showing some of these features.</span><br />
+<br />
+<br />
+<div style="margin-left: auto; margin-right: auto; display: block; width: 504px; height: 377px;"><iframe width="504" height="377" src="//www.youtube.com/embed/3xT1ONgImZw" frameborder="0" allowfullscreen></iframe></div><br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<h3 id="toc18"><a name="Characters &amp; Matrices-The Character Matrix Editor-Charting information about Characters"></a>Charting information about Characters</h3>
+ Informative statistics and values for characters can be viewed or <a class="wiki_link" href="Charts.html">charted</a> in various windows. In the Analysis menu a Bar &amp; Line Chart can be requested to show the distribution of a value for a series of characters. For instance, the number of parsimony steps in the characters on a current tree can be charted. The Scattergram available in the Analysis menu plots characters in a two dimensional space with the X axis being one particular value (e.g., the character's likelhood under one tree), the Y axis another value (e.g. the character's likelihood under a different tree). Values for characters can also be viewed in the List of Characters window, where columns can be added (in the List menu) to show selected statistics for each of the characters.<br />
+<h3 id="toc19"><a name="Characters &amp; Matrices-The Character Matrix Editor-Listing all character matrices"></a>Listing all character matrices</h3>
+ The List of Character Matrices menu item under Characters brings up a list of character matrices. Here you can view statistics and change names of character matrices.<br />
+<br />
+Character matrices can be marked as &quot;hidden&quot;, which means that they will not be included in most menus and dialog boxes in which you can choose matrices, and they will not appear in the project panel at the left of the window. To set the visibility, go to the List of Character Matrices, Column&gt;Visibility of Matrix. Once the column appears, select the rows for the matrices whose visiblity you want to change, and choose Toggle Visibility from the drop down menu at the top of the column.
+<!-- InstanceEndEditable -->
+
+    
+    
+    </div>
+	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<script type="text/javascript">
+<!--
+
+
+var OverviewOfMesquitePanel = null;
+var GettingStartedPanel = null;
+var BasicMesquiteOperationPanel = null;
+var TaxaTreesCharactersPanel = null;
+var AnalysesPanel = null;
+var WorkflowsPanel = null;
+var GettingHelpPanel = null;
+var TechnicalDetailsPanel = null;
+var HistoryPanel = null;
+var PublishingResultsPanel = null;
+
+if (qsParm['BasicMesquiteOperationPanel']=='open')
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: true});
+else
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: false});
+	
+if (qsParm['OverviewOfMesquitePanel']=='open')
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: true});
+else
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: false});
+	
+if (qsParm['GettingStartedPanel']=='open')
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: true});
+else
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: false});
+
+if (qsParm['TaxaTreesCharactersPanel']=='open')
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: true});
+else
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: false});
+
+if (qsParm['AnalysesPanel']=='open')
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: true});
+else
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: false});
+
+if (qsParm['WorkflowsPanel']=='open')
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: true});
+else
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: false});
+
+if (qsParm['GettingHelpPanel']=='open')
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: true});
+else
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: false});
+    
+if (qsParm['TechnicalDetailsPanel']=='open')
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: true});
+else
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: false});
+
+if (qsParm['HistoryPanel']=='open')
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: true});
+else
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: false});
+if (qsParm['PublishingResultsPanel']=='open')
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: true});
+else
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: false});
+
+
+//-->
+</script>
+</body>
+<!-- InstanceEnd --></html>

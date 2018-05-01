@@ -5,7 +5,7 @@
 
 
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Acknowledgements</title>
+<title>Glossary</title>
 <!-- InstanceEndEditable -->
 
 <![endif]--><!--[if IE]>
@@ -39,7 +39,7 @@
     <table width="100%" border="0" cellpadding="4">
   <tr>
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
-    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Acknowledgements<!-- InstanceEndEditable --></div></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Glossary<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
     <td width="14%">Version 3.41<br />
       3 May 2018<br /></td>
@@ -196,36 +196,14 @@
 <!-- InstanceBeginEditable name="content" -->
     
     
-<h1 id="toc0"><a name="Acknowledgements"></a>Acknowledgements</h1>
- Mesquite has been developed with the assistance of a Fellowship to WPM from the David and Lucile Packard Foundation, an NSERC Discovery grant to WPM, NSF support via the <a class="wiki_link_ext" href="http://www.phylo.org/" rel="nofollow">CIPRES project</a>, and NSF grant DEB 1258220 to DRM, and the patience of our families.<br />
-<br />
-The following are gratefully acknowledged for direct assistance with Mesquite's programming or source code. David Swofford helped with the implementation of the likelihood calculations, and supplied code for the optimization routines. John Huelsenbeck gave us portions of the code used in calculation of change probabilities for the Ti/Tv rate matrix model. Lars Rosengreen helped us prepare the code for compilation by means other than Codewarrior. <span style="line-height: 1.5;">Rutger Vos has led the development of NeXML for Mesquite, which is not yet integrated into the standard packages, but we look forward to making it so. </span><br />
-<br />
-We offer our thanks to the many users who have given suggestions and bug reports. We would like to single out Michel Laurin, Jonathan Coddington, and Kojun Kanda for extensive feedback. Maureen O'Leary gave advice on the use of Mesquite for large morphological data matrices. Thanks to Karen Cranston for her suggestion to use Wikispaces for the documentation. <br />
-<br />
-Mesquite has benefitted from support to Wayne Maddison and David Maddison by the University of Arizona, the University of British Columbia, Oregon State University, and the Wissenschaftskolleg zu Berlin.<br />
-<br />
-
-
-<table class="wiki_table">
-    <tr>
-        <td><a href="http://www.arizona.edu/" rel="nofollow"><img src="files/a_logo.gif" alt="a_logo.gif" title="a_logo.gif" /></a><br />
-</td>
-        <td><a href="http://www.ubc.ca/" rel="nofollow"><img src="files/ubc_blue.gif" alt="ubc_blue.gif" title="ubc_blue.gif" /></a><br />
-</td>
-        <td><a href="http://oregonstate.edu" target="_blank" rel="nofollow"><img src="files/OSULogo.gif" alt="OSULogo.gif" title="OSULogo.gif" /></a><br />
-</td>
-        <td><a href="http://www.phylo.org/" rel="nofollow"><img src="files/logo_cipres.gif" alt="logo_cipres.gif" title="logo_cipres.gif" /></a><br />
-</td>
-        <td><a href="http://www.nsf.gov/" rel="nofollow"><img src="files/nsf4c.jpg" alt="nsf4c.jpg" title="nsf4c.jpg" style="height: 109px; width: 109px;" /></a><br />
-</td>
-        <td><a href="http://www.nserc-crsng.gc.ca/" rel="nofollow"><img src="files/NSERClogo.jpg" alt="NSERClogo.jpg" title="NSERClogo.jpg" style="height: 110px; width: 113px;" /></a><br />
-</td>
-        <td><a href="http://www.wiko-berlin.de/" rel="nofollow"><img src="files/wiko_logo_grau.gif" alt="wiko_logo_grau.gif" title="wiko_logo_grau.gif" /></a><br />
-</td>
-    </tr>
-</table>
-
+<h2 id="toc0"><a name="x-Basic concepts and vocabulary"></a>Basic concepts and vocabulary</h2>
+ Mesquite was designed to explore the evolution of organsims and their characteristics. Here is some basic vocabulary that relates the biology to the implementation in Mesquite.<br />
+<h3 id="toc1"><a name="x-Basic concepts and vocabulary-Taxa"></a><a name="taxa"></a>Taxa</h3>
+ <ul><li><strong>Taxon</strong> - One of the basic entities being studied, usually a species or a gene sequence. In Mesquite (as in other programs), the word &quot;Taxon&quot; has shifted from its traditional meaning to become more or less equivalent to &quot;terminal taxon&quot; (the smallest unit of analysis of relationships).</li><li><strong>Block of taxa</strong> / <strong>Taxa block</strong>- A collection of taxa grouped together for analysis. In most programs dealing with phylogeny, there is only a single block of taxa allowed in a file (e.g., &quot;Primates&quot;, consisting of 20 species of primates). In Mesquite, multiple blocks are allowed (perhaps to study associations among them, in the style of Rod Page's programs), and so it is useful to refer to different blocks of taxa. A block of taxa is equivalent to a TAXA block in a NEXUS file.</li><li><strong>Group Membership (Taxa partition)</strong> - A subdivision of a taxa block into disjoint subsets. Thus, a taxa block for Mammals may have its taxa partitioned into one of three groups, Carnivore, Ominvore and Herbivore. A taxa partition is equivalent to a TAXAPARTITION in a NEXUS file.</li></ul><hr />
+<h3 id="toc2"><a name="x-Basic concepts and vocabulary-Characters"></a><a name="chars"></a>Characters</h3>
+ <ul><li><strong>Character</strong> - A variable or characteristic measured or observed for a block of taxa. It could be from molecular data (&quot;Nucleotide at position 367 of the 18S gene&quot;), or it could be phenotypic (&quot;length of wing&quot;). Characters in Mesquite typically exist only within character matrices.</li><li><strong>Character model</strong> - a model of the evolution of a character. This could be a model for use in parsimony calculations (e.g., &quot;unordered&quot;, a cost matrix) or in likelihood calculations or stochastic simulations (e.g., HKY85, GTR).</li><li><strong>Character matrix</strong> - A matrix representing the character states of various characters for a block of taxa. Each character matrix in Mesquite must be homogeneous with respect to type of character (e.g. nucleotide sequences can't be intermingled with morphometrics data).</li><li><strong>Character partition</strong> - A subdivision of a characters into disjoint subsets. Thus, a character matrix for insects may have its characters partitioned into one of three groups, larval, pupal, and adult. A character partition is equivalent to a CHARPARTITION in a NEXUS file.</li><li><strong>Character inclusion set</strong> - A specification of what characters are to be included and what excluded from analyses. This is equivalent (in inverse form) to an EXSET in a NEXUS file.</li><li><strong>Character weight set</strong> - A specification of what weights are to be applied to characters in summed calculations (especially for parsimony calculations). This is equivalent to a WTSET in a NEXUS file.</li><li><strong>Parsimony model set</strong> - A specification of what parsimony model of character evolution (i.e., what &quot;transformation type&quot;) is to be applied to each character of a matrix. This is equivalent to a TYPESET in a NEXUS file.</li><li><strong>Probability model set</strong> - A specification of what probalistic model of character evolution is to be applied to each character of a matrix.</li></ul><hr />
+<h3 id="toc3"><a name="x-Basic concepts and vocabulary-Trees"></a><a name="trees"></a>Trees</h3>
+ <ul><li><strong>Tree</strong> - A tree representing the relationships of the taxa. If the taxa are species, the tree represents phylogeny; if the taxa are gene sequences, the tree represents a gene genealogy.</li><li><strong>Block of trees / Tree Block</strong> - A collection of trees. This might be a set of trees saved by the user, or output by a program like PAUP*.</li></ul>
 <!-- InstanceEndEditable -->
 
     

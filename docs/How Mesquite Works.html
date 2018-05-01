@@ -5,7 +5,7 @@
 
 
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Acknowledgements</title>
+<title>How Mesquite Works</title>
 <!-- InstanceEndEditable -->
 
 <![endif]--><!--[if IE]>
@@ -39,7 +39,7 @@
     <table width="100%" border="0" cellpadding="4">
   <tr>
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
-    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Acknowledgements<!-- InstanceEndEditable --></div></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->How Mesquite Works<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
     <td width="14%">Version 3.41<br />
       3 May 2018<br /></td>
@@ -196,36 +196,19 @@
 <!-- InstanceBeginEditable name="content" -->
     
     
-<h1 id="toc0"><a name="Acknowledgements"></a>Acknowledgements</h1>
- Mesquite has been developed with the assistance of a Fellowship to WPM from the David and Lucile Packard Foundation, an NSERC Discovery grant to WPM, NSF support via the <a class="wiki_link_ext" href="http://www.phylo.org/" rel="nofollow">CIPRES project</a>, and NSF grant DEB 1258220 to DRM, and the patience of our families.<br />
+<h1 id="toc0"><a name="How Mesquite Works"></a>How Mesquite Works</h1>
+ Mesquite operates via the cooperation of modules, each of which performs some function or duty. There is one core module, the Mesquite trunk module. When this module starts up, it finds all of the available modules. (Mesquite does this by looking into the subdirectories of the mesquite directory.) From each module, it gathers information, including its name and the functions the module promises to perform.<br />
+A programmer's account of Mesquite's modular architecture is given in the <a class="wiki_link_ext" href="http://mesquiteproject.org/mesquite/development/development.html" rel="nofollow">developer's documentation</a>.<br />
+<h2 id="toc1"><a name="How Mesquite Works-The tree of modules"></a><a name="moduleTree"></a>The tree of modules</h2>
+ Modules are &quot;hired&quot; by other modules as employees to perform certain tasks. Thus, the core Mesquite module hires a &quot;File Coordinator&quot; module to manage most activities, including coordinating the reading and analyzing of data files. The File Coordinator itself hires other modules to do the actual file reading and analyses. The file reading module may hire other modules to handle particular parts of the data file, one for the data matrix, another for the trees, and so on.With modules hiring modules hiring modules, the modules in use at any time are linked together in employee-employer relationships that as a whole take the form of atree, with the root module being the core Mesquite trunk module. (To see the tree of modules active at any time, choose the menu item &quot;Active Modules&quot; from Mesquite's Help menu, or by touching the Modules tab in a window's information bar.)<br />
+Here is a diagram of a section of the module tree. The five modules in the oval are engaged in calculating and presenting some result to the user. (The two modules outside the oval are patiently waiting as alternatives.) The over-all coordinator module has hired a calculation coordinator module, which in turns uses one module to supply data and another to do the actual calculation. The over-all coordinator also hires a module to display the results (in this case, a charting module).<br />
+<div style="text-align: center"><img src="files/littleModularity.gif" alt="littleModularity.gif" title="littleModularity.gif" /></div><h2 id="toc2"><a name="How Mesquite Works-Kinds of modules: Duties"></a><a name="duties"></a>Kinds of modules: Duties</h2>
+ A module will decide which other modules would be appropriate to hire for a particular task according to the duties that the various modules promise to perform. Each module belongs to a particular kind of module, and these kinds amount to a claim as to what duties will be performed. (Technically, these &quot;kinds&quot; are subclasses of the general Mesquite module class, and a particular module can choose which kind it is by what subclass it extends.) For instance, one &quot;kind&quot; of module is a DrawTree module. By belonging to this kind, a module promises that, when given a tree, it will draw it. There may be multiple DrawTree modules available -- one may make square trees (&quot;phenograms&quot;), another diagonal trees (&quot;cladograms&quot;), another circular trees, another may plot the nodes of the tree in a three dimensional space, and so on. The fact that a module is of the DrawTree kind guarantees to any employer module that it will perform a task in a predictable way, and be interchangeable with other modules of the DrawTree kind. If a module needs a tree drawn, it could choose any one of these DrawTree modules to hire. Modules can easily fire an existing employee, and hire a new one, to respond to a user's request to change the calculation or display.<br />
+<h2 id="toc3"><a name="How Mesquite Works-Consequences to the user: Flexibility and choice"></a><a name="flexibility"></a>Consequences to the user: Flexibility and choice</h2>
+ This system of modules provides great flexibility for the user in designing calculations and output. The user can typically choose which particular module of a kind is used, and thus mix and match modules to construct an analysis. In the example of the illustration, the user might substitute the other calculation module (calculation 2) and the other graphical display module (table) and thus arrive at a different calculation and output. If, in the future, someone writes a new sort of calculation module (calculation 3), it can also be plugged in to the system as a new alternative. It can be used not only in the calculation diagrammed above, but in any other analysis in which a calculation of its basic kind is needed. Likewise, if someone writes a new sort of graphical presentation module, it can also be plugged in. This means that the number of alternative analyses and display modes available to the user rises multiplicatively as more modules of different kinds are available.<br />
 <br />
-The following are gratefully acknowledged for direct assistance with Mesquite's programming or source code. David Swofford helped with the implementation of the likelihood calculations, and supplied code for the optimization routines. John Huelsenbeck gave us portions of the code used in calculation of change probabilities for the Ti/Tv rate matrix model. Lars Rosengreen helped us prepare the code for compilation by means other than Codewarrior. <span style="line-height: 1.5;">Rutger Vos has led the development of NeXML for Mesquite, which is not yet integrated into the standard packages, but we look forward to making it so. </span><br />
-<br />
-We offer our thanks to the many users who have given suggestions and bug reports. We would like to single out Michel Laurin, Jonathan Coddington, and Kojun Kanda for extensive feedback. Maureen O'Leary gave advice on the use of Mesquite for large morphological data matrices. Thanks to Karen Cranston for her suggestion to use Wikispaces for the documentation. <br />
-<br />
-Mesquite has benefitted from support to Wayne Maddison and David Maddison by the University of Arizona, the University of British Columbia, Oregon State University, and the Wissenschaftskolleg zu Berlin.<br />
-<br />
-
-
-<table class="wiki_table">
-    <tr>
-        <td><a href="http://www.arizona.edu/" rel="nofollow"><img src="files/a_logo.gif" alt="a_logo.gif" title="a_logo.gif" /></a><br />
-</td>
-        <td><a href="http://www.ubc.ca/" rel="nofollow"><img src="files/ubc_blue.gif" alt="ubc_blue.gif" title="ubc_blue.gif" /></a><br />
-</td>
-        <td><a href="http://oregonstate.edu" target="_blank" rel="nofollow"><img src="files/OSULogo.gif" alt="OSULogo.gif" title="OSULogo.gif" /></a><br />
-</td>
-        <td><a href="http://www.phylo.org/" rel="nofollow"><img src="files/logo_cipres.gif" alt="logo_cipres.gif" title="logo_cipres.gif" /></a><br />
-</td>
-        <td><a href="http://www.nsf.gov/" rel="nofollow"><img src="files/nsf4c.jpg" alt="nsf4c.jpg" title="nsf4c.jpg" style="height: 109px; width: 109px;" /></a><br />
-</td>
-        <td><a href="http://www.nserc-crsng.gc.ca/" rel="nofollow"><img src="files/NSERClogo.jpg" alt="NSERClogo.jpg" title="NSERClogo.jpg" style="height: 110px; width: 113px;" /></a><br />
-</td>
-        <td><a href="http://www.wiko-berlin.de/" rel="nofollow"><img src="files/wiko_logo_grau.gif" alt="wiko_logo_grau.gif" title="wiko_logo_grau.gif" /></a><br />
-</td>
-    </tr>
-</table>
-
+The diversity of analyses that can be done with Mesquite is valuable in many respects, not the least of which is that it helps overcome the constraining effect that computer programs tend to have on a user's work. However, it also forces the user to make choices: to think about exactly what he or she is doing. This may be an advantage or disadvantage. Of course, one could write an artificial intelligence module that advises the user what to do....<br />
+It is not just the diversity of analyses that makes Mesquite unusual. It is the fact that we cannot predict what features it will have, since its features depend on the modules currently installed and loaded. Thus, a simple manual for it is not possible. In a normal program we could say &quot;If you want to trace a character, go to the Analysis menu and choose Trace Character. The branches will be shaded to show the parsimonious ancestral states&quot;. With Mesquite, the branches might not be shaded, because the reconstructed states might be displayed in some other way, according to whatever display module is in use. The states might not be reconstructed by parsimony. The Trace Character command might not appear in the Analysis menu, since the Trace Character module might be hired by various other modules, and each of these employer modules might choose a different place (e.g., somewhere other than a Trace menu) to give the user the opportunity to choose analyeses. We have attempted to describe standard analysis via the links at the left hand side of this page. Beyond those, however, the user can use the examples files for more information about setting up analyses.
 <!-- InstanceEndEditable -->
 
     

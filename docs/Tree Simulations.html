@@ -5,7 +5,7 @@
 
 
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Acknowledgements</title>
+<title>Tree Simulations</title>
 <!-- InstanceEndEditable -->
 
 <![endif]--><!--[if IE]>
@@ -39,7 +39,7 @@
     <table width="100%" border="0" cellpadding="4">
   <tr>
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
-    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Acknowledgements<!-- InstanceEndEditable --></div></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Tree Simulations<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
     <td width="14%">Version 3.41<br />
       3 May 2018<br /></td>
@@ -196,36 +196,22 @@
 <!-- InstanceBeginEditable name="content" -->
     
     
-<h1 id="toc0"><a name="Acknowledgements"></a>Acknowledgements</h1>
- Mesquite has been developed with the assistance of a Fellowship to WPM from the David and Lucile Packard Foundation, an NSERC Discovery grant to WPM, NSF support via the <a class="wiki_link_ext" href="http://www.phylo.org/" rel="nofollow">CIPRES project</a>, and NSF grant DEB 1258220 to DRM, and the patience of our families.<br />
+<h1 id="toc0"><a name="Tree simulations and randomizations"></a>Tree simulations and randomizations</h1>
+ Various packages in Mesquite can simulate or randomize trees, allowing you to build statistical tests based on null distributions or trees generated under some hypothesis.<br />
 <br />
-The following are gratefully acknowledged for direct assistance with Mesquite's programming or source code. David Swofford helped with the implementation of the likelihood calculations, and supplied code for the optimization routines. John Huelsenbeck gave us portions of the code used in calculation of change probabilities for the Ti/Tv rate matrix model. Lars Rosengreen helped us prepare the code for compilation by means other than Codewarrior. <span style="line-height: 1.5;">Rutger Vos has led the development of NeXML for Mesquite, which is not yet integrated into the standard packages, but we look forward to making it so. </span><br />
+<h4 id="toc1"><a name="Tree simulations and randomizations---Contents"></a>Contents</h4>
+ <ul><li><a class="wiki_link" href="Tree%20Simulations.html">Using results of simulations &amp; randomizations</a></li><li><a class="wiki_link" href="Tree%20Simulations.html#simulations">Evolutionary Simulations of Trees</a><ul><li><a class="wiki_link" href="Tree%20Simulations.html#species">Species Trees</a></li><li><a class="wiki_link" href="Tree%20Simulations.html#gene">Gene Trees</a></li></ul></li><li><a class="wiki_link" href="Tree%20Simulations.html#random">Random Trees</a></li><li><a class="wiki_link" href="Tree%20Simulations.html#randomized">Randomized Trees</a></li></ul><h3 id="toc2"><a name="Tree simulations and randomizations--Using results of simulations &amp; randomizations"></a><a name="using"></a>Using results of simulations &amp; randomizations</h3>
+ The simulated or randomized trees can be used or stored in several ways:<br />
+<ul><li>The trees can be stored into tree blocks in the current file by choosing options in the Make New Trees Block from submenu of the Taxa&amp;Trees menu.</li><li>The trees may be used directly, at that moment, in calculations. For example, if you make a Bar &amp; Line Chart for trees, and choose Simulated Trees as your source of trees, the trees will be simulated and used in the chart without being stored in the file.</li><li>A series of many files can be saved, each one with a different replicate of a block of simulated or randomized trees. This is available through the Save Copies of Tree Blocks submenu of the Taxa&amp;Trees menu</li></ul>To replicate the results of a simulation or randomization, you can use the Set Seed menu item to set the random number seed used. If you are using the same conditions, including the same seed, the simulations and randomizations should be reproducible. However, in some situations, such as when comparing results from different parameters, leaving simulations reproducible can yield non-independent results. To ensure independence (at the cost of exact reproducibility) you can use the Simulation Repeatable menu item.<br />
 <br />
-We offer our thanks to the many users who have given suggestions and bug reports. We would like to single out Michel Laurin, Jonathan Coddington, and Kojun Kanda for extensive feedback. Maureen O'Leary gave advice on the use of Mesquite for large morphological data matrices. Thanks to Karen Cranston for her suggestion to use Wikispaces for the documentation. <br />
-<br />
-Mesquite has benefitted from support to Wayne Maddison and David Maddison by the University of Arizona, the University of British Columbia, Oregon State University, and the Wissenschaftskolleg zu Berlin.<br />
-<br />
-
-
-<table class="wiki_table">
-    <tr>
-        <td><a href="http://www.arizona.edu/" rel="nofollow"><img src="files/a_logo.gif" alt="a_logo.gif" title="a_logo.gif" /></a><br />
-</td>
-        <td><a href="http://www.ubc.ca/" rel="nofollow"><img src="files/ubc_blue.gif" alt="ubc_blue.gif" title="ubc_blue.gif" /></a><br />
-</td>
-        <td><a href="http://oregonstate.edu" target="_blank" rel="nofollow"><img src="files/OSULogo.gif" alt="OSULogo.gif" title="OSULogo.gif" /></a><br />
-</td>
-        <td><a href="http://www.phylo.org/" rel="nofollow"><img src="files/logo_cipres.gif" alt="logo_cipres.gif" title="logo_cipres.gif" /></a><br />
-</td>
-        <td><a href="http://www.nsf.gov/" rel="nofollow"><img src="files/nsf4c.jpg" alt="nsf4c.jpg" title="nsf4c.jpg" style="height: 109px; width: 109px;" /></a><br />
-</td>
-        <td><a href="http://www.nserc-crsng.gc.ca/" rel="nofollow"><img src="files/NSERClogo.jpg" alt="NSERClogo.jpg" title="NSERClogo.jpg" style="height: 110px; width: 113px;" /></a><br />
-</td>
-        <td><a href="http://www.wiko-berlin.de/" rel="nofollow"><img src="files/wiko_logo_grau.gif" alt="wiko_logo_grau.gif" title="wiko_logo_grau.gif" /></a><br />
-</td>
-    </tr>
-</table>
-
+<h3 id="toc3"><a name="Tree simulations and randomizations--Evolutionary Simulations of Trees"></a><a name="simulations"></a>Evolutionary Simulations of Trees</h3>
+ <h4 id="toc4"><a name="Tree simulations and randomizations--Evolutionary Simulations of Trees-Species Trees"></a><a name="species"></a>Species Trees</h4>
+ We recommend you see the page on <a class="wiki_link" href="Diversification.html">diversification</a> for more features related to species tree evolution.<br />
+<ul><li>Uniform speciation (Yule) (trees package) — Generates tree by simple uniform probability speciation (a Yule process). The chance of speciation is equal for all tips. Options: total time depth of tree.</li><li>Uniform speciation with sampling (TreeFarm package) — Generates a tree by Yule process, as above, but with to a total number of species greather than in the taxa block. Extra species are then randomly sampled out, to leave the tree with the appropriate number of species. Barraclough &amp; Nee (2001) discuss how this sampling alters the branch length distribution of the tree.</li><li>Birth/Death trees (Diverse package) — Simulates a constant rate of speciation and extinction to generate a tree. For more details see the page on <a class="wiki_link" href="Diversification.html">diversification</a>.</li><li>Trees depending on the evolution of a character — in the <a class="wiki_link" href="Diversification.html">Diverse</a> package are also some simulators that evolve a tree and character simultaneously; the speciation and extinction rates may depend on the state of the character.</li></ul><h4 id="toc5"><a name="Tree simulations and randomizations--Evolutionary Simulations of Trees-Gene Trees"></a><a name="gene"></a>Gene Trees</h4>
+ <ul><li>Coalescent Trees (coalesce package) - Generates tree by coalescence within a single panmictic population. Options: Effective population size.</li><li>Coalescence Contained within Current Tree (coalesce package) - Generates tree by a simple coalescence model of a neutral gene with constant population size, within a current species tree from a Tree window or other tree context. Branch lengths are assigned according to generation of coalescence. The species tree used is a current tree found in a Tree Window or other tree context.</li></ul><h3 id="toc6"><a name="Tree simulations and randomizations--Random Trees"></a><a name="random"></a>Random Trees</h3>
+ <ul><li>Equiprobable Trees (trees package)- Generates trees randomly so that each possible labelled tree topology is equally likely.</li><li>Randomly Resolve Polytomies (TreeFarm package) - Randomly resolves polytomies in tree. All possible resolutions are equiprobable. Thus, if the tree is a polytomous bush, the resulting resolved trees will be distributed equivalently to that from the Equiprobable Trees module.</li></ul><h3 id="toc7"><a name="Tree simulations and randomizations--Randomized Trees"></a><a name="randomized"></a>Randomized Trees</h3>
+ <ul><li>Reshuffle Terminal Taxa (TreeFarm package) - Shuffles (permutes) the taxa among the terminal nodes.</li><li>Random Branch Moves (TreeFarm packages) — Performs a specified number of randomly -chosen branch moves.</li><li>Add Noise to Branch Lengths (TreeFarm package) - Adds noise to branch lengths of tree. Noise is Normally distributed with variance specified by user. Optionally, this variance is proportional to current branch length. Negative branch lengths are not allowed, and are changed to zero. Options: variance of noise.</li><li>Rarefy Tree (TreeFarm package) - Rarefies tree by randomly deleting taxa. Options: how many excluded.</li><li>Augment Tree Randomly (TreeFarm package) - Augments tree by random placement of excluded taxa. Options: whether branch lengths are to be considered; whether addition is only to original branches</li></ul><h3 id="toc8"><a name="Tree simulations and randomizations--References"></a><a name="references"></a>References</h3>
+ Barraclough, T.G. &amp; S. Nee 2001. Phylogenetics and speciation. TRENDS in Ecology and Evolution. 16:391-399.
 <!-- InstanceEndEditable -->
 
     

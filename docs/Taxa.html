@@ -5,7 +5,7 @@
 
 
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Acknowledgements</title>
+<title>Taxa</title>
 <!-- InstanceEndEditable -->
 
 <![endif]--><!--[if IE]>
@@ -39,7 +39,7 @@
     <table width="100%" border="0" cellpadding="4">
   <tr>
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
-    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Acknowledgements<!-- InstanceEndEditable --></div></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Taxa<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
     <td width="14%">Version 3.41<br />
       3 May 2018<br /></td>
@@ -196,36 +196,66 @@
 <!-- InstanceBeginEditable name="content" -->
     
     
-<h1 id="toc0"><a name="Acknowledgements"></a>Acknowledgements</h1>
- Mesquite has been developed with the assistance of a Fellowship to WPM from the David and Lucile Packard Foundation, an NSERC Discovery grant to WPM, NSF support via the <a class="wiki_link_ext" href="http://www.phylo.org/" rel="nofollow">CIPRES project</a>, and NSF grant DEB 1258220 to DRM, and the patience of our families.<br />
+<h1 id="toc0"><a name="Taxa"></a>Taxa</h1>
+ Taxa are the fundamental entities in Mesquite: they represent the species or gene copies whose characteristics are recorded in character matrices, whose relationships are summarized in trees. Our use of the word &quot;taxa&quot; isn't the traditional one, which views a taxon as a formally recognized group at any level (e.g., genus, family, order) in a taxonomic classification. Rather, as with other computer programs, Mesquite uses &quot;taxon&quot; as a shorthand for &quot;terminal taxon&quot; (the smallest unit of analysis of relationships, equivalent to &quot;Operational Taxonomic Unit&quot; or &quot;Evolutionary Unit&quot;). Higher level groups are refered to as clades.<br />
 <br />
-The following are gratefully acknowledged for direct assistance with Mesquite's programming or source code. David Swofford helped with the implementation of the likelihood calculations, and supplied code for the optimization routines. John Huelsenbeck gave us portions of the code used in calculation of change probabilities for the Ti/Tv rate matrix model. Lars Rosengreen helped us prepare the code for compilation by means other than Codewarrior. <span style="line-height: 1.5;">Rutger Vos has led the development of NeXML for Mesquite, which is not yet integrated into the standard packages, but we look forward to making it so. </span><br />
+Taxa in Mesquite currently must belong to taxa blocks, which are collections of taxa. Thus, the taxon &quot;Homo sapiens&quot; would belong to a taxa block, for instance one called &quot;Mammalia&quot; which may also contain other taxa such as &quot;Mus musculus&quot; and &quot;Ornithorhynchus anatinus&quot;.<br />
 <br />
-We offer our thanks to the many users who have given suggestions and bug reports. We would like to single out Michel Laurin, Jonathan Coddington, and Kojun Kanda for extensive feedback. Maureen O'Leary gave advice on the use of Mesquite for large morphological data matrices. Thanks to Karen Cranston for her suggestion to use Wikispaces for the documentation. <br />
+<h3 id="toc1"><a name="Taxa--Creating and managing taxa blocks"></a><a name="creating"></a>Creating and managing taxa blocks</h3>
+ To add taxa to a data file, a taxa block must first be created to contain them. Mesquite automatically asks you to create a taxa block when you make a new file. You can later create a new taxa block by selecting Taxa&amp;Trees&gt;New Block of Taxa... A dialog box will ask you the name of the taxa block and the initial number of taxa (you can add or delete taxa later). You will be then shown the List of Taxa window, in which you can rename the taxa (you can also rename them in the Character Matrix Editor).<br />
 <br />
-Mesquite has benefitted from support to Wayne Maddison and David Maddison by the University of Arizona, the University of British Columbia, Oregon State University, and the Wissenschaftskolleg zu Berlin.<br />
+Mesquite allows more than one taxa block to exist in a file. Thus, there is a List of Taxa Blocks window which shows you all of the taxa blocks defined. To rename a taxa block, edit its name directly in tis window. To delete a taxa block, select its row in this window and chooseList&gt;Delete Selected Taxa Blocks. Deleting a taxa block may cause character matrices and tree blocks that depend on it to be deleted.<br />
 <br />
-
-
-<table class="wiki_table">
-    <tr>
-        <td><a href="http://www.arizona.edu/" rel="nofollow"><img src="files/a_logo.gif" alt="a_logo.gif" title="a_logo.gif" /></a><br />
-</td>
-        <td><a href="http://www.ubc.ca/" rel="nofollow"><img src="files/ubc_blue.gif" alt="ubc_blue.gif" title="ubc_blue.gif" /></a><br />
-</td>
-        <td><a href="http://oregonstate.edu" target="_blank" rel="nofollow"><img src="files/OSULogo.gif" alt="OSULogo.gif" title="OSULogo.gif" /></a><br />
-</td>
-        <td><a href="http://www.phylo.org/" rel="nofollow"><img src="files/logo_cipres.gif" alt="logo_cipres.gif" title="logo_cipres.gif" /></a><br />
-</td>
-        <td><a href="http://www.nsf.gov/" rel="nofollow"><img src="files/nsf4c.jpg" alt="nsf4c.jpg" title="nsf4c.jpg" style="height: 109px; width: 109px;" /></a><br />
-</td>
-        <td><a href="http://www.nserc-crsng.gc.ca/" rel="nofollow"><img src="files/NSERClogo.jpg" alt="NSERClogo.jpg" title="NSERClogo.jpg" style="height: 110px; width: 113px;" /></a><br />
-</td>
-        <td><a href="http://www.wiko-berlin.de/" rel="nofollow"><img src="files/wiko_logo_grau.gif" alt="wiko_logo_grau.gif" title="wiko_logo_grau.gif" /></a><br />
-</td>
-    </tr>
-</table>
-
+<h3 id="toc2"><a name="Taxa--Managing taxa"></a><a name="managing"></a>Managing taxa</h3>
+ You can add and delete taxa in the List of Taxa window and in the Character Matrix editor. In the List of Taxa window, taxa can be added by selecting List&gt;Add Taxa.... In the Character Matrix Editor, taxa can be added either by using the Add Taxa tool or by selecting Matrix&gt;Add Taxa...<br />
+<br />
+Taxa can be deleted in the List of Taxa window by selecting their rows and choosing List&gt;Delete Selected Taxa. Taxa can be deleted in the Character Matrix Editor by selecting their rows and choosing Matrix&gt;Delete Selected.<br />
+<br />
+Taxa can be renamed by editing their names directly in the List of Taxa window or in the Character Matrix editor, or by using the Name tool in the Tree Window.<br />
+To change the order of taxa, you can select and drag entire taxa in the List of Taxa Window or the Character Matrix Editor. You can also us the sort tool (<img src="files/sortTool.gif" alt="sortTool.gif" title="sortTool.gif" />) to sort taxa automatically in alphabetical or numerical order of the column on which you touch in these windows.<br />
+<br />
+Taxa can be merged, with their character states merged, using <a class="wiki_link" href="Characters%20%26%20Matrices.html#mergetaxa">Merge Taxa</a> of the Taxon Utilities submenu.<br />
+<br />
+Different blocks of taxa can be merged during <a class="wiki_link" href="Managing%20Molecular%20Data.html#includetaxafromfile">file import</a> or <a class="wiki_link" href="Managing%20Molecular%20Data.html#fusedMatrices">file export</a>. Otherwise there are not yet methods to merge taxa blocks within Mesquite.<br />
+<br />
+<h3 id="toc3"><a name="Taxa--Renaming taxa"></a><a name="renamingtaxa"></a>Renaming taxa</h3>
+ Taxa can be renamed by editing their names directly in the List of Taxa window or in the Character Matrix editor, or by using the Name tool in the Tree Window.<br />
+In the List of Taxa window and Character Matrix Editor, the Taxon Names submenu permits you to make changes to taxon names. Condense Taxon Names, for instance, assigns shorter names with punctuation removed. This may be useful for converting names to a format for other programs.<br />
+<br />
+<h3 id="toc4"><a name="Taxa--Alternative Taxon Names"></a><a name="alternativeNames"></a>Alternative Taxon Names</h3>
+ This feature allows you to have several alternative naming schemes for taxa, e.g. one set of names that includes your specimen codes, another set that uses formal taxonomic names (for publication), another set whose names are condensed for exporting to programs that can handle only short names, and so on. By switching among naming schemes, you can change how your trees appear, what tree files you can read in, and so forth. (Prior to version 2 this feature used to be called Archived Names and permit just one alternative list of names; it now permits multiple lists and has a different interface.) Here's a video about this feature:<br />
+<br />
+<div style="margin-left: auto; margin-right: auto; display: block; width: 504px; height: 377px;"><iframe width="504" height="377" src="//www.youtube.com/embed/I0nzSf4kND0" frameborder="0" allowfullscreen></iframe></div><br />
+<br />
+<br />
+<br />
+<br />
+<br />
+You can see and manage alternative naming schemes for taxa in the List of Taxa window. First, in the List of Taxa window choose Columns&gt;Alternative Names. A column will appear showing alternative names (if any). To create a list of alternative names, you can type the names directly in the Alternative Names column. Or, if you want to base the alternative names on existing names, you can touch on the column heading; a drop down menu will appear. Select Replace Alternatives by Taxon Names in order to put the current taxon names into the list of Alternatives.<br />
+<br />
+Once you have a list of Alternative Names, you can save it as a stored alternative naming scheme by choosing Store Alternatives... from the column heading menu. Mesquite can store multiple alternative naming schemes in the file that you can later load, replace, or delete using items from the column heading drop down menu.<br />
+<br />
+For instance, suppose you want to truncate taxon names for export, but you don't want to lose your original names. In the List of Taxa window, with Alternative Names showing, touch on the column heading and select Replace Alternatives by Taxon Names. Then, choose Store Alternatives... and enter the name &quot;Original Names&quot;. Now, you've successfully archived the original names. Truncate the taxon names (for instance using List&gt;Taxon Names&gt;Truncate...). Now, export the file as you wish. Once you're done, you might want to archive the truncated names also. From the column's menu, choose Trade Taxon Names with Alternatives to put the truncated names into the column, then choose Store Alternatives... to store the alternative naming scheme for the truncated names. The file should now have two stored naming schemes, the original and the truncated.<br />
+<br />
+To set the current taxon names to be those in an archived alternative naming scheme, you must first load the alternative scheme into the Alternative Names column of the List of Taxa window, then select Trade Taxon Names with Alternatives or Replace Taxon Names by Alternatives in the column heading's menu.<br />
+<br />
+<h3 id="toc5"><a name="Taxa--Taxa partitions and assigning group membership"></a><a name="groups"></a>Taxa partitions and assigning group membership</h3>
+ Taxa can be assigned to groups to form a partition of the taxa. Thus, taxa could be assigned to groups according to a traditional taxonomic scheme (some taxa in the group &quot;Vertebrates&quot;, others &quot;Invertebrates&quot;), or according to some quality such as distribution (&quot;Neotropical&quot;, &quot;Holarctic&quot;). The reason to assign taxa to groups is not to constrain trees or do formal analyses (these groups in most circumstances don't get involved in formal analyses) but rather for reasons of graphics and interface. Groups can be assigned colors, and thus taxa can be highlighed by their group's color wherever they appear (e.g., in charts, in the Tree Window). (One analytical advantage is in multivariate analysis, where Canonical Variates uses the assigned groups as the prior grouping.)<br />
+<br />
+To assign taxa to groups, go to the List of Taxa window. Select Columns&gt;Group Membership (Taxa) to show the column indicating group membership. If you click on the column heading &quot;Group&quot;, a menu will drop down with menu items to manage group membership. You must first create groups using New Group. For instance, you could create a group Neotropical and another group Holarctic. Then, you can assign taxa to the group using the Set Group submenu. You can also edit the color of the group, and rename the group. <span style="background-color: #ffffff; line-height: 1.5;">You can manage your taxa groups by in the List of Taxon Group Labels menu available in the Taxa menu.</span><br />
+<br />
+<span style="background-color: #ffffff;">The groups currently assigned to the taxa defines the current taxa partition. To store group assignments as a named taxa partition, touch on the &quot;Group&quot; title in the List of Taxa Window. In the popup menu that appears, choose &quot;Store current partition...&quot;. In this menu you can also replace a previously named partition with the current partition, or load a previously defined partition and your current partition.</span><br />
+<br />
+<span style="background-color: #ffffff;">The following video shows some of these features:</span><br />
+<br />
+<span style="background-color: #ffffff;"> </span><br />
+<div style="margin-left: auto; margin-right: auto; display: block; width: 504px; height: 377px;"><iframe width="504" height="377" src="//www.youtube.com/embed/3xT1ONgImZw" frameborder="0" allowfullscreen></iframe></div><br />
+<br />
+<br />
+<h3 id="toc6"><a name="Taxa--Associating two taxa blocks"></a><a name="associatingTaxa"></a>Associating two taxa blocks</h3>
+ Associating the taxa in one block with taxa in another block is useful in two contexts. First, you may want to indicate how genes are assigned to species or parasites to hosts for studies of <a class="wiki_link" href="Gene%20Trees.html#multiple">gene tree/species tree or parasite tree/host tree relationships</a>. Second, you may want to indicate equivalence of taxa in different blocks, e.g., sequence matrices of different gene loci with slightly different taxon names but pertaining to the same set of specimens or species. This can be helpful for <a class="wiki_link" href="Managing%20Molecular%20Data.html#fusedMatrices">fused export</a> into a single matrix.<br />
+<br />
+To set up an association between two taxa blocks, follow the instructions <a class="wiki_link" href="Gene%20Trees.html#newassociation">here</a>.
 <!-- InstanceEndEditable -->
 
     

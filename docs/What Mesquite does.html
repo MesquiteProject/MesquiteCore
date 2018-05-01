@@ -5,7 +5,7 @@
 
 
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Acknowledgements</title>
+<title>Introduction to Mesquite</title>
 <!-- InstanceEndEditable -->
 
 <![endif]--><!--[if IE]>
@@ -39,7 +39,7 @@
     <table width="100%" border="0" cellpadding="4">
   <tr>
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
-    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Acknowledgements<!-- InstanceEndEditable --></div></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Introduction to Mesquite<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
     <td width="14%">Version 3.41<br />
       3 May 2018<br /></td>
@@ -196,36 +196,96 @@
 <!-- InstanceBeginEditable name="content" -->
     
     
-<h1 id="toc0"><a name="Acknowledgements"></a>Acknowledgements</h1>
- Mesquite has been developed with the assistance of a Fellowship to WPM from the David and Lucile Packard Foundation, an NSERC Discovery grant to WPM, NSF support via the <a class="wiki_link_ext" href="http://www.phylo.org/" rel="nofollow">CIPRES project</a>, and NSF grant DEB 1258220 to DRM, and the patience of our families.<br />
+<h1 id="toc0"><a name="What Mesquite Does"></a>What Mesquite Does</h1>
+ <br />
+Mesquite is software for evolutionary biology, designed to help biologists manage and analyze comparative data about organisms. Its emphasis is on phylogenetic analysis, but some of its modules concern population genetics, while others do non-phylogenetic multivariate analysis. Because it is modular, the analyses and management features available depend on the modules installed. Here is a brief overview of some of Mesquite's features. See also a more complete <a class="wiki_link" href="Mesquite%27s%20Features.html">outline of features</a>, and the <span style="line-height: 1.5;"><a class="wiki_link_ext" href="http://www.youtube.com/channel/UCfSmgC0O_dWLI0PEoXZbS4Q" rel="nofollow">Mesquite Project Youtube channel</a>, with instructional videos helping you learn Mesquite.</span><br />
 <br />
-The following are gratefully acknowledged for direct assistance with Mesquite's programming or source code. David Swofford helped with the implementation of the likelihood calculations, and supplied code for the optimization routines. John Huelsenbeck gave us portions of the code used in calculation of change probabilities for the Ti/Tv rate matrix model. Lars Rosengreen helped us prepare the code for compilation by means other than Codewarrior. <span style="line-height: 1.5;">Rutger Vos has led the development of NeXML for Mesquite, which is not yet integrated into the standard packages, but we look forward to making it so. </span><br />
+Despite Mesquite's broad <a class="wiki_link" href="What%20Mesquite%20does.html#analysesExamples">analytical capabilities</a>, the developers of Mesquite find that we use Mesquite most often to provide a workflow of data editing, management, and processing. We will therefore begin there.<br />
 <br />
-We offer our thanks to the many users who have given suggestions and bug reports. We would like to single out Michel Laurin, Jonathan Coddington, and Kojun Kanda for extensive feedback. Maureen O'Leary gave advice on the use of Mesquite for large morphological data matrices. Thanks to Karen Cranston for her suggestion to use Wikispaces for the documentation. <br />
-<br />
-Mesquite has benefitted from support to Wayne Maddison and David Maddison by the University of Arizona, the University of British Columbia, Oregon State University, and the Wissenschaftskolleg zu Berlin.<br />
-<br />
+<h2 id="toc1"><a name="What Mesquite Does-Data Management and Processing"></a>Data Management and Processing</h2>
+ Mesquite has many features for managing data. It has an editor for editing morphological data:<br />
 
-
-<table class="wiki_table">
-    <tr>
-        <td><a href="http://www.arizona.edu/" rel="nofollow"><img src="files/a_logo.gif" alt="a_logo.gif" title="a_logo.gif" /></a><br />
-</td>
-        <td><a href="http://www.ubc.ca/" rel="nofollow"><img src="files/ubc_blue.gif" alt="ubc_blue.gif" title="ubc_blue.gif" /></a><br />
-</td>
-        <td><a href="http://oregonstate.edu" target="_blank" rel="nofollow"><img src="files/OSULogo.gif" alt="OSULogo.gif" title="OSULogo.gif" /></a><br />
-</td>
-        <td><a href="http://www.phylo.org/" rel="nofollow"><img src="files/logo_cipres.gif" alt="logo_cipres.gif" title="logo_cipres.gif" /></a><br />
-</td>
-        <td><a href="http://www.nsf.gov/" rel="nofollow"><img src="files/nsf4c.jpg" alt="nsf4c.jpg" title="nsf4c.jpg" style="height: 109px; width: 109px;" /></a><br />
-</td>
-        <td><a href="http://www.nserc-crsng.gc.ca/" rel="nofollow"><img src="files/NSERClogo.jpg" alt="NSERClogo.jpg" title="NSERClogo.jpg" style="height: 110px; width: 113px;" /></a><br />
-</td>
-        <td><a href="http://www.wiko-berlin.de/" rel="nofollow"><img src="files/wiko_logo_grau.gif" alt="wiko_logo_grau.gif" title="wiko_logo_grau.gif" /></a><br />
-</td>
-    </tr>
-</table>
-
+<a href="/file/view/BracteonMatrix.jpg"><img src="files/BracteonMatrix.jpg" alt="BracteonMatrix.jpg" title="BracteonMatrix.jpg" style="height: 307px; width: 649px;" /></a><br />
+<br />
+and DNA and protein sequence data:<br />
+<br />
+<a href="/file/view/DNASequenceData.jpg"><img src="files/DNASequenceData.jpg" alt="DNASequenceData.jpg" title="DNASequenceData.jpg" style="height: 399px; width: 720px;" /></a><br />
+<br />
+There are tools for manual and automated sequence alignment, as well as many other tools to manipulate the sequences. There are also many visualization options; for example, here are some protein-coding DNA sequence with the colors of the cells representing the amino acids for which the nucleotides code:<br />
+<br />
+<a href="/file/view/DNASequences.jpg"><img src="files/DNASequences.jpg" alt="DNASequences.jpg" title="DNASequences.jpg" style="height: 362px; width: 706px;" /></a><br />
+<br />
+Metadata of many sorts can be attached to taxa, characters or cells in the matrix, including annotations, images, alternative names, pre-selected sets, and colored labels. All of these help with sorting and manipulating data:<br />
+<br />
+<a href="/file/view/metadata.png"><img src="files/metadata.png" alt="metadata.png" title="metadata.png" style="height: 257px; width: 800px;" /></a><br />
+<br />
+<br />
+<hr />
+<h2 id="toc2"><a name="What Mesquite Does-Trees &amp; Analyses"></a><a name="analysesExamples"></a>Trees &amp; Analyses</h2>
+ <span style="background-color: #ffffff;">Mesquite has many features for visualizing and editing trees. </span>It is not primarily designed to infer phylogenetic trees, but rather for diverse analyses using already inferred trees.<br />
+<br />
+<span style="background-color: #ffffff;">Mesquite has a tree viewer and editor, from which you can print publication-quality trees:</span><br />
+<br />
+<a href="/file/view/BootstrapTree.jpg"><img src="files/BootstrapTree.jpg" alt="BootstrapTree.jpg" title="BootstrapTree.jpg" style="height: 421px; width: 483px;" /></a><br />
+<br />
+<a href="/file/view/branchLengths.jpg"><img src="files/branchLengths.jpg" alt="branchLengths.jpg" title="branchLengths.jpg" style="height: 506px; width: 560px;" /></a><br />
+<br />
+Analyses using phylogenetic trees can be done in the tree window, such as reconstruction of ancestral states:<br />
+<br />
+<a href="/file/view/ancestralStateReconstruction.png"><img src="files/ancestralStateReconstruction.png" alt="ancestralStateReconstruction.png" title="ancestralStateReconstruction.png" style="height: 363px; width: 521px;" /></a><br />
+<br />
+Analyses to test processes of character evolution include Pagel's 1994 correlation test and pairwise comparisons:<br />
+<br />
+<a href="/file/view/pairwiseComparisonsCorrelation.png"><img src="files/pairwiseComparisonsCorrelation.png" alt="pairwiseComparisonsCorrelation.png" title="pairwiseComparisonsCorrelation.png" style="height: 358px; width: 531px;" /></a><br />
+<br />
+Tests of species diversification like BiSSE are available:<br />
+<br />
+<a href="/file/view/BiSSE.png"><img src="files/BiSSE.png" alt="BiSSE.png" title="BiSSE.png" style="height: 319px; width: 595px;" /></a><br />
+<br />
+Using Mesquite's charting feature, statistics can be calculated over a suite of many trees, permitting one to determine the effect of phylogenetic uncertainty on conclusions:<br />
+<br />
+<a href="/file/view/stepsVariabilityAmongTrees.png"><img src="files/stepsVariabilityAmongTrees.png" alt="stepsVariabilityAmongTrees.png" title="stepsVariabilityAmongTrees.png" style="height: 373px; width: 386px;" /></a><br />
+<br />
+Coalescence simulations permit tests of population genetics and phylogeographic hypotheses:<br />
+<br />
+<a href="/file/view/CoalescenceInTwoPopulations.png"><img src="files/CoalescenceInTwoPopulations.png" alt="CoalescenceInTwoPopulations.png" title="CoalescenceInTwoPopulations.png" style="height: 304px; width: 550px;" /></a><br />
+<br />
+<br />
+Multivariate analyses including PCA and CVA can be done, and the phylogenetic tree embedded in morphospace:<br />
+<br />
+<a href="/file/view/treeInMorphospace.png"><img src="files/treeInMorphospace.png" alt="treeInMorphospace.png" title="treeInMorphospace.png" style="height: 500px; width: 507px;" /></a><br />
+<br />
+Various other statistics and be visualized on trees, such as GC/AT compositional bias:<br />
+<br />
+<a href="/file/view/GCBiasOnTree.png"><img src="files/GCBiasOnTree.png" alt="GCBiasOnTree.png" title="GCBiasOnTree.png" style="height: 309px; width: 587px;" /></a><br />
+<br />
+There are other analyses as well, including:<br />
+<ul><li>Simulation of character evolution (categorical, DNA, continuous)</li><li>Parametric bootstrapping (integration with programs such as PAUP* and NONA)</li><li>Tree comparisons and simulations (tree similarity, Markov speciation models)</li></ul><br />
+<hr />
+<h2 id="toc3"><a name="What Mesquite Does-Extending Mesquite"></a>Extending Mesquite</h2>
+ Mesquite's modularity means that it can be extended by adding modules available in separately distributed packages. For example, there is a package called <a class="wiki_link_ext" href="http://mesquiteproject.org/packages/chromaseq/" rel="nofollow">Chromaseq</a> that provides tools for processing chromatograms and making base calls:<br />
+<br />
+<a href="/file/view/chromaseq.jpg"><img src="files/chromaseq.jpg" alt="chromaseq.jpg" title="chromaseq.jpg" /></a><br />
+<br />
+<br />
+<a class="wiki_link" href="http://mesquitezephyr.wikispaces.com/home">Zephyr</a> allows Mesquite to interact with external phylogeny inference programs such as RAxML or GARLI; Zephyr sends data to these programs and then harvests the results. For GARLI, trees can be visualized as the search progresses:<br />
+<br />
+<a href="/file/view/TerminalGarli.gif"><img src="files/TerminalGarli.gif" alt="TerminalGarli.gif" title="TerminalGarli.gif" style="height: 444px; width: 800px;" /></a><br />
+<br />
+There is another package called <a class="wiki_link_ext" href="http://mesquiteproject.org/packages/tsv/" rel="nofollow">TreeSetViz</a> that allows you to visualize the relationships between trees in a multi-dimensional space of tree similarities:<br />
+<br />
+<a href="/file/view/TSV.jpg"><img src="files/TSV.jpg" alt="TSV.jpg" title="TSV.jpg" /></a><br />
+<br />
+<a class="wiki_link_ext" href="http://mesquiteproject.org/packages/cartographer/" rel="nofollow">Cartographer</a> provides tools for mapping of taxa:<br />
+<br />
+<a href="/file/view/mapping.jpg"><img src="files/mapping.jpg" alt="mapping.jpg" title="mapping.jpg" style="height: 495px; width: 720px;" /></a><br />
+<br />
+<br />
+including the production of KML files that allow you to view a tree in Google Earth:<br />
+<br />
+<a href="/file/view/googleEarth.jpg"><img src="files/googleEarth.jpg" alt="googleEarth.jpg" title="googleEarth.jpg" style="height: 553px; width: 696px;" /></a><br />
+<br />
+Some of the additional packages available for Mesquite are listed <a class="wiki_link" href="Additional%20Mesquite%20Packages.html">here</a>.
 <!-- InstanceEndEditable -->
 
     

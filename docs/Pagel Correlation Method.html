@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/MesquiteTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Pagel Correlation Method</title>
+<!-- InstanceEndEditable -->
+
+<![endif]--><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.thrColFixHdr #sidebar2, .thrColFixHdr #sidebar1 { padding-top: 30px; }
+.thrColFixHdr #mainContent { zoom: 1; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<style type="text/css">
+<!--
+-->
+</style>
+<link href="CSS/mesquitePackage.css" rel="stylesheet" type="text/css" />
+<link href="SpryAssets/SpryCollapsiblePanel.css" rel="stylesheet" type="text/css" />
+
+<script src="SpryAssets/SpryCollapsiblePanel.js" type="text/javascript"></script>
+<script type="text/javascript" src="SpryAssets/SpryURLUtils.js"></script>
+<script type="text/javascript" src="javascript/mesquite.js"></script>
+
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+</head>
+
+<body bgcolor="#ffffff" class="thrColFixHdr" >
+
+<div id="container">
+  <div id="header">
+    <table width="100%" border="0" cellpadding="4">
+  <tr>
+    <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Pagel Correlation Method<!-- InstanceEndEditable --></div></td>
+    <td width="2%">&nbsp;</td>
+    <td width="14%">Version 3.41<br />
+      3 May 2018<br /></td>
+  </tr>
+</table>
+
+</div>
+  
+  
+<div id="sidebar1">
+  
+  
+  
+  
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('http://mesquiteproject.github.io/MesquiteCore')">Mesquite Website Home</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('home.html')">Introduction to Mesquite</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Installation.html')">Download & Installation</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('History%20of%20New%20Features.html')">Recent Changes</a>
+  </div>
+
+  <div id="OverviewOfMesquitePanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Overview of Mesquite</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquite%27s%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingStartedPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Started</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Installation.html');">Download and Installation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Additional%20Mesquite%20Packages.html');">Additional Packages</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Beginning%20Mesquite.html');">Beginning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Example%20Files.html');">Example Files</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="BasicMesquiteOperationPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Basic Mesquite Operations</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Files.html');">Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Menus.html');">Menus</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Windows.html');">Windows</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Charts.html');">Charts</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Selection.html');">Selection</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Modules.html');">Modules</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TaxaTreesCharactersPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Taxa, Trees &amp; Characters</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Characters%20&%20Matrices.html');">Characters &amp; Matrices</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Taxa.html');">Taxa</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Trees.html');">Trees</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="AnalysesPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Analyses</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Studies%20of%20Tree%20Topology.html');">Studies of Tree Topology</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="WorkflowsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Workflows</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingHelpPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Help</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Learning%20how%20to%20use%20Mesquite.html');">Learning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Bugs%20and%20Troubleshooting.html');">Bugs &amp; Troubleshooting</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Getting%20Help.html');">Getting Help</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Suggesting%20New%20Features.html');">Your Suggestions</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Glossary.html');">Glossary</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('FAQ.html');">FAQ</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TechnicalDetailsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Technical Details</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developer%27s%20Documentation.html');">Developer's Documentation</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="HistoryPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">History</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('History%20of%20Mesquite.html');">History of Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Why%20Mesquite%3F.html');">Why Mesquite?</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('History%20of%20New%20Features.html');">New Features & Bug List</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Release%20Dates.html');">Release Dates</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="PublishingResultsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Publishing Results</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Documenting%20Your%20Work.html');">Documenting your work</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('How%20to%20Cite%20Mesquite.html');">Citing Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Publishing%20Results.html');">Publishing results</a></td></tr>
+		</table>
+    </div>
+  </div>
+
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Acknowledgements.html')">Acknowledgments</a>
+  </div>
+
+<h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+
+  <div id="mainContent">
+    
+<!-- InstanceBeginEditable name="content" -->
+    
+    
+<h1 id="toc0"><a name="Pagel's 1994 Correlation method"></a>Pagel's 1994 Correlation method</h1>
+ Peter Midford &amp; Wayne Maddison<br />
+The Pagel94 module implements a test of independent evolution of two binary characters. This test was first described in Pagel (1994). Although this test has been available in Pagel’s own program Discrete, this module is not a simple translation of Discrete. In particular, although the module calculates the same likelihood value for a given combination of tree and character states, the maximum likelihood search and character simulation portions of the module utilize existing Mesquite code. The remainder of this documentation consists of an overview of the theory of the test, followed by detailed discussion of the methods used in the three phases of the test.<br />
+<h4 id="toc1"><a name="Pagel's 1994 Correlation method---Contents"></a>Contents</h4>
+ <ul><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#theory">Theory</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#evaluator">The evaluator</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#mle">The maximum likelihood estimation process</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#simulation">Estimating statistical significance</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#options">Options for Users</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#references">References</a></li></ul><h3 id="toc2"><a name="Pagel's 1994 Correlation method--Theory"></a><a name="theory"></a>Theory</h3>
+ Pagel (1994) describes a test of independent evolution of two binary characters. The test compares the ratio of likelihoods of two models: one model where the rates of change in each character are independent of the state of the other and a second model where rates of change depend on the state of the other character. The significance of the ratio is tested by comparison with simulated data, and Pagel warns against using a standard chi-square-based test in most cases.<br />
+The models are expressed as matrices of instantaneous transition rates, with each row and column specifying a pair of character states. The model of dependent change specifies 8 parameters and can be specified by the following matrix:<br />
+<img src="files/p94Table1.jpg" alt="p94Table1.jpg" title="p94Table1.jpg" /><br />
+The zero values on the antidiagonal prevent simultaneous changes of both characters and the entries on the main diagonal normalize the matrix.<br />
+The model of independent change describes the case where the transition rates of each variable are independent of the state of the other. Pagel 1994 describes the independent model as a pair of 2x2 matrices, one for each variable. The forward (0-&gt;1) and backward (1-&gt;0) change rates of each variable are referred to as alpha and beta respectively. Another approach, taken in this module is to treat the independent case as a degenerate form of the dependent model. The model of independent change specifies 4 parameters, which can be obtained from the dependent model by setting the pairs of parameters across the antidiagonal (q13 and q24, q12 and q34, q21 and q43, q31 and q42) equal.<br />
+<img src="files/p94Table2.jpg" alt="p94Table2.jpg" title="p94Table2.jpg" /><br />
+Our treatment of the independent (four-parameter) model is different from Pagel's; we treat it as a version of the eight-parameter model constrained by setting four pairs of parameters equal (q13=q24, q12=q34, q21=q43, and q31=q42). Our four-parameter model specifies that the antidiagonal elements, indicating rates of simultaneous change, are also zero, in accord with the eight-parameter model used by us and Pagel. In contrast, Pagel (1994) treats his four-parameter model differently, as a combination of two separate asymmetric models, each represented by a 2x2 matrix. Thus, Pagel argues (p. 41) that his four-parameter model is not a constrained version of the eight-parameter model.<br />
+We feel that our formulation of the four-parameter model is a valid alternative for three reasons. First, it uses the same assumption (zero rates of simultaneous change) as used in the eight-parameter model. Second, in our explorations it appeared to arrive at the same likelihoods as obtained by Pagel's two-asymmetric-model approach. We have tested the assumption of equivalence numerous times with both this module and Discrete. Even at high transition rates, we could find no differences between the two approaches that were not more appropriately explained as stochastic behavior in the likelihood searches of the respective programs. This stochastic behavior can be observed by simply re-running an analysis multiple times and looking at both the parameter estimates and (especially for the 8-parameter model) the likelihood values.<br />
+Third, setting the anti-diagonals to zero in the four parameter model appears justified on first principles. As Pagel points out (p. 40), setting simultaneous rates to zero does not preclude the possibility of both characters changing state over a longer period of time. However, because these are instantaneous rates, the diagonal indicates the rate of events where both characters change over the same infinitesimal time dt. No matter how large the rate of character change is, the amount of time spent in transitions is still zero, thus the chance of two independent characters changing at the same time is also zero.<br />
+To calculate the likelihood of a specific set of rates giving rise to the observed data at the tips of the particular tree, the rates must be converted to transition probabilities for each branch of the tree. Because the model is based on the assumption of a Markov process, the transition probabilities for a particular branch are dependent only on the rate matrix and the length of the branch. The conversion entails calculating exp(lA) where A is the rate matrix and l is the branch length.<br />
+The calculation itself starts from the tips of the tree and works down each branch toward the root. At each branch the calculated likelihoods at the upper end are (effectively) multiplied by a transpose of the transition matrix to obtain the set of likelihoods at the lower end. The likelihoods at the tips are just the observed data.<br />
+There are several possible ways to combine likelihood calculations at the root. Currently the module simply adds the likelihoods for each of the four possible root states to get the overall likelihood for the model. Other combination options, including weighting root states empirically from their frequencies at the tips or by specifying an explicit prior distribution may be made available in future releases.<br />
+<h3 id="toc3"><a name="Pagel's 1994 Correlation method--The Evaluator"></a><a name="evaluator"></a>The Evaluator</h3>
+ The evaluator calculates the likelihood of a specific set of rates giving rise to the observed data at the tips of the particular tree. This release uses two methods to calculate the exponentation of the rate matrix. The first method, which is faster, uses spectral decomposition (e.g., eigenvalues and eigenvectors). However, this method does not work correctly when the matrix has complex eigenvalues. In this case, or any other where the spectral decomposition method produces a transition probability matrix with negative entries, the evaluator redoes the calculation using a method first described by Putzer (1966). This method is slower, but appears to handle matrices with complex eigenvalues correctly.<br />
+The current release does not allow the user to directly specify a set of parameter values and get a likelihood value. This facility may be added to future releases.<br />
+<br />
+<h3 id="toc4"><a name="Pagel's 1994 Correlation method--The Maximum likelihood estimation process"></a><a name="mle"></a>The Maximum likelihood estimation process</h3>
+ To estimate maximum likelihood values for the model parameters, the Pagel94 module requires an optimizer that works with multiple variables and does not require derivatives of the function being optimized. To do this, the module calls on the widely used Brent(1973) multivariate optimizer. This optimizer has the important property of not requiring derivatives of the function being maximized. To improve the chances of finding a global minimum, the module adds two methods to the optimization process. First the tree is scaled to a height of one, which reduces the changes of overflow. Second the module chooses the best result from multiple optimizer runs starting from different points. For optimizing the independent (four parameter) model, the module runs the optimizer from three start points (10, 10, 10, 10), (0.01, 10, 0.01, 10), and (10, 0.01, 10, 0.01).<br />
+Because dependent (eight parameter) models generally have more rugged likelihood surfaces, we found that additional searching sometimes produced substantially better answers. One example of this is the great ape data set discussed in Pagel94 and (in expanded form) in the Discrete manual. To choose multiple starting points, the model starts by estimating parameters for two six-parameter models, one where the rates of the first variable is dependent on the second but rates of the second are independent of the first (four rates for the first variable + two rates for the second), and the other with the dependencies reversed. Each six parameter model is optimized starting from the (saved) optimum of the four parameter model, with the additional parameters started from initial values that correspond to the four parameter model. <a name="multiplestartpoints"></a>The search for the eight- parameter model uses multiple start points derived from the six-parameter model results. The first two searches start from the values from each of the six-parameter models. Additional searches, controlled by the Likelihood iterations command, start from randomized linear combinations of the values from the six-parameter models. Specifically, the first four parameters for the eight-parameter search start from points on the line lying between the corresponding parameters for the six-parameter models. Because the random element is Gaussian distributed, the actual start point may lay outside the portion bracketed by the two values. The remaining four values are set from a corresponding parameter drawn from one of the six-parameter models with Gaussian noise added.<br />
+Note that the value of additional iteration depends both on the particular tree and data and on the goal of the analysis. If finding the best values for the parameters is important, more iteration will do a more through search of parameter space. If the goal is simply to perform a test of independence, less iteration and more simulation is appropriate.<br />
+Because Discrete uses a different optimizer than this module, the likelihoods and parameters found will not be identical in many cases. For most applications the differences will not be important. In other cases, the additional search this module provides should provide more optimal results.<br />
+<h3 id="toc5"><a name="Pagel's 1994 Correlation method--Estimating Statistical Significance"></a><a name="simulation"></a>Estimating Statistical Significance</h3>
+ Pagel (1994) strongly recommends testing the observed likelihood ratios by running Monte Carlo tests using simulated data. Specifically, for the test of correlated evolution described by Pagel (1994), the four-parameter model is not exactly a special case of the eight-parameter model because dual transitions in the rate matrix (the antidiagonal elements) have been set to zero. Therefore, Pagel (1994) does not consider a likelihood ratio test based on a chi-square distribution with four degrees of freedom to be appropriate. Although a chi-square test might be better justified in Mesquite's implementation because we use a different four parameter model, it is unclear how well the chi-square will approximate the correct distribution at our sample sizes. Thus, we recommend a simulation as does Pagel.<br />
+As discussed above, for estimating statistical significance, it is better to trade off optimizer iterations for simulation sets. Note that if the optimizer appears to hang (e.g., neither progress indicator appears to be updating), it is possible to abort the simulation. In this case, the module will calculate Monte Carlo statistics based on however many simulations it did complete, which might usable in some cases. We recommand for published results that significance be estimated using 1000 or more simulation replicates.<br />
+<br />
+<h3 id="toc6"><a name="Pagel's 1994 Correlation method--Options for Users"></a><a name="options"></a>Options for Users</h3>
+ There are three options for users to choose. When first requested, a dialog box will ask the user for these; once the analysis has been done, the options can be changed via the Pagel94 menu.<br />
+<ul><li>Extra iterations: as noted <a class="wiki_link" href="Pagel%20Correlation%20Method.html#multiplestartpoints">above</a>, the estimation of likelihood of the 8 parameter model can be requested to use multiple start points. The more start points specified, the better the estimation of the likelihood should be.</li><li>Whether to present a P value or not. The P values are calculated by simulation.</li><li>The number of replicates done in the simulation to estimate statistical significance. To estimate whether P&lt; 0.05, well over 100 simulations are recommended.</li></ul><h3 id="toc7"><a name="Pagel's 1994 Correlation method--References"></a><a name="references"></a>References</h3>
+ Brent, R. P. 1973. Algorithms for Optimization without Derivatives. Englewood Cliffs, New Jersey. Prentice Hall.<br />
+Pagel, M. 1994. Detecting correlated evolution on phylogenies: a general method for the comparative analysis of discrete characters. Proc. R. Soc. London B 255: 37-45.<br />
+<br />
+Putzer, E. J. 1966. Avoiding the Jordan canonical form in the discussion of linear systems with constant coefficients. American Mathematical Monthly 73:2-7.
+<!-- InstanceEndEditable -->
+
+    
+    
+    </div>
+	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<script type="text/javascript">
+<!--
+
+
+var OverviewOfMesquitePanel = null;
+var GettingStartedPanel = null;
+var BasicMesquiteOperationPanel = null;
+var TaxaTreesCharactersPanel = null;
+var AnalysesPanel = null;
+var WorkflowsPanel = null;
+var GettingHelpPanel = null;
+var TechnicalDetailsPanel = null;
+var HistoryPanel = null;
+var PublishingResultsPanel = null;
+
+if (qsParm['BasicMesquiteOperationPanel']=='open')
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: true});
+else
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: false});
+	
+if (qsParm['OverviewOfMesquitePanel']=='open')
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: true});
+else
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: false});
+	
+if (qsParm['GettingStartedPanel']=='open')
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: true});
+else
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: false});
+
+if (qsParm['TaxaTreesCharactersPanel']=='open')
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: true});
+else
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: false});
+
+if (qsParm['AnalysesPanel']=='open')
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: true});
+else
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: false});
+
+if (qsParm['WorkflowsPanel']=='open')
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: true});
+else
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: false});
+
+if (qsParm['GettingHelpPanel']=='open')
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: true});
+else
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: false});
+    
+if (qsParm['TechnicalDetailsPanel']=='open')
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: true});
+else
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: false});
+
+if (qsParm['HistoryPanel']=='open')
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: true});
+else
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: false});
+if (qsParm['PublishingResultsPanel']=='open')
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: true});
+else
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: false});
+
+
+//-->
+</script>
+</body>
+<!-- InstanceEnd --></html>

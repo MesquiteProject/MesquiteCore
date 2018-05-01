@@ -5,7 +5,7 @@
 
 
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Acknowledgements</title>
+<title>Processes of Character Evolution</title>
 <!-- InstanceEndEditable -->
 
 <![endif]--><!--[if IE]>
@@ -39,7 +39,7 @@
     <table width="100%" border="0" cellpadding="4">
   <tr>
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
-    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Acknowledgements<!-- InstanceEndEditable --></div></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Processes of Character Evolution<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
     <td width="14%">Version 3.41<br />
       3 May 2018<br /></td>
@@ -196,36 +196,53 @@
 <!-- InstanceBeginEditable name="content" -->
     
     
-<h1 id="toc0"><a name="Acknowledgements"></a>Acknowledgements</h1>
- Mesquite has been developed with the assistance of a Fellowship to WPM from the David and Lucile Packard Foundation, an NSERC Discovery grant to WPM, NSF support via the <a class="wiki_link_ext" href="http://www.phylo.org/" rel="nofollow">CIPRES project</a>, and NSF grant DEB 1258220 to DRM, and the patience of our families.<br />
+<h1 id="toc0"><a name="Processes of Character Evolution"></a>Processes of Character Evolution</h1>
+ Some characters evolve more quickly than others; some characters depend on others in their evolution. Discovering the nature of these evolutionary processes for a character from an analytical point of view involves determining a model and its parameters. For analyses that involved combined models of character change, speciation and extinction, see the page on <a class="wiki_link" href="Diversification.html">Diversification</a>.<br />
+<h4 id="toc1"><a name="Processes of Character Evolution---Contents"></a>Contents</h4>
+ <ul><li>Single characters<ul><li><a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#param">Estimating Parameters</a></li></ul></li><li>Correlated characters<ul><li><a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#vis">Visualizations</a></li><li><a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#pair">Pairwise Comparisons</a></li><li><a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#fels">Felsenstein's contrasts</a></li><li><a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#pagel94">Pagel's Correlation Method</a></li><li><a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#pagel">Use with Pagel's Discrete and Multistate</a></li></ul></li></ul><h3 id="toc2"><a name="Processes of Character Evolution--Estimating parameters"></a><a name="param"></a>Estimating parameters</h3>
+ Maximum Likelihood estimates of rates and biases can be obtained for categorical characters for two simple models, the <a class="wiki_link" href="Ancestral%20States.html#mk1">Mk1</a> model and the <a class="wiki_link" href="Ancestral%20States.html#asymmmk">AsymmMk</a> model. For more information on these models, see the page on <a class="wiki_link" href="Ancestral%20States.html#likelihood">ancestral state reconstruction</a>. Mesquite cannot yet estimate parameters for models of DNA sequence evolution.<br />
+Three modules provide calculations to estimate parameters for the Mk1 and AsymmMk models:<br />
 <br />
-The following are gratefully acknowledged for direct assistance with Mesquite's programming or source code. David Swofford helped with the implementation of the likelihood calculations, and supplied code for the optimization routines. John Huelsenbeck gave us portions of the code used in calculation of change probabilities for the Ti/Tv rate matrix model. Lars Rosengreen helped us prepare the code for compilation by means other than Codewarrior. <span style="line-height: 1.5;">Rutger Vos has led the development of NeXML for Mesquite, which is not yet integrated into the standard packages, but we look forward to making it so. </span><br />
+<ul><li>Mk1 Estimated Rate— Estimates the rate of a character's evolution under the simple Mk1 model.</li><li>Forward/Backward Rates — Uses maximum likelihood to estmate the rates of forward and backward changes (0 to 1 and 1 to 0 changes respectively), or alternatively the overall rate and the bias in gains versus losses, using the AsymmMk model on a tree for a given character.</li><li>Asymmetry Likelihood Ratio Test — Calculates the test statistic for the likelihood ratio test comparing the asymmetrical and one parameter models [2ln(L(Asymm.)/L(Mk1)], on a tree for a given character.</li></ul><br />
+These calculations consider a categorical character and a tree. As such, they can be considered to be values describing a character (and thus are available when analyzing characters, as for instance in a Characters Bar Chart or Scattergram or a List of Characters Window) or values describing a tree (and thus are available when analyzing trees, as for instance in a Trees Bar Chart or Scattergram or a List of Trees Window). To access them as values for characters, select them under &quot;Character value with current tree&quot; or &quot;Character value with tree&quot;. To access them as values for trees, select them under &quot;Tree value using character&quot;. Two example files illustrate parameter estimation, Mesquite_Folder/examples/Ancestral_States/15a-estimatingParameters.nex and Ancestral_States/15b-estimatingParameters.nex<br />
+You can explore the likelihood surface of the two parameters AsymmMk model using the (Tree Window)Analysis&gt;Other Anayses&gt;Likelihood Surface Asymm Mk menu item.<br />
+<h3 id="toc3"><a name="Processes of Character Evolution--Correlations: Visualizations"></a><a name="vis"></a>Correlations: Visualizations</h3>
+ To study correlations or associations among characters, there are both correlation calculators (see <a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#pair">Pairwise comparisons</a>, <a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#fels">Felsenstein's contrasts</a>, and <a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#pagel94">Pagel's correlation method</a>, below) and heuristic visualizations. The latter include:<br />
 <br />
-We offer our thanks to the many users who have given suggestions and bug reports. We would like to single out Michel Laurin, Jonathan Coddington, and Kojun Kanda for extensive feedback. Maureen O'Leary gave advice on the use of Mesquite for large morphological data matrices. Thanks to Karen Cranston for her suggestion to use Wikispaces for the documentation. <br />
+<ul><li><a name="mirror"></a>Mirror Tree Window — When a Tree Window is open, you can request and alternative view of the same tree by selecting Tree&gt;Mirror Tree Window. This shows the same tree as in the tree window, shown in duplicate tips-to-tips. The purpose of this is to allow you to display two different visualizations (one at left, one at right) and compare them. Character correlations can be explored by tracing evolution of two characters, as shown here.<br />
+Example files: Basic_Examples/tree_viewing/08-mirrorTree.nex; Ancestral_States/15-Mk1AsymmCompare.nex; Pairwise_Comparison/01-pairwise.nex.</li></ul><div style="text-align: center"><img src="files/mirrorTree.jpg" alt="mirrorTree.jpg" title="mirrorTree.jpg" /></div><br />
+<ul><li><a name="plot2D"></a>Plot Tree 2D — Plots the tree in a 2-dimensional space, available as a tree drawing form in the Display&gt;Tree Form submenu. If the axes represent the state of the taxa in two continuous characters, then this allows one to map the tree into the character space, which may suggest patterns or correlations. The internal nodes of the tree can are placed at the reconstructed ancestral states. An example is shown here.<br />
+Example file: Multivariate_Continuous/07-anoles.nex</li></ul><div style="text-align: center"><img src="files/anolesPlot2D.jpg" alt="anolesPlot2D.jpg" title="anolesPlot2D.jpg" /></div><br />
+<ul><li><a name="plot3D"></a>Plot Tree 3D — Plots the tree in a 3-dimensional space, available as a tree drawing form in the Display&gt;Tree Form submenu. This is part of the Rhetenor package. As with Plot Tree 2d, this allows one to map the tree into the character space. The tree can be rotated in space using the Rotation sliders in the legend. An example is shown here.<br />
+Example file: Multivariate_Continuous/08-anoles.nex</li></ul><div style="text-align: center"><img src="files/anolesPlot3D.jpg" alt="anolesPlot3D.jpg" title="anolesPlot3D.jpg" /></div><br />
+<ul><li><a name="taxaScatter"></a>Taxa Scattergram — Select Analysis&gt;New Scattergram For&gt;Taxa to obtain a bivariate plot for taxa. You will be asked whether to use the same or different calculations for the two axes. By &quot;Different&quot; is meant two entirely different calculations, such as the percentage of missing data in the taxon on one axis, and the state of a continuous variable on the other. Choose &quot;Same&quot; and then, if asked, indicate you want &quot;Continuous state of taxon&quot;. You will therefore be plotting the taxa according to their states in one character versus another. If <a class="wiki_link_ext" href="http://mesquiteproject.org/pdap_mesquite/index.html" rel="nofollow">PDAP</a> is installed, you will be able to do linear regression by selecting Scattegram&gt;Analysis&gt;, and choosing one of the Scattergram Diagnostics. Note: any correlation seen is aphylogenetic. Phylogenetic correlations can be studied by using the <a class="wiki_link" href="Processes%20of%20Character%20Evolution.html#fels">Felsenstein's contrasts</a> calculations in PDAP.<br />
+Example files: Multivariate_Continuous/01-wingsPlot.nex and subsequent</li></ul><h3 id="toc4"><a name="Processes of Character Evolution--Correlations: Pairwise comparisions"></a><a name="pair"></a>Correlations: Pairwise comparisions</h3>
+ Character correlations can be tested using pairwise comparisons as described by Read &amp; Nee (1995) and W. Maddison (2000). This is available under the Analysis:Tree menu of Tree Windows. The module chooses pairs of taxa, and indicates how the pairs compare in two characters: does the member of the pair with the higher value (say, state 1) in one character have higher or lower value in a second character? A summary over all pairs is given in the legend, as shown below. There are three options for choosing pairs:<br />
+<ul><li>Most pairs — choose pairs to maximize number of pairs, regardless of the states in the characters</li><li>Pairs for one character — choose pairs of taxa that differ in the state of the first character (independent variable)</li><li>Pairs for two characters — choose pairs of taxa that differ in the state of both characters</li></ul><br />
+<div style="text-align: center"><img src="files/pairwise.jpg" alt="pairwise.jpg" title="pairwise.jpg" /></div><br />
+The graphical display shows the current pairing chosen; you can scroll through all pairings using the legend.<br />
+Example files: Pairwise_Comparison/01-pairwise.nex and subsequent<br />
+<h3 id="toc5"><a name="Processes of Character Evolution--Felsenstein's Independent Contrasts"></a><a name="fels"></a>Felsenstein's Independent Contrasts</h3>
+ Correlations among continuous valued characters can be studied using the separately-available <a class="wiki_link_ext" href="http://mesquiteproject.org/pdap_mesquite/index.html" rel="nofollow">PDAP</a> package (Midford et al., 2003), which (among other things) calculates Felsenstein's (1985) independent contrasts and displays them in a scatterplot:<br />
+<div style="text-align: center"><img src="files/pdapFelsContrH.jpg" alt="pdapFelsContrH.jpg" title="pdapFelsContrH.jpg" /></div><br />
+The points in the plot are nodes in the tree, with the X and Y axes representing the independent contrast across the node in each of the two characters. Regression lines, confidence intervals and other statistics can be calculated by PDAP. When only some nodes in the tree are selected, they are highlighted in the plot as shown above.<br />
+The PDAP documentation or example files should be consulted for more details.<br />
 <br />
-Mesquite has benefitted from support to Wayne Maddison and David Maddison by the University of Arizona, the University of British Columbia, Oregon State University, and the Wissenschaftskolleg zu Berlin.<br />
+<h3 id="toc6"><a name="Processes of Character Evolution--Pagel's Correlation Method"></a><a name="pagel94"></a>Pagel's Correlation Method</h3>
+ Pagel's (1994) Correlation test is available via the correl package (Midford &amp; Maddison) distributed with Mesquite. It uses likelihood to test whether the evolution of two binary (0,1) characters is independent. To begin an analysis, choose Correlation Analysis from the Analysis:Tree menu of a tree window. If there is more than one option for method, choose Pagel 94 (if there is only one option, you won't be asked). You will be asked how intense to make the likelihood search (number of extra iterations), whether to present a p-value, and how many simulations to use to estimate the p-value. Options are explained in more detail on the <a class="wiki_link" href="Pagel%20Correlation%20Method.html">page</a> focusing on the analysis. A panel showing the analysis will appear in the tree window:<br />
+<div style="text-align: center"><img src="files/pagel94.jpg" alt="pagel94.jpg" title="pagel94.jpg" /></div><br />
+If the difference in likelihoods between the four (independent) and eight (correlated) models is high enough, then we can reject the null hypothesis of independence. A separate page of the manual describes the <a class="wiki_link" href="Pagel%20Correlation%20Method.html">Pagel94 modules</a> in more detail.<br />
 <br />
-
-
-<table class="wiki_table">
-    <tr>
-        <td><a href="http://www.arizona.edu/" rel="nofollow"><img src="files/a_logo.gif" alt="a_logo.gif" title="a_logo.gif" /></a><br />
-</td>
-        <td><a href="http://www.ubc.ca/" rel="nofollow"><img src="files/ubc_blue.gif" alt="ubc_blue.gif" title="ubc_blue.gif" /></a><br />
-</td>
-        <td><a href="http://oregonstate.edu" target="_blank" rel="nofollow"><img src="files/OSULogo.gif" alt="OSULogo.gif" title="OSULogo.gif" /></a><br />
-</td>
-        <td><a href="http://www.phylo.org/" rel="nofollow"><img src="files/logo_cipres.gif" alt="logo_cipres.gif" title="logo_cipres.gif" /></a><br />
-</td>
-        <td><a href="http://www.nsf.gov/" rel="nofollow"><img src="files/nsf4c.jpg" alt="nsf4c.jpg" title="nsf4c.jpg" style="height: 109px; width: 109px;" /></a><br />
-</td>
-        <td><a href="http://www.nserc-crsng.gc.ca/" rel="nofollow"><img src="files/NSERClogo.jpg" alt="NSERClogo.jpg" title="NSERClogo.jpg" style="height: 110px; width: 113px;" /></a><br />
-</td>
-        <td><a href="http://www.wiko-berlin.de/" rel="nofollow"><img src="files/wiko_logo_grau.gif" alt="wiko_logo_grau.gif" title="wiko_logo_grau.gif" /></a><br />
-</td>
-    </tr>
-</table>
-
+<h3 id="toc7"><a name="Processes of Character Evolution--Use with Pagel's Discrete and Multistate"></a><a name="pagel"></a>Use with Pagel's Discrete and Multistate</h3>
+ Mesquite can import and export files for use by the Discrete (Pagel, 2000) and Multistate (Pagel, 2002) programs. For import, attempt to read the Pagel format file in Mesquite, and choose the file format from the import dialog box. For export, select the Export... menu item from the File menu.<br />
+<h3 id="toc8"><a name="Processes of Character Evolution--References"></a><a name="refs"></a>References</h3>
+ Felsenstein, J. 1985. Phylogenies and the comparative method. American Naturalist, 125:1–15.<br />
+Maddison, W.P. 2000. Testing character correlation using pairwise comparisons on a phylogeny. J. Theoretical Biology. 202: 195-204.<br />
+Midford, P. E., T. Garland Jr. &amp; W. Maddison. 2002. PDAP:PDTREE package for Mesquite, version 1.00.<br />
+Pagel, M. 1994. Detecting correlated evolution on phylogenies: a general method for the comparative analysis of discrete characters. Proc. R. Soc. London B 255: 37-45.<br />
+Pagel, M. 2000. Discrete, version 4.0. A computer program distributed by the author.<br />
+Pagel, M. 2002. Multistate, version 0.6. A computer program distributed by the author.<br />
+Read, A. F. and S. Nee. 1995. Inference from binary comparative data. J. Theoretical Biology 173:99-108
 <!-- InstanceEndEditable -->
 
     
