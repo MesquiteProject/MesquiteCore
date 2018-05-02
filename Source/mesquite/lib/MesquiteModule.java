@@ -2186,7 +2186,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String manualPath;
 		String manP;
 		if (this instanceof MesquiteTrunk)
-			return mesquiteWebSite;
+			return getRootPath() + "docs" + MesquiteFile.fileSeparator + "home.html";
 		else
 			manP= "manual.html";
 		manualPath = getPath() + manP; 
@@ -2217,7 +2217,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		}
 	}
 
-	public static final String mesquiteWebSite = "http://mesquiteproject.wikispaces.com";
+	public static  String mesquiteHomePageURL;// = getRootPath() + "docs/home.html";
+	public static  String mesquiteDocsURL ;//= getRootPath() + "docs/";
 	/*.................................................................................................................*/
 	/** returns path to manual.  Null if manual doesn't exist*/
 	public String getBrowserManualPath() { 
@@ -2226,7 +2227,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String manualPath;
 		//String manP;
 		if (this instanceof MesquiteTrunk)
-			return mesquiteWebSite;
+			return mesquiteHomePageURL;
 		else
 			manualPath= getPath() + "manual.html";
 		File testing = new File(manualPath);
@@ -2350,9 +2351,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 					}
 					catch (IOException e) {
 						browserString = null;
-						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser." );
+						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser. [" + path + "]");
 					} catch (URISyntaxException e) {
-						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the address was not interpretable." );
+						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the address was not interpretable. [" + path + "]");
 					}
 				}
 				else if (MesquiteTrunk.isMacOSX()){ //Mac OS X
@@ -2362,7 +2363,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 						}
 						catch (IOException e) {
 							browserString = null;
-							MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser." );
+							MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser. [" + path + "]" );
 						}
 						return;
 					}
@@ -2399,7 +2400,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 						}
 						catch (IOException e) {
 							browserString = null;
-							MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser." );
+							MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser. [" + path + "] ");
 						}
 					}
 				}

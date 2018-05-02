@@ -286,6 +286,8 @@ public class Mesquite extends MesquiteTrunk
 		}
 		if (verboseStartup) System.out.println("main init 6");
 
+		MesquiteModule.mesquiteHomePageURL = getRootPath() + "docs/home.html";
+		MesquiteModule.mesquiteDocsURL = getRootPath() + "docs/";
 
 		if (starter != null){ // because of Java 9 classloading issues, rely on starter class to make class loader if it exists
 			try {
@@ -1241,14 +1243,14 @@ public class Mesquite extends MesquiteTrunk
 		if (addMesquiteToSearch.getValue())
 			textToGoogle += "+" + "Mesquite";
 		if (restrictSearchToManual.getValue())
-			textToGoogle += "&as_sitesearch=http%3A%2F%2Fmesquiteproject.wikispaces.com%2F";
+			textToGoogle += "&as_sitesearch=http%3A%2F%2Fmesquitecore.mesquiteproject.org%2F";
 		showWebPage("http://www.google.com/search?q=" + textToGoogle, false);
 	}
 	/*End new code added Feb.05.07 oliver*/
 	/*New code added April.02.07 oliver*/ //TODO: delete new code comments
 	/*.................................................................................................................*/
 	private void openMesquiteFAQ(){
-		String manualPath = mesquiteWebSite + "/FAQ" ; 
+		String manualPath = mesquiteDocsURL + "/FAQ.html" ; 
 		showWebPage(manualPath, false);
 	}
 	/*End new code added April.02.07 oliver*/
@@ -2183,7 +2185,7 @@ public class Mesquite extends MesquiteTrunk
 			if (MesquiteTrunk.isApplet()) 
 				return null;
 
-			String manualPath = mesquiteWebSite; 
+			String manualPath = mesquiteHomePageURL; 
 			//File testing = new File(manualPath);
 			showWebPage(manualPath, false);
 
@@ -2192,7 +2194,7 @@ public class Mesquite extends MesquiteTrunk
 			if (MesquiteTrunk.isApplet()) 
 				return null;
 
-			String manualPath = mesquiteWebSite + "/Getting+Help" ;
+			String manualPath = mesquiteDocsURL + "Getting Help.html" ;
 			showWebPage(manualPath, false);
 		}
 		else if (checker.compare(this.getClass(), "Sets whether the Mesquite window appears automatically when no windows are showing", "[on or off]", commandName, "windowAutoShow")){
