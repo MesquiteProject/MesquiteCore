@@ -72,7 +72,7 @@
     <div class="CollapsiblePanelContent" style="display: block">
   		<table width="100%" border="0" cellpadding="1">
   			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Mesquite%27s%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
 		</table>
@@ -158,7 +158,7 @@
   			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Developer%27s%20Documentation.html');">Developer's Documentation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
 		</table>
     </div>
   </div>
@@ -198,7 +198,7 @@
     
 <h1 id="toc0"><a name="How Mesquite Works"></a>How Mesquite Works</h1>
  Mesquite operates via the cooperation of modules, each of which performs some function or duty. There is one core module, the Mesquite trunk module. When this module starts up, it finds all of the available modules. (Mesquite does this by looking into the subdirectories of the mesquite directory.) From each module, it gathers information, including its name and the functions the module promises to perform.<br />
-A programmer's account of Mesquite's modular architecture is given in the <a class="wiki_link_ext" href="http://mesquiteproject.org/mesquite/development/development.html" rel="nofollow">developer's documentation</a>.<br />
+A programmer's account of Mesquite's modular architecture is given in the <a  href="https://mesquiteproject.github.io/MesquiteDeveloperDocumentation/documentation.html" rel="nofollow">developer's documentation</a>.<br />
 <h2 id="toc1"><a name="How Mesquite Works-The tree of modules"></a><a name="moduleTree"></a>The tree of modules</h2>
  Modules are &quot;hired&quot; by other modules as employees to perform certain tasks. Thus, the core Mesquite module hires a &quot;File Coordinator&quot; module to manage most activities, including coordinating the reading and analyzing of data files. The File Coordinator itself hires other modules to do the actual file reading and analyses. The file reading module may hire other modules to handle particular parts of the data file, one for the data matrix, another for the trees, and so on.With modules hiring modules hiring modules, the modules in use at any time are linked together in employee-employer relationships that as a whole take the form of atree, with the root module being the core Mesquite trunk module. (To see the tree of modules active at any time, choose the menu item &quot;Active Modules&quot; from Mesquite's Help menu, or by touching the Modules tab in a window's information bar.)<br />
 Here is a diagram of a section of the module tree. The five modules in the oval are engaged in calculating and presenting some result to the user. (The two modules outside the oval are patiently waiting as alternatives.) The over-all coordinator module has hired a calculation coordinator module, which in turns uses one module to supply data and another to do the actual calculation. The over-all coordinator also hires a module to display the results (in this case, a charting module).<br />

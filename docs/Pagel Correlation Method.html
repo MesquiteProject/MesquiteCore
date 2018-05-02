@@ -72,7 +72,7 @@
     <div class="CollapsiblePanelContent" style="display: block">
   		<table width="100%" border="0" cellpadding="1">
   			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Mesquite%27s%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
 		</table>
@@ -158,7 +158,7 @@
   			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Developer%27s%20Documentation.html');">Developer's Documentation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
 		</table>
     </div>
   </div>
@@ -200,7 +200,7 @@
  Peter Midford &amp; Wayne Maddison<br />
 The Pagel94 module implements a test of independent evolution of two binary characters. This test was first described in Pagel (1994). Although this test has been available in Pagel’s own program Discrete, this module is not a simple translation of Discrete. In particular, although the module calculates the same likelihood value for a given combination of tree and character states, the maximum likelihood search and character simulation portions of the module utilize existing Mesquite code. The remainder of this documentation consists of an overview of the theory of the test, followed by detailed discussion of the methods used in the three phases of the test.<br />
 <h4 id="toc1"><a name="Pagel's 1994 Correlation method---Contents"></a>Contents</h4>
- <ul><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#theory">Theory</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#evaluator">The evaluator</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#mle">The maximum likelihood estimation process</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#simulation">Estimating statistical significance</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#options">Options for Users</a></li><li><a class="wiki_link" href="Pagel%20Correlation%20Method.html#references">References</a></li></ul><h3 id="toc2"><a name="Pagel's 1994 Correlation method--Theory"></a><a name="theory"></a>Theory</h3>
+ <ul><li><a  href="Pagel%20Correlation%20Method.html#theory">Theory</a></li><li><a  href="Pagel%20Correlation%20Method.html#evaluator">The evaluator</a></li><li><a  href="Pagel%20Correlation%20Method.html#mle">The maximum likelihood estimation process</a></li><li><a  href="Pagel%20Correlation%20Method.html#simulation">Estimating statistical significance</a></li><li><a  href="Pagel%20Correlation%20Method.html#options">Options for Users</a></li><li><a  href="Pagel%20Correlation%20Method.html#references">References</a></li></ul><h3 id="toc2"><a name="Pagel's 1994 Correlation method--Theory"></a><a name="theory"></a>Theory</h3>
  Pagel (1994) describes a test of independent evolution of two binary characters. The test compares the ratio of likelihoods of two models: one model where the rates of change in each character are independent of the state of the other and a second model where rates of change depend on the state of the other character. The significance of the ratio is tested by comparison with simulated data, and Pagel warns against using a standard chi-square-based test in most cases.<br />
 The models are expressed as matrices of instantaneous transition rates, with each row and column specifying a pair of character states. The model of dependent change specifies 8 parameters and can be specified by the following matrix:<br />
 <img src="files/p94Table1.jpg" alt="p94Table1.jpg" title="p94Table1.jpg" /><br />
@@ -228,7 +228,7 @@ As discussed above, for estimating statistical significance, it is better to tra
 <br />
 <h3 id="toc6"><a name="Pagel's 1994 Correlation method--Options for Users"></a><a name="options"></a>Options for Users</h3>
  There are three options for users to choose. When first requested, a dialog box will ask the user for these; once the analysis has been done, the options can be changed via the Pagel94 menu.<br />
-<ul><li>Extra iterations: as noted <a class="wiki_link" href="Pagel%20Correlation%20Method.html#multiplestartpoints">above</a>, the estimation of likelihood of the 8 parameter model can be requested to use multiple start points. The more start points specified, the better the estimation of the likelihood should be.</li><li>Whether to present a P value or not. The P values are calculated by simulation.</li><li>The number of replicates done in the simulation to estimate statistical significance. To estimate whether P&lt; 0.05, well over 100 simulations are recommended.</li></ul><h3 id="toc7"><a name="Pagel's 1994 Correlation method--References"></a><a name="references"></a>References</h3>
+<ul><li>Extra iterations: as noted <a  href="Pagel%20Correlation%20Method.html#multiplestartpoints">above</a>, the estimation of likelihood of the 8 parameter model can be requested to use multiple start points. The more start points specified, the better the estimation of the likelihood should be.</li><li>Whether to present a P value or not. The P values are calculated by simulation.</li><li>The number of replicates done in the simulation to estimate statistical significance. To estimate whether P&lt; 0.05, well over 100 simulations are recommended.</li></ul><h3 id="toc7"><a name="Pagel's 1994 Correlation method--References"></a><a name="references"></a>References</h3>
  Brent, R. P. 1973. Algorithms for Optimization without Derivatives. Englewood Cliffs, New Jersey. Prentice Hall.<br />
 Pagel, M. 1994. Detecting correlated evolution on phylogenies: a general method for the comparative analysis of discrete characters. Proc. R. Soc. London B 255: 37-45.<br />
 <br />

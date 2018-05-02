@@ -72,7 +72,7 @@
     <div class="CollapsiblePanelContent" style="display: block">
   		<table width="100%" border="0" cellpadding="1">
   			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Mesquite%27s%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
 		</table>
@@ -158,7 +158,7 @@
   			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Developer%27s%20Documentation.html');">Developer's Documentation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
 		</table>
     </div>
   </div>
@@ -219,7 +219,7 @@ Mesquite can automatically generate documentation for the current menu configura
  Other menus come and go depending on which window is in front and what calculations are in use. Thus, the standard Tree Window has a Tree menu.<br />
 As the user requests calculations and output of results, the menus change. The reason for this is that different menus are appropriate in different circumstances. Thus, if the user requests the Balls and Sticks method to draw trees, a menu item &quot;Spot size&quot; appears in the Display menu. Spot size controls the size of the balls drawn at the nodes of the tree.<br />
 <br />
-Exactly where a menu item appears may at first be confusing to the user, but there is a certain logic to it that hopefully won't be too obscure (technical details are available in the <a class="wiki_link_ext" href="http://mesquiteproject.org/mesquite/development/development.html" rel="nofollow">developer's documentation</a>). The &quot;Spot size&quot; menu item belongs to the module that draws trees in the Balls and Sticks fashion, since that module wants the user to be able to control the size of the balls. That menu item appears within the menu of the modules that employ it to draw trees. Since the Display menu belongs to the module that coordinates tree drawing, and it is this module that (indirectly) is employing Balls and Sticks to draw the tree, the menu items belonging to Balls and Sticks appear in the Display menu.<br />
+Exactly where a menu item appears may at first be confusing to the user, but there is a certain logic to it that hopefully won't be too obscure (technical details are available in the <a  href="https://mesquiteproject.github.io/MesquiteDeveloperDocumentation/documentation.html" rel="nofollow">developer's documentation</a>). The &quot;Spot size&quot; menu item belongs to the module that draws trees in the Balls and Sticks fashion, since that module wants the user to be able to control the size of the balls. That menu item appears within the menu of the modules that employ it to draw trees. Since the Display menu belongs to the module that coordinates tree drawing, and it is this module that (indirectly) is employing Balls and Sticks to draw the tree, the menu items belonging to Balls and Sticks appear in the Display menu.<br />
 <br />
 A module can also have its own menu, as does the tree drawing coordinator. Thus, the menu items of a module (usually) appear in the menu belonging to its closest employer module that has its own menu. We say &quot;closest&quot; because sometimes a module will have a menu item, but its immediate employer won't have a menu to put it in. The menu item drifts upward in the employment hierarchy until it finds an employer that has a menu that can house it.<br />
 This system means that menu items appear in an appropriate context, but that that context is not fixed because it depends on what employer has a menu in which the item can be housed.

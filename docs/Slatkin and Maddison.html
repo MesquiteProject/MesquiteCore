@@ -72,7 +72,7 @@
     <div class="CollapsiblePanelContent" style="display: block">
   		<table width="100%" border="0" cellpadding="1">
   			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Mesquite%27s%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
 		</table>
@@ -158,7 +158,7 @@
   			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Developer%27s%20Documentation.html');">Developer's Documentation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
 		</table>
     </div>
   </div>
@@ -203,14 +203,14 @@
  These instructions are provided with a worked example. Because each model being tested is likely specific to the question being asked, many parameter values and models of population structure will be unique to each study. The models and parameter values used in this example are for educational purposes only, and we encourage investigators to allow reasonable consideration of model paremeters.<br />
 <br />
 <strong>Getting Started</strong> — You will need a Mesquite file with the following parts:<br />
-<ul><li>Taxa Block corresponding to genes sampled</li><li>Reconstructed gene tree</li><li>One or more Taxa Blocks corresponding to populations — You may have multiple population taxa blocks corresponding to different models of population structure. For the ease of this example, we will only deal with a single population taxa block.</li><li><a class="wiki_link" href="Gene%20Trees.html#establishing">Association</a> between the gene taxa and population taxa</li><li>Population Tree Block corresponding to model(s) being tested — Instructions for creating these model trees are provided below.</li></ul><br />
+<ul><li>Taxa Block corresponding to genes sampled</li><li>Reconstructed gene tree</li><li>One or more Taxa Blocks corresponding to populations — You may have multiple population taxa blocks corresponding to different models of population structure. For the ease of this example, we will only deal with a single population taxa block.</li><li><a  href="Gene%20Trees.html#establishing">Association</a> between the gene taxa and population taxa</li><li>Population Tree Block corresponding to model(s) being tested — Instructions for creating these model trees are provided below.</li></ul><br />
 <strong>Calculating observed value of s.</strong> The easiest way to do this is to add a Tree Legend to the gene tree. If you do not have a tree window open showing the reconstructed gene tree, open one using Taxa&amp;Trees &gt; New Tree Window. Add the legend from the Analysis:Tree menu (Analysis:Tree &gt; Tree Legend...), and select &quot;s of Slatkin &amp; Maddison&quot;. If you have more than one association included in the file, you will be asked to choose which association to use for the calculations. Record the number that appears in the tree legend — this is the observed value of the test statistic.<br />
 <br />
 
 
-<table class="wiki_table">
+<table >
     <tr>
-        <td>In our example, we have 20 gene sequences, sampled from 4 populations. The color of the gene sequences corresponds to the population from which they were sampled (note: taxon name colors are only used for aesthetics and are not required for this type of analysis. If you would like to color taxon names, you will need to set up &quot;<a class="wiki_link" href="Publication%20Quality%20Trees.html#taxonNameColors">Groups</a>&quot; of taxa, which are not the same as associations.). In this example, s is counting the number of changes (in parsimony steps) of a character corresponding to population membership (as indicated by color):<br />
+        <td>In our example, we have 20 gene sequences, sampled from 4 populations. The color of the gene sequences corresponds to the population from which they were sampled (note: taxon name colors are only used for aesthetics and are not required for this type of analysis. If you would like to color taxon names, you will need to set up &quot;<a  href="Publication%20Quality%20Trees.html#taxonNameColors">Groups</a>&quot; of taxa, which are not the same as associations.). In this example, s is counting the number of changes (in parsimony steps) of a character corresponding to population membership (as indicated by color):<br />
 <div style="text-align: center"><img src="files/observedStatistic.jpg" alt="external image observedStatistic.jpg" title="external image observedStatistic.jpg" /></div><br />
 Counting the most parsimonious number of changes leads to s = 9<br />
 </td>
@@ -220,7 +220,7 @@ Counting the most parsimonious number of changes leads to s = 9<br />
 Setting up models to be tested Begin by opening a new tree window, corresponding to the population block of taxa. Select Default Trees as the source of trees. Manipulate this tree to reflect the model you wish to test. In order to preserve any changes you make to the tree, you must store the tree in a Tree Block (Tree &gt; Store Tree As...).<br />
 
 
-<table class="wiki_table">
+<table >
     <tr>
         <td>In our example, we would like to test two models; the first is a model of population fragmentation, in which all four populations became isolated from one another, some time in the past, say 100,000 generations ago. Starting with a default symmetrical tree, we use the collapse branch tool (<img src="files/collapseBranch.gif" alt="external image collapseBranch.gif" title="external image collapseBranch.gif" />) to collapse the branches indicated in red on the tree to the left, to create the tree on the right.<br />
 </td>
@@ -239,7 +239,7 @@ We can set all the branch lengths to equal 100000 generations from the Tree Menu
 For our alternative model, we will test the hypothesis that Populations 1 &amp; 2 and Populations 3 &amp; 4 were isolated in two refugia 100000 generations ago, and only recently split (1000 generations ago) from two into four populations. For this model tree, we manipulate the fragmentation model tree to reflect the alternative model, and store a copy of this tree under another name (using Store Tree As... instead of Store Tree to avoid overwriting the fragmentation model tree; storing this model tree in the same tree block as the fragmentation model tree will make things easier later on). Using the arrow tool (<img src="files/arrow.gif" alt="external image arrow.gif" title="external image arrow.gif" />) in the population tree window, we join the branches of populations 1 &amp; 2 and populations 3 &amp; 4 (below, left). To assign branch lengths to individual branches, use the Adjust Branch Length tool (<img src="files/adjustBranchLength.gif" alt="external image adjustBranchLength.gif" title="external image adjustBranchLength.gif" />) on each branch, assigning branches 1-4 a value of 1000 generations (recent split) and branches 5 &amp; 6 a value of 99000 (so the age of the split is 100000 generations ago). Because the branch lengths of branches 1-4 are relatively short, it may be difficult to visualize them when branches are drawn proportional to lengths (below, right), so turning off Branches Proportional to Length may ease manipulation.<br />
 
 
-<table class="wiki_table">
+<table >
     <tr>
         <td><div style="text-align: center"><img src="files/refugiaModel.jpg" alt="external image refugiaModel.jpg" title="external image refugiaModel.jpg" style="height: 256px; width: 300px;" /></div></td>
         <td><div style="text-align: center"><img src="files/refugiaModelScaled.jpg" alt="external image refugiaModelScaled.jpg" title="external image refugiaModelScaled.jpg" style="height: 256px; width: 300px;" /></div></td>
@@ -267,7 +267,7 @@ If the observed value of s falls outside of the 95% confidence interval for a pa
 <br />
 
 
-<table class="wiki_table">
+<table >
     <tr>
         <td>We begin by simulating a distribution of s for the fragmentation model. From the Tree Window showing the fragmentation model population tree, we select Analysis &gt; New Bar &amp; Line Chart for &gt; Trees, choosing, as prompted, Genes Taxa Block (taxa to calculate value), Simulated Trees (source of trees), Coalescence Contained within Current Tree (tree simulator), 10000 (effective population size), s of Slatkin &amp; Maddison (Value to calculate), 1000 (trees for the chart), and check to be certain that Mesquite is using the fragmentation model tree. The chart window opens, showing the distribution of simulated values of s.<br />
 <div style="text-align: center"><img src="files/fragModelSim.jpg" alt="external image fragModelSim.jpg" title="external image fragModelSim.jpg" /></div>By clicking on the &quot;Text&quot; tab, we can see the details of the simulations:<br />

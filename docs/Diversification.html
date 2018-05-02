@@ -72,7 +72,7 @@
     <div class="CollapsiblePanelContent" style="display: block">
   		<table width="100%" border="0" cellpadding="1">
   			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Mesquite%27s%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
 		</table>
@@ -158,7 +158,7 @@
   			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Developer%27s%20Documentation.html');">Developer's Documentation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
 		</table>
     </div>
   </div>
@@ -197,13 +197,13 @@
     
     
 <h1 id="toc0"><a name="Diversification: Speciation and extinction"></a>Diversification: Speciation and extinction</h1>
- The diversification processes that determine the branching pattern of the phylogenetic tree, speciation and extinction, can be simulated and analyzed. There is a series of <a class="wiki_link" href="Example%20Files.html">example files</a> available showing some of these features.<br />
-<ul><li><a class="wiki_link" href="Diversification.html#simulations">Simulating speciation and extinction</a> to generate trees</li><li><a class="wiki_link" href="Diversification.html#ltt">Lineages Through Time</a> plots</li><li><a class="wiki_link" href="Diversification.html#speciationextinction">Analysis of Speciation/Extinction rates</a></li><li><a class="wiki_link" href="Diversification.html#divCharDep">Analysis of Character-associated Speciation/Extinction rates</a>
-  <ul><li><a class="wiki_link" href="Diversification.html#bisseCalculations">Likelihood Calculations</a></li><li><a class="wiki_link" href="Diversification.html#ht">Hypothesis Testing</a></li>
-  <li><a class="wiki_link" href="Diversification.html#mt">Multiple trees</a></li></ul></li>
+ The diversification processes that determine the branching pattern of the phylogenetic tree, speciation and extinction, can be simulated and analyzed. There is a series of <a  href="Example%20Files.html">example files</a> available showing some of these features.<br />
+<ul><li><a  href="Diversification.html#simulations">Simulating speciation and extinction</a> to generate trees</li><li><a  href="Diversification.html#ltt">Lineages Through Time</a> plots</li><li><a  href="Diversification.html#speciationextinction">Analysis of Speciation/Extinction rates</a></li><li><a  href="Diversification.html#divCharDep">Analysis of Character-associated Speciation/Extinction rates</a>
+  <ul><li><a  href="Diversification.html#bisseCalculations">Likelihood Calculations</a></li><li><a  href="Diversification.html#ht">Hypothesis Testing</a></li>
+  <li><a  href="Diversification.html#mt">Multiple trees</a></li></ul></li>
 </ul>
 <ul>
-  <li><a class="wiki_link" href="Diversification.html#references">References</a></li></ul><h2 id="toc1"><a name="Diversification: Speciation and extinction-Simulations"></a><a name="simulations"></a>Simulations</h2>
+  <li><a  href="Diversification.html#references">References</a></li></ul><h2 id="toc1"><a name="Diversification: Speciation and extinction-Simulations"></a><a name="simulations"></a>Simulations</h2>
  Trees can be created through simulations of speciation and extinction. Here are options:<br />
 <ul><li>Tree simulators available to make tree blocks (Taxa&amp;Trees&gt;Make New Trees Block from&gt;Simulated Trees) or to generate trees on demand (e.g., for charts or in the tree window).<ul><li>Uniform speciation (Yule) (trees package) - Generates tree by a pure birth process (a Yule process). The chance of speciation is equal for all tips. Options: total time depth of tree.</li><li>Uniform speciation with sampling (TreeFarm package) — Generates a tree by Yule process, as above, but with to a total number of species greater than in the taxa block. Extra species are then randomly sampled out, to leave the tree with the appropriate number of species. Barraclough &amp; Nee (2001) discuss how this sampling alters the branch length distribution of the tree.</li><li>Birth/Death process trees (Diverse package) — Generates trees with a speciation rate and extinction rate.</li></ul></li></ul><br />
 <ul><li>Trees &amp; Diversification Characters (Diverse package) — Simulates speciation and extinction, simultaneous with the evolution of characters that influence speciation and extinction rates. Select the Trees &amp; Diversification Characters item in the Taxa&amp;Trees menu to generate the tree block and a character matrix; the i'th tree was evolved in connection with the i'th character in the matrix.<ul><li>BiSSE Trees &amp; Characters — by this model, a categorical character evolves with two states, which can cause their lineages to differ in their speciation rates, and in their extinction rates. You will be given the following options for setting up the simulation:<br />

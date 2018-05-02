@@ -34,7 +34,7 @@
  * CollapsiblePanel panel tab container.
  */
 .CollapsiblePanelTab {
-	font-size: 11px;
+	font-size: 12px;
 	font-weight:bold;
 	color: #454;
 	margin: 0px;
@@ -54,7 +54,7 @@
  * CollapsiblePanel content container.
  */
 .CollapsiblePanelContent {
-	font-size: 10px;
+	font-size: 12px;
 	margin: 0px;
 	margin-left: 8px;
 	padding: 0px;

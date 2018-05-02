@@ -72,7 +72,7 @@
     <div class="CollapsiblePanelContent" style="display: block">
   		<table width="100%" border="0" cellpadding="1">
   			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Mesquite%27s%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
 		</table>
@@ -158,7 +158,7 @@
   			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Developer%27s%20Documentation.html');">Developer's Documentation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
 		</table>
     </div>
   </div>
@@ -199,7 +199,7 @@
 <h1 id="toc0"><a name="Scripting and Macros"></a>Scripting and Macros</h1>
  Mesquite's scripting system allows modules and other objects to be scripted using text commands. Mesquite uses scripting by text commands as follows:<br />
 <br />
-<ul><li>When a menu item, button, or tool is used, Mesquite sends a text command to the appropriate object, informing it of the use. This means that most user interface commands can also be executed in scripts and macros.</li><li>When Mesquite re-reads a NEXUS file, it attempts to return windows and analyses to approximately the same condition as when the file had been saved. It does this by reading scripting instructions in a MESQUITE block that Mesquite had written into the file when saved. Thus, Mesquite writes scripts called &quot;Snapshots&quot; to later instruct itself.</li><li>Macros are script files which, if placed in the recognized directories, appear in submenus as selectable menu items. When selected, the macro is executed. Mesquite recognizes directories called &quot;macros&quot; within the Mesquite_Folder directory and the &quot;Mesquite_Prefs&quot; subdirectory of the Mesquite_Support_Files directory.</li><li>Not all scripts in MESQUITE blocks need to be written by Mesquite. Users can write MESQUITE block scripts by hand.</li><li>Users can send a script to a window using Window&gt;Scripting&gt;Send Script. This page gives some <a class="wiki_link" href="Scripts%20%26%20Macros.html#examples">simple examples</a> for the tree window.</li></ul><br />
+<ul><li>When a menu item, button, or tool is used, Mesquite sends a text command to the appropriate object, informing it of the use. This means that most user interface commands can also be executed in scripts and macros.</li><li>When Mesquite re-reads a NEXUS file, it attempts to return windows and analyses to approximately the same condition as when the file had been saved. It does this by reading scripting instructions in a MESQUITE block that Mesquite had written into the file when saved. Thus, Mesquite writes scripts called &quot;Snapshots&quot; to later instruct itself.</li><li>Macros are script files which, if placed in the recognized directories, appear in submenus as selectable menu items. When selected, the macro is executed. Mesquite recognizes directories called &quot;macros&quot; within the Mesquite_Folder directory and the &quot;Mesquite_Prefs&quot; subdirectory of the Mesquite_Support_Files directory.</li><li>Not all scripts in MESQUITE blocks need to be written by Mesquite. Users can write MESQUITE block scripts by hand.</li><li>Users can send a script to a window using Window&gt;Scripting&gt;Send Script. This page gives some <a  href="Scripts%20%26%20Macros.html#examples">simple examples</a> for the tree window.</li></ul><br />
 The text commands are sent to modules or other objects. The particular text commands to which a module or other object responds will depend on the object. When Mesquite shows a web page for the first time, it attempts to compile automatically documentation for scripting commands that is available. This includes commands predefined by the scripting language, and commands belonging to particular modules. This compiled documentation is available from the web page linked from the &quot;Scripting Commands&quot; menu item in the Help menu when Mesquite is running.<br />
 Mesquite's scripting language is not as human-friendly as it might be at present, especially in its handling of variables and aspects such as the lack of &quot;else&quot; statements. Since the vast majority of Mesquite scripts won't be written by humans but by Mesquite itself, that is not such a liability as it might seem. We hope to reform the scripting language in the future.<br />
 <br />
@@ -419,7 +419,7 @@ endFor;</pre>
 
 <br />
 <h2 id="toc15"><a name="Scripting and Macros-Technical Details"></a>Technical Details</h2>
- (See the <a class="wiki_link_ext" href="http://mesquiteproject.org/mesquite/development/Mesquite_Development.html" rel="nofollow">developer's documentation</a>.) The Puppeteer is in charge of defining the basic language as it relates to variables and flow control. For an object to be scriptable, it must be of the Commandable interface. Commands internally in Mesquite are remembered in objects called MesquiteCommands.
+ (See the <a  href="https://mesquiteproject.github.io/MesquiteDeveloperDocumentation/documentation.html" rel="nofollow">developer's documentation</a>.) The Puppeteer is in charge of defining the basic language as it relates to variables and flow control. For an object to be scriptable, it must be of the Commandable interface. Commands internally in Mesquite are remembered in objects called MesquiteCommands.
 <!-- InstanceEndEditable -->
 
     
