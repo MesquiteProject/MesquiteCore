@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/MesquiteTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Sequence Alignment</title>
+<!-- InstanceEndEditable -->
+
+<![endif]--><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.thrColFixHdr #sidebar2, .thrColFixHdr #sidebar1 { padding-top: 30px; }
+.thrColFixHdr #mainContent { zoom: 1; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<style type="text/css">
+<!--
+-->
+</style>
+<link href="CSS/mesquitePackage.css" rel="stylesheet" type="text/css" />
+<link href="SpryAssets/SpryCollapsiblePanel.css" rel="stylesheet" type="text/css" />
+
+<script src="SpryAssets/SpryCollapsiblePanel.js" type="text/javascript"></script>
+<script type="text/javascript" src="SpryAssets/SpryURLUtils.js"></script>
+<script type="text/javascript" src="javascript/mesquite.js"></script>
+
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+</head>
+
+<body bgcolor="#ffffff" class="thrColFixHdr" >
+
+<div id="container">
+  <div id="header">
+    <table width="100%" border="0" cellpadding="4">
+  <tr>
+    <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Sequence Alignment<!-- InstanceEndEditable --></div></td>
+    <td width="2%">&nbsp;</td>
+    <td width="14%">Version 3.41<br />
+      4 May 2018<br /></td>
+  </tr>
+</table>
+
+</div>
+  
+  
+<div id="sidebar1">
+  
+  
+  
+  
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('http://mesquiteproject.github.io/MesquiteCore')">Mesquite Website Home</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('home.html')">Introduction to Mesquite</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Installation.html')">Download & Installation</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('History%20of%20New%20Features.html')">Recent Changes</a>
+  </div>
+
+  <div id="OverviewOfMesquitePanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Overview of Mesquite ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingStartedPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Started ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Installation.html');">Download and Installation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Additional%20Mesquite%20Packages.html');">Additional Packages</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Beginning%20Mesquite.html');">Beginning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Example%20Files.html');">Example Files</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="BasicMesquiteOperationPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Basic  Operations ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Files.html');">Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Menus.html');">Menus</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Windows.html');">Windows</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Charts.html');">Charts</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Selection.html');">Selection</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Modules.html');">Modules</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TaxaTreesCharactersPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Taxa, Trees, Characters ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Characters%20&%20Matrices.html');">Characters &amp; Matrices</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Taxa.html');">Taxa</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Trees.html');">Trees</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="AnalysesPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Analyses ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Align.html');">Sequence Alignment</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Studies%20of%20Tree%20Topology.html');">Studies of Tree Topology</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="WorkflowsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Workflows ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingHelpPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Help ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Learning%20how%20to%20use%20Mesquite.html');">Learning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Bugs%20and%20Troubleshooting.html');">Bugs &amp; Troubleshooting</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Getting%20Help.html');">Getting Help</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Suggesting%20New%20Features.html');">Your Suggestions</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Glossary.html');">Glossary</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('FAQ.html');">FAQ</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TechnicalDetailsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Technical Details ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="HistoryPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">History ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('History%20of%20Mesquite.html');">History of Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Why%20Mesquite%3F.html');">Why Mesquite?</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('History%20of%20New%20Features.html');">New Features & Bug List</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Release%20Dates.html');">Release Dates</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="PublishingResultsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Publishing Results ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Documenting%20Your%20Work.html');">Documenting your work</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('How%20to%20Cite%20Mesquite.html');">Citing Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Publishing%20Results.html');">Publishing results</a></td></tr>
+		</table>
+    </div>
+  </div>
+
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Acknowledgements.html')">Acknowledgments</a>
+  </div>
+
+<hx3>&nbsp;</hx3>
+  <!-- end #sidebar1 --></div>
+
+  <div id="mainContent">
+    
+<!-- InstanceBeginEditable name="content" -->
+    
+    
+<h1 id="toc0"><a name="Sequence Alignment" id="Sequence Alignment"></a>Sequence Alignment using Align</h1>
+<p>Many of the sequence alignment tools in Mesquite are provided by the <strong>Align</strong> package provides some basic tools involving alignment of sequence data. You may also wish to consider using the <a class="wiki_link_ext" href="http://mesquiteproject.org/packages/opalescent/index.html" rel="nofollow">Opal and Opalescent</a> packages for Mesquite.</p>
+<p>The Align package was written by David R. Maddison, Travis J. Wheeler, and Wayne P. Maddison. The <a href="#Citation">citation</a> for this tool is provided below.<br />
+  <br />
+  The Align package contains:<br />
+</p>
+<ul><li>Tools for <a href="#Manual Alignment Tools">manual alignment</a></li>
+  <li>Tools for <a href="#Automated Alignment">automated alignment</a></li>
+  <li>Various <a href="#Statistics">statistics</a> about taxa based about alignments</li>
+  <li>Some <a href="#Visualization Features">visualization features</a>.</li>
+</ul>
+	  
+	  
+	  <h2 id="toc0"><a name="Manual Alignment Tools"></a>Manual Alignment Tools</h2>
+ <h3 id="toc1"><a name="Manual Alignment Tools-Moving bases by hand"></a>Moving bases by hand</h3>
+ There are several tools available for moving bases by hand. These tools have a &quot;Live update analyses, etc.&quot; option in their popup menus. If this is chosen, then all calculations (e.g., charts, character tracings, etc.) that depend upon these data will be redone as you use these tools. (Recalculations will be done once you let go of the mouse button, in any event.) If some of these calculations take a while, this can dramatically slow down use of these tools.<br />
+<br />
+There are some <a class="wiki_link" href="Visualization%20Features.html">visualization features</a> in Mesquite that can aid in manual alignment.<br />
+<h4 id="toc2"><a name="Manual Alignment Tools-Moving bases by hand-Move Blocks Tool"></a><img src="files/BlockMover.gif" alt="BlockMover.gif" title="BlockMover.gif" />Move Blocks Tool</h4>
+ This tool will move a contiguous block of a single sequence. If you move the tool between two bases it will let you split a block in two, inserting gaps.<br />
+If you wish, you can move more than a single, contiguous block by turning on &quot;Move Selected Block&quot; within the tool's popup menu, then using the tool to move selected bases and gaps.<br />
+<h4 id="toc3"><a name="Manual Alignment Tools-Moving bases by hand-Multiple Block Splitter"></a><img src="files/multiBlockSpitter.gif" alt="multiBlockSpitter.gif" title="multiBlockSpitter.gif" />Multiple Block Splitter</h4>
+ This tool allows one to draw a line between two sites, through one or more sequences, as shown in the following image:<br />
+<div style="text-align: center"><img src="files/multiSplitBefore.gif" alt="multiSplitBefore.gif" title="multiSplitBefore.gif" /></div><br />
+Then, if the tool use used upon the line, those sequences can be dragged, opening up gaps along the line:<br />
+<div style="text-align: center"><img src="files/multisplitAfter.gif" alt="multisplitAfter.gif" title="multisplitAfter.gif" /></div><br />
+If you hold the Option key down, then all sequences other than those delimited will be moved. There are additional options in the popup menu of the tool's button that allow you to request that entire sequences are moved, or all sequences on one side. You can also request that the matrix be expanded on either end as necessary as you move sequences around; by default this option is off.<br />
+<br />
+<h4 id="toc4"><a name="Manual Alignment Tools-Moving bases by hand-Selected Block Mover"></a><img src="files/selectedBlockMover.gif" alt="selectedBlockMover.gif" title="selectedBlockMover.gif" />Selected Block Mover</h4>
+ This tool move move a selected block of cells. There are additional options in the popup menu of the tool's button. For example, you can also request that the matrix be expanded on either end as necessary as you move sequences around; by default this option is off.<br />
+<h4 id="toc5"><a name="Manual Alignment Tools-Moving bases by hand-Push Sequence Tool"></a><img src="files/rightGrab.gif" alt="rightGrab.gif" title="rightGrab.gif" />Push Sequence Tool</h4>
+ This tool pushes to the right the entire sequence to the right of the tool, or, if you have the Option key held down, it pushes to the left the entire sequence to the left of the tool.<br />
+<br />
+<h3 id="toc6"><a name="Manual Alignment Tools-Shifting sequences"></a>Shifting sequences</h3>
+ Select a portion of a single sequence. If you then choose Matrix&gt;Alter/Transform&gt;Shift Other to Match Selected..., then you will be presented with a dialog box that lets you choose a range of taxa, as well as a percentage. By default the range of taxa is the remaining taxa in the matrix. The default percentage is 75%.<br />
+If you press OK, Mesquite will look at each of the taxa within the range, and see if it can find a portion of each that is at least as similar as the percentage indicated to the selected portion (no gaps allowed). For each taxon that it can find such a match, it will shift those sequence such that the matched regions are lined up with the selected region.<br />
+Note that this is not an alignment algorithm; it simply shifts the sequences, maintaining whatever gaps are there or not in the sequences to be shifted.<br />
+<br />
+<a name="shiftMinimizeStops"></a>You can also choose Matrix&gt;Alter/Transform&gt;Shift To Minimize Stop Codons to shifts each sequence 0, 1, or 2 bases so as to minimize the number of stop codons. The amount each sequence will be shifted will vary from sequence to sequence. This feature requires that codon positions be designated.<br />
+ <h3 id="toc8"><a name="Manual Alignment Tools-Removal of Gaps"></a>Removal of Gaps</h3>
+ <h4 id="toc9"><a name="Manual Alignment Tools-Removal of Gaps-Remove All-Gap Characters"></a>Remove All-Gap Characters</h4>
+ Choosing this from Matrix&gt;Alter/Transform&gt;Remove All-Gap Characters will remove all sites in the matrix that consist entirely of gaps.<br />
+<h4 id="toc10"><a name="Manual Alignment Tools-Removal of Gaps-Collapse Gaps"></a>Collapse Gaps</h4>
+ With a block of the matrix selected, choosing Matrix&gt;Alter/Transform&gt;Collapse Gaps will remove all gaps in the selected block, with the bases or amino acids pushed as far to the left as possible.<br />
+<br />
+<h3 id="toc11"><a name="Manual Alignment Tools-Selecting Hint"></a>Selecting Hint</h3>
+ To select from one cell to the end of the sequence, select the cell and then hit Shift-Alt-Arrow key (or, on OS X, Shift-Option-Arrow key), where the arrow key is either the right or left arrow key.<br />
+<br />
+<h3 id="toc12"><a name="Manual Alignment Tools-Preparing the Matrix"></a>Preparing the Matrix</h3>
+ Several options under Matrix&gt;Alter/Transform may be useful to modify the matrix in preparation for alignment. Some of these options are under &quot;Other Choices...&quot;.<br />
+<ul><li>Collapse Gaps to Left</li><li>Collapse Gaps to Right</li><li>Trim Terminal Gaps Character</li><li>Gaps to Missing</li><li>Missing to Gaps</li><li>Terminal Gaps to ?</li><li>Terminal ? to Gaps</li><li>Reverse Complement</li><li>Reverse</li><li>Nucleotide Complement</li></ul>
+ 
+	  <h2 id="toc0"><a name="Automated Alignment"></a>Automated Alignment</h2>
+<h3 id="toc1"><a name="Automated Alignment-Pairwise Aligner tool"></a><img src="files/alignToDropped.gif" alt="alignToDropped.gif" title="alignToDropped.gif" />Pairwise Aligner tool</h3>
+ This tool allows one to drag one or a selected set of sequences and drop them onto a reference sequence; the sequences dropped will then be aligned to the reference sequence, preserving whatever gaps are present in the reference sequence. In the process, if gaps need to be inserted into the reference sequence, then they will be also inserted into other, non-selected sequences.<br />
+<br />
+The dropdown menu for this tool allows you to change the gap opening cost (default 8) the gap extension cost (default 3) within bases of a sequences, as well as the equivalent costs at the ends of the sequence (default 2 and 2, respectively).<br />
+The default substitution costs are:<br />
+<ul><li>for DNA and RNA data, 5 for a transition and 10 for a transversion</li><li>for protein data, 5 for each substitution.</li></ul>
+These costs can be changed using the Substitution Costs dialog box available from the tool's dropdown menu.<br />
+<br />
+The dropdown menu also allows you to choose whether or not Mesquite reverse complements the sequences that are dragged if needed. If this option is chosen, then Mesquite will compare the alignment score of the sequence as it stands to the reference sequence, and the reverse complement of the sequence, and choose whichever of the two has the best alignment score, and align either the original or reverse-complemented sequence.<br />
+<br />
+The options you set in the drop down menu can be made to be automatically chosen for all future uses by first choosing Ignore File Settings; Use Defaults, and then by choosing Save Current Settings as Defaults.<br />
+<br />
+<h3 id="toc2"><a name="Automated Alignment-Pairwise Shifter tool"></a><a name="shifter"></a><img src="files/shiftToDropped.gif" alt="shiftToDropped.gif" title="shiftToDropped.gif" />Pairwise Shifter tool</h3>
+ This tool is very similar to the Pairwise Aligner tool, except that it does not do a full alignment, in the sense that it does not insert any new gaps into the sequence that is dragged. Instead, it simply shifts the entire sequence, to the right or left, in a way to optimize the match between the two sequences.<br />
+<br />
+The dropdown menu for this tool allows you to choose which base is used as the &quot;anchor&quot; base for the alignment. There are two options in the menu:<br />
+<ul><li>Shift Dragged Sequence so that Dragged Base Matches its Counterpart</li><li>Shift Dragged Sequence so that Base on Which it is Dropped Matches its Counterpart</li></ul>
+The first option, &quot;Shift Dragged Sequence so that Dragged Base Matches its Counterpart&quot;, will cause the tool to have the following behavior: the user grabs the sequence to be shifted (the &quot;dragged sequence&quot;) at a particular base (let's say the 50th base in the dragged sequence). If that base is dragged and dropped on to the reference sequence (the &quot;dropped sequence&quot;), then Mesquite internally does a standard pairwise alignment between the sequences, using a classic Needleman-Wunsch algorithm. It then looks at the dragged base (the 50th base in the dragged sequence in this example), and sees to which base it is aligned (its counterpart) in the dropped sequence in this behind-the-scenes alignment. Mesquite then shifts the entire dragged sequence, preserving existing gaps in that sequence, right or left until the dragged (50th) base is matched up to its counterpart in the reference sequence.<br />
+<br />
+The second option, &quot;Shift Dragged Sequence so that Base on Which it is Dropped Matches its Counterpart&quot;, will cause the tool to have the following behavior: the user grabs the sequence to be shifted (the &quot;dragged sequence&quot;) anywhere within the sequence, drags it and drops it onto a particular base (the dropped base) in the reference sequence (let's say the 200th base in the reference sequence). Mesquite internally does a standard pairwise alignment between the sequences, using a classic Needleman-Wunsch algorithm. It then looks at the dropped base (the 200th base in the dropped sequence in this example), and sees to which base it is aligned (its counterpart) in the dragged sequence in this behind-the-scenes alignment. Let's call this base in the dragged sequence the counterpart to the dropped base. Mesquite then shifts the entire dragged sequence, preserving existing gaps in that sequence, right or left until the counterpart to the dropped base is matched up to the dropped base in the reference sequence.<br />
+<br />
+The dropdown menu also allows you to choose whether or not Mesquite reverse complements the sequences that are dragged if needed. If this option is chosen, then Mesquite will compare the alignment score of the sequence as it stands to the reference sequence, and the reverse complement of the sequence, and choose whichever of the two has the best alignment score, and shift either the original or reverse-complemented sequence.<br />
+<br />
+The options you set in the drop down menu can be made to be automatically chosen for all future uses by first choosing Ignore File Settings; Use Defaults, and then by choosing Save Current Settings as Defaults.<br />
+<br />
+<h3 id="toc3"><a name="Automated Alignment-Aligning nucleotide sequences to match an amino acid alignment"></a><a name="DNAToProtein"></a>Aligning nucleotide sequences to match an amino acid alignment</h3>
+ This feature allows one to take a matrix of nucleotides, and an existing alignment of their translated amino acids, and have the nucleotides realigned to match the amino acid alignment. To do this, you will need to have in the same Mesquite file both the nucleotide matrix and the protein matrix. For example, you could do the following:<br />
+<ul><li>Assign codon positions and genetic code to a nucleotide matrix (see the main Mesquite manual for details).</li><li>Adjust each sequence so that its reading frame is correct, by using the <a class="wiki_link" href="Manual%20Alignment.html#shiftMinimizeStops">Shift To Minimize Stops</a> feature.</li><li>Trim any incomplete codons from the ends of the sequences by selecting the entire matrix and choosing Alter&gt;DNA/RNA Data Cell Manipulation&gt;Trim Terminal Incomplete Codons. &quot;Terminal Incomplete Codons&quot; are nucleotides that are only part of a codon. For example, if one sequence starts at a third position, then that third position nucleotide represents only one-third of a codon, and it will be trimmed. Once this is done, only complete codons will be left in the sequence</li><li>Translate the DNA matrix to amino acids by choosing Characters&gt;Make New Matrix From&gt;Translate DNA To Protein. You will now have the protein matrix in your file.</li><li>Align the protein matrix. You could use, for example, the MAFFT Align feature described below. If instead you export the matrix (e.g., using the File&gt;Export options), align the proteins in a separate program, you will then need to choose File&gt;Include file to include the output of the alignment program into your file.</li><li>Finally, go to your DNA matrix, and choose Matrix&gt;Alter/Transform&gt;Align DNA to Protein.</li></ul>
+<h3 id="toc4"><a name="Automated Alignment-ClustalW Align"></a>ClustalW Align</h3>
+ This feature allows one to select a single block of sequences, and then have ClustalW align them. To do this, select the block, then choose Matrix&gt;Align Multiple Sequences&gt;Clustal Align...<br />
+<br />
+You will be presented first with a query as to whether you want to do the ClustalW alignment on a separate thread, or on the same thread. Mesquite can do multiple things at once, because it can have one thing running on one computational &quot;thread&quot;, and another thing happening on a separate thread. There is a main thread of the program that is the thread the user deals with directly, and that allows you to give commands to Mesquite (via menus, etc.). If this main thread is busy with a calculation, then you will not be able to ask for new things to happen in Mesquite until the calculation is done. By choosing &quot;Separate&quot; in the query that appears, you are asking Mesquite to create a thread separate from the main thread, thus enabling you to do things in Mesquite while the Clustal alignment is proceeding. However, if you do this, you must remember not to edit the matrix or close the window showing the matrix; if you do, Mesquite will be very unhappy. The safest thing to do is choose &quot;No&quot; to that query.<br />
+<br />
+Once you make that choice, you will see a dialog box in which you must enter the directory location of ClustalW; if you use the Browse button in the dialog box you can choose ClustalW and have the location filled in automatically. If you wish, you can also alter the options of clustalw. If you then press OK, Mesquite will send that section of the matrix to ClustalW and ask for it to be aligned; it will then harvest the results and reincorporate that piece into the matrix.<br />
+<br />
+The version of ClustalW that is to be used by Mesquite must be a version of ClustalW that is executable from the command line of your operating system.<br />
+<br />
+<h3 id="toc5"><a name="Automated Alignment-MAFFT Align"></a>MAFFT Align</h3>
+ This tool is just like the ClustalW Align feature described above, except that it works for the <a class="wiki_link_ext" href="http://mafft.cbrc.jp/alignment/software/" rel="nofollow" target="_blank">MAFFT</a> alignment program.<br />
+<br />
+<h3 id="toc6"><a name="Automated Alignment-Muscle Align"></a>Muscle Align</h3>
+ This tool is just like the ClustalW Align feature described above, except that it works for Robert C. Edgar's <a class="wiki_link_ext" href="http://www.drive5.com/muscle/" rel="nofollow">MUSCLE</a> program.
+
+	  <h2 id="toc0"><a name="Statistics"></a>Statistics</h2>
+Align provides two statistics that can be calculate for each taxon in a matrix.<br />
+<br />
+The first, the <strong>Alignment Score</strong>, is simply the &quot;cost&quot; of the alignment between that taxon and a reference sequence, using Mesquite's default pairwise aligner. By default, the reference sequence is the first one in the matrix; it can be reset by choosing the menu item &quot;Reference Taxon..&quot;. If you have asked to see this in a Taxa List window (by List&gt;Show Column&gt;Number for Taxon&gt;Other Choices...&gt; Alignment Score to Ref.), then the &quot;Reference Taxon&quot; menu item is available in the popup menu you get when you touch on the title of the column. The lower this number, the better the alignment between the taxon and the reference taxon.<br />
+<br />
+The second, the <strong>Alignment Score/Reverse Complement Alignment Score</strong>, is the cost of the alignment of that taxon to the reference sequence, divided by the cost of the alignment of the reverse complement of that taxon's sequence to the reference sequence. If this value is low (&lt;1), it means that the alignment is better if both sequence are in their current orientation than if one is reverse complemented; if it is greater than 1, then it might be an indication that one of the sequences is reverse complemented relative to the other one.
+
+	  <h2 id="toc0"><a name="Visualization Features"></a>Visualization Features</h2>
+<h3 id="toc1"><a name="Visualization Features-Coloring Cells for Alignment"></a>Coloring Cells for Alignment</h3>
+ Manual alignment can be made easier by appropriate choice of a method to color cells. You can set the method to color cells using the Matrix&gt;Color cells submenu. Three useful methods are:<br />
+<ul><li>Character State — This colors cells according to nucleotide. This is the default coloring, but in case it has been turned off, you can turn it back on by going to Matrix&gt;Color Cells&gt;Character State.</li><li>Aligning Colors — This colors pyrimidines by similar colors, and likewise purines</li><li>Highlight Apparently Slightly Misaligned — This highlights subsequences that appear better shifted one or two sites left or right:<br />
+<img src="files/colorMisaligned.jpg" alt="colorMisaligned.jpg" title="colorMisaligned.jpg" /><br />
+<br />
+It bases its calculations on the dominant nucleotides in the columns, and hence is useful only in a matrix that is mostly well aligned. Shifts more distant than one or two sites are not considered. Do not consider this a definitive indication that the cells should move; its purpose is only to help you find possible issues, but the decision as to whether to shift or not is still up to you. The highlight does not specify which direction the subsequences might be best shifted; to learn this, hold the cursor over the sites in question.</li></ul>
+
+	  
+	  <h2 id="toc0"><a name="Citation"></a>Citation</h2>
+	  The Align package should be cited as:<br />
+<br />
+<strong>Maddison, D.R., T.J. Wheeler, and W.P. Maddison. 2016. Align: a Mesquite package for aligning sequence data. Version 1.8. <a href="http://mesquiteproject.org/Align.html">http://mesquiteproject.org/Align.html</a></strong>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+    <!-- InstanceEndEditable -->
+
+    
+    
+    </div>
+	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<script type="text/javascript">
+<!--
+
+
+var OverviewOfMesquitePanel = null;
+var GettingStartedPanel = null;
+var BasicMesquiteOperationPanel = null;
+var TaxaTreesCharactersPanel = null;
+var AnalysesPanel = null;
+var WorkflowsPanel = null;
+var GettingHelpPanel = null;
+var TechnicalDetailsPanel = null;
+var HistoryPanel = null;
+var PublishingResultsPanel = null;
+
+if (qsParm['BasicMesquiteOperationPanel']=='open')
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: true});
+else
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: false});
+	
+if (qsParm['OverviewOfMesquitePanel']=='open')
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: true});
+else
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: false});
+	
+if (qsParm['GettingStartedPanel']=='open')
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: true});
+else
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: false});
+
+if (qsParm['TaxaTreesCharactersPanel']=='open')
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: true});
+else
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: false});
+
+if (qsParm['AnalysesPanel']=='open')
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: true});
+else
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: false});
+
+if (qsParm['WorkflowsPanel']=='open')
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: true});
+else
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: false});
+
+if (qsParm['GettingHelpPanel']=='open')
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: true});
+else
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: false});
+    
+if (qsParm['TechnicalDetailsPanel']=='open')
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: true});
+else
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: false});
+
+if (qsParm['HistoryPanel']=='open')
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: true});
+else
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: false});
+if (qsParm['PublishingResultsPanel']=='open')
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: true});
+else
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: false});
+
+
+//-->
+</script>
+</body>
+<!-- InstanceEnd --></html>
