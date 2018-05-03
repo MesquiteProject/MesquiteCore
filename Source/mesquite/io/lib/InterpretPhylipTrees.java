@@ -84,6 +84,9 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 		incrementMenuResetSuppression();
 		if (file.openReading()) {
 			initializeTreeImport(file, taxa);
+			if (StringUtil.notEmpty(arguments) && arguments.indexOf("useStandardizedTaxonNames")>=0)
+				taxonNamer = new SimpleNamesTaxonNamer();
+				
 			TreeVector trees = IOUtil.readPhylipTrees(this,mf, file, null, null, taxa, enlargeTaxaBlock, taxonNamer,getTreeNameBase(), true);
 			importExtraFiles(file,taxa, trees);
 			finishImport(null, file, false );

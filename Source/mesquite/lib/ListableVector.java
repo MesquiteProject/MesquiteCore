@@ -686,7 +686,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 							s+=separator;
 							writeSeparator=false;
 						}
-						s += " " + CharacterStates.toExternal(i) + " - " +  CharacterStates.toExternal(lastThird) + "\\3";
+						s += " " + CharacterStates.toExternal(i) + "-" +  CharacterStates.toExternal(lastThird) + "\\3";
 						writeSeparator=true;
 						i = lastThird;
 					}
@@ -701,7 +701,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 					}
 				}
 				else if (continuing == 1) {  //second instance
-					s += " - ";
+					s += "-";
 					continuing = 2;
 				}
 			}

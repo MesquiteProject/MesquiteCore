@@ -4929,7 +4929,11 @@ class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { 
 		int amount = e.getScrollAmount() * 2;
 		boolean blockScroll = e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL;
 		boolean vert = !e.isShiftDown();
-		boolean upleft = e.getWheelRotation() < 0;
+		boolean upleft=false;
+		if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(1.7)) // this and following line are to fix the bug in Java 8 update 161
+			upleft = e.getPreciseWheelRotation()<0;
+		else 
+			upleft = e.getWheelRotation()<0;
 		if (vert) {
 			if (blockScroll)
 				amount = vScroll.getBlockIncrement();

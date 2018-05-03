@@ -1,0 +1,475 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/MesquiteTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Simulating DNA Evolution</title>
+<!-- InstanceEndEditable -->
+
+<![endif]--><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.thrColFixHdr #sidebar2, .thrColFixHdr #sidebar1 { padding-top: 30px; }
+.thrColFixHdr #mainContent { zoom: 1; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<style type="text/css">
+<!--
+-->
+</style>
+<link href="CSS/mesquitePackage.css" rel="stylesheet" type="text/css" />
+<link href="SpryAssets/SpryCollapsiblePanel.css" rel="stylesheet" type="text/css" />
+
+<script src="SpryAssets/SpryCollapsiblePanel.js" type="text/javascript"></script>
+<script type="text/javascript" src="SpryAssets/SpryURLUtils.js"></script>
+<script type="text/javascript" src="javascript/mesquite.js"></script>
+
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+</head>
+
+<body bgcolor="#ffffff" class="thrColFixHdr" >
+
+<div id="container">
+  <div id="header">
+    <table width="100%" border="0" cellpadding="4">
+  <tr>
+    <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Simulating DNA Evolution<!-- InstanceEndEditable --></div></td>
+    <td width="2%">&nbsp;</td>
+    <td width="14%">Version 3.41<br />
+      4 May 2018<br /></td>
+  </tr>
+</table>
+
+</div>
+  
+  
+<div id="sidebar1">
+  
+  
+  
+  
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('http://mesquiteproject.github.io/MesquiteCore')">Mesquite Website Home</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('home.html')">Introduction to Mesquite</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Installation.html')">Download & Installation</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('History%20of%20New%20Features.html')">Recent Changes</a>
+  </div>
+
+  <div id="OverviewOfMesquitePanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Overview of Mesquite ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingStartedPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Started ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Installation.html');">Download and Installation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Additional%20Mesquite%20Packages.html');">Additional Packages</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Beginning%20Mesquite.html');">Beginning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Example%20Files.html');">Example Files</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="BasicMesquiteOperationPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Basic  Operations ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Files.html');">Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Menus.html');">Menus</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Windows.html');">Windows</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Charts.html');">Charts</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Selection.html');">Selection</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Modules.html');">Modules</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TaxaTreesCharactersPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Taxa, Trees, Characters ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Characters%20&%20Matrices.html');">Characters &amp; Matrices</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Taxa.html');">Taxa</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Trees.html');">Trees</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="AnalysesPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Analyses ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Align.html');">Sequence Alignment</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Studies%20of%20Tree%20Topology.html');">Studies of Tree Topology</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="WorkflowsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Workflows ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingHelpPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Help ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Learning%20how%20to%20use%20Mesquite.html');">Learning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Bugs%20and%20Troubleshooting.html');">Bugs &amp; Troubleshooting</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Getting%20Help.html');">Getting Help</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Suggesting%20New%20Features.html');">Your Suggestions</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Glossary.html');">Glossary</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('FAQ.html');">FAQ</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TechnicalDetailsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Technical Details ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="HistoryPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">History ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('History%20of%20Mesquite.html');">History of Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Why%20Mesquite%3F.html');">Why Mesquite?</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('History%20of%20New%20Features.html');">New Features & Bug List</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Release%20Dates.html');">Release Dates</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="PublishingResultsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Publishing Results ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Documenting%20Your%20Work.html');">Documenting your work</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('How%20to%20Cite%20Mesquite.html');">Citing Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Publishing%20Results.html');">Publishing results</a></td></tr>
+		</table>
+    </div>
+  </div>
+
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Acknowledgements.html')">Acknowledgments</a>
+  </div>
+
+<h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+
+  <div id="mainContent">
+    
+<!-- InstanceBeginEditable name="content" -->
+    
+    
+<h1 id="toc0"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing"></a>Simulating DNA sequence evolution, with examples of hypothesis testing</h1>
+ This section provides a brief introduction to some of the analyses you can do by simulating DNA sequence evolution, including:<br />
+<br />
+<ul><li><a  href="Simulating%20DNA%20Evolution.html#basicsimulation">Simulating DNA sequence evolution on a tree</a></li><li><a  href="Simulating%20DNA%20Evolution.html#complexmodels">Building more complex models</a></li><li><a  href="Simulating%20DNA%20Evolution.html#multisim">Batch Architect: Simulating, exporting, and analyzing multiple matrices</a></li><li><a  href="Simulating%20DNA%20Evolution.html#examples">Examples of tests of phylogenetic hypotheses</a></li></ul><br />
+Example files for this chapter are in the &quot;Character_Simulations&quot; folder within the &quot;examples&quot; folder within Mesquite_Folder.<br />
+<br />
+<h2 id="toc1"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Simulating DNA sequence evolution on a tree"></a><a name="basicsimulation"></a>Simulating DNA sequence evolution on a tree</h2>
+ First, let's try evolving DNA sequences up the branches of a model tree, thereby creating an entire simulated matrix. Open the example file &quot;01-modelTree.nex&quot; and you will be presented with a tree. For the moment it doesn't matter where this tree came from; the important thing to note is that it has branch lengths inferred from a matrix of 18S rDNA; this matrix is also included in the file.<br />
+In order to simulate DNA sequences, you need:<br />
+<ul><li>A tree, with branch lengths specified. A tree with branch lengths is included in this example file.</li><li>A specification of how the DNA sequences evolve. This model could have many elements. One common form of model specifies the relative frequencies of A, C, G, and T; the relative rates of change of the different characters; and the relative rates of change between A and C, A and G, and so on.</li></ul><h3 id="toc2"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Simulating DNA sequence evolution on a tree-Creating a model of character evolution"></a>Creating a model of character evolution</h3>
+ For sake of simplicity, let's presume that A, C, G, and T occur at equal frequencies, and that all pairs of nucleotides have equal rates of change between them. To make it interesting, though, let's presume that some characters evolve more quickly than others, with the distribution of rates of change following a discrete gamma distribution with shape parameter 1.5. If one presumes (as we will) that there were four categories of rates, then this model presumes that one quarter of the characters have rate 0.225, one quarter 0.589, one quarter 1.05, and the rest 2.136, as shown in the following figure:<br />
+<div style="text-align: center"><img src="files/gamma15.gif" alt="gamma15.gif" title="gamma15.gif" /></div><br />
+To create this model of character rate variation in Mesquite, choose (Tree) Characters&gt;New Character Submodel&gt;Gamma Rate Variation Model... You will be presented with a dialog box in which you can choose the name of the model you will create; you might call it &quot;my gamma model&quot;. You will then be presented with a dialog box allowing you to specify the nature of the model; set the shape parameter to 1.5:<br />
+<div style="text-align: center"><img src="files/gamma15dlog.gif" alt="gamma15dlog.gif" title="gamma15dlog.gif" /></div><br />
+Now we need to create a composite model of character evolution that specifies both this gamma rate variation model, the state frequency model, and the state-to-state rate model. To do this, choose (Tree) Characters&gt;New Character Model&gt;Composite DNA Simulation Model..., name the model (perhaps call it &quot;my full model&quot;), and you will be presented with a dialog box in which you can choose the various submodels:<br />
+<div style="text-align: center"><img src="files/fullmodel.gif" alt="fullmodel.gif" title="fullmodel.gif" /></div><br />
+<span style="display: block; text-align: left;">The only element of this model we will change is the character rates model; choose &quot;my gamma model&quot; from the drop-down menu to select the gamma distribution model you created as the model of site-to-site rate variation. The model &quot;my full model&quot; is now ready to use.</span><br />
+<span style="display: block; text-align: left;">Note that the dialog box in which you edited &quot;my full model&quot; has button with a ? on it (<img src="files/helpButton.gif" alt="helpButton.gif" title="helpButton.gif" />). When a button like this is present in a Mesquite window, touching on it will display a small note with information about how to use the window's feature.</span><br />
+<h3 id="toc3"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Simulating DNA sequence evolution on a tree-Simulating evolution"></a>Simulating evolution</h3>
+ <span style="display: block; text-align: left;">Now choose (Tree) Characters&gt;Make New Matrix from&gt;Simulated Matrices on Current Tree. This will ask Mesquite to simulate evolution of characters up the current tree in the tree window to produce a new matrix. You will be asked what sort of character simulator to use. As we wish to evolve a DNA sequence up the tree's branches, choose &quot;Evolve DNA characters&quot; from the list. (There might be other options presented, such as Evolve Continuous Characters, but we don't wish to try that now.) You will then need to chose the model of DNA sequence evolution; choose the composite one you created earlier called &quot;full model&quot;. When it queries for the number of character, choose a large number, such as 2000. When it asks for the name of the matrix to be created, call it &quot;simulated&quot; (although you could choose another name, if you wish). Mesquite will then simulate evolution, and a matrix will be produced, such as this one:</span><br />
+<div style="text-align: center"><img src="files/simMatrix.gif" alt="simMatrix.gif" title="simMatrix.gif" /></div><br />
+<h3 id="toc4"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Simulating DNA sequence evolution on a tree-Examining the results of the simulation"></a>Examining the results of the simulation</h3>
+ <span style="display: block; text-align: left;">Let's see whether the rate variation between characters suggested by this simulated matrix matches a gamma distribution with shape parameter 1.5, as used in the model. First, save the matrix to a file so that you can read it into PAUP*. Choose (Character Matrix) Characters&gt;Save Copy of Matrix&gt;simulated to save a copy of your newly created matrix; perhaps name the file &quot;Simulated Matrix&quot;.</span><br />
+<span style="display: block; text-align: left;">In PAUP* 4, execute the file Simulated Matrix, and then execute the following commands:</span><br />
+
+<style type="text/css"><!--
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.text  {font-family:monospace;}
+.text .imp {font-weight: bold; color: red;}
+.text span.xtra { display:block; }
+
+-->
+</style><pre class="text">nj;
+lset nst=1 basefreq=equal rates=gamma shape=estimate;
+lscore 1;</pre>
+
+<br />
+<br />
+<span style="display: block; text-align: left;">(If you don't know how to give PAUP* commands, please read your PAUP* documentation. There are equivalent ways to give these commands in the MacOS versions using dialog boxes, but it is much easier for us to describe what to do with these text commands.)</span><br />
+<span style="display: block; text-align: left;">The first command (&quot;nj;&quot;) will find a neighbor-joining tree. While this might not be the best way to get a tree, but it will be fast, and give a tree that is good enough for our purposes. The second command (&quot;lset...&quot;) sets the model used for likelihood calculations to be the model used by Mesquite in the simulations, except that the shape parameter used is not specified, but is instead estimated from the data. The third command (&quot;lscore 1;&quot;) tells PAUP* to calculate the likelihood of the tree, in the course of which it will also estimate the shape parameter of the gamma distribution using likelhood. You might end up with PAUP* reporting something like this:</span><br />
+
+<style type="text/css"><!--
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.text  {font-family:monospace;}
+.text .imp {font-weight: bold; color: red;}
+.text span.xtra { display:block; }
+
+-->
+</style><pre class="text">Tree 1
+-------------------
+-ln L 19742.05025
+Shape 1.583552</pre>
+
+<br />
+<span style="display: block; text-align: left;">The shape parameter should be around 1.5.</span><br />
+<br />
+<br />
+<h3 id="toc5"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Simulating DNA sequence evolution on a tree-Building more complex models"></a>Building more complex models</h3>
+ <span style="display: block; text-align: left;">More complex composite models of DNA evolution can be built by choosing among the following:</span><br />
+<span style="display: block; text-align: left;"><em>Models of root state frequencies:</em></span><br />
+<ul><li>Equal Frequencies: equal frequencies of states</li><li>Empirical Frequencies: frequencies of states the same as that found in an existing character matrix</li><li>User-specified Nucleotide Frequencies: frequencies of nucleotides specified by the user. You can create a model of this sort by choosing (Character Matrix) Characters&gt;New Character Submodel&gt;User-specified Nucleotide Frequencies... and then entering the appropriate values in the dialog box.</li></ul><br />
+<span style="display: block; text-align: left;"><em>Models of equilibrium state frequencies on other branches:</em></span><br />
+<ul><li>Equal Frequencies: equal frequences of states</li><li>Empirical Frequencies: frequencies of states the same as that found in an existing character matrix</li><li>User-specified Nucleotide Frequencies: frequencies of nucleotides specified by the user. You can create a model of this sort by choosing (Character Matrix) Characters&gt;New Character Submodel&gt;User-specified Nucleotide Frequencies... and then entering the appropriate values in the dialog box.</li></ul><br />
+<span style="display: block; text-align: left;">The above two submodels corresponds in PAUP* to the specifying the base frequencies in the likelihood settings; note that PAUP* does not allow separate specification of the model of frequences and the root and at other branches.</span><br />
+<span style="display: block; text-align: left;"><em>Models of rate variation among characters:</em></span><br />
+<ul><li>Equal Rates: all characters evolve at the same rate.</li><li>Codon Position Rates Model: a model specifying the relative rates of the different codon positions. If you wish to have the codon positions match those in an existing matrix, then codon positions need to be specified for a DNA matrix. To do this, choose (Character Matrix) Characters&gt;List of Characters to see the current codon positions. Select the characters in this list window, and then touch on the title of the column &quot;Codon Position&quot;. A drop-down menu will appear in which you can choose to set the codon positions to a sequence like 123123123... as appropriate.</li><li>Gamma Rates Model: a model specifying that rates of characters evolve according to a gamma distribution.</li><li>Gamma Invar Rates Model: a model specifying that a proportion of the characters are invariant, and the remainder follow a gamma distribution.</li><li>Proportion Invariant Model: a model specifying that a proportion of the characters are invariant, and the remainder evolve at one rate.</li></ul><br />
+<span style="display: block; text-align: left;">The first model (&quot;Equal Rates&quot;) is built in; you can create a model of the other kinds by choosing the appropriate items from the (Character Matrix) Characters&gt;New Character Submodel menu and then entering the values in the dialog box.</span><br />
+<span style="display: block; text-align: left;"><em>Model of rate matrices:</em></span><br />
+<ul><li>Single Rate: all changes between nucleotides occur at the same rate.</li><li>Ti/Tv Rate Matrix Model: the two-parameter rate matrix model in which transversions occur at a different rate than transversions.</li><li>GTR Rate Matrix Model: the General Time Reversible, six-parameter rate matrix model in which you can specify rates of each type of nucleotide change.</li></ul><br />
+<span style="display: block; text-align: left;">The first model (&quot;Single Rate&quot;) is built in; you can create a model of the other kinds by choosing the appropriate items from the (Character Matrix) Characters&gt;New Character Submodel menu and then entering the values in the dialog box.</span><br />
+<h2 id="toc6"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Batch Architect: Simulating, exporting, and analyzing multiple matrices"></a><a name="multisim"></a>Batch Architect: Simulating, exporting, and analyzing multiple matrices</h2>
+ <span style="display: block; text-align: left;">Mesquite's Batch Architect package can be used to create multiple simulated matrices, export them to files, and create one or more files that provide instructions to programs to analyze the files produced. These instruction files are called &quot;batch files&quot;.</span><br />
+<span style="display: block; text-align: left;">One could, for example, examine the quality of Mesquite's simulation algorithms by simulating 100 matrices using a gamma model of character rate variation. In addition to creating 100 files with matrices, Mesquite would create a batch file containing instructions for PAUP* to estimate the gamma shape parameter for each of the matrices and save the resulting values to a score file. Mesquite would also create an file that would provide instructions to Mesquite to allow it to read PAUP*'s score file and display the resulting distribution of estimated gamma shape parameters in a chart. As a concrete example, simulation of 1000 matrices of 2000 characters each under a model with a gamma shape parameter of 2.0, estimating of the shape parameter by PAUP* for each of these matrices, and processing of the results by Mesquite yielded the following histogram:</span><br />
+<div style="text-align: center"><img src="files/gammaTest.gif" alt="gammaTest.gif" title="gammaTest.gif" /></div><br />
+<span style="display: block; text-align: left;">In this particular analysis, most matrices were estimated to have a gamma shape parameter close to that used in the model that generated the data; the average estimated gamma shape parameter over the 1000 replicates was 2.017.</span><br />
+<h4 id="toc7"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Batch Architect: Simulating, exporting, and analyzing multiple matrices--Conducting multiple simulations"></a>Conducting multiple simulations</h4>
+ <span style="display: block; text-align: left;">To conduct an analysis similar to this one, open up the example file &quot;02-gammaTest.nex&quot;. A complete model of DNA sequence evolution has already been added to that file, under the name &quot;gamma2model&quot;. It specifies, among other components, character rate variation following a gamma distribution with shape parameter 2.0. First, you will need to ask Mesquite to evolve several matrices up the branches of the phylogeny. Choose Analysis &gt; Matrices &amp; Batch Files &gt; Export Matrices &amp; Batch Files.... You will be presented with a choice of the source of matrices; choose &quot;Simulated Matrices on Current Tree&quot;, and press OK; for the character simulator, choose &quot;Evolve DNA characters&quot;. When asked to choose the model, choose &quot;gamma2model&quot;.</span><br />
+<span style="display: block; text-align: left;">You will now be presented with the main dialog box that you will need to master to use Mesquite's simulation tools. It looks approximately like this:</span><br />
+<div style="text-align: center"><img src="files/exportMatrixBatch.gif" alt="exportMatrixBatch.gif" title="exportMatrixBatch.gif" /></div><br />
+<span style="display: block; text-align: left;">The top part of the dialog box allows one to choose the base part of the name of the simulated matrices that will be produced, as well as to specify how many matrices will be produced (the &quot;number of replicates&quot;). Let's call have the file names begin with &quot;gammaTest&quot;, so enter that for the base name. In the interests of time, you can leave the number of replicates be only 10 (a more thorough analysis would involve many more replicates).</span><br />
+<span style="display: block; text-align: left;">In addition to creating the matrices, Mesquite will also produce one or two files accompanying those matrices that specify commands to be used by various software (e.g. PAUP, NONA, even Mesquite) to analyze those matrices. The manner in which these accessory files or &quot;batch files&quot; are written is controlled by the lower portion of the dialog box. The content of the batch files is specified by a &quot;batch file template&quot;. There are some templates supplied by Mesquite; you can also build your own. The template we need to use for this example is not built into Mesquite; you will need to load it in from a file. To do this, go into the Templates Manager, by pressing the Edit Templates button. In the dialog that is presented, you can see the build-in templates:</span><br />
+<div style="text-align: center"><img src="files/templateManager.gif" alt="templateManager.gif" title="templateManager.gif" /></div><br />
+<span style="display: block; text-align: left;">To load in the template we need to use, press the Load button, and open the &quot;GammaTest.template&quot; file that is in the &quot;templates&quot; folder within the Simulations examples folder. The template Gamma Model Test will now be added to the templates list. (You can see the nature of the template by selecting it in this list and pressing &quot;Edit&quot;, but you needn't do this now.)</span><br />
+<span style="display: block; text-align: left;">Once the template is loaded, press Done to return to the Export Matrices &amp; Batch Files dialog box. Make sure &quot;Gamma Model Test&quot; is selected, and press &quot;OK&quot;. You will now be asked to choose a folder to store the created files. As multiple files will be created, you may wish to create a new, empty folder to house the files. Once the location is chosen, you will be asked (after perhaps dismissing a notice or two) for the number of characters to be simulated within each matrix. Choose a fairly high number, such as 2000. Mesquite will now proceed to create through simulation all 10 files, plus two batch files.</span><br />
+<span style="display: block; text-align: left;">One of these batch files will be a file containing PAUP commands that will instruct PAUP* to read in each matrix file, quickly build a preliminary tree (using neighbor-joining, which should be good enough for our purposes), and estimate the gamma shape parameter using likelihood. The resulting value will be saved to a PAUP &quot;scorefile&quot;. Open up PAUP* 4 (make sure you have the latest version of PAUP*), and ask it to execute the file &quot;gammaCommands.nex&quot;. After PAUP has finished its analysis, go back to Mesquite, and choose Analysis &gt; Batch Architect&gt; Show Results via Instruction File.... You will be asked to first choose an &quot;instruction file&quot;, which is a text file telling Mesquite how to interpret another file. Choose the file &quot;MesquiteInstructions&quot;, which is the second batch file created by the Gamma Model Test template. After Mesquite processes the instruction file, it will ask you to find the results file, which in this case is the score file created by PAUP*. It should be called &quot;gammaTestScore.scr&quot; (if the base name of the matrices was &quot;gammaTest&quot;); open it when asked for the results file. You will then be presented with a histogram of the estimated gamma shape parameter values, that will look approximately like this:</span><br />
+<div style="text-align: center"><img src="files/gamma10reps.gif" alt="gamma10reps.gif" title="gamma10reps.gif" /></div><br />
+<span style="display: block; text-align: left;">Of course, your exact values should differ from these, but should cluster around 2.0. If you repeated this, but with many more replicates, then you should see a bell-shaped curve, as shown above.</span><br />
+<h4 id="toc8"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Batch Architect: Simulating, exporting, and analyzing multiple matrices--Testing simulations of more complex models"></a>Testing simulations of more complex models</h4>
+ <span style="display: block; text-align: left;">A test of accuracy of Mesquite's more complex models can also be done. For example, there are seven parameters in model that includes a General Time Reversible model of DNA evolution and assuming a proportion of the characters are invariant with the remainder following a gamma distribution. In 1000 replicates of 2000 characters evolved up the branches of a 49-taxon tree, the average value of these parameters as estimated by PAUP* is close (within 1.3 %) of the value used in model used in Mesquite, as shown by the results of one particular analysis:</span><br />
+
+
+<table >
+    <tr>
+        <th><strong>Parameter</strong><br />
+</th>
+        <th><strong>Value in model</strong><br />
+</th>
+        <th><strong>Estimated value</strong><br />
+</th>
+        <th><strong>Difference</strong><br />
+</th>
+    </tr>
+    <tr>
+        <td style="text-align: center;">Rate(A&lt;-&gt;C)<br />
+</td>
+        <td style="text-align: center;">1.8700052<br />
+</td>
+        <td style="text-align: center;">1.87771<br />
+</td>
+        <td style="text-align: center;">0.41%<br />
+</td>
+    </tr>
+    <tr>
+        <td style="text-align: center;">Rate(A&lt;-&gt;G)<br />
+</td>
+        <td style="text-align: center;">4.2537253<br />
+</td>
+        <td style="text-align: center;">4.26319<br />
+</td>
+        <td style="text-align: center;">0.22%<br />
+</td>
+    </tr>
+    <tr>
+        <td style="text-align: center;">Rate(A&lt;-&gt;T)<br />
+</td>
+        <td style="text-align: center;">2.5286454<br />
+</td>
+        <td style="text-align: center;">2.53006<br />
+</td>
+        <td style="text-align: center;">0.06%<br />
+</td>
+    </tr>
+    <tr>
+        <td style="text-align: center;">Rate(C&lt;-&gt;G)<br />
+</td>
+        <td style="text-align: center;">0.626305<br />
+</td>
+        <td style="text-align: center;">0.63152<br />
+</td>
+        <td style="text-align: center;">0.83%<br />
+</td>
+    </tr>
+    <tr>
+        <td style="text-align: center;">Rate(C&lt;-&gt;T)<br />
+</td>
+        <td style="text-align: center;">8.735118<br />
+</td>
+        <td style="text-align: center;">8.77468<br />
+</td>
+        <td style="text-align: center;">0.45%<br />
+</td>
+    </tr>
+    <tr>
+        <td style="text-align: center;">proportion invariant<br />
+</td>
+        <td style="text-align: center;">0.506903<br />
+</td>
+        <td style="text-align: center;">0.50903<br />
+</td>
+        <td style="text-align: center;">0.42%<br />
+</td>
+    </tr>
+    <tr>
+        <td style="text-align: center;">gamma<br />
+shape<br />
+</td>
+        <td style="text-align: center;">0.438522<br />
+</td>
+        <td style="text-align: center;">0.44422<br />
+</td>
+        <td style="text-align: center;">1.30%<br />
+</td>
+    </tr>
+</table>
+
+<span style="display: block; text-align: left;"><br />
+</span><br />
+<h3 id="toc9"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Batch Architect: Simulating, exporting, and analyzing multiple matrices-Examples of tests of phylogenetic hypotheses"></a><a name="examples"></a>Examples of tests of phylogenetic hypotheses</h3>
+ <span style="display: block; text-align: left;">You can use Mesquite's Batch Architect and Genesis packages to build your own statistical tests of various phylogenetic hypotheses. Some example tests are presented in the following pages:</span><br />
+<ul><li><a  href="Testing%20monophyly%20of%20a%20group%20of%20beetles.html">Testing monophyly of a group of beetles</a></li><li><a  href="Are%20strepsipterans%20related%20to%20flies%3F.html">Are strepsipterans related to flies? Exploring long branch attraction</a></li></ul><span style="display: block; text-align: center;"><br />
+</span><br />
+<h3 id="toc10"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Batch Architect: Simulating, exporting, and analyzing multiple matrices-Other analyses that Mesquite can do"></a>Other analyses that Mesquite can do</h3>
+ The examples given about used the Genesis package in Mesquite to simulate the evolution of characters under a specified model of DNA evolution, and up the branches of the current tree on the screen. Many more sorts of analyses can be done, using different sources of characters other than simulated DNA data, different sources of trees other than the current tree on the screen, and different calculations by other programs.<br />
+<span style="display: block; text-align: left;">Some of the different sources of character matrices include:</span><br />
+<ul><li>Simulators that evolve data other than DNA data, including continuously valued data.</li><li>Random modifications of existing matrices, including by non-parametric resampling (as used in classic bootstrap methods), random reshuffling of data, and jackknifing.</li></ul><br />
+<span style="display: block; text-align: left;">Some of the different sources of trees include:</span><br />
+<ul><li>Simulations using markovian models of speciation</li><li>Coalescence simulations of gene trees</li><li>Modifications of an existing tree by random modification of branch lengths</li><li>Modifications of an existing tree by randomly pruning a fraction of the taxa or by randomly adding taxa</li><li>Randomly sampled trees among all possible trees</li><li>Trees generated by randomly reshuffling taxa at their tips</li></ul><br />
+<br />
+<h3 id="toc11"><a name="Simulating DNA sequence evolution, with examples of hypothesis testing-Batch Architect: Simulating, exporting, and analyzing multiple matrices-References"></a>References</h3>
+ Shull, V., A.P. Vogler, M.D. Baker, D.R. Maddison, and P.M. Hammond. 2001. Sequence alignment of 18S ribosomal RNA and the basal relationships of adephagan beetles: Evidence for monophyly of aquatic families and the placement of Trachypachidae. Systematic Biology, 50:945-969.
+<!-- InstanceEndEditable -->
+
+    
+    
+    </div>
+	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<script type="text/javascript">
+<!--
+
+
+var OverviewOfMesquitePanel = null;
+var GettingStartedPanel = null;
+var BasicMesquiteOperationPanel = null;
+var TaxaTreesCharactersPanel = null;
+var AnalysesPanel = null;
+var WorkflowsPanel = null;
+var GettingHelpPanel = null;
+var TechnicalDetailsPanel = null;
+var HistoryPanel = null;
+var PublishingResultsPanel = null;
+
+if (qsParm['BasicMesquiteOperationPanel']=='open')
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: true});
+else
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: false});
+	
+if (qsParm['OverviewOfMesquitePanel']=='open')
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: true});
+else
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: false});
+	
+if (qsParm['GettingStartedPanel']=='open')
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: true});
+else
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: false});
+
+if (qsParm['TaxaTreesCharactersPanel']=='open')
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: true});
+else
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: false});
+
+if (qsParm['AnalysesPanel']=='open')
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: true});
+else
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: false});
+
+if (qsParm['WorkflowsPanel']=='open')
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: true});
+else
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: false});
+
+if (qsParm['GettingHelpPanel']=='open')
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: true});
+else
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: false});
+    
+if (qsParm['TechnicalDetailsPanel']=='open')
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: true});
+else
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: false});
+
+if (qsParm['HistoryPanel']=='open')
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: true});
+else
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: false});
+if (qsParm['PublishingResultsPanel']=='open')
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: true});
+else
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: false});
+
+
+//-->
+</script>
+</body>
+<!-- InstanceEnd --></html>

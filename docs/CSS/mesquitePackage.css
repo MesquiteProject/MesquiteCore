@@ -1,0 +1,147 @@
+body  {
+ 	background:#c5c5c5;
+	color: #454;
+	margin: 0; /* it's good practice to zero the margin and padding of the body element to account for differing browser defaults */
+	padding: 5;
+	text-align: center; /* this centers the container in IE 5* browsers. The text is then set to the left aligned default in the #container selector */
+ 	background-image: url(../mesquitePlain.gif);
+ 	background-position: 0 0;
+ 	background-repeat: no-repeat;
+	font-family:Verdana, Lucida, Arial, sans-serif; 
+	font-size:12px;
+}
+
+
+.thrColFixHdr #container { 
+	width: 80%;  /* using 20px less than a full 800px width allows for browser chrome and avoids a horizontal scroll bar */
+ 	background:#f3f3f3;
+	margin: 0 auto; /* the auto margins (in conjunction with a width) center the page */
+	border: 1px solid #777;
+	text-align: left; /* this overrides the text-align: center on the body element. */
+} 
+.thrColFixHdr #header { 
+ 	background:#f3f3f3;
+	background-position:bottom;
+	background-position:left;
+ 	background-repeat: no-repeat;
+	border-bottom: 1px solid #777;
+	padding: 0 10px 0 10px;  /* this padding matches the left alignment of the elements in the divs that appear beneath it. If an image is used in the #header instead of text, you may want to remove the padding. */
+} 
+
+.thrColFixHdr #header h1 {
+	margin: 0; /* zeroing the margin of the last element in the #header div will avoid margin collapse - an unexplainable space between divs. If the div has a border around it, this is not necessary as that also avoids the margin collapse */
+	padding: 10px 0; /* using padding instead of margin will allow you to keep the element away from the edges of the div */
+}
+.thrColFixHdr #sidebar1 {
+	float: left; /* since this element is floated, a width must be given */
+	width: 120px; /* the actual width of this div, in standards-compliant browsers, or standards mode in Internet Explorer will include the padding and border in addition to the width */
+	background:#f3f3f3;
+	padding: 10px; /* padding keeps the content of the div away from the edges */
+}
+.thrColFixHdr #mainContent {
+	margin-left: 200px; /* remember that padding is the space inside the div box and margin is the space outside the div box */
+	background:#FFFFFF;
+	color: #000000;
+	border: #000 thin;
+	text-align: left;
+	margin-top: 10px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-bottom: 16px;
+	padding-left: 10px;
+} 
+
+.thrColFixHdr #footer { 
+	padding: 0 10px 0 20px; /* this padding matches the left alignment of the elements in the divs that appear above it. */
+ 	background:#f3f3f3;
+	font-size:10px;
+
+} 
+.thrColFixHdr #footer p {
+	margin: 0; /* zeroing the margins of the first element in the footer will avoid the possibility of margin collapse - a space between divs */
+	padding: 10px 0; /* padding on this element will create space, just as the the margin would have, without the margin collapse issue */
+}
+.fltrt { /* this class can be used to float an element right in your page. The floated element must precede the element it should be next to on the page. */
+	float: right;
+	margin-left: 8px;
+}
+.fltlft { /* this class can be used to float an element left in your page */
+	float: left;
+	margin-right: 8px;
+}
+.clearfloat { /* this class should be placed on a div or break element and should be the final element before the close of a container that should fully contain a float */
+	clear:both;
+    height:0;
+    font-size: 1px;
+    line-height: 0px;
+}
+#PackageTitle {
+	font-size: 36px;
+	text-align: left;
+ 	text-shadow: #aaaaaa 3px 3px 2px;
+}
+#subtitle {
+	font-size: 18px;
+	text-align: right;
+	vertical-align: middle;
+	font-style:italic;
+	font-weight: bold;
+}
+#NonCollapsiblePanel {
+	margin: 2px;
+	border-bottom: solid #DDDDDD thin;
+	padding: 0px;
+/*	border: solid 1px #DFBC95; */
+	font-family:Verdana, Lucida, Arial, sans-serif; 
+ 	background:#f3f3f3;
+	color: #454; 
+	font-weight: bold;
+}
+#NonCollapsiblePanel a {
+	margin: 2px;
+	border-bottom: solid #DDDDDD thin;
+	padding: 0px;
+/*	border: solid 1px #DFBC95; */
+	font-family:Verdana, Lucida, Arial, sans-serif; 
+	font-weight: bold;
+ 	background:#f3f3f3;
+	color: #454; 
+	text-decoration: none;
+}
+
+
+.thrColFixHdr #sidebar1 { width: 180px; }
+.thrColFixHdr #sidebar2 { width: 190px; }
+
+.monospaced {
+	font-family: "Courier New", Courier, monospace;
+	font-size: 12px;
+}
+.monospacedSmall {
+	font-family: "Courier New", Courier, monospace;
+	font-size: 11px;
+}
+
+
+.thrColFixHdr #container #mainContent ul li {
+	padding-bottom: 6px;
+}
+.thrColFixHdr #container #mainContent ol li {
+	padding-bottom: 6px;
+}
+
+betaNote {
+	color: #666;
+}
+betaMssage {
+	font-size: 18px;
+	font-style: oblique;
+	color: #000;
+}
+.thrColFixHdr #container #mainContent p strong {
+	font-weight: bold;
+	font-size: 12px;
+	color: #000;
+}

@@ -56,9 +56,12 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 	public abstract boolean appropriateBlockForReading(String blockName);
 	public abstract Object getSpecification(String token);
 	public abstract void setSpecification(SpecsSet specsSet, Object specification, int ic);
+	
+	/** Returns whether or not the NEXUS command has category tokens before character lists, e.g. the weight, or the partition name */
 	public boolean hasSpecificationTokens(){
 		return true;
 	}
+
 	/*.................................................................................................................*/
 	public static boolean writeLinkWithCharacterMatrixName(MesquiteFile file, CharacterData data){
 		return (file.getProject().getNumberCharMatrices()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data));
@@ -185,6 +188,21 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		}
 		return null;
 	}
+	
+	public  CharSelectionSet getSpecSetFromName(CharacterData data, String name){
+		SpecsSetVector ssv = data.getSpecSetsVector(CharSelectionSet.class);
+		if (ssv==null)
+			return null;
+		return (CharSelectionSet)ssv.getElement(name);
+	}
+
+	
+	public  static Bits getCharBitsFromName(String name){
+		return null;
+	}
+
+	
+
 	/*.................................................................................................................*/
 	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
 		if (appropriateBlockForReading(blockName)) { 
@@ -244,6 +262,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		 		SpecsSet specsSet= getNewSpecsSet(nameOfSpecsSet, data);
 		 		specsSet.setNexusBlockStored(blockName);
 				
+		 		//=======================
 				int lastChar = -1;
 				boolean join = false;
 				boolean nextIsCharList = !hasSpecificationTokens();
@@ -294,6 +313,14 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 									lastChar = whichChar;
 									setSpecification(specsSet, specification,whichChar);
 								}
+							} else { // it might be a character set.  Added April 2018 DRM
+								CharSelectionSet charSet = getSpecSetFromName(data,token);
+								if (charSet!=null) {
+									for (whichChar = 0; whichChar<data.getNumChars(); whichChar++) {
+										if (charSet.isBitOn(whichChar))
+											setSpecification(specsSet, specification,whichChar);
+									}
+								}
 							}
 						}
 						else {
@@ -304,6 +331,8 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 					token = ParseUtil.getToken(command, startCharT); 
 				}
 				
+		 		//=======================
+
 				if (isDefault) {
 					if (!"UNTITLED".equals(specsSet.getName())) {
 			 			data.storeSpecsSet(specsSet, getElementClass());

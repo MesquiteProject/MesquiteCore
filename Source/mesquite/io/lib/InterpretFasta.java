@@ -472,6 +472,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		SingleLineTextField uniqueSuffixField = exportDialog.addTextField("Taxon Name Suffix", "", 20);
 		Checkbox simpleTaxonNamesCheckBox = exportDialog.addCheckBox("simplify taxon names", simplifyTaxonName);
 		Checkbox includeGapsCheckBox = exportDialog.addCheckBox("include gaps", includeGaps);  
+		Checkbox writeExcludedCheckBox = exportDialog.addCheckBox("write excluded characters", writeExcludedCharacters);  
 		Checkbox converMultiStateToMissingCheckBox = exportDialog.addCheckBox("convert multistate to missing for protein data", convertMultStateToMissing);
 
 		
@@ -486,6 +487,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		includeGaps = includeGapsCheckBox.getState();
 		simplifyTaxonName=simpleTaxonNamesCheckBox.getState();
 		convertMultStateToMissing=converMultiStateToMissingCheckBox.getState();
+		writeExcludedCharacters=writeExcludedCheckBox.getState();
 		
 		exportDialog.dispose();
 		return ok;

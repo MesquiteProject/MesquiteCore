@@ -16,6 +16,7 @@ public class IOUtil {
 
 	public static String translationTableFileName = "taxonNamesTranslationTable.txt";
 	public static final String RAXMLSCORENAME = "RAxMLScore";
+	public static final String IQTREESCORENAME = "IQTREEScore";
 	public static final String RAXMLFINALSCORENAME = "RAxMLScore (Final Gamma-based)";
 	/*.................................................................................................................*/
 

@@ -64,7 +64,15 @@ public class StringUtil {
 		return result;
 	}
 
-		/* ................................................................................................................. */
+	/* ................................................................................................................. */
+	public static int getNumberOfLines(String s) {
+		s = StringUtil.replace(s, "\r\n", "\r");
+		s = StringUtil.replace(s, "\n", "\r");
+
+		StringTokenizer t = new StringTokenizer(s, "\r");
+		return t.countTokens();
+	}
+	/* ................................................................................................................. */
 	public static String[] getLines(String s) {
 		s = StringUtil.replace(s, "\r\n", "\r");
 		s = StringUtil.replace(s, "\n", "\r");

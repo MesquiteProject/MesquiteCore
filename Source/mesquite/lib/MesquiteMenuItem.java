@@ -40,7 +40,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 	boolean hiddenStatusSet = false;
 	boolean hideable = true;
 	Class dutyClass = null;
-	
+
 
 	public MesquiteMenuItem(String itemName, MesquiteModule ownerModule, MesquiteCommand command) {
 		super();
@@ -115,6 +115,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 	public void setHideable(boolean h ){
 		hideable = h;
 	}
+
 	public void resetLabel(){
 		if (InterfaceManager.isEditingMode()){
 			if (!hideable)
@@ -149,8 +150,12 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 			setLabel("" + itemName);
 	}
 	public void resetEnable() {
-		if (specification != null)
-			setEnabled(specification.isEnabled());
+		if (specification != null){
+			if (specification instanceof MesquiteSubmenuSpec && ((MesquiteSubmenuSpec)specification).getBehaviorIfNoChoice() == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE)
+				setEnabled(false);
+			else
+				setEnabled(specification.isEnabled());
+		}
 	}
 	public Listable[] getOthers(){
 		return others;
@@ -185,7 +190,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 			command = null;
 			totalDisposed++;
 		}
-	/*	else if (MesquiteTrunk.debugMode){
+		/*	else if (MesquiteTrunk.debugMode){
 			MesquiteMessage.println("not disconnectable " + getLabel());
 		}*/
 	}

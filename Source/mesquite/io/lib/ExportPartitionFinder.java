@@ -213,7 +213,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		if (isProtein())
 			sb.append("## MODELS OF EVOLUTION for PartitionFinderProtein: all_protein | <list> ##\n");
 		else 
-			sb.append("## MODELS OF EVOLUTION for PartitionFinder: all | raxml | mrbayes | beast | <list> ##\n");
+			sb.append("## MODELS OF EVOLUTION for PartitionFinder: all | mrbayes | beast | <list> ##\n");
 		sb.append("models = "+ models+";\n\n");
 
 		sb.append("## MODEL SELECTION: AIC | AICc | BIC ##\n");
@@ -280,6 +280,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		branchesLinked = exportDialog.getLinked();
 		separateCodPos = exportDialog.getSeparateCodPos();
 		modelSelection = exportDialog.getModelSelection();
+		writeExcludedCharacters = exportDialog.getWriteExcluded();
 		schemes = exportDialog.getScheme();
 
 		
@@ -376,9 +377,13 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 
 		if (data != null){
 			numChars = data.getNumChars();
-			int numCharWrite = data.numberSelected(this.writeOnlySelectedData); 
 			outputBuffer.append(Integer.toString(numTaxaWrite)+" ");
-			outputBuffer.append(Integer.toString(numCharWrite)+this.getLineEnding());
+			if (!writeExcludedCharacters)
+				outputBuffer.append(Integer.toString(data.getNumCharsIncluded(this.writeOnlySelectedData))+this.getLineEnding());		
+			else {
+				int numCharWrite = data.numberSelected(this.writeOnlySelectedData); 
+				outputBuffer.append(Integer.toString(numCharWrite)+this.getLineEnding());	
+			}
 			int blockSize=50;
 
 			exportBlock(taxa, data, outputBuffer, 0, numChars);

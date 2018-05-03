@@ -57,6 +57,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	boolean readyToPaint = true;
 	protected Font currentFont;
 	public static Font defaultFont;
+	
+	boolean suppressExplanationAreaUpdates=false;
 
 	private MesquiteTool currentTool;
 	private MesquiteTool previousTool = null;
@@ -351,6 +353,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				MesquiteMessage.println(message + "  " + windowTimer.timeSinceLast());
 			else
 				MesquiteMessage.println("  " + windowTimer.timeSinceLast());
+	}
+	public boolean getSuppressExplanationAreaUpdates() {
+		return suppressExplanationAreaUpdates;
+	}
+
+	public void setSuppressExplanationAreaUpdates(boolean suppressExplanationAreaUpdates) {
+		this.suppressExplanationAreaUpdates = suppressExplanationAreaUpdates;
 	}
 
 	public boolean isCompactible(){
@@ -1556,7 +1565,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*.................................................................................................................*/
 	/** Sets the text in the explanation area.  This text is not editable */
 	public void setExplanation(String text){
-		if (explanationArea!=null) {
+		if (explanationArea!=null && !getSuppressExplanationAreaUpdates()) {
 			try {
 				explanationArea.setExplanation(text);
 			}

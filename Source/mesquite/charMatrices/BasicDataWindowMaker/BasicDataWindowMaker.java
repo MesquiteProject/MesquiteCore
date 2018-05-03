@@ -56,6 +56,7 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 	boolean isExtra = false;
 	MesquiteMenuSpec matrixMenu, displayMenu;
 	static boolean warnAgainAboutTaxonNameDuplication = true;
+	boolean suppressExplanationAreaUpdates = false;
 	
 	/* ................................................................................................................. */
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -97,6 +98,8 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			temp.addLine("hideWindow");
 		return temp;
 	}
+
+
 
 	MesquiteInteger pos = new MesquiteInteger();
 

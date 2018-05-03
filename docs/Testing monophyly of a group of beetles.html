@@ -1,0 +1,376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/MesquiteTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Testing monophyly of a group of beetles</title>
+<!-- InstanceEndEditable -->
+
+<![endif]--><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.thrColFixHdr #sidebar2, .thrColFixHdr #sidebar1 { padding-top: 30px; }
+.thrColFixHdr #mainContent { zoom: 1; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<style type="text/css">
+<!--
+-->
+</style>
+<link href="CSS/mesquitePackage.css" rel="stylesheet" type="text/css" />
+<link href="SpryAssets/SpryCollapsiblePanel.css" rel="stylesheet" type="text/css" />
+
+<script src="SpryAssets/SpryCollapsiblePanel.js" type="text/javascript"></script>
+<script type="text/javascript" src="SpryAssets/SpryURLUtils.js"></script>
+<script type="text/javascript" src="javascript/mesquite.js"></script>
+
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+</head>
+
+<body bgcolor="#ffffff" class="thrColFixHdr" >
+
+<div id="container">
+  <div id="header">
+    <table width="100%" border="0" cellpadding="4">
+  <tr>
+    <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Example: Testing monophyly<!-- InstanceEndEditable --></div></td>
+    <td width="2%">&nbsp;</td>
+    <td width="14%">Version 3.41<br />
+      4 May 2018<br /></td>
+  </tr>
+</table>
+
+</div>
+  
+  
+<div id="sidebar1">
+  
+  
+  
+  
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('http://mesquiteproject.github.io/MesquiteCore')">Mesquite Website Home</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('home.html')">Introduction to Mesquite</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Installation.html')">Download & Installation</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('History%20of%20New%20Features.html')">Recent Changes</a>
+  </div>
+
+  <div id="OverviewOfMesquitePanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Overview of Mesquite ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingStartedPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Started ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Installation.html');">Download and Installation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Additional%20Mesquite%20Packages.html');">Additional Packages</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Beginning%20Mesquite.html');">Beginning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Example%20Files.html');">Example Files</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="BasicMesquiteOperationPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Basic  Operations ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Files.html');">Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Menus.html');">Menus</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Windows.html');">Windows</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Charts.html');">Charts</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Selection.html');">Selection</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Modules.html');">Modules</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TaxaTreesCharactersPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Taxa, Trees, Characters ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Characters%20&%20Matrices.html');">Characters &amp; Matrices</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Taxa.html');">Taxa</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Trees.html');">Trees</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="AnalysesPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Analyses ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Align.html');">Sequence Alignment</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Studies%20of%20Tree%20Topology.html');">Studies of Tree Topology</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="WorkflowsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Workflows ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingHelpPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Help ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Learning%20how%20to%20use%20Mesquite.html');">Learning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Bugs%20and%20Troubleshooting.html');">Bugs &amp; Troubleshooting</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Getting%20Help.html');">Getting Help</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Suggesting%20New%20Features.html');">Your Suggestions</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Glossary.html');">Glossary</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('FAQ.html');">FAQ</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TechnicalDetailsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Technical Details ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="HistoryPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">History ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('History%20of%20Mesquite.html');">History of Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Why%20Mesquite%3F.html');">Why Mesquite?</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('History%20of%20New%20Features.html');">New Features & Bug List</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Release%20Dates.html');">Release Dates</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="PublishingResultsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Publishing Results ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Documenting%20Your%20Work.html');">Documenting your work</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('How%20to%20Cite%20Mesquite.html');">Citing Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Publishing%20Results.html');">Publishing results</a></td></tr>
+		</table>
+    </div>
+  </div>
+
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Acknowledgements.html')">Acknowledgments</a>
+  </div>
+
+<h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+
+  <div id="mainContent">
+    
+<!-- InstanceBeginEditable name="content" -->
+    
+    
+<h1 id="toc0"><a name="Testing monophyly of a group of beetles"></a>Testing monophyly of a group of beetles</h1>
+ David R. Maddison<br />
+<br />
+<em><strong><span style="color: #ff002e;">Note: <a  href="http://mesquitezephyr.wikispaces.com/Introduction%20to%20the%20SOWH%20test">Zephyr version 2 </a>and later contains a built-in SOWH test that automates the process of doing this statistical test.</span></strong></em><br />
+<br />
+<h3 id="toc1"><a name="Testing monophyly of a group of beetles--The question"></a>The question</h3>
+ There is an enigmatic group of terrestrial beetles called the Trachypachidae. These had traditionally been considered to be related to other terrestrial beetles in the suborder Adephaga, but later analyses of morphological data suggested (Bell, 1966; Hammond, 1979; Roughley, 1981; Ward, 1979) that they were instead closely related to some water beetles, the Dytiscoidea.<br />
+<br />
+<table class="captionBox"><tr><td class="captionedImage"><img src="files/trachypachid.jpg" alt="trachypachid.jpg" title="trachypachid.jpg" /></td></tr><tr><td class="imageCaption">The terrestrial Trachypachus</td></tr></table><table class="captionBox"><tr><td class="captionedImage"><img src="files/noterid.jpg" alt="noterid.jpg" title="noterid.jpg" /></td></tr><tr><td class="imageCaption">An aquatic dytiscoid (Hydrocanthus sp.)</td></tr></table><br />
+<br />
+<br />
+Shull et al. (2001) report sequence data of the 18S rRNA gene suggesting that trachypachids are not related to dytiscoids, but are instead related to some other terrestrial beetles. For example, the most parsimonious trees in one analysis have trachypachids with other terrestrial adephagans, and not with dytiscoids. Forcing trachypachids with dytiscoids increases the treelength by 9 steps.<br />
+<br />
+However, given the vagaries of the evolutionary process and phylogenetic inference, it is possible that even if trachypachids and dytiscoids are truly related, one might incorrectly infer that they are not, just by chance or because of difficulties such as long branch attraction (Felsenstein, 1978; Hendy &amp; Penny, 1989; Huelsenbeck, 1997). A statistical test could help us determine whether or not a difference of 9 steps between trees with trachypachids placed with dytiscoids and unconstrained trees is expected under the hypothesis that trachypachids and dytiscoids are related.<br />
+<br />
+<h3 id="toc2"><a name="Testing monophyly of a group of beetles--A statistical test"></a>A statistical test</h3>
+ Is 9 steps a significant difference in treelength in this context? Can we can reject the monophyly of trachypachids plus dytiscoids?<br />
+<br />
+To test the hypotheses that trachypachids are related to dytiscoids, we first need to flesh out its details of the hypothesis. It needs to be detailed enough to allow us to predict the observations we would expect to see if this hypothesis were true. First of all, we will need a detailed phylogenetic hypothesis. We could find the tree of highest likelihood for 18S rDNA under the constraint that trachypachids are with dytiscoids; for one matrix, this tree is as shown below, with trachypachids marked in green and dytiscoids in blue.<br />
+<br />
+<br />
+<div style="text-align: center"><img src="files/tdtree.gif" alt="tdtree.gif" title="tdtree.gif" /></div><br />
+<br />
+Branch lengths of this tree and parameter values for a GTR + Gamma + Proportion Invariant (GTR+G+I) model of evolution are estimated by maximum likelihood using the 18S rDNA data. We thus have built a model that contains our best guess of the nature of evolution presuming that trachypachids and dytiscoids form a clade; the details of the model were established using the 18S rDNA data.<br />
+<br />
+We can now ask: if evolution occurred under a GTR+G+I model with the parameter values as inferred, up the tree shown above (with trachypachids and dytiscoids forming a clade), then what would we expect the difference in treelength to be between the most parsimonious trees constrained to have trachypachids with dytiscoids and the most parsimonious unconstrained trees? Would that difference in general be similar to the observed value, 9? Or is 9 an unexpected value? Specifically, is 9 a value that we would expect to observe less than 0.05 of the time? If so, then we could reject the hypothesis that trachypachids are related to dytiscoids.<br />
+<br />
+This test is an example of the use of parametric bootstrapping (Huelsenbeck et al., 1995; Swofford et al., 1996; Goldman et al., 2000). It is almost identical to the monophyly test proposed by Huelsenbeck et al. (1996), except that they use a difference in likelihood rather than treelength as their test statistic. Treelength is used here for pedagogical reasons as it allows the reader to conduct the test quickly; the methods described below could easily be modified to use likelihood values instead.<br />
+<br />
+<h3 id="toc3"><a name="Testing monophyly of a group of beetles--Building the statistical test"></a>Building the statistical test</h3>
+ To conduct this test, in Mesquite open the example file &quot;study001.nex&quot;, in the folder Mesquite_Folder/docs/mesquite/studies/study001/. This file contains a matrix of 18S rDNA, and the tree of highest likelihood found in which trachypachids are with dytiscids, with branch lengths inferred from the data. It also contains a GTR+G+I model with parameters inferred by PAUP* using maximum likelihood and 18S rDNA. We will ask Mesquite to simulate 100 matrices, and then (using the batch file Mesquite produces) ask PAUP* to find the most parsimonious trees with trachypachids constrained to be with dytiscoids and the most parsimonious unconstrained trees, and write their treelengths to a scorefile. Mesquite will then read in the results and calculate the distribution of treelength differences, allowing us to determine if the observed value of 9 is unusual.<br />
+<br />
+The simulations can be done by choosing (Tree Window) Analysis &gt; Batch Architect &gt; Export Matrices &amp; Batch Files.... After selecting &quot;Simulated Matrices on Current Tree&quot; and &quot;Evolve DNA Characters&quot;, choose the GTR+G+I model. You will then be presented with the Export Matrices &amp; Batch Files dialog box. Give a base name for the matrices of &quot;TDTest&quot;, and do 100 replicates. We will use the template &quot;PAUPConstraintTestParsimony&quot;:<br />
+<br />
+<br />
+<div style="text-align: center"><img src="files/treeTestDialog.gif" alt="treeTestDialog.gif" title="treeTestDialog.gif" /></div><br />
+<br />
+If you wish to look at the contents of this template, touch on &quot;Edit Templates&quot;, and in the Template Manager, select &quot;PAUPConstraintTestParsimony&quot;, and press &quot;View&quot;. (As this template is built-in, you can't edit it, only view it.) You will see some elements of the batch files that will be produced.<br />
+<br />
+<br />
+<div style="text-align: center"><img src="files/templateEditor1.gif" alt="templateEditor1.gif" title="templateEditor1.gif" /></div><br />
+<br />
+The complexity of this template needn't be of concern. If you are interested, details of how it works are presented in &quot; <a  href="file:///Users/david/Documents/Mesquite_Workspace/MesquiteCore/Mesquite_Folder//mesquite/batchArch/aBatchArchIntro/batchtemplates.html" rel="nofollow">Design of Batch Templates</a>&quot;. Just press &quot;OK&quot; to get back to the Template Manager, and then press &quot;Done&quot;.<br />
+<br />
+You are almost ready to have Mesquite simulate the matrices. However, the template we are using requires that we specify a tree to use as a constraint tree. In this case, the constraint tree is one with trachypachids with dytiscoids, but with no other structure. A tree like this is stored in the file under the name &quot;TD constraint&quot;. To choose it, touch the &quot;Choose Tree&quot; button, and select &quot;TD constraint&quot;.<br />
+<br />
+All the options have now been chosen. Press the &quot;OK&quot; button in the Export Matrices and Batch Files dialog box to start the simulation. You will be asked for a location to save the files, and be given some messages. When you are asked for the number of characters, Mesquite recognizes that you are calculating some elements of the model using an existing matrix (in particular, the frequencies of A, C, G, and T), and for this reason it gives as the default number of characters the number in the original matrix. That's the number we want to use in this case, as we want the simulation to be as realistic as possible.<br />
+<br />
+Once the simulations are all done, then go into PAUP*, and execute the file &quot;PaupCommands.nex&quot;. When PAUP* completes its analyses, go back to Mesquite, and choose(Tree Window) Analysis &gt; Batch Architect &gt; Show Results via Instruction File.... Choose the file &quot;MesquiteInstructions&quot;, in the same folder as the simulated matrices, and then choose the results file (which should be called &quot;TDTestScore.scr&quot;,). Mesquite should then show you a histogram of the treelength differences.<br />
+<br />
+<h3 id="toc4"><a name="Testing monophyly of a group of beetles--Interpreting the results"></a>Interpreting the results</h3>
+ An analysis of this exact sort but with 500 replicates yielded the following histogram:<br />
+<br />
+<div style="text-align: center"><img src="files/testStructure1.gif" alt="testStructure1.gif" title="testStructure1.gif" /></div><br />
+<br />
+Of the 500 replicates, 439 had a value 0, 58 had a value 1, and 3 had a value 2. You can determine these numbers by touching on each bar with the arrow:<br />
+<br />
+<div style="text-align: center"><img src="files/barValue.gif" alt="barValue.gif" title="barValue.gif" /></div><br />
+<br />
+You can also see these values by going to the Text view of the chart (by touching the Text tab at the upper part of the chart window):<br />
+<br />
+<div style="text-align: center"><img src="files/histogramAsText.gif" alt="histogramAsText.gif" title="histogramAsText.gif" /></div><br />
+<br />
+To see what values are in a specified percentile of the left or right tail of the distribution, you can choose (Bar &amp; Line Chart) Chart&gt; Analysis &gt; Percentiles.... In the dialog box presented, you can choose the value of the percentile, the color of the bar to be shown, and whether the left or right tails (or both) are calculated. By default, the percentile value is 0.05; on this example, it would be displayed as:<br />
+<br />
+<div style="text-align: center"><img src="files/showPercentile.gif" alt="showPercentile.gif" title="showPercentile.gif" /></div><br />
+<br />
+All values to the right of this red bar are thus in the extreme of the distribution, and our simulation would suggest that any value greater than or equal to 2 would occur with a frequency of less than 0.05. Our observation of 9 is thus an unlikely outcome if our hypothesis were true. Thus, we can reject our hypothesis at p &lt; 0.05, and conclude that trachypachids and dytiscoids do not form a clade.<br />
+<br />
+As it may be hard to interpret the value of the boundaries by the colored vertical lines, you might want to know the exact values of the percentile boundaries. This information can can be gathered by looking at the text view for the histogram. Toward the bottom of the text view in the above example is the following:<br />
+<br />
+<div style="text-align: center"><img src="files/showPercentileText.gif" alt="showPercentileText.gif" title="showPercentileText.gif" /></div><br />
+<br />
+The percentile bar shown will be that that is closest to that requested, but not over it.<br />
+<br />
+The behavior of Mesquite can best be illustrated with another example. If you requested a percentile of 0.05, and if a percentile bar might be placed at 0.043 (left, below), but moving it one increment higher would include enough values to increase the percentile to 0.051 (right, below), then the percentile bar shown will be 0.043.<br />
+<br />
+<img src="files/boundaryRight.gif" alt="boundaryRight.gif" title="boundaryRight.gif" /><img src="files/boundaryLeft.gif" alt="boundaryLeft.gif" title="boundaryLeft.gif" /><br />
+<br />
+<h3 id="toc5"><a name="Testing monophyly of a group of beetles--Summary"></a>Summary</h3>
+ The hypothesis tested herein was the monophyly of a clade. The steps in the test are:<br />
+<ul><li>Determine the observed value of the test statistic for the observed DNA sequences. In this case, the treelength of unconstrained most-parsimonious trees was determined using PAUP*, and was then subtracted from constrained (trachypachids with dytiscoids) treelength.</li><li>The best tree matching the hypothesis to be tested (trachypachids with dytiscoids) is inferred using the available sequence data, with branch lengths inferred using maximum likelihood. This is the model tree.</li><li>Values of parameters of a model of sequence evolution (gamma shape parameter, rate matrices, etc.) are inferred using maximum likelihood on the model tree for the DNA sequences.</li><li>The data matrix is opened in Mesquite, along with the model tree. Submodels and a model of character evolution are created within Mesquite to match those inferred.</li><li>Mesquite's Batch Architect is used to automate the process of simulating the evolution of multiple (100 or more) data matrices under this model, using Mesquite's Genesis package. Batch Architect also builds a command file for PAUP* and an instruction file for Mesquite so that it can interpret the results of the PAUP* analyses.</li><li>The command file is executed in PAUP*, telling PAUP* to search for the shortest constained and unconstrained trees for each of the simulated matrices, accumulating the results into a score file.</li><li>The Mesquite Instructions file is then read into Mesquite, and the score file is read, and Mesquite presents a histogram of the distribution of the test statistic (constrained treelength - unconstrained treelength).</li><li>The observed value of the test statistic is compared to the distribution of the statistic expected under the model as determined by the simulations. If the observed value is more extreme than that expected (say, greater than 95% of the expected values), the hypothesis is rejected.</li></ul><h3 id="toc6"><a name="Testing monophyly of a group of beetles--References"></a>References</h3>
+ Bell, R. T. 1966. Trachypachus and the origin of Hydradephaga. Coleopts Bull. 20:107-112.<br />
+Felsenstein, J. 1978. Cases in which parsimony and compatibility methods will be positively misleading. Systematic Zoology, 27, 401-410.<br />
+Goldman, N., J. P. Anderson, and A. G. Rodrigo. 2000. Likelihood-based tests of topologies in phylogenetics. Syst. Biol. 49:652–670.<br />
+Hammond, P. M. 1979. Wing-folding mechanisms of beetles with special reference to investigations of Adephagan phylogeny. Pp. 113-180 in Carabid beetles; their evolution, natural history, and classification (T. L. Erwin, G. E. Ball, D. R. Whitehead, and A. Halpern, eds.) . W. Junk, The Hague.<br />
+Hendy, M.D. &amp; Penny, D. 1989. A framework for the quantitative study of evolutionary trees. Systematic Zoology, 38, 297-309.<br />
+Huelsenbeck, J.P., Hillis, D.M. &amp; Jones, R. 1995. Parametric bootstrapping in molecular phylogenetics: Applications and performance. Molecular zoology: Advances, Strategies, and Protocols; Symposium held during Annual Meeting of the American Society of Zoologists, St. Louis, Missouri, USA, January 5-8, 1995 (ed. by J. D. Ferraris &amp; S. R. Palumbi), pp. 19-45. Wiley-Liss, Inc., New York.<br />
+Huelsenbeck, J.P. 1997. Is the Felsenstein zone a fly trap? Systematic Biology, 46, 69-74.<br />
+Huelsenbeck, J. P., D. M. Hillis, and R. Nielsen. 1996. A likelihood-ratio test of monophyly. Syst. Biol. 45:546-558.<br />
+Roughley, R. E. 1981. Trachypachidae and Hydradephaga (Coleoptera), a monophyletic unit? Pan-Pac. Entomol. 57:273-285.<br />
+Shull, V., A.P. Vogler, M.D. Baker, D.R. Maddison, and P.M. Hammond. 2001. Sequence alignment of 18S ribosomal RNA and the basal relationships of adephagan beetles: Evidence for monophyly of aquatic families and the placement of Trachypachidae. Systematic Biology, 50:945-969.<br />
+Swofford, D. L., G. J. Olson, P. J. Waddell, and D. M. Hillis. 1996. Phylogenetic inference. Pp. 407-514 in Molecular Systematics (D. M. Hillis, C. Moritz, and B. K. Mable, eds.) . Sinauer, Sunderland, MA.<br />
+Ward, R. D. 1979. Metathoracic wing structures as phylogenetic indicators in the Adephaga (Coleoptera). Pp. 181-191 in Carabid beetles; their evolution, natural history, and classification (T. L. Erwin, G. E. Ball, D. R. Whitehead, and A. Halpern, eds.) . W. Junk, The Hague.<br />
+<hr />
+<h4 id="toc7"><a name="Testing monophyly of a group of beetles--References-Citation for this page"></a>Citation for this page</h4>
+ Maddison, D.R. 2004. Testing monophyly of a group of beetles. Study 1 in Mesquite: a modular system for evolutionary analysis, version 2.54, <a  href="http://mesquiteproject.org" rel="nofollow">http://mesquiteproject.org</a>.
+<!-- InstanceEndEditable -->
+
+    
+    
+    </div>
+	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<script type="text/javascript">
+<!--
+
+
+var OverviewOfMesquitePanel = null;
+var GettingStartedPanel = null;
+var BasicMesquiteOperationPanel = null;
+var TaxaTreesCharactersPanel = null;
+var AnalysesPanel = null;
+var WorkflowsPanel = null;
+var GettingHelpPanel = null;
+var TechnicalDetailsPanel = null;
+var HistoryPanel = null;
+var PublishingResultsPanel = null;
+
+if (qsParm['BasicMesquiteOperationPanel']=='open')
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: true});
+else
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: false});
+	
+if (qsParm['OverviewOfMesquitePanel']=='open')
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: true});
+else
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: false});
+	
+if (qsParm['GettingStartedPanel']=='open')
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: true});
+else
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: false});
+
+if (qsParm['TaxaTreesCharactersPanel']=='open')
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: true});
+else
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: false});
+
+if (qsParm['AnalysesPanel']=='open')
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: true});
+else
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: false});
+
+if (qsParm['WorkflowsPanel']=='open')
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: true});
+else
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: false});
+
+if (qsParm['GettingHelpPanel']=='open')
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: true});
+else
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: false});
+    
+if (qsParm['TechnicalDetailsPanel']=='open')
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: true});
+else
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: false});
+
+if (qsParm['HistoryPanel']=='open')
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: true});
+else
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: false});
+if (qsParm['PublishingResultsPanel']=='open')
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: true});
+else
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: false});
+
+
+//-->
+</script>
+</body>
+<!-- InstanceEnd --></html>

@@ -1842,7 +1842,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 					MesquiteMenuItem m = new MesquiteMenuItem(msms);
 					m.setHiddenStatus(hiddenStatus);
 					MesquiteMenu.add(menu, m);
-					m.setEnabled(false);
+					m.setEnabled(false);//Note: the MesquiteSubmenuSpec doesn't know that it's been disabled, and so when enabling is reset, it would turn back on. Thus kludge in resetEnable of MesquiteMenuItem
 					needToAddSubmenu = false;
 				}
 				else  if (submenu.getItemCount()==1 && b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE){
@@ -1878,7 +1878,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 					MesquiteMenuItem m = new MesquiteMenuItem(msms);
 					MesquiteMenu.add(menu, m);
 					m.setHiddenStatus(hiddenStatus);
-					m.setEnabled(false);
+					m.setEnabled(false);//Note: the MesquiteSubmenuSpec doesn't know that it's been disabled, and so when enabling is reset, it would turn back on. Thus kludge in resetEnable of MesquiteMenuItem
 					needToAddSubmenu = false;
 				}
 				else  if (submenu.getItemCount()==1 && b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE){
@@ -1925,7 +1925,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 					MesquiteMenuItem m = new MesquiteMenuItem(msms);
 					m.setHiddenStatus(hiddenStatus);
 					MesquiteMenu.add(menu, m);
-					m.setEnabled(false);
+					m.setEnabled(false); //Note: the MesquiteSubmenuSpec doesn't know that it's been disabled, and so when enabling is reset, it would turn back on. Thus kludge in resetEnable of MesquiteMenuItem
 					needToAddSubmenu = false;
 				}
 				else  if (submenu.getItemCount()==1 && b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE){

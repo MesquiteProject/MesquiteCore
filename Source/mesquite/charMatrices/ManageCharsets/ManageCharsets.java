@@ -93,7 +93,7 @@ public class ManageCharsets extends CharSpecsSetManager {
 							continuing = 1;
 						}
 						else if (continuing == 1) {
-							sT += " - ";
+							sT += "-";
 							continuing = 2;
 						}
 					}

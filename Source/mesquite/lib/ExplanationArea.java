@@ -225,11 +225,13 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	public boolean getFocusSuppression(){
 		return focusSuppressed;
 	}
+	public static int explanationCount=0;
 	public void setExplanation(String text){
 		if (text == null)  
 			text = "";
-		annotatable = null;
-		String current = explTextArea.getText();
+		annotatable = null;  
+		explanationCount++;
+		String current = explTextArea.getText(); 
 		explanationSet = text;
 		if (text!=null && current!=null && !text.equals(current)){
 			explTextArea.setText(text);
@@ -481,7 +483,15 @@ class ExplTextArea extends TextArea {
 		else
 			explArea.hasFocus = true;
 	}
-
+	public void setEditable(boolean b){
+		super.setEditable(b);
+		try {
+			super.setEditable(b);
+		}
+		catch (Throwable e){
+			
+		}
+	}
 	public void setText(String t){  // and possibly others
 		try {
 			if (MesquiteTrunk.isMacOSX()){  //this had been a workaround to bug in OS X Snow Leopard, but it slowed alignment too much

@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/MesquiteTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Tree Simulations</title>
+<!-- InstanceEndEditable -->
+
+<![endif]--><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.thrColFixHdr #sidebar2, .thrColFixHdr #sidebar1 { padding-top: 30px; }
+.thrColFixHdr #mainContent { zoom: 1; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<style type="text/css">
+<!--
+-->
+</style>
+<link href="CSS/mesquitePackage.css" rel="stylesheet" type="text/css" />
+<link href="SpryAssets/SpryCollapsiblePanel.css" rel="stylesheet" type="text/css" />
+
+<script src="SpryAssets/SpryCollapsiblePanel.js" type="text/javascript"></script>
+<script type="text/javascript" src="SpryAssets/SpryURLUtils.js"></script>
+<script type="text/javascript" src="javascript/mesquite.js"></script>
+
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+</head>
+
+<body bgcolor="#ffffff" class="thrColFixHdr" >
+
+<div id="container">
+  <div id="header">
+    <table width="100%" border="0" cellpadding="4">
+  <tr>
+    <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Tree Simulations<!-- InstanceEndEditable --></div></td>
+    <td width="2%">&nbsp;</td>
+    <td width="14%">Version 3.41<br />
+      4 May 2018<br /></td>
+  </tr>
+</table>
+
+</div>
+  
+  
+<div id="sidebar1">
+  
+  
+  
+  
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('http://mesquiteproject.github.io/MesquiteCore')">Mesquite Website Home</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('home.html')">Introduction to Mesquite</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Installation.html')">Download & Installation</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('History%20of%20New%20Features.html')">Recent Changes</a>
+  </div>
+
+  <div id="OverviewOfMesquitePanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Overview of Mesquite ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingStartedPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Started ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Installation.html');">Download and Installation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Additional%20Mesquite%20Packages.html');">Additional Packages</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Beginning%20Mesquite.html');">Beginning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Example%20Files.html');">Example Files</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="BasicMesquiteOperationPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Basic  Operations ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Files.html');">Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Menus.html');">Menus</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Windows.html');">Windows</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Charts.html');">Charts</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Selection.html');">Selection</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Modules.html');">Modules</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TaxaTreesCharactersPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Taxa, Trees, Characters ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Characters%20&%20Matrices.html');">Characters &amp; Matrices</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Taxa.html');">Taxa</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Trees.html');">Trees</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="AnalysesPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Analyses ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Align.html');">Sequence Alignment</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Studies%20of%20Tree%20Topology.html');">Studies of Tree Topology</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="WorkflowsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Workflows ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingHelpPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Help ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Learning%20how%20to%20use%20Mesquite.html');">Learning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Bugs%20and%20Troubleshooting.html');">Bugs &amp; Troubleshooting</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Getting%20Help.html');">Getting Help</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Suggesting%20New%20Features.html');">Your Suggestions</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Glossary.html');">Glossary</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('FAQ.html');">FAQ</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TechnicalDetailsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Technical Details ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="HistoryPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">History ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('History%20of%20Mesquite.html');">History of Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Why%20Mesquite%3F.html');">Why Mesquite?</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('History%20of%20New%20Features.html');">New Features & Bug List</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Release%20Dates.html');">Release Dates</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="PublishingResultsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Publishing Results ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Documenting%20Your%20Work.html');">Documenting your work</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('How%20to%20Cite%20Mesquite.html');">Citing Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Publishing%20Results.html');">Publishing results</a></td></tr>
+		</table>
+    </div>
+  </div>
+
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Acknowledgements.html')">Acknowledgments</a>
+  </div>
+
+<h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+
+  <div id="mainContent">
+    
+<!-- InstanceBeginEditable name="content" -->
+    
+    
+<h1 id="toc0"><a name="Tree simulations and randomizations"></a>Tree simulations and randomizations</h1>
+ Various packages in Mesquite can simulate or randomize trees, allowing you to build statistical tests based on null distributions or trees generated under some hypothesis.<br />
+<br />
+<h4 id="toc1"><a name="Tree simulations and randomizations---Contents"></a>Contents</h4>
+ <ul><li><a  href="Tree%20Simulations.html">Using results of simulations &amp; randomizations</a></li><li><a  href="Tree%20Simulations.html#simulations">Evolutionary Simulations of Trees</a><ul><li><a  href="Tree%20Simulations.html#species">Species Trees</a></li><li><a  href="Tree%20Simulations.html#gene">Gene Trees</a></li></ul></li><li><a  href="Tree%20Simulations.html#random">Random Trees</a></li><li><a  href="Tree%20Simulations.html#randomized">Randomized Trees</a></li></ul><h3 id="toc2"><a name="Tree simulations and randomizations--Using results of simulations &amp; randomizations"></a><a name="using"></a>Using results of simulations &amp; randomizations</h3>
+ The simulated or randomized trees can be used or stored in several ways:<br />
+<ul><li>The trees can be stored into tree blocks in the current file by choosing options in the Make New Trees Block from submenu of the Taxa&amp;Trees menu.</li><li>The trees may be used directly, at that moment, in calculations. For example, if you make a Bar &amp; Line Chart for trees, and choose Simulated Trees as your source of trees, the trees will be simulated and used in the chart without being stored in the file.</li><li>A series of many files can be saved, each one with a different replicate of a block of simulated or randomized trees. This is available through the Save Copies of Tree Blocks submenu of the Taxa&amp;Trees menu</li></ul>To replicate the results of a simulation or randomization, you can use the Set Seed menu item to set the random number seed used. If you are using the same conditions, including the same seed, the simulations and randomizations should be reproducible. However, in some situations, such as when comparing results from different parameters, leaving simulations reproducible can yield non-independent results. To ensure independence (at the cost of exact reproducibility) you can use the Simulation Repeatable menu item.<br />
+<br />
+<h3 id="toc3"><a name="Tree simulations and randomizations--Evolutionary Simulations of Trees"></a><a name="simulations"></a>Evolutionary Simulations of Trees</h3>
+ <h4 id="toc4"><a name="Tree simulations and randomizations--Evolutionary Simulations of Trees-Species Trees"></a><a name="species"></a>Species Trees</h4>
+ We recommend you see the page on <a  href="Diversification.html">diversification</a> for more features related to species tree evolution.<br />
+<ul><li>Uniform speciation (Yule) (trees package) — Generates tree by simple uniform probability speciation (a Yule process). The chance of speciation is equal for all tips. Options: total time depth of tree.</li><li>Uniform speciation with sampling (TreeFarm package) — Generates a tree by Yule process, as above, but with to a total number of species greather than in the taxa block. Extra species are then randomly sampled out, to leave the tree with the appropriate number of species. Barraclough &amp; Nee (2001) discuss how this sampling alters the branch length distribution of the tree.</li><li>Birth/Death trees (Diverse package) — Simulates a constant rate of speciation and extinction to generate a tree. For more details see the page on <a  href="Diversification.html">diversification</a>.</li><li>Trees depending on the evolution of a character — in the <a  href="Diversification.html">Diverse</a> package are also some simulators that evolve a tree and character simultaneously; the speciation and extinction rates may depend on the state of the character.</li></ul><h4 id="toc5"><a name="Tree simulations and randomizations--Evolutionary Simulations of Trees-Gene Trees"></a><a name="gene"></a>Gene Trees</h4>
+ <ul><li>Coalescent Trees (coalesce package) - Generates tree by coalescence within a single panmictic population. Options: Effective population size.</li><li>Coalescence Contained within Current Tree (coalesce package) - Generates tree by a simple coalescence model of a neutral gene with constant population size, within a current species tree from a Tree window or other tree context. Branch lengths are assigned according to generation of coalescence. The species tree used is a current tree found in a Tree Window or other tree context.</li></ul><h3 id="toc6"><a name="Tree simulations and randomizations--Random Trees"></a><a name="random"></a>Random Trees</h3>
+ <ul><li>Equiprobable Trees (trees package)- Generates trees randomly so that each possible labelled tree topology is equally likely.</li><li>Randomly Resolve Polytomies (TreeFarm package) - Randomly resolves polytomies in tree. All possible resolutions are equiprobable. Thus, if the tree is a polytomous bush, the resulting resolved trees will be distributed equivalently to that from the Equiprobable Trees module.</li></ul><h3 id="toc7"><a name="Tree simulations and randomizations--Randomized Trees"></a><a name="randomized"></a>Randomized Trees</h3>
+ <ul><li>Reshuffle Terminal Taxa (TreeFarm package) - Shuffles (permutes) the taxa among the terminal nodes.</li><li>Random Branch Moves (TreeFarm packages) — Performs a specified number of randomly -chosen branch moves.</li><li>Add Noise to Branch Lengths (TreeFarm package) - Adds noise to branch lengths of tree. Noise is Normally distributed with variance specified by user. Optionally, this variance is proportional to current branch length. Negative branch lengths are not allowed, and are changed to zero. Options: variance of noise.</li><li>Rarefy Tree (TreeFarm package) - Rarefies tree by randomly deleting taxa. Options: how many excluded.</li><li>Augment Tree Randomly (TreeFarm package) - Augments tree by random placement of excluded taxa. Options: whether branch lengths are to be considered; whether addition is only to original branches</li></ul><h3 id="toc8"><a name="Tree simulations and randomizations--References"></a><a name="references"></a>References</h3>
+ Barraclough, T.G. &amp; S. Nee 2001. Phylogenetics and speciation. TRENDS in Ecology and Evolution. 16:391-399.
+<!-- InstanceEndEditable -->
+
+    
+    
+    </div>
+	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<script type="text/javascript">
+<!--
+
+
+var OverviewOfMesquitePanel = null;
+var GettingStartedPanel = null;
+var BasicMesquiteOperationPanel = null;
+var TaxaTreesCharactersPanel = null;
+var AnalysesPanel = null;
+var WorkflowsPanel = null;
+var GettingHelpPanel = null;
+var TechnicalDetailsPanel = null;
+var HistoryPanel = null;
+var PublishingResultsPanel = null;
+
+if (qsParm['BasicMesquiteOperationPanel']=='open')
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: true});
+else
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: false});
+	
+if (qsParm['OverviewOfMesquitePanel']=='open')
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: true});
+else
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: false});
+	
+if (qsParm['GettingStartedPanel']=='open')
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: true});
+else
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: false});
+
+if (qsParm['TaxaTreesCharactersPanel']=='open')
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: true});
+else
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: false});
+
+if (qsParm['AnalysesPanel']=='open')
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: true});
+else
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: false});
+
+if (qsParm['WorkflowsPanel']=='open')
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: true});
+else
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: false});
+
+if (qsParm['GettingHelpPanel']=='open')
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: true});
+else
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: false});
+    
+if (qsParm['TechnicalDetailsPanel']=='open')
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: true});
+else
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: false});
+
+if (qsParm['HistoryPanel']=='open')
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: true});
+else
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: false});
+if (qsParm['PublishingResultsPanel']=='open')
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: true});
+else
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: false});
+
+
+//-->
+</script>
+</body>
+<!-- InstanceEnd --></html>

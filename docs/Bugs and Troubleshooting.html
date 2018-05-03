@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/MesquiteTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Bugs and Troubleshooting</title>
+<!-- InstanceEndEditable -->
+
+<![endif]--><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.thrColFixHdr #sidebar2, .thrColFixHdr #sidebar1 { padding-top: 30px; }
+.thrColFixHdr #mainContent { zoom: 1; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<style type="text/css">
+<!--
+-->
+</style>
+<link href="CSS/mesquitePackage.css" rel="stylesheet" type="text/css" />
+<link href="SpryAssets/SpryCollapsiblePanel.css" rel="stylesheet" type="text/css" />
+
+<script src="SpryAssets/SpryCollapsiblePanel.js" type="text/javascript"></script>
+<script type="text/javascript" src="SpryAssets/SpryURLUtils.js"></script>
+<script type="text/javascript" src="javascript/mesquite.js"></script>
+
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+</head>
+
+<body bgcolor="#ffffff" class="thrColFixHdr" >
+
+<div id="container">
+  <div id="header">
+    <table width="100%" border="0" cellpadding="4">
+  <tr>
+    <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Bugs and Troubleshooting<!-- InstanceEndEditable --></div></td>
+    <td width="2%">&nbsp;</td>
+    <td width="14%">Version 3.41<br />
+      4 May 2018<br /></td>
+  </tr>
+</table>
+
+</div>
+  
+  
+<div id="sidebar1">
+  
+  
+  
+  
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('http://mesquiteproject.github.io/MesquiteCore')">Mesquite Website Home</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('home.html')">Introduction to Mesquite</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Installation.html')">Download & Installation</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('History%20of%20New%20Features.html')">Recent Changes</a>
+  </div>
+
+  <div id="OverviewOfMesquitePanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Overview of Mesquite ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingStartedPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Started ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Installation.html');">Download and Installation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Additional%20Mesquite%20Packages.html');">Additional Packages</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Beginning%20Mesquite.html');">Beginning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Example%20Files.html');">Example Files</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="BasicMesquiteOperationPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Basic  Operations ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Files.html');">Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Menus.html');">Menus</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Windows.html');">Windows</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Charts.html');">Charts</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Selection.html');">Selection</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Modules.html');">Modules</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TaxaTreesCharactersPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Taxa, Trees, Characters ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Characters%20&%20Matrices.html');">Characters &amp; Matrices</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Taxa.html');">Taxa</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Trees.html');">Trees</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="AnalysesPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Analyses ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Align.html');">Sequence Alignment</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Studies%20of%20Tree%20Topology.html');">Studies of Tree Topology</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="WorkflowsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Workflows ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingHelpPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Help ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Learning%20how%20to%20use%20Mesquite.html');">Learning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Bugs%20and%20Troubleshooting.html');">Bugs &amp; Troubleshooting</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Getting%20Help.html');">Getting Help</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Suggesting%20New%20Features.html');">Your Suggestions</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Glossary.html');">Glossary</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('FAQ.html');">FAQ</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TechnicalDetailsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Technical Details ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="HistoryPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">History ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('History%20of%20Mesquite.html');">History of Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Why%20Mesquite%3F.html');">Why Mesquite?</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('History%20of%20New%20Features.html');">New Features & Bug List</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Release%20Dates.html');">Release Dates</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="PublishingResultsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Publishing Results ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Documenting%20Your%20Work.html');">Documenting your work</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('How%20to%20Cite%20Mesquite.html');">Citing Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Publishing%20Results.html');">Publishing results</a></td></tr>
+		</table>
+    </div>
+  </div>
+
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Acknowledgements.html')">Acknowledgments</a>
+  </div>
+
+<h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+
+  <div id="mainContent">
+    
+<!-- InstanceBeginEditable name="content" -->
+    
+    
+<h1 id="toc0"><a name="Bugs and Troubleshooting"></a>Bugs and Troubleshooting</h1>
+ If you think you've found a bug in Mesquite, our would like to suggest a feature, please read this page. For help in using Mesquite, see the <a  href="Learning%20how%20to%20use%20Mesquite.html">Learning Mesquite</a> and <a  href="Getting%20Help.html">Getting Help</a> page.<br />
+<br />
+A list of the known bugs in the current release version of Mesquite is listed on the page about <a  href="History%20of%20New%20Features.html">Features and Bugs</a>.<br />
+<br />
+<h1 id="toc1"><a name="Mesquite under MacOS X 10.12 (Sierra)"></a>Mesquite under MacOS X 10.12 (Sierra)</h1>
+ Under MacOS X Sierra, starting up versions of Mesquite prior to 3.2 may result in nothing more than the icon bouncing in the Dock a few times, then disappearing. That is, it won't start up. If you see this behaviour, try downloading the latest version of Mesquite, which should work. If it does not, please <a  href="Contact%20Us.html">contact us</a>.<br />
+<br />
+<br />
+<h2 id="toc2"><a name="Mesquite under MacOS X 10.12 (Sierra)-Why does  not seem to work properly?"></a><a name="think"></a>Why does &lt;insert feature&gt; not seem to work properly?</h2>
+ It could be that the feature in question is one whose operation you don't fully understand, or it could be that you have found a bug. Some bugs you may encounter will be bugs not in Mesquite but in the operating system or Java virtual machine (for example, see the list, below).<br />
+<br />
+<div style="text-align: center"><img src="files/thassus.jpg" alt="thassus.jpg" title="thassus.jpg" /></div><br />
+<br />
+That there will be bugs in Mesquite is inevitable. Mesquite is a large project, about 1500 pages of source code when printed single spaced at 7 point font (about 120,000 or more lines of source; over 5MB of ASCII text). We don't have a big team of people working on it; most of it was written by one or two people. We apologize for the bugs that remain, and look forward to your bug reports and efforts to aid us make Mesquite useful.<br />
+If you think you have found a bug in Mesquite, please report it on the <a  href="https://sun.zoology.ubc.ca:442/mailman/listinfo/mesquitelist" rel="nofollow">Mesquite mailing list</a>. Partly to foster a community of users, and partly for efficiency, we are encouraging users to sign up to the mailing list via which they can report bugs and post queries about using Mesquite. Once you've signed up, you can send a message to the list. As a second choice, you can send a note to us at <strong>info {at} mesquiteproject.org</strong>.<br />
+<br />
+If we don't know about a bug, it is unlikely that it will be fixed. It might be natural to presume that we know about all the bugs in Mesquite, but it is not possible for us to have tried out every combination of options on every computer environment with every data matrix, model, etc. If you are not sure if it is a bug (a large number of users blame themselves when they encounter a bug, presuming it is something they have done wrong), please report it anyway. Even if your apparent &quot;bug&quot; is a mistake you made, your mistake might indicate a poorly designed interface that should be corrected.<br />
+<br />
+If you're reporting a bug, it's important that you are able to specify, as precisely as possible, exactly what you did that generated the bug. Try to find a precisely repeatable series of actions that generate the bug. In any bug report, please specify the version of Mesquite and any important modules and your operating system. Be prepared to send us your data file so we can test the problem. It is also very helpful to send us the Mesquite_Log file that is in Mesquite_Support_Files (which is in your home directory in Mac OS X and in &quot;Documents and Settings\yourUserName\&quot; in Windows). We need a copy of the log file as it was written immediately after your problem occurs.<br />
+<br />
+<h1 id="toc3"><a name="Perhaps you can fix the bugs yourself!"></a>Perhaps you can fix the bugs yourself!</h1>
+ Mesquite is intended to become a community effort. <a  href="Source%20Code.html">Source code</a> is available on GitHub; we hope other programmers will help us improve the system.<br />
+<br />
+<br />
+<h2 id="toc4"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite"></a><a name="knownVMBugs"></a>Java bugs that affect Mesquite</h2>
+ Below are problems in Java on various operating systems that affect Mesquite. If these problems annoy you, please contact those responsible for your Java virtual machine.<br />
+<hr />
+<h3 id="toc5"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-MacOS X"></a>MacOS X</h3>
+ The recommended configuration for Mesquite on Mac OS X is OS X 10.5 or newer with the latest Java. There are various screen redraw and crashing bugs in earlier versions of OS X and Java.<br />
+If at any point Mesquite quits spontaneously and OS X puts up a dialog that says that Mesquite has unexpectedly quit, this is what is called a &quot;JVM crash&quot;. Technically it is not supposed to be possible for Mesquite to do this, and thus it represents a bug in Java and not a bug in Mesquite. Nonetheless, we would like to know about it, because we may be able to find a way to avoid the JVM bug.<br />
+<br />
+<h3 id="toc6"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-MacOS X running Java 1.3.1"></a>MacOS X running Java 1.3.1</h3>
+ Mesquite 2 does not run under Java 1.3 or earlier.<br />
+<br />
+<h3 id="toc7"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-MacOS X 10.0 through 10.2"></a>MacOS X 10.0 through 10.2</h3>
+ We have not tested Mesquite 2 under these earlier versions of MacOS X.<br />
+<br />
+<h3 id="toc8"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-Mac OS 9"></a>Mac OS 9</h3>
+ Mesquite 2 does not function on Mac OS 9, because it requires Java 1.4.<br />
+<br />
+<br />
+<hr />
+<h3 id="toc9"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-Windows"></a>Windows</h3>
+ <ul><li>Windows bounce up and down as menus change (a rapid shrink &amp; expansion). This is due to a design flaw either in Windows or the Java VM; there is nothing we can do about it.</li><li>When you try to start Mesquite, you get a message that says it can't find Java. The JAVA_HOME may not be set properly on your machine To set it, go to System Properties (right click on My Computer and select Properties); Advanced tab; Environment Variables; look for Java_Home in the System variables window and edit it so that it points to the correct location of the latest Java installation.</li></ul><hr />
+<h3 id="toc10"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-Linux/Unix etc"></a>Linux/Unix etc</h3>
+ <ul><li>Window sizes and placements sometimes are inappropriate under some window managers. Some window managers refuse to let Mesquite have control over window size and placement, and choose what appear to be random sizes and placements of windows. This is not in our control. Try changing your window manager. We have found that the default installations for KDE and Gnome of Red Hat 7 work well with Mesquite.</li><li>Messages about Fonts not found on startup may be given. The problem is that you need to install a supposedly optional package of fonts in order that the default installation of Sun's Java VM work properly (see <a  href="http://java.sun.com/products/jdk/1.2/changes.html#sunw" rel="nofollow">http://java.sun.com/products/jdk/1.2/changes.html#sunw</a>). We would have thought that if the default installation of a product claims to support a program but doesn't, then that would be considered a bug. Sun considered this to be not a bug, although they seem to have fixed it...</li></ul>
+<!-- InstanceEndEditable -->
+
+    
+    
+    </div>
+	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<script type="text/javascript">
+<!--
+
+
+var OverviewOfMesquitePanel = null;
+var GettingStartedPanel = null;
+var BasicMesquiteOperationPanel = null;
+var TaxaTreesCharactersPanel = null;
+var AnalysesPanel = null;
+var WorkflowsPanel = null;
+var GettingHelpPanel = null;
+var TechnicalDetailsPanel = null;
+var HistoryPanel = null;
+var PublishingResultsPanel = null;
+
+if (qsParm['BasicMesquiteOperationPanel']=='open')
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: true});
+else
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: false});
+	
+if (qsParm['OverviewOfMesquitePanel']=='open')
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: true});
+else
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: false});
+	
+if (qsParm['GettingStartedPanel']=='open')
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: true});
+else
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: false});
+
+if (qsParm['TaxaTreesCharactersPanel']=='open')
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: true});
+else
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: false});
+
+if (qsParm['AnalysesPanel']=='open')
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: true});
+else
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: false});
+
+if (qsParm['WorkflowsPanel']=='open')
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: true});
+else
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: false});
+
+if (qsParm['GettingHelpPanel']=='open')
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: true});
+else
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: false});
+    
+if (qsParm['TechnicalDetailsPanel']=='open')
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: true});
+else
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: false});
+
+if (qsParm['HistoryPanel']=='open')
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: true});
+else
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: false});
+if (qsParm['PublishingResultsPanel']=='open')
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: true});
+else
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: false});
+
+
+//-->
+</script>
+</body>
+<!-- InstanceEnd --></html>

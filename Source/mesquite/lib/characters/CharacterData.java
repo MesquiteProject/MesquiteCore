@@ -2413,6 +2413,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return count;
 	}
 	/*.................................................................................................................*/
+	/** if state of character ic, taxon it is applicable, returns ic; otherwise, returns the next character that has applicable data*/
+	public int getNumCharsIncluded(boolean onlyCountSelected) {
+		int count=0;
+		for (int i = 0; i< getNumChars(); i++){
+			if (isCurrentlyIncluded(i) && (!onlyCountSelected || getSelected(i)))
+				count++;
+		}
+		return count;
+	}
+	/*.................................................................................................................*/
 	public String getExcludedCharactersList(CharSpecsSet specsSet){
 		if (specsSet ==null || !(specsSet instanceof CharInclusionSet))
 			return "";

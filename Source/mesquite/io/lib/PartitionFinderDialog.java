@@ -23,6 +23,7 @@ public class PartitionFinderDialog extends ExporterDialog {
 	boolean linked = true;
 	boolean separateCodPos = true;
 	Checkbox linkedBox;
+	Checkbox writeExcludedBox;
 	Checkbox separateCodePosBox;
 	String models;
 	SingleLineTextField modelsListField;
@@ -30,12 +31,14 @@ public class PartitionFinderDialog extends ExporterDialog {
 	Choice modelSelectionChoice;
 	Choice schemeChoice;
 	boolean isProtein;
+	ExportPartitionFinder module;
 	
 	public PartitionFinderDialog (ExportPartitionFinder module, MesquiteWindow parent, String title, MesquiteInteger buttonPressed, boolean isProtein) {
 		super(module, parent, title, buttonPressed);
 //		this.tnl = module.taxonNameLength;
 		this.linked = module.branchesLinked;
 		this.isProtein = isProtein;
+		this.module = module;
 		
 	}
 			
@@ -47,12 +50,13 @@ public class PartitionFinderDialog extends ExporterDialog {
 		if (isProtein)
 			modelsChoice = addPopUpMenu ("models", new String[] {"all_protein", LISTMODELS}, 0);
 		else
-			modelsChoice = addPopUpMenu ("models", new String[] {"all", "raxml", "mrbayes", "beast", LISTMODELS}, 0);
+			modelsChoice = addPopUpMenu ("models", new String[] {"all", "mrbayes", "beast", LISTMODELS}, 0);
 		 modelsListField = addTextField ("model list: ", "",40);
 		 modelSelectionChoice = addPopUpMenu ("model selection", new String[] {"AIC", "AICc", "BIC"}, 2);
 		 schemeChoice = addPopUpMenu ("scheme", new String[] {"all", "greedy", "rcluster", "hcluster"}, 1);
 		if (!isProtein)
 			separateCodePosBox = addCheckBox("separate by codon positions", separateCodPos);
+		writeExcludedBox = addCheckBox("write excluded characters", module.writeExcludedCharacters);
 		super.completeAndShowDialog(dataSelected, taxaSelected);
 	}
 	public boolean getLinked(){
@@ -62,6 +66,9 @@ public class PartitionFinderDialog extends ExporterDialog {
 		if (isProtein)
 			return false;
 		return separateCodePosBox.getState();
+	}
+	public boolean getWriteExcluded(){
+		return writeExcludedBox.getState();
 	}
 	public String getModels(){
 		String modelsSelected = modelsChoice.getSelectedItem();
