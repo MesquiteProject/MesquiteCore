@@ -136,7 +136,6 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 		if (autoScrollThread!=null)
 			removeMouseListener(autoScrollThread);
 	}
-
 	public void setMoveFrequency(long mf){
 		moveFrequency = mf;
 	}

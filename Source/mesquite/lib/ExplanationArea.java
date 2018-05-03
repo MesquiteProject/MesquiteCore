@@ -483,7 +483,15 @@ class ExplTextArea extends TextArea {
 		else
 			explArea.hasFocus = true;
 	}
-
+	public void setEditable(boolean b){
+		super.setEditable(b);
+		try {
+			super.setEditable(b);
+		}
+		catch (Throwable e){
+			
+		}
+	}
 	public void setText(String t){  // and possibly others
 		try {
 			if (MesquiteTrunk.isMacOSX()){  //this had been a workaround to bug in OS X Snow Leopard, but it slowed alignment too much
