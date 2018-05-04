@@ -29,7 +29,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Manual  'http://mesquiteproject.wikispaces.com/Ancestral+States';
+				addWebLink Manual  'mesquite:docs/Ancestral States.html';
 				addFileLink Return_to_main_Introduction  '../Introduction.nex';
 			endTell;
 			showWindow;

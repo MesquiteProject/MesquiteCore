@@ -37,36 +37,53 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.40.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.5.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.40";
+		return "3.5";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 340;
+		return 350;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.40;
+		return 3.50;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "January 2018"; //"April 2007";
+		return "May 2018"; //"April 2007";
 	}
 
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
+		//See MesquiteModule for version reporter and error reporter URLs
+		//See Installer for updates.xml URLs
+
+		if (!isPrerelease() && !debugMode)
+			return "http://www.mesquiteproject.org/noticesAndUpdates/notices.xml";   
+		else
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
+
+
+	/* Version 3.2 through 3.40 
 		if (!isPrerelease() && !debugMode)
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/notices.xml";   
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
+
+	*/
+	
+	/* Version 2.75 through 3.11
+		if (!isPrerelease() && !debugMode)
+			return "http://mesquiteproject.org/mesquite/notice/notices.xml";   
+		else
+			return "http://mesquiteproject.org/mesquite/prereleasenotices/notices.xml";   
+	*/
 	}
-	//See MesquiteModule for version reporter and error reporter URLs
-	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return true;

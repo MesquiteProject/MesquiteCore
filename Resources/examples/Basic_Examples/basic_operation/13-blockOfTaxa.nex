@@ -188,7 +188,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Projects_&_Files  'http://mesquiteproject.wikispaces.com/Files';
+				addWebLink Projects_&_Files  'mesquite:docs/Files.html';
 			endTell;
 			showWindow;
 		endTell;

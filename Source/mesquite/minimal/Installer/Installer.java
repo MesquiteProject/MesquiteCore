@@ -105,13 +105,31 @@ public class Installer extends MesquiteInit {
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
+	//See Mesquite.java for notices.xml URLs
+	//See MesquiteModule for version reporter and error reporter URLs
+		
 		if (!MesquiteTrunk.mesquiteTrunk.isPrerelease() && !MesquiteTrunk.debugMode) 
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/updates.xml";
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/updatesPrerelease.xml";   
-	}
-	//See Mesquite.java for notices.xml URLs
-	//See MesquiteModule for version reporter and error reporter URLs
+
+
+
+		/* Version 3.2 through 3.40 
+		if (!MesquiteTrunk.mesquiteTrunk.isPrerelease() && !MesquiteTrunk.debugMode)
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/updates.xml";
+		else
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/updatesPrerelease.xml";   
+
+		*/
+		
+		/* Version 2.75 through 3.11
+		if (!MesquiteTrunk.mesquiteTrunk.isPrerelease() && !MesquiteTrunk.debugMode)
+			return "http://mesquiteproject.org/mesquite/updates/updates.xml";
+		else
+			return "http://mesquiteproject.org/mesquite/prereleasenotices/updates.xml";   
+		*/
+}
 	/*.................................................................................................................*/
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){

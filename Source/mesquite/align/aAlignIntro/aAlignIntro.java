@@ -65,12 +65,12 @@ public class aAlignIntro extends PackageIntro {
   	/*.................................................................................................................*/
   	/** Returns the URL for the web page about the package*/
   	public String getPackageURL(){
-  		return "http://mesquiteproject.org/Align.html";  
+  		return "http://www.mesquiteproject.org/Align.html";  
   	}
  	/*.................................................................................................................*/
  	/** Returns the URL for the manual about the package*/
  	public String getManualPath(){
- 		return "http://mesquiteproject.org/Align.html";  
+ 		return "http://www.mesquiteproject.org/Align.html";  
  	}
 
 	/*.................................................................................................................*/

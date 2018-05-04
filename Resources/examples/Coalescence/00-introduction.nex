@@ -42,7 +42,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Manual  'http://mesquiteproject.wikispaces.com/Gene+Trees';
+				addWebLink Manual  'mesquite:docs/Gene Trees.html';
 				addFileLink Return_to_main_Introduction  '../Introduction.nex';
 			endTell;
 			showWindow;

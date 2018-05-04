@@ -664,7 +664,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Manual_page  'http://mesquiteproject.wikispaces.com/Ancestral+States#tcot';
+				addWebLink Manual_page  'mesquite:docs/Ancestral States.html#tcot';
 			endTell;
 			showWindow;
 		endTell;
