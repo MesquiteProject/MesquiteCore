@@ -169,8 +169,6 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 	void goBack(){
 		if (pastTexts==null)
 			return;
-		//if (backEnabled && pastTexts.size() <= 1)  // WAYNECHECK: see how I changed this.  
-		// Encountered a case where backEnabled was true and pastTexts was empty so the lastElement called threw an exception
 		if (!backEnabled || pastTexts.size() <= 1)
 			return;
 		String t = (String)pastTexts.lastElement();

@@ -2380,20 +2380,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else
 			return candidate;
 	}
-	/*-----------------------------------------* WAYNECHECK
-
-	public  int lastDaughterOfNodeUR(int anc, int node) {
-		if (!nodeExists(node) && !nodeExists(anc))
-			return 0;
-		int first = firstDaughterOfNodeUR(anc, node);
-		int prev = first;
-		while (nodeExists(first)) {
-			prev = first;
-			first = nextSisterOfNodeUR(anc, node, first);
-		}
-		return prev;
-	}
-	*/
+	/*-----------------------------------------*/
 	
 	/** Returns the first (left-most) daughter of node in an UNROOTED sense where the node
 	is treated as descendant from anc. This is one of the UR procedures, designed
@@ -3039,11 +3026,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					fromWhichNamer = 4;
 				}
 				if (taxonNumber<0){
-					/* Debugg.  WAYNECHECK: DAVIDCHECK: there is a problem with this.  If you read in a Zephyr produced tree file by itself, not after
+					/* Note: There is a problem with this if permitTONames is on.  If you read in a Zephyr produced tree file by itself, not after
 					 * opening the file with the taxa in order, then you will likely get reticulations.  In particular, permitTONames not only
 					 * interprets "tx" as a taxon name, it presumes that the taxon number of this taxon number x.  The problem with this
 					 * is that in reading the treefile, it creates the taxa in the orders it encounters them.  If t88 is the first taxon in the first
 					 * treedescription, this will be taxon 0.  So if it reads t0, it will interpret it as taxon 0, even if it is the 99th taxon read in. 
+					 * Our solution to this has been to set permitTONames to false by default, and warn the user not to turn it on unless they need to.
 					 * */
 					if (MesquiteTree.permitT0Names && c != null && c.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there 
 						String number = c.substring(1, c.length());

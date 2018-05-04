@@ -67,12 +67,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "3 May 2018";
+		return "4 May 2018";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.40+";
+		return "3.5";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -85,7 +85,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 886;  
+		return 888;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -134,6 +134,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.30  = 854 released 12 Sept 2O17
 	//3.31  = 858 released 20 Sept 2O17; 859 released 20 Sept
 	//3.40  = 877 released 27 Jan 2O18
+	//3.50  = 888 released 4 May 2O18
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
