@@ -60,13 +60,30 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
+		//See MesquiteModule for version reporter and error reporter URLs
+		//See Installer for updates.xml URLs
+
 		if (!isPrerelease() && !debugMode)
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/notices.xml";   
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
+
+
+	/* Version 3.2 through 3.40 
+		if (!isPrerelease() && !debugMode)
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/notices.xml";   
+		else
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
+
+	*/
+	
+	/* Version 2.75 through 3.11
+		if (!isPrerelease() && !debugMode)
+			return "http://mesquiteproject.org/mesquite/notice/notices.xml";   
+		else
+			return "http://mesquiteproject.org/mesquite/prereleasenotices/notices.xml";   
+	*/
 	}
-	//See MesquiteModule for version reporter and error reporter URLs
-	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return true;
