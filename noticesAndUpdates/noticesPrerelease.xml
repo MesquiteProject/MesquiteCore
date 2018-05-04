@@ -12,7 +12,6 @@
 		<notice>
 			<noticeNumber>20</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Hello.]></message>
 		</notice>
 	</MessagesFromHome>
 </mesquite>
