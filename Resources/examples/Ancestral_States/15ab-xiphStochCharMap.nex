@@ -319,7 +319,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Show_Manual  'http://mesquiteproject.wikispaces.com/Ancestral+States#scm';
+				addWebLink Show_Manual  'mesquite:docs/Ancestral States.html#scm';
 			endTell;
 			showWindow;
 		endTell;

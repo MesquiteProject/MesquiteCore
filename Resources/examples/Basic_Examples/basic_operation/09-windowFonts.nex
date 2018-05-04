@@ -199,7 +199,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Window_Documentation  'http://mesquiteproject.wikispaces.com/Windows';
+				addWebLink Window_Documentation  'mesquite:docs/Windows.html';
 			endTell;
 			showWindow;
 		endTell;

@@ -578,7 +578,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Return_to_intro;
-				addWebLink Explanation_of_example  'http://mesquiteproject.wikispaces.com/Testing+monophyly+of+a+group+of+beetles';
+				addWebLink Explanation_of_example  'mesquite:docs/Testing monophyly of a group of beetles.html';
 			endTell;
 			showWindow;
 		endTell;

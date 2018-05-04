@@ -385,7 +385,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Page_in_manual  'http://mesquiteproject.wikispaces.com/Processes+of+Character+Evolution#pagel94';
+				addWebLink Page_in_manual  'mesquite:docs/Processes of Character Evolution.html#pagel94';
 			endTell;
 			showWindow;
 		endTell;

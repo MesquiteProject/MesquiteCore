@@ -216,7 +216,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Page_on_learning_Mesquite  'http://mesquiteproject.wikispaces.com/Learning+how+to+use+Mesquite';
+				addWebLink Page_on_learning_Mesquite  'mesquite:docs/Learning how to use Mesquite.html';
 			endTell;
 			showWindow;
 		endTell;
