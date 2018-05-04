@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<mesquite>
+	<lastnoticeNumber>16</lastnoticeNumber>
+	<MessagesFromHome>
+		<version>1</version>
+		<currentReleaseVersion>
+			<versionString>3.40</versionString>
+			<build>877</build>
+			<version>340</version>
+			<downloadURL>http://mesquiteproject.wikispaces.com/Installation</downloadURL>
+		</currentReleaseVersion>
+		<notice>
+			<forVersion>331</forVersion>
+			<noticeNumber>22</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[A new version of Mesquite is available, version 3.40, with various bug fixes, and with compatibility with Java 9.  We urge that you update to the new version by downloading it from 
+			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+		</notice> 
+	
+	</MessagesFromHome>
+</mesquite>
