@@ -109,13 +109,13 @@ public class Installer extends MesquiteInit {
 	//See MesquiteModule for version reporter and error reporter URLs
 		
 		if (!MesquiteTrunk.mesquiteTrunk.isPrerelease() && !MesquiteTrunk.debugMode) 
-			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/updates.xml";
+			return "http://www.mesquiteproject.org/noticesAndUpdates/updates.xml";
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/updatesPrerelease.xml";   
 
 
 
-		/* Version 3.2 through 3.40 
+		/* Version 3.2 through 3.4 
 		if (!MesquiteTrunk.mesquiteTrunk.isPrerelease() && !MesquiteTrunk.debugMode)
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/updates.xml";
 		else

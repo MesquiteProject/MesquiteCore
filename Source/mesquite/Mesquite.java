@@ -37,7 +37,7 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.5.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.5.  http://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
@@ -69,7 +69,7 @@ public class Mesquite extends MesquiteTrunk
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
 
 
-	/* Version 3.2 through 3.40 
+	/* Version 3.2 through 3.4 
 		if (!isPrerelease() && !debugMode)
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/notices.xml";   
 		else
@@ -86,7 +86,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -498,7 +498,7 @@ public class Mesquite extends MesquiteTrunk
 			//WelcomeDialog is being phased out
 			if (false && !MesquiteWindow.headless && !MesquiteThread.suppressInteractionAsLibrary){  //hackathon
 				String s = "Welcome to Mesquite.  If this is the first time you've run Mesquite, you might want to try the example files to learn about how to use it (example files in \"Mesquite_Folder/examples\").  You might also check the menu items in the Help menu for links to documentation.";
-				s += "\n\nAlso, please sign up to the Mesquite Discussion e-mail list to learn about bugs and updates (instructions for signing up at http://mesquiteproject.org).";
+				s += "\n\nAlso, please sign up to the Mesquite Discussion e-mail list to learn about bugs and updates (instructions for signing up at http://www.mesquiteproject.org).";
 				new WelcomeDialog(containerOfModule(), "Welcome to Mesquite", s);
 			}
 			if (makeNewPrefsDirectory) {
@@ -1260,7 +1260,7 @@ public class Mesquite extends MesquiteTrunk
 		if (addMesquiteToSearch.getValue())
 			textToGoogle += "+" + "Mesquite";
 		if (restrictSearchToManual.getValue())
-			textToGoogle += "&as_sitesearch=http%3A%2F%2Fmesquitecore.mesquiteproject.org%2F";
+			textToGoogle += "&as_sitesearch=http%3A%2F%2Fwww.mesquiteproject.org%2F";
 		showWebPage("http://www.google.com/search?q=" + textToGoogle, false);
 	}
 	/*End new code added Feb.05.07 oliver*/

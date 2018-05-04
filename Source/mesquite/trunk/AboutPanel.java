@@ -52,7 +52,7 @@ public class AboutPanel extends Panel {
 			//StringUtil.highlightString(g, "Touch on red alert symbol in windows for information.", 25,45);
 			g.drawImage(InfoBar.prereleaseImage,3,3,(ImageObserver)this);
 		}
-		g.drawString("http://mesquiteproject.org", 5,210);
+		g.drawString("http://www.mesquiteproject.org", 5,210);
 		g.drawString("Copyright (c) 1997-2018 W. & D. Maddison.", 5,225);
 		
 		MesquiteWindow.uncheckDoomed(this);
