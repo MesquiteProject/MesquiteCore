@@ -23,7 +23,7 @@ public class IOUtil {
 	public static String[] getRAxMLRateModels(MesquiteModule mb, CharactersGroup[] parts){
 		if (parts==null || parts.length==0 || parts.length>20)
 			return null;
-		String[] rateModels = new String[parts.length];
+		String[] rateModels = new String[parts.length+1];
 		for (int i=0; i<rateModels.length; i++)
 			rateModels[i] = "JTT";
 
@@ -32,9 +32,12 @@ public class IOUtil {
 			ExtensibleDialog dialog = new ExtensibleDialog(mb.containerOfModule(), "Protein Rate Models",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 			dialog.addLabel("Protein Rate Models");
 
-			SingleLineTextField[] modelFields = new SingleLineTextField[parts.length];
+			SingleLineTextField[] modelFields = new SingleLineTextField[rateModels.length];
 			for (int i=0; i<rateModels.length; i++)
-				modelFields[i] = dialog.addTextField(parts[i].getName()+":", rateModels[i], 20);
+				if (i<parts.length)
+					modelFields[i] = dialog.addTextField(parts[i].getName()+":", rateModels[i], 20);
+				else
+					modelFields[i] = dialog.addTextField("unassigned:", rateModels[i], 20);
 
 			dialog.completeAndShowDialog(true);
 			if (buttonPressed.getValue()==0)  {
@@ -101,14 +104,12 @@ public class IOUtil {
 				for (int i=0; i<parts.length; i++) {
 					q = ListableVector.getListOfMatches(partition, parts[i], CharacterStates.toExternal(0), true, ",");
 					if (q != null) {
-						if (nucleotides)
 							sb.append("DNA, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+parts[i].getName(), true) + " = " +  q + "\n");
 					}
 				}
 				q = ListableVector.getListOfMatches(partition, null, CharacterStates.toExternal(0), true, ",");
 				if (q != null) {
-					if (nucleotides)
-						sb.append("DNA, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_unassigned", true) + " = " +  q + "\n");
+					sb.append("DNA, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_unassigned", true) + " = " +  q + "\n");
 				}
 			} else if (protein) {
 				String[] rateModels = getRAxMLRateModels(mb, parts);
@@ -121,13 +122,22 @@ public class IOUtil {
 						}
 					}
 				}
+				q = ListableVector.getListOfMatches(partition, null, CharacterStates.toExternal(0), true, ",");
+				if (q != null) {
+					sb.append(rateModels[rateModels.length-1]+", " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_unassigned", true) + " = " +  q + "\n");
+				}
 			} else {  // non molecular
+				String q;
 				for (int i=0; i<parts.length; i++) {
-					String q = ListableVector.getListOfMatches(partition, parts[i], CharacterStates.toExternal(0), true, ",");
+					q = ListableVector.getListOfMatches(partition, parts[i], CharacterStates.toExternal(0), true, ",");
 					if (q != null) {
 						if (nucleotides)
 							sb.append("MULTI, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+parts[i].getName(), true) + " = " +  q + "\n");
 					}
+				}
+				q = ListableVector.getListOfMatches(partition, null, CharacterStates.toExternal(0), true, ",");
+				if (q != null) {
+					sb.append("MULTI, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_unassigned", true) + " = " +  q + "\n");
 				}
 			} 
 		} else if (writeCodPosPartition && partByCodPos) {//TODO: never accessed by Zephyr because in the only Zephyr call of this method, partByCodPos is false.
