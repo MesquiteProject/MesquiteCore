@@ -15,10 +15,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package start;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.*;
 import java.lang.Class;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Vector;
 import java.lang.ClassLoader;
 
@@ -63,11 +66,17 @@ public class Mesquite {
 		System.out.println("Starting Mesquite with Java: " + System.getProperty("java.version"));
 		startupNotices.addElement("start.Mesquite: Location of executable start class: " + loc);
 		
-		System.out.println("Location of executable start class: " + loc);
 		if (loc.startsWith("file:")){
 				loc = loc.substring(5, loc.length());
 		}
-		loc = decodeFromURL(loc); 
+	//	loc = decodeFromURL(loc); 
+		try {
+			loc = URLDecoder.decode(loc, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Location of executable start class: " + loc);
 		
 		/*Find Mesquite_Folder by moving upwards until signature folders are found
 		 * Mesquite_Folder must contain "mesquite", "images", and "start"*/
@@ -159,9 +168,52 @@ public class Mesquite {
 	static String stripLast(String s){
 		return s.substring(0, s.lastIndexOf("/"));
 	}
-	/*.................................................................................................................*/
+	/*The methods below were in place ore being developed before URLDecoder was discovered. Left just in case, as backup
+	static String[][] decodeReplace = {{"%C3%a9","é"}, {"%C3%ad","í"},  {"%C3%bc","ü"}};
+
+	public static int indexOfIgnoreCase(String a, String b) {
+		if (a == null || b == null)
+			return -1;
+		a = a.toLowerCase();
+		b = b.toLowerCase();
+		return a.indexOf(b);
+	}
+
+	public static String replace(String s,String from,String to){
+		if (s == null || from == null)
+			return null;
+		if (to!=null && from.equals(to))
+			return s;
+		String newString = s;
+		int indexCounter = 0;
+		int pos = indexOfIgnoreCase(s, from);
+		while (pos>=indexCounter) {
+			if (to == null) {
+				newString = newString.substring(0, pos)+newString.substring(pos+from.length(), newString.length());
+				indexCounter = pos;
+			}
+			else {
+				newString = newString.substring(0, pos)+to+newString.substring(pos+from.length(), newString.length());
+				indexCounter = pos +to.length();
+			}
+			pos = newString.indexOf(from, indexCounter);
+		}
+		return newString;
+	}
+
 	public static String decodeFromURL(String s){
 		if (s==null) return null;
+		boolean done = false;
+		while (!done){
+			done = true;
+			for (int i = 0; i<decodeReplace.length; i++){
+				if (indexOfIgnoreCase(s,  decodeReplace[i][0])>=0){
+					s = replace(s, decodeReplace[i][0], decodeReplace[i][1]);
+					done = false;
+				}
+			}
+		}
+		System.out.println("decoded " + s);
 		StringBuffer buffer = new StringBuffer(s.length()*2);
 		for (int i=0; i<s.length(); i++) {
 			if (s.charAt(i) == '%' && i < s.length()+2){
@@ -203,7 +255,7 @@ public class Mesquite {
 		return buffer.toString();
 	}
 
-
+*/
 }
 
 

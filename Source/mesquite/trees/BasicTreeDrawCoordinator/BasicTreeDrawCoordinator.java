@@ -359,7 +359,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], treeDisplays[i].getTaxa().getNumTaxa()));
 				}
 				for (int i=0; i<numDisplays; i++) {
-					if (temp.allowsReorientation())
+					if (temp != null && temp.allowsReorientation())
 						treeDisplays[i].setOrientation(currentOrientations[i]);
 					else
 						currentOrientations[i] = treeDisplays[i].getOrientation();
