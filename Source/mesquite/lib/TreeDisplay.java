@@ -75,7 +75,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	int minForTerminalBoxes = 0;
 	
 	protected boolean showBranchColors = true;
-	
+	public static boolean printTreeNameByDefault = false;
 	
 	/**  The color of the branches*/
 	public Color branchColor;

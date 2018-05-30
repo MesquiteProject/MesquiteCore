@@ -964,7 +964,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		infoPanelOn = new MesquiteBoolean(false);
 		// sizeToFit = new MesquiteBoolean(true);
 		floatLegends = new MesquiteBoolean(true);
-		ownerModule.printNameOnTree = new MesquiteBoolean(true);
+		ownerModule.printNameOnTree = new MesquiteBoolean(TreeDisplay.printTreeNameByDefault);
 		textVersionDrawOnTree = new MesquiteBoolean(false);
 		controlStrip = new ControlStrip((BasicTreeWindowMaker) ownerModule);
 		MesquiteButton listButton = new MesquiteButton(ownerModule, MesquiteModule.makeCommand("showTaxaList", this), null, true, MesquiteModule.getRootImageDirectoryPath() + "listT.gif", 12, 16);

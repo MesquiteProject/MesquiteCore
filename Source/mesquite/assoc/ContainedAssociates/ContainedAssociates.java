@@ -81,8 +81,8 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 	
 	Color containedBranchColor;
 	MesquiteString containedBrColorName;
-	Color containingBranchColor =null; //WideTreeDrawing.defaultBranchColor;
-	MesquiteString containingBrColorName;
+	Color containingBranchColor = WideTreeDrawing.defaultBranchColor;
+	MesquiteString containingBrColorName = new MesquiteString(WideTreeDrawing.defaultBranchColorName);
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -503,6 +503,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	Color migratedColor = Color.yellow;
 	static Color defaultBranchColor = ColorDistribution.burlyWood;
 	Color containingColor = defaultBranchColor;
+	static String defaultBranchColorName = "Wood";
 	AssociationSource associationTask;
 	TaxaAssociation association;
 	MesquiteModule treeSourceTask;

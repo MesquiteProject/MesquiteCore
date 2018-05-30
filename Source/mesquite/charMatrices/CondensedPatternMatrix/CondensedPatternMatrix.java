@@ -87,6 +87,9 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 					weightSet.setValue(ic,1);
 				
 				for (int ic = 0; ic< numChars; ic++){
+					if (ic % 1000 == 0)
+						logln("Scanning character " + (ic+1));
+
 					for (int oic = ic+1; oic< numChars; oic++){
 						if (weightSet.getInt(oic)!=0 && condensedData.samePattern(oic, ic)){  //if weight zero already been here and found it
 							int curWeight = weightSet.getInt(ic);

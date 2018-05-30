@@ -38,7 +38,8 @@ public class Defaults extends MesquiteInit  {
 				"The defaults are presented in the Defaults submenu of the File menu.");
 	}
 	/*.................................................................................................................*/
-	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode,  taxonTruncTrees, taxonT0TreesWarned, taxonT0Trees;
+	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode;
+	MesquiteBoolean taxonTruncTrees, taxonT0TreesWarned, taxonT0Trees, printTreeNameByDefault;
 	MesquiteBoolean tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; 
 	MesquiteString themeName;
 	StringArray themes;
@@ -55,6 +56,7 @@ public class Defaults extends MesquiteInit  {
 		taxonTruncTrees = new MesquiteBoolean(MesquiteTree.permitTruncTaxNames);
 		taxonT0Trees = new MesquiteBoolean(MesquiteTree.permitT0Names);
 		taxonT0TreesWarned = new MesquiteBoolean(false);
+		printTreeNameByDefault = new MesquiteBoolean(TreeDisplay.printTreeNameByDefault);
 		debugMode = new MesquiteBoolean(false);
 		phoneHome = new MesquiteBoolean(MesquiteTrunk.phoneHome);
 		errorReports = new MesquiteBoolean(MesquiteTrunk.reportErrors);
@@ -115,6 +117,7 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Ask for Random Number Seeds", makeCommand("toggleAskSeed",  this), askSeed);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Partial Names in Tree Reading", makeCommand("togglePartNamesTrees",  this), taxonTruncTrees);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit t0=taxon 1, t1=taxon 2, etc. Names in Tree Reading", makeCommand("toggleT0NamesTrees",  this), taxonT0Trees);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Print Tree Names by Default", makeCommand("printTreeNameByDefault",  this), printTreeNameByDefault);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Matrix Limits for Undo...", makeCommand("setMaxMatrixSizeUndo",  this));
 
 		//comment out debug mode menu item for users 
@@ -212,6 +215,10 @@ public class Defaults extends MesquiteInit  {
 			}
 
 			MesquiteTree.permitT0Names = taxonT0Trees.getValue();
+		}
+		else if ("printTreeNameByDefault".equalsIgnoreCase(tag)){
+			printTreeNameByDefault.setValue(content);
+			TreeDisplay.printTreeNameByDefault = printTreeNameByDefault.getValue();
 		}
 		else if ("taxonT0TreesWarned".equalsIgnoreCase(tag)){
 			taxonT0TreesWarned.setValue(content);
@@ -314,6 +321,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "taxonTruncTrees", taxonTruncTrees);   
 		StringUtil.appendXMLTag(buffer, 2, "taxonT0TreesWarned", taxonT0TreesWarned);   
 		StringUtil.appendXMLTag(buffer, 2, "taxonT0Trees", taxonT0Trees);   
+		StringUtil.appendXMLTag(buffer, 2, "printTreeNameByDefault", printTreeNameByDefault);   
 		StringUtil.appendXMLTag(buffer, 2, "tabbedWindows", tabbedWindows);   
 		StringUtil.appendXMLTag(buffer, 2, "respectFileSpecificResourceWidth", respectFileSpecificResourceWidth);   
 		StringUtil.appendXMLTag(buffer, 2, "tilePopouts", tilePopouts);   
@@ -591,6 +599,13 @@ public class Defaults extends MesquiteInit  {
 			resetAllMenuBars();
 			storePreferences();
 			return taxonT0Trees;
+		}
+		else if (checker.compare(getClass(), "Sets whether names of trees will be printed on tree by default", null, commandName, "printTreeNameByDefault")) {
+			printTreeNameByDefault.toggleValue(null);
+			TreeDisplay.printTreeNameByDefault = printTreeNameByDefault.getValue();
+			resetAllMenuBars();
+			storePreferences();
+			return printTreeNameByDefault;
 		}
 		else if (checker.compare(getClass(), "Sets whether to place secondary choices for modules into an \"Other Choices...\" dialog box", null, commandName, "toggleOtherChoices")) {
 			useOtherChoices.toggleValue(null);

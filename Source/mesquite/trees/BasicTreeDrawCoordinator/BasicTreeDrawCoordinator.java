@@ -835,6 +835,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 			int dRoot = getTreeDrawing().getDrawnRoot();
 			if (!tree.nodeExists(dRoot))
 				dRoot = tree.getRoot();
+
 			printAllBackgroundExtras(tree, dRoot, g);
 			getTreeDrawing().drawTree(tree, dRoot, g); //OTHER ROOTS
 			printAllExtras(tree, dRoot, g);
