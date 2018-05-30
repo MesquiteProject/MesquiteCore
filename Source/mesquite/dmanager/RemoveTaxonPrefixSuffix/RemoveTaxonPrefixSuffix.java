@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.dmanager.KeepTaxonPrefixSuffix;
+package mesquite.dmanager.RemoveTaxonPrefixSuffix;
 
 import java.util.*;
 import java.awt.*;
@@ -20,9 +20,8 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
-/* ======================================================================== 
-*new in 1.02* */
-public class KeepTaxonPrefixSuffix extends TaxonNameAlterer {
+
+public class RemoveTaxonPrefixSuffix extends TaxonNameAlterer {
 	String searchText=".";
 	MesquiteBoolean suffix = new MesquiteBoolean(true);
 	
@@ -32,17 +31,17 @@ public class KeepTaxonPrefixSuffix extends TaxonNameAlterer {
 	}
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return 250;  
+		return 351;  
 	}
 	/*.................................................................................................................*/
    	public boolean getOptions(Taxa taxa, int firstSelected){
    		if (MesquiteThread.isScripting())
    			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Keep Only Prefix or Suffix",  buttonPressed);
-		queryDialog.addLabel("Keep only a prefix or suffix of taxon name", Label.CENTER);
+		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Remove Prefix or Suffix",  buttonPressed);
+		queryDialog.addLabel("Remove the prefix or suffix of taxon name", Label.CENTER);
 		SingleLineTextField searchField = queryDialog.addTextField("Delimiter:", searchText, 12, true);
-		Checkbox suffixBox = queryDialog.addCheckBox("Keep Suffix (otherwise Prefix)", suffix.getValue());
+		Checkbox suffixBox = queryDialog.addCheckBox("Remove Suffix (otherwise Prefix)", suffix.getValue());
 		queryDialog.completeAndShowDialog(true);
 			
 		boolean ok = (queryDialog.query()==0);
@@ -64,10 +63,10 @@ public class KeepTaxonPrefixSuffix extends TaxonNameAlterer {
 		String name = taxa.getTaxonName(it);
 		if (name!=null){
 			String s = "";
-			if (suffix.getValue()){
+			if (suffix.getValue()){ //removing suffix
 				int delim = name.lastIndexOf(searchText);
 				if (delim>=0){
-					name = name.substring(delim+1, name.length());
+					name = name.substring(0, delim);
 					taxa.setTaxonName(it, name, false);
 					nameChanged = true;
 				}
@@ -75,7 +74,7 @@ public class KeepTaxonPrefixSuffix extends TaxonNameAlterer {
 			else {
 				int delim = name.indexOf(searchText);
 				if (delim>=0){
-					name = name.substring(0, delim);
+					name = name.substring(delim+1, name.length());
 					taxa.setTaxonName(it, name, false);
 					nameChanged = true;
 				}
@@ -85,16 +84,16 @@ public class KeepTaxonPrefixSuffix extends TaxonNameAlterer {
    	}
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Keep Only Prefix/Suffix of Taxon Name...";
+		return "Remove Prefix/Suffix of Taxon Name...";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Keep Only Prefix/Suffix of Taxon Name";
+		return "Remove Prefix/Suffix of Taxon Name";
    	 }
    	 
 	/*.................................................................................................................*/
   	 public String getExplanation() {
-		return "Keeps only Prefix or Suffix of Taxon Name.";
+		return "Remove Prefix or Suffix of Taxon Name.";
    	 }
 }
 

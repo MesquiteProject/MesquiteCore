@@ -25,7 +25,6 @@ import mesquite.lib.duties.*;
 public class CompileProcessedMatrices extends FileProcessor {
 	String saveFile = null;
 	String tempFile = null;
-	TaxonNameAlterer nameAlterer;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -53,8 +52,6 @@ public class CompileProcessedMatrices extends FileProcessor {
 	void checkTaxonList(CharacterData data, String saveFile){
 		Taxa taxa = data.getTaxa();
 		boolean added = false;
-		if (nameAlterer != null)
-			nameAlterer.alterTaxonNames(taxa, null);
 		for (int it = 0; it<taxa.getNumTaxa(); it++){
 		
 			if (taxonNames.indexOfByName(taxa.getTaxonName(it))<0){
@@ -108,9 +105,6 @@ public class CompileProcessedMatrices extends FileProcessor {
 				return false;
 			saveFile = MesquiteFile.composePath(directory, fileName);
 			tempFile = MesquiteFile.composePath(directory, MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + fileName)) ;
-			if (AlertDialog.query(containerOfModule(), "Alter names?", "The matrices found in the files of the selected folder will be accumulated into a single NEXUS file.  All taxa will be accumulated into a single block."
-					+"In case the different files have variants of taxon names, do you want to alter the names of each matrix as it is read?", "Alter Names", "No"))
-					nameAlterer = (TaxonNameAlterer) hireEmployee(TaxonNameAlterer.class, "How do you want to alter the names of taxa in each matrix?");
 		}
 		if (saveFile == null)
 			return false;
