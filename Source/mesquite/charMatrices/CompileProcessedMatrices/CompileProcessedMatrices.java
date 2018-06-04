@@ -68,7 +68,7 @@ public class CompileProcessedMatrices extends FileProcessor {
 			String block = "#NEXUS" + StringUtil.lineEnding() + "BEGIN TAXA;" + StringUtil.lineEnding() + " DIMENSIONS NTAX=" + taxonNames.size() + ";" + StringUtil.lineEnding() + " TAXLABELS" + StringUtil.lineEnding() + "   ";
 			for (int it = 0; it<taxonNames.size(); it++){
 				MesquiteString n = (MesquiteString)taxonNames.elementAt(it);
-				block += n.getName() + "  ";
+				block += ParseUtil.tokenize(n.getName()) + "  ";
 			}
 			block += ";" + StringUtil.lineEnding() + "END;" + StringUtil.lineEnding() + StringUtil.lineEnding();
 			MesquiteFile.putFileContents(saveFile, block + matrices, true);
