@@ -390,7 +390,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 	/** readFileFromString takes the FASTA-formated string "contents" and pumps it into the CharacterData data.  This method is required for the ReadFileFromString interface */
 	/*.................................................................................................................*/
-	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String arguments) {
+	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String fileName, String arguments) {
 		MesquiteProject mf = getProject();
 		if (taxa == null || StringUtil.blank(contents))
 			return;

@@ -1184,7 +1184,7 @@ class MElementPanel extends ElementPanel {
 	public void actUponDroppedFileContents(FileInterpreter fileInterpreter, String path) {
 		if (fileInterpreter!=null) {
 			Taxa taxa = data.getTaxa();
-			((ReadFileFromString)fileInterpreter).readFileFromString( data,  taxa,  MesquiteFile.getFileContentsAsString(path),  "");
+			((ReadFileFromString)fileInterpreter).readFileFromString( data,  taxa,  MesquiteFile.getFileContentsAsString(path), MesquiteFile.getFileNameFromFilePath(path), "");
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, null, null));
 			data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
