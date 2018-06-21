@@ -3483,7 +3483,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 			data.setCharNumChanging(true);
 			String fileName = MesquiteFile.getFileNameFromFilePath(path);
-			((ReadFileFromString) fileInterpreter).readFileFromString(data, taxa, MesquiteFile.getFileContentsAsString(path), "", fileName);
+			((ReadFileFromString) fileInterpreter).readFileFromString(data, taxa, MesquiteFile.getFileContentsAsString(path), fileName, "");
 			data.setCharNumChanging(false);
 
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
