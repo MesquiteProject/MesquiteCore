@@ -4250,7 +4250,6 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					Object obj = v.elementAt(i);
 					if (obj instanceof DataWindowAssistant) {
 						DataWindowAssistant a = (DataWindowAssistant) obj;
-					//	s += "(" + a.getName() + ")";
 						String ce = a.getCellExplanation(column, row);
 						if (!StringUtil.blank(ce))
 							s += "\n" + ce;
