@@ -92,6 +92,24 @@ public class ColorByAA extends DataWindowAssistantID implements CellColorer, Cel
 	/*.................................................................................................................*/
 	public void viewChanged(){
 	}
+  	public String getCellExplanation(int ic, int it){
+		if (ic<0)
+			return null;
+		if (data == null)
+			return null;
+ 		int i = data.getCodonPosition(ic);
+ 		String s;
+  		if (!MesquiteInteger.isCombinable(i))
+  			s= "Codon position unassigned";
+  		if (i == 0)
+  			s= "Non-coding";
+  		else
+  			s= "Codon position: " + i;
+		long aa = data.getAminoAcid(ic,it,true);
+		if (aa!=CategoricalState.inapplicable)
+			s += "Amino acid: " + ProteinState.toString(aa, false);
+		return s;
+	}
 	public String getCellString(int ic, int it){
 
 		if (!isActive())

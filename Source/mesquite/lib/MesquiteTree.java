@@ -3134,7 +3134,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Unrecognized taxon name", "Unrecognized name (\"" + c + "\") of terminal taxon in tree", "Continue", "Don't warn again", 0)) {
 							dWarn = false;
 						}
-						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " (search for \"ERROR>\" in output in log file) " + path);
+						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " [permit t0 " + permitT0Names + "] (search for \"ERROR>\" in output in log file) " + path);
 						StringBuffer sb = new StringBuffer(TreeDescription);
 						sb.insert(stringLoc.getValue()-1, "ERROR>");
 						MesquiteTrunk.mesquiteTrunk.logln(sb.toString());

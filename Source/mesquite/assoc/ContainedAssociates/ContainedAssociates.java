@@ -83,14 +83,18 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 	MesquiteString containedBrColorName;
 	Color containingBranchColor = WideTreeDrawing.defaultBranchColor;
 	MesquiteString containingBrColorName = new MesquiteString(WideTreeDrawing.defaultBranchColorName);
-
+	MesquiteMenuSpec containedMenu = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		containedMenu = makeMenu("Contained");
 		startedUnderScripting = MesquiteThread.isScripting();
 		if (getProject().getNumberTaxas()<=1) {
 			return sorry("Sorry, you can't use the Contained Associates tree drawing if there is only a single set of taxa available.  It is designed to show contained trees within containing trees (e.g. genes within species)");
 		}
-		nodeLocsTask= (NodeLocsVH)hireCompatibleEmployee(NodeLocsVH.class, new boolean[]{true}, "Calculator of node locations");
+		nodeLocsTask= (NodeLocsVH)hireCompatibleEmployee(NodeLocsVH.class, new boolean[]{false}, "Calculator of node locations");
+		//nodeLocsTask= (NodeLocsVH)hireCompatibleEmployee(NodeLocsVH.class, new boolean[]{true}, "Calculator of node locations");
+		Debugg.println("getMenu" + getEmployer().getMenu());
+		//nodeLocsTask.setMenuToUse(getEmployer().getMenu()); //Debugg.println: why isn't this being used?
 		if (nodeLocsTask == null) {
 			return sorry(getName() + " couldn't start because node locator module not obtained");
 		}
@@ -110,7 +114,6 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 		}
 		tstC = makeCommand("setTreeSource",  this);
 		treeSourceTask.setHiringCommand(tstC);
-		makeMenu("Contained");
 		treeSourceName = new MesquiteString(treeSourceTask.getName());
 		if (numModulesAvailable(TreeSource.class)>1) {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Contained Tree Source", tstC, TreeSource.class);
