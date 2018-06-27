@@ -208,7 +208,7 @@ public abstract class InterpretGenBank extends FileInterpreterI implements ReadF
 	
 	/** readFileFromString takes the NBRF-formated string "contents" and pumps it into the CharacterData data.  This method is required for the ReadFileFromString interface */
 	/*.................................................................................................................*/
-	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String arguments) {
+	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String fileName, String arguments) {
 		MesquiteProject mf = getProject();
 		incrementMenuResetSuppression();
 		ProgressIndicator progIndicator = new ProgressIndicator(mf,"Importing Sequences ", contents.length());

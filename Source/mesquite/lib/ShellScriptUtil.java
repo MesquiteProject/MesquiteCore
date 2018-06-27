@@ -161,6 +161,7 @@ public class ShellScriptUtil  {
 	}
 	/*.................................................................................................................*/
 	public static Process executeScript(String scriptPath, boolean visibleTerminal){ 
+		//TODO: retool this to use ProcessBuilder
 		Process proc;
 		try {
 			String[] pathArray = null;
@@ -172,6 +173,9 @@ public class ShellScriptUtil  {
 					scriptPath = scriptPath.replaceAll("//", "/");
 					pathArray = new String[] {scriptPath};
 				}
+				/*ProcessBuilder processBuilder =new ProcessBuilder(scriptPath,"");
+				processBuilder.directory(new File(MesquiteFile.getDirectoryPathFromFilePath(scriptPath)));
+				proc = processBuilder.start(); */
 				proc = Runtime.getRuntime().exec(pathArray);
 			}
 			else if (MesquiteTrunk.isLinux()) {

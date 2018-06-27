@@ -19,7 +19,7 @@ import mesquite.lib.characters.CharacterData;
 
 public interface ReadFileFromString {
 
-	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String arguments);
+	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String fileName, String arguments);
 
 		
 }
