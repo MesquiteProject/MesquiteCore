@@ -91,10 +91,7 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 		if (getProject().getNumberTaxas()<=1) {
 			return sorry("Sorry, you can't use the Contained Associates tree drawing if there is only a single set of taxa available.  It is designed to show contained trees within containing trees (e.g. genes within species)");
 		}
-		nodeLocsTask= (NodeLocsVH)hireCompatibleEmployee(NodeLocsVH.class, new boolean[]{false}, "Calculator of node locations");
-		//nodeLocsTask= (NodeLocsVH)hireCompatibleEmployee(NodeLocsVH.class, new boolean[]{true}, "Calculator of node locations");
-		Debugg.println("getMenu" + getEmployer().getMenu());
-		//nodeLocsTask.setMenuToUse(getEmployer().getMenu()); //Debugg.println: why isn't this being used?
+		nodeLocsTask= (NodeLocsVH)hireCompatibleEmployee(NodeLocsVH.class, new boolean[]{false}, "Calculator of node locations");  //if "true" passed, then restricts branch length drawing options
 		if (nodeLocsTask == null) {
 			return sorry(getName() + " couldn't start because node locator module not obtained");
 		}
@@ -112,6 +109,7 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 		if (treeSourceTask == null) {
 			return sorry(getName() + " couldn't start because no source of contained trees obtained");
 		}
+		addMenuItem( "-", null);
 		tstC = makeCommand("setTreeSource",  this);
 		treeSourceTask.setHiringCommand(tstC);
 		treeSourceName = new MesquiteString(treeSourceTask.getName());

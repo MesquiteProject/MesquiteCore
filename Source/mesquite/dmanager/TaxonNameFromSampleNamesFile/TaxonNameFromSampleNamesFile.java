@@ -236,15 +236,13 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		sampleCodeListParser.setPosition(0);
 		Parser subParser = new Parser();
 		String line = sampleCodeListParser.getRawNextDarkLine();
-		Debugg.println("TARGETCODE [" + sampleCodeString + "]");
 		while (StringUtil.notEmpty(line)) {  
 			subParser.setString(line);
 			subParser.setWhitespaceString("\t");
 			subParser.setPunctuationString("");
 			String code = subParser.getFirstRawToken();
-			Debugg.println("thisCode [" + code + "]");
 			if (sampleCodeString.equalsIgnoreCase(code)) {
-				//String fileName = subParser.getNextToken(); //Debugg.println
+				//String fileName = subParser.getNextToken(); //
 				String sequenceName=subParser.getNextToken();
 				for (int i=0; i<chosenNameCategory; i++) {
 					sequenceName=subParser.getNextToken();
@@ -255,8 +253,6 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 				return sequenceName;
 			}
 			line = sampleCodeListParser.getRawNextDarkLine();
-			Debugg.println("%%%%%%%%%%%%%%LINE [" + line + "]");
-
 		}
 		// got here and no match found -- log an error
 		MesquiteMessage.warnUser("No OTU ID code named '" + sampleCode + "' found in taxon names file.");
