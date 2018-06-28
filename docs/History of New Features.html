@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->History of New Features<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 3.5<br />
-      4 May 2018<br /></td>
+    <td width="14%">Version 3.51<br />
+      28 June 2018<br /></td>
   </tr>
 </table>
 
@@ -198,17 +198,29 @@
     
     
 <h1 id="toc0"><a name="New Features, Bugs, and History of Features and Bug Fixes"></a>New Features, Bugs, and History of Features and Bug Fixes</h1>
- Here are some of the more notable new features and bug fixes since version 1.0. If the previous way Mesquite worked could have yielded errors in substantive results (e.g., there was a bug in a phylogenetic calculation), those bugs are marked with <img src="files/substantiveBug.gif" alt="substantiveBug.gif" title="substantiveBug.gif" />.<br />
-<br />
-A list of new modules in the latest version can be seen by choosing &quot;List new modules&quot; from the Help menu<br />
-<br />
-There is also a list of <a  href="Release%20Dates.html">release dates.</a><br />
-<br />
-<a name="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes" id="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes"></a>Features to come in the next release version of Mesquite are listed <a href="https://github.com/MesquiteProject/MesquiteCore/wiki/New-features-and-bug-fixes-in-the-development-version">on this web page</a>. These new features and bug fixes are already contained in latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub.<br />
-<br />
-<hr />
+ <p>Here are some of the more notable new features and bug fixes since version 1.0. If the previous way Mesquite worked could have yielded errors in substantive results (e.g., there was a bug in a phylogenetic calculation), those bugs are marked with <img src="files/substantiveBug.gif" alt="substantiveBug.gif" title="substantiveBug.gif" />.<br />
+  <br />
+   A list of new modules in the latest version can be seen by choosing &quot;List new modules&quot; from the Help menu<br />
+  <br />
+   There is also a list of <a  href="Release%20Dates.html">release dates.</a><br />
+  <br />
+  <a name="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes" id="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes"></a>Features to come in the next release version of Mesquite are listed <a href="https://github.com/MesquiteProject/MesquiteCore/wiki/New-features-and-bug-fixes-in-the-development-version">on this web page</a>. These new features and bug fixes are already contained in latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub.</p>
+ <p>&nbsp;</p>
+ <hr /><h3>Version 3.51</h3>
+<br /><strong>
+Bug Fixes and Workarounds</strong><br />
+ </p>
+ <ul>
+   <li>Mesquite wouldn&rsquo;t work if it was contained within a directory whose name included some accented letters and other high ASCII characters.</li>
+   <li>Fix bug whereby reading in a treefile with bootstrap frequencies attached as node labels were attached to nodes rather than branches even though the user chose to interpret them as bootstrap frequencies in the &quot;How to interpret numbers in tree description&quot; dialog box. Thanks to Austin Baker for reporting this. Fixed in build 892.<br />
+     <br />
+   </li>
+ </ul>
+
+	  
+ <hr />
 <h3 id="toc1"><a name="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes"></a>Version 3.5<br />
-</h3><h4 id="toc2"><a name="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes-New Features"></a>New Features</h4>
+</h3><h4 id="toc2">New Features</h4>
  <ul>
    <li>Improvements were done to support a new version of <a href="http://zephyr.mesquiteproject.org">Zephyr</a> that supports IQ-TREE.</li>
    <li>The manual was moved away from online-only at Wikispaces to being available both online at <a href="http://www.mesquiteproject.org">Github</a> and offline within the distributed Mesquite_Folder (at Mesquite_Folder/docs/home.html).</li>

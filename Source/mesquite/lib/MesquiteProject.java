@@ -219,6 +219,50 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return s;
 	}
 
+	public String toStringDescription(){
+
+		String s = "";
+		if (getHomeFileName() == null)
+			s += "Project (without home file)\n";
+		else
+			s +="Project with home file " + getHomeFileName() + "\n";
+		if (getHomeDirectoryName() != null)
+			s += "Location: in directory " + getHomeDirectoryName() + "\n";
+		if (files.size()>1){
+
+			s += "Linked files\n";
+			for (int i = 0; i<files.size(); i++){
+				MesquiteFile file = (MesquiteFile)files.elementAt(i);
+				if (file != homeFile)
+					s += "" + file.getName() + " at " + file.getDirectoryName();
+			}
+			s += "<hr>";
+		}
+		if (taxas.size()>0){
+			for (int i = 0; i< taxas.size(); i++){
+				Taxa t = (Taxa)taxas.elementAt(i);
+				s += t.toString(); 
+				if (getNumberCharMatrices(t)>0){
+					for (int k = 0; k<getNumberCharMatrices(t); k++){
+						CharacterData data = getCharacterMatrix(t, k);
+						s += " " + data;
+						s += "\n";
+					}
+					s += "\n";
+				}
+				if (getNumberOfFileElements(TreeVector.class)>0){
+					for (int k = 0; k<getNumberOfFileElements(TreeVector.class); k++){
+						TreeVector trees = (TreeVector)getFileElement(TreeVector.class, k);
+						if (trees.getTaxa() == t)
+							s += trees.toString() + "\n";
+					}
+				}
+
+			}
+			s += "\n";
+		}
+		return s;
+	}
 	/*.................................................................................................................*/
 	/** returns the Trees with given id number */
 	public TreeVector getTreesByID(long id) {

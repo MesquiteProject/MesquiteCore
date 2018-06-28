@@ -81,16 +81,17 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 	
 	Color containedBranchColor;
 	MesquiteString containedBrColorName;
-	Color containingBranchColor =null; //WideTreeDrawing.defaultBranchColor;
-	MesquiteString containingBrColorName;
-
+	Color containingBranchColor = WideTreeDrawing.defaultBranchColor;
+	MesquiteString containingBrColorName = new MesquiteString(WideTreeDrawing.defaultBranchColorName);
+	MesquiteMenuSpec containedMenu = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		containedMenu = makeMenu("Contained");
 		startedUnderScripting = MesquiteThread.isScripting();
 		if (getProject().getNumberTaxas()<=1) {
 			return sorry("Sorry, you can't use the Contained Associates tree drawing if there is only a single set of taxa available.  It is designed to show contained trees within containing trees (e.g. genes within species)");
 		}
-		nodeLocsTask= (NodeLocsVH)hireCompatibleEmployee(NodeLocsVH.class, new boolean[]{true}, "Calculator of node locations");
+		nodeLocsTask= (NodeLocsVH)hireCompatibleEmployee(NodeLocsVH.class, new boolean[]{false}, "Calculator of node locations");  //if "true" passed, then restricts branch length drawing options
 		if (nodeLocsTask == null) {
 			return sorry(getName() + " couldn't start because node locator module not obtained");
 		}
@@ -108,9 +109,9 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 		if (treeSourceTask == null) {
 			return sorry(getName() + " couldn't start because no source of contained trees obtained");
 		}
+		addMenuItem( "-", null);
 		tstC = makeCommand("setTreeSource",  this);
 		treeSourceTask.setHiringCommand(tstC);
-		makeMenu("Contained");
 		treeSourceName = new MesquiteString(treeSourceTask.getName());
 		if (numModulesAvailable(TreeSource.class)>1) {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Contained Tree Source", tstC, TreeSource.class);
@@ -503,6 +504,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	Color migratedColor = Color.yellow;
 	static Color defaultBranchColor = ColorDistribution.burlyWood;
 	Color containingColor = defaultBranchColor;
+	static String defaultBranchColorName = "Wood";
 	AssociationSource associationTask;
 	TaxaAssociation association;
 	MesquiteModule treeSourceTask;

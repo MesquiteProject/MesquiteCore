@@ -3134,7 +3134,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Unrecognized taxon name", "Unrecognized name (\"" + c + "\") of terminal taxon in tree", "Continue", "Don't warn again", 0)) {
 							dWarn = false;
 						}
-						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " (search for \"ERROR>\" in output in log file) " + path);
+						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " [permit t0 " + permitT0Names + "] (search for \"ERROR>\" in output in log file) " + path);
 						StringBuffer sb = new StringBuffer(TreeDescription);
 						sb.insert(stringLoc.getValue()-1, "ERROR>");
 						MesquiteTrunk.mesquiteTrunk.logln(sb.toString());
@@ -4917,8 +4917,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		setDirty(true);
 		return true;
 	}
+	
+	/* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
+	values in ManageTrees.queryAboutNumericalLabelIntepretation() */
+	
 	static final String[] betweenLongs = new String[]{"color"};
-	static final String[] betweenDoubles = new String[]{"width", "consensusFrequency", "posteriorProbability"};
+	static final String[] betweenDoubles = new String[]{"width", "bootstrapFrequency", "consensusFrequency", "posteriorProbability"};
 	static final String[] betweenObjects = new String[]{};
 	static final String[] betweenBits = new String[]{};
 	/*

@@ -217,7 +217,6 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 				decrementMenuResetSuppression();
 				return false;
 			}
-
 			boolean firstResult = true;
 			if (fileProcessors != null){
 				boolean success = true;

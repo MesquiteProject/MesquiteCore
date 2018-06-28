@@ -37,24 +37,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.5.  http://www.mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.51.  http://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.5";
+		return "3.51";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 350;
+		return 351;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.50;
+		return 3.51;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "May 2018"; //"April 2007";
+		return "June 2018"; //"April 2007";
 	}
 
 	/*.................................................................................................................*/

@@ -359,7 +359,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], treeDisplays[i].getTaxa().getNumTaxa()));
 				}
 				for (int i=0; i<numDisplays; i++) {
-					if (temp.allowsReorientation())
+					if (temp != null && temp.allowsReorientation())
 						treeDisplays[i].setOrientation(currentOrientations[i]);
 					else
 						currentOrientations[i] = treeDisplays[i].getOrientation();
@@ -835,6 +835,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 			int dRoot = getTreeDrawing().getDrawnRoot();
 			if (!tree.nodeExists(dRoot))
 				dRoot = tree.getRoot();
+
 			printAllBackgroundExtras(tree, dRoot, g);
 			getTreeDrawing().drawTree(tree, dRoot, g); //OTHER ROOTS
 			printAllExtras(tree, dRoot, g);

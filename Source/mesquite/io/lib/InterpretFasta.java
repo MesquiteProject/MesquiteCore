@@ -18,6 +18,7 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.ContinuousData;
@@ -149,7 +150,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 	/*.................................................................................................................*/
 	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, ProgressIndicator progIndicator, String arguments) {
-		readFileCore(parser, file, data, taxa, 0, progIndicator, arguments, true);
+		readFileCore(parser, file, data, taxa, 0, progIndicator, arguments, true, "");
 	}
 	public int queryOptionsDuplicate() {
 		String helpString = "If you choose Don't Add, then any incoming sequence with the same name as an existing sequence will be ignored. ";
@@ -178,9 +179,13 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		id.dispose();
 		return value;
 	}
-
 	/*.................................................................................................................*/
-	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, int lastTaxonNumber, ProgressIndicator progIndicator, String arguments, boolean newFile) {
+	public void processFileName(String fileName, CharacterData data, Taxa taxa, int taxonNumber) {
+		
+	}
+	
+	/*.................................................................................................................*/
+	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, int lastTaxonNumber, ProgressIndicator progIndicator, String arguments, boolean newFile, String fileName) {
 			boolean wassave = data.saveChangeHistory;
 			data.saveChangeHistory = false;
 			Parser subParser = new Parser();
@@ -193,6 +198,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				sb.append(parser.getRawNextLine());
 			String line = sb.toString();
 			int taxonNumber = -1;
+			
 
 			boolean abort = false;
 			subParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
@@ -244,7 +250,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				added=false;
 
 				
-				if (true) {
+				if (true) {  
 					if (replace) {
 						CharacterState cs = data.makeCharacterState(); //so as to get the default state
 						int numChars = data.getNumChars();
@@ -252,6 +258,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 							for (int ic=0; ic<numChars; ic++)
 								data.setState(ic, taxonNumber, cs);
 						added=false;
+
 					} else if (!skipThisSequence) {  // adding to end, not replacing an existing one
 						if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
 							taxonNumber = getLastNewTaxonFilled()+1;
@@ -287,6 +294,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 					if (taxonNumber>=0)
 						t = taxa.getTaxon(taxonNumber);
+					processFileName(fileName, data, taxa, taxonNumber);
 
 					if (t!=null) {
 						recordAsNewlyAddedTaxon(taxa,taxonNumber);
@@ -390,7 +398,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 	/** readFileFromString takes the FASTA-formated string "contents" and pumps it into the CharacterData data.  This method is required for the ReadFileFromString interface */
 	/*.................................................................................................................*/
-	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String arguments) {
+	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String fileName, String arguments) {
 		MesquiteProject mf = getProject();
 		if (taxa == null || StringUtil.blank(contents))
 			return;
@@ -403,7 +411,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		}
 		int numTaxa = taxa.getNumTaxa();
 		parser.setString(contents);
-		readFileCore(parser, null, data,  taxa, numTaxa, progIndicator, arguments, false);	
+		readFileCore(parser, null, data,  taxa, numTaxa, progIndicator, arguments, false, fileName);	
 		taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 
@@ -414,7 +422,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
 			CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
-		if (taxaTask == null || getProject() == null || getProject().getTaxas() == null)
+		if (taxaTask == null || getProject() == null || getProject().getTaxas() == null || file==null)
 			return;
 		incrementMenuResetSuppression();
 		ProgressIndicator progIndicator = new ProgressIndicator(mf,"Importing File "+ file.getName(), file.existingLength());
@@ -447,7 +455,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			if (fuse)
 				numTaxa = taxa.getNumTaxa();
 			
-			readFileCore(parser, file, data,  taxa, numTaxa, progIndicator, arguments, !fuse);	
+			readFileCore(parser, file, data,  taxa, numTaxa, progIndicator, arguments, !fuse, file.getName());	
 			
 		}
 		decrementMenuResetSuppression();

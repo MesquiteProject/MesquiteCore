@@ -177,18 +177,22 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 			if (test == null || test.isCompatible(data.getStateClass(), getProject(), this)) {
 				taxa = data.getTaxa();
 
-				String path = file.getPath();
+				String filePath = file.getPath();
 				String fileName = file.getFileName();
-				if (path.endsWith(".nex") || path.endsWith(".fas")){
-					path = path.substring(0, path.length()-4);
+				if (filePath.endsWith(".nex") || filePath.endsWith(".fas")){
+					filePath = filePath.substring(0, filePath.length()-4);
 					fileName = fileName.substring(0, fileName.length()-4);
 
 				}
+				String path = directoryPath;
+				if (path == null)
+					path = filePath;
+				path= path + MesquiteFile.fileSeparator + fileName;
 				if (multiple){
 					path = path + (im + 1);
 					fileName = fileName + (im + 1);
 				}
-				
+
 				path = path + "." + exporterTask.preferredDataFileExtension(); 
 				if (!StringUtil.blank(exporterTask.preferredDataFileExtension()) && !fileName.endsWith(exporterTask.preferredDataFileExtension()))
 					fileName = fileName + "." + exporterTask.preferredDataFileExtension();
@@ -238,11 +242,11 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		if (exporterName.equals("NEXUS file"))
 			coord.writeFile(file);
 		else if (exporterTask instanceof FileInterpreterI) {
-				String s = "file = " + StringUtil.tokenize(fileName) + " directory = " + StringUtil.tokenize(directoryPath) + " noTrees";
-				if (usePrevious)
-					s += " usePrevious";
-				coord.export((FileInterpreterI)exporterTask, file, s);
-			}
+			String s = "file = " + StringUtil.tokenize(fileName) + " directory = " + StringUtil.tokenize(directoryPath) + " noTrees";
+			if (usePrevious)
+				s += " usePrevious";
+			coord.export((FileInterpreterI)exporterTask, file, s);
+		}
 	}
 
 
