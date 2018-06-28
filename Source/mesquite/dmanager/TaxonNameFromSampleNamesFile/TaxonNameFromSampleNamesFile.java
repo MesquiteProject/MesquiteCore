@@ -43,7 +43,6 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		//sampleCodeListParser = new Parser(sampleCodeList);
 		//Parser subParser = new Parser();
 		//String line = sampleCodeListParser.getRawNextDarkLine();
-		Debugg.println("line " + line);
 		subParser.setString(line);
 		subParser.setWhitespaceString("\t");
 		subParser.setPunctuationString("");
