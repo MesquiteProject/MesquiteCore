@@ -3497,7 +3497,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	int referenceSequence = 0;
 
 	/* ................................................................................................................. */
-	public boolean queryDroppedFileOptions() {
+	protected boolean queryDroppedFileOptions(MesquiteBoolean adjustSequences) {
 		if (!(data instanceof MolecularData))
 			return false;
 		
@@ -3511,13 +3511,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	//		dialog.addBlankLine();
 	//	}
 		IntegerField referenceSequenceBox = dialog.addIntegerField("Compare to reference sequence: ", referenceSequence + 1, 8, 1, data.getNumTaxa());
-		dialog.completeAndShowDialog("Adjust Sequences", "Don't Adjust", true, null);
+		dialog.completeAndShowDialog("Adjust Sequences", "Don't Adjust", "Cancel", "Adjust Sequences");
 
 		if (buttonPressed.getValue() == 0) {
 			referenceSequence = referenceSequenceBox.getValue() - 1;
 		}
 		dialog.dispose();
-		return (buttonPressed.getValue() == 0);
+		return (buttonPressed.getValue() !=2);
 	}
 	
 	public int numIters (Iterator iter) {
@@ -3531,6 +3531,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 		FileInterpreter fileInterpreter = null;
 		int numFiles = numIters(files.iterator());
+		boolean abort = false;
 
 		for (Iterator iter = files.iterator(); iter.hasNext();) {
 			File nextFile = (File) iter.next();
@@ -3547,8 +3548,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					fileInterpreter.setMaximumTaxonFilled(-1);
 
 					if (!MesquiteThread.isScripting()) {
-						if (data instanceof MolecularData)
-							adjustNewSequences = queryDroppedFileOptions();
+						if (data instanceof MolecularData) {
+							MesquiteBoolean adjustSequences = new MesquiteBoolean(true);
+							abort = !queryDroppedFileOptions(adjustSequences);
+							if (abort)
+								break;
+							adjustNewSequences = adjustSequences.getValue();
+						}
 					}
 					
 				}
@@ -3561,7 +3567,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				count++;
 			}
 		}
-		if (fileInterpreter!=null) {
+		if (!abort && fileInterpreter!=null) {
 			if (adjustNewSequences) {
 				MesquiteMessage.println("Adjusting sequences ");
 				if (!data.someApplicableInTaxon(referenceSequence, false)){  
