@@ -340,7 +340,8 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		if (treeVectors.length==1)
 			treeVector = (TreeVector)treeVectors[0];
 		else
-			treeVector = (TreeVector)ListDialog.queryList(containerOfModule(), "Include trees in file?", "Include trees in file?", MesquiteString.helpString, treeVectors, 0);
+			treeVector = (TreeVector)ListDialog.queryList(containerOfModule(), "Include trees in file?", "Include trees in file?", MesquiteString.helpString, "Include", "No trees", treeVectors, 0);
+		//treeVector = (TreeVector)ListDialog.queryList(containerOfModule(), "Include trees in file?", "Include trees in file?", MesquiteString.helpString, treeVectors, 0);
 		previousVector = treeVector;
 		return treeVector;
 	}
