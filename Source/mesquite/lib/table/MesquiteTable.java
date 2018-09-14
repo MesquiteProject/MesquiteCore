@@ -5658,12 +5658,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		this.showRowNames = showRowNames;
 	}
 
-	public synchronized void mouseWheelMoved(MouseWheelEvent e) {
+	public synchronized void mouseWheelMoved(MouseWheelEvent e) {   //scrollwheel
 		int amount = e.getScrollAmount();  //verticalScrollPageIncrement, numColumnsVisible
 		boolean blockScroll = e.getScrollType()==MouseWheelEvent.WHEEL_BLOCK_SCROLL;
 		boolean vert = !e.isShiftDown();
 		boolean upleft=false;
-		if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(1.7)) // this and following line are to fix the bug in Java 8 update 161
+		if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(1.8)) // this and following line are to fix the bug in Java 8 update 161
 			upleft = e.getPreciseWheelRotation()<0;
 		else 
 			upleft = e.getWheelRotation()<0;
