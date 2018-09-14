@@ -38,7 +38,7 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 
 	/*.................................................................................................................*/
 	public boolean loadModule(){
-		return false;
+		return true;
 	}
 	public boolean isSubstantive(){
 		return true;
