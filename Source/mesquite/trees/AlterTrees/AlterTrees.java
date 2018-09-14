@@ -87,7 +87,7 @@ public class AlterTrees extends TreeListUtility {
 					CommandRecord.tick("Altering tree " + j + " of " + numTrees);
 			   		if (j % dotFreq == 0)
 			   			log(".");
-					boolean success = alterTask.transformTree((MesquiteTree)tree, null, false);
+					boolean success = alterTask.transformTree((MesquiteTree)tree, null, true); //WAYNECHECK: why was notify set to false here?  This caused a lack of updating in the tree list window.
  				}
 			}
 		}
