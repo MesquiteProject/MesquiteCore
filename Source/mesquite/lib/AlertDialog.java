@@ -128,7 +128,11 @@ public class AlertDialog  {
 		if (id.isInWizard())
 			id.appendToHelpString("<h3>Notice</h3>");
 		id.addHTMLPanel(message, w, h, linkTouchedCommand);
-		id.completeAndShowDialog(okString,null,null,okString);
+		try {
+			id.completeAndShowDialog(okString,null,null,okString);
+		} catch (Exception e) {
+			MesquiteMessage.println("exception: " + e.getMessage());
+		}
 		id.dispose();
 	}
 	public static void notice(Object parent, String title, String message) {
