@@ -558,6 +558,17 @@ public class StringUtil {
 		return line.substring(last+1, line.length());
 	}
 	/*.................................................................................................................*/
+	/** returns the last item in a string, separated into parts by whichever is last of the two separators*/
+	public static String getLastItem(String line, String separator1, String separator2, boolean removeTrailingSeparators) {
+		if (line==null)
+			return null;
+		else if (line.equals(""))
+			return "";
+		line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1+separator2);
+		int last = MesquiteInteger.maximum(line.lastIndexOf(separator1), line.lastIndexOf(separator2));
+		return line.substring(last+1, line.length());
+	}
+	/*.................................................................................................................*/
 	/** returns the  item number "index" in a string, separated into parts by the separator.  NOT 0-based*/
 	public static String getItem(String line, String separator, int index) {
 		if (line==null)
@@ -1025,12 +1036,16 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String stripTrailingWhitespaceAndPunctuation(String token) {
+		return stripTrailingWhitespaceAndPunctuation(token, defaultPunctuation);
+	}
+	/*.................................................................................................................*/
+	public static String stripTrailingWhitespaceAndPunctuation(String token, String punct) {
 		if (token == null)
 			return "";
 		int firstDark = -1;
 		for (int i=token.length()-1;  i>=0; i--) {
 			char c = token.charAt(i);
-			if (!(defaultWhitespace.indexOf(c)>=0 ||  defaultPunctuation.indexOf(c)>=0)){  // not (whitespace or punctuation)
+			if (!(defaultWhitespace.indexOf(c)>=0 ||  (punct!=null && punct.indexOf(c)>=0))){  // not (whitespace or punctuation)
 				firstDark = i;
 				break;
 			}
