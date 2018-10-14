@@ -2,6 +2,8 @@ package mesquite.externalCommunication.lib;
 
 import mesquite.lib.*;
 
+import java.io.File;
+
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.*;
@@ -11,6 +13,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 
 public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
+	protected static final int defaultMinPollIntervalSeconds = 30;
+	protected int minPollIntervalSeconds =defaultMinPollIntervalSeconds;
+
 	protected String host="";
 	protected static String username = "";
 	protected static String password = ""; 
@@ -19,6 +24,10 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	protected MesquiteModule ownerModule;
 	protected boolean verbose = MesquiteTrunk.debugMode;
 	protected boolean aborted = false;
+	protected String rootDir;
+	protected long[] lastModified;
+	protected final static String submitted="SUBMITTED";
+	protected RemoteJobFile[] previousRemoteJobFiles;
 
 	protected OutputFileProcessor outputFileProcessor; // for reconnection
 	protected ShellScriptWatcher watcher; // for reconnection
@@ -34,7 +43,15 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 		ownerModule = mb;
 	}
 	
-	
+	/*.................................................................................................................*/
+	public abstract String getServiceName();
+	public abstract String getBaseURL();
+	public abstract String getAPIURL();
+	public abstract String getRegistrationURL();
+	public abstract String getSystemName();
+
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public String getAPITestUserName(){
 		return "";
 	}
@@ -50,6 +67,21 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 
 	public void setAborted(boolean aborted) {
 		this.aborted = aborted;
+	}
+	/*.................................................................................................................*/
+	public String getRootDir() {
+		return rootDir;
+	}
+	public void setRootDir(String rootDir) {
+		this.rootDir = rootDir;
+	}
+
+	/*.................................................................................................................*/
+	public void setOutputProcessor(OutputFileProcessor outputFileProcessor){
+		this.outputFileProcessor = outputFileProcessor;
+	}
+	public void setWatcher(ShellScriptWatcher watcher){
+		this.watcher = watcher;
 	}
 
 	/*.................................................................................................................*/
@@ -114,20 +146,12 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 
 
 	/*.................................................................................................................*/
-	public abstract String getBaseURL();
-	/*.................................................................................................................*/
-	public abstract String getAPIURL();
-	/*.................................................................................................................*/
-	public abstract String getRegistrationURL();
-	/*.................................................................................................................*/
-	public abstract String getSystemName();
-	/*.................................................................................................................*/
 	public String getSystemTypeName() {
 		return "";
 	}
 	/*.................................................................................................................*/
 	public boolean checkUsernamePassword(boolean tellUserAboutSystem){
-		if (StringUtil.blank(getUserName()) || StringUtil.blank(password) || true){
+		if (StringUtil.blank(getUserName()) || StringUtil.blank(password)){
 			MesquiteBoolean answer = new MesquiteBoolean(false);
 			MesquiteString usernameString = new MesquiteString();
 			if (getUserName()!=null)
@@ -160,6 +184,124 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 		provider.setCredentials(AuthScope.ANY, credentials);
 		return HttpClientBuilder.create().setDefaultCredentialsProvider(provider).build();
 	}
+	/*.................................................................................................................*/
+	public boolean fileNewOrModified (RemoteJobFile[] previousJobFiles, RemoteJobFile[] jobFiles, int fileNumber) {
+		if (previousJobFiles!=null && jobFiles!=null && fileNumber<jobFiles.length) {
+			String fileName = jobFiles[fileNumber].getFileName();
+			if (StringUtil.notEmpty(fileName)){
+				for (int i=0; i<previousJobFiles.length; i++) {
+					if (fileName.equalsIgnoreCase(previousJobFiles[i].getFileName())) {  // we've found the file
+						String lastMod = jobFiles[fileNumber].getLastModified();
+						if (StringUtil.notEmpty(lastMod))
+							return !lastMod.equals(previousJobFiles[i].getLastModified());  // return true if the strings don't match
+						else
+							return true;
+					}
+				}
+			}
+		}
+		return true;
+	}
 
+	/*.................................................................................................................*/
+	public void processOutputFiles(Object location){
+		if (rootDir!=null) {
+			downloadWorkingResults(location, rootDir, true);
+			if (outputFileProcessor!=null && outputFilePaths!=null && lastModified !=null) {
+				String[] paths = outputFileProcessor.modifyOutputPaths(outputFilePaths);
+				for (int i=0; i<paths.length && i<lastModified.length; i++) {
+					File file = new File(paths[i]);
+					long lastMod = file.lastModified();
+					if (!MesquiteLong.isCombinable(lastModified[i])|| lastMod>lastModified[i]){
+						outputFileProcessor.processOutputFile(paths, i);
+						lastModified[i] = lastMod;
+					}
+				}
+			}
+		}
+	}
+
+	/*.................................................................................................................*/
+	public abstract boolean jobCompleted(Object location);
+	public abstract String getJobStatus(Object location) ;
+	public abstract boolean downloadWorkingResults(Object location, String rootDir, boolean onlyNewOrModified);
+	public abstract boolean downloadResults(Object location, String rootDir, boolean onlyNewOrModified);
+	public abstract void deleteJob(Object location);
+
+	/*.................................................................................................................*/
+	public boolean monitorAndCleanUpShell(Object location, ProgressIndicator progIndicator){
+		boolean stillGoing = true;
+
+		if (!checkUsernamePassword(true)) {
+			return false;
+		}
+		lastModified=null;
+		if (outputFilePaths==null)
+			;
+		if (outputFilePaths!=null) {
+			lastModified = new long[outputFilePaths.length];
+			LongArray.deassignArray(lastModified);
+		}
+		String status = "";
+		MesquiteTimer timer = new MesquiteTimer();
+		timer.start();
+		int interval = 0;
+		int pollInterval = minPollIntervalSeconds;
+		boolean submittedReportedToUser = false;
+		
+		while (!jobCompleted(location) && stillGoing && !aborted){
+			double loopTime = timer.timeSinceLastInSeconds();  // checking to see how long it has been since the last one
+			if (loopTime>minPollIntervalSeconds) {
+				pollInterval = minPollIntervalSeconds - ((int)loopTime-minPollIntervalSeconds);
+				if (pollInterval<0) pollInterval=0;
+			}
+			else 
+				pollInterval = minPollIntervalSeconds;
+			if(!StringUtil.blank(status)) {
+				if (!status.equalsIgnoreCase(submitted) || !submittedReportedToUser) 
+					ownerModule.logln(getServiceName()+" Job Status: " + status + "  (" + StringUtil.getDateTime() + ")");
+				if (status.equalsIgnoreCase(submitted))
+					submittedReportedToUser = true;
+			}
+
+			//	if (jobSubmitted(location))
+			//		processOutputFiles();
+			try {
+				for (int i=0; i<pollInterval; i++) {
+					if (progIndicator!=null)
+						progIndicator.spin();
+					Thread.sleep(1000);
+				}
+			}
+			catch (InterruptedException e){
+				MesquiteMessage.notifyProgrammer("InterruptedException in "+getServiceName()+" monitoring");
+				return false;
+			}
+
+			stillGoing = watcher == null || watcher.continueShellProcess(null);
+			String newStatus = getJobStatus(location); 
+			if (newStatus!=null && !newStatus.equalsIgnoreCase(status)) {
+				ownerModule.logln(getServiceName()+" Job Status: " + newStatus + "  (" + StringUtil.getDateTime() + ")");
+			} else
+				ownerModule.log(".");
+			status=newStatus;
+			if (newStatus!=null && newStatus.equalsIgnoreCase(submitted)){  // job is running
+				processOutputFiles(location);
+			}
+		}
+		ownerModule.logln(getServiceName()+" job completed. (" + StringUtil.getDateTime() + " or earlier)");
+		if (outputFileProcessor!=null) {
+			if (rootDir!=null) {
+				ownerModule.logln("About to download results from "+getServiceName()+" (this may take some time).");
+				if (downloadResults(location, rootDir, false))
+						outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
+				else
+					return false;
+			}
+		}
+		if (aborted)
+			return false;
+		return true;
+	}
 
 }
