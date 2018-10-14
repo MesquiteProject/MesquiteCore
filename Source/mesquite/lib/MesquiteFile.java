@@ -1175,7 +1175,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/*-------------------------------------------------------*/
 	/** Return string for directory path from full file path*/
 	public static String getFileNameFromFilePath(String path) { 
-		return StringUtil.getLastItem(path, fileSeparator, "/"); 
+		return StringUtil.getLastItem(path, fileSeparator, "/", true); 
 	}
 	/*-------------------------------------------------------*/
 	/** Return string for path, accommodating ../ at start of filename. If second string passed begins with "/", this 
