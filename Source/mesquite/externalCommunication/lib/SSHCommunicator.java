@@ -4,17 +4,11 @@ import mesquite.lib.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Properties;
 import java.util.Vector;
 
-import org.apache.http.client.HttpClient;
-import org.dom4j.Document;
-
 import com.jcraft.jsch.*;
-
 
 
 public abstract class SSHCommunicator extends RemoteCommunicator {
@@ -112,7 +106,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		}
 	}
 
-	public  boolean remoteFileExists (ChannelSftp channel, String remoteFileName) {
+	public  boolean remoteFileExists (ChannelSftp channel, String remoteFileName) {  // faster version if channel provided as doesn't need to establish a session
 		try {
 			if (channel==null)
 				return false;
@@ -244,35 +238,6 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	public void processOutputFiles(Object location) {
 	}
 	
-	public  boolean downloadAllFilesToLocalWorkingDirectory2 (boolean onlyNewOrModified) {
-		try{
-			Session session=createSession();
-			if (session==null)
-				return false;  // TODO: feedback
-			session.connect();
-			ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
-			channel.connect();
-
-			channel.cd(getRemoteWorkingDirectoryPath());
-			Vector remoteFiles = channel.ls(getRemoteWorkingDirectoryPath());
-			for (int i=0; i<remoteFiles.size(); i++) {
-				ChannelSftp.LsEntry entry = (ChannelSftp.LsEntry)remoteFiles.elementAt(i);
-				String fileName = entry.getFilename();
-				if (remoteFileExists(fileName))
-					channel.get(fileName, rootDir+fileName);
-			}
-
-			channel.disconnect();
-			session.disconnect();
-			return true;
-		} catch(Exception e){
-			ownerModule.logln("Could not SFTP files to working directory: " + e.getMessage());
-			e.printStackTrace();
-			return false;
-		}
-
-	}
-
 	public  boolean downloadFilesToLocalWorkingDirectory (boolean onlyNewOrModified) {
 		try{
 			Session session=createSession();
@@ -285,13 +250,14 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			channel.cd(getRemoteWorkingDirectoryPath());
 			Vector remoteFiles = channel.ls(getRemoteWorkingDirectoryPath());
 			
-			RemoteJobFile[] remoteJobFiles = new RemoteJobFile[remoteFiles.size()];  // now set the last modified dates
+			RemoteJobFile[] remoteJobFiles = new RemoteJobFile[remoteFiles.size()];  // now acquire the last modified dates
 			for (int i=0; i<remoteFiles.size(); i++) {
 				ChannelSftp.LsEntry entry = (ChannelSftp.LsEntry)remoteFiles.elementAt(i);
 				String fileName = entry.getFilename();
 				if (remoteFileExists(channel,fileName)) {
 					remoteJobFiles[i] = new RemoteJobFile();
 					remoteJobFiles[i].setLastModified(lastModified(fileName));
+					remoteJobFiles[i].setFileName(fileName);
 				}
 			}
 			for (int i=0; i<remoteFiles.size(); i++) {
