@@ -17,6 +17,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	protected String remoteWorkingDirectoryName = "";
 	protected String remoteServerDirectoryPath = "";
 	public static final String runningFileName = "running";
+	protected ProgressIndicator progressIndicator;
 
 
 	public SSHCommunicator (MesquiteModule mb, String xmlPrefsString,String[] outputFilePaths) {
@@ -24,6 +25,9 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			XMLUtil.readXMLPreferences(mb, this, xmlPrefsString);
 		this.outputFilePaths = outputFilePaths;
 		ownerModule = mb;
+	}
+	public void setProgressIndicator(ProgressIndicator progressIndicator) {
+		this.progressIndicator= progressIndicator;
 	}
 
 	public Session createSession() {
@@ -45,6 +49,12 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	}
 	public void setHost(String host) {
 		this.host = host;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	public String getRemoteWorkingDirectoryName() {
 		return remoteWorkingDirectoryName;
@@ -173,6 +183,8 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	
 				}
 				success=channel.getExitStatus()==0;
+				monitorAndCleanUpShell(null,progressIndicator);
+				
 				try{Thread.sleep(1000);}catch(Exception ee){}
 			}
 
@@ -235,8 +247,6 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			return submitted;
 		return "Job completed or not found.";
 	}
-	public void processOutputFiles(Object location) {
-	}
 	
 	public  boolean downloadFilesToLocalWorkingDirectory (boolean onlyNewOrModified) {
 		try{
@@ -285,6 +295,11 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		return downloadFilesToLocalWorkingDirectory(onlyNewOrModified);
 	}
 	
+	/*.................................................................................................................*/
+	public int getDefaultMinPollIntervalSeconds(){
+		return 10;
+	}
+
 	/*.................................................................................................................*/
 	public boolean downloadWorkingResults(Object location, String rootDir, boolean onlyNewOrModified) {
 		if (checkUsernamePassword(false)) {

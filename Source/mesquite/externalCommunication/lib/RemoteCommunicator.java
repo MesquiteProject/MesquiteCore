@@ -13,11 +13,10 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 
 public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
-	protected static final int defaultMinPollIntervalSeconds = 30;
-	protected int minPollIntervalSeconds =defaultMinPollIntervalSeconds;
+	protected int minPollIntervalSeconds =getDefaultMinPollIntervalSeconds();
 
 	protected String host="";
-	protected static String username = "";
+	protected String username = "";
 	protected static String password = ""; 
 	protected String xmlPrefsString = null;
 	protected String[] outputFilePaths; //local copies of files
@@ -51,6 +50,11 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	public abstract String getSystemName();
 
 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	public int getDefaultMinPollIntervalSeconds(){
+		return 30;
+	}
+
 	/*.................................................................................................................*/
 	public String getAPITestUserName(){
 		return "";
@@ -150,6 +154,14 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 		return "";
 	}
 	/*.................................................................................................................*/
+	public String getRegistrationHint() {
+		return "";
+	}
+	/*.................................................................................................................*/
+	public boolean showNeedToRegisterNote() {
+		return false;
+	}
+	/*.................................................................................................................*/
 	public boolean checkUsernamePassword(boolean tellUserAboutSystem){
 		if (StringUtil.blank(getUserName()) || StringUtil.blank(password)){
 			MesquiteBoolean answer = new MesquiteBoolean(false);
@@ -159,9 +171,10 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 			MesquiteString passwordString = new MesquiteString();
 			if (getPassword()!=null)
 				passwordString.setValue(getPassword());
-			String help = "You need an account on the "+getSystemName()+getSystemTypeName() + " system to use this service.  To register, go to " + getRegistrationURL();
-			String registrationHint = "Touch on the web link icon on the left to register for this service.";
-			new UserNamePasswordDialog(ownerModule.containerOfModule(), "Sign in to "+getSystemName(), help, getRegistrationURL(), registrationHint, "Username", "Password", answer, usernameString, passwordString);
+			String help = "";
+			if (showNeedToRegisterNote())
+				help = "You need an account on the "+getSystemName()+getSystemTypeName() + " system to use this service.  To register, go to " + getRegistrationURL();
+			new UserNamePasswordDialog(ownerModule.containerOfModule(), "Sign in to "+getSystemName(), help, getRegistrationURL(), getRegistrationHint(), "Username", "Password", answer, usernameString, passwordString);
 			if (answer.getValue()){
 				setUserName(usernameString.getValue());
 				setPassword(passwordString.getValue());
@@ -190,7 +203,7 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 			String fileName = jobFiles[fileNumber].getFileName();
 			if (StringUtil.notEmpty(fileName)){
 				for (int i=0; i<previousJobFiles.length; i++) {
-					if (fileName.equalsIgnoreCase(previousJobFiles[i].getFileName())) {  // we've found the file
+					if (previousJobFiles[i]!=null && fileName.equalsIgnoreCase(previousJobFiles[i].getFileName())) {  // we've found the file
 						String lastMod = jobFiles[fileNumber].getLastModified();
 						if (StringUtil.notEmpty(lastMod))
 							return !lastMod.equals(previousJobFiles[i].getLastModified());  // return true if the strings don't match
@@ -246,6 +259,7 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
 		int interval = 0;
+		minPollIntervalSeconds = 5;
 		int pollInterval = minPollIntervalSeconds;
 		boolean submittedReportedToUser = false;
 		
