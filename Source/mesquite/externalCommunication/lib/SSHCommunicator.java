@@ -38,8 +38,13 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			Session session=jsch.getSession(username, host, 22);
 			session.setPassword(password);
 			session.setConfig(config);
+			if (verbose)
+				ownerModule.logln("Successfully created session to " + host);
+
 			return session;
 		} catch (Exception e) {
+			ownerModule.logln("Could not create Session: " + e.getMessage());
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -93,6 +98,8 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			return sftpATTRS.getMtimeString();
 			
 		}  catch (Exception e) {
+			ownerModule.logln("Could not determine last modified date of file on remote server: " + e.getMessage());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -112,6 +119,8 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			return !sftpATTRS.isDir() && !sftpATTRS.isLink();
 			
 		}  catch (Exception e) {
+			ownerModule.logln("Could not determine if file exists on remote server.  File: " + remoteFileName + ", Message: " + e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -130,12 +139,14 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			return !sftpATTRS.isDir() && !sftpATTRS.isLink();
 			
 		}  catch (Exception e) {
+			ownerModule.logln("Could not determine if file exists on remote server.  File: " + remoteFileName + ", Message: " + e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 	}
 
 
-
+	public static String remoteSSHErrorFileName = "errorstream.txt";
 
 	
 	public  boolean sendCommands (String[] commands, boolean waitForRunning, boolean cdIntoWorking, boolean captureErrorStream) {
@@ -154,11 +165,17 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 						concatenated += commands[i];
 					else
 						concatenated += " && " + commands[i];
+			if (verbose)
+				ownerModule.logln("*** Command string: " + concatenated);
 
 	        if (captureErrorStream) {
-	        	String filename = getRemoteWorkingDirectoryPath() + "/errorStream.txt";
+				//channel.setCommand( "cd " + getRemoteWorkingDirectoryPath() + " && >"+remoteSSHErrorFileName);
+				//channel.connect();
+				//channel.disconnect();
+	        	String filename = rootDir + "/"+ remoteSSHErrorFileName;
 	        	File fstream = new File(filename);
-	        	PrintStream errorStream = new PrintStream(new FileOutputStream(fstream));
+	        	FileOutputStream fos = new FileOutputStream(fstream);
+	        	PrintStream errorStream = new PrintStream(fos);
 	        	channel.setErrStream(errorStream);
 	        }
 			channel.setCommand(concatenated);
@@ -193,6 +210,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			session.disconnect();
 			return success;
 		}catch(Exception e){
+			ownerModule.logln("Could not successfully send commands to remote server: " + e.getMessage());
 			e.printStackTrace();
 			return false;
 		}
@@ -216,6 +234,8 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 
 			channel.disconnect();
 			session.disconnect();
+			if (verbose)
+				ownerModule.logln("Successfully sent files to working directory");
 			return true;
 		} catch(Exception e){
 			ownerModule.logln("Could not SFTP files to working directory: " + e.getMessage());
@@ -229,7 +249,12 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 
 	public boolean createRemoteWorkingDirectory() {
 		String[] commands = new String[] { "cd " + getRemoteServerDirectoryPath(), "mkdir " + getRemoteWorkingDirectoryName()};
-		return sendCommands(commands,false, false, false);
+		if (sendCommands(commands,false, false, false))
+			return true;
+		else
+			ownerModule.logln("Could not create remote working directory.");
+		return false;
+			
 	}
 	public boolean transferFilesToServer(String[] localFilePaths, String[] remoteFileNames) {
 		if (createRemoteWorkingDirectory()) {
@@ -284,7 +309,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			session.disconnect();
 			return true;
 		} catch(Exception e){
-			ownerModule.logln("Could not SFTP files to working directory: " + e.getMessage());
+			ownerModule.logln("Could not download files from remote server: " + e.getMessage());
 			e.printStackTrace();
 			return false;
 		}
