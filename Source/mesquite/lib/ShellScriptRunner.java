@@ -203,7 +203,7 @@ public class ShellScriptRunner implements Commandable  {
 				else
 					MesquiteFile.putFileContents(runningFilePath, runningFileMessage, true);
 				if (appendRemoveCommand && MesquiteFile.fileExists(runningFilePath))
-					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
+					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
 			}
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);  
 			externalProcessManager = new MesquiteExternalProcess(proc);

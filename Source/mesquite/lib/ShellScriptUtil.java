@@ -66,9 +66,9 @@ public class ShellScriptUtil  {
 			return "ln  " +StringUtil.protectFilePathForUnix(path) + " " + StringUtil.protectFilePathForUnix(aliasPath) +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
-	public static String getChangeDirectoryCommand(String directory){
+	public static String getChangeDirectoryCommand(boolean isWindows, String directory){
 		String directoryString;
-		if (MesquiteTrunk.isWindows()) {
+		if (isWindows) {
 			directoryString = "/d "+StringUtil.protectFilePathForWindows(directory);
 		} else {
 			directoryString = StringUtil.protectFilePathForUnix(directory);
@@ -76,8 +76,8 @@ public class ShellScriptUtil  {
 		return "cd " + directoryString +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
-	public static String getRemoveCommand(String filePath){
-		if (MesquiteTrunk.isWindows())
+	public static String getRemoveCommand(boolean isWindows, String filePath){
+		if (isWindows)
 			return "del " + StringUtil.protectFilePathForWindows(filePath) +StringUtil.lineEnding();
 		else
 			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding();
@@ -275,7 +275,7 @@ public class ShellScriptUtil  {
 				else
 					MesquiteFile.putFileContents(runningFilePath, runningFileMessage, true);
 				if (appendRemoveCommand && MesquiteFile.fileExists(runningFilePath))
-					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
+					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
 				//+StringUtil.lineEnding()+ShellScriptUtil.getExitCommand()
 			}
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);

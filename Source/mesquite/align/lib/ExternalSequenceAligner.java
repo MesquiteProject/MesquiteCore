@@ -346,7 +346,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 //		MesquiteFile.putFileContents(filePath, fileBuffer.toString(), true);
 
 		StringBuffer shellScript = new StringBuffer(1000);
-		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(rootDir));
+		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 		shellScript.append(getProgramCommand());
 		StringBuffer argumentsForLogging = new StringBuffer();
 		logln("Options: " + programOptions + " " + getQueryProgramOptions());
@@ -362,7 +362,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			argumentsForLogging.append(" " + programOptions + " "+ getQueryProgramOptions());
 		}
 		shellScript.append(StringUtil.lineEnding());
-		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
+		shellScript.append(ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath));
 
 		String scriptPath = rootDir + "alignerScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		if (scriptBased)

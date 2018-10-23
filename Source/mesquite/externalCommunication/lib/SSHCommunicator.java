@@ -103,7 +103,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			return "";
 		}
 	}
-	public  boolean remoteFileExists (String remoteFileName) {
+	public  boolean remoteFileExists (String remoteFileName, boolean warn) {
 		try {
 			Session session=createSession();
 			session.connect();
@@ -119,8 +119,10 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			return !sftpATTRS.isDir() && !sftpATTRS.isLink();
 			
 		}  catch (Exception e) {
-			ownerModule.logln("Could not determine if file exists on remote server.  File: " + remoteFileName + ", Message: " + e.getMessage());
-			e.printStackTrace();
+			if (warn) {
+				ownerModule.logln("Could not determine if file exists on remote server.  File: " + remoteFileName + ", Message: " + e.getMessage());
+				e.printStackTrace();
+			}
 			return false;
 		}
 	}
@@ -166,7 +168,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 					else
 						concatenated += " && " + commands[i];
 			if (verbose)
-				ownerModule.logln("*** Command string: " + concatenated);
+				ownerModule.logln("\n*** Command string: " + concatenated + "\n");
 
 	        if (captureErrorStream) {
 				//channel.setCommand( "cd " + getRemoteWorkingDirectoryPath() + " && >"+remoteSSHErrorFileName);
@@ -191,7 +193,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 					ownerModule.logln(new String(tmp, 0, i));
 				}
 
-				if (channel.isClosed() && (!waitForRunning || !remoteFileExists(runningFileName))) {
+				if (channel.isClosed() && (!waitForRunning || !remoteFileExists(runningFileName, false))) {
 					ownerModule.logln("exit-status: "+channel.getExitStatus());
 					success=channel.getExitStatus()==0;
 					break;
@@ -264,11 +266,11 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	}
 
 	public  boolean jobCompleted (Object location) {
-		return !remoteFileExists(runningFileName);
+		return !remoteFileExists(runningFileName, false);
 	}
 	
 	public String getJobStatus(Object location) {
-		if (remoteFileExists(runningFileName)) 
+		if (remoteFileExists(runningFileName, false)) 
 			return submitted;
 		return "Job completed or not found.";
 	}

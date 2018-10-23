@@ -207,7 +207,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		String outFilePath = rootDir + outFileName;
 
 		StringBuffer shellScript = new StringBuffer(1000);
-		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(rootDir));
+		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 		String blastCommand = blastType + "  -query " + fileName;
 		blastCommand+= " -db "+database;
 		blastCommand+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
@@ -283,7 +283,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		String outFilePath = rootDir + outFileName;
 
 		StringBuffer shellScript = new StringBuffer(1000);
-		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(rootDir));
+		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 
 		String blastCommand = "blastdbcmd  -entry "+queryString + " -outfmt %f";
 		blastCommand+= " -db "+databaseArray[databaseNumber];
