@@ -3516,6 +3516,8 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		if (buttonPressed.getValue() == 0) {
 			referenceSequence = referenceSequenceBox.getValue() - 1;
 		}
+		if (adjustSequences!=null)
+			adjustSequences.setValue(buttonPressed.getValue()==0);
 		dialog.dispose();
 		return (buttonPressed.getValue() !=2);
 	}
