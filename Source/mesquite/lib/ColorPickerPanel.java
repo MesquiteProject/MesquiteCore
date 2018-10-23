@@ -225,6 +225,9 @@ public class ColorPickerPanel extends Panel implements MouseListener {
    	public void mousePressed(MouseEvent e) {
    	}
    	public void mouseReleased(MouseEvent e) {
+  		int x = e.getX();
+  		int y = e.getY();
+		setColorFromXY(x, y);
    	}
    	
    	public Color getColor(){
