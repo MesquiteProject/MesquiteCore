@@ -327,8 +327,13 @@ class ValuesAtNodesOperator extends TreeDisplayDrawnExtra {
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree){
+		
 		myTree = tree;
+		
+		if (vModule.isInStartup() && MesquiteThread.isScripting()) //don't do the calculations if starting in script, because numForNodeTasks will be reset anyways
+			return;
 		if ((vModule.numForNodesTask!=null) && (vModule.displayTask!=null)) {
+			
 			doCalculations();
 		}
 	}
