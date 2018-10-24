@@ -38,12 +38,12 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			Session session=jsch.getSession(username, host, 22);
 			session.setPassword(password);
 			session.setConfig(config);
-			if (verbose)
-				ownerModule.logln("Successfully created session to " + host);
+		//	if (verbose)
+		//		ownerModule.logln("Successfully created session to " + host);
 
 			return session;
 		} catch (Exception e) {
-			ownerModule.logln("Could not create Session: " + e.getMessage());
+			ownerModule.logln("WARNING: could not create Session: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -259,11 +259,19 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			
 	}
 	public boolean transferFilesToServer(String[] localFilePaths, String[] remoteFileNames) {
-		if (createRemoteWorkingDirectory()) {
 			return sendFilesToWorkingDirectory (localFilePaths, remoteFileNames);
-		}
-		return false;
 	}
+	public boolean transferFileToServer(String localFilePath, String remoteFileName) {
+		return sendFilesToWorkingDirectory (new String[] {localFilePath}, new String[] {remoteFileName});
+}
+	public boolean setRemoteFileToExecutable(String remoteFileName) {
+		String[] commands = new String[] { "cd " + getRemoteWorkingDirectoryPath(), "chmod +x " + remoteFileName};
+		if (sendCommands(commands,false, false, false))
+			return true;
+		else
+			ownerModule.logln("Could not set remote file to be executable.");
+		return false;
+}
 
 	public  boolean jobCompleted (Object location) {
 		return !remoteFileExists(runningFileName, false);
