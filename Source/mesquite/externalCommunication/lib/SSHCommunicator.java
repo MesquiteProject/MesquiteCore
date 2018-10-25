@@ -13,11 +13,13 @@ import com.jcraft.jsch.*;
 
 public abstract class SSHCommunicator extends RemoteCommunicator {
 	
-//	protected String remoteWorkingDirectoryPath = "";
+
+	//	protected String remoteWorkingDirectoryPath = "";
 	protected String remoteWorkingDirectoryName = "";
 	protected String remoteServerDirectoryPath = "";
 	public static final String runningFileName = "running";
 	protected ProgressIndicator progressIndicator;
+	protected String sshServiceProfileName = "";
 
 
 	public SSHCommunicator (MesquiteModule mb, String xmlPrefsString,String[] outputFilePaths) {
@@ -48,6 +50,13 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			return null;
 		}
 	}
+	public String getSshServiceProfileName() {
+		return sshServiceProfileName;
+	}
+	public void setSshServiceProfileName(String sshServiceProfileName) {
+		this.sshServiceProfileName = sshServiceProfileName;
+	}
+
 
 	public String getHost() {
 		return host;
@@ -354,6 +363,11 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	/*.................................................................................................................*/
 	public String getSystemTypeName() {
 		return "";
+	}
+	public String getSystemName() {
+		if (StringUtil.notEmpty(sshServiceProfileName))
+			return sshServiceProfileName +" (via SSH)";
+		return "Server (via SSH)";
 	}
 
 
