@@ -228,6 +228,23 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 
 	}
 	
+	
+	public  boolean monitorRun (boolean waitForRunning) {
+
+			while(true){
+
+				if ((!waitForRunning || !remoteFileExists(runningFileName, false))) {
+					break;
+				} 
+				monitorAndCleanUpShell(null,progressIndicator);
+				
+				try{Thread.sleep(1000);}catch(Exception ee){}
+			}
+
+			return true;
+
+	}
+
 	public  boolean sendFilesToWorkingDirectory (String[] localFilePaths, String[] remoteFileNames) {
 		if (localFilePaths==null || remoteFileNames==null)
 			return false;
