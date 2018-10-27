@@ -157,7 +157,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	}
 
 
-	public static String remoteSSHErrorFileName = "errorstream.txt";
+	public static String remoteSSHErrorFileName = "CommunicationErrors.txt";
 
 	
 	public  boolean sendCommands (String[] commands, boolean waitForRunning, boolean cdIntoWorking, boolean captureErrorStream) {
@@ -256,9 +256,16 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
 			channel.connect();
 
+			Debugg.println("|||||||||||| remoteFileNames: "+remoteFileNames);
+			Debugg.println("|||||||||||| localFilePaths: "+localFilePaths);
+
 			channel.cd(getRemoteWorkingDirectoryPath());
+			Debugg.println("|||||||||||| after cd");
+			
 			for (int i=0; i<localFilePaths.length && i<remoteFileNames.length; i++)
-				channel.put(localFilePaths[i], remoteFileNames[i]);
+				if (StringUtil.notEmpty(localFilePaths[i]) && StringUtil.notEmpty(remoteFileNames[i]))
+					channel.put(localFilePaths[i], remoteFileNames[i]);
+			Debugg.println("|||||||||||| after putting files");
 
 			channel.disconnect();
 			session.disconnect();
@@ -282,13 +289,14 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			channel.connect();
 			channel.cd(getRemoteServerDirectoryPath());
 			channel.mkdir(getRemoteWorkingDirectoryName());
-			
+
 			channel.disconnect();
 			session.disconnect();
 			return true;
 			
 		}  catch (Exception e) {
 			ownerModule.logln("Could not create remote working directory (\""+getRemoteWorkingDirectoryName()+"\")");
+			ownerModule.logln("Error message: "+e.getMessage());
 			e.printStackTrace();
 			return false;
 		}
