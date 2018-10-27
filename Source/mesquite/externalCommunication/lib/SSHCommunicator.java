@@ -12,7 +12,7 @@ import com.jcraft.jsch.*;
 
 
 public abstract class SSHCommunicator extends RemoteCommunicator {
-	
+
 
 	//	protected String remoteWorkingDirectoryPath = "";
 	protected String remoteWorkingDirectoryName = "";
@@ -40,8 +40,8 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			Session session=jsch.getSession(username, host, 22);
 			session.setPassword(password);
 			session.setConfig(config);
-		//	if (verbose)
-		//		ownerModule.logln("Successfully created session to " + host);
+			//	if (verbose)
+			//		ownerModule.logln("Successfully created session to " + host);
 
 			return session;
 		} catch (Exception e) {
@@ -82,7 +82,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	/*public void setRemoteWorkingDirectoryPath(String workingDirectoryPath) {
 		this.remoteWorkingDirectoryPath = workingDirectoryPath;
 	}
-*/
+	 */
 	public String getRemoteServerDirectoryPath() {
 		return remoteServerDirectoryPath;
 	}
@@ -95,17 +95,17 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		try {
 			Session session=createSession();
 			session.connect();
-			
+
 			ChannelSftp channel=(ChannelSftp)session.openChannel("sftp");
 			channel.connect();
 			channel.cd(getRemoteWorkingDirectoryPath());
-			
+
 			SftpATTRS sftpATTRS = channel.stat(remoteFileName);
-			
+
 			channel.disconnect();
 			session.disconnect();
 			return sftpATTRS.getMtimeString();
-			
+
 		}  catch (Exception e) {
 			ownerModule.logln("Could not determine last modified date of file on remote server: " + e.getMessage());
 			e.printStackTrace();
@@ -116,17 +116,17 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		try {
 			Session session=createSession();
 			session.connect();
-			
+
 			ChannelSftp channel=(ChannelSftp)session.openChannel("sftp");
 			channel.connect();
 			channel.cd(getRemoteWorkingDirectoryPath());
-			
+
 			SftpATTRS sftpATTRS = channel.stat(remoteFileName);
-			
+
 			channel.disconnect();
 			session.disconnect();
 			return !sftpATTRS.isDir() && !sftpATTRS.isLink();
-			
+
 		}  catch (Exception e) {
 			if (warn) {
 				ownerModule.logln("Could not determine if file exists on remote server.  File: " + remoteFileName + ", Message: " + e.getMessage());
@@ -140,15 +140,15 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		try {
 			if (channel==null)
 				return false;
-			 if (!channel.isConnected())
+			if (!channel.isConnected())
 				channel.connect();
-			
+
 			channel.cd(getRemoteWorkingDirectoryPath());
-			
+
 			SftpATTRS sftpATTRS = channel.stat(remoteFileName);
-			
+
 			return !sftpATTRS.isDir() && !sftpATTRS.isLink();
-			
+
 		}  catch (Exception e) {
 			ownerModule.logln("Could not determine if file exists on remote server.  File: " + remoteFileName + ", Message: " + e.getMessage());
 			e.printStackTrace();
@@ -159,7 +159,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 
 	public static String remoteSSHErrorFileName = "CommunicationErrors.txt";
 
-	
+
 	public  boolean sendCommands (String[] commands, boolean waitForRunning, boolean cdIntoWorking, boolean captureErrorStream) {
 		if (commands==null || commands.length==0)
 			return false;
@@ -179,16 +179,16 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			if (verbose)
 				ownerModule.logln("\n*** Command string: " + concatenated + "\n");
 
-	        if (captureErrorStream) {
+			if (captureErrorStream) {
 				//channel.setCommand( "cd " + getRemoteWorkingDirectoryPath() + " && >"+remoteSSHErrorFileName);
 				//channel.connect();
 				//channel.disconnect();
-	        	String filename = rootDir + "/"+ remoteSSHErrorFileName;
-	        	File fstream = new File(filename);
-	        	FileOutputStream fos = new FileOutputStream(fstream);
-	        	PrintStream errorStream = new PrintStream(fos);
-	        	channel.setErrStream(errorStream);
-	        }
+				String filename = rootDir + "/"+ remoteSSHErrorFileName;
+				File fstream = new File(filename);
+				FileOutputStream fos = new FileOutputStream(fstream);
+				PrintStream errorStream = new PrintStream(fos);
+				channel.setErrStream(errorStream);
+			}
 			channel.setCommand(concatenated);
 			InputStream in=channel.getInputStream();
 			channel.connect();
@@ -207,12 +207,12 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 					success=channel.getExitStatus()==0;
 					break;
 				} else if (channel.isClosed()) {
-							ownerModule.logln("exit-status: "+channel.getExitStatus());
-	
+					ownerModule.logln("exit-status: "+channel.getExitStatus());
+
 				}
 				success=channel.getExitStatus()==0;
 				monitorAndCleanUpShell(null,progressIndicator);
-				
+
 				try{Thread.sleep(1000);}catch(Exception ee){}
 			}
 
@@ -227,21 +227,21 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		}
 
 	}
-	
-	
+
+
 	public  boolean monitorRun (boolean waitForRunning) {
 
-			while(true){
+		while(true){
 
-				if ((!waitForRunning || !remoteFileExists(runningFileName, false))) {
-					break;
-				} 
-				monitorAndCleanUpShell(null,progressIndicator);
-				
-				try{Thread.sleep(1000);}catch(Exception ee){}
-			}
+			if ((!waitForRunning || !remoteFileExists(runningFileName, false))) {
+				break;
+			} 
+			monitorAndCleanUpShell(null,progressIndicator);
 
-			return true;
+			try{Thread.sleep(1000);}catch(Exception ee){}
+		}
+
+		return true;
 
 	}
 
@@ -261,7 +261,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 
 			channel.cd(getRemoteWorkingDirectoryPath());
 			Debugg.println("|||||||||||| after cd");
-			
+
 			for (int i=0; i<localFilePaths.length && i<remoteFileNames.length; i++)
 				if (StringUtil.notEmpty(localFilePaths[i]) && StringUtil.notEmpty(remoteFileNames[i]))
 					channel.put(localFilePaths[i], remoteFileNames[i]);
@@ -279,12 +279,21 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		}
 
 	}
-	
+
+	private boolean AuthorizationFailure(Exception e) {
+		if (e!=null && e instanceof JSchException && "Auth fail".equalsIgnoreCase(e.getMessage())) {
+			ownerModule.discreetAlert("Authentication failure.  Make sure you are using the correct username and password for the SSH server.");
+			forgetPassword();
+			return true;
+		}
+		return false;
+	}
+
 	public  boolean createRemoteWorkingDirectory() {
 		try {
 			Session session=createSession();
 			session.connect();
-			
+
 			ChannelSftp channel=(ChannelSftp)session.openChannel("sftp");
 			channel.connect();
 			channel.cd(getRemoteServerDirectoryPath());
@@ -293,22 +302,26 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			channel.disconnect();
 			session.disconnect();
 			return true;
-			
+
 		}  catch (Exception e) {
-			ownerModule.logln("Could not create remote working directory (\""+getRemoteWorkingDirectoryName()+"\")");
-			ownerModule.logln("Error message: "+e.getMessage());
-			e.printStackTrace();
+			if (AuthorizationFailure(e)) {
+				ownerModule.logln("Could not create remote working directory (\""+getRemoteWorkingDirectoryName()+"\")");
+			} else{
+				ownerModule.logln("Could not create remote working directory (\""+getRemoteWorkingDirectoryName()+"\")");
+				ownerModule.logln("Error message: "+e.getMessage());
+				e.printStackTrace();
+			}
 			return false;
 		}
 	}
 
 
 	public boolean transferFilesToServer(String[] localFilePaths, String[] remoteFileNames) {
-			return sendFilesToWorkingDirectory (localFilePaths, remoteFileNames);
+		return sendFilesToWorkingDirectory (localFilePaths, remoteFileNames);
 	}
 	public boolean transferFileToServer(String localFilePath, String remoteFileName) {
 		return sendFilesToWorkingDirectory (new String[] {localFilePath}, new String[] {remoteFileName});
-}
+	}
 	public boolean setRemoteFileToExecutable(String remoteFileName) {
 		String[] commands = new String[] { "cd " + getRemoteWorkingDirectoryPath(), "chmod +x " + remoteFileName};
 		if (sendCommands(commands,false, false, false))
@@ -316,18 +329,18 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		else
 			ownerModule.logln("Could not set remote file to be executable.");
 		return false;
-}
+	}
 
 	public  boolean jobCompleted (Object location) {
 		return !remoteFileExists(runningFileName, false);
 	}
-	
+
 	public String getJobStatus(Object location) {
 		if (remoteFileExists(runningFileName, false)) 
 			return submitted;
 		return "Job completed or not found.";
 	}
-	
+
 	public  boolean downloadFilesToLocalWorkingDirectory (boolean onlyNewOrModified) {
 		try{
 			Session session=createSession();
@@ -339,7 +352,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 
 			channel.cd(getRemoteWorkingDirectoryPath());
 			Vector remoteFiles = channel.ls(getRemoteWorkingDirectoryPath());
-			
+
 			RemoteJobFile[] remoteJobFiles = new RemoteJobFile[remoteFiles.size()];  // now acquire the last modified dates
 			for (int i=0; i<remoteFiles.size(); i++) {
 				ChannelSftp.LsEntry entry = (ChannelSftp.LsEntry)remoteFiles.elementAt(i);
@@ -374,7 +387,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	public boolean downloadResults(Object location, String rootDir, boolean onlyNewOrModified) {
 		return downloadFilesToLocalWorkingDirectory(onlyNewOrModified);
 	}
-	
+
 	/*.................................................................................................................*/
 	public int getDefaultMinPollIntervalSeconds(){
 		return 10;
