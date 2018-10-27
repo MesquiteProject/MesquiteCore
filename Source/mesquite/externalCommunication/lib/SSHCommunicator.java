@@ -273,17 +273,28 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 
 	}
 	
-
-
-	public boolean createRemoteWorkingDirectory() {
-		String[] commands = new String[] { "cd " + getRemoteServerDirectoryPath(), "mkdir " + getRemoteWorkingDirectoryName()};
-		if (sendCommands(commands,false, false, false))
-			return true;
-		else
-			ownerModule.logln("Could not create remote working directory.");
-		return false;
+	public  boolean createRemoteWorkingDirectory() {
+		try {
+			Session session=createSession();
+			session.connect();
 			
+			ChannelSftp channel=(ChannelSftp)session.openChannel("sftp");
+			channel.connect();
+			channel.cd(getRemoteServerDirectoryPath());
+			channel.mkdir(getRemoteWorkingDirectoryName());
+			
+			channel.disconnect();
+			session.disconnect();
+			return true;
+			
+		}  catch (Exception e) {
+			ownerModule.logln("Could not create remote working directory (\""+getRemoteWorkingDirectoryName()+"\")");
+			e.printStackTrace();
+			return false;
+		}
 	}
+
+
 	public boolean transferFilesToServer(String[] localFilePaths, String[] remoteFileNames) {
 			return sendFilesToWorkingDirectory (localFilePaths, remoteFileNames);
 	}
