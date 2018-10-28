@@ -257,16 +257,11 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
 			channel.connect();
 
-			Debugg.println("|||||||||||| remoteFileNames: "+remoteFileNames);
-			Debugg.println("|||||||||||| localFilePaths: "+localFilePaths);
-
 			channel.cd(getRemoteWorkingDirectoryPath());
-			Debugg.println("|||||||||||| after cd");
 
 			for (int i=0; i<localFilePaths.length && i<remoteFileNames.length; i++)
 				if (StringUtil.notEmpty(localFilePaths[i]) && StringUtil.notEmpty(remoteFileNames[i]))
 					channel.put(localFilePaths[i], remoteFileNames[i]);
-			Debugg.println("|||||||||||| after putting files");
 
 			channel.disconnect();
 			session.disconnect();
@@ -311,7 +306,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 
 	private boolean AuthorizationFailure(Exception e) {
 		if (e!=null && e instanceof JSchException && "Auth fail".equalsIgnoreCase(e.getMessage())) {
-			ownerModule.discreetAlert("Authentication failure.  Make sure you are using the correct username and password for the SSH server.");
+			ownerModule.discreetAlert("Authentication failure.  Make sure you are using the correct username and password for the SSH server, and that you have appropriate access to the SSH server.");
 			forgetPassword();
 			return true;
 		}
