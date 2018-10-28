@@ -303,10 +303,13 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 				processOutputFiles(location);
 			}
 		}
-		ownerModule.logln(getServiceName()+" job completed. (" + StringUtil.getDateTime() + " or earlier)");
+		boolean done = jobCompleted(location);
+		if (done)
+			ownerModule.logln(getServiceName()+" job completed. (" + StringUtil.getDateTime() + " or earlier)");
 		if (outputFileProcessor!=null) {
 			if (rootDir!=null) {
-				ownerModule.logln("About to download results from "+getServiceName()+" (this may take some time).");
+				if (done)
+					ownerModule.logln("About to download results from "+getServiceName()+" (this may take some time).");
 				if (downloadResults(location, rootDir, false))
 						outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
 				else

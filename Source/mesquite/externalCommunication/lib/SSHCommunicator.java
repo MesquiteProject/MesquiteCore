@@ -2,6 +2,7 @@ package mesquite.externalCommunication.lib;
 
 import mesquite.lib.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -274,6 +275,34 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			return true;
 		} catch(Exception e){
 			ownerModule.logln("Could not SFTP files to working directory: " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	public  boolean addEmptyFileToWorkingDirectory (String remoteFileName) {
+		if (remoteFileName==null)
+			return false;
+		try{
+			Session session=createSession();
+			if (session==null)
+				return false;  // TODO: feedback
+			session.connect();
+			ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
+			channel.connect();
+
+			channel.cd(getRemoteWorkingDirectoryPath());
+
+			channel.put(new ByteArrayInputStream( "".getBytes() ), remoteFileName);
+
+			channel.disconnect();
+			session.disconnect();
+			if (verbose)
+				ownerModule.logln("Successfully sent empty file " + remoteFileName + " to working directory");
+			return true;
+		} catch(Exception e){
+			ownerModule.logln("Could not send empty file " + remoteFileName + " to working directory: " + e.getMessage());
 			e.printStackTrace();
 			return false;
 		}
