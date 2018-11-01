@@ -262,8 +262,9 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 		minPollIntervalSeconds = 5;
 		int pollInterval = minPollIntervalSeconds;
 		boolean submittedReportedToUser = false;
+		boolean onceThrough = false;
 		
-		while (!jobCompleted(location) && stillGoing && !aborted){
+		while ((!jobCompleted(location) || !onceThrough) && stillGoing && !aborted){
 			double loopTime = timer.timeSinceLastInSeconds();  // checking to see how long it has been since the last one
 			if (loopTime>minPollIntervalSeconds) {
 				pollInterval = minPollIntervalSeconds - ((int)loopTime-minPollIntervalSeconds);
@@ -302,6 +303,7 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 			if (newStatus!=null && newStatus.equalsIgnoreCase(submitted)){  // job is running
 				processOutputFiles(location);
 			}
+			onceThrough = true;
 		}
 		boolean done = jobCompleted(location);
 		if (done)
