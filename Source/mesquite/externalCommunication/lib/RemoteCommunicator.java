@@ -43,7 +43,6 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	}
 	
 	/*.................................................................................................................*/
-	public abstract String getServiceName();
 	public abstract String getBaseURL();
 	public abstract String getAPIURL();
 	public abstract String getRegistrationURL();
@@ -235,11 +234,13 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	}
 
 	/*.................................................................................................................*/
-	public abstract boolean jobCompleted(Object location);
-	public abstract String getJobStatus(Object location) ;
-	public abstract boolean downloadWorkingResults(Object location, String rootDir, boolean onlyNewOrModified);
-	public abstract boolean downloadResults(Object location, String rootDir, boolean onlyNewOrModified);
-	public abstract void deleteJob(Object location);
+	// TODO: turn these to abstract once version 2.5 or Zephyr is released?
+	public boolean jobCompleted(Object location) { return true;}
+	public String getJobStatus(Object location) { return "";}
+	public boolean downloadWorkingResults(Object location, String rootDir, boolean onlyNewOrModified) { return true;}
+	public boolean downloadResults(Object location, String rootDir, boolean onlyNewOrModified) { return true;}
+	public void deleteJob(Object location) {}
+	public String getServiceName() { return "";}
 
 	/*.................................................................................................................*/
 	public boolean monitorAndCleanUpShell(Object location, ProgressIndicator progIndicator){
