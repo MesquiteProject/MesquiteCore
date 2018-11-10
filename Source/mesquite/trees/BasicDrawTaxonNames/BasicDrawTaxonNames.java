@@ -24,7 +24,7 @@ import mesquite.trees.lib.*;
 
 
 /** Draws the taxon names in a tree drawing */
-public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
+public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCommenter {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Basic Draw Names for Tree Display";
@@ -206,12 +206,55 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			MesquiteTrunk.resetMenuItemEnabling();
 			parametersChanged();
 		}
+		else if (checker.compare(this.getClass(), "Toggles whether to show taxon names colored by partition", "[on or off]", commandName, "toggleColorPartition")) { //for backwards compatibility
+			String s = parser.getFirstToken(arguments);
+			if (s != null){
+				String replacement = null;
+				if (s.equalsIgnoreCase("on"))
+					replacement = "#ColorTaxonByPartition";
+				else if (s.equalsIgnoreCase("off"))
+					replacement = "#NoColorForTaxon";
+					
+			TaxonNameStyler temp = (TaxonNameStyler)replaceEmployee(TaxonNameStyler.class, replacement, "How to color taxon names?", colorerTask);
+			if (temp!=null) {
+				colorerTask = temp;
+				colorerName.setValue(colorerTask.getName());
+				if (tree != null)
+					colorerTask.initialize(tree.getTaxa());
+				parametersChanged();
+				return colorerTask;
+			}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Toggles whether to show taxon names colored by assigned", "[on or off]", commandName, "toggleColorAssigned")) { //for backwards compatibility
+			String s = parser.getFirstToken(arguments);
+			if (s != null){
+				String replacement = null;
+				if (s.equalsIgnoreCase("on"))
+					replacement = "#ColorTaxonByAssigned";
+				else if (s.equalsIgnoreCase("off"))
+					replacement = "#NoColorForTaxon";
+					
+			TaxonNameStyler temp = (TaxonNameStyler)replaceEmployee(TaxonNameStyler.class, replacement, "How to color taxon names?", colorerTask);
+			if (temp!=null) {
+				colorerTask = temp;
+				colorerName.setValue(colorerTask.getName());
+				if (tree != null)
+					colorerTask.initialize(tree.getTaxa());
+				parametersChanged();
+				return colorerTask;
+			}
+			}
+		}
 		else if (checker.compare(this.getClass(), "Sets the module to be used to choose taxon name colors and styles", "[name of taxon color-style module]", commandName, "setTaxonNameStyler")) {
 			TaxonNameStyler temp = (TaxonNameStyler)replaceEmployee(TaxonNameStyler.class, arguments, "How to color taxon names?", colorerTask);
 			if (temp!=null) {
 				colorerTask = temp;
 				colorerName.setValue(colorerTask.getName());
+				if (tree != null)
+					colorerTask.initialize(tree.getTaxa());
 				parametersChanged();
+				return colorerTask;
 			}
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether taxon names are given a background color according to their group in the current taxa partition", "[on or off]", commandName, "toggleShadePartition")) {
@@ -352,15 +395,25 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		if (shader != null ){
 			calcShades(tree);
 		}
+		if (colorerTask !=null && tree != null)
+			colorerTask.initialize(tree.getTaxa());
+	}
+	public String getTaxonComment(Taxa taxa, int it){
+		if (colorerTask !=null && tree != null)
+			return colorerTask.getTaxonComment(tree.getTaxa(), it);
+		return null;
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-		calcShades(tree);
+		if (shader != null)
+			calcShades(tree);
+		if (colorerTask !=null && tree != null)
+			colorerTask.prepareToStyle(tree.getTaxa());
 		parametersChanged(notification);
 
 	}
 	private void calcShades(Tree tree){
-		if (tree == null)
+		if (tree == null || shader == null)
 			return;
 		minValue = MesquiteDouble.unassigned;
 		maxValue = MesquiteDouble.unassigned;
@@ -937,6 +990,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					triangleBase = drawnRoot;
 				else
 					triangleBase = -1;
+				if (colorerTask !=null)
+					colorerTask.prepareToStyle(tree.getTaxa());
 				drawNamesOnTree(tree, drawnRoot, drawnRoot, treeDisplay, part, triangleBase);
 		
 				g.setFont(tempFont);

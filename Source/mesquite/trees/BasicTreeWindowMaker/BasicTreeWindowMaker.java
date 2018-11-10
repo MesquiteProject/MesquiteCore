@@ -221,7 +221,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (basicTreeWindow == null)
 			return;
 		handlingQuitTreeSource = true;
-		
+
 		String d = basicTreeWindow.getTreeDescription();
 		String n = "Tree recovered from: " + basicTreeWindow.getTreeNameAndDetails();
 		if (fireCurrentTask)
@@ -592,6 +592,25 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return basicTreeWindow.treeDisplay;
 	}
 
+	/*.................................................................................................................*/
+	public String getTaxonComment(Taxa taxa, int it){
+		StringBuffer sb = new StringBuffer();
+		Enumeration e = employees.elements();
+		boolean first = true;
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			if (obj instanceof TaxonCommenter){
+				String s = ((TaxonCommenter)obj).getTaxonComment(taxa, it);
+				if (!StringUtil.blank(s)){
+					if (!first)
+						sb.append("\n");
+					first = false;
+					sb.append(s);
+				}
+			}
+		}
+		return sb.toString();
+	}
 	/* ................................................................................................................. */
 	/** because TreeContext */
 	public Tree getTree() {
@@ -858,7 +877,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	// MesquiteScrollbar hScroll, vScroll;
 	TreeScrollPane treePane;
 	Adjustable hScroll, vScroll;
-	
+
 	int scanLineThickness = 3;
 	boolean usingPane = false;
 	TreeSource treeSourceTask;
@@ -3376,6 +3395,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* _________________________________________________ */
+	private String getTaxonExplanation(Taxa taxa, int it){
+		String comment = windowModule.getTaxonComment(taxa, it);
+		if (StringUtil.blank(comment))
+			return " Taxon: " + taxa.getTaxonName(it);
+		else 
+			return " Taxon: " + taxa.getTaxonName(it) + "\n" + windowModule.getTaxonComment(taxa, it);
+	}
+	/* _________________________________________________ */
 
 	public void InvertTaxon(Graphics g, int M) {
 
@@ -3411,7 +3438,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (t.getTaxa().getAnnotation(M) != null)
 				setAnnotation(t.getTaxa().getAnnotation(M), "Footnote above refers to taxon \"" + t.getTaxa().getTaxonName(M) + "\"");
 			else {
-				setExplanation("Taxon: " + t.getTaxa().getTaxonName(M)); //TaxonExplanation 
+				setExplanation(getTaxonExplanation(t.getTaxa(),M)); //TaxonExplanation 
 				setAnnotation("", null);
 			}
 			treeAnnotationShown = false; // so that the base Explanation can know whether to refer to the annotation
@@ -3527,7 +3554,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (tree.nodeIsTerminal(node)) {
 			Taxon t = tree.getTaxa().getTaxon(tree.taxonNumberOfNode(node));
 			if (t != null)
-				setExplanation("Taxon: " + t.getName() + s);//TaxonExplanation
+				setExplanation(getTaxonExplanation(tree.getTaxa(), tree.taxonNumberOfNode(node)) + "\n" + s);//TaxonExplanation
 			else
 				setExplanation("Unknown taxon (the tree description may have been malformed or with undefined taxa)" + s);
 		}
@@ -3620,7 +3647,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (tree.nodeIsTerminal(branchFound)) {
 				Taxon t = tree.getTaxa().getTaxon(tree.taxonNumberOfNode(branchFound));
 				if (t != null)
-					setExplanation("Taxon: " + t.getName());//TaxonExplanation
+					setExplanation(getTaxonExplanation(tree.getTaxa(), tree.taxonNumberOfNode(branchFound)));//TaxonExplanation
 				else
 					setExplanation("Unknown taxon (the tree description may have been malformed or with undefined taxa)");
 			}
@@ -3640,27 +3667,27 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 		}
 		else {
-			int nameFound = findTaxon(x, y);
+			int taxonFound = findTaxon(x, y);
 			if (highlightedTaxon >= 0) {
-				if (nameFound == -1) {
+				if (taxonFound == -1) {
 					int wasHighlighted = highlightedTaxon;
 					RevertTaxon(g, highlightedTaxon);
 					notifyExtrasOfTaxonExit(g, wasHighlighted);
 					setExplanation(baseExplanation, false);
 				}
-				else if (nameFound != highlightedTaxon) {
+				else if (taxonFound != highlightedTaxon) {
 					int wasHighlighted = highlightedTaxon;
 					RevertTaxon(g, highlightedTaxon);
-					InvertTaxon(g, nameFound);
+					InvertTaxon(g, taxonFound);
 					notifyExtrasOfTaxonExit(g, wasHighlighted);
-					notifyExtrasOfTaxonEnter(g, nameFound);
-					setExplanation(" Taxon: " + taxa.getTaxonName(nameFound)); //TaxonExplanation
+					notifyExtrasOfTaxonEnter(g, taxonFound);
+					setExplanation(getTaxonExplanation(taxa, taxonFound)); //TaxonExplanation
 				}
 			}
-			else if (nameFound != -1) {
-				InvertTaxon(g, nameFound);
-				notifyExtrasOfTaxonEnter(g, nameFound);
-				setExplanation(" Taxon: " + taxa.getTaxonName(nameFound)); //TaxonExplanation
+			else if (taxonFound != -1) {
+				InvertTaxon(g, taxonFound);
+				notifyExtrasOfTaxonEnter(g, taxonFound);
+				setExplanation(getTaxonExplanation(taxa, taxonFound)); //TaxonExplanation
 			}
 			else {
 				currentTreeTool.moved(x, y, tree, modifiers);
@@ -4464,7 +4491,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 		}
 		messagePanel.setMessage(treename);
-		
+
 		if (treeInfoPanel != null)
 			treeInfoPanel.setTreeAndSourceName(treename, treeSourceTask.getName());
 
@@ -4965,38 +4992,38 @@ class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { 
 
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void keyPressed(KeyEvent e) {
-	    int keyCode = e.getKeyCode();
-	    int amount = 0;
-	    int scale = 1;
-	    if (e.isAltDown())
-	    	scale=5;
+		int keyCode = e.getKeyCode();
+		int amount = 0;
+		int scale = 1;
+		if (e.isAltDown())
+			scale=5;
 
-	    switch( keyCode ) { 
-	        case KeyEvent.VK_UP:
-				amount = vScroll.getBlockIncrement();
-				vScroll.setValue(vScroll.getValue() - amount*scale);
-				window.sizeDisplay();
-	            break;
-	        case KeyEvent.VK_DOWN:
-				amount = vScroll.getBlockIncrement();
-				vScroll.setValue(vScroll.getValue() + amount*scale);
-				window.sizeDisplay();
-	            break;
-	        case KeyEvent.VK_LEFT:
-				amount = hScroll.getBlockIncrement();
-				hScroll.setValue(hScroll.getValue() - amount*scale);
-				window.sizeDisplay();
-	            break;
-	        case KeyEvent.VK_RIGHT :
-				amount = hScroll.getBlockIncrement();
-				hScroll.setValue(hScroll.getValue() + amount*scale);
-				window.sizeDisplay();
-	            break;
-	     }
+		switch( keyCode ) { 
+		case KeyEvent.VK_UP:
+			amount = vScroll.getBlockIncrement();
+			vScroll.setValue(vScroll.getValue() - amount*scale);
+			window.sizeDisplay();
+			break;
+		case KeyEvent.VK_DOWN:
+			amount = vScroll.getBlockIncrement();
+			vScroll.setValue(vScroll.getValue() + amount*scale);
+			window.sizeDisplay();
+			break;
+		case KeyEvent.VK_LEFT:
+			amount = hScroll.getBlockIncrement();
+			hScroll.setValue(hScroll.getValue() - amount*scale);
+			window.sizeDisplay();
+			break;
+		case KeyEvent.VK_RIGHT :
+			amount = hScroll.getBlockIncrement();
+			hScroll.setValue(hScroll.getValue() + amount*scale);
+			window.sizeDisplay();
+			break;
+		}
 	} 
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
@@ -5145,7 +5172,7 @@ class MessagePanel extends Panel {
 		else
 			ownerModule.magnifyExtra.name = null;
 		if (ownerModule.treeSourceTask != null && !edited) {
-					
+
 			String s = ownerModule.treeSourceTask.getNameAndParameters();
 			if (!StringUtil.blank(s))
 				treeSourceAddendum = "   [" + s + "]";

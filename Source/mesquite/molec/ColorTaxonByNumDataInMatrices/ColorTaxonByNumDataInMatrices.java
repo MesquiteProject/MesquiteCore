@@ -21,7 +21,6 @@ import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public class ColorTaxonByNumDataInMatrices extends TaxonNameStyler {
-	double resultNum;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -76,6 +75,27 @@ public class ColorTaxonByNumDataInMatrices extends TaxonNameStyler {
 			return totMatrices ==numMatrices;
 		}
 		return false;
+	}
+	public String getTaxonComment(Taxa taxa, int it){
+		String s = "";
+		int totMatrices =  getProject().getNumberCharMatrices(taxa);
+		int matricesWithData = 0;
+		if (totMatrices >0){
+			for (int im = 0; im < totMatrices; im++){
+				CharacterData data = getProject().getCharacterMatrix(taxa, im);
+				if (data.hasDataForTaxon(it)){
+					matricesWithData++;
+					s = s + "  —  " + data.getName();
+				}
+			}
+		}
+		if (matricesWithData==1)
+			return "Taxon has data in this matrix " + s;
+		else if (matricesWithData >1)
+			return "Taxon has data in these matrices: " + s;
+		else
+			return "Taxon has data in no matrices";
+			
 	}
 	/*.................................................................................................................*/
 	public String getName() {

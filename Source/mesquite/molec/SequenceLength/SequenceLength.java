@@ -126,8 +126,8 @@ public class SequenceLength extends NumberForTaxon {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		if (currentTaxa != null && observedStates == null)
-			observedStates = matrixSourceTask.getCurrentMatrix(currentTaxa);
+		//if (currentTaxa != null && observedStates == null)
+		//	observedStates = matrixSourceTask.getCurrentMatrix(currentTaxa);
 		if (observedStates != null && getProject().getNumberCharMatricesVisible()>1){
 			CharacterData d = observedStates.getParentData();
 			if (d != null && d.getName()!= null) {

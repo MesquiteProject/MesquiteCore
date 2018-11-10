@@ -28,13 +28,13 @@ import mesquite.lib.duties.*;
 import com.lowagie.text.pdf.PdfGraphics2D;
 
 /** Coordinates the drawing of trees in windows (e.g., used in the Tree Window and other places) */
-public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
+public class BasicTreeDrawCoordinator extends DrawTreeCoordinator implements TaxonCommenter {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTree.class, "A specific Tree Drawer is needed to yield the desired style of tree.",
-		"You can choose the style in the Tree Form submenu of the Drawing menu.");
+				"You can choose the style in the Tree Form submenu of the Drawing menu.");
 		e.setSuppressListing(true);
 		EmployeeNeed e2 = registerEmployeeNeed(DrawNamesTreeDisplay.class, "A Tree drawing shows the names of taxa.",
-		"This is activated automatically.");
+				"This is activated automatically.");
 		e2.setSuppressListing(true);
 	}
 	private DrawTree treeDrawTask;
@@ -224,6 +224,25 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		return terminalNamesTask;
 	}
 	/*.................................................................................................................*/
+	public String getTaxonComment(Taxa taxa, int it){
+		StringBuffer sb = new StringBuffer();
+		Enumeration e = employees.elements();
+		boolean first = true;
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			if (obj instanceof TaxonCommenter){
+				String s = ((TaxonCommenter)obj).getTaxonComment(taxa, it);
+				if (!StringUtil.blank(s)){
+					if (!first)
+						sb.append("\n");
+					first = false;
+					sb.append(s);
+				}
+			}
+		}
+		return sb.toString();
+	}
+	/*.................................................................................................................*/
 	public void setBranchColor(Color c) {
 		brColor = c;
 	}
@@ -333,7 +352,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplay.suppressDrawing(suppression);
 					decrementMenuResetSuppression();
 					return null;
-			}
+				}
 			}
 			else if (treeDisplays != null) { //many tree displays
 				boolean[] vis = new boolean[numDisplays];
@@ -558,9 +577,9 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			if (w != null){
 				w.windowResized();  //this is a hack to force them to update sizes
 				return;
+			}
 		}
-		}
-		
+
 		if (treeDisplay != null) {
 			((BasicTreeDisplay)treeDisplay).pleaseUpdate(true);
 		}
@@ -868,22 +887,22 @@ class BasicTreeDisplay extends TreeDisplay  {
 	private   void drawSpot(TreeDisplay treeDisplay, Tree tree, Graphics g, int N) {
 		if (tree.nodeExists(N)) {
 			if (treeDisplay.getVisRect() == null || treeDisplay.getVisRect().contains(treeDisplay.getTreeDrawing().x[N], treeDisplay.getTreeDrawing().y[N])){
-			if (tree.nodeIsInternal(N) || true){  //replace true by show terminal
-				//int i=0;
-				//int j=2;
-				String s = Integer.toString(N);
-				FontMetrics fm = g.getFontMetrics(g.getFont());
-				int width = fm.stringWidth(s) + 6;
-				int height = fm.getAscent()+fm.getDescent() + 6;
-				if (spotsize>width)
-					width = spotsize;
-				if (spotsize>height)
-					height = spotsize;
-				g.setColor(Color.white);
-				double x = treeDisplay.getTreeDrawing().x[N] - width/2;
-				double y = treeDisplay.getTreeDrawing().y[N] - height/2;
-				GraphicsUtil.fillOval(g,x , y, width, height);
-			/*	g.setColor(Color.red);
+				if (tree.nodeIsInternal(N) || true){  //replace true by show terminal
+					//int i=0;
+					//int j=2;
+					String s = Integer.toString(N);
+					FontMetrics fm = g.getFontMetrics(g.getFont());
+					int width = fm.stringWidth(s) + 6;
+					int height = fm.getAscent()+fm.getDescent() + 6;
+					if (spotsize>width)
+						width = spotsize;
+					if (spotsize>height)
+						height = spotsize;
+					g.setColor(Color.white);
+					double x = treeDisplay.getTreeDrawing().x[N] - width/2;
+					double y = treeDisplay.getTreeDrawing().y[N] - height/2;
+					GraphicsUtil.fillOval(g,x , y, width, height);
+					/*	g.setColor(Color.red);
 				Graphics2D g2 = (Graphics2D)g;
 				GraphicsConfiguration gc;
 				java.awt.geom.AffineTransform at, at0, nt;
@@ -899,24 +918,24 @@ class BasicTreeDisplay extends TreeDisplay  {
 				 at = gc.getDefaultTransform();
 				 nt = gc.getNormalizingTransform();
 				ss += " " +  at0.getTranslateX() + " " +  at.getTranslateX() + " " + nt.getTranslateX() + "/ ";
-				*/
-				g.setColor(Color.black);
-			   GraphicsUtil.drawString(g,Integer.toString(N), x+2, y-4+ height);
-				/*g.drawRect(x , y, width, height);
+					 */
+					g.setColor(Color.black);
+					GraphicsUtil.drawString(g,Integer.toString(N), x+2, y-4+ height);
+					/*g.drawRect(x , y, width, height);
 				gc = g2.getDeviceConfiguration();
 				 at0 = g2.getTransform();
 				 at = gc.getDefaultTransform();
 				 nt = gc.getNormalizingTransform();
 				ss += " " +  at0.getTranslateX() + " " +  at.getTranslateX() + " " + nt.getTranslateX() + "/ ";
-				*/
-				GraphicsUtil.drawOval(g,x , y, width, height);
-				/*gc = g2.getDeviceConfiguration();
+					 */
+					GraphicsUtil.drawOval(g,x , y, width, height);
+					/*gc = g2.getDeviceConfiguration();
 				 at0 = g2.getTransform();
 				 at = gc.getDefaultTransform();
 				 nt = gc.getNormalizingTransform();
 				ss += " " +  at0.getTranslateX() + " " +  at.getTranslateX() + " " + nt.getTranslateX() + "/ ";
-				*/
-			}
+					 */
+				}
 			}
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				drawSpot(treeDisplay, tree, g, d);
@@ -1000,8 +1019,8 @@ class BasicTreeDisplay extends TreeDisplay  {
 	}
 	/*_________________________________________________*/
 	public void redrawTaxa(Graphics g, int M) {
-	((DrawTreeCoordinator)ownerModule).getNamesTask().drawNames(this, tree, getTreeDrawing().getDrawnRoot(), g);
-		
+		((DrawTreeCoordinator)ownerModule).getNamesTask().drawNames(this, tree, getTreeDrawing().getDrawnRoot(), g);
+
 	}
 	/*_________________________________________________*/
 	private boolean responseOK(){

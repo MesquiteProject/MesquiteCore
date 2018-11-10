@@ -18,9 +18,8 @@ import mesquite.lib.*;
 
 
 /* ======================================================================== */
-/*A superclass for the various subclasses of TreeDisplayAssistants (I, D and A)*/
 
-public abstract class TaxonNameStyler extends MesquiteModule  {
+public abstract class TaxonNameStyler extends MesquiteModule implements TaxonCommenter  {
 	
    	 public Class getDutyClass() {
    	 	return TaxonNameStyler.class;
@@ -31,6 +30,14 @@ public abstract class TaxonNameStyler extends MesquiteModule  {
 	public String getDutyName() {
  		return "Supplier of color for taxon name";
    	 }
+	public void initialize(Taxa taxa){
+	}
+	public void prepareToStyle(Taxa taxa){
+	}
+	
+	public String getTaxonComment(Taxa taxa, int it){
+		return null;
+	}
 	public Color getTaxonNameColor(Taxa taxa, int it){
 		return Color.red;
 	}
