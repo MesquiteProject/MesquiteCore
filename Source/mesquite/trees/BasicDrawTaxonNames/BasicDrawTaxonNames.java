@@ -79,10 +79,10 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
 		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Names");
 		addItemToSubmenu(null, namesMenu, "Taxon Name Angle...", makeCommand("namesAngle", this));
-		
+
 		MesquiteSubmenuSpec msf = FontUtil.getFontSubmenuSpec(this,this);
 		msf.setSelected(fontName);
-		
+
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Font Size", makeCommand("setFontSize", this), MesquiteSubmenu.getFontSizeList());
 		mss.setList(MesquiteSubmenu.getFontSizeList());
 		mss.setDocumentItems(false);
@@ -94,12 +94,12 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 		colorerTask =  (TaxonNameStyler)hireNamedEmployee(TaxonNameStyler.class, "#NoColorForTaxon");
 		tNC = makeCommand("setTaxonNameStyler",  this);
 		colorerTask.setHiringCommand(tNC);
-		
+
 		MesquiteSubmenuSpec mmTNC = addSubmenu(null, "Color And Style Of Taxon Names", tNC);
 		mmTNC.setList(TaxonNameStyler.class);
 		colorerName = new MesquiteString(colorerTask.getName());
 		mmTNC.setSelected(colorerName);
-		
+
 		addItemToSubmenu(null, namesMenu, "Shade by Value...", makeCommand("shadeByNumber",  this));
 		offShadeMI = addItemToSubmenu(null, namesMenu, "Turn off Shading", makeCommand("offShading",  this));
 		offShadeMI.setEnabled(false);
@@ -210,40 +210,38 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 			String s = parser.getFirstToken(arguments);
 			if (s != null){
 				String replacement = null;
-				if (s.equalsIgnoreCase("on"))
+				if (s.equalsIgnoreCase("on")){
 					replacement = "#ColorTaxonByPartition";
-				else if (s.equalsIgnoreCase("off"))
-					replacement = "#NoColorForTaxon";
-					
-			TaxonNameStyler temp = (TaxonNameStyler)replaceEmployee(TaxonNameStyler.class, replacement, "How to color taxon names?", colorerTask);
-			if (temp!=null) {
-				colorerTask = temp;
-				colorerName.setValue(colorerTask.getName());
-				if (tree != null)
-					colorerTask.initialize(tree.getTaxa());
-				parametersChanged();
-				return colorerTask;
-			}
+
+					TaxonNameStyler temp = (TaxonNameStyler)replaceEmployee(TaxonNameStyler.class, replacement, "How to color taxon names?", colorerTask);
+					if (temp!=null) {
+						colorerTask = temp;
+						colorerName.setValue(colorerTask.getName());
+						if (tree != null)
+							colorerTask.initialize(tree.getTaxa());
+						parametersChanged();
+						return colorerTask;
+					}
+				}
 			}
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether to show taxon names colored by assigned", "[on or off]", commandName, "toggleColorAssigned")) { //for backwards compatibility
 			String s = parser.getFirstToken(arguments);
 			if (s != null){
 				String replacement = null;
-				if (s.equalsIgnoreCase("on"))
+				if (s.equalsIgnoreCase("on")){
 					replacement = "#ColorTaxonByAssigned";
-				else if (s.equalsIgnoreCase("off"))
-					replacement = "#NoColorForTaxon";
-					
-			TaxonNameStyler temp = (TaxonNameStyler)replaceEmployee(TaxonNameStyler.class, replacement, "How to color taxon names?", colorerTask);
-			if (temp!=null) {
-				colorerTask = temp;
-				colorerName.setValue(colorerTask.getName());
-				if (tree != null)
-					colorerTask.initialize(tree.getTaxa());
-				parametersChanged();
-				return colorerTask;
-			}
+
+					TaxonNameStyler temp = (TaxonNameStyler)replaceEmployee(TaxonNameStyler.class, replacement, "How to color taxon names?", colorerTask);
+					if (temp!=null) {
+						colorerTask = temp;
+						colorerName.setValue(colorerTask.getName());
+						if (tree != null)
+							colorerTask.initialize(tree.getTaxa());
+						parametersChanged();
+						return colorerTask;
+					}
+				}
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the module to be used to choose taxon name colors and styles", "[name of taxon color-style module]", commandName, "setTaxonNameStyler")) {
@@ -516,7 +514,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 				taxonColor = fontColor;
 			else
 				taxonColor = fontColorLight;
-			
+
 			Color tempColor = colorerTask.getTaxonNameColor(taxa, taxonNumber);
 			if (tempColor != null){
 				taxonColor = tempColor;
@@ -569,7 +567,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 			if (treeDrawing.namesFollowLines ){
 				double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])*1.0/(treeDrawing.lineBaseX[N]*1.0-treeDrawing.lineTipX[N]);
 				double radians = Math.atan(slope);
-				
+
 				boolean right = treeDrawing.lineTipX[N]>treeDrawing.lineBaseX[N];
 				Font font = gL.getFont();
 				FontMetrics fontMet = gL.getFontMetrics(font);
@@ -629,7 +627,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 					if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
-					setBounds(namePolys[taxonNumber], (int)horiz-rise/2, (int)vert+separation, rise+descent, lengthString); //integer nodeloc approximation
+						setBounds(namePolys[taxonNumber], (int)horiz-rise/2, (int)vert+separation, rise+descent, lengthString); //integer nodeloc approximation
 					if (nameIsVisible(treeDisplay, taxonNumber))
 						textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz-rise/2, (int)vert+separation, false); //integer nodeloc approximation
 					if (underlined){
@@ -649,7 +647,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 					if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
-					setBounds(namePolys[taxonNumber], (int)horiz+separation, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
+						setBounds(namePolys[taxonNumber], (int)horiz+separation, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
 
 					if (nameIsVisible(treeDisplay, taxonNumber)){
 						if (bgColor!=null) {
@@ -676,7 +674,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 					if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
-					setBounds(namePolys[taxonNumber], (int)horiz - separation - lengthString, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
+						setBounds(namePolys[taxonNumber], (int)horiz - separation - lengthString, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
 					if (nameIsVisible(treeDisplay, taxonNumber)){
 						if (bgColor!=null) {
 							gL.setColor(bgColor);
@@ -696,7 +694,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 				if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 					setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 				else
-				setBounds(namePolys[taxonNumber], (int)horiz+separation, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
+					setBounds(namePolys[taxonNumber], (int)horiz+separation, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
 				if (nameIsVisible(treeDisplay, taxonNumber)){
 					if (bgColor!=null) {
 						gL.setColor(bgColor);
@@ -718,7 +716,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 						if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 							setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 						else
-						setBounds(namePolys[taxonNumber], (int)horiz+separation, (int)vert, lengthString, rise+descent); //integer nodeloc approximation
+							setBounds(namePolys[taxonNumber], (int)horiz+separation, (int)vert, lengthString, rise+descent); //integer nodeloc approximation
 						if (nameIsVisible(treeDisplay, taxonNumber)){
 							if (bgColor!=null) {
 								gL.setColor(bgColor);
@@ -737,7 +735,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 						if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 							setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 						else
-						setBounds(namePolys[taxonNumber], (int)horiz - separation - lengthString, (int)vert, lengthString, rise+descent); //integer nodeloc approximation
+							setBounds(namePolys[taxonNumber], (int)horiz - separation - lengthString, (int)vert, lengthString, rise+descent); //integer nodeloc approximation
 						if (nameIsVisible(treeDisplay, taxonNumber)){
 							if (bgColor!=null) {
 								gL.setColor(bgColor);
@@ -758,7 +756,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 						if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 							setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 						else
-						setBounds(namePolys[taxonNumber], (int)horiz, (int)vert+separation, rise+descent, lengthString); //integer nodeloc approximation
+							setBounds(namePolys[taxonNumber], (int)horiz, (int)vert+separation, rise+descent, lengthString); //integer nodeloc approximation
 						if (nameIsVisible(treeDisplay, taxonNumber)){
 							textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz, (int)vert+separation, false); //integer nodeloc approximation
 							if (underlined){
@@ -772,7 +770,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 						if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 							setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 						else
-						setBounds(namePolys[taxonNumber], (int)horiz, (int)vert-separation-lengthString, rise+descent, lengthString); //integer nodeloc approximation
+							setBounds(namePolys[taxonNumber], (int)horiz, (int)vert-separation-lengthString, rise+descent, lengthString); //integer nodeloc approximation
 						if (nameIsVisible(treeDisplay, taxonNumber)){
 							textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz, (int)vert-separation); //integer nodeloc approximation
 							if (underlined){
@@ -792,7 +790,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 				//gL.fillPolygon(namePolys[taxonNumber]);
 				GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, namePolys[taxonNumber]);
 
-			//	gL.setPaintMode();
+				//	gL.setPaintMode();
 			}
 
 			if (useBold)
@@ -993,7 +991,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 				if (colorerTask !=null)
 					colorerTask.prepareToStyle(tree.getTaxa());
 				drawNamesOnTree(tree, drawnRoot, drawnRoot, treeDisplay, part, triangleBase);
-		
+
 				g.setFont(tempFont);
 			}
 		}
