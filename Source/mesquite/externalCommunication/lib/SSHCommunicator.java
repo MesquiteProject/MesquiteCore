@@ -359,10 +359,12 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		return !remoteFileExists(runningFileName, false);
 	}
 
-	public String getJobStatus(Object location) {
-		if (remoteFileExists(runningFileName, false)) 
+	public String getJobStatus(Object location, boolean warn) {
+		if (remoteFileExists(runningFileName, warn)) 
 			return submitted;
-		return "Job completed or not found.";
+		if (warn)
+			return "Job completed or not found.";
+		return "";
 	}
 
 	public  boolean downloadFilesToLocalWorkingDirectory (boolean onlyNewOrModified) {
@@ -390,7 +392,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 			for (int i=0; i<remoteFiles.size(); i++) {
 				ChannelSftp.LsEntry entry = (ChannelSftp.LsEntry)remoteFiles.elementAt(i);
 				String fileName = entry.getFilename();
-				if (remoteFileExists(channel,fileName)) {
+				if (!runningFileName.equalsIgnoreCase(fileName) && remoteFileExists(channel,fileName)) {
 					if (!onlyNewOrModified || fileNewOrModified(previousRemoteJobFiles, remoteJobFiles, i))
 						channel.get(fileName, rootDir+fileName);
 				}

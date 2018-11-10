@@ -236,7 +236,12 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	/*.................................................................................................................*/
 	// TODO: turn these to abstract once version 2.5 or Zephyr is released?
 	public boolean jobCompleted(Object location) { return true;}
-	public String getJobStatus(Object location) { return "";}
+	/*.................................................................................................................*/
+	public String getJobStatus(Object location) {
+		return getJobStatus(location, true);
+
+	}
+	public String getJobStatus(Object location, boolean warn) { return "";}
 	public boolean downloadWorkingResults(Object location, String rootDir, boolean onlyNewOrModified) { return true;}
 	public boolean downloadResults(Object location, String rootDir, boolean onlyNewOrModified) { return true;}
 	public void deleteJob(Object location) {}
@@ -295,8 +300,8 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 			}
 
 			stillGoing = watcher == null || watcher.continueShellProcess(null);
-			String newStatus = getJobStatus(location); 
-			if (newStatus!=null && !newStatus.equalsIgnoreCase(status)) {
+			String newStatus = getJobStatus(location, onceThrough && submittedReportedToUser); 
+			if (StringUtil.notEmpty(newStatus) && !newStatus.equalsIgnoreCase(status) && !submittedReportedToUser) {
 				ownerModule.logln(getServiceName()+" Job Status: " + newStatus + "  (" + StringUtil.getDateTime() + ")");
 			} else
 				ownerModule.log(".");
@@ -307,11 +312,11 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 			onceThrough = true;
 		}
 		boolean done = jobCompleted(location);
-		if (done)
+		if (done && submittedReportedToUser)
 			ownerModule.logln(getServiceName()+" job completed. (" + StringUtil.getDateTime() + " or earlier)");
 		if (outputFileProcessor!=null) {
 			if (rootDir!=null) {
-				if (done)
+				if (done && submittedReportedToUser)
 					ownerModule.logln("About to download results from "+getServiceName()+" (this may take some time).");
 				if (downloadResults(location, rootDir, false))
 						outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
