@@ -44,6 +44,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected Graphics gL;
 	protected int separation = 10;
 	protected Font currentFont = null;
+	protected Font currentFontBOLD = null;
 	protected String myFont = null;
 	protected int myFontSize = -1;
 	protected FontMetrics fm;
@@ -51,7 +52,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected int descent;
 	protected int oldNumTaxa=0;
 	protected MesquiteString fontSizeName, fontName;
-	protected MesquiteBoolean colorPartition, colorAssigned, shadePartition, showFootnotes;
+	protected MesquiteBoolean shadePartition, showFootnotes;
 	/*New code added Feb.15.07 centerNodeLabels oliver*/ //TODO: delete new code comments
 	protected MesquiteBoolean showNodeLabels, showTaxonNames, centerNodeLabels; /*deleted centerNodeLables declaration Feb.26.07 oliver*/
 	/*end new code added Feb.15.07 oliver*/
@@ -59,6 +60,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected Color fontColor=Color.black;
 	protected Color fontColorLight = Color.gray;
 	protected NumberForTaxon shader = null;
+	protected TaxonNameStyler colorerTask = null;
 	protected int longestString = 0;
 	protected MesquiteMenuItemSpec offShadeMI = null;
 	/* New code added Feb.26.07 oliver*/ //TODO: delete new code comments
@@ -67,9 +69,12 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected double[] shades = null;
 	protected double minValue, maxValue;
 	double namesAngle = MesquiteDouble.unassigned;
+	MesquiteCommand tNC;
+	MesquiteString colorerName = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		currentFont = MesquiteWindow.defaultFont;
+		currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
 		fontName = new MesquiteString(MesquiteWindow.defaultFont.getName());
 		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
 		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Names");
@@ -86,12 +91,15 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		MesquiteSubmenuSpec mmis = addSubmenu(null, "Default Font Color", makeCommand("setColor",  this));
 		mmis.setList(ColorDistribution.standardColorNames);
 		mmis.setSelected(fontColorName);
-
-		//MesquiteSubmenuSpec mssNames = addSubmenu(null, "Names");
-		colorPartition = new MesquiteBoolean(false);
-		colorAssigned = new MesquiteBoolean(true);
-		addCheckMenuItemToSubmenu(null, namesMenu, "Color by Taxon Group", makeCommand("toggleColorPartition", this), colorPartition);
-		addCheckMenuItemToSubmenu(null, namesMenu, "Color by Assigned Color", makeCommand("toggleColorAssigned",  this), colorAssigned);
+		colorerTask =  (TaxonNameStyler)hireNamedEmployee(TaxonNameStyler.class, "#NoColorForTaxon");
+		tNC = makeCommand("setTaxonNameStyler",  this);
+		colorerTask.setHiringCommand(tNC);
+		
+		MesquiteSubmenuSpec mmTNC = addSubmenu(null, "Color And Style Of Taxon Names", tNC);
+		mmTNC.setList(TaxonNameStyler.class);
+		colorerName = new MesquiteString(colorerTask.getName());
+		mmTNC.setSelected(colorerName);
+		
 		addItemToSubmenu(null, namesMenu, "Shade by Value...", makeCommand("shadeByNumber",  this));
 		offShadeMI = addItemToSubmenu(null, namesMenu, "Turn off Shading", makeCommand("offShading",  this));
 		offShadeMI.setEnabled(false);
@@ -139,8 +147,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		if (myFontSize>0)
 			temp.addLine("setFontSize " + myFontSize);  //TODO: this causes problem since charts come before tree window
 		temp.addLine("setColor " + ParseUtil.tokenize(fontColorName.toString()));  //TODO: this causes problem since charts come before tree window
-		temp.addLine("toggleColorPartition " + colorPartition.toOffOnString());
-		temp.addLine("toggleColorAssigned " + colorAssigned.toOffOnString());
+		temp.addLine("setTaxonNameStyler " , colorerTask);
 		if (shader != null)
 			temp.addLine("shadeByNumber ", shader);
 		temp.addLine("toggleShadePartition " + shadePartition.toOffOnString());
@@ -199,23 +206,13 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			MesquiteTrunk.resetMenuItemEnabling();
 			parametersChanged();
 		}
-		else if (checker.compare(this.getClass(), "Toggles whether taxon names are colored according to their group in the current taxa partition", "[on or off]", commandName, "toggleColorPartition")) {
-			boolean current = colorPartition.getValue();
-
-			colorPartition.toggleValue(parser.getFirstToken(arguments));
-			if (colorAssigned.getValue() && colorPartition.getValue())
-				colorAssigned.setValue(false);
-			if (current!=colorPartition.getValue())
+		else if (checker.compare(this.getClass(), "Sets the module to be used to choose taxon name colors and styles", "[name of taxon color-style module]", commandName, "setTaxonNameStyler")) {
+			TaxonNameStyler temp = (TaxonNameStyler)replaceEmployee(TaxonNameStyler.class, arguments, "How to color taxon names?", colorerTask);
+			if (temp!=null) {
+				colorerTask = temp;
+				colorerName.setValue(colorerTask.getName());
 				parametersChanged();
-		}
-		else if (checker.compare(this.getClass(), "Toggles whether taxon names are colored according to their current assigned color", "[on or off]", commandName, "toggleColorAssigned")) {
-			boolean current = colorAssigned.getValue();
-
-			colorAssigned.toggleValue(parser.getFirstToken(arguments));
-			if (colorAssigned.getValue() && colorPartition.getValue())
-				colorPartition.setValue(false);
-			if (current!=colorAssigned.getValue())
-				parametersChanged();
+			}
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether taxon names are given a background color according to their group in the current taxa partition", "[on or off]", commandName, "toggleShadePartition")) {
 			boolean current = shadePartition.getValue();
@@ -273,6 +270,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					myFont = t;
 					fontName.setValue(t);
 					currentFont = fontToSet;
+					currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
 					parametersChanged();
 				}
 			}
@@ -291,6 +289,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						myFont = t;
 						fontName.setValue(t);
 						currentFont = fontToSet;
+						currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
+
 						parametersChanged();
 					}
 				}
@@ -314,6 +314,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					Font fontToSet = new Font (currentFont.getName(), currentFont.getStyle(), fontSize);
 					if (fontToSet!= null) {
 						currentFont = fontToSet;
+						currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
 						fontSizeName.setValue(Integer.toString(fontSize));
 						parametersChanged(new Notification(TreeDisplay.FONTSIZECHANGED));
 					}
@@ -462,22 +463,23 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				taxonColor = fontColor;
 			else
 				taxonColor = fontColorLight;
-
-			if (partitions!=null && (colorPartition.getValue() || shadePartition.getValue())){
+			
+			Color tempColor = colorerTask.getTaxonNameColor(taxa, taxonNumber);
+			if (tempColor != null){
+				taxonColor = tempColor;
+			}
+			boolean useBold = colorerTask.getTaxonNameBoldness(taxa, taxonNumber);
+			Font previousFont = gL.getFont();
+			if (useBold)
+				gL.setFont(currentFontBOLD);
+			if (partitions!=null && shadePartition.getValue()){
 				TaxaGroup mi = (TaxaGroup)partitions.getProperty(taxonNumber);
 				if (mi!=null) {
-					if (colorPartition.getValue() && mi.getColor() != null)
-						taxonColor = mi.getColor();
 					if (shadePartition.getValue()){
 						bgColor =mi.getColor();
 						textRotator.assignBackground(bgColor);
 					}
 				}
-			}
-			if (colorAssigned.getValue()){
-				long c = taxa.getAssociatedLong(colorNameRef, taxonNumber);
-				if (MesquiteLong.isCombinable(c))
-					taxonColor= ColorDistribution.getStandardColor((int)c);
 			}
 			if (showFootnotes.getValue()){
 				ListableVector extras = treeDisplay.getExtras();
@@ -740,6 +742,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			//	gL.setPaintMode();
 			}
 
+			if (useBold)
+				gL.setFont(previousFont);
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -911,6 +915,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						currentFont = g.getFont();
 					else
 						currentFont = fontToSet;
+					currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
 				}
 				Font tempFont = g.getFont();
 				//currentFont = currentFont.deriveFont(Font.BOLD);
@@ -921,7 +926,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				separation = treeDisplay.getTaxonNameDistance();
 
 				TaxaPartition part = null;
-				if (colorPartition.getValue() || shadePartition.getValue())
+				if (shadePartition.getValue())
 					part = (TaxaPartition)tree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
 				if (treeDisplay.centerNames) {
 					longestString = 0;
