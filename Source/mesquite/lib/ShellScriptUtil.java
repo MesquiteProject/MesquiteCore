@@ -76,11 +76,19 @@ public class ShellScriptUtil  {
 		return "cd " + directoryString +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
+	public static String getChangeDirectoryCommand(String directory){
+		return getChangeDirectoryCommand(false, directory);
+	}
+	/*.................................................................................................................*/
 	public static String getRemoveCommand(boolean isWindows, String filePath){
 		if (isWindows)
 			return "del " + StringUtil.protectFilePathForWindows(filePath) +StringUtil.lineEnding();
 		else
 			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding();
+	}
+	/*.................................................................................................................*/
+	public static String getRemoveCommand(String filePath){
+		return getRemoveCommand(false, filePath);
 	}
 	
 	/** This returns whether or not an exit command for shell scripts is available
