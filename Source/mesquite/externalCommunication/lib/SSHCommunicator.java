@@ -167,6 +167,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 		try{
 			if (cdIntoWorking)
 				commands = StringArray.addToStart(commands, "cd " + getRemoteWorkingDirectoryPath());
+			submittedReportedToUser = false;
 			Session session=createSession();
 			session.connect();
 			ChannelExec channel=(ChannelExec)session.openChannel("exec");
@@ -204,11 +205,13 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 				}
 
 				if (channel.isClosed() && (!waitForRunning || !remoteFileExists(runningFileName, false))) {
-					ownerModule.logln("exit-status: "+channel.getExitStatus());
 					success=channel.getExitStatus()==0;
+					if (!success || verbose)
+						ownerModule.logln("exit-status: "+channel.getExitStatus());
 					break;
 				} else if (channel.isClosed()) {
-					ownerModule.logln("exit-status: "+channel.getExitStatus());
+					if (channel.getExitStatus()!=0 || verbose)
+						ownerModule.logln("exit-status: "+channel.getExitStatus());
 
 				}
 				success=channel.getExitStatus()==0;
@@ -360,7 +363,7 @@ public abstract class SSHCommunicator extends RemoteCommunicator {
 	}
 
 	public String getJobStatus(Object location, boolean warn) {
-		if (remoteFileExists(runningFileName, warn)) 
+		if (remoteFileExists(runningFileName, false)) 
 			return submitted;
 		if (warn)
 			return "Job completed or not found.";

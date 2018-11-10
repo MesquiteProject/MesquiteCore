@@ -246,6 +246,7 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	public boolean downloadResults(Object location, String rootDir, boolean onlyNewOrModified) { return true;}
 	public void deleteJob(Object location) {}
 	public String getServiceName() { return "";}
+	protected boolean submittedReportedToUser = false;
 
 	/*.................................................................................................................*/
 	public boolean monitorAndCleanUpShell(Object location, ProgressIndicator progIndicator){
@@ -267,7 +268,6 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 		int interval = 0;
 		minPollIntervalSeconds = 5;
 		int pollInterval = minPollIntervalSeconds;
-		boolean submittedReportedToUser = false;
 		boolean onceThrough = false;
 		
 		while ((!jobCompleted(location) || !onceThrough) && stillGoing && !aborted){
@@ -280,7 +280,7 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 				pollInterval = minPollIntervalSeconds;
 			if(!StringUtil.blank(status)) {
 				if (!status.equalsIgnoreCase(submitted) || !submittedReportedToUser) 
-					ownerModule.logln(getServiceName()+" Job Status: " + status + "  (" + StringUtil.getDateTime() + ")");
+					MesquiteMessage.logCurrentTime(getServiceName()+" job status: " + status + ": ");
 				if (status.equalsIgnoreCase(submitted))
 					submittedReportedToUser = true;
 			}
@@ -302,10 +302,12 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 			stillGoing = watcher == null || watcher.continueShellProcess(null);
 			String newStatus = getJobStatus(location, onceThrough && submittedReportedToUser); 
 			if (StringUtil.notEmpty(newStatus) && !newStatus.equalsIgnoreCase(status) && !submittedReportedToUser) {
-				ownerModule.logln(getServiceName()+" Job Status: " + newStatus + "  (" + StringUtil.getDateTime() + ")");
+				MesquiteMessage.logCurrentTime(getServiceName()+" job status: " + newStatus + ": ");
 			} else
 				ownerModule.log(".");
 			status=newStatus;
+			if (status.equalsIgnoreCase(submitted))
+				submittedReportedToUser = true;
 			if (newStatus!=null && newStatus.equalsIgnoreCase(submitted)){  // job is running
 				processOutputFiles(location);
 			}
