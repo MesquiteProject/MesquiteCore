@@ -3411,7 +3411,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (t.getTaxa().getAnnotation(M) != null)
 				setAnnotation(t.getTaxa().getAnnotation(M), "Footnote above refers to taxon \"" + t.getTaxa().getTaxonName(M) + "\"");
 			else {
-				setExplanation("Taxon: " + t.getTaxa().getTaxonName(M)); //TaxonExplanation
+				setExplanation("Taxon: " + t.getTaxa().getTaxonName(M)); //TaxonExplanation 
 				setAnnotation("", null);
 			}
 			treeAnnotationShown = false; // so that the base Explanation can know whether to refer to the annotation
