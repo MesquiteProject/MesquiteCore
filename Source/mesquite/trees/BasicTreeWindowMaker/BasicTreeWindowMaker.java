@@ -3411,7 +3411,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (t.getTaxa().getAnnotation(M) != null)
 				setAnnotation(t.getTaxa().getAnnotation(M), "Footnote above refers to taxon \"" + t.getTaxa().getTaxonName(M) + "\"");
 			else {
-				setExplanation("Taxon: " + t.getTaxa().getTaxonName(M));
+				setExplanation("Taxon: " + t.getTaxa().getTaxonName(M)); //TaxonExplanation 
 				setAnnotation("", null);
 			}
 			treeAnnotationShown = false; // so that the base Explanation can know whether to refer to the annotation
@@ -3527,7 +3527,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (tree.nodeIsTerminal(node)) {
 			Taxon t = tree.getTaxa().getTaxon(tree.taxonNumberOfNode(node));
 			if (t != null)
-				setExplanation("Taxon: " + t.getName() + s);
+				setExplanation("Taxon: " + t.getName() + s);//TaxonExplanation
 			else
 				setExplanation("Unknown taxon (the tree description may have been malformed or with undefined taxa)" + s);
 		}
@@ -3620,7 +3620,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (tree.nodeIsTerminal(branchFound)) {
 				Taxon t = tree.getTaxa().getTaxon(tree.taxonNumberOfNode(branchFound));
 				if (t != null)
-					setExplanation("Taxon: " + t.getName());
+					setExplanation("Taxon: " + t.getName());//TaxonExplanation
 				else
 					setExplanation("Unknown taxon (the tree description may have been malformed or with undefined taxa)");
 			}
@@ -3654,13 +3654,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					InvertTaxon(g, nameFound);
 					notifyExtrasOfTaxonExit(g, wasHighlighted);
 					notifyExtrasOfTaxonEnter(g, nameFound);
-					setExplanation(" Taxon: " + taxa.getTaxonName(nameFound));
+					setExplanation(" Taxon: " + taxa.getTaxonName(nameFound)); //TaxonExplanation
 				}
 			}
 			else if (nameFound != -1) {
 				InvertTaxon(g, nameFound);
 				notifyExtrasOfTaxonEnter(g, nameFound);
-				setExplanation(" Taxon: " + taxa.getTaxonName(nameFound));
+				setExplanation(" Taxon: " + taxa.getTaxonName(nameFound)); //TaxonExplanation
 			}
 			else {
 				currentTreeTool.moved(x, y, tree, modifiers);
