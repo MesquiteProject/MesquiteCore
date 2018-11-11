@@ -24,7 +24,7 @@ import mesquite.trees.lib.*;
 
 
 /** Draws the taxon names in a tree drawing */
-public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCommenter {
+public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Basic Draw Names for Tree Display";
@@ -396,9 +396,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay implements TaxonCo
 		if (colorerTask !=null && tree != null)
 			colorerTask.initialize(tree.getTaxa());
 	}
-	public String getTaxonComment(Taxa taxa, int it){
-		if (colorerTask !=null && tree != null)
-			return colorerTask.getTaxonComment(tree.getTaxa(), it);
+	public String getObjectComment(Object obj){
+		if (colorerTask !=null && obj != null)
+			return colorerTask.getObjectComment(obj);
 		return null;
 	}
 	/*.................................................................................................................*/

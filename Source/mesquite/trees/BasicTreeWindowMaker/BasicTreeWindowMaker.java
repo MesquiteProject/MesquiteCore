@@ -592,25 +592,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return basicTreeWindow.treeDisplay;
 	}
 
-	/*.................................................................................................................*/
-	public String getTaxonComment(Taxa taxa, int it){
-		StringBuffer sb = new StringBuffer();
-		Enumeration e = employees.elements();
-		boolean first = true;
-		while (e.hasMoreElements()) {
-			Object obj = e.nextElement();
-			if (obj instanceof TaxonCommenter){
-				String s = ((TaxonCommenter)obj).getTaxonComment(taxa, it);
-				if (!StringUtil.blank(s)){
-					if (!first)
-						sb.append("\n");
-					first = false;
-					sb.append(s);
-				}
-			}
-		}
-		return sb.toString();
-	}
 	/* ................................................................................................................. */
 	/** because TreeContext */
 	public Tree getTree() {
@@ -3396,11 +3377,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	/* _________________________________________________ */
 	private String getTaxonExplanation(Taxa taxa, int it){
-		String comment = windowModule.getTaxonComment(taxa, it);
+		String comment = windowModule.getObjectComment(taxa.getTaxon(it));
 		if (StringUtil.blank(comment))
 			return " Taxon: " + taxa.getTaxonName(it);
 		else 
-			return " Taxon: " + taxa.getTaxonName(it) + "\n" + windowModule.getTaxonComment(taxa, it);
+			return " Taxon: " + taxa.getTaxonName(it) + "\n" + comment;
 	}
 	/* _________________________________________________ */
 

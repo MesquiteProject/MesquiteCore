@@ -151,12 +151,13 @@ public class ColorTaxonByNumber extends TaxonNameStyler {
 	public boolean getTaxonNameBoldness(Taxa taxa, int it){
 		return true;
 	}
-	public String getTaxonComment(Taxa taxa, int it){
+	public String getObjectComment(Object obj){
+		Taxon taxon = ((Taxon)obj);
+		Taxa taxa = taxon.getTaxa();
 		if (myTaxa != taxa)
 			prepareToStyle(taxa);
 		MesquiteNumber result = new MesquiteNumber();
 		MesquiteString resultString = new MesquiteString();
-		Taxon taxon = taxa.getTaxon(it);
 		numberTask.calculateNumber(taxon, result, resultString);
 		return resultString.getValue();
 	}

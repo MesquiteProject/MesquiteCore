@@ -28,7 +28,7 @@ import mesquite.lib.duties.*;
 import com.lowagie.text.pdf.PdfGraphics2D;
 
 /** Coordinates the drawing of trees in windows (e.g., used in the Tree Window and other places) */
-public class BasicTreeDrawCoordinator extends DrawTreeCoordinator implements TaxonCommenter {
+public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTree.class, "A specific Tree Drawer is needed to yield the desired style of tree.",
 				"You can choose the style in the Tree Form submenu of the Drawing menu.");
@@ -222,25 +222,6 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator implements Tax
 
 	public DrawNamesTreeDisplay getNamesTask(){
 		return terminalNamesTask;
-	}
-	/*.................................................................................................................*/
-	public String getTaxonComment(Taxa taxa, int it){
-		StringBuffer sb = new StringBuffer();
-		Enumeration e = employees.elements();
-		boolean first = true;
-		while (e.hasMoreElements()) {
-			Object obj = e.nextElement();
-			if (obj instanceof TaxonCommenter){
-				String s = ((TaxonCommenter)obj).getTaxonComment(taxa, it);
-				if (!StringUtil.blank(s)){
-					if (!first)
-						sb.append("\n");
-					first = false;
-					sb.append(s);
-				}
-			}
-		}
-		return sb.toString();
 	}
 	/*.................................................................................................................*/
 	public void setBranchColor(Color c) {

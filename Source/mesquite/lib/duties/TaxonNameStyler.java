@@ -19,7 +19,7 @@ import mesquite.lib.*;
 
 /* ======================================================================== */
 
-public abstract class TaxonNameStyler extends MesquiteModule implements TaxonCommenter  {
+public abstract class TaxonNameStyler extends MesquiteModule  {
 	
    	 public Class getDutyClass() {
    	 	return TaxonNameStyler.class;
@@ -32,10 +32,14 @@ public abstract class TaxonNameStyler extends MesquiteModule implements TaxonCom
    	 }
 	public void initialize(Taxa taxa){
 	}
+	
+	/*Use this to survey all the taxa as needed, e.g. for minima and maxima.
+	 * This is called before a lot of requests for styles for individual taxa are made. 
+	 * This is a bit dangerous. because the data could be stale because of multithreading.*/
 	public void prepareToStyle(Taxa taxa){
 	}
 	
-	public String getTaxonComment(Taxa taxa, int it){
+	public String getObjectComment(Object obj){
 		return null;
 	}
 	public Color getTaxonNameColor(Taxa taxa, int it){

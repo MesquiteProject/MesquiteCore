@@ -63,7 +63,7 @@ MesquiteModule objects.<p>
  */
 
 
-public abstract class MesquiteModule extends EmployerEmployee implements Commandable, Showable, Logger, FunctionExplainable,  Identifiable, FileDirtier, MesquiteListener, XMLPreferencesProcessor {
+public abstract class MesquiteModule extends EmployerEmployee implements Commandable, Showable, Logger, FunctionExplainable,  Identifiable, FileDirtier, MesquiteListener, XMLPreferencesProcessor, ObjectCommenter {
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
@@ -1996,6 +1996,23 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return temp;
 	}
 
+	/*.................................................................................................................*/
+	public String getObjectComment(Object object){
+		StringBuffer sb = new StringBuffer();
+		Enumeration e = employees.elements();
+		boolean first = true;
+		while (e.hasMoreElements()) {
+			MesquiteModule mb = ((MesquiteModule)e.nextElement());
+			String s = mb.getObjectComment(object);
+			if (!StringUtil.blank(s)){
+				if (!first)
+					sb.append("\n");
+				first = false;
+				sb.append(s);
+			}
+		}
+		return sb.toString();
+	}
 	/*__________________________________________________________*/
 	/** for the paging system (may be defunct)*/
 	public void pageModule(MesquiteModule fromModule, boolean persistent){

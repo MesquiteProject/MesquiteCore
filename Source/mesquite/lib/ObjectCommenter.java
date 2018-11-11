@@ -15,9 +15,9 @@ package mesquite.lib;
 
 /*.................................................................................................................*/
 
-public interface TaxonCommenter  {
+public interface ObjectCommenter  {
 	
-	public abstract String getTaxonComment(Taxa taxa, int it);
+	public abstract String getObjectComment(Object obj);
 }
 
 

@@ -76,7 +76,10 @@ public class ColorTaxonByNumDataInMatrices extends TaxonNameStyler {
 		}
 		return false;
 	}
-	public String getTaxonComment(Taxa taxa, int it){
+	public String getObjectComment(Object obj){
+		Taxon taxon = ((Taxon)obj);
+		Taxa taxa = taxon.getTaxa();
+		int it = taxon.getNumber();
 		String s = "";
 		int totMatrices =  getProject().getNumberCharMatrices(taxa);
 		int matricesWithData = 0;
@@ -89,10 +92,15 @@ public class ColorTaxonByNumDataInMatrices extends TaxonNameStyler {
 				}
 			}
 		}
+		
 		if (matricesWithData==1)
 			return "Taxon has data in this matrix " + s;
-		else if (matricesWithData >1)
-			return "Taxon has data in these matrices: " + s;
+		else if (matricesWithData >1) {
+			if (s.length()<300)
+				return "Taxon has data in these " + matricesWithData + " matrices: " + s;
+			else
+				return "Taxon has data in " + matricesWithData + " matrices";
+		}
 		else
 			return "Taxon has data in no matrices";
 			
