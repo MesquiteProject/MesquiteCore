@@ -69,20 +69,20 @@ public class Mesquite extends MesquiteTrunk
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
 
 
-	/* Version 3.2 through 3.4 
+		/* Version 3.2 through 3.4 
 		if (!isPrerelease() && !debugMode)
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/notices.xml";   
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
 
-	*/
-	
-	/* Version 2.75 through 3.11
+		 */
+
+		/* Version 2.75 through 3.11
 		if (!isPrerelease() && !debugMode)
 			return "http://mesquiteproject.org/mesquite/notice/notices.xml";   
 		else
 			return "http://mesquiteproject.org/mesquite/prereleasenotices/notices.xml";   
-	*/
+		 */
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -2462,6 +2462,8 @@ public class Mesquite extends MesquiteTrunk
 
 			} catch (NoSuchMethodError e) {
 			}
+			catch (NoClassDefFoundError e) { //WAYNECHECK: DAVIDCHECK: need to add alternative macos application event handling methods for post-1.8 Java
+			}
 		}
 	}
 
@@ -2667,7 +2669,7 @@ public class Mesquite extends MesquiteTrunk
 				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
 				startupNotices = (Vector)gsn.invoke(starter, null);
 			} catch (Exception e) {
-					System.out.println("Failed to get startup notices vector");
+				System.out.println("Failed to get startup notices vector");
 			}
 		}
 		if (startupNotices != null)
@@ -2719,7 +2721,7 @@ public class Mesquite extends MesquiteTrunk
 				//Go through each package listed in classpaths.txt
 				for (int i = 0; i<paths.length; i++){
 					if (!paths[i].startsWith("#")) { //paths can be commented out with leading #
-						
+
 						addClasspathsHere(urls, jars, MesquiteFile.composePath(mesquiteDirectoryPath, correctClassPath(paths[i])));
 					}
 				}

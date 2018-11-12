@@ -1996,7 +1996,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return temp;
 	}
 
+	/*.................................................................................................................*
+	 * If overriding getObjectComment, we suggest this to recover from descendent employees as well
+	public String getObjectComment(Object object){
+		String q = "this is my comment";
+		
+		String accumulated = super.getObjectComment(object);
+		if (!StringUtil.blank(accumulated))
+			return q + "\n" + accumulated;
+		else
+			return q;
+	}
+
 	/*.................................................................................................................*/
+	//See model above for overridden version
 	public String getObjectComment(Object object){
 		StringBuffer sb = new StringBuffer();
 		Enumeration e = employees.elements();
