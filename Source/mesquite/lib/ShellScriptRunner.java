@@ -151,14 +151,14 @@ public class ShellScriptRunner implements Commandable  {
 		if (i>=0 && i<lastModified.length)
 			lastModified[i]=0;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public long getStdErrLastModified() {
 		File file = new File(stdErrFilePath);
 		if (file!=null)
 			return 0;
 		return file.lastModified();
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public long getStdOutLastModified() {
 		File file = new File(stdOutFilePath);
 		if (file!=null)
@@ -225,13 +225,13 @@ public class ShellScriptRunner implements Commandable  {
 		aborted = true;
 
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public boolean stdOutModified(){
 		long lastModified = stdOutLastModified;
 		stdOutLastModified= getStdOutLastModified();
 		return stdOutLastModified!=lastModified;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public boolean stdErrModified(){
 		long lastModified = stdErrLastModified;
 		stdErrLastModified= getStdErrLastModified();
