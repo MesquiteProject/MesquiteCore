@@ -2462,7 +2462,7 @@ public class Mesquite extends MesquiteTrunk
 
 			} catch (NoSuchMethodError e) {
 			}
-			catch (NoClassDefFoundError e) {
+			catch (NoClassDefFoundError e) { //WAYNECHECK: DAVIDCHECK: need to add alternative macos application event handling methods for post-1.8 Java
 			}
 		}
 	}
