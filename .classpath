@@ -24,5 +24,6 @@
 	<classpathentry exported="true" kind="lib" path="jars/commons-math3-3.6.1.jar"/>
 	<classpathentry kind="lib" path="jars/byte-buddy-agent-1.7.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="jars/dom4j-2.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/jsch-0.1.54.jar"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>
