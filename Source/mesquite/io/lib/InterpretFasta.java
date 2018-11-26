@@ -193,7 +193,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 			String line = "";
 			if (file!=null)
-				file.readNextDarkLine();
+				line = file.readNextDarkLine();
 			else
 				line=parser.getRawNextDarkLine();
 			int taxonNumber = -1;
