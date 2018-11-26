@@ -256,8 +256,6 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 			return false;
 		}
 		lastModified=null;
-		if (outputFilePaths==null)
-			;
 		if (outputFilePaths!=null) {
 			lastModified = new long[outputFilePaths.length];
 			LongArray.deassignArray(lastModified);
@@ -285,8 +283,7 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 					submittedReportedToUser = true;
 			}
 
-			//	if (jobSubmitted(location))
-			//		processOutputFiles();
+			//processOutputFiles(location);
 			try {
 				for (int i=0; i<pollInterval; i++) {
 					if (progIndicator!=null)
@@ -308,7 +305,7 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 			status=newStatus;
 			if (status.equalsIgnoreCase(submitted))
 				submittedReportedToUser = true;
-			if (newStatus!=null && newStatus.equalsIgnoreCase(submitted)){  // job is running
+			if (submittedReportedToUser){  // job is running
 				processOutputFiles(location);
 			}
 			onceThrough = true;

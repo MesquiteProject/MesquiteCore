@@ -62,7 +62,7 @@ public String getMessageIfUserAbortRequested () {
 		if (arguments !=null) {
 			searchTask = (TreeSearcher)hireNamedEmployee(TreeSearcher.class,arguments);
 			if (searchTask==null) {
-				return sorry(getName() + " couldn't start because the requested tree searching module not obtained");
+				return sorry(getName() + " couldn't start because the requested tree searching module not obtained: "+arguments);
 			}
 		}
 		else {

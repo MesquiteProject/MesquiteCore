@@ -243,6 +243,10 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		return System.getProperty("os.name").startsWith("Mac OS X");
 	}
 	/*.................................................................................................................*/
+	public static String getUserName(){
+		return System.getProperty("user.name");
+	}
+	/*.................................................................................................................*/
 	/** Returns the first three characters of "java.version" as a string; e.g., "1.4.1" is returned as the string 1.4 */
 	public static String getJavaVersionAsString(){
 		return System.getProperty("java.version").substring(0,3);
