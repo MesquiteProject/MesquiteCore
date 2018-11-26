@@ -238,7 +238,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	public void saveBLASTReport(String name, String contents) {
 		if (StringUtil.blank(reportDirectoryPath))
 			return;
-
+		if (name==null || name.length()>30)
+			name = "BLAST databases";
 		String blastReportPath = reportDirectoryPath + name;  // directory into which processed files go
 		blastReportPath = MesquiteFile.getUniqueNumberedPath(blastReportPath);
 		if (!StringUtil.blank(blastReportPath)) {
