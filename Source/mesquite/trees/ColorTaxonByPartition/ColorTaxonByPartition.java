@@ -49,10 +49,12 @@ public class ColorTaxonByPartition extends TaxonNameStyler {
 	
 	public Color getTaxonNameColor(Taxa taxa, int ic){
 		TaxaPartition partitions =  (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
-		TaxaGroup mi = (TaxaGroup)partitions.getProperty(ic);
-		if (mi!=null) {
-			if (mi.getColor() != null)
-				return mi.getColor();
+		if (partitions!=null) {
+			TaxaGroup mi = (TaxaGroup)partitions.getProperty(ic);
+			if (mi!=null) {
+				if (mi.getColor() != null)
+					return mi.getColor();
+			}
 		}
 		return null;
 	}
