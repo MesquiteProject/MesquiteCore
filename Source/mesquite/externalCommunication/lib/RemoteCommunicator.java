@@ -12,12 +12,12 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 
 
-public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
+public abstract class RemoteCommunicator  {
 	protected int minPollIntervalSeconds =getDefaultMinPollIntervalSeconds();
 
 	protected String host="";
-	protected String username = "";
-	protected static String password = ""; 
+//	private String username = "";
+//	private static String password = ""; 
 	protected String xmlPrefsString = null;
 	protected String[] outputFilePaths; //local copies of files
 	protected MesquiteModule ownerModule;
@@ -30,14 +30,15 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 
 	protected OutputFileProcessor outputFileProcessor; // for reconnection
 	protected ShellScriptWatcher watcher; // for reconnection
+	protected UsernamePasswordKeeper usernamePasswordKeeper;
 
 
 	public RemoteCommunicator () {
 	}
 
 	public RemoteCommunicator (MesquiteModule mb, String xmlPrefsString,String[] outputFilePaths) {
-		if (xmlPrefsString != null)
-			XMLUtil.readXMLPreferences(mb, this, xmlPrefsString);
+	//	if (xmlPrefsString != null)
+	//		XMLUtil.readXMLPreferences(mb, this, xmlPrefsString);
 		this.outputFilePaths = outputFilePaths;
 		ownerModule = mb;
 	}
@@ -48,6 +49,10 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	public abstract String getRegistrationURL();
 	public abstract String getSystemName();
 
+	/*.................................................................................................................*/
+	public void setUsernamePasswordKeeper(UsernamePasswordKeeper usernamePasswordKeeper) {
+		this.usernamePasswordKeeper = usernamePasswordKeeper;
+	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public int getDefaultMinPollIntervalSeconds(){
@@ -92,51 +97,53 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 		if (useAPITestUser()) {
 			return getAPITestUserName();
 		} else 
-			return username;
+			return usernamePasswordKeeper.getUsername();
 	}
 	/*.................................................................................................................*/
 	public void setUserName(String newName){
 		if (!useAPITestUser()) 
-			username=newName;
+			usernamePasswordKeeper.setUsername(newName);;
 	}
 	/*.................................................................................................................*/
 	public String getPassword(){
 		if (useAPITestUser()) {
 			return getAPITestPassword();
 		} else 
-			return password;
+			return usernamePasswordKeeper.getPassword();
 	}
 	/*.................................................................................................................*/
 	public void setPassword(String newPassword){
 		if (!useAPITestUser()) 
-			password=newPassword;
+			usernamePasswordKeeper.setPassword(newPassword);
 	}
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		temp.addLine("setUsername " + ParseUtil.tokenize(username));
+		//temp.addLine("setUsername " + ParseUtil.tokenize(usernamePasswordKeeper.getUsername()));
 		return temp;
 	}
 	Parser parser = new Parser();
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the username", "[username]", commandName, "setUsername")) {
 			username = parser.getFirstToken(arguments);
 		}
 		return null;
 	}	
+	/*.................................................................................................................*
+
 	public void processSingleXMLPreference (String tag, String content) {
 		processSingleXMLPreference(tag, null, content);
 
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public void processSingleXMLPreference (String tag, String flavor, String content) {
 		if ("userName".equalsIgnoreCase(tag))
 			username = StringUtil.cleanXMLEscapeCharacters(content);
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "username", username);  
@@ -144,7 +151,8 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	}
 	/*.................................................................................................................*/
 	public void forgetPassword() {
-		password="";
+		if (usernamePasswordKeeper!=null)
+			usernamePasswordKeeper.setPassword("");
 	}
 
 
@@ -162,7 +170,7 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	}
 	/*.................................................................................................................*/
 	public boolean checkUsernamePassword(boolean tellUserAboutSystem){
-		if (StringUtil.blank(getUserName()) || StringUtil.blank(password)){
+		if (StringUtil.blank(getUserName()) || StringUtil.blank(getPassword())){
 			MesquiteBoolean answer = new MesquiteBoolean(false);
 			MesquiteString usernameString = new MesquiteString();
 			if (getUserName()!=null)
@@ -192,7 +200,7 @@ public abstract class RemoteCommunicator implements XMLPreferencesProcessor {
 	public HttpClient getHttpClient(){
 		// from http://www.artima.com/forums/flat.jsp?forum=121&thread=357685
 		CredentialsProvider provider = new BasicCredentialsProvider();
-		UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
+		UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(getUserName(), getPassword());
 		provider.setCredentials(AuthScope.ANY, credentials);
 		return HttpClientBuilder.create().setDefaultCredentialsProvider(provider).build();
 	}

@@ -13,8 +13,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 public abstract class RESTCommunicator extends RemoteCommunicator {
 
 	public RESTCommunicator (MesquiteModule mb, String xmlPrefsString,String[] outputFilePaths) {
-		if (xmlPrefsString != null)
-			XMLUtil.readXMLPreferences(mb, this, xmlPrefsString);
+//		if (xmlPrefsString != null)
+//			XMLUtil.readXMLPreferences(mb, this, xmlPrefsString);
 		this.outputFilePaths = outputFilePaths;
 		ownerModule = mb;
 	}
