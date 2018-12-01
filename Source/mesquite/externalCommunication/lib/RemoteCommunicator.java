@@ -16,8 +16,6 @@ public abstract class RemoteCommunicator  {
 	protected int minPollIntervalSeconds =getDefaultMinPollIntervalSeconds();
 
 	protected String host="";
-//	private String username = "";
-//	private static String password = ""; 
 	protected String xmlPrefsString = null;
 	protected String[] outputFilePaths; //local copies of files
 	protected MesquiteModule ownerModule;
