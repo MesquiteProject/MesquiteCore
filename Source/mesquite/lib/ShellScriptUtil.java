@@ -97,16 +97,14 @@ public class ShellScriptUtil  {
 	 * only used in Windows and Mac, and because the Mac's Terminal can't easily be closed,
 	 * this only returns true for Windows. 
 	 */
-	public static boolean exitCommandIsAvailableAndUseful(){
-		if (MesquiteTrunk.isWindows())
-			return true;
-		return false;
+	public static boolean exitCommandIsAvailableAndUseful(boolean isWindows){
+		return isWindows;
 	}
 	
 	/** This returns the exit command that might be used to quit a visible terminal window from within itself. 
 	 */
-	public static String getExitCommand(){
-		if (MesquiteTrunk.isMacOSX()){
+	public static String getExitCommand(boolean isMacOSX){
+		if (isMacOSX){
 			return "osascript -e 'quit app \"Terminal\"'";  // doesn't fully work as will prompt user
 		}
 		else
