@@ -224,6 +224,13 @@ public class StringUtil {
 	public static String lineEnding(){
 		return lineSeparator;
 	}
+	/*.................................................................................................................*/
+	public static String lineEnding(boolean isWindows){
+		if (isWindows)
+			return "\r\n";
+		return "\n";
+	}
+
 	public static boolean getIsNumeric(String s) {
 		try {
 			Integer.parseInt(s);
