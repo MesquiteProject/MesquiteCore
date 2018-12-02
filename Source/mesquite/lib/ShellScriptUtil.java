@@ -29,6 +29,7 @@ import java.io.*;
 public class ShellScriptUtil  {
 	static int sleepTime = 50;
 	public static int recoveryDelay = 0;
+	public static final String runningFileName = "running";
 	
 
 	/*.................................................................................................................*/
@@ -239,7 +240,7 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static String getDefaultRunningFilePath(){
 		Random rng = new Random(System.currentTimeMillis());
-		String runningFilePath = MesquiteModule.getTempDirectoryPath()  + MesquiteFile.fileSeparator + "running" + MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs(rng.nextInt()));
+		String runningFilePath = MesquiteModule.getTempDirectoryPath()  + MesquiteFile.fileSeparator + runningFileName + MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs(rng.nextInt()));
 		return runningFilePath;
 	}
 	/*.................................................................................................................*/
