@@ -83,9 +83,21 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(boolean isWindows, String filePath){
 		if (isWindows)
-			return "del " + StringUtil.protectFilePathForWindows(filePath) +StringUtil.lineEnding();
+			return "del " + StringUtil.protectFilePathForWindows(filePath) +StringUtil.lineEnding(isWindows);
 		else
-			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding();
+			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding(isWindows);
+	}
+	/*.................................................................................................................*/
+	public static String getRemoveCommand(boolean isWindows, String filePath, boolean includeLineEnding){
+		String removeCommand = "";
+		if (isWindows)
+			removeCommand = "del " + StringUtil.protectFilePathForWindows(filePath);
+		else
+			removeCommand = "rm -f " + StringUtil.protectFilePathForUnix(filePath);
+		if (includeLineEnding)
+			return removeCommand + StringUtil.lineEnding(isWindows);
+		else
+			return removeCommand;
 	}
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(String filePath){
