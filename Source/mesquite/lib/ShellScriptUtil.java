@@ -74,7 +74,7 @@ public class ShellScriptUtil  {
 		} else {
 			directoryString = StringUtil.protectFilePathForUnix(directory);
 		}
-		return "cd " + directoryString +StringUtil.lineEnding();
+		return "cd " + directoryString +StringUtil.lineEnding(isWindows);
 	}
 	/*.................................................................................................................*/
 	public static String getChangeDirectoryCommand(String directory){
