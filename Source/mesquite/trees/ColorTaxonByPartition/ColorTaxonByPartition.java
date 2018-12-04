@@ -55,6 +55,7 @@ public class ColorTaxonByPartition extends TaxonNameStyler {
 		if (mi!=null) {
 			if (mi.getColor() != null)
 				return mi.getColor();
+
 		}
 		return null;
 	}

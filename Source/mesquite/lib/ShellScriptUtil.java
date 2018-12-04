@@ -29,6 +29,7 @@ import java.io.*;
 public class ShellScriptUtil  {
 	static int sleepTime = 50;
 	public static int recoveryDelay = 0;
+	public static final String runningFileName = "running";
 	
 
 	/*.................................................................................................................*/
@@ -73,7 +74,7 @@ public class ShellScriptUtil  {
 		} else {
 			directoryString = StringUtil.protectFilePathForUnix(directory);
 		}
-		return "cd " + directoryString +StringUtil.lineEnding();
+		return "cd " + directoryString +StringUtil.lineEnding(isWindows);
 	}
 	/*.................................................................................................................*/
 	public static String getChangeDirectoryCommand(String directory){
@@ -82,9 +83,21 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(boolean isWindows, String filePath){
 		if (isWindows)
-			return "del " + StringUtil.protectFilePathForWindows(filePath) +StringUtil.lineEnding();
+			return "del " + StringUtil.protectFilePathForWindows(filePath) +StringUtil.lineEnding(isWindows);
 		else
-			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding();
+			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding(isWindows);
+	}
+	/*.................................................................................................................*/
+	public static String getRemoveCommand(boolean isWindows, String filePath, boolean includeLineEnding){
+		String removeCommand = "";
+		if (isWindows)
+			removeCommand = "del " + StringUtil.protectFilePathForWindows(filePath);
+		else
+			removeCommand = "rm -f " + StringUtil.protectFilePathForUnix(filePath);
+		if (includeLineEnding)
+			return removeCommand + StringUtil.lineEnding(isWindows);
+		else
+			return removeCommand;
 	}
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(String filePath){
@@ -96,16 +109,14 @@ public class ShellScriptUtil  {
 	 * only used in Windows and Mac, and because the Mac's Terminal can't easily be closed,
 	 * this only returns true for Windows. 
 	 */
-	public static boolean exitCommandIsAvailableAndUseful(){
-		if (MesquiteTrunk.isWindows())
-			return true;
-		return false;
+	public static boolean exitCommandIsAvailableAndUseful(boolean isWindows){
+		return isWindows;
 	}
 	
 	/** This returns the exit command that might be used to quit a visible terminal window from within itself. 
 	 */
-	public static String getExitCommand(){
-		if (MesquiteTrunk.isMacOSX()){
+	public static String getExitCommand(boolean isMacOSX){
+		if (isMacOSX){
 			return "osascript -e 'quit app \"Terminal\"'";  // doesn't fully work as will prompt user
 		}
 		else
@@ -239,7 +250,7 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static String getDefaultRunningFilePath(){
 		Random rng = new Random(System.currentTimeMillis());
-		String runningFilePath = MesquiteModule.getTempDirectoryPath()  + MesquiteFile.fileSeparator + "running" + MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs(rng.nextInt()));
+		String runningFilePath = MesquiteModule.getTempDirectoryPath()  + MesquiteFile.fileSeparator + runningFileName + MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs(rng.nextInt()));
 		return runningFilePath;
 	}
 	/*.................................................................................................................*/
