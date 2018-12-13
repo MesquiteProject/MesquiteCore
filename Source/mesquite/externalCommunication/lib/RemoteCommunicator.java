@@ -29,6 +29,7 @@ public abstract class RemoteCommunicator  {
 	protected OutputFileProcessor outputFileProcessor; // for reconnection
 	protected ShellScriptWatcher watcher; // for reconnection
 	protected UsernamePasswordKeeper usernamePasswordKeeper;
+	protected boolean hasBeenReconnected = false;
 
 
 	public RemoteCommunicator () {
@@ -55,6 +56,13 @@ public abstract class RemoteCommunicator  {
 	/*.................................................................................................................*/
 	public int getDefaultMinPollIntervalSeconds(){
 		return 30;
+	}
+	public boolean hasBeenReconnected() {
+		return hasBeenReconnected;
+	}
+
+	public void setHasBeenReconnected(boolean hasBeenReconnected) {
+		this.hasBeenReconnected = hasBeenReconnected;
 	}
 
 	/*.................................................................................................................*/
@@ -311,7 +319,7 @@ public abstract class RemoteCommunicator  {
 			status=newStatus;
 			if (status.equalsIgnoreCase(submitted))
 				submittedReportedToUser = true;
-			if (submittedReportedToUser){  // job is running
+			if (submittedReportedToUser || hasBeenReconnected){  // job is running
 				processOutputFiles(location);
 			}
 			onceThrough = true;
