@@ -571,8 +571,22 @@ public class StringUtil {
 			return null;
 		else if (line.equals(""))
 			return "";
-		line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1+separator2);
-		int last = MesquiteInteger.maximum(line.lastIndexOf(separator1), line.lastIndexOf(separator2));
+		int last = 0;
+		if (separator1==null) {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator2);
+			last = line.lastIndexOf(separator2);
+		}
+		else if (separator2==null) {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1);
+			last = line.lastIndexOf(separator1);
+		}
+		else {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1+separator2);
+			last = MesquiteInteger.maximum(line.lastIndexOf(separator1), line.lastIndexOf(separator2));
+		}
 		return line.substring(last+1, line.length());
 	}
 	/*.................................................................................................................*/
@@ -624,15 +638,38 @@ public class StringUtil {
 	/*.................................................................................................................*/
 	/** returns everything in front of the last item in a string, separated into parts by whichever is last of the two separators*/
 	public static String getAllButLastItem(String line, String separator1, String separator2) {
+		return getAllButLastItem(line, separator1, separator2, false);
+	}
+	
+	/*.................................................................................................................*/
+	/** returns everything in front of the last item in a string, separated into parts by whichever is last of the two separators*/
+	public static String getAllButLastItem(String line, String separator1, String separator2, boolean removeTrailingSeparators) {
 		if (line==null)
 			return null;
 		else if (line.equals(""))
 			return "";
-		int last = MesquiteInteger.maximum(line.lastIndexOf(separator1), line.lastIndexOf(separator2));
+		int last = 0;
+		if (separator1==null) {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator2);
+			last = line.lastIndexOf(separator2);
+		}
+		else if (separator2==null) {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1);
+			last = line.lastIndexOf(separator1);
+		}
+		else {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1+separator2);
+			last = MesquiteInteger.maximum(line.lastIndexOf(separator1), line.lastIndexOf(separator2));
+		}
 		if (last <0 )
 			return line;
 		return line.substring(0, last);
 	}
+	
+	
 	/*.................................................................................................................*/
 	/** returns everything in a string AFTER a particular substring; returns empty string if substring not present*/
 	public static String getAllAfterSubString(String line, String subString) {
