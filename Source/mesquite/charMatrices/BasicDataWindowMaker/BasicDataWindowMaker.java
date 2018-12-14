@@ -3031,7 +3031,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		showEmptyDataAsClear = new MesquiteBoolean(false);
 		showPaleExcluded = new MesquiteBoolean(false);
 		paleInapplicable = new MesquiteBoolean(true);
-		paleMissing = new MesquiteBoolean(true);
+		paleMissing = new MesquiteBoolean(false);
 		showBoldCellText = new MesquiteBoolean(false);
 		showChanges = new MesquiteBoolean(!(data instanceof MolecularData));
 		allowAutosize = new MesquiteBoolean(!(data instanceof MolecularData));
