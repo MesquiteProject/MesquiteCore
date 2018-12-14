@@ -460,6 +460,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Grid", MesquiteModule.makeCommand("toggleShowPaleGrid", this), table.showPaleGrid);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Cell Colors", MesquiteModule.makeCommand("toggleShowPaleCellColors", this), table.showPaleCellColors);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Missing", MesquiteModule.makeCommand("togglePaleMissing", this), table.paleMissing);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
 		
 		//CHANGES
@@ -922,6 +923,7 @@ public void requestFocus(){
 		temp.addLine("toggleShowPaleCellColors " + table.showPaleCellColors.toOffOnString());
 		temp.addLine("toggleShowPaleExcluded " + showPaleExcluded.toOffOnString());
 		temp.addLine("togglePaleInapplicable " + table.paleInapplicable.toOffOnString());
+		temp.addLine("togglePaleMissing " + table.paleMissing.toOffOnString());
 		temp.addLine("toggleShowBoldCellText " + table.showBoldCellText.toOffOnString());
 		temp.addLine("toggleAllowAutosize " + table.allowAutosize.toOffOnString());
 		temp.addLine("toggleColorsPanel " + showColorLegend.toOffOnString());
@@ -2089,8 +2091,12 @@ public void requestFocus(){
 			table.setShowPaleExcluded(showPaleExcluded.getValue());
 			table.repaintAll();
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not the gaps are pale.", "[on or off]", commandName, "togglePaleInapplicable")) {
+		else if (checker.compare(this.getClass(), "Sets whether or not gaps are pale.", "[on or off]", commandName, "togglePaleInapplicable")) {
 			table.paleInapplicable.toggleValue(ParseUtil.getFirstToken(arguments, pos));
+			table.repaintAll();
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not missing data are pale.", "[on or off]", commandName, "togglePaleMissing")) {
+			table.paleMissing.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 			table.repaintAll();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not the text of cells is shown in bold face.", "[on or off]", commandName, "toggleShowBoldCellText")) {
@@ -2959,6 +2965,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	MesquiteBoolean showPaleExcluded;
 	MesquiteBoolean showEmptyDataAsClear;
 	MesquiteBoolean paleInapplicable;
+	MesquiteBoolean paleMissing;
 
 	int birdsEyeWidth = 2;
 
@@ -3024,6 +3031,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		showEmptyDataAsClear = new MesquiteBoolean(false);
 		showPaleExcluded = new MesquiteBoolean(false);
 		paleInapplicable = new MesquiteBoolean(true);
+		paleMissing = new MesquiteBoolean(true);
 		showBoldCellText = new MesquiteBoolean(false);
 		showChanges = new MesquiteBoolean(!(data instanceof MolecularData));
 		allowAutosize = new MesquiteBoolean(!(data instanceof MolecularData));
@@ -3877,6 +3885,12 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 						else */
 							textColor = Color.lightGray;
 					}
+					else if (paleMissing.getValue() && data.isUnassigned(column, row)){
+							/*	if (data.isTerminalInapplicable(column, row))
+									textColor = Color.white;
+								else */
+									textColor = Color.lightGray;
+							}
 					else
 						textColor = ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black);
 				}
