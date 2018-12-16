@@ -292,7 +292,10 @@ public abstract class RemoteCommunicator  {
 				pollInterval = minPollIntervalSeconds;
 			if(!StringUtil.blank(status)) {
 				if (!status.equalsIgnoreCase(submitted) || !submittedReportedToUser) 
-					MesquiteMessage.logCurrentTime(getServiceName()+" job status: " + status + ": ");
+					if (hasBeenReconnected())
+						ownerModule.logln(getServiceName()+" job status: " + status);
+					else
+						MesquiteMessage.logCurrentTime(getServiceName()+" job status: " + status + ": ");
 				if (status.equalsIgnoreCase(submitted))
 					submittedReportedToUser = true;
 			}
@@ -313,7 +316,10 @@ public abstract class RemoteCommunicator  {
 			stillGoing = watcher == null || watcher.continueShellProcess(null);
 			String newStatus = getJobStatus(location, onceThrough && submittedReportedToUser); 
 			if (StringUtil.notEmpty(newStatus) && !newStatus.equalsIgnoreCase(status) && !submittedReportedToUser) {
-				MesquiteMessage.logCurrentTime(getServiceName()+" job status: " + newStatus + ": ");
+				if (hasBeenReconnected() && newStatus.equalsIgnoreCase(submitted))
+					ownerModule.logln(getServiceName()+" job status: " + newStatus);
+				else
+					MesquiteMessage.logCurrentTime(getServiceName()+" job status: " + newStatus + ": ");
 			} else
 				ownerModule.log(".");
 			status=newStatus;
@@ -325,11 +331,11 @@ public abstract class RemoteCommunicator  {
 			onceThrough = true;
 		}
 		boolean done = jobCompleted(location);
-		if (done && submittedReportedToUser)
+		if (done && (submittedReportedToUser || hasBeenReconnected))
 			ownerModule.logln(getServiceName()+" job completed. (" + StringUtil.getDateTime() + " or earlier)");
 		if (outputFileProcessor!=null) {
 			if (rootDir!=null) {
-				if (done && submittedReportedToUser)
+				if (done && (submittedReportedToUser || hasBeenReconnected))
 					ownerModule.logln("About to download results from "+getServiceName()+" (this may take some time).");
 				if (downloadResults(location, rootDir, false))
 						outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
