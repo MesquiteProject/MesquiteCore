@@ -1242,11 +1242,12 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else if (!MesquiteThread.isScripting() && (suppressAsk || AlertDialog.query(containerOfModule(), "Trees ready", "The trees are now ready [" + fillTask.getName() + "; name of tree block: \"" + trees.getName()+ "\"].  Would you like to open a tree window to display them?", "Yes", "No"))){
 			//send script to tree window coord to makeTreeWindow with set of taxa and then set to stored trees and this tree vector
 			int whichTreeBlock = getTreeBlockNumber(taxa, trees);
-			String extraWindowCommands = fillTask.getExtraTreeWindowCommands(true);
+			long treeBlockID = TreeVector.toExternal(whichTreeBlock);  //WAYNECHECK
+			String extraWindowCommands = fillTask.getExtraTreeWindowCommands(true, treeBlockID);
 			if (StringUtil.blank(extraWindowCommands))
 				extraWindowCommands="";
 			String commands = "makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It; setTreeSource  #StoredTrees;";
-			commands += " tell It; setTaxa " + getProject().getTaxaReferenceInternal(taxa) + " ;  setTreeBlock " + TreeVector.toExternal(whichTreeBlock)  + "; endTell;  getWindow; tell It; setSize 400 300; " + extraWindowCommands + " endTell; showWindowForce; endTell; ";
+			commands += " tell It; setTaxa " + getProject().getTaxaReferenceInternal(taxa) + " ;  setTreeBlock " + treeBlockID  + "; endTell;  getWindow; tell It; setSize 400 300; " + extraWindowCommands + " endTell; showWindowForce; endTell; ";
 			MesquiteInteger pos = new MesquiteInteger(0);
 			Puppeteer p = new Puppeteer(this);
 			CommandRecord prev = MesquiteThread.getCurrentCommandRecord();
