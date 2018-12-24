@@ -91,6 +91,8 @@ public abstract class CharacterState {
 	public abstract boolean isImpossible();
 	/** returns whether value is combinable (i.e. a valid assigned state) or not.*/
 	public abstract boolean isCombinable();
+	/** returns whether the contents of the character states could be identical, given ambiguity*/
+	public abstract boolean couldBeEqual(CharacterState s);
 	/** returns whether the contents of the character states are identical*/
 	public abstract boolean equals(CharacterState s);
 	/** returns whether the contents of the character states are identical, allowing some to be missing if allowMissing is true*/

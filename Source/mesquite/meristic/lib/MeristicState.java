@@ -239,6 +239,11 @@ public class MeristicState extends CharacterState implements ItemContainer {
 	public boolean equals(CharacterState s, boolean allowMissing, boolean allowNearExact) {
 		return equals(s,allowMissing);
 	}
+	/*..........................................MeristicState.....................................*/
+	/**returns true iff state sets are same, or could be the same given ambiguity */
+	public boolean couldBeEqual(CharacterState s) {
+		return equals(s, true);
+	}
 	/*..........................................MeristicState................*/
 	public static int absolute(int d) {
 		if (d== unassigned || d==inapplicable || d==impossible || d==infinite)

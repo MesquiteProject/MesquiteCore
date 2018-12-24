@@ -74,6 +74,14 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	private int minDist=8;
 	int minForTerminalBoxes = 0;
 	
+	/**  What is the mode for highlighting selected taxa in tree displays? */
+	public static final int sTHM_NONE = 0;
+	public static final int sTHM_GREYBOX = 1;
+	public static final int sTHM_BIGNAME = 2; //selectedTaxonHighlightMode/bigNameDivisor is how much bigger
+	// 2 should translate to 1.25X, 3 to 1.5X, 4 to 1.75X, 5 to 2X (i.e. (selectedTaxonHighlightMode + 3)/4)
+	public static int sTHM_DEFAULT = sTHM_GREYBOX;
+	public int selectedTaxonHighlightMode = sTHM_DEFAULT;
+
 	protected boolean showBranchColors = true;
 	public static boolean printTreeNameByDefault = false;
 	

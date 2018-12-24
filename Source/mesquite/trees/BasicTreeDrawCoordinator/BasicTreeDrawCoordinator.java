@@ -52,6 +52,9 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	MesquiteBoolean showBrLenLabelsOnTerminals = new MesquiteBoolean(true);
 	MesquiteInteger numBrLenDecimals = new MesquiteInteger(6);
 	public Color brLenColor=Color.blue;
+	MesquiteString highlightModeName;
+	String[] highlightChoices = new String[]{"No Highlight", "Gray Box", "Enlarge 1.25X", "Enlarge 1.5X", "Enlarge 1.75X", "Enlarge 2X"};
+	int selectedTaxonHighlightMode = TreeDisplay.sTHM_DEFAULT;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -100,9 +103,14 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		addItemToSubmenu(null, mmis, "Label Color...", MesquiteModule.makeCommand("chooseBrLenLabelColor",  this));
 		addItemToSubmenu(null, mmis, "Number of Decimal Places...", MesquiteModule.makeCommand("setNumBrLenDecimals",  this));
 		addCheckMenuItemToSubmenu(null, mmis, "Include Missing Values", MesquiteModule.makeCommand("showBrLensUnspecified",  this), showBrLensUnspecified);
+
+		highlightModeName = new MesquiteString(highlightChoices[selectedTaxonHighlightMode]);
+		MesquiteSubmenuSpec highlightSubmenu = addSubmenu(null, "Highlight for Selected Taxa");
+		highlightSubmenu.setSelected(highlightModeName);
+		for (int i = 0; i<highlightChoices.length; i++)
+			addItemToSubmenu(null, highlightSubmenu, highlightChoices[i], new MesquiteCommand("setSelectedTaxonHighlightMode",  MesquiteInteger.toString(i), this));
 		return true;
 	}
-
 	public boolean getShowBrLensUnspecified(){
 		return showBrLensUnspecified.getValue();
 	}
@@ -142,12 +150,19 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "defaultDrawer", defaultDrawer);   
+		//	StringUtil.appendXMLTag(buffer, 2, "selectedTaxonHighlightMode", selectedTaxonHighlightMode);   
 		return buffer.toString();
 	}
 
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("defaultDrawer".equalsIgnoreCase(tag))
 			defaultDrawer = StringUtil.cleanXMLEscapeCharacters(content);
+		/*	if ("selectedTaxonHighlightMode".equalsIgnoreCase(tag)){
+			int m = MesquiteInteger.fromString(content);
+			if (MesquiteInteger.isNonNegative(m))
+				selectedTaxonHighlightMode = m;
+		}
+		 */
 	}
 
 
@@ -201,6 +216,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		temp.addLine("showBrLenLabelsOnTerminals " + showBrLenLabelsOnTerminals.toOffOnString()); 
 		temp.addLine("setBrLenLabelColor " + ColorDistribution.getColorStringForSnapshot(brLenColor));
 		temp.addLine("setNumBrLenDecimals " + numBrLenDecimals.getValue());
+		temp.addLine("setSelectedTaxonHighlightMode " + selectedTaxonHighlightMode);
 		temp.addLine("desuppress");
 		return temp;
 	}
@@ -233,6 +249,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		treeDisplay.setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplay, taxa.getNumTaxa()));
 		treeDisplay.setDrawTaxonNames(terminalNamesTask);
 		treeDisplay.suppressDrawing(suppression);
+		treeDisplay.selectedTaxonHighlightMode = selectedTaxonHighlightMode;
 		return treeDisplay;
 	}
 	/*.................................................................................................................*/
@@ -247,6 +264,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			treeDisplays[i].setDrawTaxonNames(terminalNamesTask);
 			treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], numTaxa));
 			treeDisplays[i].suppressDrawing(suppression);
+			treeDisplays[i].selectedTaxonHighlightMode = selectedTaxonHighlightMode;
 		}
 		return treeDisplays;
 	}
@@ -258,6 +276,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			treeDisplays[i] = new BasicTreeDisplay(this, taxas[i]);
 			treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], taxas[i].getNumTaxa()));
 			treeDisplays[i].suppressDrawing(suppression);
+			treeDisplays[i].selectedTaxonHighlightMode = selectedTaxonHighlightMode;
 		}
 		return treeDisplays;
 	}
@@ -273,19 +292,24 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 
 	/*.................................................................................................................*/
 	private void updateTreeDisplays () {
+		updateTreeDisplays(false);
+	}
+
+	/*.................................................................................................................*/
+	private void updateTreeDisplays (boolean reset) {
 
 		if (treeDisplay != null) {
 			while (treeDisplay.getDrawingInProcess())
 				;		
 			if (!suppression)
-				treeDisplay.pleaseUpdate(false);
+				treeDisplay.pleaseUpdate(reset);
 		}
 		else if (treeDisplays != null) {
 			for (int i=0; i<numDisplays; i++) {
 				while (treeDisplays[i].getDrawingInProcess())
 					;		
 				if (!suppression)
-					treeDisplays[i].pleaseUpdate(false);
+					treeDisplays[i].pleaseUpdate(reset);
 			}
 		}
 	}
@@ -469,6 +493,29 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					if (!suppression)
 						treeDisplays[i].pleaseUpdate(false);
 				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets the highlight mode for selected taxa", "[number]", commandName, "setSelectedTaxonHighlightMode")) {
+			int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
+			
+			if (!MesquiteInteger.isCombinable(newNum)){
+				pos.setValue(0);
+				String token = ParseUtil.getToken(arguments, pos);
+				newNum = StringArray.indexOf(highlightChoices, token);
+			}
+
+			if (MesquiteInteger.isCombinable(newNum)){
+				selectedTaxonHighlightMode = newNum;
+				highlightModeName.setValue(highlightChoices[selectedTaxonHighlightMode]);
+				if (treeDisplay != null) 
+					treeDisplay.selectedTaxonHighlightMode = selectedTaxonHighlightMode;
+				else if (treeDisplays != null) {
+					for (int i=0; i<numDisplays; i++) {
+						treeDisplays[i].selectedTaxonHighlightMode = selectedTaxonHighlightMode;
+					}
+				}
+
+				updateTreeDisplays(true);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the number of decimals in the branch length label", "[number]", commandName, "setNumBrLenDecimals")) {
