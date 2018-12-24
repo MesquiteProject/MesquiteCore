@@ -192,8 +192,8 @@ public abstract class RemoteCommunicator  {
 	}
 	/*.................................................................................................................*/
 	public boolean checkUsernamePassword(boolean tellUserAboutSystem, boolean giveWarningAboutPreviousFailure){
+		MesquiteBoolean answer = new MesquiteBoolean(false);
 		if (StringUtil.blank(getUserName()) || StringUtil.blank(getPassword())){
-			MesquiteBoolean answer = new MesquiteBoolean(false);
 			MesquiteString usernameString = new MesquiteString();
 			if (getUserName()!=null)
 				usernameString.setValue(getUserName());
@@ -214,7 +214,7 @@ public abstract class RemoteCommunicator  {
 			ownerModule.storePreferences();
 		}
 		boolean success = StringUtil.notEmpty(getUserName()) && StringUtil.notEmpty(getPassword());
-		if (!success && tellUserAboutSystem) {
+		if (!success && tellUserAboutSystem && answer.getValue()) {
 			String URL = getRegistrationURL();
 			if (StringUtil.notEmpty(URL))
 				MesquiteMessage.discreetNotifyUser("Use of the "+getSystemName()+" service requires an account with the service, and for you to sign in successfully.  Go to "+ getRegistrationURL()+" to register for an account");
