@@ -30,6 +30,7 @@ public abstract class RemoteCommunicator  {
 	protected ShellScriptWatcher watcher; // for reconnection
 	protected UsernamePasswordKeeper usernamePasswordKeeper;
 	protected boolean hasBeenReconnected = false;
+	protected boolean authorizationFailure = false;
 
 
 	public RemoteCommunicator () {
@@ -89,6 +90,16 @@ public abstract class RemoteCommunicator  {
 	public void setRootDir(String rootDir) {
 		this.rootDir = rootDir;
 	}
+	public boolean reAuthorize() {
+		return true;
+	}
+	public boolean isAuthorizationFailure() {
+		return authorizationFailure;
+	}
+	public void setAuthorizationFailure(boolean authorizationFailure) {
+		this.authorizationFailure = authorizationFailure;
+	}
+
 
 	/*.................................................................................................................*/
 	public void setOutputProcessor(OutputFileProcessor outputFileProcessor){
@@ -176,6 +187,11 @@ public abstract class RemoteCommunicator  {
 	}
 	/*.................................................................................................................*/
 	public boolean checkUsernamePassword(boolean tellUserAboutSystem){
+		return checkUsernamePassword(tellUserAboutSystem, false);
+
+	}
+	/*.................................................................................................................*/
+	public boolean checkUsernamePassword(boolean tellUserAboutSystem, boolean giveWarningAboutPreviousFailure){
 		if (StringUtil.blank(getUserName()) || StringUtil.blank(getPassword())){
 			MesquiteBoolean answer = new MesquiteBoolean(false);
 			MesquiteString usernameString = new MesquiteString();
@@ -187,7 +203,10 @@ public abstract class RemoteCommunicator  {
 			String help = "";
 			if (showNeedToRegisterNote())
 				help = "You need an account on the "+getSystemName()+getSystemTypeName() + " system to use this service.  To register, go to " + getRegistrationURL();
-			new UserNamePasswordDialog(ownerModule.containerOfModule(), "Sign in to "+getSystemName(), help, getRegistrationURL(), getRegistrationHint(), "Username", "Password", answer, usernameString, passwordString);
+			if (giveWarningAboutPreviousFailure)
+				new UserNamePasswordDialog(ownerModule.containerOfModule(), "Try again to sign in to "+getSystemName(), help, getRegistrationURL(), getRegistrationHint(), "Username", "Password", answer, usernameString, passwordString);
+			else
+				new UserNamePasswordDialog(ownerModule.containerOfModule(), "Sign in to "+getSystemName(), help, getRegistrationURL(), getRegistrationHint(), "Username", "Password", answer, usernameString, passwordString);
 			if (answer.getValue()){
 				setUserName(usernameString.getValue());
 				setPassword(passwordString.getValue());
@@ -231,9 +250,9 @@ public abstract class RemoteCommunicator  {
 
 	/*.................................................................................................................*/
 	public void processOutputFiles(Object location){
-		if (rootDir!=null) {
+		if (rootDir!=null && !isAuthorizationFailure()) {
 			downloadWorkingResults(location, rootDir, true);
-			if (outputFileProcessor!=null && outputFilePaths!=null && lastModified !=null) {
+			if (outputFileProcessor!=null && outputFilePaths!=null && lastModified !=null && !isAuthorizationFailure()) {
 				String[] paths = outputFileProcessor.modifyOutputPaths(outputFilePaths);
 				for (int i=0; i<paths.length && i<lastModified.length; i++) {
 					File file = new File(paths[i]);
@@ -282,7 +301,12 @@ public abstract class RemoteCommunicator  {
 		int pollInterval = minPollIntervalSeconds;
 		boolean onceThrough = false;
 		
-		while ((!jobCompleted(location) || !onceThrough) && stillGoing && !aborted){
+		while (((!jobCompleted(location) || !onceThrough) && stillGoing && !aborted)|| isAuthorizationFailure()){
+			if (isAuthorizationFailure())
+				if (!reAuthorize()) {
+					setAborted(true);
+					return false;
+				}
 			double loopTime = timer.timeSinceLastInSeconds();  // checking to see how long it has been since the last one
 			if (loopTime>minPollIntervalSeconds) {
 				pollInterval = minPollIntervalSeconds - ((int)loopTime-minPollIntervalSeconds);
@@ -330,20 +354,22 @@ public abstract class RemoteCommunicator  {
 			}
 			onceThrough = true;
 		}
-		boolean done = jobCompleted(location);
-		if (done && (submittedReportedToUser || hasBeenReconnected))
-			ownerModule.logln(getServiceName()+" job completed. (" + StringUtil.getDateTime() + " or earlier)");
-		if (outputFileProcessor!=null) {
-			if (rootDir!=null) {
-				if (done && (submittedReportedToUser || hasBeenReconnected))
-					ownerModule.logln("About to download results from "+getServiceName()+" (this may take some time).");
-				if (downloadResults(location, rootDir, false))
+		if (!isAuthorizationFailure()) {
+			boolean done = jobCompleted(location);
+			if (done && (submittedReportedToUser || hasBeenReconnected))
+				ownerModule.logln(getServiceName()+" job completed. (" + StringUtil.getDateTime() + " or earlier)");
+			if (outputFileProcessor!=null) {
+				if (rootDir!=null) {
+					if (done && (submittedReportedToUser || hasBeenReconnected))
+						ownerModule.logln("About to download results from "+getServiceName()+" (this may take some time).");
+					if (downloadResults(location, rootDir, false))
 						outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
-				else
-					return false;
+					else
+						return false;
+				}
 			}
 		}
-		if (aborted)
+		if (aborted || isAuthorizationFailure())
 			return false;
 		return true;
 	}
