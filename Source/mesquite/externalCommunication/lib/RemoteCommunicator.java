@@ -215,7 +215,11 @@ public abstract class RemoteCommunicator  {
 		}
 		boolean success = StringUtil.notEmpty(getUserName()) && StringUtil.notEmpty(getPassword());
 		if (!success && tellUserAboutSystem) {
-			MesquiteMessage.discreetNotifyUser("Use of the "+getSystemName()+" service requires an account with the service.  Go to "+ getRegistrationURL()+" to register for an account");
+			String URL = getRegistrationURL();
+			if (StringUtil.notEmpty(URL))
+				MesquiteMessage.discreetNotifyUser("Use of the "+getSystemName()+" service requires an account with the service, and for you to sign in successfully.  Go to "+ getRegistrationURL()+" to register for an account");
+			else 
+				MesquiteMessage.discreetNotifyUser("Use of the "+getSystemName()+" service requires an account with the service, and for you to sign in successfully.");
 		}
 		return success;
 
