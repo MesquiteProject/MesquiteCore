@@ -45,6 +45,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected int separation = 10;
 	protected Font currentFont = null;
 	protected Font currentFontBOLD = null;
+	protected Font currentFontBIG = null;
+	protected Font currentFontBIGBOLD = null;
+	protected int bigFontChoice = TreeDisplay.sTHM_BIGNAME;
 	protected String myFont = null;
 	protected int myFontSize = -1;
 	protected FontMetrics fm;
@@ -71,10 +74,13 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	double namesAngle = MesquiteDouble.unassigned;
 	MesquiteCommand tNC;
 	MesquiteString colorerName = null;
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		currentFont = MesquiteWindow.defaultFont;
 		currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
+		currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
+		currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
 		fontName = new MesquiteString(MesquiteWindow.defaultFont.getName());
 		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
 		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Names");
@@ -127,6 +133,10 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		treeDrawing = null;
 		textRotator = null;
 		super.endJob();
+	}
+	/*.................................................................................................................*/
+	double highlightMultiplier(){
+		return (bigFontChoice+3)/4.0;
 	}
 	/*.................................................................................................................*/
 	/** A method called immediately after the file has been read in or completely set up (if a new file).*/
@@ -312,6 +322,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					fontName.setValue(t);
 					currentFont = fontToSet;
 					currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
+					currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
+					currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
 					parametersChanged();
 				}
 			}
@@ -331,6 +343,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						fontName.setValue(t);
 						currentFont = fontToSet;
 						currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
+						currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
+						currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
 
 						parametersChanged();
 					}
@@ -356,6 +370,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					if (fontToSet!= null) {
 						currentFont = fontToSet;
 						currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
+						currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
+						currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
 						fontSizeName.setValue(Integer.toString(fontSize));
 						parametersChanged(new Notification(TreeDisplay.FONTSIZECHANGED));
 					}
@@ -506,6 +522,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					MesquiteMessage.warnProgrammer("error: taxon null");
 				return;
 			}
+			//@@@@ preparing for the specifics of the taxon name @@@@@@
 			boolean selected = taxa.getSelected(taxonNumber);
 			//check all extras to see if they want to add anything
 			boolean underlined = false;
@@ -521,8 +538,24 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}
 			boolean useBold = colorerTask.getTaxonNameBoldness(taxa, taxonNumber);
 			Font previousFont = gL.getFont();
-			if (useBold)
-				gL.setFont(currentFontBOLD);
+			if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX){
+				if (bigFontChoice!= treeDisplay.selectedTaxonHighlightMode){ //there's been a shift
+					bigFontChoice = treeDisplay.selectedTaxonHighlightMode;
+					currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
+					currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
+				}
+			}
+			if (useBold){
+				if (selected && treeDisplay.selectedTaxonHighlightMode >TreeDisplay.sTHM_GREYBOX)
+					gL.setFont(currentFontBIGBOLD);
+				else
+					gL.setFont(currentFontBOLD);
+			}
+			else if (selected && treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX){
+				gL.setFont(currentFontBIG);
+			}
+			else
+				gL.setFont(currentFont);
 			if (partitions!=null && shadePartition.getValue()){
 				TaxaGroup mi = (TaxaGroup)partitions.getProperty(taxonNumber);
 				if (mi!=null) {
@@ -785,12 +818,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			textRotator.assignBackground(null);
 			gL.setColor(Color.black);
 			ColorDistribution.setComposite(gL,composite);		
-			if (selected  && !namePolys[taxonNumber].isHidden()){ //&& GraphicsUtil.useXORMode(gL, false)
-				//gL.setXORMode(Color.white);
-				//gL.fillPolygon(namePolys[taxonNumber]);
+			if (selected  && !namePolys[taxonNumber].isHidden() && treeDisplay.selectedTaxonHighlightMode == TreeDisplay.sTHM_GREYBOX){ //&& GraphicsUtil.useXORMode(gL, false)
 				GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, namePolys[taxonNumber]);
-
-				//	gL.setPaintMode();
 			}
 
 			if (useBold)

@@ -61,11 +61,11 @@ public class ColorTaxonByPartition extends TaxonNameStyler {
 	}
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Color by Partition";
+		return "Color by Taxon Group";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Supplies the colors assigned to the taxa individually." ;
+ 		return "Supplies the colors assigned to the taxon's group (partition)." ;
    	 }
 }

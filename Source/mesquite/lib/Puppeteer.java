@@ -341,7 +341,7 @@ public class Puppeteer  {
 		else return MesquiteInteger.fromString(name);
 	}
 	/*--------------------------------------*/
-	private boolean debugging = false; 
+	private boolean debugging = false;  
 	private boolean logOnly = false;
 	private MesquiteTimer timer;
 	private boolean showTime = false;

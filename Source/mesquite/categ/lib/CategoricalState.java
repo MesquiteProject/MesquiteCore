@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.categ.lib;
 
 import java.awt.*;
@@ -32,7 +32,7 @@ public class CategoricalState extends CharacterState{
 	public static final long inapplicable = 1L<<59;   //576460752303423488
 	/** The state (1L<<62) that corresponds to an invalid CategoricalState.*/
 	public static final long impossible = 1L<<62;  //4611686018427387904
-	
+
 	public static final short unassignedShort = compressToShort(unassigned);
 	public static final short inapplicableShort = compressToShort(inapplicable);
 	public static final short impossibleShort = compressToShort(impossible);
@@ -64,13 +64,13 @@ public class CategoricalState extends CharacterState{
 	public static final int inapplicableBitInt = 27;
 	public static final int uncertainBitInt = 29;
 	public static final int statesBitsMaskInt = (~0)>>>8;
-	
-	
+
+
 	public static final int TOTALBITS = 64;  //for use by other classes that might want to make, say, an array for the bits
-	
+
 	private static final int MAXBIT = 63; //MAXBIT for bitwise manipulations
 	long set; //the value stored for an instantiation of this
-	
+
 	public CategoricalState () {
 		set = unassigned;
 	}
@@ -184,6 +184,31 @@ public class CategoricalState extends CharacterState{
 		return equals(s, allowMissing, allowNearExact, false);
 	}
 	/*..........................................CategoricalState.....................................*/
+	/**returns true iff state sets are same, or could be the same given ambiguity */
+	public boolean couldBeEqual(CharacterState s) {
+		if (s==null)
+			return false;
+		if (!(s instanceof CategoricalState))
+			return false;
+		if (isUnassigned() || s.isUnassigned())
+			return true;
+		long t = getValue();
+		long tO = ((CategoricalState)s).getValue();
+		boolean tUncertain = isUncertain(t);
+		boolean tOUncertain = isUncertain(tO);
+		t = statesBitsMask & t;
+		tO = statesBitsMask & tO;
+		if (t == tO)
+			return true;
+		if (tUncertain){ // t is uncertain, and t0 is a subset of it
+			return (tO == (t & tO));
+		}
+		if (tOUncertain){ // t0 is uncertain, and t is a subset of it
+			return (t == (t & tO));
+		}
+		return false;
+	}
+	/*..........................................CategoricalState.....................................*/
 	/**returns true iff state sets are same */
 	public boolean equals(CharacterState s, boolean allowMissing, boolean allowNearExact, boolean allowSubset) {
 		if (s==null)
@@ -191,7 +216,7 @@ public class CategoricalState extends CharacterState{
 		if (!(s instanceof CategoricalState))
 			return false;
 		if (allowMissing && (isUnassigned() || s.isUnassigned())) //fixed June 02
-				return true;
+			return true;
 		long t = getValue();
 		long tO = ((CategoricalState)s).getValue();
 		if (allowSubset) {
@@ -297,7 +322,7 @@ public class CategoricalState extends CharacterState{
 	public static boolean isSubset(long sub, long s) {
 		return (statesBitsMask & sub & s) == (statesBitsMask & sub);
 	}
-	
+
 	/*..........................................CategoricalState.....................................*/
 	/**returns minimum element in state set s */
 	public static int minimum(long s) {
@@ -322,20 +347,20 @@ public class CategoricalState extends CharacterState{
 	/**returns number of states in state set shortS */
 	public static int cardinality(int shortS) {
 		int count =0;
-			for (int e=0; e<= getMaxPossibleStateStatic(); e++) {
-				if (((1L<<e)&shortS)!=0) {  //test bit
-					count++;
-				}
+		for (int e=0; e<= getMaxPossibleStateStatic(); e++) {
+			if (((1L<<e)&shortS)!=0) {  //test bit
+				count++;
 			}
-			return count;
+		}
+		return count;
 
 	}
 	/*..........................................CategoricalState.....................................*/
 	/**returns number of states in state set s */
 	public static int cardinality(long s) {
 		if ((statesBitsMask & s)==0L)
-		 	return 0;  
-		
+			return 0;  
+
 		else {
 			int count =0;
 			for (int e=0; e<= getMaxPossibleStateStatic(); e++) {
@@ -351,8 +376,8 @@ public class CategoricalState extends CharacterState{
 	public  int cardinality() {
 		long s = getValue();
 		if ((statesBitsMask & s)==0L)
-		 	return 0;  
-		
+			return 0;  
+
 		else {
 			int count =0;
 			for (int e=0; e<= getMaxPossibleStateStatic(); e++) {
@@ -367,8 +392,8 @@ public class CategoricalState extends CharacterState{
 	/**returns whether number of states in state set s is greater than 1 */
 	public static boolean hasMultipleStates(long s) {
 		if ((statesBitsMask & s)==0L)
-		 	return false;  
-		
+			return false;  
+
 		else {
 			int count =0;
 			for (int e=0; e<= getMaxPossibleStateStatic(); e++) {
@@ -385,7 +410,7 @@ public class CategoricalState extends CharacterState{
 	/**return maximum value of states in state set s */
 	public static int maximum(long s) {
 		if (s==0L) {
-		 	return -1;  
+			return -1;  
 		}
 		else {
 			int max = -1;
@@ -396,7 +421,7 @@ public class CategoricalState extends CharacterState{
 			}
 			return max;
 		}
-/*
+		/*
 		Attempt 1 (doesn't work on IE4/W95)
 		for (int e=maxCategoricalState; e>=0; e--) {
 			if (((1L<<e)&s)!=0)
@@ -417,8 +442,8 @@ public class CategoricalState extends CharacterState{
 						return e;
 				}
 			}
-*/
-	//	return -1;  // should be missing!!!!
+		 */
+		//	return -1;  // should be missing!!!!
 	}
 	/*..........................................CategoricalState.....................................*/
 	/**returns true if e is only state in state set s */
@@ -675,103 +700,103 @@ public class CategoricalState extends CharacterState{
 	}
 	/** The masks that preserves bits 0.. maxCategoricalState*/
 	public static final long shortStatesBitsMaskL = (~0L)>>>53; //5 for high bits + 48 for reduction from 64 to 16
-	public static final long intStatesBitsMaskL = (~0L)>>>37; //5 for high bits + 32 for reduction from 64 to 32
+		public static final long intStatesBitsMaskL = (~0L)>>>37; //5 for high bits + 32 for reduction from 64 to 32
 
-	/*..........................................CategoricalState.....................................*/
-	public static boolean compressibleToShort(long s){
-		return (s & shortStatesBitsMaskL) == (s & CategoricalState.statesBitsMask);
-	}
-	/*..........................................CategoricalState.....................................*/
-	public static short compressToShort(long s){
-		return (short)((s & shortStatesBitsMaskL) | ((s & CategoricalState.highBitsMask)>>>48));
-	}
-	/*..........................................CategoricalState.....................................*/
-	public static long expandFromShort(short s){
-		long LS = ((long)s);
-		return (LS & shortStatesBitsMaskL) | ((LS << 48) & CategoricalState.highBitsMask);
-	}
-	/*..........................................CategoricalState.....................................*/
-	public static boolean compressibleToInt(long s){
-		return (s & intStatesBitsMaskL) == (s & CategoricalState.statesBitsMask);
-	}
-	/*..........................................CategoricalState.....................................*/
-	public static int compressToInt(long s){
-		return (int)((s & intStatesBitsMaskL) | ((s & CategoricalState.highBitsMask)>>>32));
-	}
-	/*..........................................CategoricalState.....................................*/
-	public static long expandFromInt(int s){
-		long LS = ((long)s);
-		return (LS & intStatesBitsMaskL) | ((LS << 32) & CategoricalState.highBitsMask);
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** Expands state set (passed as long) to full array of included elements. */
-	public static int[] expand(long s) {
-		int numStates = cardinality(s);
-		int count=0;
-		int[] result = new int[numStates];
-		for (int e=0; e<=maxCategoricalState; e++) {
-			if (isElement(s, e)) {
-				result[count]=e;
-				count++;
+			/*..........................................CategoricalState.....................................*/
+			public static boolean compressibleToShort(long s){
+				return (s & shortStatesBitsMaskL) == (s & CategoricalState.statesBitsMask);
 			}
-		}
-		return result;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** Compresses array listing included elements into state set form (long, with bits set).  This is inverse of expand.*/
-	public static long compressFromList(int[] states) {
-		if (states == null) //added 20 Oct 01
-			return 0L;
-		long s=0L;
-		for (int i=0; i<states.length; i++) {
-			if (states[i]>=0 && states[i]<=maxCategoricalState)
-				s= addToSet(s, states[i]);
-		}
-		return s;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** Compresses array with presence (>0) or absence (<=0) for each element into state set form (long, with bits set).*/
-	public static long compressFromPresence(double[] states) {
-		if (states == null) //added 20 Oct 01
-			return 0L;
-		long s=0L;
-		for (int i=0; i<states.length; i++) {
-			if (states[i]>0.0) 
-				s= addToSet(s, i);
-		}
-		return s;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** sets the value to inapplicable*/
-	public void setToInapplicable() {
-		set = inapplicable;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** sets the value to unassigned*/
-	public void setToUnassigned() {
-		set = unassigned;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/**gets the value of the state set */
-	public long getValue() {
-		return set;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/**sets the value of the state set to the long variable passed*/
-	public void setValue(long value) {
-		set = value;
-	}
-	
-	
-	/*..........................................CategoricalState.....................................*/
-	/**sets the value using the passed CharacterState's value if of same type */
-	public void setValue(CharacterState cs){
-		if (cs!=null && cs instanceof CategoricalState) {
-			setValue(((CategoricalState)cs).getValue());
-		}
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** sets its value to the value given by the String passed to it starting at position pos �*
+			/*..........................................CategoricalState.....................................*/
+			public static short compressToShort(long s){
+				return (short)((s & shortStatesBitsMaskL) | ((s & CategoricalState.highBitsMask)>>>48));
+			}
+			/*..........................................CategoricalState.....................................*/
+			public static long expandFromShort(short s){
+				long LS = ((long)s);
+				return (LS & shortStatesBitsMaskL) | ((LS << 48) & CategoricalState.highBitsMask);
+			}
+			/*..........................................CategoricalState.....................................*/
+			public static boolean compressibleToInt(long s){
+				return (s & intStatesBitsMaskL) == (s & CategoricalState.statesBitsMask);
+			}
+			/*..........................................CategoricalState.....................................*/
+			public static int compressToInt(long s){
+				return (int)((s & intStatesBitsMaskL) | ((s & CategoricalState.highBitsMask)>>>32));
+			}
+			/*..........................................CategoricalState.....................................*/
+			public static long expandFromInt(int s){
+				long LS = ((long)s);
+				return (LS & intStatesBitsMaskL) | ((LS << 32) & CategoricalState.highBitsMask);
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** Expands state set (passed as long) to full array of included elements. */
+			public static int[] expand(long s) {
+				int numStates = cardinality(s);
+				int count=0;
+				int[] result = new int[numStates];
+				for (int e=0; e<=maxCategoricalState; e++) {
+					if (isElement(s, e)) {
+						result[count]=e;
+						count++;
+					}
+				}
+				return result;
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** Compresses array listing included elements into state set form (long, with bits set).  This is inverse of expand.*/
+			public static long compressFromList(int[] states) {
+				if (states == null) //added 20 Oct 01
+					return 0L;
+				long s=0L;
+				for (int i=0; i<states.length; i++) {
+					if (states[i]>=0 && states[i]<=maxCategoricalState)
+						s= addToSet(s, states[i]);
+				}
+				return s;
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** Compresses array with presence (>0) or absence (<=0) for each element into state set form (long, with bits set).*/
+			public static long compressFromPresence(double[] states) {
+				if (states == null) //added 20 Oct 01
+					return 0L;
+				long s=0L;
+				for (int i=0; i<states.length; i++) {
+					if (states[i]>0.0) 
+						s= addToSet(s, i);
+				}
+				return s;
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** sets the value to inapplicable*/
+			public void setToInapplicable() {
+				set = inapplicable;
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** sets the value to unassigned*/
+			public void setToUnassigned() {
+				set = unassigned;
+			}
+			/*..........................................CategoricalState.....................................*/
+			/**gets the value of the state set */
+			public long getValue() {
+				return set;
+			}
+			/*..........................................CategoricalState.....................................*/
+			/**sets the value of the state set to the long variable passed*/
+			public void setValue(long value) {
+				set = value;
+			}
+
+
+			/*..........................................CategoricalState.....................................*/
+			/**sets the value using the passed CharacterState's value if of same type */
+			public void setValue(CharacterState cs){
+				if (cs!=null && cs instanceof CategoricalState) {
+					setValue(((CategoricalState)cs).getValue());
+				}
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** sets its value to the value given by the String passed to it starting at position pos �*
 	public void setValue(String s, MesquiteInteger pos){
 		if (s==null){
 			set = unassigned;
@@ -786,7 +811,7 @@ public class CategoricalState extends CharacterState{
 			char c = s.charAt(loc++); //get next dark character in string
 			while (ParseUtil.whitespace(c, null)  && c!=0 && loc<s.length())
 				c = s.charAt(loc++);
-				
+
 			if (!ParseUtil.whitespace(c, null)){
 				if (c == '(')
 					polymorphOn = true;
@@ -811,274 +836,274 @@ public class CategoricalState extends CharacterState{
 		setValue(stateSet);
 	}
 	/*..........................................CategoricalState.....................................*/
-	/* Sets the value of this CharacterState according to the string, assuming the parent data is as given �*/
-	public void setValue(String s, CharacterData parentData) {
-		if (s==null){
-			set = unassigned;
-			return;
-		}
-		MesquiteInteger pos = new MesquiteInteger(0);
-		boolean polymorphOn = false;
-		boolean uncertainOn = false;
-		boolean done = false;
-		set = 0L;
-		int loc = pos.getValue();
-		while (loc<s.length() && !done) {
-			char c = s.charAt(loc++);
-			while (ParseUtil.whitespace(c, null)  && c!=0 && loc<s.length())
-				c = s.charAt(loc++);
-			if (!ParseUtil.whitespace(c, null)){
-				if (c == '(')
-					polymorphOn = true;
-				else if (c == '{')
-					uncertainOn = true;
-				else if (c == '}' || c == ')') 
-					done = true;
-				else if (polymorphOn || uncertainOn) {
-					long state;
-					if (parentData == null || !(parentData instanceof CategoricalData))
-						state =  fromChar(c);
-					else
-						state = ((CategoricalData)parentData).fromChar(c);
-					if (CategoricalState.isCombinable(state))
-						set |=  state;
+			/* Sets the value of this CharacterState according to the string, assuming the parent data is as given �*/
+			public void setValue(String s, CharacterData parentData) {
+				if (s==null){
+					set = unassigned;
+					return;
 				}
-				else {
-					if (parentData == null || !(parentData instanceof CategoricalData))
-						set =  fromChar(c);
-					else
-						set =  ((CategoricalData)parentData).fromChar(c);
-					done = true;
+				MesquiteInteger pos = new MesquiteInteger(0);
+				boolean polymorphOn = false;
+				boolean uncertainOn = false;
+				boolean done = false;
+				set = 0L;
+				int loc = pos.getValue();
+				while (loc<s.length() && !done) {
+					char c = s.charAt(loc++);
+					while (ParseUtil.whitespace(c, null)  && c!=0 && loc<s.length())
+						c = s.charAt(loc++);
+					if (!ParseUtil.whitespace(c, null)){
+						if (c == '(')
+							polymorphOn = true;
+						else if (c == '{')
+							uncertainOn = true;
+						else if (c == '}' || c == ')') 
+							done = true;
+						else if (polymorphOn || uncertainOn) {
+							long state;
+							if (parentData == null || !(parentData instanceof CategoricalData))
+								state =  fromChar(c);
+							else
+								state = ((CategoricalData)parentData).fromChar(c);
+							if (CategoricalState.isCombinable(state))
+								set |=  state;
+						}
+						else {
+							if (parentData == null || !(parentData instanceof CategoricalData))
+								set =  fromChar(c);
+							else
+								set =  ((CategoricalData)parentData).fromChar(c);
+							done = true;
+						}
+					}
 				}
+				if (uncertainOn)
+					set = setUncertainty(set, true);
 			}
-		}
-		if (uncertainOn)
-			set = setUncertainty(set, true);
-	}
-	/*..........................................CategoricalState.....................................*/
-	/**return the state set containing the state represented by the character (e.g., '0' to {0}); 
+			/*..........................................CategoricalState.....................................*/
+			/**return the state set containing the state represented by the character (e.g., '0' to {0}); 
 	Used default symbols since no CharacterData is specified �*/
-	public long fromChar(char c) { //this doesn't work with symbols!
-		if (c == '?')
-			return unassigned;
-		if (c == '-')
-			return inapplicable;
-		int e=whichState(c); //find which state this character is, among default symbols
-		if (legalState(e))
-			return (1L<<e); //return set with just that element
-		else {
-			return impossible;
-		}
-	}
-	/*..........................................CategoricalState.....................................*/
-	/*find which state this character refers to, comparing against default symbols �*/
-	public int whichState(char c){
-		for (int i=0; i<CategoricalData.defaultSymbols.length; i++){
-			if (CategoricalData.defaultSymbols[i] == c)
-				return i;
-		}
-		return -1;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/**returns the String description of the state set*/
-	public String toString() {
-		return toString(set);
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Uses braces, and does not use character state names*/
-	public static String toString(long s) {
-		return toString(s, null, 0, true);
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Does not use character state names*/
-	public static String toString(long s, boolean useBraces) {
-		return toString(s, null, 0, useBraces);
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Uses character state names if available.*/
-	public static String toString(long s, CategoricalData data, int ic, boolean useBraces) {
-		return toString(s, data, ic, useBraces, false);
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Uses character state names if available. �*/
-	public static String toString(long s, CategoricalData data, int ic, boolean useBraces, boolean useSymbols) {
-		if (s == impossible)
-			return "impossible";
-		else if (s== unassigned) {
-			if (data == null)
-				return "?";
-			else
-				return String.valueOf(data.getUnassignedSymbol());
-		}
-		else if (s == inapplicable){
-			if (data == null)
-				return "-";
-			else
-				return String.valueOf(data.getInapplicableSymbol());
-		}
-			
-			
-		boolean first=true;
-		String temp;
-		if (useBraces) 
-			temp="{";
-		else
-			temp="";
-		for (int e=0; e<=maxCategoricalState; e++) {
-			if (isElement(s, e)) {
-				if (!first)
-					temp+=" ";
-				if (data != null) {
-					if (useSymbols)
-						temp+=data.getSymbol(e);
-					else
-						temp+=data.getStateName(ic, e);
+			public long fromChar(char c) { //this doesn't work with symbols!
+				if (c == '?')
+					return unassigned;
+				if (c == '-')
+					return inapplicable;
+				int e=whichState(c); //find which state this character is, among default symbols
+				if (legalState(e))
+					return (1L<<e); //return set with just that element
+				else {
+					return impossible;
 				}
-				else if (useSymbols)
-					temp+=CategoricalData.defaultSymbols[e];
+			}
+			/*..........................................CategoricalState.....................................*/
+			/*find which state this character refers to, comparing against default symbols �*/
+			public int whichState(char c){
+				for (int i=0; i<CategoricalData.defaultSymbols.length; i++){
+					if (CategoricalData.defaultSymbols[i] == c)
+						return i;
+				}
+				return -1;
+			}
+			/*..........................................CategoricalState.....................................*/
+			/**returns the String description of the state set*/
+			public String toString() {
+				return toString(set);
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** converts passed long (treated as CategoricalState) to string.  Uses braces, and does not use character state names*/
+			public static String toString(long s) {
+				return toString(s, null, 0, true);
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** converts passed long (treated as CategoricalState) to string.  Does not use character state names*/
+			public static String toString(long s, boolean useBraces) {
+				return toString(s, null, 0, useBraces);
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** converts passed long (treated as CategoricalState) to string.  Uses character state names if available.*/
+			public static String toString(long s, CategoricalData data, int ic, boolean useBraces) {
+				return toString(s, data, ic, useBraces, false);
+			}
+			/*..........................................CategoricalState.....................................*/
+			/** converts passed long (treated as CategoricalState) to string.  Uses character state names if available. �*/
+			public static String toString(long s, CategoricalData data, int ic, boolean useBraces, boolean useSymbols) {
+				if (s == impossible)
+					return "impossible";
+				else if (s== unassigned) {
+					if (data == null)
+						return "?";
+					else
+						return String.valueOf(data.getUnassignedSymbol());
+				}
+				else if (s == inapplicable){
+					if (data == null)
+						return "-";
+					else
+						return String.valueOf(data.getInapplicableSymbol());
+				}
+
+
+				boolean first=true;
+				String temp;
+				if (useBraces) 
+					temp="{";
 				else
-					temp+=Integer.toString(e);
-				first=false;
+					temp="";
+				for (int e=0; e<=maxCategoricalState; e++) {
+					if (isElement(s, e)) {
+						if (!first)
+							temp+=" ";
+						if (data != null) {
+							if (useSymbols)
+								temp+=data.getSymbol(e);
+							else
+								temp+=data.getStateName(ic, e);
+						}
+						else if (useSymbols)
+							temp+=CategoricalData.defaultSymbols[e];
+						else
+							temp+=Integer.toString(e);
+						first=false;
+					}
+				}
+				if (first)
+					temp += '!'; //no state found!
+				if (useBraces)
+					temp+="}";
+				return temp;
 			}
-		}
-		if (first)
-			temp += '!'; //no state found!
-		if (useBraces)
-			temp+="}";
-		return temp;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** Returns string as would be displayed to user (not necessarily internal shorthand).  �*/
-	public  String toDisplayString(){
-		if (isInapplicable(set))
-			return "" + CharacterData.defaultInapplicableChar;
-		if (isUnassigned(set))
-			return "" + CharacterData.defaultMissingChar;
-		char sep = '&';
-		if (isUncertain(set))
-			sep = '/';
-		boolean first=true;
-		String temp="";
-		for (int e=0; e<=maxCategoricalState; e++) {
-			if (((1L<<e)&set)!=0L) {
-				if (!first)
-					temp+=sep;
-				temp+=CategoricalData.defaultSymbols[e];
-				first=false;
+			/*..........................................CategoricalState.....................................*/
+			/** Returns string as would be displayed to user (not necessarily internal shorthand).  �*/
+			public  String toDisplayString(){
+				if (isInapplicable(set))
+					return "" + CharacterData.defaultInapplicableChar;
+				if (isUnassigned(set))
+					return "" + CharacterData.defaultMissingChar;
+				char sep = '&';
+				if (isUncertain(set))
+					sep = '/';
+				boolean first=true;
+				String temp="";
+				for (int e=0; e<=maxCategoricalState; e++) {
+					if (((1L<<e)&set)!=0L) {
+						if (!first)
+							temp+=sep;
+						temp+=CategoricalData.defaultSymbols[e];
+						first=false;
+					}
+				}
+				if (first)
+					temp += '!'; //no state found!
+				return temp;
 			}
-		}
-		if (first)
-			temp += '!'; //no state found!
-		return temp;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states. */
-	public static String toSimpleString(long s) {
-		if (isInapplicable(s))
-			return "" + CharacterData.defaultInapplicableChar;
-		if (isUnassigned(s))
-			return "" + CharacterData.defaultMissingChar;
-		boolean first=true;
-		String temp="";
-		for (int e=0; e<=maxCategoricalState; e++) {
-			if (((1L<<e)&s)!=0L) {
-				if (!first)
-					temp+=" ";
-				temp+=CategoricalData.defaultSymbols[e];
-				first=false;
+			/*..........................................CategoricalState.....................................*/
+			/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states. */
+			public static String toSimpleString(long s) {
+				if (isInapplicable(s))
+					return "" + CharacterData.defaultInapplicableChar;
+				if (isUnassigned(s))
+					return "" + CharacterData.defaultMissingChar;
+				boolean first=true;
+				String temp="";
+				for (int e=0; e<=maxCategoricalState; e++) {
+					if (((1L<<e)&s)!=0L) {
+						if (!first)
+							temp+=" ";
+						temp+=CategoricalData.defaultSymbols[e];
+						first=false;
+					}
+				}
+				if (first)
+					temp += '!'; //no state found!
+				if (temp.length()>1)
+					temp ="{" + temp + "}";
+				return temp;
 			}
-		}
-		if (first)
-			temp += '!'; //no state found!
-		if (temp.length()>1)
-			temp ="{" + temp + "}";
-		return temp;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states. */
-	public String toNEXUSString() {
-		return toNEXUSString(set);
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states. */
-	public static String toNEXUSString(long s) {
-		if (isInapplicable(s))
-			return "" + CharacterData.defaultInapplicableChar;
-		if (isUnassigned(s))
-			return "" + CharacterData.defaultMissingChar;
-		String temp="";
-		for (int e=0; e<=maxCategoricalState; e++) {
-			if (((1L<<e)&s)!=0L) {
-				temp+=CategoricalData.defaultSymbols[e];
+			/*..........................................CategoricalState.....................................*/
+			/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states. */
+			public String toNEXUSString() {
+				return toNEXUSString(set);
 			}
-		}
-		if (temp.length()>1)
-			temp ="{" + temp + "}";
-		return temp;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states.  Includes High Bits.  Used for development/debugging. �*/
-	public static String toSimpleStringHB(long s) {
-		if (isInapplicable(s))
-			return "" + CharacterData.defaultInapplicableChar;
-		if (isUnassigned(s))
-			return "" + CharacterData.defaultMissingChar;
-		boolean first=true;
-		String temp="";
-		for (int e=0; e<=maxCategoricalState; e++) {
-			if (((1L<<e)&s)!=0L) {
-				if (!first)
-					temp+=",";
-				temp+=CategoricalData.defaultSymbols[e];
-				first=false;
+			/*..........................................CategoricalState.....................................*/
+			/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states. */
+			public static String toNEXUSString(long s) {
+				if (isInapplicable(s))
+					return "" + CharacterData.defaultInapplicableChar;
+				if (isUnassigned(s))
+					return "" + CharacterData.defaultMissingChar;
+				String temp="";
+				for (int e=0; e<=maxCategoricalState; e++) {
+					if (((1L<<e)&s)!=0L) {
+						temp+=CategoricalData.defaultSymbols[e];
+					}
+				}
+				if (temp.length()>1)
+					temp ="{" + temp + "}";
+				return temp;
 			}
-		}
-		for (int e=maxCategoricalState+1; e<=MAXBIT; e++) {
-			if (((1L<<e)&s)!=0L) {
-				if (!first)
-					temp+=",";
-				temp+= " " + Integer.toString(e);
-				first=false;
+			/*..........................................CategoricalState.....................................*/
+			/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states.  Includes High Bits.  Used for development/debugging. �*/
+			public static String toSimpleStringHB(long s) {
+				if (isInapplicable(s))
+					return "" + CharacterData.defaultInapplicableChar;
+				if (isUnassigned(s))
+					return "" + CharacterData.defaultMissingChar;
+				boolean first=true;
+				String temp="";
+				for (int e=0; e<=maxCategoricalState; e++) {
+					if (((1L<<e)&s)!=0L) {
+						if (!first)
+							temp+=",";
+						temp+=CategoricalData.defaultSymbols[e];
+						first=false;
+					}
+				}
+				for (int e=maxCategoricalState+1; e<=MAXBIT; e++) {
+					if (((1L<<e)&s)!=0L) {
+						if (!first)
+							temp+=",";
+						temp+= " " + Integer.toString(e);
+						first=false;
+					}
+				}
+				if (temp.length()>1)
+					temp ="{" + temp + "}";
+				return temp;
 			}
-		}
-		if (temp.length()>1)
-			temp ="{" + temp + "}";
-		return temp;
-	}
 
-	/*..........................................CategoricalState.....................................*/
-	/** converts passed long as bits. */
-	public static String toStringBits(long s) {
-		StringBuffer temp= new StringBuffer();
-		for (int e=63; e>=0; e--) {
-			if (((1L<<e)&s)!=0L) 
-				temp.append('1');
-			else
-				temp.append('0');
-		}
-		
-		return temp.toString();
-	}
+			/*..........................................CategoricalState.....................................*/
+			/** converts passed long as bits. */
+			public static String toStringBits(long s) {
+				StringBuffer temp= new StringBuffer();
+				for (int e=63; e>=0; e--) {
+					if (((1L<<e)&s)!=0L) 
+						temp.append('1');
+					else
+						temp.append('0');
+				}
 
-	/*..........................................CategoricalState.....................................*/
-	/**returns the maximum possible state */
-	public static int getMaxPossibleStateStatic() {
-		return maxCategoricalState;
-	}
-	public static int getTotalBitsInStateSet() {
-		return TOTALBITS;
-	}
-	/*..........................................CategoricalState.....................................*/
-	/**returns the maximum possible state */
-	public int getMaxPossibleState() {
-		return maxCategoricalState;
-	}
+				return temp.toString();
+			}
 
-	/*..........................................CategoricalState.....................................*/
-	/**return whether uncertainty flag is set in state set s */
-	public static boolean isUnassignedInt(int s) {
-		return (((1<<unassignedBitInt)&s)!=0);
-	}
+			/*..........................................CategoricalState.....................................*/
+			/**returns the maximum possible state */
+			public static int getMaxPossibleStateStatic() {
+				return maxCategoricalState;
+			}
+			public static int getTotalBitsInStateSet() {
+				return TOTALBITS;
+			}
+			/*..........................................CategoricalState.....................................*/
+			/**returns the maximum possible state */
+			public int getMaxPossibleState() {
+				return maxCategoricalState;
+			}
+
+			/*..........................................CategoricalState.....................................*/
+			/**return whether uncertainty flag is set in state set s */
+			public static boolean isUnassignedInt(int s) {
+				return (((1<<unassignedBitInt)&s)!=0);
+			}
 
 }
 
