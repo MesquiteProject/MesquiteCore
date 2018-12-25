@@ -169,7 +169,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		}
 		else if (checker.compare(this.getClass(),  "Sets which block of trees to use", "[runtime ID]", commandName, "setTreeBlockByID")) {
 			int whichList = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
-			Debugg.printStackTrace("setTreeBlockByID " + arguments + " whichList " + whichList);
 			if (MesquiteInteger.isCombinable(whichList)) {
 				TreeVector tr = manager.getTreeBlockByID(whichList);
 				if (tr == null || (preferredTaxa != null && tr.getTaxa() != preferredTaxa))
@@ -180,7 +179,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
 				blockName.setValue(currentTreeBlock.getName());
 				currentTreeBlock.addListener(this);
-				Debugg.println("currentTreeBlock " + currentTreeBlock);
 				currentTreeBlockID = currentTreeBlock.getID();
 				currentSourceFile = currentTreeBlock.getFile();
 				lastUsedTreeBlock = currentTreeBlock;
