@@ -2868,21 +2868,28 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			MesquiteInteger io = new MesquiteInteger(0);
 			int x= MesquiteInteger.fromString(arguments, io);
 			int y= MesquiteInteger.fromString(arguments, io);
+			int minimalVisible = 32;
 			if (MesquiteInteger.isCombinable(x) && MesquiteInteger.isCombinable(y)) {
 				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-				if (x> screenSize.width-16)
-					x=screenSize.width-64;
-				else if (x+getBounds().width<16)
-					x= 16 - getBounds().width;
-				if (y> screenSize.height-16)
-					y=screenSize.height-64;
-				else if (y+getBounds().height<16)
-					y= 16 - getBounds().height;
+				Debugg.println("x " + x);
+				if (x> screenSize.width-minimalVisible) {
+					x=screenSize.width/2;
+					Debugg.println("x adjusted to " + x);
+				}
+				else if (x+getParentFrame().getBounds().width<minimalVisible){
+					x= 0;
+					Debugg.println("x adjusted 2");
+				}
+				if (y> screenSize.height-minimalVisible)
+					y=screenSize.height/2;
+				else if (y+getParentFrame().getBounds().height<minimalVisible)
+					y=  0;
 				if (y<0)
 					y=0;
-				if (MesquiteTrunk.isMacOSX() && y<22 && x<0)  //workaround for bug in OS X; June 2004
+				if (MesquiteTrunk.isMacOSX() && y<minimalVisible*2 && x<0)  //workaround for bug in OS X; June 2004
 					x=0;
 				setWindowLocation(x, y, false, true);
+				Debugg.println("x " + x + " result " + getParentFrame().getBounds().x);
 			}
 		}
 		else if (checker.compare(MesquiteWindow.class, "Sets the font of the window", "[name of font]", commandName, "setFont")) {
