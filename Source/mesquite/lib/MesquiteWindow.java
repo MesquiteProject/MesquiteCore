@@ -2988,9 +2988,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public Dimension getScreenSize() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Insets scnMax = Toolkit.getDefaultToolkit().getScreenInsets(parentFrame.getGraphicsConfiguration());
-		int taskBarSize = scnMax.bottom;
+		int sideBarSize = scnMax.right;
+		int lowerBarSize = scnMax.bottom;
 
-		Dimension effectiveScreenSize = new Dimension(screenSize.width, screenSize.height - taskBarSize);
+		Dimension effectiveScreenSize = new Dimension(screenSize.width-sideBarSize, screenSize.height - lowerBarSize);
 		return effectiveScreenSize;
 	}
 
