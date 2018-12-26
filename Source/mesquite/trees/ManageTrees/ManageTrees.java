@@ -148,13 +148,15 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	public void addBlockListener(MesquiteListener ml){
 		blockListeners.addElement(ml);
-		for (int i= 0; i<treesVector.size(); i++)
-			((TreeVector)treesVector.elementAt(i)).addListener(ml);
+		if (treesVector!=null)
+			for (int i= 0; i<treesVector.size(); i++)
+				((TreeVector)treesVector.elementAt(i)).addListener(ml);
 	}
 	public void removeBlockListener(MesquiteListener ml){
 		blockListeners.removeElement(ml);
-		for (int i= 0; i<treesVector.size(); i++)
-			((TreeVector)treesVector.elementAt(i)).removeListener(ml);
+		if (treesVector!=null)
+			for (int i= 0; i<treesVector.size(); i++)
+				((TreeVector)treesVector.elementAt(i)).removeListener(ml);
 	}
 	/*.................................................................................................................*/
 	public MesquiteModule showElement(FileElement e){
@@ -392,7 +394,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns a trees block", "[number of trees block; 0 based]", commandName, "getTreeBlock")) {
 			int t = MesquiteInteger.fromFirstToken(arguments, pos);
-			if (MesquiteInteger.isCombinable(t) && t<treesVector.size()) {
+			if (treesVector!=null && MesquiteInteger.isCombinable(t) && t<treesVector.size()) {
 				TreeVector tx = (TreeVector)treesVector.elementAt(t);
 				return tx;
 			}
@@ -1341,14 +1343,15 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	/*.................................................................................................................*/
 	public int getTreeBlockNumber(Taxa taxa, TreeVector trees){ //OK for doomed
 		int count = 0;
-		for (int j = 0; j< treesVector.size(); j++) {
-			TreeVector t = (TreeVector)treesVector.elementAt(j);
-			if ((taxa == null || taxa.equals(t.getTaxa(), false)) && !t.isDoomed()) { 
-				if (t == trees)
-					return count;
-				count++;
+		if (treesVector!=null)
+			for (int j = 0; j< treesVector.size(); j++) {
+				TreeVector t = (TreeVector)treesVector.elementAt(j);
+				if ((taxa == null || taxa.equals(t.getTaxa(), false)) && !t.isDoomed()) { 
+					if (t == trees)
+						return count;
+					count++;
+				}
 			}
-		}
 		return -1;
 	}
 	/*.................................................................................................................*/
@@ -1442,7 +1445,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		if (nb!=null) {
 			removeNEXUSBlock(nb);
 		}
-		if (treesVector.indexOf(e)>=0){
+		if (treesVector!=null && treesVector.indexOf(e)>=0){
 			while(treesVector.indexOf(e)>=0) {
 				treesVector.removeElement(e, true);
 			}

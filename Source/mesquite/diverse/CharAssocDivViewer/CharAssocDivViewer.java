@@ -224,8 +224,10 @@ public class CharAssocDivViewer extends TreeWindowAssistantA    {
 		MesquiteNumber result = new MesquiteNumber();
 		MesquiteString rs = new MesquiteString();
 		CharacterDistribution states = characterSourceTask.getCharacter(taxa, current);
-		if (states == null )
+		if (states == null ) {
 			rs.setValue("Sorry, no character was not obtained.  The diversification analysis could not be completed.");
+			return;
+		}
 		stateClass = states.getStateClass();
 		//		window.setText("");
 		clearLastResult();

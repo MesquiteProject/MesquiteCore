@@ -262,10 +262,11 @@ public class EvolveDNAChars extends CharacterSimulator implements MesquiteListen
 
    	public void cleanupAfterSimulation(MAdjustableDistribution matrix){
 		 if (modelSource.modelFromModelSet()) {
-			 for (int ic=0; ic<data.getNumChars(); ic++) {
-				 SimulationDNAModel currentModel = (SimulationDNAModel)((ProbModelSourceSim)modelSource).getCharacterModel(data,ic);
-				 currentModel.clearNoCheckFlag();
-			 }
+			 if (data!=null)
+				 for (int ic=0; ic<data.getNumChars(); ic++) {
+					 SimulationDNAModel currentModel = (SimulationDNAModel)((ProbModelSourceSim)modelSource).getCharacterModel(data,ic);
+					 currentModel.clearNoCheckFlag();
+				 }
 		}
 		 if (matrix!=null) {
 			 CharacterData data = matrix.getParentData();

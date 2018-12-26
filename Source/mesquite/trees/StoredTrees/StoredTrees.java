@@ -53,7 +53,8 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			return sorry("No stored trees are available.");
 		}
 		managerVectorOfTreeBlocks = manager.getTreeBlockVector();
-		managerVectorOfTreeBlocks.addListener(this);
+		if (managerVectorOfTreeBlocks!=null)
+			managerVectorOfTreeBlocks.addListener(this);
 
 		//can leave a hint in terms of an id of a treeblock to use
 		String whichBlock = MesquiteThread.retrieveAndDeleteHint(this);

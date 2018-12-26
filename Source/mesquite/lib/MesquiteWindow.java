@@ -2227,6 +2227,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	/*........................................................*/
 	int sameUntil(MenuBar current, MenuBar target){
+		if (current==null || target==null)
+			return 0;
 		int it = 0;
 		while (it<target.getMenuCount() && it<current.getMenuCount()){
 			Menu thisTargetMenu = target.getMenu(it);

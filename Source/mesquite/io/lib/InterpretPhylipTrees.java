@@ -77,6 +77,8 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 		Taxa taxa = getProject().chooseTaxa(containerOfModule(), "From what taxa are these trees composed?");
 		if (taxa== null) {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
+			if (taxaTask==null)  //TODO: give warning?  WAYNECHECK:
+				return;
 			taxa = taxaTask.makeNewTaxa("Taxa", 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			enlargeTaxaBlock = true;

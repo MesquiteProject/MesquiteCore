@@ -467,7 +467,7 @@ class TaxonListWindow extends ListWindow {
 			String warning = taxa.checkNameLegality(row, name);
 			if (warning == null)
 				taxa.setTaxonName(row, name);
-			else
+			else if (ownerModule!=null)
 				ownerModule.discreetAlert( warning);
 		}
 	}
