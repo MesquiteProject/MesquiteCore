@@ -2826,6 +2826,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			if (MesquiteInteger.isCombinable(width) && MesquiteInteger.isCombinable(height)) {
 				fromScriptCommand = true;//this is needed to counteract difficulties with popping in/out and size setting in window constructors
 				setWindowSize(width, height);
+				parentFrame.recordScriptedWindowSize(this, width, height);
 				fromScriptCommand = false;
 			}
 		}
