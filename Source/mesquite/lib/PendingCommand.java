@@ -272,11 +272,7 @@ public class PendingCommand implements SpecialListName, Explainable {
 			finishUp();
 			return;
 		}
-		/*
-		catch (InterruptedException e){
-			Thread.currentThread().interrupt();
-		}
-		 */
+		
 		catch (Exception e){
 			crashed = true;
 			MesquiteDialog.closeWizard();

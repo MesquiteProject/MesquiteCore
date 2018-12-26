@@ -3199,6 +3199,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString) {
+		return readTree(TreeDescription, namer, whitespaceString, punctuationString, true);
+	}
+	/** Reads the tree description string and sets the tree object to store the tree described.*/
+	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
 
@@ -3226,9 +3230,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 		if (!StringUtil.blank(c) && !(";".equals(c))){  //TODO: all these "equals" should be replaced by StringUtil static methods
-			if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c) || "%".equals(c) || "#".equals(c)))// name of internal node!!!!
+			if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || ("<".equals(c) && readAssociated) || "%".equals(c) || "#".equals(c)))// name of internal node!!!!
 				c = readNamedInternal(TreeDescription, c, root, stringLoc);
-			while (":".equals(c) || "<".equals(c)|| "%".equals(c) || "#".equals(c)) {
+			while (":".equals(c) ||  ("<".equals(c) && readAssociated)|| "%".equals(c) || "#".equals(c)) {
 				if (":".equals(c)) {
 					readLength(TreeDescription, root, stringLoc);
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
@@ -3247,7 +3251,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						return false;
 					}
 				}
-				else if ("<".equals(c)) {
+				else if  ("<".equals(c) && readAssociated) {
 					readAssociatedInTree(TreeDescription, root, stringLoc);
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
@@ -3255,11 +3259,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 9");
 						return false;
 					}
-					if ("<".equals(c)){
+					if  ("<".equals(c) && readAssociated){
 						readAttachedProperties(TreeDescription, stringLoc);
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					}
-					if ("<".equals(c)){
+					if  ("<".equals(c) && readAssociated){
 						readExtras(TreeDescription, stringLoc);
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					}

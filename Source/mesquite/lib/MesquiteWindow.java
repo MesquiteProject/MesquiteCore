@@ -57,7 +57,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	boolean readyToPaint = true;
 	protected Font currentFont;
 	public static Font defaultFont;
-	
+
 	boolean suppressExplanationAreaUpdates=false;
 
 	private MesquiteTool currentTool;
@@ -2159,7 +2159,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			if ((currentMM.getLabel()== null && targetMM.getLabel()==null))
 				return true;
 			if (currentMM.getLabel()== null || targetMM.getLabel()==null)
-					return false;
+				return false;
 			return currentMM.getLabel().equals(targetMM.getLabel());
 		}
 		if (current instanceof MenuItem && target instanceof MenuItem){
@@ -2168,7 +2168,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			if ((currentMMI.getLabel()== null && targetMMI.getLabel()==null))
 				return true;
 			if (currentMMI.getLabel()== null || targetMMI.getLabel()==null)
-					return false;
+				return false;
 			return currentMMI.getLabel().equals(targetMMI.getLabel());
 		}
 		return true;
@@ -2246,10 +2246,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		for (int it= current.getMenuCount()-1; it>=startOfDifference; it--){
 			try{
 				Menu m = current.getMenu(it);
-			disposeMenuComponent(m);
-			current.remove(it);
+				disposeMenuComponent(m);
+				current.remove(it);
 			}
 			catch (NullPointerException e){
+			}
+			catch (ArrayIndexOutOfBoundsException e){
 			}
 		}
 		Menu[] toTransfer = new Menu[target.getMenuCount()-startOfDifference+1];

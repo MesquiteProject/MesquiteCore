@@ -354,6 +354,7 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 	/*.................................................................................................................*/
 	/* Go up tree, choosing pairing in clade by taking first choices wherever a choice is available*/
 	private void firstPairingInClade(int node, Tree tree) {
+		try {
 		currentChoice[node]=0;
 		numChoices[node]= 1;
 
@@ -396,6 +397,12 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 					}
 				}
 			}
+		}
+		}
+		catch (StackOverflowError t){
+			MesquiteMessage.notifyUser("Could you please send your data file to info@mesquiteproject.org to help us diagnose an error that has just happened in Pairwise Comparison (PairsNoChar)? We haven't been able to reproduce this error, and yet users keep encountering it."
+					+ " If you can send us the file, we may be able to solve the problem. Thanks! (More dialog boxes may follow)."); 
+			throw t;
 		}
 	}
 
