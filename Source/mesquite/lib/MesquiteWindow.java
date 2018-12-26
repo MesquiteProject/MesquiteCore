@@ -2877,16 +2877,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				double left = effectiveScreenSize.getX();
 				double width = effectiveScreenSize.getWidth();
 				double right = left+width;
-				Debugg.println("top " + top + ", bottom " + bottom+ ", left " + left+ ", right " + right);
-				Debugg.println("x " + x);
-				Debugg.println("y " + y);
+
 				if (x> right-minimalVisible) {  // too far to right
 					x=(int)width/2;
-					Debugg.println("x adjusted to " + x);
 				}
 				else if (x+getParentFrame().getBounds().width<minimalVisible+left){
 					x= (int)left;
-					Debugg.println("x adjusted 2");
 				}
 				if (y> bottom-minimalVisible)  // too far down
 					y=(int)height/2;
@@ -2897,7 +2893,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				//if (MesquiteTrunk.isMacOSX() && y<minimalVisible*2 && x<left)  //workaround for bug in OS X; June 2004
 				//	x=(int)left;
 				setWindowLocation(x, y, false, true);
-				Debugg.println("x " + x + " result " + getParentFrame().getBounds().x);
 			}
 		}
 		else if (checker.compare(MesquiteWindow.class, "Sets the font of the window", "[name of font]", commandName, "setFont")) {

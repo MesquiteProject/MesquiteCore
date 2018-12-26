@@ -613,6 +613,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		MesquiteWindow fw = frontMostInLocation(MAIN);
 		reconnect(fw);
 	}
+
 	public void popIn(MesquiteWindow w){
 		if (windows == null || (!w.popAsTile && windows.indexOf(w)>=0))  //POPOUTBUGS: If window is popped out in separate window, then this doesn't work, in part as windows.indexOf(w)=0 but there is only one window.  
 			return;

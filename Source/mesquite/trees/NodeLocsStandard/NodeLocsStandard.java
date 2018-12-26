@@ -836,7 +836,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		double baseSpacing =treeDisplay.getTaxonSpacing();
 		if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX  && tree.getTaxa().getSelected(tree.taxonNumberOfNode(node)))
-			baseSpacing = baseSpacing *highlightMultiplier(treeDisplay)*0.86;  //0.86 is magical constant to prevent too big a space for highlighted taxa
+			baseSpacing = baseSpacing *highlightMultiplier(treeDisplay)*0.89;  //0.89 is magical constant to prevent too big a space for highlighted taxa
 		if (zoomNode > 0){
 			int inZoom = tree.numberOfTerminalsInClade(zoomNode);
 			if (inZoom<2)

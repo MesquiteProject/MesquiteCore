@@ -2771,13 +2771,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 
-	static boolean numericalLabelInterpretationSetRUN = false;
+	public static boolean numericalLabelInterpretationSetRUN = false;
 	boolean numericalLabelInterpretationSet = false;
-	static boolean interpretNumericalLabelsAsOnBranchesRUN = false;
+	public static boolean interpretNumericalLabelsAsOnBranchesRUN = false;
 	boolean interpretNumericalLabelsAsOnBranches = false;
-	static boolean interpretLabelsAsNumericalRUN = false;
+	public static boolean interpretLabelsAsNumericalRUN = false;
 	boolean interpretLabelsAsNumerical = false;
-	static String defaultValueCodeRUN = "";
+	public static String defaultValueCodeRUN = "";
 	String defaultValueCode = "";
 	NameReference defaultValueCodeRef = null;
 	

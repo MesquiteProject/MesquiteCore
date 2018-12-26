@@ -82,13 +82,13 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		queryDialog.addLargeTextLabel("A tree being read includes numbers written as node labels (e.g., \"" + c + "\"). " +
 				"Some programs write special information, e.g. bootstrap frequency or posterior probabilities, as node labels. " +
 				" Please indicate how you want these numbers to be interpreted.");
-		
+
 		queryDialog.appendToHelpString("If you choose Bootstrap frequency, Posterior probability, or Consensus frequency, then Mesquite "
 				+ "will presume that the number is attached to a branch, as opposed to a node. "
 				+ "If you choose to treat it as text, then it will attach the number to the node, as a label. "
 				+ "If want to manually specify whether the number is attached to a branch or label, then choose Other and "
 				+ "then select among the Nodes or Branches options below it.");
-		
+
 		queryDialog.addLabel("Interpretation:", Label.LEFT);
 		String[] names = new String[]{"Treat as text", "Bootstrap frequency",  "Posterior probability", "Consensus frequency", "Other"};
 		interpretation = queryDialog.addRadioButtons(names, 0);
@@ -110,7 +110,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		if (ok) {
 			int interp = interpretation.getValue();
 			interps[0] = interp >0;
-/* NOTE: if you add a named value to this list, you MUST add it to the betweenDoubles list or other between list in MesquiteTree!!!*/
+			/* NOTE: if you add a named value to this list, you MUST add it to the betweenDoubles list or other between list in MesquiteTree!!!*/
 			if (interp == 1)
 				name = "bootstrapFrequency";
 			else if (interp == 2)
@@ -126,7 +126,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			}
 			interps[2] = remember.getState();
 			n.setValue(name);
-			
+
 		}
 		queryDialog.dispose();
 		return ok;
@@ -632,6 +632,18 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else if (checker.compare(this.getClass(), "Includes file with trees (partial)", null, commandName, "includePartialTreeFile")) { 
 			includeTreeFile(commandName, arguments, checker, true);
 		}
+		else if (checker.compare(this.getClass(), "Sets the interpretation of numerical node labels, as per dialog in this module", "[interpretation]", commandName, "setDefaultNumericalLabelInterpetation")) { 
+
+			boolean interpretLabelsAsNumerical = "True".equalsIgnoreCase(parser.getFirstToken(arguments)); 
+			boolean interpretNumericalLabelsAsOnBranches = "True".equalsIgnoreCase(parser.getNextToken());
+			String interpretationName = parser.getNextToken(); //("bootstrapFrequency", "posteriorProbability", "consensusFrequency", other)
+			MesquiteTree.defaultValueCodeRUN = interpretationName;
+			MesquiteTree.interpretNumericalLabelsAsOnBranchesRUN = interpretNumericalLabelsAsOnBranches;
+			MesquiteTree.numericalLabelInterpretationSetRUN = true;
+			MesquiteTree.interpretLabelsAsNumericalRUN = interpretLabelsAsNumerical;
+			return null;
+		}
+
 		else if (checker.compare(this.getClass(), "Includes file with trees (ask if partial)", null, commandName, "includeTreeFileAskPartial")) {
 			boolean all = AlertDialog.query(containerOfModule(), "Read All Trees?", "Read all trees, or only a sample of the trees?", "All", "Sample");
 
