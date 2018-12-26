@@ -2894,8 +2894,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 					y=  (int)top;
 				if (y<top)
 					y=(int)top;
-				if (MesquiteTrunk.isMacOSX() && y<minimalVisible*2 && x<left)  //workaround for bug in OS X; June 2004
-					x=(int)left;
+				//if (MesquiteTrunk.isMacOSX() && y<minimalVisible*2 && x<left)  //workaround for bug in OS X; June 2004
+				//	x=(int)left;
 				setWindowLocation(x, y, false, true);
 				Debugg.println("x " + x + " result " + getParentFrame().getBounds().x);
 			}
