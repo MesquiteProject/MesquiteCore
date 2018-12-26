@@ -18,5 +18,7 @@ package mesquite.lib;
 public interface Reconnectable {
    	/** Called when Mesquite re-reads a file that had had unfinished tree filling, e.g. by an external process, to pass along the command that should be executed on the main thread when trees are ready.*/
    	public void reconnectToRequester(MesquiteCommand command);
+   	/** Called when Mesquite re-reads a file that had had unfinished tree filling, e.g. by an external process, to pass along the command that should be executed on the main thread when trees are ready.*/
+   	public boolean successfulReconnect();
 }
 

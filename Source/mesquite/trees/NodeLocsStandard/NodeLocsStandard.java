@@ -16,7 +16,6 @@ package mesquite.trees.NodeLocsStandard;
 
 import java.util.*;
 
-import com.sun.org.apache.xml.internal.resolver.helpers.Debug;
 
 import java.awt.*;
 
