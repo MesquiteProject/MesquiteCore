@@ -2783,9 +2783,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	
 	boolean checkNumericalLabelInterpretation(String c){
 		if (numericalLabelInterpretationSet){ //user has answered, therefore follow guidance
-			if (interpretLabelsAsNumerical)
-				return true;
-			return false;
+			return (interpretLabelsAsNumerical);
+		}
+		if (MesquiteThread.isScripting()){ //scripting; use default
+			interpretLabelsAsNumerical = interpretLabelsAsNumericalRUN;
+			return (interpretLabelsAsNumerical);
 		}
 
 		if (taxa != null){
@@ -2794,6 +2796,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			TreesManager em = (TreesManager)fc.findManager(fc, TreeVector.class);
 			boolean[] interps = new boolean[4]; //0 interpret as number (vs. text); 1 interpret as on branch (vs. node); 2 remember
 			MesquiteString n = new MesquiteString(); //the code name of the value, e.g. "consensusFrequency"
+			
+			//Ask ManageTrees to query the user; otherwise see scripting possibility in ManageTrees via command setDefaultNumericalLabelInterpetation
 			numericalLabelInterpretationSet = em.queryAboutNumericalLabelIntepretation(interps, c, n);
 			if (numericalLabelInterpretationSet){
 				if (interps[0]){ // treat as number

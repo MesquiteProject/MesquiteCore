@@ -73,6 +73,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 
 	/*.................................................................................................................*/
+	//This dialog is queried from MesquiteTree when node labels are found that might be numerical
+	//see also "setDefaultNumericalLabelInterpetation" in doCommand, below
 	RadioButtons interpretation, branchesOrNodes;
 	TextField nameField;
 	JLabel otherNameLabel, bOn;
@@ -632,8 +634,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else if (checker.compare(this.getClass(), "Includes file with trees (partial)", null, commandName, "includePartialTreeFile")) { 
 			includeTreeFile(commandName, arguments, checker, true);
 		}
-		else if (checker.compare(this.getClass(), "Sets the interpretation of numerical node labels, as per dialog in this module", "[interpretation]", commandName, "setDefaultNumericalLabelInterpetation")) { 
-
+		else if (checker.compare(this.getClass(), "Sets the interpretation of numerical node labels, as per dialog in this module", "[true/false for interpret as numerical; true/false for as on branches; name of interpretation]", commandName, "setDefaultNumericalLabelInterpetation")) { 
+			// see also queryAboutNumericalLabelIntepretation, above
 			boolean interpretLabelsAsNumerical = "True".equalsIgnoreCase(parser.getFirstToken(arguments)); 
 			boolean interpretNumericalLabelsAsOnBranches = "True".equalsIgnoreCase(parser.getNextToken());
 			String interpretationName = parser.getNextToken(); //("bootstrapFrequency", "posteriorProbability", "consensusFrequency", other)
