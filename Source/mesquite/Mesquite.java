@@ -1273,7 +1273,8 @@ public class Mesquite extends MesquiteTrunk
 	/*End new code added April.02.07 oliver*/
 
 	public void employeeQuit(MesquiteModule mb){
-		helpSearchManager.employeeQuit(mb);
+		if (helpSearchManager!=null)
+			helpSearchManager.employeeQuit(mb);
 		super.employeeQuit(mb);
 	}
 	/*.................................................................................................................*/

@@ -84,6 +84,8 @@ public class ProportionUniqueStates extends NumberForTaxon {
 	}
 
 	public boolean taxonIsUnique(CharacterData data, int ic, int it){
+		if (data==null || observedStates==null)
+			return false;
 		CategoricalState cs = null;
 		cs = (CategoricalState)observedStates.getCharacterState(cs, ic, it);   // state of original
 		if (cs.isInapplicable())

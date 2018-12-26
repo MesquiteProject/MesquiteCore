@@ -1897,9 +1897,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	private synchronized void  printComponent(Graphics g, Panel c) {
 		int shiftX = c.getBounds().x;
 		int shiftY = c.getBounds().y;
-		g.translate(shiftX, shiftY);
-		c.print(g);
-		g.translate(-shiftX, -shiftY);
+		if (g!=null) {
+			g.translate(shiftX, shiftY);
+			c.print(g);
+			g.translate(-shiftX, -shiftY);
+		}
 	}
 
 	/* ............................................................................................................... */

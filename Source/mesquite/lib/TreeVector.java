@@ -281,7 +281,8 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 				
 			}
 			trees.addToFile(getFile(), getProject(), getManager()); 
-			getManager().elementAdded(trees);
+			if (getManager()!=null)
+				getManager().elementAdded(trees);
 			if (getProject() != null)
 				getProject().decrementProjectWindowSuppression();
 			return trees;

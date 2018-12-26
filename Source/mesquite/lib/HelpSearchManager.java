@@ -360,7 +360,7 @@ public class HelpSearchManager implements Commandable {
 				ww.setText(results);
 				ww.setVisible(true);
 			}
-			else*/ if (searchWindowBabysitter.getModuleWindow()!= null){
+			else*/ if (searchWindowBabysitter!=null && searchWindowBabysitter.getModuleWindow()!= null){
 				MesquiteHTMLWindow w = (MesquiteHTMLWindow)searchWindowBabysitter.getModuleWindow();
 				w.setDataWindow(null);
 				w.setText(results);
