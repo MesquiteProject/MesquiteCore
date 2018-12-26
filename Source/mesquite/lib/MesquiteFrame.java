@@ -125,6 +125,46 @@ public class MesquiteFrame extends Frame implements Commandable {
 			return;
 		super.setResizable(r);
 	}
+
+	int maxScriptedMainWidth = 0;
+	int maxScriptedPoppedWidth = 0;
+	int maxScriptedMainHeight = 0;
+	int maxScriptedPoppedHeight = 0;
+	public void recordScriptedWindowSize(MesquiteWindow w, int width, int height){  //not all of this information as used; see method checkScriptedWindowSizes
+		if (w.getTileLocation() == MesquiteFrame.POPTILE){
+			if (width>maxScriptedPoppedWidth)
+				maxScriptedPoppedWidth = width;
+			if (height>maxScriptedPoppedHeight)
+				maxScriptedPoppedHeight = height;
+		}
+		else {
+			if (width>maxScriptedMainWidth)
+				maxScriptedMainWidth = width;
+			if (height>maxScriptedMainHeight)
+				maxScriptedMainHeight = height;
+		}
+	}
+	public void checkScriptedWindowSizes(){  //This is a kludge to fix the bug where windows can open at much greater width than they should have
+		if (maxScriptedPoppedWidth == 0)
+			return;
+		int ow = getBounds().width;
+		if (ow != maxScriptedMainWidth){
+			Insets insets = getInsets();
+			storeInsets(insets);
+
+			int totalNeededWidth = maxScriptedMainWidth + insets.left + insets.right;
+			setSavedDimensions(totalNeededWidth, getBounds().height);
+			setSize(totalNeededWidth, getBounds().height);
+			resetSizes(true);
+			for (int i = 0; i<windows.size(); i++){
+				MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
+				w.resetContentsSize();
+			}
+			saveFullDimensions();	
+		}
+
+	}
+
 	public int getID(){
 		return id;
 	}
@@ -182,7 +222,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		}
 		checkInsets(true);
 	}
-	
+
 	public int getNumWindows(){
 		return windows.size();
 	}

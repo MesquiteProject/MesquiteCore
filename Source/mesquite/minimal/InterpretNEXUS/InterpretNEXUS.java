@@ -433,8 +433,11 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		}
 		if (getProject() != null) {
 			resolveCharMatrixIDs();
+			MesquiteFrame f = getProject().getFrame();
+			f.checkScriptedWindowSizes();
 		}
 		decrementMenuResetSuppression();
+		
 	}
 	/*.................................................................................................................*/
 	private int  getNumberCharMatricesWithAssignedID(long ref) {   //MOVE TO InterpretNEXUS
