@@ -2870,26 +2870,32 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			int y= MesquiteInteger.fromString(arguments, io);
 			int minimalVisible = 16;
 			if (MesquiteInteger.isCombinable(x) && MesquiteInteger.isCombinable(y)) {
-				Dimension screenSize = getScreenSize();
-				Debugg.println("screenSize.width " + screenSize.width + ", screenSize.height " + screenSize.height);
+				Rectangle effectiveScreenSize = getEffectiveScreenSize();
+				double top = effectiveScreenSize.getY();
+				double height = effectiveScreenSize.getHeight();
+				double bottom = top+height;
+				double left = effectiveScreenSize.getX();
+				double width = effectiveScreenSize.getWidth();
+				double right = left+width;
+				Debugg.println("top " + top + ", bottom " + bottom+ ", left " + left+ ", right " + right);
 				Debugg.println("x " + x);
 				Debugg.println("y " + y);
-				if (x> screenSize.width-minimalVisible) {
-					x=screenSize.width/2;
+				if (x> right-minimalVisible) {  // too far to right
+					x=(int)width/2;
 					Debugg.println("x adjusted to " + x);
 				}
-				else if (x+getParentFrame().getBounds().width<minimalVisible){
-					x= 0;
+				else if (x+getParentFrame().getBounds().width<minimalVisible+left){
+					x= (int)left;
 					Debugg.println("x adjusted 2");
 				}
-				if (y> screenSize.height-minimalVisible)
-					y=screenSize.height/2;
-				else if (y+getParentFrame().getBounds().height<minimalVisible)
-					y=  0;
-				if (y<0)
-					y=0;
-				if (MesquiteTrunk.isMacOSX() && y<minimalVisible*2 && x<0)  //workaround for bug in OS X; June 2004
-					x=0;
+				if (y> bottom-minimalVisible)  // too far down
+					y=(int)height/2;
+				else if (y+getParentFrame().getBounds().height<minimalVisible+top)
+					y=  (int)top;
+				if (y<top)
+					y=(int)top;
+				if (MesquiteTrunk.isMacOSX() && y<minimalVisible*2 && x<left)  //workaround for bug in OS X; June 2004
+					x=(int)left;
 				setWindowLocation(x, y, false, true);
 				Debugg.println("x " + x + " result " + getParentFrame().getBounds().x);
 			}
@@ -2985,13 +2991,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 	}
 	
-	public Dimension getScreenSize() {
+	public Rectangle getEffectiveScreenSize() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Insets scnMax = Toolkit.getDefaultToolkit().getScreenInsets(parentFrame.getGraphicsConfiguration());
-		int sideBarSize = scnMax.right;
-		int lowerBarSize = scnMax.bottom;
 
-		Dimension effectiveScreenSize = new Dimension(screenSize.width-sideBarSize, screenSize.height - lowerBarSize);
+		Rectangle effectiveScreenSize = new Rectangle(scnMax.left, scnMax.top, 
+				screenSize.width-scnMax.right-scnMax.left, 
+				screenSize.height-scnMax.top-scnMax.bottom);
 		return effectiveScreenSize;
 	}
 
