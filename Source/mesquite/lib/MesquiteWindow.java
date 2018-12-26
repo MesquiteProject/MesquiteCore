@@ -2868,10 +2868,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			MesquiteInteger io = new MesquiteInteger(0);
 			int x= MesquiteInteger.fromString(arguments, io);
 			int y= MesquiteInteger.fromString(arguments, io);
-			int minimalVisible = 32;
+			int minimalVisible = 16;
 			if (MesquiteInteger.isCombinable(x) && MesquiteInteger.isCombinable(y)) {
-				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				Dimension screenSize = getScreenSize();
+				Debugg.println("screenSize.width " + screenSize.width + ", screenSize.height " + screenSize.height);
 				Debugg.println("x " + x);
+				Debugg.println("y " + y);
 				if (x> screenSize.width-minimalVisible) {
 					x=screenSize.width/2;
 					Debugg.println("x adjusted to " + x);
@@ -2981,6 +2983,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				elem.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 		}
+	}
+	
+	public Dimension getScreenSize() {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Insets scnMax = Toolkit.getDefaultToolkit().getScreenInsets(parentFrame.getGraphicsConfiguration());
+		int taskBarSize = scnMax.bottom;
+
+		Dimension effectiveScreenSize = new Dimension(screenSize.width, screenSize.height - taskBarSize);
+		return effectiveScreenSize;
 	}
 
 	private void saveWindowMacro(int preferredMenu){
