@@ -60,6 +60,6 @@ public class ColorTaxonByAssigned extends TaxonNameStyler {
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Supplies the colors assigned to the taxa individually." ;
+ 		return "Supplies the colors assigned individually to the taxa." ;
    	 }
 }
