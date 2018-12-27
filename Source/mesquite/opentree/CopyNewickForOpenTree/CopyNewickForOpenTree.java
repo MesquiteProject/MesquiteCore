@@ -44,7 +44,7 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 		return true;
 	}
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean queryOptions(Tree tree){
