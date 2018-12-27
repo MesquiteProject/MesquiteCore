@@ -38,7 +38,7 @@
 			<forVersion>331</forVersion>
 			<noticeNumber>24</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[A new version of Mesquite is available, version 3.6, with various new features and bug fixes, compatibility with Java 9, an offline manual and a new location for  
+			<message><![CDATA[YOU ARE USING AN OLD VERSION of Mesquite. Your version is no longer supported. A new version of Mesquite is available, version 3.6, with various new features and bug fixes, compatibility with Java 9, an offline manual and a new location for  
 			<a href = "http://www.mesquiteproject.org">the website</a>.  
 			We urge that you update to the new version by downloading it from 
 			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
@@ -47,16 +47,16 @@
 			<forVersion>330</forVersion>
 			<noticeNumber>24</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[A new version of Mesquite is available, version 3.6, with various new features and bug fixes, compatibility with Java 9, an offline manual and a new location for  
+			<message><![CDATA[YOU ARE USING AN OLD VERSION of Mesquite. Your version is no longer supported. A new version of Mesquite is available, version 3.6, with various new features and bug fixes, compatibility with Java 9, an offline manual and a new location for  
 			<a href = "http://www.mesquiteproject.org">the website</a>.  
 			We urge that you update to the new version by downloading it from 
 			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
 		</notice>
 		<notice>
-			<forMesquiteVersionLessOrEqual>320</forMesquiteVersionLessOrEqual>
+			<forMesquiteVersionLessOrEqual>330</forMesquiteVersionLessOrEqual>
 			<noticeNumber>24</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[You are using a very old version of Mesquite. A new version is available, version 3.6, with many new features and bug fixes, compatibility with Java 9, performance improvements, an offline manual and a new location for  
+			<message><![CDATA[YOU ARE USING A VERY OLD VERSION of Mesquite. Your version is no longer supported. A new version is available, version 3.6, with many new features and bug fixes, compatibility with Java 9, performance improvements, an offline manual and a new location for  
 			<a href = "http://www.mesquiteproject.org">the website</a>.  
 			We strongly urge that you update to the new version by downloading it from 
 			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
