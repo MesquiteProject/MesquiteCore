@@ -37,11 +37,11 @@ public class ColorTaxonByNumDataInMatrices extends TaxonNameStyler {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 360;  
 	}
 
 	private int getNumMatricesWithDataForTaxon(Taxa taxa, int it){
@@ -107,7 +107,7 @@ public class ColorTaxonByNumDataInMatrices extends TaxonNameStyler {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Highlight Taxa With Data in More Matrices";
+		return "Emphasize Taxa With Data in More Matrices";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
