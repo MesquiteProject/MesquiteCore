@@ -73,13 +73,6 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 	/*.................................................................................................................*/
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 	}
-	/*.................................................................................................................*/
-	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
-	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
-	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
-	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
-	}
 
 
 	/* ============================  exporting ============================*/
@@ -333,8 +326,14 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 		String s =  "Exports NEXUS file with a taxa and tree block for OpenTree based upon a source of trees.  ";
 		return s;
 	}
-	/*.................................................................................................................*/
 
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 360;  
+	}
 
 }
 
