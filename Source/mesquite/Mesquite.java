@@ -37,24 +37,28 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.51.  http://www.mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.6.  http://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.51";
+		return "3.6";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 351;
+		return 360;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.51;
+		return 3.6;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "June 2018"; //"April 2007";
+		return "December 2018"; //"April 2007";
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -83,10 +87,6 @@ public class Mesquite extends MesquiteTrunk
 		else
 			return "http://mesquiteproject.org/mesquite/prereleasenotices/notices.xml";   
 		 */
-	}
-	/*.................................................................................................................*/
-	public boolean isPrerelease(){
-		return true;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
