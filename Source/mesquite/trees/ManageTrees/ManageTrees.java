@@ -636,6 +636,12 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 		else if (checker.compare(this.getClass(), "Sets the interpretation of numerical node labels, as per dialog in this module", "[true/false for interpret as numerical; true/false for as on branches; name of interpretation]", commandName, "setDefaultNumericalLabelInterpetation")) { 
 			// see also queryAboutNumericalLabelIntepretation, above
+			/*	Arguments: 
+			-  true/false for intepret as numerical
+			- true/false for as on branches (versus nodes)
+			- string for name of interpretation ("bootstrapFrequency", "posteriorProbability", "consensusFrequency", other)
+			*/
+			
 			boolean interpretLabelsAsNumerical = "True".equalsIgnoreCase(parser.getFirstToken(arguments)); 
 			boolean interpretNumericalLabelsAsOnBranches = "True".equalsIgnoreCase(parser.getNextToken());
 			String interpretationName = parser.getNextToken(); //("bootstrapFrequency", "posteriorProbability", "consensusFrequency", other)
