@@ -63,16 +63,16 @@ MesquiteModule objects.<p>
  */
 
 
-public abstract class MesquiteModule extends EmployerEmployee implements Commandable, Showable, Logger, FunctionExplainable,  Identifiable, FileDirtier, MesquiteListener, XMLPreferencesProcessor {
+public abstract class MesquiteModule extends EmployerEmployee implements Commandable, Showable, Logger, FunctionExplainable,  Identifiable, FileDirtier, MesquiteListener, XMLPreferencesProcessor, ObjectCommenter {
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "28 June 2018";
+		return "27 December 2018";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.51";
+		return "3.6";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -85,7 +85,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 898;  
+		return 917;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -136,6 +136,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.40  = 877 released 27 Jan 2O18
 	//3.50  = 888 released 4 May 2O18
 	//3.51  = 898 released 28 June 2O18
+	//3.6  = 917 released 27 Dec 2O18
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
@@ -1996,6 +1997,36 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return temp;
 	}
 
+	/*.................................................................................................................*
+	 * If overriding getObjectComment, we suggest this to recover from descendent employees as well
+	public String getObjectComment(Object object){
+		String q = "this is my comment";
+		
+		String accumulated = super.getObjectComment(object);
+		if (!StringUtil.blank(accumulated))
+			return q + "\n" + accumulated;
+		else
+			return q;
+	}
+
+	/*.................................................................................................................*/
+	//See model above for overridden version
+	public String getObjectComment(Object object){
+		StringBuffer sb = new StringBuffer();
+		Enumeration e = employees.elements();
+		boolean first = true;
+		while (e.hasMoreElements()) {
+			MesquiteModule mb = ((MesquiteModule)e.nextElement());
+			String s = mb.getObjectComment(object);
+			if (!StringUtil.blank(s)){
+				if (!first)
+					sb.append("\n");
+				first = false;
+				sb.append(s);
+			}
+		}
+		return sb.toString();
+	}
 	/*__________________________________________________________*/
 	/** for the paging system (may be defunct)*/
 	public void pageModule(MesquiteModule fromModule, boolean persistent){

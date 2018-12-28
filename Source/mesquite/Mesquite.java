@@ -37,24 +37,28 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.51.  http://www.mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2018. Mesquite: A modular system for evolutionary analysis.  Version 3.6.  http://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.51";
+		return "3.6";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 351;
+		return 360;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.51;
+		return 3.6;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "June 2018"; //"April 2007";
+		return "December 2018"; //"April 2007";
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -69,24 +73,20 @@ public class Mesquite extends MesquiteTrunk
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
 
 
-	/* Version 3.2 through 3.4 
+		/* Version 3.2 through 3.4 
 		if (!isPrerelease() && !debugMode)
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/notices.xml";   
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
 
-	*/
-	
-	/* Version 2.75 through 3.11
+		 */
+
+		/* Version 2.75 through 3.11
 		if (!isPrerelease() && !debugMode)
 			return "http://mesquiteproject.org/mesquite/notice/notices.xml";   
 		else
 			return "http://mesquiteproject.org/mesquite/prereleasenotices/notices.xml";   
-	*/
-	}
-	/*.................................................................................................................*/
-	public boolean isPrerelease(){
-		return false;
+		 */
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -1273,7 +1273,8 @@ public class Mesquite extends MesquiteTrunk
 	/*End new code added April.02.07 oliver*/
 
 	public void employeeQuit(MesquiteModule mb){
-		helpSearchManager.employeeQuit(mb);
+		if (helpSearchManager!=null)
+			helpSearchManager.employeeQuit(mb);
 		super.employeeQuit(mb);
 	}
 	/*.................................................................................................................*/
@@ -2462,6 +2463,8 @@ public class Mesquite extends MesquiteTrunk
 
 			} catch (NoSuchMethodError e) {
 			}
+			catch (NoClassDefFoundError e) { //WAYNECHECK: DAVIDCHECK: need to add alternative macos application event handling methods for post-1.8 Java
+			}
 		}
 	}
 
@@ -2667,7 +2670,7 @@ public class Mesquite extends MesquiteTrunk
 				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
 				startupNotices = (Vector)gsn.invoke(starter, null);
 			} catch (Exception e) {
-					System.out.println("Failed to get startup notices vector");
+				System.out.println("Failed to get startup notices vector");
 			}
 		}
 		if (startupNotices != null)
@@ -2719,7 +2722,7 @@ public class Mesquite extends MesquiteTrunk
 				//Go through each package listed in classpaths.txt
 				for (int i = 0; i<paths.length; i++){
 					if (!paths[i].startsWith("#")) { //paths can be commented out with leading #
-						
+
 						addClasspathsHere(urls, jars, MesquiteFile.composePath(mesquiteDirectoryPath, correctClassPath(paths[i])));
 					}
 				}

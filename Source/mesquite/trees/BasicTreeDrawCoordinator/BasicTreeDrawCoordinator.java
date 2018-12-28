@@ -31,10 +31,10 @@ import com.lowagie.text.pdf.PdfGraphics2D;
 public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTree.class, "A specific Tree Drawer is needed to yield the desired style of tree.",
-		"You can choose the style in the Tree Form submenu of the Drawing menu.");
+				"You can choose the style in the Tree Form submenu of the Drawing menu.");
 		e.setSuppressListing(true);
 		EmployeeNeed e2 = registerEmployeeNeed(DrawNamesTreeDisplay.class, "A Tree drawing shows the names of taxa.",
-		"This is activated automatically.");
+				"This is activated automatically.");
 		e2.setSuppressListing(true);
 	}
 	private DrawTree treeDrawTask;
@@ -52,6 +52,9 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	MesquiteBoolean showBrLenLabelsOnTerminals = new MesquiteBoolean(true);
 	MesquiteInteger numBrLenDecimals = new MesquiteInteger(6);
 	public Color brLenColor=Color.blue;
+	MesquiteString highlightModeName;
+	String[] highlightChoices = new String[]{"No Highlight", "Gray Box", "Enlarge 1.25X", "Enlarge 1.5X", "Enlarge 1.75X", "Enlarge 2X"};
+	int selectedTaxonHighlightMode = TreeDisplay.sTHM_DEFAULT;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -100,9 +103,14 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		addItemToSubmenu(null, mmis, "Label Color...", MesquiteModule.makeCommand("chooseBrLenLabelColor",  this));
 		addItemToSubmenu(null, mmis, "Number of Decimal Places...", MesquiteModule.makeCommand("setNumBrLenDecimals",  this));
 		addCheckMenuItemToSubmenu(null, mmis, "Include Missing Values", MesquiteModule.makeCommand("showBrLensUnspecified",  this), showBrLensUnspecified);
+
+		highlightModeName = new MesquiteString(highlightChoices[selectedTaxonHighlightMode]);
+		MesquiteSubmenuSpec highlightSubmenu = addSubmenu(null, "Highlight for Selected Taxa");
+		highlightSubmenu.setSelected(highlightModeName);
+		for (int i = 0; i<highlightChoices.length; i++)
+			addItemToSubmenu(null, highlightSubmenu, highlightChoices[i], new MesquiteCommand("setSelectedTaxonHighlightMode",  MesquiteInteger.toString(i), this));
 		return true;
 	}
-
 	public boolean getShowBrLensUnspecified(){
 		return showBrLensUnspecified.getValue();
 	}
@@ -142,12 +150,19 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "defaultDrawer", defaultDrawer);   
+		//	StringUtil.appendXMLTag(buffer, 2, "selectedTaxonHighlightMode", selectedTaxonHighlightMode);   
 		return buffer.toString();
 	}
 
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("defaultDrawer".equalsIgnoreCase(tag))
 			defaultDrawer = StringUtil.cleanXMLEscapeCharacters(content);
+		/*	if ("selectedTaxonHighlightMode".equalsIgnoreCase(tag)){
+			int m = MesquiteInteger.fromString(content);
+			if (MesquiteInteger.isNonNegative(m))
+				selectedTaxonHighlightMode = m;
+		}
+		 */
 	}
 
 
@@ -201,6 +216,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		temp.addLine("showBrLenLabelsOnTerminals " + showBrLenLabelsOnTerminals.toOffOnString()); 
 		temp.addLine("setBrLenLabelColor " + ColorDistribution.getColorStringForSnapshot(brLenColor));
 		temp.addLine("setNumBrLenDecimals " + numBrLenDecimals.getValue());
+		temp.addLine("setSelectedTaxonHighlightMode " + selectedTaxonHighlightMode);
 		temp.addLine("desuppress");
 		return temp;
 	}
@@ -233,6 +249,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		treeDisplay.setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplay, taxa.getNumTaxa()));
 		treeDisplay.setDrawTaxonNames(terminalNamesTask);
 		treeDisplay.suppressDrawing(suppression);
+		treeDisplay.selectedTaxonHighlightMode = selectedTaxonHighlightMode;
 		return treeDisplay;
 	}
 	/*.................................................................................................................*/
@@ -247,6 +264,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			treeDisplays[i].setDrawTaxonNames(terminalNamesTask);
 			treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], numTaxa));
 			treeDisplays[i].suppressDrawing(suppression);
+			treeDisplays[i].selectedTaxonHighlightMode = selectedTaxonHighlightMode;
 		}
 		return treeDisplays;
 	}
@@ -258,6 +276,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			treeDisplays[i] = new BasicTreeDisplay(this, taxas[i]);
 			treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], taxas[i].getNumTaxa()));
 			treeDisplays[i].suppressDrawing(suppression);
+			treeDisplays[i].selectedTaxonHighlightMode = selectedTaxonHighlightMode;
 		}
 		return treeDisplays;
 	}
@@ -273,19 +292,24 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 
 	/*.................................................................................................................*/
 	private void updateTreeDisplays () {
+		updateTreeDisplays(false);
+	}
+
+	/*.................................................................................................................*/
+	private void updateTreeDisplays (boolean reset) {
 
 		if (treeDisplay != null) {
 			while (treeDisplay.getDrawingInProcess())
 				;		
 			if (!suppression)
-				treeDisplay.pleaseUpdate(false);
+				treeDisplay.pleaseUpdate(reset);
 		}
 		else if (treeDisplays != null) {
 			for (int i=0; i<numDisplays; i++) {
 				while (treeDisplays[i].getDrawingInProcess())
 					;		
 				if (!suppression)
-					treeDisplays[i].pleaseUpdate(false);
+					treeDisplays[i].pleaseUpdate(reset);
 			}
 		}
 	}
@@ -333,7 +357,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplay.suppressDrawing(suppression);
 					decrementMenuResetSuppression();
 					return null;
-			}
+				}
 			}
 			else if (treeDisplays != null) { //many tree displays
 				boolean[] vis = new boolean[numDisplays];
@@ -471,6 +495,29 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 				}
 			}
 		}
+		else if (checker.compare(this.getClass(), "Sets the highlight mode for selected taxa", "[number]", commandName, "setSelectedTaxonHighlightMode")) {
+			int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
+			
+			if (!MesquiteInteger.isCombinable(newNum)){
+				pos.setValue(0);
+				String token = ParseUtil.getToken(arguments, pos);
+				newNum = StringArray.indexOf(highlightChoices, token);
+			}
+
+			if (MesquiteInteger.isCombinable(newNum)){
+				selectedTaxonHighlightMode = newNum;
+				highlightModeName.setValue(highlightChoices[selectedTaxonHighlightMode]);
+				if (treeDisplay != null) 
+					treeDisplay.selectedTaxonHighlightMode = selectedTaxonHighlightMode;
+				else if (treeDisplays != null) {
+					for (int i=0; i<numDisplays; i++) {
+						treeDisplays[i].selectedTaxonHighlightMode = selectedTaxonHighlightMode;
+					}
+				}
+
+				updateTreeDisplays(true);
+			}
+		}
 		else if (checker.compare(this.getClass(), "Sets the number of decimals in the branch length label", "[number]", commandName, "setNumBrLenDecimals")) {
 			int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newNum))
@@ -558,9 +605,9 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			if (w != null){
 				w.windowResized();  //this is a hack to force them to update sizes
 				return;
+			}
 		}
-		}
-		
+
 		if (treeDisplay != null) {
 			((BasicTreeDisplay)treeDisplay).pleaseUpdate(true);
 		}
@@ -868,22 +915,22 @@ class BasicTreeDisplay extends TreeDisplay  {
 	private   void drawSpot(TreeDisplay treeDisplay, Tree tree, Graphics g, int N) {
 		if (tree.nodeExists(N)) {
 			if (treeDisplay.getVisRect() == null || treeDisplay.getVisRect().contains(treeDisplay.getTreeDrawing().x[N], treeDisplay.getTreeDrawing().y[N])){
-			if (tree.nodeIsInternal(N) || true){  //replace true by show terminal
-				//int i=0;
-				//int j=2;
-				String s = Integer.toString(N);
-				FontMetrics fm = g.getFontMetrics(g.getFont());
-				int width = fm.stringWidth(s) + 6;
-				int height = fm.getAscent()+fm.getDescent() + 6;
-				if (spotsize>width)
-					width = spotsize;
-				if (spotsize>height)
-					height = spotsize;
-				g.setColor(Color.white);
-				double x = treeDisplay.getTreeDrawing().x[N] - width/2;
-				double y = treeDisplay.getTreeDrawing().y[N] - height/2;
-				GraphicsUtil.fillOval(g,x , y, width, height);
-			/*	g.setColor(Color.red);
+				if (tree.nodeIsInternal(N) || true){  //replace true by show terminal
+					//int i=0;
+					//int j=2;
+					String s = Integer.toString(N);
+					FontMetrics fm = g.getFontMetrics(g.getFont());
+					int width = fm.stringWidth(s) + 6;
+					int height = fm.getAscent()+fm.getDescent() + 6;
+					if (spotsize>width)
+						width = spotsize;
+					if (spotsize>height)
+						height = spotsize;
+					g.setColor(Color.white);
+					double x = treeDisplay.getTreeDrawing().x[N] - width/2;
+					double y = treeDisplay.getTreeDrawing().y[N] - height/2;
+					GraphicsUtil.fillOval(g,x , y, width, height);
+					/*	g.setColor(Color.red);
 				Graphics2D g2 = (Graphics2D)g;
 				GraphicsConfiguration gc;
 				java.awt.geom.AffineTransform at, at0, nt;
@@ -899,24 +946,24 @@ class BasicTreeDisplay extends TreeDisplay  {
 				 at = gc.getDefaultTransform();
 				 nt = gc.getNormalizingTransform();
 				ss += " " +  at0.getTranslateX() + " " +  at.getTranslateX() + " " + nt.getTranslateX() + "/ ";
-				*/
-				g.setColor(Color.black);
-			   GraphicsUtil.drawString(g,Integer.toString(N), x+2, y-4+ height);
-				/*g.drawRect(x , y, width, height);
+					 */
+					g.setColor(Color.black);
+					GraphicsUtil.drawString(g,Integer.toString(N), x+2, y-4+ height);
+					/*g.drawRect(x , y, width, height);
 				gc = g2.getDeviceConfiguration();
 				 at0 = g2.getTransform();
 				 at = gc.getDefaultTransform();
 				 nt = gc.getNormalizingTransform();
 				ss += " " +  at0.getTranslateX() + " " +  at.getTranslateX() + " " + nt.getTranslateX() + "/ ";
-				*/
-				GraphicsUtil.drawOval(g,x , y, width, height);
-				/*gc = g2.getDeviceConfiguration();
+					 */
+					GraphicsUtil.drawOval(g,x , y, width, height);
+					/*gc = g2.getDeviceConfiguration();
 				 at0 = g2.getTransform();
 				 at = gc.getDefaultTransform();
 				 nt = gc.getNormalizingTransform();
 				ss += " " +  at0.getTranslateX() + " " +  at.getTranslateX() + " " + nt.getTranslateX() + "/ ";
-				*/
-			}
+					 */
+				}
 			}
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				drawSpot(treeDisplay, tree, g, d);
@@ -1000,8 +1047,8 @@ class BasicTreeDisplay extends TreeDisplay  {
 	}
 	/*_________________________________________________*/
 	public void redrawTaxa(Graphics g, int M) {
-	((DrawTreeCoordinator)ownerModule).getNamesTask().drawNames(this, tree, getTreeDrawing().getDrawnRoot(), g);
-		
+		((DrawTreeCoordinator)ownerModule).getNamesTask().drawNames(this, tree, getTreeDrawing().getDrawnRoot(), g);
+
 	}
 	/*_________________________________________________*/
 	private boolean responseOK(){

@@ -204,7 +204,7 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 	public void windowResized(){
 		super.windowResized();
 		if (scrollPane!=null){
-			if (showBack)
+			if (showBack && controls != null)
 				controls.setBounds(0, 0, getWidth(), controlHeight);
 			if (showExtraPanel) {
 				extraPanelHeight = defaultExtraPanelHeight;

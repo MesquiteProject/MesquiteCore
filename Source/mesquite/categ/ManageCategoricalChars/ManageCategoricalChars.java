@@ -394,6 +394,8 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		file.write(endLine);
 		file.write("\tFORMAT");
 		file.write(" DATATYPE = STANDARD");
+		if (!data.isMolecularSequence())
+			file.write(" RESPECTCASE");
 		file.write(" GAP = " + data.getInapplicableSymbol() + " MISSING = " + data.getUnassignedSymbol());
 		file.write(" SYMBOLS = \" ");
 		int maxSt = ((CategoricalData)data).getMaxState();

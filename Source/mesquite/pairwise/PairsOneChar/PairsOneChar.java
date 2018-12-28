@@ -308,6 +308,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	/* This traversal from tips to roots, does parsimony "downpass" and also accumulates allStates for each clade.  allStates records, for
 	each clade, whether 0 or 1 or both are observed among the terminal taxa of the clade*/
 	private void downPass(int node, Tree tree) {
+		try {
 		if (tree.nodeIsTerminal(node)) {
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node)); // get observed state for taxon
 
@@ -341,6 +342,13 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 				allStatesInClade.setState(node, allStatesInClade.getState(left) | allStatesInClade.getState(right)); // take union for states in clade
 			}
 		}
+		}
+		catch (StackOverflowError t){
+			MesquiteMessage.notifyUser("Could you please send your data file to info@mesquiteproject.org to help us diagnose an error that has just happened in Pairwise Comparison (PairsOneChar)? We haven't been able to reproduce this error, and yet users keep encountering it."
+					+ " If you can send us the file, we may be able to solve the problem. Thanks! (More dialog boxes may follow)."); 
+			throw t;
+		}
+
 	}
 	/*.................................................................................................................*/
 	/* The following six methods do the second traversal upward through the tree, choosing pairs by 

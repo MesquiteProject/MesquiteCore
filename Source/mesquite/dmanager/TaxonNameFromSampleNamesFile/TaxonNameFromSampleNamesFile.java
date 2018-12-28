@@ -31,6 +31,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 	SingleLineTextField sampleCodeFilePathField = null;
 	int chosenNameCategory = 0;
 	MesquiteBoolean matchCurrentTaxonName = new MesquiteBoolean(true);
+	MesquiteBoolean changeColor = new MesquiteBoolean(true);
 	String[] nameCategories = new String[]{"<choose column>"};
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -155,6 +156,9 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		if ("matchCurrentTaxonName".equalsIgnoreCase(tag)){
 			matchCurrentTaxonName.setValue(content);
 		}
+		if ("changeColor".equalsIgnoreCase(tag)){
+			changeColor.setValue(content);
+		}
 		preferencesSet = true;
 	}
 	/*.................................................................................................................*/
@@ -163,6 +167,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		StringUtil.appendXMLTag(buffer, 2, "sampleCodeListPath", sampleCodeListPath);  
 		StringUtil.appendXMLTag(buffer, 2, "chosenNameCategory", chosenNameCategory);  
 		StringUtil.appendXMLTag(buffer, 2, "matchCurrentTaxonName", matchCurrentTaxonName);  
+		StringUtil.appendXMLTag(buffer, 2, "changeColor", changeColor);  
 		preferencesSet = true;
 		return buffer.toString();
 	}
@@ -174,6 +179,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Rename Taxa Based On Table with File",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		Checkbox matchTaxonName = dialog.addCheckBox("Match Current Taxon Name (otherwise OTU ID code)", matchCurrentTaxonName.getValue());
+		Checkbox colorChanged = dialog.addCheckBox("Color changed taxa", changeColor.getValue());
 		sampleCodeFilePathField = dialog.addTextField("File with Replacement Names:", sampleCodeListPath,26);
 		sampleCodeFilePathField.addTextListener(this);
 		final Button dnaCodesBrowseButton = dialog.addAListenedButton("Browse...",null, this);
@@ -211,6 +217,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		if (success)  {
 			sampleCodeListPath = sampleCodeFilePathField.getText();
 			chosenNameCategory = categoryChoice.getSelectedIndex();
+			changeColor.setValue(colorChanged.getState());
 			matchCurrentTaxonName.setValue(matchTaxonName.getState());
 			//	initialize();  // is this needed?
 		}
@@ -276,10 +283,12 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		}
 
 		// got here and no match found -- log an error
-		MesquiteMessage.warnUser("No matching name or code named '" + sampleCode + "' found in taxon names file.");
+		//MesquiteMessage.warnUser("No matching name or code named '" + sampleCode + "' found in taxon names file.");
+		log("-");
 		return null;
 	}
 
+	NameReference colorNameRef = NameReference.getNameReference("color");
 	/*.................................................................................................................*/
 	/** Called to alter the taxon name in a single cell.  If you use the alterContentOfCells method of this class, 
    	then you must supply a real method for this, not just this stub. */
@@ -296,6 +305,9 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 			if (StringUtil.notEmpty(newName)){
 				logln("Taxon \"" + taxa.getTaxonName(it) +"\" renamed to \"" + newName + "\"");
 				taxa.setTaxonName(it, newName, false);
+				if (changeColor.getValue())
+					taxa.setAssociatedLong(colorNameRef, it, 14);
+				
 			}
 			nameChanged = true;
 		}

@@ -63,6 +63,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	Vector fillerThreads;  // for the TreeBlockThread and TreeMonitorThreads, to be able to shut them off as needed
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		checkTreesVector();
 		fillerThreads = new Vector();
 		blockListeners = new Vector();
 		setMenuToUse(MesquiteTrunk.treesMenu);
@@ -73,6 +74,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 
 	/*.................................................................................................................*/
+	//This dialog is queried from MesquiteTree when node labels are found that might be numerical
+	//see also "setDefaultNumericalLabelInterpetation" in doCommand, below
 	RadioButtons interpretation, branchesOrNodes;
 	TextField nameField;
 	JLabel otherNameLabel, bOn;
@@ -82,13 +85,13 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		queryDialog.addLargeTextLabel("A tree being read includes numbers written as node labels (e.g., \"" + c + "\"). " +
 				"Some programs write special information, e.g. bootstrap frequency or posterior probabilities, as node labels. " +
 				" Please indicate how you want these numbers to be interpreted.");
-		
+
 		queryDialog.appendToHelpString("If you choose Bootstrap frequency, Posterior probability, or Consensus frequency, then Mesquite "
 				+ "will presume that the number is attached to a branch, as opposed to a node. "
 				+ "If you choose to treat it as text, then it will attach the number to the node, as a label. "
 				+ "If want to manually specify whether the number is attached to a branch or label, then choose Other and "
 				+ "then select among the Nodes or Branches options below it.");
-		
+
 		queryDialog.addLabel("Interpretation:", Label.LEFT);
 		String[] names = new String[]{"Treat as text", "Bootstrap frequency",  "Posterior probability", "Consensus frequency", "Other"};
 		interpretation = queryDialog.addRadioButtons(names, 0);
@@ -110,7 +113,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		if (ok) {
 			int interp = interpretation.getValue();
 			interps[0] = interp >0;
-/* NOTE: if you add a named value to this list, you MUST add it to the betweenDoubles list or other between list in MesquiteTree!!!*/
+			/* NOTE: if you add a named value to this list, you MUST add it to the betweenDoubles list or other between list in MesquiteTree!!!*/
 			if (interp == 1)
 				name = "bootstrapFrequency";
 			else if (interp == 2)
@@ -126,10 +129,16 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			}
 			interps[2] = remember.getState();
 			n.setValue(name);
-			
+
 		}
 		queryDialog.dispose();
 		return ok;
+	}
+	void checkTreesVector(){
+		if (treesVector == null && getProject() != null){
+			treesVector = getProject().getTreeVectors(); 
+		}
+
 	}
 	/*.................................................................................................................*/
 	public void itemStateChanged(ItemEvent arg0) {
@@ -148,13 +157,17 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	public void addBlockListener(MesquiteListener ml){
 		blockListeners.addElement(ml);
-		for (int i= 0; i<treesVector.size(); i++)
-			((TreeVector)treesVector.elementAt(i)).addListener(ml);
+		checkTreesVector();
+		if (treesVector!=null)
+			for (int i= 0; i<treesVector.size(); i++)
+				((TreeVector)treesVector.elementAt(i)).addListener(ml);
 	}
 	public void removeBlockListener(MesquiteListener ml){
 		blockListeners.removeElement(ml);
-		for (int i= 0; i<treesVector.size(); i++)
-			((TreeVector)treesVector.elementAt(i)).removeListener(ml);
+		checkTreesVector();
+		if (treesVector!=null)
+			for (int i= 0; i<treesVector.size(); i++)
+				((TreeVector)treesVector.elementAt(i)).removeListener(ml);
 	}
 	/*.................................................................................................................*/
 	public MesquiteModule showElement(FileElement e){
@@ -271,7 +284,6 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	/** A method called immediately after the file has been read in.*/
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
-		treesVector = getProject().getTreeVectors(); //new ListableVector();
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "List of Trees", makeCommand("showTrees",  this), treesVector);
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Tree Blocks", makeCommand("showTreeBlocks",  this));
@@ -303,6 +315,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
+		checkTreesVector();
 		if (treesVector != null && (file == null || file == getProject().getHomeFile())){
 			for (int i = 0; i< treesVector.size(); i++) {
 				TreeVector trees = (TreeVector)treesVector.elementAt(i);
@@ -392,7 +405,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns a trees block", "[number of trees block; 0 based]", commandName, "getTreeBlock")) {
 			int t = MesquiteInteger.fromFirstToken(arguments, pos);
-			if (MesquiteInteger.isCombinable(t) && t<treesVector.size()) {
+			checkTreesVector();
+			if (treesVector!=null && MesquiteInteger.isCombinable(t) && t<treesVector.size()) {
 				TreeVector tx = (TreeVector)treesVector.elementAt(t);
 				return tx;
 			}
@@ -630,6 +644,24 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else if (checker.compare(this.getClass(), "Includes file with trees (partial)", null, commandName, "includePartialTreeFile")) { 
 			includeTreeFile(commandName, arguments, checker, true);
 		}
+		else if (checker.compare(this.getClass(), "Sets the interpretation of numerical node labels, as per dialog in this module", "[true/false for interpret as numerical; true/false for as on branches; name of interpretation]", commandName, "setDefaultNumericalLabelInterpetation")) { 
+			// see also queryAboutNumericalLabelIntepretation, above
+			/*	Arguments: 
+			-  true/false for intepret as numerical
+			- true/false for as on branches (versus nodes)
+			- string for name of interpretation ("bootstrapFrequency", "posteriorProbability", "consensusFrequency", other)
+			 */
+
+			boolean interpretLabelsAsNumerical = "True".equalsIgnoreCase(parser.getFirstToken(arguments)); 
+			boolean interpretNumericalLabelsAsOnBranches = "True".equalsIgnoreCase(parser.getNextToken());
+			String interpretationName = parser.getNextToken(); //("bootstrapFrequency", "posteriorProbability", "consensusFrequency", other)
+			MesquiteTree.defaultValueCodeRUN = interpretationName;
+			MesquiteTree.interpretNumericalLabelsAsOnBranchesRUN = interpretNumericalLabelsAsOnBranches;
+			MesquiteTree.numericalLabelInterpretationSetRUN = true;
+			MesquiteTree.interpretLabelsAsNumericalRUN = interpretLabelsAsNumerical;
+			return null;
+		}
+
 		else if (checker.compare(this.getClass(), "Includes file with trees (ask if partial)", null, commandName, "includeTreeFileAskPartial")) {
 			boolean all = AlertDialog.query(containerOfModule(), "Read All Trees?", "Read all trees, or only a sample of the trees?", "All", "Sample");
 
@@ -1242,7 +1274,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else if (!MesquiteThread.isScripting() && (suppressAsk || AlertDialog.query(containerOfModule(), "Trees ready", "The trees are now ready [" + fillTask.getName() + "; name of tree block: \"" + trees.getName()+ "\"].  Would you like to open a tree window to display them?", "Yes", "No"))){
 			//send script to tree window coord to makeTreeWindow with set of taxa and then set to stored trees and this tree vector
 			int whichTreeBlock = getTreeBlockNumber(taxa, trees);
-			String extraWindowCommands = fillTask.getExtraTreeWindowCommands(true);
+			String extraWindowCommands = fillTask.getExtraTreeWindowCommands(true, trees.getID());
 			if (StringUtil.blank(extraWindowCommands))
 				extraWindowCommands="";
 			String commands = "makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It; setTreeSource  #StoredTrees;";
@@ -1273,6 +1305,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public TreeVector getTreeBlock(Taxa taxa, int i){  //OK for doomed
+		checkTreesVector();
 		if (treesVector==null)
 			return null;
 		int count = 0;
@@ -1288,6 +1321,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public TreeVector getTreeBlockByID(long id){  //this uses the temporary run-time id of the tree vector
+		checkTreesVector();
 		if (treesVector==null)
 			return null;
 		for (int j = 0; j< treesVector.size(); j++) {
@@ -1299,6 +1333,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public TreeVector getTreeBlockByUniqueID(String uniqueID){  //this uses the temporary run-time id of the tree vector
+		checkTreesVector();
 		if (treesVector==null || uniqueID == null)
 			return null;
 
@@ -1311,6 +1346,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i){  //OK for doomed
+		checkTreesVector();
 		if (treesVector==null)
 			return null;
 		int count = 0;
@@ -1326,6 +1362,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public int getTreeBlockNumber(Taxa taxa, MesquiteFile file, TreeVector trees){ //OK for doomed
+		checkTreesVector();
 		int count = 0;
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector t = (TreeVector)treesVector.elementAt(j);
@@ -1339,15 +1376,17 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public int getTreeBlockNumber(Taxa taxa, TreeVector trees){ //OK for doomed
+		checkTreesVector();
 		int count = 0;
-		for (int j = 0; j< treesVector.size(); j++) {
-			TreeVector t = (TreeVector)treesVector.elementAt(j);
-			if ((taxa == null || taxa.equals(t.getTaxa(), false)) && !t.isDoomed()) { 
-				if (t == trees)
-					return count;
-				count++;
+		if (treesVector!=null)
+			for (int j = 0; j< treesVector.size(); j++) {
+				TreeVector t = (TreeVector)treesVector.elementAt(j);
+				if ((taxa == null || taxa.equals(t.getTaxa(), false)) && !t.isDoomed()) { 
+					if (t == trees)
+						return count;
+					count++;
+				}
 			}
-		}
 		return -1;
 	}
 	/*.................................................................................................................*/
@@ -1356,6 +1395,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public int getNumberTreeBlocks(Taxa taxa){ //OK for doomed
+		checkTreesVector();
 		if (treesVector == null)
 			return 0;
 		int count = 0;
@@ -1368,6 +1408,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public int getNumberTreeBlocks(Taxa taxa, MesquiteFile file){ //OK for doomed
+		checkTreesVector();
 		if (treesVector == null)
 			return 0;
 		int count = 0;
@@ -1380,6 +1421,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public int getNumberTreeBlocks(){ //OK for doomed
+		checkTreesVector();
 		if (treesVector == null)
 			return 0;
 		int count = 0;
@@ -1404,6 +1446,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public NexusBlock elementAdded(FileElement trees){
+		checkTreesVector();
 		if (trees ==null || !(trees instanceof TreeVector) || treesVector == null)
 			return null;
 		if (treesVector.indexOf(trees) <0) {
@@ -1437,11 +1480,12 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					fireEmployee((ManagerAssistant)ma);
 				}
 		}
+		checkTreesVector();
 		NexusBlock nb = findNEXUSBlock(e);
 		if (nb!=null) {
 			removeNEXUSBlock(nb);
 		}
-		if (treesVector.indexOf(e)>=0){
+		if (treesVector!=null && treesVector.indexOf(e)>=0){
 			while(treesVector.indexOf(e)>=0) {
 				treesVector.removeElement(e, true);
 			}

@@ -637,6 +637,25 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		}
 		else return null;
 	}
+	public static Listable queryList(MesquiteWindow parent, String title, String message, String helpString,  String OKButton, String cancelButton, Listable[] objects, int current) {
+		if (objects==null) 
+			return null;
+		MesquiteInteger io = new MesquiteInteger(current);
+//		public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, MesquiteInteger selected, String okButton, String cancelButton, String thirdButton, boolean prioritize, Class priorityClass, boolean hasDefault, boolean multipleMode) {
+		ListDialog id = new ListDialog(parent, title, message, true,helpString, objects, io, OKButton, cancelButton, null,false, null, true, false);
+//		public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, MesquiteInteger selected, String thirdButton, boolean hasDefault, boolean multipleMode) {
+//		ListDialog id = new ListDialog(parent, title, message, true,helpString, objects, io, null,true, false);
+		id.setVisible(true);
+		id.dispose();
+		int result = io.getValue();
+		if (io.isUnassigned())
+			return null;
+		if (result>=0 && result<objects.length){
+				MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + objects[result].getName());
+			return objects[result];
+		}
+		else return null;
+	}
 	public static int queryList(MesquiteWindow parent, String title, String message, String helpString, Context[] contexts, int current, boolean doShow) {
 		if (contexts==null)
 			return MesquiteInteger.unassigned;

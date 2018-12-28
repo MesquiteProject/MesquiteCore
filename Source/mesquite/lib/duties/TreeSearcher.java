@@ -65,11 +65,14 @@ public abstract class TreeSearcher extends MesquiteModule  {
 
 
 	 public String getExtraTreeWindowCommands (boolean finalTree){
-   		 return "";
-   	 }
+		 return "";
+	 }
+	 public String getExtraTreeWindowCommands (boolean finalTree, long treeBlockID){
+		 return "";
+	 }
 	 public String getExtraIntermediateTreeWindowCommands (){
-   		 return "";
-   	 }
+		 return "";
+	 }
 
    	 /** Fills the passed tree block with trees. */
   	public abstract void fillTreeBlock(TreeVector treeList);

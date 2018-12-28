@@ -15,6 +15,8 @@ package mesquite.trees.NodeLocsStandard;
 /*~~  */
 
 import java.util.*;
+
+
 import java.awt.*;
 
 import mesquite.lib.*;
@@ -752,19 +754,21 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 	}
 	/*....................................................................................................*/
-	FontMetrics fm;
-	private int findMaxNameLength(Tree tree, int N) {
+	FontMetrics fm, fmBIG;
+	private int findMaxNameLength(TreeDisplay treeDisplay, Tree tree, int N) {
 		if (tree.nodeIsTerminal(N)) {
 			String s = tree.getTaxa().getName(tree.taxonNumberOfNode(N));
 			if (s==null)
 				return 0;
+			else if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX && tree.getTaxa().getSelected(tree.taxonNumberOfNode(N)))
+				return fmBIG.stringWidth(s);
 			else
 				return fm.stringWidth(s);
 		}
 		else {
 			int max = 0;
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
-				int cur = findMaxNameLength(tree, d);
+				int cur = findMaxNameLength(treeDisplay, tree, d);
 				if (cur>max)
 					max = cur;
 			}
@@ -772,18 +776,41 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 	}
 	/*.................................................................................................................*/
-	public int effectiveNumberOfTerminals(Tree tree, int node){
-		if (tree.nodeIsTerminal(node))
-			return 1;
+	double highlightMultiplier(TreeDisplay treeDisplay){
+		return (treeDisplay.selectedTaxonHighlightMode+3)/4.0;
+	}
+	/*.................................................................................................................*/
+	public double effectiveNumberOfTerminalsInClade(Tree tree, int node, TreeDisplay treeDisplay){
+		if (tree.nodeIsTerminal(node)){
+			if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX && tree.getTaxa().getSelected(tree.taxonNumberOfNode(node)))
+				return highlightMultiplier(treeDisplay);
+			else
+				return 1;
+		}
+		double num=0;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+			num += effectiveNumberOfTerminalsInClade(tree, d, treeDisplay);
+		}
+		return num;
+	}
+	
+	/*.................................................................................................................*/
+	public double effectiveNumberOfTerminals(Tree tree, int node, TreeDisplay treeDisplay){
+		if (tree.nodeIsTerminal(node)){
+			if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX && tree.getTaxa().getSelected(tree.taxonNumberOfNode(node)))
+				return highlightMultiplier(treeDisplay);
+			else
+				return 1;
+		}
 		else if (tree.getAssociatedBit(triangleNameRef, node)) {
-			if (tree.numberOfTerminalsInClade(node)>2)
+			if (effectiveNumberOfTerminalsInClade(tree, node, treeDisplay)>2)
 				return 3;
 			else 
 				return 2;
 		}
-		int num=0;
+		double num=0;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
-			num += effectiveNumberOfTerminals(tree, d);
+			num += effectiveNumberOfTerminals(tree, d, treeDisplay);
 		}
 		return num;
 	}
@@ -801,13 +828,15 @@ public class NodeLocsStandard extends NodeLocsVH {
 		zoomFactor = factor;
 		parametersChanged();
 	}
-	int getSpacing(TreeDisplay treeDisplay, Tree tree, int node, boolean inTriangle){
+	double getSpacing(TreeDisplay treeDisplay, Tree tree, int node, boolean inTriangle){
 		if (inTriangle && !treeDisplay.getSimpleTriangle()) {
 			int ancestralNode = tree.ancestorWithNameReference(triangleNameRef, node);
 			if (ancestralNode==0 ||  node != tree.leftmostTerminalOfNode(ancestralNode))
 				return 4;
 		}
-		int baseSpacing =treeDisplay.getTaxonSpacing();
+		double baseSpacing =treeDisplay.getTaxonSpacing();
+		if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX  && tree.getTaxa().getSelected(tree.taxonNumberOfNode(node)))
+			baseSpacing = baseSpacing *highlightMultiplier(treeDisplay)*0.89;  //0.89 is magical constant to prevent too big a space for highlighted taxa
 		if (zoomNode > 0){
 			int inZoom = tree.numberOfTerminalsInClade(zoomNode);
 			if (inZoom<2)
@@ -828,6 +857,11 @@ public class NodeLocsStandard extends NodeLocsVH {
 		return baseSpacing;
 	}
 	
+	void prepareFontMetrics(Font f, Graphics g){
+		Font big2 = new Font(f.getName(), Font.PLAIN, f.getSize()*2);
+		fmBIG = g.getFontMetrics(big2);
+		fm = g.getFontMetrics(f);
+	}
 	/*.................................................................................................................*/
 	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { //Graphics g removed as parameter May 02
 		if (MesquiteTree.OK(tree)) {
@@ -871,9 +905,9 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 					if (f==null)
 						f = g.getFont();
-					fm=g.getFontMetrics(f);
+					prepareFontMetrics(f, g);
 					if (fm!=null)
-						treeDisplay.setTipsMargin(findMaxNameLength(tree, root) + treeDisplay.getTaxonNameBuffer() + treeDisplay.getTaxonNameDistance());
+						treeDisplay.setTipsMargin(findMaxNameLength(treeDisplay, tree, root) + treeDisplay.getTaxonNameBuffer() + treeDisplay.getTaxonNameDistance());
 				}
 				else 
 					treeDisplay.setTipsMargin(treeDisplay.getTaxonNameBuffer());
@@ -911,7 +945,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				setDefaultOrientation(treeDisplay);
 			
 			if (treeDisplay.getOrientation()==TreeDisplay.UP) {
-				int numTerms = effectiveNumberOfTerminals(tree, root);
+				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
 				if (numTerms == 0)
 					numTerms = 1;
 				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
@@ -974,7 +1008,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 			}
 			else if (treeDisplay.getOrientation()==TreeDisplay.DOWN) {
-				int numTerms = effectiveNumberOfTerminals(tree, root);
+				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
 				if (numTerms == 0)
 					numTerms = 1;
 				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
@@ -1032,7 +1066,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				}
 			}
 			else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-				int numTerms = effectiveNumberOfTerminals(tree, root);
+				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
 				if (numTerms == 0)
 					numTerms = 1;
 				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
@@ -1089,7 +1123,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				}
 			}
 			else if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
-				int numTerms = effectiveNumberOfTerminals(tree, root);
+				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
 				if (numTerms == 0)
 					numTerms = 1;
 				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
@@ -1228,7 +1262,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				GraphicsUtil.drawLine(g,rightEdge, (int)(base), rightEdge,  (int)(base+ (totalScaleHeight*scaling)));
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
-			fm=g.getFontMetrics(g.getFont());
+			prepareFontMetrics(g.getFont(), g);
 			int textHeight = fm.getHeight();
 			double leftEdge = treeDisplay.getTreeDrawing().y[tree.leftmostTerminalOfNode(drawnRoot)];
 			double rightEdge = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)]+ scaleBuffer;
@@ -1255,7 +1289,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				GraphicsUtil.drawLine(g,(int)(base), rightEdge, (int)(base- (totalScaleHeight*scaling)),rightEdge);
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-			fm=g.getFontMetrics(g.getFont());
+			prepareFontMetrics(g.getFont(), g);
 			int textHeight = fm.getHeight();
 			double leftEdge = treeDisplay.getTreeDrawing().y[tree.leftmostTerminalOfNode(drawnRoot)];
 			double rightEdge = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)] + scaleBuffer;

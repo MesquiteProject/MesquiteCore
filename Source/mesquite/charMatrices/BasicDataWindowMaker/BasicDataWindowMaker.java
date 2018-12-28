@@ -460,6 +460,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Grid", MesquiteModule.makeCommand("toggleShowPaleGrid", this), table.showPaleGrid);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Cell Colors", MesquiteModule.makeCommand("toggleShowPaleCellColors", this), table.showPaleCellColors);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Missing", MesquiteModule.makeCommand("togglePaleMissing", this), table.paleMissing);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
 		
 		//CHANGES
@@ -922,6 +923,7 @@ public void requestFocus(){
 		temp.addLine("toggleShowPaleCellColors " + table.showPaleCellColors.toOffOnString());
 		temp.addLine("toggleShowPaleExcluded " + showPaleExcluded.toOffOnString());
 		temp.addLine("togglePaleInapplicable " + table.paleInapplicable.toOffOnString());
+		temp.addLine("togglePaleMissing " + table.paleMissing.toOffOnString());
 		temp.addLine("toggleShowBoldCellText " + table.showBoldCellText.toOffOnString());
 		temp.addLine("toggleAllowAutosize " + table.allowAutosize.toOffOnString());
 		temp.addLine("toggleColorsPanel " + showColorLegend.toOffOnString());
@@ -2089,8 +2091,12 @@ public void requestFocus(){
 			table.setShowPaleExcluded(showPaleExcluded.getValue());
 			table.repaintAll();
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not the gaps are pale.", "[on or off]", commandName, "togglePaleInapplicable")) {
+		else if (checker.compare(this.getClass(), "Sets whether or not gaps are pale.", "[on or off]", commandName, "togglePaleInapplicable")) {
 			table.paleInapplicable.toggleValue(ParseUtil.getFirstToken(arguments, pos));
+			table.repaintAll();
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not missing data are pale.", "[on or off]", commandName, "togglePaleMissing")) {
+			table.paleMissing.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 			table.repaintAll();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not the text of cells is shown in bold face.", "[on or off]", commandName, "toggleShowBoldCellText")) {
@@ -2959,6 +2965,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	MesquiteBoolean showPaleExcluded;
 	MesquiteBoolean showEmptyDataAsClear;
 	MesquiteBoolean paleInapplicable;
+	MesquiteBoolean paleMissing;
 
 	int birdsEyeWidth = 2;
 
@@ -3024,6 +3031,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		showEmptyDataAsClear = new MesquiteBoolean(false);
 		showPaleExcluded = new MesquiteBoolean(false);
 		paleInapplicable = new MesquiteBoolean(true);
+		paleMissing = new MesquiteBoolean(false);
 		showBoldCellText = new MesquiteBoolean(false);
 		showChanges = new MesquiteBoolean(!(data instanceof MolecularData));
 		allowAutosize = new MesquiteBoolean(!(data instanceof MolecularData));
@@ -3497,7 +3505,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	int referenceSequence = 0;
 
 	/* ................................................................................................................. */
-	public boolean queryDroppedFileOptions() {
+	protected boolean queryDroppedFileOptions(MesquiteBoolean adjustSequences) {
 		if (!(data instanceof MolecularData))
 			return false;
 		
@@ -3511,13 +3519,15 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	//		dialog.addBlankLine();
 	//	}
 		IntegerField referenceSequenceBox = dialog.addIntegerField("Compare to reference sequence: ", referenceSequence + 1, 8, 1, data.getNumTaxa());
-		dialog.completeAndShowDialog("Adjust Sequences", "Don't Adjust", true, null);
+		dialog.completeAndShowDialog("Adjust Sequences", "Don't Adjust", "Cancel", "Adjust Sequences");
 
 		if (buttonPressed.getValue() == 0) {
 			referenceSequence = referenceSequenceBox.getValue() - 1;
 		}
+		if (adjustSequences!=null)
+			adjustSequences.setValue(buttonPressed.getValue()==0);
 		dialog.dispose();
-		return (buttonPressed.getValue() == 0);
+		return (buttonPressed.getValue() !=2);
 	}
 	
 	public int numIters (Iterator iter) {
@@ -3531,6 +3541,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 		FileInterpreter fileInterpreter = null;
 		int numFiles = numIters(files.iterator());
+		boolean abort = false;
 
 		for (Iterator iter = files.iterator(); iter.hasNext();) {
 			File nextFile = (File) iter.next();
@@ -3547,8 +3558,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					fileInterpreter.setMaximumTaxonFilled(-1);
 
 					if (!MesquiteThread.isScripting()) {
-						if (data instanceof MolecularData)
-							adjustNewSequences = queryDroppedFileOptions();
+						if (data instanceof MolecularData) {
+							MesquiteBoolean adjustSequences = new MesquiteBoolean(true);
+							abort = !queryDroppedFileOptions(adjustSequences);
+							if (abort)
+								break;
+							adjustNewSequences = adjustSequences.getValue();
+						}
 					}
 					
 				}
@@ -3561,7 +3577,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				count++;
 			}
 		}
-		if (fileInterpreter!=null) {
+		if (!abort && fileInterpreter!=null) {
 			if (adjustNewSequences) {
 				MesquiteMessage.println("Adjusting sequences ");
 				if (!data.someApplicableInTaxon(referenceSequence, false)){  
@@ -3869,6 +3885,12 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 						else */
 							textColor = Color.lightGray;
 					}
+					else if (paleMissing.getValue() && data.isUnassigned(column, row)){
+							/*	if (data.isTerminalInapplicable(column, row))
+									textColor = Color.white;
+								else */
+									textColor = Color.lightGray;
+							}
 					else
 						textColor = ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black);
 				}

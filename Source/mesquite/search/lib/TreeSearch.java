@@ -62,7 +62,7 @@ public String getMessageIfUserAbortRequested () {
 		if (arguments !=null) {
 			searchTask = (TreeSearcher)hireNamedEmployee(TreeSearcher.class,arguments);
 			if (searchTask==null) {
-				return sorry(getName() + " couldn't start because the requested tree searching module not obtained");
+				return sorry(getName() + " couldn't start because the requested tree searching module not obtained: "+arguments);
 			}
 		}
 		else {
@@ -98,9 +98,9 @@ public String getMessageIfUserAbortRequested () {
    		return null;
    	}
    	
-	 public String getExtraTreeWindowCommands (boolean finalTree){
+	public String getExtraTreeWindowCommands (boolean finalTree, long treeBlockID){
 		 if (searchTask!=null)
-			 return searchTask.getExtraTreeWindowCommands(finalTree);
+			 return searchTask.getExtraTreeWindowCommands(finalTree, treeBlockID);
 		 else
 			 return "";
    	 }

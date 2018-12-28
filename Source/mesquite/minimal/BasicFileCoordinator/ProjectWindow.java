@@ -696,7 +696,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		resetSizes(getBounds().width, getBounds().height);
 	}
 	void resetSizes(int w, int h){
-		if (bfc.isDoomed() ||  bfc.getProject().refreshSuppression>0)
+		if (bfc!=null && (bfc.isDoomed() ||  bfc.getProject().refreshSuppression>0))
 			return;
 		int max = getHeight();
 		int vertical = 2;

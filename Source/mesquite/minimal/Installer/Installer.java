@@ -361,7 +361,7 @@ public class Installer extends MesquiteInit {
 		MesquiteBoolean b = new MesquiteBoolean();
 		String scriptPath  = createSupportDirectory(b) + MesquiteFile.fileSeparator + "script";
 		if (precedeWithCDToMesquiteFolder)
-			script = ShellScriptUtil.getChangeDirectoryCommand(getRootPath()) + script;
+			script = ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), getRootPath()) + script;
 		MesquiteFile.putFileContents(scriptPath, script, false);
 		return ShellScriptUtil.executeAndWaitForShell(scriptPath, "installScript");
 	}

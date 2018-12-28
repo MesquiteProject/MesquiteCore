@@ -57,7 +57,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	boolean readyToPaint = true;
 	protected Font currentFont;
 	public static Font defaultFont;
-	
+
 	boolean suppressExplanationAreaUpdates=false;
 
 	private MesquiteTool currentTool;
@@ -2159,7 +2159,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			if ((currentMM.getLabel()== null && targetMM.getLabel()==null))
 				return true;
 			if (currentMM.getLabel()== null || targetMM.getLabel()==null)
-					return false;
+				return false;
 			return currentMM.getLabel().equals(targetMM.getLabel());
 		}
 		if (current instanceof MenuItem && target instanceof MenuItem){
@@ -2168,7 +2168,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			if ((currentMMI.getLabel()== null && targetMMI.getLabel()==null))
 				return true;
 			if (currentMMI.getLabel()== null || targetMMI.getLabel()==null)
-					return false;
+				return false;
 			return currentMMI.getLabel().equals(targetMMI.getLabel());
 		}
 		return true;
@@ -2227,6 +2227,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	/*........................................................*/
 	int sameUntil(MenuBar current, MenuBar target){
+		if (current==null || target==null)
+			return 0;
 		int it = 0;
 		while (it<target.getMenuCount() && it<current.getMenuCount()){
 			Menu thisTargetMenu = target.getMenu(it);
@@ -2246,10 +2248,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		for (int it= current.getMenuCount()-1; it>=startOfDifference; it--){
 			try{
 				Menu m = current.getMenu(it);
-			disposeMenuComponent(m);
-			current.remove(it);
+				disposeMenuComponent(m);
+				current.remove(it);
 			}
 			catch (NullPointerException e){
+			}
+			catch (ArrayIndexOutOfBoundsException e){
 			}
 		}
 		Menu[] toTransfer = new Menu[target.getMenuCount()-startOfDifference+1];
@@ -2824,6 +2828,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			if (MesquiteInteger.isCombinable(width) && MesquiteInteger.isCombinable(height)) {
 				fromScriptCommand = true;//this is needed to counteract difficulties with popping in/out and size setting in window constructors
 				setWindowSize(width, height);
+				parentFrame.recordScriptedWindowSize(this, width, height);
 				fromScriptCommand = false;
 			}
 		}
@@ -2863,20 +2868,30 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			MesquiteInteger io = new MesquiteInteger(0);
 			int x= MesquiteInteger.fromString(arguments, io);
 			int y= MesquiteInteger.fromString(arguments, io);
+			int minimalVisible = 16;
 			if (MesquiteInteger.isCombinable(x) && MesquiteInteger.isCombinable(y)) {
-				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-				if (x> screenSize.width-16)
-					x=screenSize.width-64;
-				else if (x+getBounds().width<16)
-					x= 16 - getBounds().width;
-				if (y> screenSize.height-16)
-					y=screenSize.height-64;
-				else if (y+getBounds().height<16)
-					y= 16 - getBounds().height;
-				if (y<0)
-					y=0;
-				if (MesquiteTrunk.isMacOSX() && y<22 && x<0)  //workaround for bug in OS X; June 2004
-					x=0;
+				Rectangle effectiveScreenSize = getEffectiveScreenSize();
+				double top = effectiveScreenSize.getY();
+				double height = effectiveScreenSize.getHeight();
+				double bottom = top+height;
+				double left = effectiveScreenSize.getX();
+				double width = effectiveScreenSize.getWidth();
+				double right = left+width;
+
+				if (x> right-minimalVisible) {  // too far to right
+					x=(int)width/2;
+				}
+				else if (x+getParentFrame().getBounds().width<minimalVisible+left){
+					x= (int)left;
+				}
+				if (y> bottom-minimalVisible)  // too far down
+					y=(int)height/2;
+				else if (y+getParentFrame().getBounds().height<minimalVisible+top)
+					y=  (int)top;
+				if (y<top)
+					y=(int)top;
+				//if (MesquiteTrunk.isMacOSX() && y<minimalVisible*2 && x<left)  //workaround for bug in OS X; June 2004
+				//	x=(int)left;
 				setWindowLocation(x, y, false, true);
 			}
 		}
@@ -2969,6 +2984,16 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				elem.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 		}
+	}
+	
+	public Rectangle getEffectiveScreenSize() {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Insets scnMax = Toolkit.getDefaultToolkit().getScreenInsets(parentFrame.getGraphicsConfiguration());
+
+		Rectangle effectiveScreenSize = new Rectangle(scnMax.left, scnMax.top, 
+				screenSize.width-scnMax.right-scnMax.left, 
+				screenSize.height-scnMax.top-scnMax.bottom);
+		return effectiveScreenSize;
 	}
 
 	private void saveWindowMacro(int preferredMenu){

@@ -523,16 +523,16 @@ public class Parser extends StringUtil {
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
-		char c=getNextChar();
+		char c=getNextCharRaw();  //Debugg.println(this had used NEXUS characters, i.e. skipped brackets) OK to have changed?
 		buffer.setLength(0);
 
 		while (!lineEndCharacter(c) && pos.getValue()<=line.length() && c!=(char)0) {  
 			buffer.append(c);
-			c=getNextChar();
+			c=getNextCharRaw();
 		}
 		if (c=='\r' && lineEndsAreDefaults()) {
 			int pos = getPosition();
-			c=getNextChar();
+			c=getNextCharRaw();
 			if (c!='\n')   // if the next char is a newline, we want to go past it; otherwise, step back
 				setPosition(pos);
 		}
@@ -1340,6 +1340,15 @@ public class Parser extends StringUtil {
 		else if (hadBrack) {
 			return getNextChar();
 		}
+		return c;
+	}
+	/*.................................................................................................................*/
+	public char getNextCharRaw() {
+		int posTemp = pos.getValue();
+		if (posTemp>=line.length()) 
+			return 0;
+		char c = line.charAt(posTemp); 
+		pos.increment();
 		return c;
 	}
 	/*.................................................................................................................*/

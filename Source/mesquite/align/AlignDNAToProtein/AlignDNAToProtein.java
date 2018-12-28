@@ -70,7 +70,7 @@ public class AlignDNAToProtein extends DNADataAltererCon  implements AltererAlig
 		int numBases = dnaData.getNumberApplicableInTaxon(it, true);
 		int numAAs = proteinData.getNumberApplicableInTaxon(it, true);
 		if (numAAs*3!= numBases) {
-			logln("Number of nucleotides in sequence does not correspond to number of amino acids in protein sequence (taxon " + it + ")");
+			logln("Number of nucleotides in sequence does not correspond to number of amino acids in protein sequence (taxon " + it+1 + ")");
 			return false;
 		}
 		

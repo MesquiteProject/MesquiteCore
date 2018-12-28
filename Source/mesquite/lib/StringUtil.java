@@ -224,6 +224,13 @@ public class StringUtil {
 	public static String lineEnding(){
 		return lineSeparator;
 	}
+	/*.................................................................................................................*/
+	public static String lineEnding(boolean isWindows){
+		if (isWindows)
+			return "\r\n";
+		return "\n";
+	}
+
 	public static boolean getIsNumeric(String s) {
 		try {
 			Integer.parseInt(s);
@@ -558,6 +565,31 @@ public class StringUtil {
 		return line.substring(last+1, line.length());
 	}
 	/*.................................................................................................................*/
+	/** returns the last item in a string, separated into parts by whichever is last of the two separators*/
+	public static String getLastItem(String line, String separator1, String separator2, boolean removeTrailingSeparators) {
+		if (line==null)
+			return null;
+		else if (line.equals(""))
+			return "";
+		int last = 0;
+		if (separator1==null) {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator2);
+			last = line.lastIndexOf(separator2);
+		}
+		else if (separator2==null) {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1);
+			last = line.lastIndexOf(separator1);
+		}
+		else {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1+separator2);
+			last = MesquiteInteger.maximum(line.lastIndexOf(separator1), line.lastIndexOf(separator2));
+		}
+		return line.substring(last+1, line.length());
+	}
+	/*.................................................................................................................*/
 	/** returns the  item number "index" in a string, separated into parts by the separator.  NOT 0-based*/
 	public static String getItem(String line, String separator, int index) {
 		if (line==null)
@@ -606,15 +638,38 @@ public class StringUtil {
 	/*.................................................................................................................*/
 	/** returns everything in front of the last item in a string, separated into parts by whichever is last of the two separators*/
 	public static String getAllButLastItem(String line, String separator1, String separator2) {
+		return getAllButLastItem(line, separator1, separator2, false);
+	}
+	
+	/*.................................................................................................................*/
+	/** returns everything in front of the last item in a string, separated into parts by whichever is last of the two separators*/
+	public static String getAllButLastItem(String line, String separator1, String separator2, boolean removeTrailingSeparators) {
 		if (line==null)
 			return null;
 		else if (line.equals(""))
 			return "";
-		int last = MesquiteInteger.maximum(line.lastIndexOf(separator1), line.lastIndexOf(separator2));
+		int last = 0;
+		if (separator1==null) {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator2);
+			last = line.lastIndexOf(separator2);
+		}
+		else if (separator2==null) {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1);
+			last = line.lastIndexOf(separator1);
+		}
+		else {
+			if (removeTrailingSeparators) 
+				line = StringUtil.stripTrailingWhitespaceAndPunctuation(line, separator1+separator2);
+			last = MesquiteInteger.maximum(line.lastIndexOf(separator1), line.lastIndexOf(separator2));
+		}
 		if (last <0 )
 			return line;
 		return line.substring(0, last);
 	}
+	
+	
 	/*.................................................................................................................*/
 	/** returns everything in a string AFTER a particular substring; returns empty string if substring not present*/
 	public static String getAllAfterSubString(String line, String subString) {
@@ -1025,12 +1080,16 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String stripTrailingWhitespaceAndPunctuation(String token) {
+		return stripTrailingWhitespaceAndPunctuation(token, defaultPunctuation);
+	}
+	/*.................................................................................................................*/
+	public static String stripTrailingWhitespaceAndPunctuation(String token, String punct) {
 		if (token == null)
 			return "";
 		int firstDark = -1;
 		for (int i=token.length()-1;  i>=0; i--) {
 			char c = token.charAt(i);
-			if (!(defaultWhitespace.indexOf(c)>=0 ||  defaultPunctuation.indexOf(c)>=0)){  // not (whitespace or punctuation)
+			if (!(defaultWhitespace.indexOf(c)>=0 ||  (punct!=null && punct.indexOf(c)>=0))){  // not (whitespace or punctuation)
 				firstDark = i;
 				break;
 			}

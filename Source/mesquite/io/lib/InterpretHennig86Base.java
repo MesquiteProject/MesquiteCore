@@ -1704,7 +1704,7 @@ class HennigTREAD extends HennigNonaCommand {
 		if (treeVectors.length==1)
 			treeVector = (TreeVector)treeVectors[0];
 		else
-			treeVector = (TreeVector)ListDialog.queryList(fileInterpreter.containerOfModule(), "Include trees in file?", "Include trees in file?", MesquiteString.helpString, treeVectors, 0);
+			treeVector = (TreeVector)ListDialog.queryList(fileInterpreter.containerOfModule(), "Include trees in file?", "Include trees in file?", MesquiteString.helpString, "Include", "No trees", treeVectors, 0);
 		Tree tree;
 		if (treeVector !=null && treeVector.size()>0) {
 			outputBuffer.append(getCommandName()+fileInterpreter.getLineEnding());
