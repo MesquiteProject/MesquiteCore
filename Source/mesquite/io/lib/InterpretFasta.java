@@ -514,6 +514,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		return "";
 	}
 	protected String getTaxonName(Taxa taxa, int it){
+		return getTaxonName(taxa, it, null);
+	}
+	protected String getTaxonName(Taxa taxa, int it, CharacterData data){
 		if (simplifyTaxonName)
 			return StringUtil.cleanseStringOfFancyChars(taxa.getTaxonName(it)+uniqueSuffix,false,true);
 		else 
@@ -561,7 +564,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 					counter = 1;
 					outputBuffer.append(">");
-					outputBuffer.append(getTaxonName(taxa,it));
+					outputBuffer.append(getTaxonName(taxa,it, data));
 					String sup = getSupplementForTaxon(taxa, it);
 					if (StringUtil.notEmpty(sup))
 						outputBuffer.append(sup);
