@@ -125,7 +125,7 @@ public class ProteinState extends MolecularState{
 		return toString(s, data, ic, useBraces, false);
 	}
 	/*..........................................ProteinState.....................................*/
-	/** converts passed long (treated as ProteinState) to string.  Uses character state names if available.*/
+	/** converts passed long (treated as ProteinState) to string.*/
 	public static String toString(long s, CategoricalData data, int ic, boolean useBraces, boolean useSymbols) {
 		if (s == impossible)
 			return "impossible";
@@ -152,7 +152,10 @@ public class ProteinState extends MolecularState{
 			if (isElement(s, e)) {
 				if (!first)
 					temp+=" ";
-				temp+=ProteinData.symbolsAsStrings[e];
+				if (useSymbols)  
+					temp+=ProteinData.symbolsAsStrings[e];
+				else
+					temp+=ProteinData.longNamesAsStrings[e];  //added Feb 2019
 				first=false;
 			}
 		}
@@ -161,7 +164,8 @@ public class ProteinState extends MolecularState{
 		if (useBraces)
 			temp+="}";
 		return temp;
-	}
+	}	
+
 	/*..........................................ProteinState.....................................*/
 	/**return the state set containing the state represented by the character (e.g., '0' to {0}) �*/
 	public long fromChar(char c) { 
