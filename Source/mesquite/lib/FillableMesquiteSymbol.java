@@ -24,7 +24,13 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 	Checkbox fillBox = null;
 	protected boolean fill=true;
 	Color fillColor = Color.black;
-	Color rimColor = Color.black;
+	
+	Checkbox edgeWhiteBox = null;
+	Color edgeColor = Color.white;
+	protected boolean edgeWhite=true;
+	IntegerField edgeWidthField = null;
+	private int edgeWidth = 1;
+	
 	/**sets whether to fill the symbol or not*/
 	public void setFill(boolean fill){
 		this.fill = fill;
@@ -33,39 +39,91 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 	public boolean getFill(){
 		return fill;
 	}
+	/**sets whether the edge of the symbol is white (as opposed to black)*/
+	public void setEdgeWhite(boolean edgeWhite){
+		this.edgeWhite = edgeWhite;
+		if (edgeWhite)
+			edgeColor = Color.white;
+		else
+			edgeColor = Color.black;
+	}
+	/**gets whether the edge of the symbol is white or not*/
+	public boolean getEdgeWhite(){
+		return edgeWhite;
+	}
+	/**sets the thickness of the edge*/
+	public void setEdgeWidth(int width){
+		this.edgeWidth = width;
+	}
+	/**gets whether to fill the symbol or not*/
+	public int getEdgeWidth(){
+		return edgeWidth;
+	}
+
 	/**gets the NEXUS commands to specify the options specific to this tool*/
 	public String getBasicNexusOptions(){
+		String s = "";
 		if (getFill())
-			return " FILL ";
+			s = " FILL ";
 		else
-			return " OPEN ";
+			s = " OPEN ";
+		if (getEdgeWhite())
+			s += "EDGEWHITE ";
+		else
+			s +="EDGEBLACK ";
+		s += "EDGEWIDTH=" + getEdgeWidth();
+		return s;
+		
 	}
 	/*.................................................................................................................*/
 	public void  setToCloned(MesquiteSymbol cloned){
 		super.setToCloned(cloned);
 		setFill(((FillableMesquiteSymbol)cloned).getFill());
+		setEdgeWidth(((FillableMesquiteSymbol)cloned).getEdgeWidth());
+		setEdgeWhite(((FillableMesquiteSymbol)cloned).getEdgeWhite());
 	}
 	/*.................................................................................................................*/
 	public void addDialogElements(ExtensibleDialog dialog, boolean includeSize){
 		super.addDialogElements(dialog, includeSize);
 		fillBox = dialog.addCheckBox("filled", fill);
+		edgeWhiteBox = dialog.addCheckBox("edge white", edgeWhite);
+		edgeWidthField = dialog.addIntegerField("thickness of edge", edgeWidth, 5, 1, 20000);
 	}
 	/*.................................................................................................................*/
 	public void getDialogOptions(){
 		super.getDialogOptions();
 		fill = fillBox.getState();
+		setEdgeWhite(edgeWhiteBox.getState());
+		setEdgeWidth(edgeWidthField.getValue());
 	}
 	/*.................................................................................................................*/
 	public void processSubcommand(String token, Parser subcommands){
 		super.processSubcommand(token, subcommands);
-		if (token.equalsIgnoreCase("FILL"))
+		if (token.equalsIgnoreCase("FILL")) {
 			setFill(true);
-		else if (token.equalsIgnoreCase("OPEN"))
+		}
+		else if (token.equalsIgnoreCase("OPEN")) {
 			setFill(false);
+		}	
+		else if (token.equalsIgnoreCase("EDGEWHITE")) {
+			setEdgeWhite(true);
+		}
+		else if (token.equalsIgnoreCase("EDGEBLACK")) {
+			setEdgeWhite(false);
+		}
+		else if (token.equalsIgnoreCase("EDGEWIDTH")) {
+			token = subcommands.getNextToken(); // should be "=";
+			token = subcommands.getNextToken(); // value;
+			setEdgeWidth(MesquiteInteger.fromString(token));
+		}
 	}
 	/**sets fill color*/
 	public void setFillColor(Color color){
 		this.fillColor = color;
+	}
+	/**sets edge color*/
+	public void setEdgeColor(Color color){
+		this.edgeColor = color;
 	}
 	/**sets fill color*/
 	public void setColor(Color color){
@@ -136,9 +194,9 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 						g.setColor(fillColor);
 						GraphicsUtil.fill(g,poly);
 					}
-					g.setColor(rimColor);
+					g.setColor(edgeColor);
 
-					GraphicsUtil.draw(g,poly);
+					GraphicsUtil.draw(g,poly, edgeWidth);
 				}
 				g2.setTransform(saveTransform);
 			}
