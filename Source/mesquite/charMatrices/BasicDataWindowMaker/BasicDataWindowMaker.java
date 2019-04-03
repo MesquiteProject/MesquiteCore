@@ -302,6 +302,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	MesquiteBoolean useDiagonal = new MesquiteBoolean(false);
 	MesquiteBoolean allowAutosize;
 	boolean oldShowStates;
+	boolean oldReduceCellBorders;
 	boolean oldSuppress;
 	int oldColumnsWidths;
 	MesquiteMenuItemSpec linkedScrollingItem = null;
@@ -377,6 +378,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		}
 
 		oldShowStates = table.showStates.getValue();
+		oldReduceCellBorders = table.reduceCellBorders.getValue();
 		oldColumnsWidths = table.getColumnWidthsUniform();
 		oldSuppress = table.suppressAutosize;
 		interleaved = new MesquiteBoolean(data.interleaved);
@@ -463,6 +465,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Missing", MesquiteModule.makeCommand("togglePaleMissing", this), table.paleMissing);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
 		
+		ownerModule.addCheckMenuItem(ownerModule.displayMenu,"Reduce Cell Borders", MesquiteModule.makeCommand("toggleReduceCellBorders", this), table.reduceCellBorders);
+
 		//CHANGES
 		ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Show Changes Since Saved", MesquiteModule.makeCommand("toggleShowChanges", this), table.showChanges);
 		if (data instanceof CategoricalData && !(data instanceof DNAData) && !(data instanceof ProteinData))
@@ -912,6 +916,7 @@ public void requestFocus(){
 		temp.addLine("toggleShowChanges " + table.showChanges.toOffOnString());
 		temp.addLine("toggleSeparateLines " + table.statesSeparateLines.toOffOnString());
 		temp.addLine("toggleShowStates " + table.showStates.toOffOnString());
+		temp.addLine("toggleReduceCellBorders " + table.reduceCellBorders.toOffOnString());
 		temp.addLine("toggleAutoWCharNames " + table.autoWithCharNames.toOffOnString());
 		temp.addLine("toggleAutoTaxonNames " + table.autoRowNameWidth.toOffOnString());
 		temp.addLine("toggleShowDefaultCharNames " + table.showDefaultCharNames.toOffOnString());
@@ -1990,6 +1995,11 @@ public void requestFocus(){
 			table.doAutosize = true;
 			table.repaintAll();
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not cell borders should be reduced", "[on or off]", commandName, "toggleReduceCellBorders")) {
+			table.reduceCellBorders.toggleValue(ParseUtil.getFirstToken(arguments, pos));
+			table.doAutosize = true;
+			table.repaintAll();
+		}
 		else if (checker.compare(this.getClass(), "Sets whether or not default character names are shown", "[on or off]", commandName, "toggleShowDefaultCharNames")) {
 			table.showDefaultCharNames.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 			table.doAutosize = true;
@@ -2944,6 +2954,8 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	MesquiteBoolean showStates;
 
+	MesquiteBoolean reduceCellBorders;
+
 	MesquiteBoolean showDefaultCharNames;
 
 	MesquiteBoolean autoWithCharNames;
@@ -3023,6 +3035,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		this.data = data;
 		cellAnnotated = new CellAnnotation(data);
 		showStates = new MesquiteBoolean(true);
+		reduceCellBorders = new MesquiteBoolean(false);
 		showDefaultCharNames = new MesquiteBoolean(false);
 		autoWithCharNames = new MesquiteBoolean(!(data instanceof MolecularData));
 		showBirdsEyeView = new MesquiteBoolean(false);
@@ -3795,7 +3808,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		if (data == null)
 			return;
 		boolean writeStates = !showBirdsEyeView.getValue() && showStates.getValue();
-		boolean leaveEdges = writeStates && !tight.getValue();
+		boolean leaveEdges = !reduceCellBorders.getValue() && writeStates && !tight.getValue();
 		drawMatrixCell(g, x, y, w, h, column, row, selected, writeStates, leaveEdges);
 
 	}
