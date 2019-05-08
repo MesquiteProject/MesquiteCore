@@ -17,6 +17,7 @@ package mesquite.charMatrices.CompileProcessedMatrices;
 import java.awt.FileDialog;
 import java.util.Vector;
 
+import mesquite.categ.lib.ProteinData;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
@@ -77,7 +78,10 @@ public class CompileProcessedMatrices extends FileProcessor {
 	void writeMatrixToFile(String file, CharacterData data, String matrixName){
 		MesquiteFile.appendFileContents(file, "BEGIN CHARACTERS;" + StringUtil.lineEnding() + "\tTITLE " + ParseUtil.tokenize(matrixName) + ";" + StringUtil.lineEnding() , true);
 		MesquiteFile.appendFileContents(file, "\tDIMENSIONS NCHAR= " + data.getNumChars() + " ;" + StringUtil.lineEnding() , true);
-		MesquiteFile.appendFileContents(file, "\tFORMAT DATATYPE = DNA GAP = - MISSING = ?;" + StringUtil.lineEnding() + "\tMATRIX" + StringUtil.lineEnding() , true);
+		if (data instanceof ProteinData)
+			MesquiteFile.appendFileContents(file, "\tFORMAT DATATYPE = PROTEIN GAP = - MISSING = ?;" + StringUtil.lineEnding() + "\tMATRIX" + StringUtil.lineEnding() , true);
+		else
+			MesquiteFile.appendFileContents(file, "\tFORMAT DATATYPE = DNA GAP = - MISSING = ?;" + StringUtil.lineEnding() + "\tMATRIX" + StringUtil.lineEnding() , true);
 		for (int it = 0; it < data.getNumTaxa(); it++){
 			MesquiteFile.appendFileContents(file, "\t" + ParseUtil.tokenize(data.getTaxa().getTaxonName(it)) + "\t" , true);
 			StringBuffer description = new StringBuffer();
@@ -95,7 +99,7 @@ public class CompileProcessedMatrices extends FileProcessor {
 
 		if (saveFile == null || okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking for file to save")){ //need to check if can proceed
 
-			MesquiteFileDialog fdlg= new MesquiteFileDialog(containerOfModule(), "Output File for Matrices(s)", FileDialog.SAVE);
+			MesquiteFileDialog fdlg= new MesquiteFileDialog(containerOfModule(), "Output File for Compiled Matrices(s)", FileDialog.SAVE);
 			fdlg.setBackground(ColorTheme.getInterfaceBackground());
 			fdlg.setVisible(true);
 			String fileName=fdlg.getFile();
