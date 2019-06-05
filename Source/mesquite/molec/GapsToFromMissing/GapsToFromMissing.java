@@ -124,7 +124,7 @@ public String preparePreferencesForXML () {
 				int startOfFirstDataRegion = -1;
 				int endOfLastDataRegion = -1;
 				for (int ic = 0; ic<data.getNumChars() && !done; ic++){  //the first terminal region
-					if (cellToConvert(data, ic, it)) {
+					if (cellToConvert(data, ic, it)) {  // this is a cell that fits the criteria in terms of is gap to convert or is missing to convert
 						if (mode==ALLREGIONS || mode==TERMINALREGION) {
 							data.setState(ic, it, conversionValue());
 							if (!MesquiteLong.isCombinable(numCellsAltered))
@@ -132,7 +132,7 @@ public String preparePreferencesForXML () {
 							numCellsAltered++;
 						}
 					}
-					else if (!data.isUnassigned(ic, it)){  // we are out of the first terminal region
+					else if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it)){  // we are out of the first terminal region
 						done = true;
 						startOfFirstDataRegion=ic;
 					}
@@ -148,7 +148,7 @@ public String preparePreferencesForXML () {
 								numCellsAltered++;
 							}
 						}
-						else if (!data.isUnassigned(ic, it)) {  // we are out of the end terminal region
+						else if (!data.isUnassigned(ic, it)&& !data.isInapplicable(ic, it)) {  // we are out of the end terminal region
 							endOfLastDataRegion=ic;
 							done = true;
 						}
