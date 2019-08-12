@@ -70,5 +70,22 @@ public class MProteinEmbedded extends MCategoricalEmbedded {
 		}
 		return s;
 	}
+	/*..........................................................*/
+	/** This readjust procedure can be called to readjust the size of storage of
+	states of a character for nodes. */
+	public MCharactersHistory adjustHistorySize(Tree tree, MCharactersHistory charStates) {
+		int numNodes = tree.getNumNodeSpaces();
+		MCharactersHistory soc =charStates;
+		if (charStates==null || ! (charStates.getClass() == MProteinHistory.class)) 
+			soc = new MProteinHistory(tree.getTaxa(), getNumChars(), numNodes); 
+		else if (numNodes!= charStates.getNumNodes() || charStates.getNumChars()!= getNumChars()) 
+			soc = new MProteinHistory(tree.getTaxa(), getNumChars(), numNodes);
+		else {
+			soc =charStates;
+		}
+		soc.setParentData(getParentData());
+		return soc;
+	}
+
 }
 

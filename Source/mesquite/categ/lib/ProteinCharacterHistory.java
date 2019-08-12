@@ -135,7 +135,7 @@ public class ProteinCharacterHistory extends CategoricalHistory {
 			return s;
 		}
 		else
-			return ProteinState.toString(getState(node), null, 0, false);
+			return ProteinState.toString(getState(node), null, 0, false, true);
 	}
 	/*..........................................  ProteinCharacterHistory  ...................................................*/
 	/**returns string describing states at nodes. */
