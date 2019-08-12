@@ -14,6 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.lib;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.util.*;
 
@@ -124,6 +127,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			MesquiteMenuItemSpec mm = ownerModule.addMenuItem( "Move Selected " + owner.getItemTypeNamePlural() + " To...", ownerModule.makeCommand("moveSelectedTo", this));
 			mm.setShortcut(KeyEvent.VK_M);
 		}
+		MesquiteSubmenuSpec mss2 =	ownerModule.addSubmenu(null,"Select");
+		ownerModule.addItemToSubmenu(null, mss2, ownerModule.addMenuItem( "Invert Selection", ownerModule.makeCommand("invertSelection", this)));
+		ownerModule.addItemToSubmenu(null, mss2, ownerModule.addMenuItem( "Select by List in Clipboard", ownerModule.makeCommand("selectByClipboard", this)));
+
 		setShowExplanation(true);
 		setShowAnnotation(true);
 		table.requestFocusInWindow();
@@ -284,6 +291,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				if (arguments.indexOf("shift")<0 && !withinSelection && !deselects)
 					assoc.deselectAll();
 				table.offAllEdits();
+				int count = 0;
 				for (int i=0; i<table.getNumRows(); i++){
 					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
 					if (nonMatching.getValue())
@@ -299,7 +307,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 					else if (satisfies) {
 						assoc.setSelected(i, !deselects);
 					}
+					if (assoc.getSelected(i))
+						count++;
 				}
+				ownerModule.logln("" + count + " items are now selected");
 				assoc.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 			else {
@@ -309,6 +320,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				if (arguments.indexOf("shift")<0 && !withinSelection && !deselects)
 					table.deselectAll();
 				table.offAllEdits();
+				int count = 0;
 				for (int i=0; i<table.getNumRows(); i++){
 					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
 					if (nonMatching.getValue())
@@ -329,8 +341,11 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 							table.selectRow(i);
 						else
 							table.deselectRow(i);
-					} 
+					}
+					if (table.isRowSelected(i))
+						count++;
 				}
+				ownerModule.logln("" + count + " rows are now selected");
 				table.repaintAll();
 			}
 		}
@@ -496,6 +511,43 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		}
 		else if (checker.compare(this.getClass(), "Deletes the selected rows", null, commandName, "deleteSelectedRows")) {
 			deleteSelectedRows(true);
+		}
+		else if (checker.compare(this.getClass(), "Inverts which rows are selected", null, commandName, "invertSelection")) {
+			for (int im = 0; im < table.getNumRows(); im++){
+				if (table.isRowSelected(im)){
+					table.deselectRow(im); //2019: why this doesn't handle associable deselection, don't remember!
+					if (table.getRowAssociable() != null){
+						table.getRowAssociable().setSelected(im, false);
+					}
+				}
+				else
+					table.selectRow(im);
+			}
+			table.repaintAll();
+		}
+		else if (checker.compare(this.getClass(), "Select by List in Clipboard", null, commandName, "selectByClipboard")) {
+			String[] clipboard = null; //{"uce-101", "uce-1084"};
+			clipboard = null;
+			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable t = clip.getContents(this);
+			try {
+
+				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+				if (s != null) {
+					clipboard = StringUtil.getLines(s);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			for (int im = 0; im < table.getNumRows(); im++){
+				if (StringArray.indexOf(clipboard, table.getRowNameTextForDisplay(im))>=0){
+					table.selectRow(im);
+				if (table.getRowAssociable() != null)
+					table.getRowAssociable().setSelected(im, true);
+				}
+			}
+			table.repaintAll();
+
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected rows ", "[row to move after; -1 if at start]", commandName, "moveSelectedTo")) {
 			if (!owner.rowsMovable())
