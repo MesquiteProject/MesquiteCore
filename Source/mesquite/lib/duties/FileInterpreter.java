@@ -32,6 +32,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public static final int WINDOWSDELIMITER=2;
 	public static final int UNIXDELIMITER=3;
 	public int lineDelimiter = CURRENTDELIMITER;
+	public boolean writeCharLabels = true;
 	public boolean writeOnlySelectedData = false;
 	public boolean writeOnlyIncludedData = true;
 	public boolean writeOnlySelectedTaxa = false;

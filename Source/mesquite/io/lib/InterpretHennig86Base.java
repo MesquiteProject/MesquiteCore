@@ -463,6 +463,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
 			fractionApplicable = file.fractionApplicable;
+			writeCharLabels = file.writeCharLabels;
 		}
 
 
@@ -473,7 +474,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 			dread.appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
 		else
 			xread.appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
-		if (catData==null || (catData.hasStateNames()|| data.characterNamesExist()))
+		if (writeCharLabels && (catData==null || (catData.hasStateNames()|| data.characterNamesExist())))
 			availableCommands[cnamesElement].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
 
 		availableCommands[2].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);  //ccode
