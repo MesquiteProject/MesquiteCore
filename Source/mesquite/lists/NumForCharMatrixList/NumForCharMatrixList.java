@@ -39,6 +39,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		"You can select a value to show in the Number For Character Matrices submenu of the Columns menu of the List of Character Matrices Window. ");
 	}
 	NumberForMatrix numberTask;
+	MesquiteBoolean shadeCells = new MesquiteBoolean(false);
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (arguments !=null) {
@@ -52,6 +53,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		if (numberTask==null) {
 			return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
 		}
+		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells);
 		return true;
 	}
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
@@ -96,6 +98,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setValueTask ", numberTask); 
+		temp.addLine("toggleShadeCells " + shadeCells.toOffOnString());
 		return temp;
 	}
 	/*.................................................................................................................*/
@@ -107,6 +110,14 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 				return temp;
 			}
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to color cells", "[on or off]", commandName, "toggleShadeCells")) {
+			boolean current = shadeCells.getValue();
+			shadeCells.toggleValue(parser.getFirstToken(arguments));
+			if (current!=shadeCells.getValue()) {
+				outputInvalid();
+				parametersChanged();
+			}
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -115,6 +126,17 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		if (numberTask==null)
 			return "";
 		return numberTask.getVeryShortName();
+	}
+	MesquiteNumber min = new MesquiteNumber();
+	MesquiteNumber max = new MesquiteNumber();
+	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
+	public Color getBackgroundColorOfCell(int ic, boolean selected){
+		if (!shadeCells.getValue())
+			return null;
+		if (min.isCombinable() && max.isCombinable() && na != null && na.isCombinable(ic)){
+			return MesquiteColorTable.getGreenScale(na.getDouble(ic), min.getDoubleValue(), max.getDoubleValue(), false);
+		}
+		return null;
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
@@ -143,6 +165,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 			na.setValue(ic, mn);
 			explArray.setValue(ic, expl.getValue());
 		}
+		na.placeMinimumValue(min);
+		na.placeMaximumValue(max);
 	}
 	public String getExplanationForRow(int ic){
 		if (explArray == null || explArray.getSize() <= ic)
