@@ -583,6 +583,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		else if (checker.compare(this.getClass(), "Hires a list assistant module", "[name of module]", commandName, "newAssistant")) {
 			ListAssistant assistant= (ListAssistant)ownerModule.hireNamedEmployee(owner.getAssistantClass(), arguments);
 			if (assistant!=null) {
+				//Debugg.println(this.getClass().toString() + "%%%%%%%%%%assistant " + assistant.getClass());
 				assistant.setUseMenubar(false);
 				addListAssistant(assistant);
 				repaintAll();

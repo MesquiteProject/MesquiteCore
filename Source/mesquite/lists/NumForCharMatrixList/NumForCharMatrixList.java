@@ -54,6 +54,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 		if (numberTask==null) {
 			return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
 		}
+		//Debugg.println("NumForCharMatrixList, employee on startup " + numberTask.getClass().toString());
 		shadeCells.setValue(false);
 		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells);
 		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
@@ -89,7 +90,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 		return true;  //TODO: respond
 	}
 	public void changed(Object caller, Object obj, Notification notification){
-		if (Notification.appearsCosmetic(notification))
+		// below should be appearsCosmeticOrSelection if matrix initiating Debugg.println("NUMFORCHARMATRIXLIST changed "  + notification);
+		if (Notification.appearsCosmeticOrSelection(notification))
 			return;
 		if (notification.getCode()!=MesquiteListener.LOCK_CHANGED)
 			doCalcs();

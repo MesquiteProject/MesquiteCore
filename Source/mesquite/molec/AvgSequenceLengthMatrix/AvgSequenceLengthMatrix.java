@@ -22,7 +22,7 @@ public class AvgSequenceLengthMatrix extends NumberForMatrix {
 		if (result == null || data == null)
 			return;
 		clearResultAndLastResult(result);
-
+Debugg.printStackTrace("CALCULATING NOW ");
 		CharacterData parentData = data.getParentData();
 		if (parentData == null){
 			if (resultString != null)
