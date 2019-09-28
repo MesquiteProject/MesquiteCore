@@ -285,6 +285,12 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 	static boolean autoNEXUSSave = true;
 	static String fileExtension = "";
 	/*.................................................................................................................*/
+	public void addOptions (ExtensibleDialog dialog) {
+	}
+	/*.................................................................................................................*/
+	public void processOptions () {
+	}
+	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Process file options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
@@ -294,11 +300,13 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		dialog.appendToHelpString("Subsequent dialog boxes will provide additional processing options. ");
 		SingleLineTextField extension = dialog.addTextField ("Process only files with this extension (e.g. .nex, .fas): ", "", 5);
 		Checkbox autoSave = dialog.addCheckBox("Resave all files as NEXUS", autoNEXUSSave);
+		addOptions(dialog);
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			autoNEXUSSave=autoSave.getState();
 			fileExtension = extension.getText();
+			processOptions();
 			//storePreferences();
 
 		}
