@@ -40,6 +40,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 	}
 	NumberForMatrix numberTask;
 	MesquiteBoolean shadeCells = new MesquiteBoolean(false);
+	MesquiteTable table;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (arguments !=null) {
@@ -53,7 +54,9 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		if (numberTask==null) {
 			return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
 		}
+		shadeCells.setValue(false);
 		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells);
+		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
 		return true;
 	}
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
@@ -71,6 +74,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		if (obj instanceof ListableVector)
 			this.datas = (ListableVector)obj;
 		datas.addListener(this);
+		this.table = table;
 		doCalcs();
 	}
 	/*.................................................................................................................*/
@@ -102,6 +106,66 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		return temp;
 	}
 	/*.................................................................................................................*/
+	public boolean querySelectBounds(MesquiteNumber lessThan, MesquiteNumber moreThan) {
+		if (lessThan==null || moreThan==null || numberTask==null)
+			return false;
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Select based upon value",buttonPressed); 
+
+		dialog.addLargeOrSmallTextLabel("Select based upon value of " + numberTask.getNameOfValueCalculated());
+
+		SingleLineTextField moreThanField = dialog.addTextField("Select values greater than or equal to ","",20);
+		SingleLineTextField lessThanField = dialog.addTextField("Select values less than or equal to ","",20);
+
+
+		dialog.completeAndShowDialog(true);
+
+		if (buttonPressed.getValue()==0)  {
+			String s = moreThanField.getText();
+			moreThan.setValue(s);
+			s = lessThanField.getText();
+			lessThan.setValue(s);
+		}
+		dialog.dispose();
+		return (buttonPressed.getValue()==0);
+	}
+	/*.................................................................................................................*/
+	public void SelectBasedOnValue() {
+		if (MesquiteThread.isScripting())
+			return;
+		if (table==null || datas==null || na==null)
+			return;
+		MesquiteNumber lessThan = new MesquiteNumber();
+		MesquiteNumber moreThan = new MesquiteNumber();
+		if (!querySelectBounds(lessThan, moreThan))
+			return;
+		if (!lessThan.isCombinable() && ! moreThan.isCombinable())
+			return;
+		MesquiteNumber value = new MesquiteNumber();
+		for (int i=0; i<datas.getNumberOfParts(); i++) {
+			na.placeValue(i, value);
+
+			if (lessThan.isCombinable() && moreThan.isCombinable()) {
+				if ((lessThan.isMoreThan(value)|| lessThan.equals(value)) &&  (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
+					table.selectRow(i);
+					datas.setSelected(i, true);
+					table.redrawFullRow(i);
+				}
+			} else if (lessThan.isCombinable() && (lessThan.isMoreThan(value)|| lessThan.equals(value))) {
+				table.selectRow(i);
+				datas.setSelected(i, true);
+				table.redrawFullRow(i);
+			} else if (moreThan.isCombinable() && (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
+				table.selectRow(i);
+				datas.setSelected(i, true);
+				table.redrawFullRow(i);
+			}
+		}
+		
+		datas.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+
+	}
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a character matrix", "[name of module]", commandName, "setValueTask")) {
 			NumberForMatrix temp= (NumberForMatrix)hireNamedEmployee(NumberForMatrix.class, arguments);
@@ -118,6 +182,9 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 				parametersChanged();
 			}
 		}
+		else if (checker.compare(this.getClass(), "Selects list rows based on value of this column", null, commandName, "selectBasedOnValue")) {
+			SelectBasedOnValue();
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -127,8 +194,6 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 			return "";
 		return numberTask.getVeryShortName();
 	}
-	MesquiteNumber min = new MesquiteNumber();
-	MesquiteNumber max = new MesquiteNumber();
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int ic, boolean selected){
 		if (!shadeCells.getValue())
@@ -148,6 +213,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 	/*.................................................................................................................*/
 	NumberArray na = new NumberArray(0);
 	StringArray explArray = new StringArray(0);
+	MesquiteNumber min = new MesquiteNumber();
+	MesquiteNumber max = new MesquiteNumber();
 	/*.................................................................................................................*/
 	public void doCalcs(){
 		if (numberTask==null || datas == null)
@@ -157,6 +224,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		explArray.resetSize(numBlocks);
 		MesquiteString expl = new MesquiteString();
 		na.resetSize(numBlocks);
+		na.deassignArrayToInteger();
 		MesquiteNumber mn = new MesquiteNumber();
 		for (int ic=0; ic<numBlocks; ic++) {
 			CharacterData data = (CharacterData)datas.elementAt(ic);
