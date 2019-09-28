@@ -23,7 +23,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class NumForCharMatrixList extends DataSetsListAssistant  {
+public class NumForCharMatrixList extends DataSetsListAssistant implements MesquiteListener  {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Number for Matrix (in List of Character Matrices window)";
@@ -80,7 +80,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
 	public void disposing(Object obj){
-		//TODO: respond
+		if (obj == datas)
+			datas=null;
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
