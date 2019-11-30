@@ -40,7 +40,7 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	}
 	/*.................................................................................................................*/
 	public String getCitation()  {
-		return "Please remember to cite the version of Muscle you used.";
+		return "Please remember to cite the version of MUSCLE you used.";
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){
@@ -52,11 +52,11 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Muscle Align";
+		return "MUSCLE Align";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Muscle Align...";
+		return "MUSCLE Align...";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
@@ -65,9 +65,13 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	}
 	
 	public String getProgramName(){
-		 return "Muscle";
+		 return "MUSCLE";
 	 }
-	
+	/*.................................................................................................................*/
+	public String getHelpURL(){
+		return "http://www.drive5.com/muscle/manual/";
+	}
+
 	/*.................................................................................................................*/
 	public String getHelpString() {
 	  String s =  " In the Muscle Options field, place any Muscle options you wish to use.  For example, if you wished to change the"
