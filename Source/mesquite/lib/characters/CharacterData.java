@@ -811,7 +811,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			footnotes = newFootnotes;
 		}
 		if (cellObjects.size()>0){
-			Debugg.println("cellObjects" + cellObjects.size());
 			for (int k =0; k<cellObjects.size(); k++){
 				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
 				Object[][] oldObjects = objArray.getMatrix();
@@ -828,7 +827,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 		if (cellObjectsDisplay!=null){
-			Debugg.println("cellObjectsDisplay ");
 			boolean[][] newCOD = new boolean[newNumChars][numTaxa];
 			for (int j = 0; j<numTaxa; j++){
 				for (int i=0; i<=starting; i++)

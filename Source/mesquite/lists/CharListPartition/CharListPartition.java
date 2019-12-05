@@ -19,6 +19,7 @@ import mesquite.lists.lib.*;
 import java.util.*;
 import java.awt.*;
 
+import mesquite.categ.lib.DNAData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -37,7 +38,7 @@ public class CharListPartition extends CharListAssistant {
 	CharacterData data=null;
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC, mDGC, mEGN;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, mss2;
+	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, mss2, msRCP;
 	CharactersGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -90,6 +91,45 @@ public class CharListPartition extends CharListAssistant {
 							outputInvalid();
 							parametersChanged();
 			}
+		}
+	}
+	private void refineByCodonPosition(){
+		if (table !=null && data!=null) {
+			boolean changed=false;
+			CodonPositionsSet codons = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
+			CharacterPartition partition = (CharacterPartition) data.getCurrentSpecsSet(CharacterPartition.class);
+			if (codons == null || partition == null)
+				return;
+			if (employer!=null && employer instanceof ListModule) {
+				int c = ((ListModule)employer).getMyColumn(this);
+				for (int i=0; i<data.getNumChars(); i++) {
+					if (table.isCellSelectedAnyWay(c, i)) {
+						if (codons.getInt(i)>0 && codons.getInt(i)<=3 ){
+							CharactersGroup currentGroup = (CharactersGroup)partition.getProperty(i);
+							String newName = currentGroup.getName() + "_" + codons.toString(i);
+							CharactersGroup newGroup = (CharactersGroup)groups.elementWithName(newName);
+							if (newGroup == null){
+								newGroup = new CharactersGroup();
+								newGroup.setName(newName);
+								newGroup.setColor(currentGroup.getColor());
+								newGroup.setSymbol(currentGroup.getSymbol());
+								groups.addElement(newGroup, true);
+							}
+							partition.setProperty(newGroup, i);
+							if (!changed)
+								outputInvalid();
+							changed = true;
+						}
+					}
+				}
+			}
+
+			if (changed)
+				data.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
+			outputInvalid();
+			parametersChanged();
+
+
 		}
 	}
 	private void removePartition(){
@@ -209,6 +249,9 @@ public class CharListPartition extends CharListAssistant {
 		else if (checker.compare(this.getClass(), "Removes the group designation from the selected characters", null, commandName, "removeGroup")) {
 			removePartition();
 		}
+		else if (checker.compare(this.getClass(), "Refines current groups by intersecting them with codon positions", null, commandName, "refineByCodonPosition")) {
+			refineByCodonPosition();
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -233,6 +276,10 @@ public class CharListPartition extends CharListAssistant {
 		deleteMenuItem(nNG);
 		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
+		if (data != null && data instanceof DNAData)
+			msRCP =	 addMenuItem("Refine Groups by Codon Position", makeCommand("refineByCodonPosition", this));
+
+			
 		mss2 = addMenuItem("Remove Group Designation", makeCommand("removeGroup", this));
 		mLine2 = addMenuSeparator();
 		nNG = addMenuItem("New Group...", makeCommand("newGroup",  this));

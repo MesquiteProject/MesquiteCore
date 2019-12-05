@@ -10,14 +10,14 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
 
 import mesquite.lib.duties.*;
 
-	
+
 /* ======================================================================== */
 /** DOCUMENT.*/
 public class GroupLabel extends FileElement {
@@ -44,7 +44,7 @@ public class GroupLabel extends FileElement {
 			tS = -tS;
 		tS = tS % 25;
 		color = new Color(Color.HSBtoRGB((float)((25-tS) * 0.8 /25),(float)1.0,(float)1.0));
-		*/
+		 */
 		color = null;
 	}
 	public static boolean supportsSymbols() {
@@ -82,8 +82,10 @@ public class GroupLabel extends FileElement {
 	/*.................................................................................................................*/
 	public void setSymbol(MesquiteSymbol symbol){
 		this.symbol = symbol;
-		symbol.setColor(getColor());
-		this.symbol.setColor(getColor());
+		if (symbol != null){
+			symbol.setColor(getColor());
+			this.symbol.setColor(getColor());
+		}
 		symbolWasSet = true;
 		notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 	}
@@ -101,7 +103,7 @@ public class GroupLabel extends FileElement {
 	public void setRecentlyModified(boolean recentlyModified) {
 		this.recentlyModified = recentlyModified;
 	}
-	
+
 	/*.................................................................................................................*/
 }
 

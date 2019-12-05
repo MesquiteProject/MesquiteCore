@@ -284,7 +284,7 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 	}
 	public String getRowName(int row){
 		if (groups!=null){
-			if (row<0 && row >= groups.size())
+			if (row<0 || row >= groups.size())
 				return null;
 			return ((Listable)groups.elementAt(row)).getName();
 		}
