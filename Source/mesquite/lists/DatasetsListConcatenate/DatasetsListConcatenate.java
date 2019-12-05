@@ -133,19 +133,18 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 
 				starter.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
 			}
-
 			boolean success = starter.concatenate(data, false, concatExcludedCharacters, true, prefixGroupLabelNames, false, false);
 			if (success){
 				count++;
 				if (count > 1)
 					name = name + "+";
 				name = name + "(" + data.getName() + ")";
-				if (removeConcatenated)
+				if (removeConcatenated){
 						data.deleteMe(false);
+				}
 			}
 			else 
 				countFailed++;
-
 
 		}
 		if (starter != null)

@@ -56,9 +56,57 @@ public class MiniScrollButton extends MousePanel {
 		this.miniScroll = miniScroll;
 		this.itemName = itemName;
 		arrowPoly= new Polygon();
-		arrowPoly.xpoints = new int[4];
-		arrowPoly.ypoints = new int[4];
-		if (orientation==LEFT) {
+		arrowPoly.xpoints = new int[7];
+		arrowPoly.ypoints = new int[7];
+		int wid = 16;
+		int hlf = 6;
+		int pg = 4;
+		int cg = 4;
+		if (orientation==LEFT) { //made more inclusive Dec 2019
+			arrowPoly.npoints=0;
+			arrowPoly.addPoint(0, hlf);
+			arrowPoly.addPoint(wid-cg, 0);
+			arrowPoly.addPoint(wid, 0);
+			arrowPoly.addPoint(wid, wid);
+			arrowPoly.addPoint(wid-cg, wid);
+			arrowPoly.addPoint(0, hlf+pg);
+			arrowPoly.addPoint(0, hlf);
+			arrowPoly.npoints=7;
+		}
+		else if (orientation == RIGHT){
+			arrowPoly.npoints=0;
+			arrowPoly.addPoint(0, 0);
+			arrowPoly.addPoint(cg, 0);
+			arrowPoly.addPoint(wid, hlf);
+			arrowPoly.addPoint(wid, hlf+pg);
+			arrowPoly.addPoint(cg, wid);
+			arrowPoly.addPoint(0, wid);
+			arrowPoly.addPoint(0, 0);
+			arrowPoly.npoints=7;
+		}
+		else if (orientation==UP) {
+			arrowPoly.npoints=0;
+			arrowPoly.addPoint(hlf, 0);
+			arrowPoly.addPoint(hlf+pg, 0);
+			arrowPoly.addPoint(wid, wid-cg);
+			arrowPoly.addPoint(wid, wid);
+			arrowPoly.addPoint(0, wid);
+			arrowPoly.addPoint(0, wid-cg);
+			arrowPoly.addPoint(hlf, 0);
+			arrowPoly.npoints=7;
+		}
+		else if (orientation == DOWN){
+			arrowPoly.npoints=0;
+			arrowPoly.addPoint(0, 0);
+			arrowPoly.addPoint(wid, 0);
+			arrowPoly.addPoint(wid, cg);
+			arrowPoly.addPoint(hlf+pg, wid);
+			arrowPoly.addPoint(hlf, wid);
+			arrowPoly.addPoint(0, cg);
+			arrowPoly.addPoint(0, 0);
+			arrowPoly.npoints=7;
+		}
+/*		if (orientation==LEFT) {
 			arrowPoly.npoints=0;
 			arrowPoly.addPoint(1, 7);
 			arrowPoly.addPoint(15, 15);
@@ -90,6 +138,7 @@ public class MiniScrollButton extends MousePanel {
 			arrowPoly.addPoint(7, 15);
 			arrowPoly.npoints=4;
 		}
+		*/
 		setBackground(ColorTheme.getInterfaceBackground());
 		setBounds(0,0,16,16);
 	}
@@ -169,7 +218,6 @@ public class MiniScrollButton extends MousePanel {
 		MesquiteWindow.uncheckDoomed(this);
 	}
   	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
-		
 		Graphics g=getGraphics();
 		if (g == null)
 			return;

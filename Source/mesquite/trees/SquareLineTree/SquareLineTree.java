@@ -454,6 +454,10 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public   void drawTree(Tree tree, int drawnRoot, Graphics g) {
 		if (MesquiteTree.OK(tree)) {
+			treeDisplay.addToChain("SqLT-drawTree " + StringUtil.getDateTimeWithSeconds());  //Debugg.println
+			treeDisplay.resetChain(); //Debugg.println
+			treeDisplay.enableChain(); //Debugg.println
+
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
 			g.setColor(treeDisplay.branchColor);

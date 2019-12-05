@@ -84,7 +84,7 @@ public class InterpretTabbedCat extends FileInterpreterI {
 							ic++;
 						else { //sc isn't tab; is name of ic'th character
 							if (data.getNumChars() <= ic) {
-								data.addParts(data.getNumChars()-1, 1);   // add a character if needed
+								data.addParts(data.getNumChars()-1, ic-data.getNumChars()+1);   // add characters if needed
 							}
 							data.setCharacterName(ic, sc);
 							if (st.hasMoreTokens())

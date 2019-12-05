@@ -181,6 +181,40 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	public void repaint(boolean resetElements){
 		repaint();
 	}
+	public String repaintChain  = "";//Debugg.println
+	public long chainResetTime = -1;//Debugg.println
+	public boolean chainEnabled = false; //has to draw once
+	public void enableChain(){//Debugg.println
+		chainEnabled = true;
+	}
+	public void resetChain(){//Debugg.println
+		if (chainEnabled == false)
+			return;
+		repaintChain = "";
+		chainResetTime = -1;
+	}
+	public void restartChain(String s){//Debugg.println
+		if (chainEnabled == false)
+			return;
+		repaintChain = s;
+		chainResetTime = System.currentTimeMillis();
+	}
+	public void addToChain(String s){//Debugg.println
+		if (chainEnabled == false)
+			return;
+		if (chainResetTime <0) //hasn't yet started
+			return;
+		
+		repaintChain = repaintChain + "\n" + s;
+		if (System.currentTimeMillis()-chainResetTime>1000){
+			Debugg.println("@@@@@@@@@@ DELAY @@@@@@@@");
+			Debugg.println("CURRENT " + StringUtil.getDateTimeWithSeconds());
+			Debugg.println(repaintChain);
+			Debugg.printStackTrace();
+			resetChain();
+		}
+	}
+	
 	public void repaint() {  //TODO: this whole system needs revamping.  
 		if (!isVisible())
 			return;
@@ -195,6 +229,8 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		}
 		repaintsPending++;
 		if (repaintsPending<=1){
+			//resetChain();
+			//addToChain("TTD-repaintCalled " + repaintsPending + "  " + StringUtil.getDateTimeWithSeconds()); //Debugg.println
 			super.repaint();
 			crossDrawn=false;
 		}
