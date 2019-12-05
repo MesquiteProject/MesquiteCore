@@ -96,7 +96,7 @@ public class IOUtil {
 		boolean nucleotides = (data instanceof DNAData);
 		boolean protein = (data instanceof ProteinData);
 		String standardPart = "";
-		if (writeStandardPartition) {
+		if (writeStandardPartition && !partByCodPos) {
 			Listable[] partition = (Listable[])characterPartition.getProperties();
 			partition = data.removeExcludedFromListable(partition);
 			if (nucleotides) {
