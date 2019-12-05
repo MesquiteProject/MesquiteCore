@@ -209,7 +209,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			height = resetHeight;
 			Shape clip = g.getClip();
 
-			for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (lineY<height); r++) {
+			for (int r=table.firstRowVisible; (r<=table.lastRowVisible) && (lineY<height); r++) {
 				redrawName(g, r);
 			}
 
