@@ -144,6 +144,8 @@ public class CodonPositionsSet  extends CharNumSet {
 							writeSeparator=false;
 						}
 						list += " " + CharacterStates.toExternal(count-1+offset);
+						if (writeCommas)
+							writeSeparator=true;
 						lastWritten = count-1;
 					}
 					else {
