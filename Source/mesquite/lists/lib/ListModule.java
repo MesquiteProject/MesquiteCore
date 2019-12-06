@@ -134,6 +134,11 @@ public abstract class ListModule extends ManagerAssistant  {
 	public boolean rowsDeletable(){
 		return false;
 	}
+	public boolean rowsShowable(){
+		return false;
+	}
+	public void showItemAtRow(int row){
+	}
 	public boolean rowsAddable(){
 		return false;
 	}

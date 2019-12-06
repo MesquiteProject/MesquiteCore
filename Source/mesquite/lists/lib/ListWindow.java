@@ -119,6 +119,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		//ownerModule.addMenuSeparator();
 		if (owner.rowsAddable())
 			ownerModule.addMenuItem( "Add " + owner.getItemTypeNamePlural() + "...", ownerModule.makeCommand("addRows", this));
+		if (owner.rowsShowable())
+			ownerModule.addMenuItem( "Show Selected " + owner.getItemTypeNamePlural(), showCommand = ownerModule.makeCommand("showSelectedRows", this));
+		MesquiteWindow.addKeyListener(this, this);
+	
 		if (owner.rowsDeletable()) {
 			ownerModule.addMenuItem( "Delete Selected " + owner.getItemTypeNamePlural(), deleteCommand = ownerModule.makeCommand("deleteSelectedRows", this));
 			MesquiteWindow.addKeyListener(this, this);
@@ -508,6 +512,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 					((CharacterData)assoc).compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "sorting of characters");
 				}
 			}
+		}
+		else if (checker.compare(this.getClass(), "Shows the selected rows", null, commandName, "showSelectedRows")) {
+			showSelectedRows();
 		}
 		else if (checker.compare(this.getClass(), "Deletes the selected rows", null, commandName, "deleteSelectedRows")) {
 			deleteSelectedRows(true);
@@ -929,6 +936,15 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		MenuOwner.decrementMenuResetSuppression();
 
 	}
+	public void showSelectedRows() {
+		int numSelected = 0;
+		for (int ic = table.getNumRows()-1; ic>=0; ic--){
+			if (table.isRowSelected(ic)) { 
+				owner.showItemAtRow(ic);
+			}
+		}
+	}
+		
 	public void deleteSelectedRows(boolean byCommand) {
 		int numSelected = 0;
 		for (int ic = table.getNumRows()-1; ic>=0; ic--){

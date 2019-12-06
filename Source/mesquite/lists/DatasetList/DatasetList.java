@@ -50,6 +50,14 @@ public class DatasetList extends ListLVModule {
 	public boolean resetMenusOnNameChange(){
 		return true;
 	}
+	public boolean rowsShowable(){
+		return true;
+	}
+	public void showItemAtRow(int row){
+		CharacterData data = (CharacterData)datas.elementAt(row);
+		data.showMe();
+		
+	}
 	public void showListWindow(Object obj){
 		CharMatricesListWindow charMatricesListWindow = new CharMatricesListWindow(this);
 		charMatricesListWindow.setDatas(datas);
