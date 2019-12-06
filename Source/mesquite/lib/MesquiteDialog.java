@@ -83,7 +83,7 @@ public abstract class MesquiteDialog implements Commandable, Listable, Component
 				}
 			}
 			if (f == MesquiteWindow.dialogAnchor)
-				Debugg.println("@@@@@@@@@@@DIALOG ANCHOR USED FOR " + title);
+				Debugg.printStackTrace("@@@@@@@@@@@DIALOG ANCHOR USED FOR " + title);
 
 			parentDialog = new MesquiteDialogParent(f, title, !usingWizard);
 			//parentDialog = new MesquiteDialogParent(MesquiteWindow.dialogAnchor, title, !usingWizard);

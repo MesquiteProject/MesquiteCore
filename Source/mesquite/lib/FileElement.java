@@ -246,7 +246,6 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	}
 	public MesquiteModule show(){
 		ElementManager manager = getManager();
-		
 		if (manager!=null)
 			return manager.showElement(this);
 		return null;
@@ -461,7 +460,6 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	/*.................................................................................................................*/
 	/** Returns the FileElement's managing module */
 	public ElementManager getManager(){
-
 		if (elementManager==null){//IF MANAGER NULL then find one
 			if (file != null && project == null)
 				project = file.getProject();
@@ -469,7 +467,14 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 				return null;
 			if (project.getCoordinatorModule()==null)
 				return null;
-			elementManager = project.getCoordinatorModule().findElementManager(getClass());
+			Class c = getClass();
+			if (this == project.datas)
+				c = mesquite.lib.characters.CharacterData.class;
+			else if (this == project.getTreeVectors())
+				c = TreeVector.class;
+			else if (this == project.taxas)
+				c = Taxa.class;
+			elementManager = project.getCoordinatorModule().findElementManager(c);
 		}
 		return elementManager;
 	}

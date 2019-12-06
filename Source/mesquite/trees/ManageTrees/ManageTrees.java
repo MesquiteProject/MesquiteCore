@@ -173,6 +173,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	public MesquiteModule showElement(FileElement e){
 		if (e instanceof TreeVector)
 			return showTreesList((TreeVector)e);
+		if (e == getProject().getTreeVectors())
+			return showTreeBlocks(null);
 		return null;
 	}
 	public void deleteElement(FileElement e){
@@ -549,25 +551,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Shows a list of the stored tree blocks", null, commandName, "showTreeBlocks")) {
-			//Check to see if already has lister for this
-			boolean found = false;
-			for (int i = 0; i<getNumberOfEmployees(); i++) {
-				Object e=getEmployeeVector().elementAt(i);
-				if (e instanceof ManagerAssistant)
-					if ( ((ManagerAssistant)e).getName().equals("Tree Blocks List")) {
-						((ManagerAssistant)e).getModuleWindow().setVisible(true);
-						return e;
-					}
-			}
-			ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize("Tree Blocks List"));
-			if (lister==null){
-				alert("Sorry, no module was found to list the tree blocks");
-				return null;
-			}
-			lister.showListWindow(null);
-			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
-				lister.getModuleWindow().setVisible(true);
-			return lister;
+			return showTreeBlocks(arguments);
 		}
 		else if (checker.compare(this.getClass(), "Deletes tree blocks from the project", null, commandName, "deleteTreeBlocks")) {
 			Listable[] chosen = ListDialog.queryListMultiple(containerOfModule(), "Select Tree Blocks to Delete", "Select one or more tree blocks to be deleted", (String)null, "Delete", false, getProject().getTreeVectors(), (boolean[])null);
@@ -853,6 +837,28 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
+	}
+	/*-----------------------------------------------------------------*/
+	MesquiteModule showTreeBlocks(String arguments){
+		//Check to see if already has lister for this
+		boolean found = false;
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			Object e=getEmployeeVector().elementAt(i);
+			if (e instanceof ManagerAssistant)
+				if ( ((ManagerAssistant)e).getName().equals("Tree Blocks List")) {
+					((ManagerAssistant)e).getModuleWindow().setVisible(true);
+					return (MesquiteModule)e;
+				}
+		}
+		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize("Tree Blocks List"));
+		if (lister==null){
+			alert("Sorry, no module was found to list the tree blocks");
+			return null;
+		}
+		lister.showListWindow(null);
+		if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
+			lister.getModuleWindow().setVisible(true);
+		return lister;
 	}
 	/*-----------------------------------------------------------------*/
 	void includeTreeFile(String commandName, String arguments, CommandChecker checker, boolean partial){

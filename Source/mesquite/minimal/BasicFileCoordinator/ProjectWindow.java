@@ -459,31 +459,35 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				panel.repaint();
 				e++;
 				if (proj.getNumberCharMatricesVisible(t)>0){
-					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){   
-						CharacterData data = proj.getCharacterMatrixVisible(t, k);
-						if (data.isUserVisible()){
+					e++; //for the title "Character Matrices"
+					if (proj.getNumberCharMatricesVisible(t)<=MAXELEMENTS)
+						for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){   
+							CharacterData data = proj.getCharacterMatrixVisible(t, k);
+							if (data.isUserVisible()){
+								if (e>= elements.size())
+									return 5;
+								panel = ((ProjPanelPanel)elements.elementAt(e));
+								if (!(panel instanceof ElementPanel) || ((ElementPanel)panel).element != data || !panel.upToDate())
+									return 6;
+								panel.resetTitle();
+								panel.repaint();
+								e++;
+							}
+						}
+				}
+				if (proj.getNumberOfFileElements(TreeVector.class)>0){
+					e++; //for the title "Tree Blocks"
+					if (proj.getTreeVectors().size()<=MAXELEMENTS)
+						for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
+							TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
 							if (e>= elements.size())
-								return 5;
+								return 7;
 							panel = ((ProjPanelPanel)elements.elementAt(e));
-							if (!(panel instanceof ElementPanel) || ((ElementPanel)panel).element != data || !panel.upToDate())
-								return 6;
+							if (!(panel instanceof ElementPanel) || ((ElementPanel)panel).element != trees || !panel.upToDate())
+								return 8;
 							panel.resetTitle();
 							panel.repaint();
 							e++;
-						}
-					}
-				}
-				if (proj.getNumberOfFileElements(TreeVector.class)>0){
-					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
-						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
-						if (e>= elements.size())
-							return 7;
-						panel = ((ProjPanelPanel)elements.elementAt(e));
-						if (!(panel instanceof ElementPanel) || ((ElementPanel)panel).element != trees || !panel.upToDate())
-							return 8;
-						panel.resetTitle();
-						panel.repaint();
-						e++;
 					}
 				}
 
@@ -583,6 +587,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			}
 		}
 	}
+	int MAXELEMENTS = 10;
 	//boolean fipOpen = false;
 	//FileIncorporatePanel fip = null;
 	public void refresh(){
@@ -637,23 +642,27 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				addExtraPanel(panel = new TaxaPanel(bfc, this, w, t));
 				panel.setLocation(0,0);
 				if (proj.getNumberCharMatricesVisible(t)>0){
-					for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){
-						CharacterData data = proj.getCharacterMatrixVisible(t, k);
-						if (data.isUserVisible()){
-							if (data instanceof MolecularData)
-								addExtraPanel(panel = new MolecMPanel(bfc, this, w,data));
-							else if (data instanceof ContinuousData)
-								addExtraPanel(panel = new ContMPanel(bfc, this, w, data));
-							else if (data instanceof MeristicData)
-								addExtraPanel(panel = new MeristicMPanel(bfc, this, w, data));
-							else
-								addExtraPanel(panel = new CategMPanel(bfc, this, w, data));
-							panel.setLocation(0,0);
+					addExtraPanel(panel = new AbundancePanel(bfc, this, w, proj.getCharacterMatrices()));
+					if (proj.getNumberCharMatricesVisible(t)<=MAXELEMENTS)
+						for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){
+							CharacterData data = proj.getCharacterMatrixVisible(t, k);
+							if (data.isUserVisible()){
+								if (data instanceof MolecularData)
+									addExtraPanel(panel = new MolecMPanel(bfc, this, w,data));
+								else if (data instanceof ContinuousData)
+									addExtraPanel(panel = new ContMPanel(bfc, this, w, data));
+								else if (data instanceof MeristicData)
+									addExtraPanel(panel = new MeristicMPanel(bfc, this, w, data));
+								else
+									addExtraPanel(panel = new CategMPanel(bfc, this, w, data));
+								panel.setLocation(0,0);
+							}
 						}
-					}
 				}
-				if (proj.getNumberOfFileElements(TreeVector.class)>0){
-					for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
+				if (proj.getTreeVectors().size()>0){
+					addExtraPanel(panel = new AbundancePanel(bfc, this, w, proj.getTreeVectors()));
+					if (proj.getTreeVectors().size()<=MAXELEMENTS)
+						for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
 						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
 						if (trees.getTaxa() == t){
 							addExtraPanel(panel = new TreesRPanel(bfc, this, w, trees));
@@ -1287,6 +1296,25 @@ class ContMPanel extends MElementPanel {
 	}
 	public String getShowMatrixIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "matrixCont.gif";
+	}
+}
+/*======================================================================== */
+class AbundancePanel extends ElementPanel {
+
+	public AbundancePanel(BasicFileCoordinator bfc, ClosablePanelContainer container,MesquiteWindow w,  FileElement element){
+		super(bfc, container, w,element);
+		addCommand(true, null, "View List", "View List", new MesquiteCommand("showMe", element));
+
+	}
+	public String getTitle(){
+		String s = "";
+		if (element instanceof ListableVector){
+			int n = ((ListableVector)element).size();
+			if (n>1)
+					s = Integer.toString(n) + " ";
+			
+		}
+		return s + element.getName();
 	}
 }
 /*======================================================================== */

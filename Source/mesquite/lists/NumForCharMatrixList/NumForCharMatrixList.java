@@ -54,7 +54,6 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 		if (numberTask==null) {
 			return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
 		}
-		//Debugg.println("NumForCharMatrixList, employee on startup " + numberTask.getClass().toString());
 		shadeCells.setValue(false);
 		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells);
 		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
