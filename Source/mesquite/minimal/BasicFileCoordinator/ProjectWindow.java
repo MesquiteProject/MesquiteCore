@@ -460,7 +460,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				e++;
 				if (proj.getNumberCharMatricesVisible(t)>0){
 					e++; //for the title "Character Matrices"
-					if (proj.getNumberCharMatricesVisible(t)<=MAXELEMENTS)
+					if (proj.getNumberCharMatricesVisible(t)<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
 						for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){   
 							CharacterData data = proj.getCharacterMatrixVisible(t, k);
 							if (data.isUserVisible()){
@@ -477,7 +477,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				}
 				if (proj.getNumberOfFileElements(TreeVector.class)>0){
 					e++; //for the title "Tree Blocks"
-					if (proj.getTreeVectors().size()<=MAXELEMENTS)
+					if (proj.getTreeVectors().size()<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
 						for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
 							TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
 							if (e>= elements.size())
@@ -587,7 +587,6 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			}
 		}
 	}
-	int MAXELEMENTS = 10;
 	//boolean fipOpen = false;
 	//FileIncorporatePanel fip = null;
 	public void refresh(){
@@ -643,7 +642,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				panel.setLocation(0,0);
 				if (proj.getNumberCharMatricesVisible(t)>0){
 					addExtraPanel(panel = new AbundancePanel(bfc, this, w, proj.getCharacterMatrices()));
-					if (proj.getNumberCharMatricesVisible(t)<=MAXELEMENTS)
+					if (proj.getNumberCharMatricesVisible(t)<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
 						for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){
 							CharacterData data = proj.getCharacterMatrixVisible(t, k);
 							if (data.isUserVisible()){
@@ -661,7 +660,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				}
 				if (proj.getTreeVectors().size()>0){
 					addExtraPanel(panel = new AbundancePanel(bfc, this, w, proj.getTreeVectors()));
-					if (proj.getTreeVectors().size()<=MAXELEMENTS)
+					if (proj.getTreeVectors().size()<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
 						for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
 						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
 						if (trees.getTaxa() == t){
