@@ -211,16 +211,22 @@
  <h3>Next Version</h3>
  <h4 id="toc83">New Features</h4>
  <ul>
+   <li><strong>Refine Groups by Codon Position</strong> added (in List of Characters window, drop-down menu by touching on the title of the Groups column). This will create a new character partition that takes the current character partition, and if any existing group has different codon positions in it, will assign each codon position within that group to a separate group. For example, if you have two protein coding genes in the matrix, say Gene1 and Gene2, and the first 900 characters are assigned to a character group called Gene1, and the last 600 characters to a group called Gene2, and within each gene codon positions are specified, then using this tool there will be six group created: Gene1_1, for all of the first positions in Gene1, Gene1_2, for all the second positions in Gene1, and then similarly Gene1_3, Gene2_1, Gene2_2, and Gene2_3. </li>
    <li>Added &quot;Select by List in Clipboard&quot; to List Windows.  If you have a list of names in the Clipboard, and go to the list window, and use this, it will select all rows in the list window whose names match a name in that list of names in the Clipboard.</li>
    <li>Added ability to color cells and select rows based upon values in Character Matrix List Window</li>
+   <li>As a minor change, tree windows now have a default orientation of &quot;Right&quot;, i.e., with the root of the tree on the left and taxon names on the right. </li>
+   <li>The Project Panel (on the left of a Mesquite window) has been improved. Among other things, it now lists matrices and tree blocks only if there are less than a specified number (by default 16).</li>
+   <li>Other minor improvements.</li>
  </ul>
  <br />
  <strong> Bug Fixes and Workarounds</strong><br />
  </p>
  <ul>
    <li>The List of Trees menu item was accidentally removed in version 3.6. Now restored.</li>
+   <li>Significantly increased the speed of matrix concatenation and general aspects of list windows, including sorting. </li>
    <li>Fixed amino acid output in Trace All Changes</li>
    <li>Corrected handling of terminal ? in Gaps to and from Missing alterer.</li>
+   <li>Copy/paste now works as expected in the Notes window.</li>
    <li>Miscellaneous small bugs fixed.</li>
  </ul>
  <hr />

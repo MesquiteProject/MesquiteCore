@@ -921,7 +921,7 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 				}
 				if (showNodeAbsent){
 					extraNames[NODE_ABSENT] = "Node Absent";
-					extraColors.setColor(NODE_ABSENT,Color.red);
+					extraColors.setColor(NODE_ABSENT,ColorDistribution.veryLightBlue);
 				}
 				charStates.setExtraFrequencyNames(extraNames);
 				charStates.setExtraFrequencyColors(extraColors);
