@@ -125,8 +125,8 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 						}
 					}
 					if (bestCharacter>=0 && ic<newNumChars){
-						weightSet.swapParts(ic+1, bestCharacter);
-						condensedData.swapParts(ic+1, bestCharacter);
+						weightSet.swapParts(ic+1, bestCharacter, true);
+						condensedData.swapParts(ic+1, bestCharacter, true);
 					}
 				}
 				condensedData.setCurrentSpecsSet(weightSet, CharWeightSet.class); 

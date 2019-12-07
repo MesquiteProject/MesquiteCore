@@ -1052,7 +1052,7 @@ public class ManageTaxa extends TaxaManager {
 			if (!StringUtil.blank(id)){
 				int whichTaxon = taxa.findByUniqueID(id);
 				if (whichTaxon >=0 && whichTaxon!= ic) {
-					taxa.swapParts(ic, whichTaxon);
+					taxa.swapParts(ic, whichTaxon, true);
 					anyIDMoves = true;
 					//logln("Taxon " + (whichTaxon+1) + " moved into position " + (ic+1) + " (a)");
 				}
@@ -1062,7 +1062,7 @@ public class ManageTaxa extends TaxaManager {
 			for (int ic = 0; ic<taxa.getNumTaxa(); ic++){ //first reorder by id's
 				int whichTaxon = taxa.whichTaxonNumber(oTaxa.getTaxonName(ic));
 				if (whichTaxon >=0 && whichTaxon!= ic) {
-					taxa.swapParts(ic, whichTaxon);
+					taxa.swapParts(ic, whichTaxon, true);
 					//logln("Taxon " + (whichTaxon+1) + " moved into position " + (ic+1) + " (b)");
 				}
 			}
@@ -1080,7 +1080,7 @@ public class ManageTaxa extends TaxaManager {
 			if (!StringUtil.blank(id)){
 				int whichTaxon = taxa.findByUniqueID(id);
 				if (whichTaxon >=0 && whichTaxon!= ic) {
-					taxa.swapParts(ic, whichTaxon);
+					taxa.swapParts(ic, whichTaxon, true);
 					anyIDMoves = true;
 					//logln("Taxon " + (whichTaxon+1) + " moved into position " + (ic+1) + " (a)");
 				}
@@ -1090,7 +1090,7 @@ public class ManageTaxa extends TaxaManager {
 			for (int ic = 0; ic<taxa.getNumTaxa(); ic++){ //first reorder by id's
 				int whichTaxon = taxa.whichTaxonNumber(storedOrder[ic][1]);
 				if (whichTaxon >=0 && whichTaxon!= ic) {
-					taxa.swapParts(ic, whichTaxon);
+					taxa.swapParts(ic, whichTaxon, true);
 					//logln("Taxon " + (whichTaxon+1) + " moved into position " + (ic+1) + " (b)");
 				}
 			}

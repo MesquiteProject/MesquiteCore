@@ -30,7 +30,7 @@ public interface TaxaSpecsSet extends Listable {
 	public boolean moveParts(int first, int num, int justAfter);
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
-	public boolean swapParts(int first, int second);
+	public boolean swapParts(int first, int second, boolean notify);
 	
 	public Taxa getTaxa();
 }

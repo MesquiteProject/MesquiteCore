@@ -425,7 +425,7 @@ public class ContinuousData extends CharacterData implements ItemContainer {
 	}
 	/*..........................................ContinuousData................*/
 	/**swaps characters first and second.*/
-	public boolean swapParts(int first, int second){
+	public boolean swapParts(int first, int second, boolean notify){
 		if (first<0 || first >= numChars)
 			return false;
 		if (second<0 || second >= numChars)
@@ -434,7 +434,7 @@ public class ContinuousData extends CharacterData implements ItemContainer {
 			Double2DArray oldMatrix = ((Double2DArray)matrices.elementAt(item));
 			Double2DArray.swapColumns(oldMatrix.getMatrix(), first, second);
 		}
-		return super.swapParts(first, second);
+		return super.swapParts(first, second, notify);
 	}
 	/*..........................................ContinuousData................*/
 	/**moves num characters from position "first" to just after position "justAfter"; returns true iff successful.*/

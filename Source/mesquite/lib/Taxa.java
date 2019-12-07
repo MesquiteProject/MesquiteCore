@@ -909,6 +909,11 @@ public class Taxa extends FileElement {
 		return true;
 	}
 
+	/*-----------------------------------------------------------*/
+	/**Swaps taxa first and second.*/
+	public boolean swapParts(int first, int second){
+		return swapParts(first, second, true);
+	}
 	/* ................................................................................................................. */
 	/** Swaps taxa first and second */
 	public boolean swapTaxa(int first, int second, boolean notify) {
@@ -919,7 +924,7 @@ public class Taxa extends FileElement {
 			return false;
 		if (inhibitEdit>0)
 			return false;
-		swapParts(first, second);
+		swapParts(first, second, notify);
 		notifyOfChangeLowLevel(MesquiteListener.PARTS_SWAPPED, first, second, 0);  
 		inFlux = true;
 		/*
@@ -951,7 +956,7 @@ public class Taxa extends FileElement {
 	}
 
 	/* ........................................................... */
-	public boolean swapParts(int first, int second) {
+	public boolean swapParts(int first, int second, boolean notify) {
 		if (first < 0 || first >= taxon.length || second < 0
 				|| second >= taxon.length)
 			return false;
@@ -963,7 +968,7 @@ public class Taxa extends FileElement {
 		Taxon temp = taxon[first];
 		taxon[first] = taxon[second];
 		taxon[second] = temp;
-		boolean success = super.swapParts(first, second);
+		boolean success = super.swapParts(first, second, notify);
 		taxon[first].setIndex(first);
 		taxon[second].setIndex(second);
 		inFlux = false;

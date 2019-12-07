@@ -331,7 +331,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			for (int i=0; i<taxa.getNumberOfParts(); i++) {
 				if (bits.isBitOn(i)){
 					if (i>lowestYes+1){ //a "yes" that is deeper than last
-						taxa.swapParts(lowestYes+1, i);
+						taxa.swapParts(lowestYes+1, i, true);
 						lowestYes = lowestYes+1;
 					}
 					else

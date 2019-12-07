@@ -34,7 +34,7 @@ public interface CharSpecsSet extends Listable, Identifiable {
 	public boolean moveParts(int first, int num, int justAfter);
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
-	public boolean swapParts(int first, int second);
+	public boolean swapParts(int first, int second, boolean notify);
 	
 	public CharacterData getCharacterData();
 }

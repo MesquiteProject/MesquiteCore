@@ -545,12 +545,12 @@ public class CategoricalData extends CharacterData {
 		if (second<0 || second >= numChars)
 			return false;
 
-		return super.swapParts(first,second);
+		return super.swapParts(first,second, true);
 
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**swaps characters first and second*/
-	public  boolean swapParts(int first, int second){
+	public  boolean swapParts(int first, int second, boolean notify){
 		if (first<0 || first >= numChars)
 			return false;
 		if (second<0 || second >= numChars)
@@ -564,7 +564,7 @@ public class CategoricalData extends CharacterData {
 		StringArray.swapColumns(stateNotes, first, second);
 		Object2DArray.swapColumns(stateAnnotations, first, second);
 
-		return super.swapParts(first,second);
+		return super.swapParts(first,second, notify);
 
 	}
 	/*..........................................  CategoricalData  ..................................................*/

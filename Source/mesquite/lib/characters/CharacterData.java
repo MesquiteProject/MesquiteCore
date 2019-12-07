@@ -1153,13 +1153,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		calculateFirstLastApplicable();
 		MesquiteImage.swapParts( characterIllustrations,  first, second); 
 		nMove++;
-		boolean swapped =  super.swapParts( first, second);
+		boolean swapped =  super.swapParts( first, second, true);
 		uncheckThread();
 		return swapped;
 	}
 	/*-----------------------------------------------------------*/
 	/**Swaps characters first and second.*/
 	public boolean swapParts(int first, int second){
+		return swapParts(first, second, true);
+	}
+	/*-----------------------------------------------------------*/
+	/**Swaps characters first and second.*/
+	public boolean swapParts(int first, int second, boolean notify){
 		boolean meta = swapCellMetadata(first, second);
 		if (!meta)
 			return false;
@@ -1173,7 +1178,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
-				d.swapParts(first, second);
+				d.swapParts(first, second, notify);
 				if (notify)
 					d.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
 			}
@@ -3987,7 +3992,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
 					Associable a = getTaxaInfo(false);
 					if (a != null)
-						a.swapParts(sinkTaxon, it);
+						a.swapParts(sinkTaxon, it, true);
 				}
 				mA[it] = ma;   
 				mergedAssigned = mergedAssigned | ma;

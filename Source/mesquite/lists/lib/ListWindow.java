@@ -121,7 +121,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			ownerModule.addMenuItem( "Add " + owner.getItemTypeNamePlural() + "...", ownerModule.makeCommand("addRows", this));
 		if (owner.rowsShowable())
 			ownerModule.addMenuItem( "Show Selected " + owner.getItemTypeNamePlural(), showCommand = ownerModule.makeCommand("showSelectedRows", this));
-		MesquiteWindow.addKeyListener(this, this);
 	
 		if (owner.rowsDeletable()) {
 			ownerModule.addMenuItem( "Delete Selected " + owner.getItemTypeNamePlural(), deleteCommand = ownerModule.makeCommand("deleteSelectedRows", this));
@@ -462,6 +461,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED,assoc);
 			undoInstructions.recordPreviousOrder(assoc);
 			UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);
+			
 			if (column>=0 && row >=0) {
 				long[] fullChecksumBefore=null;
 				if (assoc instanceof CharacterData) {
@@ -481,7 +481,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						swapParts(assoc, j, j+1, text);
 					}
 				}
-
+				if (assoc instanceof ListableVector && ((ListableVector)assoc).size()>0){
+					Listable obj = ((ListableVector)assoc).elementAt(0);
+					mesquite.lib.duties.ElementManager m = ownerModule.findElementManager(obj.getClass());
+					if (m != null)
+						m.elementsReordered((ListableVector)assoc);
+				}
 				processPostSwap(assoc);
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 				if (assoc instanceof CharacterData){
@@ -490,6 +495,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 			}
 			else if (column == -1 && row >=0) { //row names selected; sort by name
+				
 				long[] fullChecksumBefore=null;
 				if (assoc instanceof CharacterData) {
 					fullChecksumBefore = ((CharacterData)assoc).getIDOrderedFullChecksum();
@@ -506,6 +512,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						swapParts(assoc, j, j+1, text);
 					}
 				}
+				if (assoc instanceof ListableVector && ((ListableVector)assoc).size()>0){
+					Listable obj = ((ListableVector)assoc).elementAt(0);
+					mesquite.lib.duties.ElementManager m = ownerModule.findElementManager(obj.getClass());
+					if (m != null)
+						m.elementsReordered((ListableVector)assoc);
+				}
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
@@ -515,9 +527,11 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		}
 		else if (checker.compare(this.getClass(), "Shows the selected rows", null, commandName, "showSelectedRows")) {
 			showSelectedRows();
+			return null;
 		}
 		else if (checker.compare(this.getClass(), "Deletes the selected rows", null, commandName, "deleteSelectedRows")) {
 			deleteSelectedRows(true);
+			return null;
 		}
 		else if (checker.compare(this.getClass(), "Inverts which rows are selected", null, commandName, "invertSelection")) {
 			for (int im = 0; im < table.getNumRows(); im++){
@@ -590,7 +604,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		else if (checker.compare(this.getClass(), "Hires a list assistant module", "[name of module]", commandName, "newAssistant")) {
 			ListAssistant assistant= (ListAssistant)ownerModule.hireNamedEmployee(owner.getAssistantClass(), arguments);
 			if (assistant!=null) {
-				//Debugg.println(this.getClass().toString() + "%%%%%%%%%%assistant " + assistant.getClass());
 				assistant.setUseMenubar(false);
 				addListAssistant(assistant);
 				repaintAll();
@@ -634,7 +647,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		String temp = text[first];
 		text[first] = text[second];
 		text[second] = temp;
-		assoc.swapParts(first, second); 
+		assoc.swapParts(first, second, false); 
 	}
 	public void processPostSwap(Associable assoc){
 	}
@@ -965,21 +978,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			MenuOwner.incrementMenuResetSuppression();
 			if (ownerModule != null && ownerModule.getProject() != null)
 				ownerModule.getProject().incrementProjectWindowSuppression();
-			/*int[] which = new int[numSelected];
-			int howMany = 0;
-			for (int ic = table.getNumRows()-1; ic>=0; ic--){
-				if (table.isRowSelected(ic)) {
-		 			if (!owner.rowDeletable(ic)){
-			 			if (!MesquiteThread.isScripting())
-			 				owner.alert("Sorry, you can't delete that");
-			 		}
-			 		else {
-						which[howMany]=ic;
-						howMany++;
-					}
-				}
-			}
-			 */
+			
 
 			int count =0;
 			int currentNumRows = owner.getNumberOfRows();

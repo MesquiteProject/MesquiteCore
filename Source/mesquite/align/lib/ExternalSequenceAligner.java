@@ -450,7 +450,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				if (success) {
 					for (int i=1; i<alignedTaxa.getNumTaxa() ; i++) {
 						for (int j= i-1; j>=0 && j+1<keys.length && keys[j]>keys[j+1]; j--) {
-							alignedTaxa.swapParts(j, j+1);
+							alignedTaxa.swapParts(j, j+1, false);
 							int kj = keys[j];
 							keys[j] = keys[j+1];
 							keys[j+1] = kj;
@@ -458,7 +458,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 						}
 					}
 					alignedData.changed(this, alignedTaxa, new Notification(MesquiteListener.PARTS_MOVED));
-
+				///	Debugg.println notify of taxon swapping
 					if (alignedData instanceof MolecularData){
 						aligned = new long[alignedData.getNumChars()][originalTaxa.getNumTaxa()];
 						for (int ic = 0; ic<alignedData.getNumChars(); ic++)

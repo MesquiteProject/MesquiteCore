@@ -373,8 +373,13 @@ public class ListableVector extends FileElement implements StringLister, Command
 		if (notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 	}
-	/*...........................................................*/
+	/*...........................................................*
 	public boolean swapParts(int first, int second) {
+		return swapParts(first, second, true);
+	}
+	*/
+	
+	public boolean swapParts(int first, int second, boolean notify) {
 		if (first<0 || first>=size() || second<0 || second>=size()) 
 			return false;
 		mesquite.lib.duties.ElementManager m = null;
@@ -385,9 +390,9 @@ public class ListableVector extends FileElement implements StringLister, Command
 		Object objSecond = vec.elementAt(second);
 		vec.setElementAt(objSecond, first);
 		vec.setElementAt(objFirst, second);
-		if (m != null)
+		if (notify && m != null)
 			m.elementsReordered(this);
-		return super.swapParts(first, second);
+		return super.swapParts(first, second, notify);
 		
 	}
 	/*...........................................................*/

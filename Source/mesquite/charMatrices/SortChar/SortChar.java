@@ -88,7 +88,7 @@ public class SortChar extends DataWindowAssistantI {
   		String temp = text[first];
   		text[first] = text[second];
   		text[second] = temp;
-		data.swapParts(first, second); 
+		data.swapParts(first, second, true); 
 		data.swapInLinked(first, second, false); 
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -144,7 +144,7 @@ public class SortChar extends DataWindowAssistantI {
 					for (int i=1; i<data.getNumChars(); i++) {
 						if (i % 10 == 0) CommandRecord.tick("Sorting from character " + i);
 						for (int j= i-1; j>=0 && compare(gT, data.getCharacterName(j), data.getCharacterName(j+1)); j--) {
-							data.swapParts(j, j+1);
+							data.swapParts(j, j+1, false);
 							data.swapInLinked(j, j+1, false);
 						}
 					}
