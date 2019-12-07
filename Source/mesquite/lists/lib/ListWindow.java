@@ -1020,49 +1020,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				row--;
 			}
 
-
-			/*				int firstInBlockDeleted = -1;
-				int lastInBlockDeleted = -1;
-				for (int ic = 0; ic<howMany; ic++){
-					if (lastInBlockDeleted < 0) {
-						lastInBlockDeleted = which[ic];
-						firstInBlockDeleted = lastInBlockDeleted;
-					}
-					else if (which[ic] == firstInBlockDeleted-1){ //still contiguous
-						firstInBlockDeleted = which[ic];					
-					}
-					else {
-						owner.deleteRows(firstInBlockDeleted, lastInBlockDeleted, false);
-						count += lastInBlockDeleted-firstInBlockDeleted+1;
-						lastInBlockDeleted = which[ic];
-						firstInBlockDeleted = lastInBlockDeleted;
-					}
-				}
-				if (lastInBlockDeleted>=0){
-					owner.deleteRows(firstInBlockDeleted, lastInBlockDeleted, false);
-					count += lastInBlockDeleted-firstInBlockDeleted+1;
-				}
-			 */
-
-			/*  old code pre-2. 02
-				int firstInBlockDeleted = -1;
-				for (int ic = 0; ic<howMany; ic++){
-					//NOTE: this code allows reporting of what contiguous blocks were deleted, but caused  full recalculations for each discontiguity
-					if (notifyInBlocks && obj instanceof Associable && firstInBlockDeleted < 0) {
-						firstInBlockDeleted = which[ic];
-					}
-			 		if (owner.deleteRow(which[ic], false))
-						count++;
-					//NOTE: this code allows reporting of what contiguous blocks were deleted, but caused  full recalculations for each discontiguity
-					if (notifyInBlocks && obj instanceof Associable && (ic+1 >= howMany || which[ic+1] != which[ic]-1)){ //next one is not adjacent; notify listeners
-						((Listenable)obj).notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, new int[] {which[ic], firstInBlockDeleted - which[ic]+1}));
-						((Listenable)obj).decrementNotifySuppress();
-						((Listenable)obj).incrementNotifySuppress();
-						firstInBlockDeleted = -1;
-					}
-				}
-			 */
-
 			table.setNumRows(currentNumRows-count);
 			//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
 			notifyRowDeletion(obj);

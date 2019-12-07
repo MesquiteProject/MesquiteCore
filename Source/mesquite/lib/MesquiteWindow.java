@@ -449,6 +449,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public boolean isFrontMostInLocation(){
 		return parentFrame.frontMostInLocation(getTileLocation()) == this;
 	}
+	public boolean isFrontMostWindow(){
+		return parentFrame.getFrontWindow() == this;
+	}
 	public void setAsPrimaryMesquiteWindow(boolean p){
 		if (parentFrame != null)
 			parentFrame.setAsPrimaryMesquiteFrame(p);
