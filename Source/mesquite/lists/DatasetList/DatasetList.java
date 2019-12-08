@@ -132,7 +132,6 @@ public class DatasetList extends ListLVModule {
 		if (row<0 || row>= getNumberOfRows())
 			return false;
 		CharacterData data = getProject().getCharacterMatrixDoomedOrNot(row);
-		getProject().removeFileElement(data, notify);//must remove first, before disposing
 		data.dispose();
 		return true;
 	}

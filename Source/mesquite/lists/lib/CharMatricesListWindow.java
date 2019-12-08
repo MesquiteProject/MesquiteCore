@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import mesquite.lib.ListableVector;
+import mesquite.lib.Listenable;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
 import mesquite.lib.characters.CharacterData;
 
 public class CharMatricesListWindow extends ListableVectorWindow {
@@ -20,6 +23,8 @@ public class CharMatricesListWindow extends ListableVectorWindow {
 
 	public void setDatas(ListableVector datas) {
 		this.datas = datas;
+	}
+	public void notifyRowDeletion(Object obj){ // row deletion notification happens through remove file element of project
 	}
 
 	/*...............................................................................................................*/

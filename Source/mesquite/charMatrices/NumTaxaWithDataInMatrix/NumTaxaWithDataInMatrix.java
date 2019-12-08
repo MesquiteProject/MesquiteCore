@@ -21,7 +21,6 @@ public class NumTaxaWithDataInMatrix extends NumberForMatrix {
 	public void calculateNumber(MCharactersDistribution data, MesquiteNumber result, MesquiteString resultString) {
 		if (result == null || data == null)
 			return;
-
 		clearResultAndLastResult(result);
 		int count = 0;
 		for (int it = 0; it<data.getNumTaxa(); it++){
