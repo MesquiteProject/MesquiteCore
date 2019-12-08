@@ -285,27 +285,24 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 
 	/*.................................................................................................................*/
 	/** returns the number of Tree Vectors */
+	public int getNumberTreeVectors(Taxa t) {
+		int count = 0;
+		for (int i = 0; i<treeVectors.size(); i++){
+			TreeVector trees = (TreeVector)treeVectors.elementAt(i);
+			if (trees.getTaxa() == t)
+				count++;
+		}
+		return count;
+	}
+	/*.................................................................................................................*/
+	/** returns the number of Tree Vectors */
 	public int getNumberTreeVectors() {
 		return treeVectors.size();
-		/*ListableVector v = new ListableVector();		
-		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
-			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
-			if (!trees.isDoomed())
-				v.addElement(trees, false);
-		}
-		return v;*/
 	}
 	/*.................................................................................................................*/
 	/** returns the Tree Vectors */
 	public ListableVector getTreeVectors() {
 		return treeVectors;
-		/*ListableVector v = new ListableVector();		
-		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
-			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
-			if (!trees.isDoomed())
-				v.addElement(trees, false);
-		}
-		return v;*/
 	}
 
 	/*.................................................................................................................*/

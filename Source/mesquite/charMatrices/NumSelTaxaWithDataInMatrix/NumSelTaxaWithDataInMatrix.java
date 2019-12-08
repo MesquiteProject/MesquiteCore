@@ -17,6 +17,13 @@ public class NumSelTaxaWithDataInMatrix extends NumberForMatrix {
 			getProject().getTaxa(i).removeListener(this);
 		super.endJob();
 	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return NEXTRELEASE;  
+	}
 	/** Called to provoke any necessary initialization.  This helps prevent the module's initialization queries to the user from happening at inopportune times (e.p., while a long chart calculation is in mid-progress*/
 	public void initialize(MCharactersDistribution data) {
 	} 

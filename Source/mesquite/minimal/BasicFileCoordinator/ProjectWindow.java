@@ -641,7 +641,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				addExtraPanel(panel = new TaxaPanel(bfc, this, w, t));
 				panel.setLocation(0,0);
 				if (proj.getNumberCharMatricesVisible(t)>0){
-					addExtraPanel(panel = new AbundancePanel(bfc, this, w, proj.getCharacterMatrices()));
+					addExtraPanel(panel = new AbundanceMPanel(bfc, this, w, proj, t));
 					if (proj.getNumberCharMatricesVisible(t)<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
 						for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){
 							CharacterData data = proj.getCharacterMatrixVisible(t, k);
@@ -659,7 +659,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 						}
 				}
 				if (proj.getTreeVectors().size()>0){
-					addExtraPanel(panel = new AbundancePanel(bfc, this, w, proj.getTreeVectors()));
+					addExtraPanel(panel = new AbundanceTPanel(bfc, this, w, proj, t));
 					if (proj.getTreeVectors().size()<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
 						for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
 						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
@@ -1298,22 +1298,38 @@ class ContMPanel extends MElementPanel {
 	}
 }
 /*======================================================================== */
-class AbundancePanel extends ElementPanel {
-
-	public AbundancePanel(BasicFileCoordinator bfc, ClosablePanelContainer container,MesquiteWindow w,  FileElement element){
-		super(bfc, container, w,element);
-		addCommand(true, null, "View List", "View List", new MesquiteCommand("showMe", element));
-
+class AbundanceMPanel extends ElementPanel {
+	MesquiteProject project = null;
+	Taxa taxa = null;
+	public AbundanceMPanel(BasicFileCoordinator bfc, ClosablePanelContainer container,MesquiteWindow w,  MesquiteProject project, Taxa taxa){
+		super(bfc, container, w,project.getCharacterMatrices());
+		addCommand(true, null, "View List", "View List", new MesquiteCommand("showMe", project.getCharacterMatrices()));
+		this.taxa = taxa;
+		this.project = project;
 	}
 	public String getTitle(){
-		String s = "";
-		if (element instanceof ListableVector){
-			int n = ((ListableVector)element).size();
-			if (n>1)
-					s = Integer.toString(n) + " ";
-			
-		}
-		return s + element.getName();
+		int n = project.getNumberCharMatricesVisible(taxa);
+		if (n>1)
+			return Integer.toString(n) + " Character Matrices";
+		return "Character Matrix";
+
+	}
+}
+/*======================================================================== */
+class AbundanceTPanel extends ElementPanel {
+	MesquiteProject project = null;
+	Taxa taxa = null;
+	public AbundanceTPanel(BasicFileCoordinator bfc, ClosablePanelContainer container,MesquiteWindow w,  MesquiteProject project, Taxa taxa){
+		super(bfc, container, w,project.getTreeVectors());
+		addCommand(true, null, "View List", "View List", new MesquiteCommand("showMe", project.getTreeVectors()));
+		this.taxa = taxa;
+		this.project = project;
+	}
+	public String getTitle(){
+		int n = project.getNumberTreeVectors(taxa);
+		if (n>1)
+			return Integer.toString(n) + " Tree Blocks";
+		return "Tree Block";
 	}
 }
 /*======================================================================== */

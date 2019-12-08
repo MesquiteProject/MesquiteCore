@@ -207,6 +207,34 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		return fileToRead.getDirectoryName() + "savedFiles" + MesquiteFile.fileSeparator;
 	}
 	/*.................................................................................................................*/
+	protected boolean beforeProcessFiles() {
+		if (fileProcessors != null){
+			boolean success = true;
+			for (int i= 0; i< fileProcessors.size() && success; i++){
+				FileProcessor alterer = (FileProcessor)fileProcessors.elementAt(i);
+				success = alterer.beforeProcessingSeriesOfFiles();
+				if (!success)
+					logln("Sorry,  " + alterer.getNameAndParameters() + " did not succeed.");
+			}
+			return success;
+		}
+		return true;
+	}
+	/*.................................................................................................................*/
+	protected boolean afterProcessFiles() {
+		if (fileProcessors != null){
+			boolean success = true;
+			for (int i= 0; i< fileProcessors.size() && success; i++){
+				FileProcessor alterer = (FileProcessor)fileProcessors.elementAt(i);
+				success = alterer.afterProcessingSeriesOfFiles();
+				if (!success)
+					logln("Sorry,  " + alterer.getNameAndParameters() + " did not succeed.");
+			}
+			return success;
+		}
+		return true;
+	}
+	/*.................................................................................................................*/
 	protected boolean processFile(MesquiteFile fileToRead, StringBuffer results, MesquiteBoolean requestToSequester) {
 		logln("Processing file " + fileToRead.getName() + " in " + fileToRead.getDirectoryName() + "...");
 		incrementMenuResetSuppression();
@@ -355,6 +383,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 					logln(StringUtil.getDateTime(dnow));
 					header += StringUtil.getDateTime(dnow) + StringUtil.lineEnding() + StringUtil.lineEnding();
 					MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", header, true);
+					beforeProcessFiles();
 					for (int i=0; i<files.length; i++) {
 						progIndicator.setCurrentValue(i);
 						requestToSequester.setValue(false);
@@ -397,6 +426,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 							}
 						}
 					}
+					afterProcessFiles();
 					progIndicator.goAway();
 				}
 
