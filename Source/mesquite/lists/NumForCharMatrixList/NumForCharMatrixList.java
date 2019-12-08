@@ -89,7 +89,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 		return true;  //TODO: respond
 	}
 	public void changed(Object caller, Object obj, Notification notification){
-		// below should be appearsCosmeticOrSelection if matrix initiating Debugg.println("NUMFORCHARMATRIXLIST changed "  + notification);
+		// below should be appearsCosmeticOrSelection if matrix initiating 
 		if (Notification.appearsCosmeticOrSelection(notification))
 			return;
 		if (notification.getCode()!=MesquiteListener.LOCK_CHANGED)

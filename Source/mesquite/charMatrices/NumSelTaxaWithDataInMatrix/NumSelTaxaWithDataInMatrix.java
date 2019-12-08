@@ -12,9 +12,20 @@ public class NumSelTaxaWithDataInMatrix extends NumberForMatrix {
 		return true;
 	} 
 
+	public void endJob(){
+		for (int i = 0; i< getProject().getNumberTaxas(); i++)
+			getProject().getTaxa(i).removeListener(this);
+		super.endJob();
+	}
 	/** Called to provoke any necessary initialization.  This helps prevent the module's initialization queries to the user from happening at inopportune times (e.p., while a long chart calculation is in mid-progress*/
 	public void initialize(MCharactersDistribution data) {
 	} 
+	/* ---------------------------------------------------------*/
+	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
+	public void changed(Object caller, Object obj, Notification notification){
+		outputInvalid();
+		parametersChanged();
+	}
 
 	public void calculateNumber(MCharactersDistribution data, MesquiteNumber result, MesquiteString resultString) {
 		if (result == null || data == null)
@@ -22,6 +33,7 @@ public class NumSelTaxaWithDataInMatrix extends NumberForMatrix {
 		clearResultAndLastResult(result);
 		int count = 0;
 		Taxa taxa = data.getTaxa();
+		taxa.addListener(this); //this doesn't add if it's already there
 		boolean anySelected = taxa.anySelected();
 		for (int it = 0; it<data.getNumTaxa(); it++){
 			if ((!anySelected || taxa.getSelected(it)) && hasData(data, it))
