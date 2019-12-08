@@ -102,8 +102,15 @@ public class NumForTreeblockList extends TreeblocksListAssistant implements Mesq
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a block of trees", "[name of module]", commandName, "setValueTask")) {
 			NumberForTreeBlock temp= (NumberForTreeBlock)hireNamedEmployee(NumberForTreeBlock.class, arguments);
+			Class prev = null;
+			if (numberTask != null)
+				prev = numberTask.getClass();
 			if (temp!=null) {
 				numberTask = temp;
+				if (prev != numberTask.getClass()){
+					doCalcs();
+					outputInvalid();
+				}
 				return temp;
 			}
 		}

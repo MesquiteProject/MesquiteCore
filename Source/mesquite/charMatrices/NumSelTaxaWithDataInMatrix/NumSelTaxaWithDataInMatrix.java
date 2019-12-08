@@ -1,14 +1,12 @@
-package mesquite.charMatrices.NumTaxaWithDataInMatrix;
+package mesquite.charMatrices.NumSelTaxaWithDataInMatrix;
 
 
 
-import mesquite.categ.lib.MolecularData;
-import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 
-public class NumTaxaWithDataInMatrix extends NumberForMatrix {
+public class NumSelTaxaWithDataInMatrix extends NumberForMatrix {
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -21,11 +19,12 @@ public class NumTaxaWithDataInMatrix extends NumberForMatrix {
 	public void calculateNumber(MCharactersDistribution data, MesquiteNumber result, MesquiteString resultString) {
 		if (result == null || data == null)
 			return;
-
 		clearResultAndLastResult(result);
 		int count = 0;
+		Taxa taxa = data.getTaxa();
+		boolean anySelected = taxa.anySelected();
 		for (int it = 0; it<data.getNumTaxa(); it++){
-			if (hasData(data, it))
+			if ((!anySelected || taxa.getSelected(it)) && hasData(data, it))
 				count++;
 		}
 
@@ -36,7 +35,7 @@ public class NumTaxaWithDataInMatrix extends NumberForMatrix {
 			result.setValue(0.0); 
 
 		if (resultString!=null) {
-			resultString.setValue("Number of taxa with data: " + result.toString());
+			resultString.setValue("Number of selected taxa with data: " + result.toString());
 		}
 		saveLastResult(result);
 		saveLastResultString(resultString);
@@ -58,21 +57,16 @@ public class NumTaxaWithDataInMatrix extends NumberForMatrix {
 		return false;
 	}
 
-	/*.................................................................................................................*/
-	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
-	public CompatibilityTest getCompatibilityTest(){
-		return new RequiresAnyMolecularData();
-	}
 	public boolean isPrerelease (){
 		return false;
 	}
 
 	public String getName() {
-		return "Number of Taxa with Data in Matrix";
+		return "Number of Selected Taxa with Data in Matrix";
 	} 
 
 	public String getExplanation(){
-		return "Counts the number of taxa with data (not ? and not gaps) the matrix.";
+		return "Counts the number of taxa, among those selected, with data (not ? and not gaps) the matrix.";
 	} 
 
 } 

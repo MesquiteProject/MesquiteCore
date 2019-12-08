@@ -4253,8 +4253,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	private void treeChanged(boolean notifyContextListeners) {
 		if (tree == null || previousTree == null || undoTree == null)
 			return;
-		treeDisplay.resetChain();
-		treeDisplay.restartChain("BTW-treeChanged " + StringUtil.getDateTimeWithSeconds()); //Debugg.println
+		if (MesquiteTrunk.debugMode){
+			treeDisplay.restartChain("BTW-treeChanged " + StringUtil.getDateTimeWithSeconds()); 
+		}
 		if (tree.upToDateWithTaxa() && previousTree.upToDateWithTaxa()) {
 			canUndo = true;
 		}

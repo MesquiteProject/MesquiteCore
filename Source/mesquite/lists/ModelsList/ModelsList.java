@@ -112,7 +112,7 @@ public class ModelsList extends ListModule {
 				return false;
 			}
 			else {
-				getProject().removeFileElement(model);//must remove first, before disposing
+				getProject().removeFileElement(model, notify);//must remove first, before disposing
 				model.dispose();
 				return true;
 			}

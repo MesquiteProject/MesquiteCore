@@ -132,7 +132,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 		return (buttonPressed.getValue()==0);
 	}
 	/*.................................................................................................................*/
-	public void SelectBasedOnValue() {
+	void selectBasedOnValue() {
 		if (MesquiteThread.isScripting())
 			return;
 		if (table==null || datas==null || na==null)
@@ -171,8 +171,15 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a character matrix", "[name of module]", commandName, "setValueTask")) {
 			NumberForMatrix temp= (NumberForMatrix)hireNamedEmployee(NumberForMatrix.class, arguments);
+			Class prev = null;
+			if (numberTask != null)
+				prev = numberTask.getClass();
 			if (temp!=null) {
 				numberTask = temp;
+				if (prev != numberTask.getClass()){
+					doCalcs();
+					outputInvalid();
+				}
 				return temp;
 			}
 		}
@@ -185,7 +192,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 			}
 		}
 		else if (checker.compare(this.getClass(), "Selects list rows based on value of this column", null, commandName, "selectBasedOnValue")) {
-			SelectBasedOnValue();
+			selectBasedOnValue();
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

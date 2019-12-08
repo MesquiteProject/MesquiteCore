@@ -821,6 +821,9 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/*.................................................................................................................*/
 	/** DOCUMENT */
 	public void removeFileElement(FileElement element) {
+		removeFileElement(element, true);
+	}
+	public void removeFileElement(FileElement element, boolean notify) {
 		if (element==null)
 			return;
 		element.removeListener(this);
@@ -857,7 +860,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				otherElements.removeElement(element, true);
 			//otherElements.notifyListenersOfDisposed(element);
 		}
-		notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+		if (notify)
+			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 		//TODO: shouldn't broadcase of deletion be here?
 	}
 	/*.................................................................................................................*/
