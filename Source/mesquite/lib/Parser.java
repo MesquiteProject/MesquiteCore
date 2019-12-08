@@ -523,7 +523,7 @@ public class Parser extends StringUtil {
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
-		char c=getNextCharRaw();  //Debugg.println(this had used NEXUS characters, i.e. skipped brackets) OK to have changed?
+		char c=getNextCharRaw();  
 		buffer.setLength(0);
 
 		while (!lineEndCharacter(c) && pos.getValue()<=line.length() && c!=(char)0) {  
