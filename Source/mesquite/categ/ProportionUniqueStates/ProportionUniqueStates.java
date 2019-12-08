@@ -162,7 +162,7 @@ public class ProportionUniqueStates extends NumberForTaxon {
 	}
 	/*.................................................................................................................*/
 	public String getVeryShortName() {
-		if (observedStates != null && getProject().getNumberCharMatricesVisible()>1){
+		if (observedStates != null && getProject() != null && getProject().getNumberCharMatricesVisible()>1){
 			CharacterData d = observedStates.getParentData();
 			if (d != null && d.getName()!= null) {
 				String n =  d.getName();
