@@ -199,7 +199,8 @@ public void setTreeDrawing(TreeDrawing td) {
 			setTaxa(tree.getTaxa());
 
 	 	if (inProgress){
-			addToChain("TD-setTree HOLDING " + StringUtil.getDateTimeWithSeconds());//Debugg.println
+			if (MesquiteTrunk.debugMode)
+				addToChain("TD-setTree HOLDING " + StringUtil.getDateTimeWithSeconds());
 	 		holdingTree = tree;
 	 	}
 	 	else {

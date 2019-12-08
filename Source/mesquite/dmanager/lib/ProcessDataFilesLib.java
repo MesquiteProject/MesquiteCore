@@ -38,7 +38,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 
 	protected String script = null;
 	protected boolean incorporateScript = false;
-
+	private MesquiteBoolean rRAN = new MesquiteBoolean();
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		loadPreferences();
@@ -48,12 +48,22 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("script".equalsIgnoreCase(tag))
 			script = StringUtil.cleanXMLEscapeCharacters(content);
-
+		else if ("importerString".equalsIgnoreCase(tag))
+			importerString = StringUtil.cleanXMLEscapeCharacters(content);
+		else if ("fileExtension".equalsIgnoreCase(tag))
+			fileExtension = StringUtil.cleanXMLEscapeCharacters(content);
+		else if ("autoNEXUSSave".equalsIgnoreCase(tag)){
+				rRAN.setValue(content);
+				autoNEXUSSave = rRAN.getValue();
+		}
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(60);	
 		StringUtil.appendXMLTag(buffer, 2, "script", script);  
+		StringUtil.appendXMLTag(buffer, 2, "importerString", importerString);  
+		StringUtil.appendXMLTag(buffer, 2, "fileExtension", fileExtension);  
+		StringUtil.appendXMLTag(buffer, 2, "autoNEXUSSave", autoNEXUSSave);  
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
@@ -298,7 +308,8 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		dialog.appendToHelpString("This dialog box provides various file-handling options for the files processed. ");
 		dialog.appendToHelpString("You can restrict which files are processed by specifying an extension, and you can ask for all the files to be resaved as NEXUS files. ");
 		dialog.appendToHelpString("Subsequent dialog boxes will provide additional processing options. ");
-		SingleLineTextField extension = dialog.addTextField ("Process only files with this extension (e.g. .nex, .fas): ", "", 5);
+		
+		SingleLineTextField extension = dialog.addTextField ("Process only files with this extension (e.g. .nex, .fas): ", fileExtension, 5);
 		Checkbox autoSave = dialog.addCheckBox("Resave all files as NEXUS", autoNEXUSSave);
 		addOptions(dialog);
 
@@ -306,8 +317,9 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		if (buttonPressed.getValue()==0)  {
 			autoNEXUSSave=autoSave.getState();
 			fileExtension = extension.getText();
+			
 			processOptions();
-			//storePreferences();
+			storePreferences();
 
 		}
 		dialog.dispose();
@@ -414,20 +426,21 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		String [] exporterNames = new String[count];
 		exporterNames[0] = "NEXUS file";
 		count = 1;
+		int rememberedNumber = 0;
 		for (int i=0; i<fInterpreters.length; i++)
 			if (((FileInterpreterI)fInterpreters[i]).canImport()) {
 				exporterNames[count] = fInterpreters[i].getName();
+				if (exporterNames[count].equalsIgnoreCase(importerString))
+					rememberedNumber = count;
 				count++;
 			}
-
-		Choice exporterChoice = dialog.addPopUpMenu ("File Format", exporterNames, 0);
-		exporterChoice.select(importerString);
+		Choice exporterChoice = dialog.addPopUpMenu ("File Format", exporterNames, rememberedNumber);
 		dialog.addBlankLine();
 		dialog.completeAndShowDialog();
 		importerString = exporterChoice.getSelectedItem();
-
 		dialog.dispose();
 		dialog = null;
+		storePreferences();
 		return importerString;
 
 	}

@@ -957,7 +957,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			}
 		}
 	}
-		
 	public void deleteSelectedRows(boolean byCommand) {
 		int numSelected = 0;
 		for (int ic = table.getNumRows()-1; ic>=0; ic--){
@@ -985,7 +984,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			Object obj = getCurrentObject();
 
 			//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
-
 			int row = currentNumRows-1;
 			int firstInBlockDeleted = -1;
 			int lastInBlockDeleted = -1;
@@ -1019,8 +1017,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				row--;
 			}
-
 			table.setNumRows(currentNumRows-count);
+
 			//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
 			notifyRowDeletion(obj);
 			table.repaintAll();
