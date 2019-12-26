@@ -60,12 +60,12 @@ public class ClockWatcherThread extends Thread {
 			}
 			
 			//Repainting any window on special repaint queue
-			for (int iw = MesquiteWindow.specialRepaintQueue.size()-1;  iw>=0; iw--){
-				MesquiteWindow w = (MesquiteWindow)MesquiteWindow.specialRepaintQueue.elementAt(iw);
-				if (System.currentTimeMillis()-w.srqTime > 500){ 
+			for (int iw = MesquiteWindow.delayedRepaintQueue.size()-1;  iw>=0; iw--){
+				MesquiteWindow w = (MesquiteWindow)MesquiteWindow.delayedRepaintQueue.elementAt(iw);
+				if (System.currentTimeMillis()>w.drqTime){ 
 					if (!w.disposed() && !w.disposing)
 						w.repaintAll();
-					MesquiteWindow.specialRepaintQueue.remove(w); //done! remove
+					MesquiteWindow.delayedRepaintQueue.remove(w); //done! remove
 					Debugg.println("repainted! " + sleepCount);
 				}
 			}
