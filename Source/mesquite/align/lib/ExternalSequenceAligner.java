@@ -457,8 +457,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 							//alignedData.swapTaxa(j, j+1);
 						}
 					}
+					alignedTaxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
 					alignedData.changed(this, alignedTaxa, new Notification(MesquiteListener.PARTS_MOVED));
-				///	Debugg.println notify of taxon swapping
 					if (alignedData instanceof MolecularData){
 						aligned = new long[alignedData.getNumChars()][originalTaxa.getNumTaxa()];
 						for (int ic = 0; ic<alignedData.getNumChars(); ic++)
