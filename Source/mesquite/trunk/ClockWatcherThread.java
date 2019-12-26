@@ -51,11 +51,27 @@ public class ClockWatcherThread extends Thread {
 				Thread.currentThread().interrupt();
 			}
 			MesquiteTrunk.checkForResetCheckMenuItems();
+			
+			//Surveying windows to reset graphically after first shown (bugs in some macOS versions)
 			if (sleptLong || sleepCount % (sleep/catnap) == 1) {
 				MesquiteThread.surveyDoomedIndicators();
 				if (MesquiteTrunk.isMacOSX())
 					MesquiteThread.surveyNewWindows();
 			}
+			
+			//Repainting any window on special repaint queue
+			for (int iw = MesquiteWindow.specialRepaintQueue.size()-1;  iw>=0; iw--){
+				MesquiteWindow w = (MesquiteWindow)MesquiteWindow.specialRepaintQueue.elementAt(iw);
+				if (System.currentTimeMillis()-w.srqTime > 500){ 
+					if (!w.disposed() && !w.disposing)
+						w.repaintAll();
+					MesquiteWindow.specialRepaintQueue.remove(w); //done! remove
+					Debugg.println("repainted! " + sleepCount);
+				}
+				
+			}
+			
+			//Surveying threads for progressindicators, need to put up "command is executing"
 			MesquiteThread[] mThreads = new MesquiteThread[MesquiteThread.threads.size()];
 			try {
 				for (int i=0; i<mThreads.length; i++)
@@ -63,11 +79,7 @@ public class ClockWatcherThread extends Thread {
 			}
 			catch (Exception e){
 			}
-/*if (KeyboardFocusManager.getCurrentKeyboardFocusManager() != null && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null){
-	System.out.println("" + KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getClass());
-System.out.println("xxx " + MesquiteWindow.windowOfItem(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner()));
-}
-*/
+
 			sleepTime = sleep;
 			sleepCount++;
 			for (int i=0; i<mThreads.length && mThreads[i]!=null; i++){  //go through current threads
