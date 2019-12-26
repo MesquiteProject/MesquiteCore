@@ -26,7 +26,7 @@ public class ClockWatcherThread extends Thread {
 	Mesquite mesquite;
 	static final int sleep = 1500;
 	static final int catnap = 50;
-	public static int numBoutsPerSleep = 5;
+	static final int numBoutsPerSleep = 10;
 	int sleepTime = sleep;
 	long lastTick = 0;
 	public ClockWatcherThread (Mesquite mesquite) {
@@ -61,7 +61,6 @@ public class ClockWatcherThread extends Thread {
 				sleepCount++;
 			
 			//sleep is down in a series of bouts. This is a kludge to let some functions happen at each bout (delayed repaint) but others be after each sleep
-
 			for (int iBout = 0; iBout<numBoutsPerSleep; iBout++){
 				try {
 					Thread.sleep(sleepTime/numBoutsPerSleep);  
