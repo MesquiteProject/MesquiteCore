@@ -42,7 +42,6 @@ public class ClockWatcherThread extends Thread {
 				if (!w.disposed() && !w.disposing)
 					w.repaintAll();
 				MesquiteWindow.delayedRepaintQueue.remove(w); //done! remove
-				Debugg.println("delayed repaint!");
 			}
 		}
 	}
