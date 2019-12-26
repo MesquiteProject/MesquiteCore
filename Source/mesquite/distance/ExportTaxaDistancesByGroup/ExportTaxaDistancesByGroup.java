@@ -36,6 +36,9 @@ public class ExportTaxaDistancesByGroup extends FileInterpreterI {
 	public boolean isPrerelease(){
 		return true;
 	}
+	public boolean loadModule(){
+		return false;
+	}
 	public boolean isSubstantive(){
 		return true;
 	}
@@ -77,7 +80,7 @@ public class ExportTaxaDistancesByGroup extends FileInterpreterI {
 	/*.................................................................................................................*/
 	String fileName = "distances.txt";
 	String addendum = "";
-/*
+	/*
 	public boolean getExportOptions(Taxa taxa){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export distance matrix", buttonPressed);
@@ -90,7 +93,7 @@ public class ExportTaxaDistancesByGroup extends FileInterpreterI {
 		addendum = "";
 
 		TextArea fsText =exportDialog.addTextAreaSmallFont(addendum,16);
-* /
+	 * /
 		exportDialog.completeAndShowDialog();
 
 		boolean ok = (exportDialog.query()==0);
@@ -171,7 +174,7 @@ public class ExportTaxaDistancesByGroup extends FileInterpreterI {
 				return false;
 			}
 		}
-		*/
+		 */
 		if (!distanceTask.getDistanceOptions()) {
 			fireEmployee(distanceTask);
 			distanceTask=null;
@@ -191,23 +194,24 @@ public class ExportTaxaDistancesByGroup extends FileInterpreterI {
 				StringBuffer line = new StringBuffer(1000);
 				for (int it = 0; it<taxa.getNumTaxa(); it++){
 					TaxaGroup groupOfTaxon = (TaxaGroup)partitions.getProperty(it);
-					
-					for (int it2 = 0; it2<taxa.getNumTaxa(); it2++){
-						TaxaGroup comparisonGroup = (TaxaGroup)partitions.getProperty(it2);
-						if (groupOfTaxon.equals(comparisonGroup)) {
-							line.setLength(0);
-							line.append(taxa.getTaxonName(it) +"\t"+groupOfTaxon.getName()+"-"+groupOfTaxon.getName()+"\twithin\t");
-							line.append(MesquiteDouble.toString(distances.getDistance(it, it2)));							
-							f.writeLine(line.toString());
+					if (groupOfTaxon!=null) {
+						for (int it2 = 0; it2<taxa.getNumTaxa(); it2++){
+							TaxaGroup comparisonGroup = (TaxaGroup)partitions.getProperty(it2);
+							if (groupOfTaxon.equals(comparisonGroup)) {
+								line.setLength(0);
+								line.append(taxa.getTaxonName(it) +"\t"+groupOfTaxon.getName()+"-"+groupOfTaxon.getName()+"\twithin\t");
+								line.append(MesquiteDouble.toString(distances.getDistance(it, it2)));							
+								f.writeLine(line.toString());
+							}
 						}
-					}
-					for (int it2 = 0; it2<taxa.getNumTaxa(); it2++){
-						TaxaGroup comparisonGroup = (TaxaGroup)partitions.getProperty(it2);
-						if (!groupOfTaxon.equals(comparisonGroup)) {
-							line.setLength(0);
-							line.append(taxa.getTaxonName(it) +"\t"+groupOfTaxon.getName()+"-"+comparisonGroup.getName()+"\tbetween\t");
-							line.append(MesquiteDouble.toString(distances.getDistance(it, it2)));							
-							f.writeLine(line.toString());
+						for (int it2 = 0; it2<taxa.getNumTaxa(); it2++){
+							TaxaGroup comparisonGroup = (TaxaGroup)partitions.getProperty(it2);
+							if (!groupOfTaxon.equals(comparisonGroup) && comparisonGroup!=null) {
+								line.setLength(0);
+								line.append(taxa.getTaxonName(it) +"\t"+groupOfTaxon.getName()+"-"+comparisonGroup.getName()+"\tbetween\t");
+								line.append(MesquiteDouble.toString(distances.getDistance(it, it2)));							
+								f.writeLine(line.toString());
+							}
 						}
 					}
 				}
