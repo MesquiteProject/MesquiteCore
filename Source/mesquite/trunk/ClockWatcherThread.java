@@ -32,6 +32,20 @@ public class ClockWatcherThread extends Thread {
 		this.mesquite = mesquite;
 		setPriority(Thread.MIN_PRIORITY);
 	}
+	
+	void doDelayedRepaints(){
+		//Repainting any window on special repaint queue
+		for (int iw = MesquiteWindow.delayedRepaintQueue.size()-1;  iw>=0; iw--){
+			MesquiteWindow w = (MesquiteWindow)MesquiteWindow.delayedRepaintQueue.elementAt(iw);
+			if (System.currentTimeMillis()>w.drqTime){ 
+				if (!w.disposed() && !w.disposing)
+					w.repaintAll();
+				MesquiteWindow.delayedRepaintQueue.remove(w); //done! remove
+				Debugg.println("delayed repaint!");
+			}
+		}
+	}
+	
 	public void run() {
 		long sleepCount = 0;
 		boolean reportThreads = false;
@@ -44,11 +58,17 @@ public class ClockWatcherThread extends Thread {
 				sleepCount = 0;
 			else
 				sleepCount++;
-			try {
-				Thread.sleep(sleepTime);  
-			}
-			catch (InterruptedException e){
-				Thread.currentThread().interrupt();
+			
+			int numBouts = 5; //sleep is down in a series of bouts. This is a kludge to let some functions happen at each bout (delayed repaint) but others be after each sleep
+
+			for (int iBout = 0; iBout<numBouts; iBout++){
+				try {
+					Thread.sleep(sleepTime/numBouts);  
+					doDelayedRepaints();
+				}
+				catch (InterruptedException e){
+					Thread.currentThread().interrupt();
+				}
 			}
 			MesquiteTrunk.checkForResetCheckMenuItems();
 			
@@ -59,16 +79,6 @@ public class ClockWatcherThread extends Thread {
 					MesquiteThread.surveyNewWindows();
 			}
 			
-			//Repainting any window on special repaint queue
-			for (int iw = MesquiteWindow.delayedRepaintQueue.size()-1;  iw>=0; iw--){
-				MesquiteWindow w = (MesquiteWindow)MesquiteWindow.delayedRepaintQueue.elementAt(iw);
-				if (System.currentTimeMillis()>w.drqTime){ 
-					if (!w.disposed() && !w.disposing)
-						w.repaintAll();
-					MesquiteWindow.delayedRepaintQueue.remove(w); //done! remove
-					Debugg.println("repainted! " + sleepCount);
-				}
-			}
 			
 			//Surveying threads for progressindicators, need to put up "command is executing"
 			MesquiteThread[] mThreads = new MesquiteThread[MesquiteThread.threads.size()];
