@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->History of New Features<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 3.6<br />
-      27 December 2018<br /></td>
+    <td width="14%">Version 3.61<br />
+      26 December 2019<br /></td>
   </tr>
 </table>
 
@@ -209,14 +209,24 @@
  <p>&nbsp;</p>
  <hr />
  <h3>Next Version</h3>
+ <h4 id="toc84">New Features </h4>
+ <ul>
+   <li>None yet </li>
+ </ul>
+ <h4>Bug Fixes and Workarounds</h4>
+ <ul>
+   <li>None yet</li>
+ </ul>
+ <hr />
+ <h3>Version 3.61</h3>
  <h4 id="toc83">New Features</h4>
  <ul>
    <li><strong>Refine Groups by Codon Position</strong> added (in List of Characters window, drop-down menu by touching on the title of the Groups column). This will create a new character partition that takes the current character partition, and if any existing group has different codon positions in it, will assign each codon position within that group to a separate group. For example, if you have two protein coding genes in the matrix, say Gene1 and Gene2, and the first 900 characters are assigned to a character group called Gene1, and the last 600 characters to a group called Gene2, and within each gene codon positions are specified, then using this tool there will be six group created: Gene1_1, for all of the first positions in Gene1, Gene1_2, for all the second positions in Gene1, and then similarly Gene1_3, Gene2_1, Gene2_2, and Gene2_3. </li>
-   <li>Added &quot;Select by List in Clipboard&quot; to List Windows.  If you have a list of names in the Clipboard (as text, one name per line), and go to the list window, and use this, it will select all rows in the list window whose names match a name in that list of names in the Clipboard.</li>
+   <li>Added &quot;<strong>Select by List in Clipboard</strong>&quot; to List Windows.  If you have a list of names in the Clipboard (as text, one name per line), and go to the list window, and use this, it will select all rows in the list window whose names match a name in that list of names in the Clipboard.</li>
    <li>Added ability to color cells and select rows based upon values in Character Matrix List Window</li>
    <li>As a minor change, tree windows now have a default orientation of &quot;Right&quot;, i.e., with the root of the tree on the left and taxon names on the right. </li>
-   <li>The Project Panel (on the left of a Mesquite window) has been improved. Among other things, it now lists matrices and tree blocks only if there are less than a specified number (by default 16).</li>
-   <li>A few new calculators were added for taxa, matrices, and trees: Number of Matrices with Data for Taxon counts, for a taxon, in how many matrices the taxon has data. This can be used, e.g., to see how abundant is data for a taxon. Number of Selected Taxa with Data in Matrix counts, for a matrix, how many of the currently selected taxa have data in that matrix. This can be used, e.g. to filter matrices that are too sparsely represented by taxa. Ratio of Longest Branches calculates, for a tree, the ratio of the two longest branches in a tree. This can be used, e.g., to find trees suggesting paralogy.</li>
+   <li>The <strong>Project Panel</strong> (on the left of a Mesquite window) has been improved. Among other things, it now lists matrices and tree blocks only if there are less than a specified number (by default 16).</li>
+   <li>A few new calculators were added for taxa, matrices, and trees: <strong>Number of Matrices with Data for Taxon</strong> counts, for a taxon, in how many matrices the taxon has data. This can be used, e.g., to see how abundant is data for a taxon. <strong>Number of Selected Taxa with Data in Matrix</strong> counts, for a matrix, how many of the currently selected taxa have data in that matrix. This can be used, e.g. to filter matrices that are too sparsely represented by taxa. <strong>Ratio of Longest Branches</strong> calculates, for a tree, the ratio of the two longest branches in a tree. This can be used, e.g., to find trees suggesting paralogy.</li>
    <li>Some functions (modules) used in Process Data Files were renamed for clarity.</li>
    <li>Other minor improvements.</li>
  </ul>
