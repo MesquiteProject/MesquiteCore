@@ -68,7 +68,6 @@ public class ClockWatcherThread extends Thread {
 					MesquiteWindow.specialRepaintQueue.remove(w); //done! remove
 					Debugg.println("repainted! " + sleepCount);
 				}
-				
 			}
 			
 			//Surveying threads for progressindicators, need to put up "command is executing"
