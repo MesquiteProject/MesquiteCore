@@ -357,6 +357,9 @@ public class MesquiteFrame extends Frame implements Commandable {
 
 
 	}
+	public MesquiteWindow getFrontWindow(){
+		return frontWindow;
+	}
 	public void fixFrontness(){
 		MesquiteWindow w = frontMostInLocation(MesquiteFrame.POPTILE);
 		if (w!= null && poptile.getComponentZOrder(w.outerContents) != 0){

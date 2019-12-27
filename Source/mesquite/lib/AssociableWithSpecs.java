@@ -176,19 +176,19 @@ public abstract class AssociableWithSpecs extends Associable {
   		}
 		return true;
 	}
-	public boolean swapParts(int first, int second){
-		if (!super.swapParts(first, second))
+	public boolean swapParts(int first, int second, boolean notify){
+		if (!super.swapParts(first, second, notify))
 			return false;
   		if (specsVectors!=null){ //update size of specification sets
 	  		for (int i=0; i<specsVectors.size(); i++) {
 	  			SpecsSetVector sv = (SpecsSetVector)specsVectors.elementAt(i);
 	  			for (int j=0; j<sv.size(); j++) {
 	  				SpecsSet css = (SpecsSet)sv.elementAt(j);
-	  				css.swapParts(first, second);
+	  				css.swapParts(first, second, notify);
 	  			}
 	  			SpecsSet currentSS = sv.getCurrentSpecsSet();
 	  			if (currentSS!=null)
-	  				currentSS.swapParts(first, second);
+	  				currentSS.swapParts(first, second, notify);
 	  		}
   		}
 		return true;

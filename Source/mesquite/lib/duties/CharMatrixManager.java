@@ -262,7 +262,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				MesquiteTrunk.errorReportedDuringRun = true;
 			}
 			if (warnChimera>=0){
-				discreetAlert("WARNING: The merging process resulted in INCORRECT assignments of states for taxon " + (warnChimera+1) + " (" + taxa.getTaxonName(warnChimera) + ").  The problem may have affected other taxa as well.  It is recommended that you DO NOT SAVE THE FILE and instead merge again so as to prevent this.  To prevent this, ensure that the incoming (merging) data matrix is NOT INTERLEAVED.  Interleaving the matrix presents special problems in merging.");
+				discreetAlert("WARNING: The merging process resulted in INCORRECT assignments of states for taxon " + (warnChimera+1) + " (" + taxa.getTaxonName(warnChimera) + ") in matrix " + data.getName() + ".  The problem may have affected other taxa as well.  It is recommended that you DO NOT SAVE THE FILE and instead merge again so as to prevent this.  To prevent this, ensure that the incoming (merging) data matrix is NOT INTERLEAVED.  Interleaving the matrix presents special problems in merging.");
 				MesquiteTrunk.errorReportedDuringRun = true;
 			}
 			if (toDelete){

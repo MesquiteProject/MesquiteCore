@@ -36,7 +36,10 @@ public abstract class DataAlterer extends MesquiteModule  {
  		return "Data Alterer";
    	}
    	
-   	public long getNumCellsAltered(){
+ 	 public String[] getDefaultModule() {
+	 	return new String[] {"#MultipleAlignService"};
+	 }
+  	public long getNumCellsAltered(){
    		return numCellsAltered;
    	}
    	/** if returns true, then requests to remain on even after operateData is called.  Default is false*/

@@ -188,6 +188,13 @@ public class StringUtil {
 		return getDateTime(dnow);
 	}
 	/*.................................................................................................................*/
+	public static String getDateTimeWithSeconds() {
+		long t = System.currentTimeMillis();
+		Date dnow = new Date(t);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMMM yyyy,  HH:mm:ss.SSS z");
+		return sdf.format(dnow);
+	}
+	/*.................................................................................................................*/
 	public static String getOutputFileStamp(MesquiteModule m) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Mesquite version " + m.getMesquiteVersion() + m.getBuildVersion() + "\n");

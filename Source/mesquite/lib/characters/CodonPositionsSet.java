@@ -54,6 +54,7 @@ public class CodonPositionsSet  extends CharNumSet {
 		return success;
 	}
   	
+  	/** **/
 	int endSequenceByThree(int targetPos, int numChars, int ic, int mainCount, boolean[] include, MesquiteInteger charNumberOfLastThird){
 		int unassignedPosition=4;
 		int previousThird = mainCount; 
@@ -61,7 +62,7 @@ public class CodonPositionsSet  extends CharNumSet {
 		int count=mainCount;
 		int ik=0;
 		for (ik = ic+1; ik< numChars; ik++){
-			if (include==null || ik>=include.length || include[ik]){
+			if (include==null || ik>=include.length || include[ik]){// only pay attention to included characters if the boolean array "include" is present
 				count++;
 				int thisPos = getInt(ik);
 				if (thisPos == targetPos || (thisPos==MesquiteInteger.unassigned && (targetPos==unassignedPosition))) {
@@ -104,7 +105,7 @@ public class CodonPositionsSet  extends CharNumSet {
 				count++;
 				int thisPos = getInt(ic);
 				if (thisPos == targetPos || (thisPos==MesquiteInteger.unassigned && (targetPos==unassignedPosition))) {
-					if (continuing == 0) { 
+					if (continuing == 0) {
 						//first, check to see if there is a series of thirds....
 						int lastThird = endSequenceByThree(targetPos, getNumberOfParts(), ic, count, include, charNumberOfLastThird);
 						//if so, then go the series of thirds 
@@ -115,6 +116,8 @@ public class CodonPositionsSet  extends CharNumSet {
 							}
 
 							list += " " + CharacterStates.toExternal(count+offset) + "-" +  CharacterStates.toExternal(lastThird+offset) + "\\3";
+							if (writeCommas)
+								writeSeparator=true;
 							ic = charNumberOfLastThird.getValue();
 							count = lastThird;
 						
@@ -141,6 +144,8 @@ public class CodonPositionsSet  extends CharNumSet {
 							writeSeparator=false;
 						}
 						list += " " + CharacterStates.toExternal(count-1+offset);
+						if (writeCommas)
+							writeSeparator=true;
 						lastWritten = count-1;
 					}
 					else {

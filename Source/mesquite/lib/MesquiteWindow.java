@@ -36,6 +36,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public MesquiteMenuBar menuBar;
 	public static Vector classesCreated, countsOfClasses, countsOfClassesFinalized; //to detect memory leaks
 
+	public static Vector delayedRepaintQueue = new Vector(); //to be repainted in about 1-2 seconds (initially, to work around graphics bug affecting Chromaseq
+	public long drqTime = 0;
+	
 	public boolean resetMenuPending = false;
 	public int painting = 0;
 	public boolean disposing = false;
@@ -347,6 +350,14 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (windowTimer!=null)
 			windowTimer.resetLastTime();
 	}
+	
+	public void addToDelayedRepaintQueue(long extraDelayTime){ 
+		// best to add extraDelayTime of at least 500 ms in case happens to be put on queue just before the thread looks for windows for delayed repainting
+		drqTime = System.currentTimeMillis() + extraDelayTime;
+		delayedRepaintQueue.addElement(this); 
+		//for execution, search for delayedRepaintQueue in ClockWatcherThread
+	}
+	
 	public void logTime(String message){
 		if (windowTimer!=null)
 			if (!StringUtil.blank(message))
@@ -448,6 +459,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	public boolean isFrontMostInLocation(){
 		return parentFrame.frontMostInLocation(getTileLocation()) == this;
+	}
+	public boolean isFrontMostWindow(){
+		return parentFrame.getFrontWindow() == this;
 	}
 	public void setAsPrimaryMesquiteWindow(boolean p){
 		if (parentFrame != null)

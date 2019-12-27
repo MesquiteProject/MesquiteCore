@@ -112,7 +112,7 @@ public class ModelsList extends ListModule {
 				return false;
 			}
 			else {
-				getProject().removeFileElement(model);//must remove first, before disposing
+				getProject().removeFileElement(model, notify);//must remove first, before disposing
 				model.dispose();
 				return true;
 			}
@@ -238,7 +238,7 @@ class ModelsListWindow extends ListWindow implements MesquiteListener {
 	}
 	public String getRowName(int row){
 		if (models!=null){
-			if (row<0 && row >= models.size())
+			if (row<0 || row >= models.size())
 				return null;
 			return ((Listable)models.elementAt(row)).getName();
 		}

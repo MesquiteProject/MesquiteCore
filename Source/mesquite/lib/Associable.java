@@ -1022,8 +1022,19 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			}
 		}
 	}
-	/*-----------------------------------------*/
+
+
+	MesquiteTimer t3 = new MesquiteTimer();
+	MesquiteTimer t4 = new MesquiteTimer();
+	MesquiteTimer t5 = new MesquiteTimer();
+	MesquiteTimer t6 = new MesquiteTimer();
+
+	/*-----------------------------------------*
 	public boolean swapParts(int first, int second){
+		return swapParts(first, second, true);
+	}
+	*/
+	public boolean swapParts(int first, int second, boolean notify){
 		if (first>numParts || first<0) 
 			return false;
 		if (second>numParts || second<0) 

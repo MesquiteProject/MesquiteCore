@@ -81,15 +81,23 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		this.ownerModule = ownerModule;
 		startupTime = System.currentTimeMillis();
 		datas = new ListableVector();  
+		datas.setProject(this);
+		datas.setName("Character Matrices");
 		taxas = new ListableVector();  
+		taxas.setProject(this);
+		taxas.setName("Taxa Blocks");
 		charModels = new ModelVector();
+		charModels.setProject(this);
 		datas.addListener(this);
 		taxas.addListener(this);
 		charModels.addListener(this);
 		modelListener = new CentralModelListener();
 		treeVectors = new ListableVector();
+		treeVectors.setProject(this);
+		treeVectors.setName("Tree Blocks");
 		otherElements = new ListableVector();
 		otherElements.setName("other file elements in project");
+		otherElements.setProject(this);
 		files = new ListableVector();
 		nexusBlocks = new ListableVector( 1);
 		idNumber = totalCreated;
@@ -277,27 +285,24 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 
 	/*.................................................................................................................*/
 	/** returns the number of Tree Vectors */
+	public int getNumberTreeVectors(Taxa t) {
+		int count = 0;
+		for (int i = 0; i<treeVectors.size(); i++){
+			TreeVector trees = (TreeVector)treeVectors.elementAt(i);
+			if (trees.getTaxa() == t)
+				count++;
+		}
+		return count;
+	}
+	/*.................................................................................................................*/
+	/** returns the number of Tree Vectors */
 	public int getNumberTreeVectors() {
 		return treeVectors.size();
-		/*ListableVector v = new ListableVector();		
-		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
-			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
-			if (!trees.isDoomed())
-				v.addElement(trees, false);
-		}
-		return v;*/
 	}
 	/*.................................................................................................................*/
 	/** returns the Tree Vectors */
 	public ListableVector getTreeVectors() {
 		return treeVectors;
-		/*ListableVector v = new ListableVector();		
-		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
-			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
-			if (!trees.isDoomed())
-				v.addElement(trees, false);
-		}
-		return v;*/
 	}
 
 	/*.................................................................................................................*/
@@ -813,6 +818,9 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/*.................................................................................................................*/
 	/** DOCUMENT */
 	public void removeFileElement(FileElement element) {
+		removeFileElement(element, true);
+	}
+	public void removeFileElement(FileElement element, boolean notify) {
 		if (element==null)
 			return;
 		element.removeListener(this);
@@ -849,7 +857,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				otherElements.removeElement(element, true);
 			//otherElements.notifyListenersOfDisposed(element);
 		}
-		notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+		if (notify)
+			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 		//TODO: shouldn't broadcase of deletion be here?
 	}
 	/*.................................................................................................................*/

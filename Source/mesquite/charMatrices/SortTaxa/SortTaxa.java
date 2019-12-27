@@ -90,7 +90,7 @@ public class SortTaxa extends DataWindowAssistantI {
   		String temp = text[first];
   		text[first] = text[second];
   		text[second] = temp;
-		taxa.swapParts(first, second); 
+		taxa.swapParts(first, second, true); 
 	}
 	MesquiteInteger pos = new MesquiteInteger();
 	 

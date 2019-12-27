@@ -19,6 +19,7 @@ import mesquite.lists.lib.*;
 import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
@@ -50,6 +51,14 @@ public class TreeblockList extends ListLVModule {
 		return (getModuleWindow()!=null && obj == treeBlocks);
 	}
 
+	public boolean rowsShowable(){
+		return true;
+	}
+	public void showItemAtRow(int row){
+		TreeVector trees = (TreeVector)treeBlocks.elementAt(row);
+		trees.showMe();
+		
+	}
 	public boolean rowsDeletable(){
 		return true;
 	}
@@ -67,7 +76,7 @@ public class TreeblockList extends ListLVModule {
 		if (row<0 || row>= getNumberOfRows())
 			return false;
 		TreeVector trees = (TreeVector)treeBlocks.elementAt(row);
-		getProject().removeFileElement(trees);//must remove first, before disposing
+		getProject().removeFileElement(trees, notify);//must remove first, before disposing
 		trees.dispose();
 		return true;
 	}

@@ -420,7 +420,7 @@ public class MeristicData extends CharacterData implements ItemContainer {
 	}
 	/*..........................................MeristicData................*/
 	/**swaps characters first and second.*/
-	public boolean swapParts(int first, int second){
+	public boolean swapParts(int first, int second, boolean notify){
 		if (first<0 || first >= numChars)
 			return false;
 		if (second<0 || second >= numChars)
@@ -429,7 +429,7 @@ public class MeristicData extends CharacterData implements ItemContainer {
 			Integer2DArray oldMatrix = ((Integer2DArray)matrices.elementAt(item));
 			Integer2DArray.swapColumns(oldMatrix.getMatrix(), first, second);
 		}
-		return super.swapParts(first, second);
+		return super.swapParts(first, second, notify);
 	}
 	/*..........................................MeristicData................*/
 	/**moves num characters from position "first" to just after position "justAfter"; returns true iff successful.*/

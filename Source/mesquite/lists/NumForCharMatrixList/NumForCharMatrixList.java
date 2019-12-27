@@ -23,7 +23,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class NumForCharMatrixList extends DataSetsListAssistant  {
+public class NumForCharMatrixList extends DataSetsListAssistant implements MesquiteListener  {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Number for Matrix (in List of Character Matrices window)";
@@ -39,6 +39,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		"You can select a value to show in the Number For Character Matrices submenu of the Columns menu of the List of Character Matrices Window. ");
 	}
 	NumberForMatrix numberTask;
+	MesquiteBoolean shadeCells = new MesquiteBoolean(false);
+	MesquiteTable table;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (arguments !=null) {
@@ -52,6 +54,9 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		if (numberTask==null) {
 			return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
 		}
+		shadeCells.setValue(false);
+		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells);
+		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
 		return true;
 	}
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
@@ -69,12 +74,14 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		if (obj instanceof ListableVector)
 			this.datas = (ListableVector)obj;
 		datas.addListener(this);
+		this.table = table;
 		doCalcs();
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
 	public void disposing(Object obj){
-		//TODO: respond
+		if (obj == datas)
+			datas=null;
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
@@ -82,7 +89,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		return true;  //TODO: respond
 	}
 	public void changed(Object caller, Object obj, Notification notification){
-		if (Notification.appearsCosmetic(notification))
+		// below should be appearsCosmeticOrSelection if matrix initiating 
+		if (Notification.appearsCosmeticOrSelection(notification))
 			return;
 		if (notification.getCode()!=MesquiteListener.LOCK_CHANGED)
 			doCalcs();
@@ -96,16 +104,95 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setValueTask ", numberTask); 
+		temp.addLine("toggleShadeCells " + shadeCells.toOffOnString());
 		return temp;
+	}
+	/*.................................................................................................................*/
+	public boolean querySelectBounds(MesquiteNumber lessThan, MesquiteNumber moreThan) {
+		if (lessThan==null || moreThan==null || numberTask==null)
+			return false;
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Select based upon value",buttonPressed); 
+
+		dialog.addLargeOrSmallTextLabel("Select based upon value of " + numberTask.getNameOfValueCalculated());
+
+		SingleLineTextField moreThanField = dialog.addTextField("Select values greater than or equal to ","",20);
+		SingleLineTextField lessThanField = dialog.addTextField("Select values less than or equal to ","",20);
+
+
+		dialog.completeAndShowDialog(true);
+
+		if (buttonPressed.getValue()==0)  {
+			String s = moreThanField.getText();
+			moreThan.setValue(s);
+			s = lessThanField.getText();
+			lessThan.setValue(s);
+		}
+		dialog.dispose();
+		return (buttonPressed.getValue()==0);
+	}
+	/*.................................................................................................................*/
+	void selectBasedOnValue() {
+		if (MesquiteThread.isScripting())
+			return;
+		if (table==null || datas==null || na==null)
+			return;
+		MesquiteNumber lessThan = new MesquiteNumber();
+		MesquiteNumber moreThan = new MesquiteNumber();
+		if (!querySelectBounds(lessThan, moreThan))
+			return;
+		if (!lessThan.isCombinable() && ! moreThan.isCombinable())
+			return;
+		MesquiteNumber value = new MesquiteNumber();
+		for (int i=0; i<datas.getNumberOfParts(); i++) {
+			na.placeValue(i, value);
+
+			if (lessThan.isCombinable() && moreThan.isCombinable()) {
+				if ((lessThan.isMoreThan(value)|| lessThan.equals(value)) &&  (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
+					table.selectRow(i);
+					datas.setSelected(i, true);
+					table.redrawFullRow(i);
+				}
+			} else if (lessThan.isCombinable() && (lessThan.isMoreThan(value)|| lessThan.equals(value))) {
+				table.selectRow(i);
+				datas.setSelected(i, true);
+				table.redrawFullRow(i);
+			} else if (moreThan.isCombinable() && (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
+				table.selectRow(i);
+				datas.setSelected(i, true);
+				table.redrawFullRow(i);
+			}
+		}
+		
+		datas.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a character matrix", "[name of module]", commandName, "setValueTask")) {
 			NumberForMatrix temp= (NumberForMatrix)hireNamedEmployee(NumberForMatrix.class, arguments);
+			Class prev = null;
+			if (numberTask != null)
+				prev = numberTask.getClass();
 			if (temp!=null) {
 				numberTask = temp;
+				if (prev != numberTask.getClass()){
+					doCalcs();
+					outputInvalid();
+				}
 				return temp;
 			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to color cells", "[on or off]", commandName, "toggleShadeCells")) {
+			boolean current = shadeCells.getValue();
+			shadeCells.toggleValue(parser.getFirstToken(arguments));
+			if (current!=shadeCells.getValue()) {
+				outputInvalid();
+				parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Selects list rows based on value of this column", null, commandName, "selectBasedOnValue")) {
+			selectBasedOnValue();
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -115,6 +202,15 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		if (numberTask==null)
 			return "";
 		return numberTask.getVeryShortName();
+	}
+	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
+	public Color getBackgroundColorOfCell(int ic, boolean selected){
+		if (!shadeCells.getValue())
+			return null;
+		if (min.isCombinable() && max.isCombinable() && na != null && na.isCombinable(ic)){
+			return MesquiteColorTable.getGreenScale(na.getDouble(ic), min.getDoubleValue(), max.getDoubleValue(), false);
+		}
+		return null;
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
@@ -126,6 +222,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 	/*.................................................................................................................*/
 	NumberArray na = new NumberArray(0);
 	StringArray explArray = new StringArray(0);
+	MesquiteNumber min = new MesquiteNumber();
+	MesquiteNumber max = new MesquiteNumber();
 	/*.................................................................................................................*/
 	public void doCalcs(){
 		if (numberTask==null || datas == null)
@@ -135,6 +233,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		explArray.resetSize(numBlocks);
 		MesquiteString expl = new MesquiteString();
 		na.resetSize(numBlocks);
+		na.deassignArrayToInteger();
 		MesquiteNumber mn = new MesquiteNumber();
 		for (int ic=0; ic<numBlocks; ic++) {
 			CharacterData data = (CharacterData)datas.elementAt(ic);
@@ -143,6 +242,8 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 			na.setValue(ic, mn);
 			explArray.setValue(ic, expl.getValue());
 		}
+		na.placeMinimumValue(min);
+		na.placeMaximumValue(max);
 	}
 	public String getExplanationForRow(int ic){
 		if (explArray == null || explArray.getSize() <= ic)

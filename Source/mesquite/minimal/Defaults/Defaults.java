@@ -108,7 +108,8 @@ public class Defaults extends MesquiteInit  {
 		sm.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "-", null);
 
-		MesquiteTrunk.mesquiteTrunk.addMenuItem(MesquiteTrunk.defaultsSubmenu,"Maximum # Items in Project Panel...", makeCommand("setProjectPanelMaxItems",  this));		
+		MesquiteTrunk.mesquiteTrunk.addMenuItem(MesquiteTrunk.defaultsSubmenu, "Max # Matrices/Tree Blocks Listed in Project Panel...", makeCommand("setProjectPanelMaxItemsSeparate",  this));
+		//MesquiteTrunk.mesquiteTrunk.addMenuItem(MesquiteTrunk.defaultsSubmenu,"Overall Max # Items in Project Panel...", makeCommand("setProjectPanelMaxItems",  this));		
 		sm = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.defaultsSubmenu,"Project Panel Font Size", makeCommand("setProjectPanelFontSize",  this), MesquiteSubmenu.getFontSizeList());		
 		sm.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use File-Specific Project Panel Width", makeCommand("respectFileSpecificResourceWidth",  this), respectFileSpecificResourceWidth);
@@ -232,6 +233,10 @@ public class Defaults extends MesquiteInit  {
 			int m = MesquiteInteger.fromString(content);
 			FileCoordinator.maxLinesOfAnyElementInPanel = m;
 		}
+		else if ("maxLinesOfMatricesTreeBlocksSeparateInPanel".equalsIgnoreCase(tag)) {
+			int m = MesquiteInteger.fromString(content);
+			FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel = m;
+		}
 		/*	else if ("tilePopouts".equalsIgnoreCase(tag)){
 			tilePopouts.setValue(content);
 			MesquiteFrame.popIsTile = tilePopouts.getValue();
@@ -314,6 +319,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "resourcesFontSize", MesquiteFrame.resourcesFontSize);
 		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfAnyElementInPanel", FileCoordinator.maxLinesOfAnyElementInPanel);
 		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfAnyElementInPanelQueried", FileCoordinator.maxLinesOfAnyElementInPanelQueried);
+		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfMatricesTreeBlocksSeparateInPanel", FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel);
 		StringUtil.appendXMLTag(buffer, 2, "useOtherChoicesInMenus", useOtherChoices);   
 		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.suggestedDirectory);
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
@@ -442,6 +448,15 @@ public class Defaults extends MesquiteInit  {
 				return null;
 			FileCoordinator.maxLinesOfAnyElementInPanel = num;
 			FileCoordinator.maxLinesOfAnyElementInPanelQueried = true;
+			storePreferences();
+		}
+		else if (checker.compare(getClass(), "Sets the maximum number of Matrices or Tree Blocks shown separately in Project Panel", "[number]", commandName, "setProjectPanelMaxItemsSeparate")) {
+			int num = MesquiteInteger.fromFirstToken(arguments, new MesquiteInteger(0));
+			if (!MesquiteInteger.isCombinable(num))
+				num= MesquiteInteger.queryInteger(containerOfModule(), "Maximum items of Matrices or Tree Blocks shown separately in project panel", null, FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel);
+			if (!MesquiteInteger.isCombinable(num))
+				return null;
+			FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel = num;
 			storePreferences();
 		}
 		else if (checker.compare(getClass(), "Sets the font size of project panel", "[font size]", commandName, "setProjectPanelFontSize")) {

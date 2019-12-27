@@ -185,6 +185,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	}
 	
 	/*.................................................................................................................*/
+	public int getTaxonNumber(Taxa taxa, String token) {
+		return taxa.whichTaxonNumber(nameMatcherTask, token, false, false);   // checking to see if a taxon of that name already exists in the file
+	}
+	/*.................................................................................................................*/
 	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, int lastTaxonNumber, ProgressIndicator progIndicator, String arguments, boolean newFile, String fileName) {
 			boolean wassave = data.saveChangeHistory;
 			data.saveChangeHistory = false;
@@ -216,7 +220,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				//parser.setPunctuationString(null);
 
 				token = subParser.getRemaining();  //taxon Name
-				taxonNumber = taxa.whichTaxonNumber(nameMatcherTask, token, false, false);   // checking to see if a taxon of that name already exists in the file
+				taxonNumber = getTaxonNumber(taxa, token);   // checking to see if a taxon of that name already exists in the file
 
 				if (!hasQueriedAboutSameNameTaxa && taxonNumber >= 0) {
 					if (!MesquiteThread.isScripting()){
@@ -299,7 +303,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						recordAsNewlyAddedTaxon(taxa,taxonNumber);
 
 						checkMaximumTaxonFilled(taxonNumber);  // record this taxonNumber to see if it is the biggest yet.
-						t.setName(token);
+						if (!replace)  // we only set the name if we are not replacing the data of an already existing taxon
+							t.setName(token);
 						if (progIndicator!=null) {
 							progIndicator.setText("Reading taxon " + taxonNumber+": "+token);
 							CommandRecord.tick("Reading taxon " + taxonNumber+": "+token);
@@ -514,6 +519,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		return "";
 	}
 	protected String getTaxonName(Taxa taxa, int it){
+		return getTaxonName(taxa, it, null);
+	}
+	protected String getTaxonName(Taxa taxa, int it, CharacterData data){
 		if (simplifyTaxonName)
 			return StringUtil.cleanseStringOfFancyChars(taxa.getTaxonName(it)+uniqueSuffix,false,true);
 		else 
@@ -561,7 +569,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 					counter = 1;
 					outputBuffer.append(">");
-					outputBuffer.append(getTaxonName(taxa,it));
+					outputBuffer.append(getTaxonName(taxa,it, data));
 					String sup = getSupplementForTaxon(taxa, it);
 					if (StringUtil.notEmpty(sup))
 						outputBuffer.append(sup);

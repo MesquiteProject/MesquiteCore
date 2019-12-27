@@ -38,6 +38,15 @@ public class MesquiteFileUtil {
 	public static final int BESIDE_HOME_FILE = 1;
 	public static final int ASK_FOR_LOCATION = 2;
 	/*.................................................................................................................*/
+	public static String pathForFiles(String enclosingDirectoryPath, String name, String suffix, boolean createUniqueDatedName) {
+		String path = enclosingDirectoryPath + StringUtil.cleanseStringOfFancyChars(name, false, true);
+		if (createUniqueDatedName) {
+			path+= "-" + StringUtil.getDateDayOnly() + suffix;
+			path = MesquiteFile.getUniqueNumberedPath(path);
+		}
+		return path;
+	}
+	/*.................................................................................................................*/
 	public static String createDirectoryForFiles(MesquiteModule module, int location, String name, String suffix, boolean createUniqueDatedName) {
 		MesquiteBoolean directoryCreated = new MesquiteBoolean(false);
 		String rootDir = null;
@@ -45,11 +54,7 @@ public class MesquiteFileUtil {
 			rootDir = module.createEmptySupportDirectory(directoryCreated) + MesquiteFile.fileSeparator;  //replace this with current directory of file
 		else if (location == BESIDE_HOME_FILE) {
 			String dir = module.getProject().getHomeFile().getDirectoryName();
-			String path = dir + StringUtil.cleanseStringOfFancyChars(name, false, true);
-			if (createUniqueDatedName) {
-				path+= "-" + StringUtil.getDateDayOnly() + suffix;
-				path = MesquiteFile.getUniqueNumberedPath(path);
-			}
+			String path = pathForFiles(dir, name, suffix, createUniqueDatedName);
 			File f = new File(path);
 			boolean b = f.mkdir();
 			directoryCreated.setValue(b);
@@ -57,12 +62,19 @@ public class MesquiteFileUtil {
 				rootDir = path + MesquiteFile.fileSeparator;
 		}
 		if (!directoryCreated.getValue()) {
-			rootDir = MesquiteFile.chooseDirectory("Choose folder for storing "+name+" files");
-			if (rootDir==null) {
+			String path = MesquiteFile.chooseDirectory("Choose folder for storing "+name+" files");
+			if (path==null) {
 				MesquiteMessage.discreetNotifyUser("Sorry, directory for storing "+name+" files could not be created.");
 				return null;
-			} else
-				rootDir += MesquiteFile.fileSeparator;
+			} else {
+				path += MesquiteFile.fileSeparator;
+				path = pathForFiles(path, name, suffix, createUniqueDatedName);
+				File f = new File(path);
+				boolean b = f.mkdir();
+				directoryCreated.setValue(b);
+				if (b)
+					rootDir = path + MesquiteFile.fileSeparator;
+			}
 		}
 		return rootDir;
 	}

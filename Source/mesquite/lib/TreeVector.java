@@ -89,13 +89,19 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 			
 		}
 	}
-	public boolean swapParts(int first, int second) {
+	/*public boolean swapPartsQ(int first, int second) {
 		
-		return swapParts(first, second, false);  //NOTE DEFAULT IS FALSE. The reason is to avoid time cost on multiple swaps
+		return swapParts(first, second, false, false);  //NOTE DEFAULT IS FALSE. The reason is to avoid time cost on multiple swaps
 	}
+	*/
 	public boolean swapParts(int first, int second, boolean resetNumbers) {
 		
-		boolean success = super.swapParts(first, second);
+		return swapParts(first, second, false, resetNumbers);  //NOTE DEFAULT IS FALSE. The reason is to avoid time cost on multiple swaps
+	}
+
+	public boolean swapParts(int first, int second, boolean notify, boolean resetNumbers) {
+		
+		boolean success = super.swapParts(first, second, notify);
 		if (resetNumbers)
 			resetAssignedNumbers();
 		return success;

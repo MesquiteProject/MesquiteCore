@@ -50,6 +50,14 @@ public class DatasetList extends ListLVModule {
 	public boolean resetMenusOnNameChange(){
 		return true;
 	}
+	public boolean rowsShowable(){
+		return true;
+	}
+	public void showItemAtRow(int row){
+		CharacterData data = (CharacterData)datas.elementAt(row);
+		data.showMe();
+		
+	}
 	public void showListWindow(Object obj){
 		CharMatricesListWindow charMatricesListWindow = new CharMatricesListWindow(this);
 		charMatricesListWindow.setDatas(datas);
@@ -124,7 +132,6 @@ public class DatasetList extends ListLVModule {
 		if (row<0 || row>= getNumberOfRows())
 			return false;
 		CharacterData data = getProject().getCharacterMatrixDoomedOrNot(row);
-		getProject().removeFileElement(data);//must remove first, before disposing
 		data.dispose();
 		return true;
 	}

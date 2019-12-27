@@ -14,6 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.lib;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.util.*;
 
@@ -116,6 +119,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		//ownerModule.addMenuSeparator();
 		if (owner.rowsAddable())
 			ownerModule.addMenuItem( "Add " + owner.getItemTypeNamePlural() + "...", ownerModule.makeCommand("addRows", this));
+		if (owner.rowsShowable())
+			ownerModule.addMenuItem( "Show Selected " + owner.getItemTypeNamePlural(), showCommand = ownerModule.makeCommand("showSelectedRows", this));
+	
 		if (owner.rowsDeletable()) {
 			ownerModule.addMenuItem( "Delete Selected " + owner.getItemTypeNamePlural(), deleteCommand = ownerModule.makeCommand("deleteSelectedRows", this));
 			MesquiteWindow.addKeyListener(this, this);
@@ -124,6 +130,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			MesquiteMenuItemSpec mm = ownerModule.addMenuItem( "Move Selected " + owner.getItemTypeNamePlural() + " To...", ownerModule.makeCommand("moveSelectedTo", this));
 			mm.setShortcut(KeyEvent.VK_M);
 		}
+		MesquiteSubmenuSpec mss2 =	ownerModule.addSubmenu(null,"Select");
+		ownerModule.addItemToSubmenu(null, mss2, ownerModule.addMenuItem( "Invert Selection", ownerModule.makeCommand("invertSelection", this)));
+		ownerModule.addItemToSubmenu(null, mss2, ownerModule.addMenuItem( "Select by List in Clipboard", ownerModule.makeCommand("selectByClipboard", this)));
+
 		setShowExplanation(true);
 		setShowAnnotation(true);
 		table.requestFocusInWindow();
@@ -284,6 +294,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				if (arguments.indexOf("shift")<0 && !withinSelection && !deselects)
 					assoc.deselectAll();
 				table.offAllEdits();
+				int count = 0;
 				for (int i=0; i<table.getNumRows(); i++){
 					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
 					if (nonMatching.getValue())
@@ -299,7 +310,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 					else if (satisfies) {
 						assoc.setSelected(i, !deselects);
 					}
+					if (assoc.getSelected(i))
+						count++;
 				}
+				ownerModule.logln("" + count + " items are now selected");
 				assoc.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 			else {
@@ -309,6 +323,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				if (arguments.indexOf("shift")<0 && !withinSelection && !deselects)
 					table.deselectAll();
 				table.offAllEdits();
+				int count = 0;
 				for (int i=0; i<table.getNumRows(); i++){
 					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
 					if (nonMatching.getValue())
@@ -329,8 +344,11 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 							table.selectRow(i);
 						else
 							table.deselectRow(i);
-					} 
+					}
+					if (table.isRowSelected(i))
+						count++;
 				}
+				ownerModule.logln("" + count + " rows are now selected");
 				table.repaintAll();
 			}
 		}
@@ -443,6 +461,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED,assoc);
 			undoInstructions.recordPreviousOrder(assoc);
 			UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);
+			
 			if (column>=0 && row >=0) {
 				long[] fullChecksumBefore=null;
 				if (assoc instanceof CharacterData) {
@@ -462,7 +481,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						swapParts(assoc, j, j+1, text);
 					}
 				}
-
+				if (assoc instanceof ListableVector && ((ListableVector)assoc).size()>0){
+					Listable obj = ((ListableVector)assoc).elementAt(0);
+					mesquite.lib.duties.ElementManager m = ownerModule.findElementManager(obj.getClass());
+					if (m != null)
+						m.elementsReordered((ListableVector)assoc);
+				}
 				processPostSwap(assoc);
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 				if (assoc instanceof CharacterData){
@@ -471,6 +495,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 			}
 			else if (column == -1 && row >=0) { //row names selected; sort by name
+				
 				long[] fullChecksumBefore=null;
 				if (assoc instanceof CharacterData) {
 					fullChecksumBefore = ((CharacterData)assoc).getIDOrderedFullChecksum();
@@ -487,6 +512,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						swapParts(assoc, j, j+1, text);
 					}
 				}
+				if (assoc instanceof ListableVector && ((ListableVector)assoc).size()>0){
+					Listable obj = ((ListableVector)assoc).elementAt(0);
+					mesquite.lib.duties.ElementManager m = ownerModule.findElementManager(obj.getClass());
+					if (m != null)
+						m.elementsReordered((ListableVector)assoc);
+				}
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
@@ -494,8 +525,50 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 			}
 		}
+		else if (checker.compare(this.getClass(), "Shows the selected rows", null, commandName, "showSelectedRows")) {
+			showSelectedRows();
+			return null;
+		}
 		else if (checker.compare(this.getClass(), "Deletes the selected rows", null, commandName, "deleteSelectedRows")) {
 			deleteSelectedRows(true);
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Inverts which rows are selected", null, commandName, "invertSelection")) {
+			for (int im = 0; im < table.getNumRows(); im++){
+				if (table.isRowSelected(im)){
+					table.deselectRow(im); //2019: why this doesn't handle associable deselection, don't remember!
+					if (table.getRowAssociable() != null){
+						table.getRowAssociable().setSelected(im, false);
+					}
+				}
+				else
+					table.selectRow(im);
+			}
+			table.repaintAll();
+		}
+		else if (checker.compare(this.getClass(), "Select by List in Clipboard", null, commandName, "selectByClipboard")) {
+			String[] clipboard = null; //{"uce-101", "uce-1084"};
+			clipboard = null;
+			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable t = clip.getContents(this);
+			try {
+
+				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+				if (s != null) {
+					clipboard = StringUtil.getLines(s);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			for (int im = 0; im < table.getNumRows(); im++){
+				if (StringArray.indexOf(clipboard, table.getRowNameTextForDisplay(im))>=0){
+					table.selectRow(im);
+				if (table.getRowAssociable() != null)
+					table.getRowAssociable().setSelected(im, true);
+				}
+			}
+			table.repaintAll();
+
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected rows ", "[row to move after; -1 if at start]", commandName, "moveSelectedTo")) {
 			if (!owner.rowsMovable())
@@ -574,7 +647,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		String temp = text[first];
 		text[first] = text[second];
 		text[second] = temp;
-		assoc.swapParts(first, second); 
+		assoc.swapParts(first, second, false); 
 	}
 	public void processPostSwap(Associable assoc){
 	}
@@ -876,6 +949,14 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		MenuOwner.decrementMenuResetSuppression();
 
 	}
+	public void showSelectedRows() {
+		int numSelected = 0;
+		for (int ic = table.getNumRows()-1; ic>=0; ic--){
+			if (table.isRowSelected(ic)) { 
+				owner.showItemAtRow(ic);
+			}
+		}
+	}
 	public void deleteSelectedRows(boolean byCommand) {
 		int numSelected = 0;
 		for (int ic = table.getNumRows()-1; ic>=0; ic--){
@@ -896,28 +977,13 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			MenuOwner.incrementMenuResetSuppression();
 			if (ownerModule != null && ownerModule.getProject() != null)
 				ownerModule.getProject().incrementProjectWindowSuppression();
-			/*int[] which = new int[numSelected];
-			int howMany = 0;
-			for (int ic = table.getNumRows()-1; ic>=0; ic--){
-				if (table.isRowSelected(ic)) {
-		 			if (!owner.rowDeletable(ic)){
-			 			if (!MesquiteThread.isScripting())
-			 				owner.alert("Sorry, you can't delete that");
-			 		}
-			 		else {
-						which[howMany]=ic;
-						howMany++;
-					}
-				}
-			}
-			 */
+			
 
 			int count =0;
 			int currentNumRows = owner.getNumberOfRows();
 			Object obj = getCurrentObject();
 
 			//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
-
 			int row = currentNumRows-1;
 			int firstInBlockDeleted = -1;
 			int lastInBlockDeleted = -1;
@@ -951,51 +1017,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				row--;
 			}
-
-
-			/*				int firstInBlockDeleted = -1;
-				int lastInBlockDeleted = -1;
-				for (int ic = 0; ic<howMany; ic++){
-					if (lastInBlockDeleted < 0) {
-						lastInBlockDeleted = which[ic];
-						firstInBlockDeleted = lastInBlockDeleted;
-					}
-					else if (which[ic] == firstInBlockDeleted-1){ //still contiguous
-						firstInBlockDeleted = which[ic];					
-					}
-					else {
-						owner.deleteRows(firstInBlockDeleted, lastInBlockDeleted, false);
-						count += lastInBlockDeleted-firstInBlockDeleted+1;
-						lastInBlockDeleted = which[ic];
-						firstInBlockDeleted = lastInBlockDeleted;
-					}
-				}
-				if (lastInBlockDeleted>=0){
-					owner.deleteRows(firstInBlockDeleted, lastInBlockDeleted, false);
-					count += lastInBlockDeleted-firstInBlockDeleted+1;
-				}
-			 */
-
-			/*  old code pre-2. 02
-				int firstInBlockDeleted = -1;
-				for (int ic = 0; ic<howMany; ic++){
-					//NOTE: this code allows reporting of what contiguous blocks were deleted, but caused  full recalculations for each discontiguity
-					if (notifyInBlocks && obj instanceof Associable && firstInBlockDeleted < 0) {
-						firstInBlockDeleted = which[ic];
-					}
-			 		if (owner.deleteRow(which[ic], false))
-						count++;
-					//NOTE: this code allows reporting of what contiguous blocks were deleted, but caused  full recalculations for each discontiguity
-					if (notifyInBlocks && obj instanceof Associable && (ic+1 >= howMany || which[ic+1] != which[ic]-1)){ //next one is not adjacent; notify listeners
-						((Listenable)obj).notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, new int[] {which[ic], firstInBlockDeleted - which[ic]+1}));
-						((Listenable)obj).decrementNotifySuppress();
-						((Listenable)obj).incrementNotifySuppress();
-						firstInBlockDeleted = -1;
-					}
-				}
-			 */
-
 			table.setNumRows(currentNumRows-count);
+
 			//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
 			notifyRowDeletion(obj);
 			table.repaintAll();

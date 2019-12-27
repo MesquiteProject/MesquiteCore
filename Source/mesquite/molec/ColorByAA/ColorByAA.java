@@ -107,7 +107,7 @@ public class ColorByAA extends DataWindowAssistantID implements CellColorer, Cel
   			s= "Codon position: " + i;
 		long aa = data.getAminoAcid(ic,it,true);
 		if (aa!=CategoricalState.inapplicable)
-			s += "Amino acid: " + ProteinState.toString(aa, false);
+			s += ", Amino acid: " + ProteinState.toString(aa, null, 0, false, false);
 		return s;
 	}
 	public String getCellString(int ic, int it){

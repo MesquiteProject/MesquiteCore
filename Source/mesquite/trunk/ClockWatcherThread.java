@@ -26,12 +26,26 @@ public class ClockWatcherThread extends Thread {
 	Mesquite mesquite;
 	static final int sleep = 1500;
 	static final int catnap = 50;
+	static final int numBoutsPerSleep = 10;
 	int sleepTime = sleep;
 	long lastTick = 0;
 	public ClockWatcherThread (Mesquite mesquite) {
 		this.mesquite = mesquite;
 		setPriority(Thread.MIN_PRIORITY);
 	}
+	
+	void doDelayedRepaints(){
+		//Repainting any window on special repaint queue
+		for (int iw = MesquiteWindow.delayedRepaintQueue.size()-1;  iw>=0; iw--){
+			MesquiteWindow w = (MesquiteWindow)MesquiteWindow.delayedRepaintQueue.elementAt(iw);
+			if (System.currentTimeMillis()>w.drqTime){ 
+				if (!w.disposed() && !w.disposing)
+					w.repaintAll();
+				MesquiteWindow.delayedRepaintQueue.remove(w); //done! remove
+			}
+		}
+	}
+	
 	public void run() {
 		long sleepCount = 0;
 		boolean reportThreads = false;
@@ -44,18 +58,28 @@ public class ClockWatcherThread extends Thread {
 				sleepCount = 0;
 			else
 				sleepCount++;
-			try {
-				Thread.sleep(sleepTime);  
-			}
-			catch (InterruptedException e){
-				Thread.currentThread().interrupt();
+			
+			//sleep is down in a series of bouts. This is a kludge to let some functions happen at each bout (delayed repaint) but others be after each sleep
+			for (int iBout = 0; iBout<numBoutsPerSleep; iBout++){
+				try {
+					Thread.sleep(sleepTime/numBoutsPerSleep);  
+					doDelayedRepaints();
+				}
+				catch (InterruptedException e){
+					Thread.currentThread().interrupt();
+				}
 			}
 			MesquiteTrunk.checkForResetCheckMenuItems();
+			
+			//Surveying windows to reset graphically after first shown (bugs in some macOS versions)
 			if (sleptLong || sleepCount % (sleep/catnap) == 1) {
 				MesquiteThread.surveyDoomedIndicators();
 				if (MesquiteTrunk.isMacOSX())
 					MesquiteThread.surveyNewWindows();
 			}
+			
+			
+			//Surveying threads for progressindicators, need to put up "command is executing"
 			MesquiteThread[] mThreads = new MesquiteThread[MesquiteThread.threads.size()];
 			try {
 				for (int i=0; i<mThreads.length; i++)
@@ -63,11 +87,7 @@ public class ClockWatcherThread extends Thread {
 			}
 			catch (Exception e){
 			}
-/*if (KeyboardFocusManager.getCurrentKeyboardFocusManager() != null && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null){
-	System.out.println("" + KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getClass());
-System.out.println("xxx " + MesquiteWindow.windowOfItem(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner()));
-}
-*/
+
 			sleepTime = sleep;
 			sleepCount++;
 			for (int i=0; i<mThreads.length && mThreads[i]!=null; i++){  //go through current threads

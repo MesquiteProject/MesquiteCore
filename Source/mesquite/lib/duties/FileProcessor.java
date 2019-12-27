@@ -29,7 +29,10 @@ public abstract class FileProcessor extends MesquiteModule  {
    	 public Class getDutyClass() {
    	 	return FileProcessor.class;
    	 }
- 	public String getDutyName() {
+  	 public String[] getDefaultModule() {
+ 	 	return new String[] {"#AlterAllMatrices", "#CompileProcessedMatrices", "#FAFillTreeBlock", "#CopyTreesToNexusBlock", "#CopyTreesToSimpleFile"};
+ 	 }
+	public String getDutyName() {
  		return "File Processor";
    	}
    	
@@ -41,11 +44,21 @@ public abstract class FileProcessor extends MesquiteModule  {
    		return false;
    	}
 	/*.................................................................................................................*/
+   	/** Called before processing a series of files.*/
+   	public  boolean beforeProcessingSeriesOfFiles(){
+   		return true;
+   	}
+	/*.................................................................................................................*/
    	/** Called to process file. Override this or the next*/
    	public  boolean processFile(MesquiteFile file){
    		return true;
    	}
   	
+	/*.................................................................................................................*/
+   	/** Called after processing a series of files.*/
+   	public  boolean afterProcessingSeriesOfFiles(){
+   		return true;
+   	}
 	/*.................................................................................................................*/
    	/** If a processor wants, it can request to have the file sequestered once all processing is done*/
    	public  boolean pleaseSequester(){

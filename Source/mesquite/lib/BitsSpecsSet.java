@@ -199,7 +199,7 @@ public abstract class BitsSpecsSet extends SpecsSet  {
 	}
 	/*.................................................................................................................*/
  	/** */
-	public boolean swapParts(int first, int second){  
+	public boolean swapParts(int first, int second, boolean notify){  
 		setDirty(true);
  		myBits.swapParts(first, second);
 		return true;

@@ -65,6 +65,7 @@ public class CopyTreesToSimpleFile extends FileProcessor {
 		Listable[] treeVectors = proj.getFileElements(TreeVector.class);	
    		if (treeVectors == null)
    			return false;
+		MesquiteFile.putFileContents(saveFile, "[trees from Process Data Files]  " , true);
 		for (int im = 0; im < treeVectors.length; im++){
    			TreeVector trees = (TreeVector)treeVectors[im];
    			if (trees.getFile() == file){
@@ -90,12 +91,12 @@ public class CopyTreesToSimpleFile extends FileProcessor {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Put Trees into Simple File";
+		return "Compile Trees into Simple File";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Puts trees from this file into a simple text file." ;
+		return "Compiles trees from this file into a simple text file." ;
 	}
 
 }

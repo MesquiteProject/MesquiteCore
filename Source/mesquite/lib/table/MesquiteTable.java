@@ -4928,7 +4928,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			return  isRowSelected(row) || isColumnSelected(column) || (cellsSelected[0].isBitOn(row * numColumnsTotal + column)) ;
 		return false;
 	}
-
+	public void synchronizeRowSelection(){
+		if (rowAssociable != null){
+			synchronizeRowSelection(rowAssociable);
+		}
+	}
 	public void synchronizeRowSelection(Associable a) {
 		if (a == null)
 			return;
@@ -4944,6 +4948,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			}
 	}
 
+	public void synchronizeColumnSelection(){
+		if (columnAssociable != null){
+			synchronizeColumnSelection(columnAssociable);
+		}
+	}
 	public void synchronizeColumnSelection(Associable a) {
 		if (a == null)
 			return;

@@ -117,7 +117,7 @@ public class FAFillTreeBlock extends FileProcessor {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Add and Fill Tree Block";
+		return "Make Trees and Add to File";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

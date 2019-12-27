@@ -42,7 +42,7 @@ public class RandomizeTaxonOrder extends TaxonUtility {
   		int temp = nums[first];
   		nums[first] = nums[second];
   		nums[second] = temp;
-		assoc.swapParts(first, second); 
+		assoc.swapParts(first, second, true); 
 	}
 	/** Called to operate on the taxa in the block.  Returns true if taxa altered*/
 	public  boolean operateOnTaxa(Taxa taxa){

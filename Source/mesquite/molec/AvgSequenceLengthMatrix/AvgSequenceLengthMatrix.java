@@ -22,7 +22,6 @@ public class AvgSequenceLengthMatrix extends NumberForMatrix {
 		if (result == null || data == null)
 			return;
 		clearResultAndLastResult(result);
-
 		CharacterData parentData = data.getParentData();
 		if (parentData == null){
 			if (resultString != null)

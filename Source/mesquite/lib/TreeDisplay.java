@@ -198,8 +198,11 @@ public void setTreeDrawing(TreeDrawing td) {
 		if (tree!=null && tree.getTaxa() != taxa)
 			setTaxa(tree.getTaxa());
 
-	 	if (inProgress)
+	 	if (inProgress){
+			if (MesquiteTrunk.debugMode)
+				addToChain("TD-setTree HOLDING " + StringUtil.getDateTimeWithSeconds());
 	 		holdingTree = tree;
+	 	}
 	 	else {
 			this.tree = tree;
 			if (treeDrawing !=null) {

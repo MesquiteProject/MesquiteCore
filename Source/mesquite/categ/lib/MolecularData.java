@@ -231,12 +231,12 @@ public class MolecularData extends CategoricalData {
 	}
 	/*-----------------------------------------------------------*/
 	/**Swaps characters first and second.*/
-	public boolean swapParts(int first, int second){
+	public boolean swapParts(int first, int second, boolean notify){
 		//swapping characters; deal with inversions
 		if (inversions != null){
 			MesquiteMessage.warnProgrammer("Swapping characters and strand inversions not yet fully supported");
 		}
-		return super.swapParts(first, second);
+		return super.swapParts(first, second, notify);
 	}
 	/*.................................................................................................................*/
 	protected CharacterState moveOne(int i, int distance, int it, CharacterState cs,  MesquiteBoolean dataChanged){

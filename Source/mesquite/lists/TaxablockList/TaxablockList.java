@@ -121,7 +121,7 @@ public class TaxablockList extends ListLVModule {
 		if (row<0 || row>= getNumberOfRows())
 			return false;
 		Taxa taxa = getProject().getTaxa(row);
-		getProject().removeFileElement(taxa);//must remove first, before disposing
+		getProject().removeFileElement(taxa, notify);//must remove first, before disposing
 		taxa.dispose();
 		return true;
 	}

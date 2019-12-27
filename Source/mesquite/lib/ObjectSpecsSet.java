@@ -143,7 +143,7 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		return true;
 	}
 	/*...........................................................*/
-	public boolean swapParts( int first, int second) {
+	public boolean swapParts( int first, int second, boolean notify) {
 		if (first<0 || first>=properties.length || second<0 || second>=properties.length) 
 			return false;
 		setDirty(true);

@@ -94,6 +94,8 @@ public class ManageCharacters extends CharactersManager {
 			CharacterData t = (CharacterData)e;
 			return showMatrixEditor(t);
 		}
+		if (e == getProject().datas)
+			return showListOfCharacterMatrices(null);
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -951,29 +953,7 @@ public class ManageCharacters extends CharactersManager {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Shows list of data matrices", null, commandName, "showDatasList")) {
-			String concatMessage = "To concatenate matrices, select their rows in the List of Character Matrices window, and choose List>Utilities>Concatenate Selected Matrices.";
-			//Check to see if already has lister for this
-			for (int i = 0; i<getNumberOfEmployees(); i++) {
-				Object e=getEmployeeVector().elementAt(i);
-				if (e instanceof ManagerAssistant)
-					if (((ManagerAssistant)e).getName().equals("Character Matrices List")) {
-						((ManagerAssistant)e).getModuleWindow().setVisible(true);
-						if ("concat".equalsIgnoreCase(arguments))
-							discreetAlert(concatMessage);
-						return e;
-					}
-			}
-			ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize("Character Matrices List"));
-			if (lister==null){
-				alert("Sorry, no module was found to list the character data matrices");
-				return null;
-			}
-			lister.showListWindow(null);
-			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
-				lister.getModuleWindow().setVisible(true);
-			if ("concat".equalsIgnoreCase(arguments))
-				discreetAlert(concatMessage);
-			return lister;
+			return showListOfCharacterMatrices(arguments);
 		}
 		else if (checker.compare(this.getClass(), "Deletes matrices from the project", null, commandName, "deleteMatrices")) {
 			Listable[] chosen = ListDialog.queryListMultiple(containerOfModule(), "Select Matrices to Delete", "Select one or more character matrices to be deleted", (String)null, "Delete", false, getProject().getCharacterMatrices(), (boolean[])null);
@@ -1097,6 +1077,32 @@ public class ManageCharacters extends CharactersManager {
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
+	}
+	
+	public MesquiteModule showListOfCharacterMatrices(String arguments){
+		String concatMessage = "To concatenate matrices, select their rows in the List of Character Matrices window, and choose List>Utilities>Concatenate Selected Matrices.";
+		//Check to see if already has lister for this
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			Object e=getEmployeeVector().elementAt(i);
+			if (e instanceof ManagerAssistant)
+				if (((ManagerAssistant)e).getName().equals("Character Matrices List")) {
+					((ManagerAssistant)e).getModuleWindow().setVisible(true);
+					if ("concat".equalsIgnoreCase(arguments))
+						discreetAlert(concatMessage);
+					return (MesquiteModule)e;
+				}
+		}
+		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize("Character Matrices List"));
+		if (lister==null){
+			alert("Sorry, no module was found to list the character data matrices");
+			return null;
+		}
+		lister.showListWindow(null);
+		if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
+			lister.getModuleWindow().setVisible(true);
+		if ("concat".equalsIgnoreCase(arguments))
+			discreetAlert(concatMessage);
+		return lister;
 	}
 	/*.................................................................................................................*/
 	/** returns number of data sets of given reference string (ref. number, name, number) from the project */

@@ -84,6 +84,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	private Vector cellObjects; //Vector of arrays of objects (Object2DArray) that are attached to cells.  A courtesy to modules, so that they can attach and maintain info at the cells
 	private boolean[][] cellObjectsDisplay; //indicates whether there exist cell objects at a cell that need to be displayed in any way
 	private boolean[][] changedSinceSave; //records whether changed since last save.  
+	private boolean anyChangesSinceSave= false;
 	private int[] firstApplicable; //records the character number of the first non-applicable character.  
 	private int[] lastApplicable; //records the character number of the first non-applicable character.  
 
@@ -162,7 +163,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		/* the following should probably be done only on demand (e.g., so that simulation matrices don't need to remake this)*/
 		characterNames = new String[numChars];
 		cellObjects = new Vector();
-		cellObjectsDisplay = new boolean[numChars][numTaxa];
+		cellObjectsDisplay = null; //make on demand;  new boolean[numChars][numTaxa];
 		changedSinceSave = new boolean[numChars][numTaxa];
 		firstApplicable = new int[numTaxa];
 		lastApplicable = new int[numTaxa];
@@ -189,6 +190,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public void nullifyBooleanArrays () {
 		cellObjectsDisplay = null;
 		changedSinceSave = null;
+		anyChangesSinceSave = false;
 	}
 	/*.................................................................................................................*/
 	public boolean getCharNumChanging() {
@@ -792,8 +794,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			newCharIDs[i + starting+num+1] = charIDs[starting + i+1];
 		charIDs = newCharIDs;
 
-
-
 		if (characterNames!=null){
 			characterNames = StringArray.addParts(characterNames, starting, num);
 		}
@@ -840,17 +840,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		if (changedSinceSave!=null){
 			boolean[][] newCOD = new boolean[newNumChars][numTaxa];
-			for (int j = 0; j<numTaxa; j++){
-				for (int i=0; i<=starting; i++)
-					newCOD[i][j] = changedSinceSave[i][j];
-				for (int i=0; i<num; i++)
-					newCOD[starting + i + 1][j] = false;
-				for (int i=0; i<numChars-starting-1; i++) 
-					newCOD[i + starting+num+1][j] = changedSinceSave[starting + i+1][j];
+			if (anyChangesSinceSave){
+				for (int j = 0; j<numTaxa; j++){
+					for (int i=0; i<=starting; i++)
+						newCOD[i][j] = changedSinceSave[i][j];
+					//	for (int i=0; i<num; i++) default is false; don't need to set
+					//		newCOD[starting + i + 1][j] = false;
+					for (int i=0; i<numChars-starting-1; i++) 
+						newCOD[i + starting+num+1][j] = changedSinceSave[starting + i+1][j];
+				}
 			}
 			changedSinceSave = newCOD;
 		}
-
 		if (characterIllustrations!=null){
 			Image[] newCharacterIllustrations = new Image[newNumChars];
 			for (int i=0; i<=starting; i++) {
@@ -987,14 +988,15 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		if (changedSinceSave!=null){
 			boolean[][] newCOD = new boolean[newNumChars][numTaxa];
-			for (int j = 0; j<numTaxa; j++){
-				for (int i=0; i<starting; i++) {
-					newCOD[i][j] = changedSinceSave[i][j];
+			if (anyChangesSinceSave)
+				for (int j = 0; j<numTaxa; j++){
+					for (int i=0; i<starting; i++) {
+						newCOD[i][j] = changedSinceSave[i][j];
+					}
+					for (int i=starting+num; i<changedSinceSave.length; i++) {
+						newCOD[i -num][j] = changedSinceSave[i][j];
+					}
 				}
-				for (int i=starting+num; i<changedSinceSave.length; i++) {
-					newCOD[i -num][j] = changedSinceSave[i][j];
-				}
-			}
 			changedSinceSave = newCOD;
 		}
 
@@ -1068,7 +1070,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		notifyOfChangeLowLevel(MesquiteListener.PARTS_MOVED, starting, num, justAfter);  
 
 		Bits.moveColumns(cellObjectsDisplay, starting, num, justAfter);
-		Bits.moveColumns(changedSinceSave, starting, num, justAfter);
+		if (anyChangesSinceSave)
+			Bits.moveColumns(changedSinceSave, starting, num, justAfter);
 		calculateFirstLastApplicable();
 		MesquiteImage.moveParts( characterIllustrations, starting, num, justAfter); 
 		charIDs = LongArray.getMoveParts(charIDs, starting, num, justAfter);
@@ -1104,7 +1107,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 		Bits.swapColumns(cellObjectsDisplay,  first, second);
-		Bits.swapColumns(changedSinceSave,  first, second);
+		if (anyChangesSinceSave)
+			Bits.swapColumns(changedSinceSave,  first, second);
 
 		uncheckThread();
 		return true;
@@ -1123,7 +1127,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 		Bits.swapCell(cellObjectsDisplay,  first, second, it);
-		Bits.swapCell(changedSinceSave,  first, second, it);
+		if (anyChangesSinceSave)
+			Bits.swapCell(changedSinceSave,  first, second, it);
 
 		uncheckThread();
 		return true;
@@ -1148,13 +1153,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		calculateFirstLastApplicable();
 		MesquiteImage.swapParts( characterIllustrations,  first, second); 
 		nMove++;
-		boolean swapped =  super.swapParts( first, second);
+		boolean swapped =  super.swapParts( first, second, true);
 		uncheckThread();
 		return swapped;
 	}
 	/*-----------------------------------------------------------*/
 	/**Swaps characters first and second.*/
 	public boolean swapParts(int first, int second){
+		return swapParts(first, second, true);
+	}
+	/*-----------------------------------------------------------*/
+	/**Swaps characters first and second.*/
+	public boolean swapParts(int first, int second, boolean notify){
 		boolean meta = swapCellMetadata(first, second);
 		if (!meta)
 			return false;
@@ -1168,7 +1178,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
-				d.swapParts(first, second);
+				d.swapParts(first, second, notify);
 				if (notify)
 					d.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
 			}
@@ -1489,7 +1499,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			characterNames[ic] = oData.characterNames[oic];
 			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
 		}
-		
+
 		for (int it = 0; it<getNumTaxa(); it++){
 			incrementSuppressHistoryStamp();
 			int oit = oData.getTaxa().findEquivalentTaxon(getTaxa(), it);
@@ -1911,15 +1921,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				objArray.setValue(ic2, it, ob);
 			}
 		}
-		boolean t = cellObjectsDisplay[ic][it];
-		cellObjectsDisplay[ic][it] = cellObjectsDisplay[ic2][it];
-		cellObjectsDisplay[ic2][it] = t;
+		if (cellObjectsDisplay != null){
+			boolean t = cellObjectsDisplay[ic][it];
+			cellObjectsDisplay[ic][it] = cellObjectsDisplay[ic2][it];
+			cellObjectsDisplay[ic2][it] = t;
+		}
 		if (adjustCellLinked){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d= (CharacterData)linkedDatas.elementAt(i);
 				d.tradeStatesBetweenCharacters(ic,ic2,it,false);
 			}
 		}
+
 	}
 	/** trades the states of character ic between taxa it and it2.  Used for reshuffling (for example).*/
 	public void tradeStatesBetweenTaxa(int ic, int it, int it2){
@@ -1940,9 +1953,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				objArray.setValue(ic, it2, ob);
 			}
 		}
-		boolean t = cellObjectsDisplay[ic][it];
-		cellObjectsDisplay[ic][it] = cellObjectsDisplay[ic][it2];
-		cellObjectsDisplay[ic][it2] = t;
+		if (cellObjectsDisplay != null){
+			boolean t = cellObjectsDisplay[ic][it];
+			cellObjectsDisplay[ic][it] = cellObjectsDisplay[ic][it2];
+			cellObjectsDisplay[ic][it2] = t;
+		}
 	}
 
 	/** returns whether the matrix would prefer to have columns sized individually in editors.  Default is true.*/
@@ -2728,6 +2743,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				}
 		watchForChange = true;	
 		checksumValid = false;
+		anyChangesSinceSave = false;
 		if (c)
 			notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 	}
@@ -2758,8 +2774,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (ic<0 || ic>=numChars || it<0 || it>=numTaxa) {
 			return;
 		}
-		else if (cellObjectsDisplay!=null && !(ic<0 || ic>=cellObjectsDisplay.length || it<0 || cellObjectsDisplay[ic]==null || it>=cellObjectsDisplay[ic].length)){
-			cellObjectsDisplay[ic][it] = true;
+		else {
+			
+			if (cellObjectsDisplay==null)
+				cellObjectsDisplay = new boolean[numChars][numTaxa];
+			if ( !(ic<0 || ic>=cellObjectsDisplay.length || it<0 || cellObjectsDisplay[ic]==null || it>=cellObjectsDisplay[ic].length))
+				cellObjectsDisplay[ic][it] = true;
 		}
 	}
 	/*.................................................................................................................*/
@@ -2977,8 +2997,10 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return;
 		}
 		else {
-			if (changedSinceSave!=null && !(ic<0 || ic>=changedSinceSave.length || it<0 || changedSinceSave[ic]==null || it>=changedSinceSave[ic].length))
+			if (changedSinceSave!=null && !(ic<0 || ic>=changedSinceSave.length || it<0 || changedSinceSave[ic]==null || it>=changedSinceSave[ic].length)){
 				changedSinceSave[ic][it] = true;
+				anyChangesSinceSave = true;
+			}
 			notifyOfChangeLowLevel(MesquiteListener.DATA_CHANGED, ic, it, 0);  
 			checksumValid = false;
 			//if (watchForChange)
@@ -3026,8 +3048,10 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public void stampHistoryChange() {
 		if (changedSinceSave!=null)
 			for (int ic = 0; ic<getNumChars(); ic++)
-				for (int it = 0; it<numTaxa; it++)
+				for (int it = 0; it<numTaxa; it++){
 					changedSinceSave[ic][it] = true;
+					anyChangesSinceSave = true;
+				}
 	}
 
 	/*.................................................................................................................*/
@@ -3700,7 +3724,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 
 		addInLinked(getNumChars()+1, oData.getNumChars(), true);
-
 		CharacterState cs = null;
 		int count=0;
 		for (int ic = 0; ic<oData.getNumChars(); ic++){
@@ -3710,7 +3733,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				count++;
 			}
 		}
-
 		if (oPartition != null && adjustGroupLabels)
 			adjustGroupLabels(oData.getName(), origNumChars, getNumChars()-1, true, prefixGroupNamesIfAlreadyAssigned, module);  //there exists a partition in the incoming, so just redo the names for the groups there.
 
@@ -3970,7 +3992,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
 					Associable a = getTaxaInfo(false);
 					if (a != null)
-						a.swapParts(sinkTaxon, it);
+						a.swapParts(sinkTaxon, it, true);
 				}
 				mA[it] = ma;   
 				mergedAssigned = mergedAssigned | ma;
@@ -3990,7 +4012,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
 		return mergeTaxa(sinkTaxon, taxaToMerge, false);
 	}
-	
+
 	/*..........................................CharacterData.....................................*/
 	/**Gets the CharacterData object for an MCharactersDistribution.  It first checks to see if the CharacterData object
 	 * already exists, and if so, returns it; otherwise, it created one.  */

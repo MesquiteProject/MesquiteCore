@@ -108,7 +108,9 @@ public class MesquiteTextWindow extends MesquiteWindow implements FocusListener 
 		return tA.getText();
 	}
 	public void focusGained(FocusEvent e){
-
+		if (!isFrontMostWindow()){
+			getParentFrame().setAsFrontWindow(this);
+		}
 	}
 	public void focusLost(FocusEvent e){
 

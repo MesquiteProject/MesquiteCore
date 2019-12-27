@@ -33,6 +33,8 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 	MesquiteBoolean matchCurrentTaxonName = new MesquiteBoolean(true);
 	MesquiteBoolean changeColor = new MesquiteBoolean(true);
 	String[] nameCategories = new String[]{"<choose column>"};
+	
+	//TODO: note that the sample code in the names file CANNOT contain "/" 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -273,6 +275,8 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 			MesquiteMessage.warnUser("Taxon \"" + taxonName + "\" has no target string to match.");
 			return null;
 		}
+		if (sampleCodeString.contains("/"))  // if there is more than one item, then take only the first one.
+			sampleCodeString = StringUtil.getFirstItem(sampleCodeString, "/");
 		for (int row = 0; row<sampleCodeList.length; row++){
 			if (chosenNameCategory< sampleCodeList[row].length){
 				String code = sampleCodeList[row][0];
