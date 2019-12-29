@@ -889,7 +889,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 	public void diagnose(){
 		System.out.println("  FRAME ~~~~~~~~~ visible = " + isVisible() + " size " + getBounds().width + " " + getBounds().height + " this =" + id);
 		System.out.println("  layout  = " + mainLayout);
-		for (int i = 0; i<windows.size(); i++){
+		if (windows != null)
+			for (int i = 0; i<windows.size(); i++){
 			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 			System.out.println("      " + w.getClass() + " visible = " + w.isVisible() + " loc " + w.getBounds().x + " " + w.getBounds().y + " size " + w.getBounds().width + " " + w.getBounds().height);
 		}

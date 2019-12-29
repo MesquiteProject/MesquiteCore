@@ -2455,8 +2455,14 @@ public void requestFocus(){
 					int starting = parameters[0];
 					int num = parameters[1];
 					if (data.getNumChars() < table.getNumColumns()) {
-						for (int i = starting + num - 1; i >= starting; i--)
+						System.out.println("Deleting from " + (starting + num - 1) + " through " + starting);
+						table.deleteColumns(starting,  starting + num - 1); //Debugg.println
+						
+						/*
+						for (int i = starting + num - 1; i >= starting; i--) {
 							table.deleteColumn(i);
+						}
+						*/
 					}
 				}
 				else if (table.getNumColumns() != data.getNumChars())

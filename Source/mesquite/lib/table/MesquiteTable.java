@@ -2216,13 +2216,44 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 
 	/* ............................................................................................................... */
 	/** Deletes the given column (but doesn't call for repaint) */
+	public void deleteColumns(int firstColumn, int lastColumn) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn))
+			return;
+		
+		if (lastColumn < numColumnsTotal && firstColumn >= 0) { 
+			int numToDelete = lastColumn-firstColumn+1;
+			int[] newColumnWidths = new int[numColumnsTotal - numToDelete];
+			for (int c = 0; c < numColumnsTotal - numToDelete; c++)
+				if (c >= firstColumn)
+					newColumnWidths[c] = columnWidths[c + numToDelete];
+				else
+					newColumnWidths[c] = columnWidths[c];
+
+			columnWidths = newColumnWidths;
+
+			numColumnsTotal = numColumnsTotal - numToDelete;
+			for (int i = 0; i < numSelectTypes; i++) { 
+				columnsSelected[i] = new Bits(numColumnsTotal);
+				cellsSelected[i] = new Bits((numRowsTotal) * (numColumnsTotal));
+				columnNamesSelected[i] = new Bits(numColumnsTotal);
+			}
+			if (firstColumnVisible >= numColumnsTotal || firstColumnVisible < 0)
+				firstColumnVisible = 0; 
+			if (horizScroll != null) { //Debugg.println
+				horizScroll.setValue(firstColumnVisible);
+				horizScroll.setMaximum(numColumnsTotal);
+			}
+		}
+	}
+	/* ............................................................................................................... */
+	/** Deletes the given column (but doesn't call for repaint) */
 	public void deleteColumn(int column) {
 		if (!columnLegal(column))
 			return;
-		if (column < numColumnsTotal && column >= 0) {
+		if (column < numColumnsTotal && column >= 0) { 
 			int[] newColumnWidths = new int[numColumnsTotal - 1];
 			for (int c = 0; c < numColumnsTotal - 1; c++)
-				if (c > column)
+				if (c >= column)
 					newColumnWidths[c] = columnWidths[c + 1];
 				else
 					newColumnWidths[c] = columnWidths[c];
@@ -2230,7 +2261,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			columnWidths = newColumnWidths;
 
 			numColumnsTotal = numColumnsTotal - 1;
-			for (int i = 0; i < numSelectTypes; i++) {
+			for (int i = 0; i < numSelectTypes; i++) { 
 				columnsSelected[i] = new Bits(numColumnsTotal);
 				cellsSelected[i] = new Bits((numRowsTotal) * (numColumnsTotal));
 				columnNamesSelected[i] = new Bits(numColumnsTotal);

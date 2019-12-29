@@ -188,16 +188,30 @@ public abstract class TreeInferer extends TreeBlockFiller {
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
 			String commands = getExtraTreeWindowCommands(false, MesquiteLong.unassigned);
 			MesquiteWindow w = tWindowMaker.getModuleWindow();
-			
+			Debugg.println("@@@@@@@@@@@@@@@\n" + commands + "\n@@@@@@@@@@@@@@");
 			if (w != null){
+				w.popOut(false);
 				if (w instanceof SimpleTreeWindow)
 					((SimpleTreeWindow)w).setWindowTitle("Most Recent Tree");
 				Puppeteer p = new Puppeteer(this);
 				p.execute(w, commands, new MesquiteInteger(0), "end;", false);
+				//w.popIn();
 			}
 		}
 		if (tWindowMaker != null){
+			Debugg.println("settreewindow visible");
 			tWindowMaker.setWindowVisible(true);
+			MesquiteWindow mw = tWindowMaker.getModuleWindow();
+			if (mw != null){
+				mw.show();
+				mw.toFront();
+				Debugg.println(" isFrontMostInLocation " + mw.isFrontMostInLocation() + " isFrontMostWindow " + mw.isFrontMostWindow());
+				MesquiteFrame parent = mw.getParentFrame();
+				mw.popIn();
+				tWindowMaker.resetEmbeddedMenus(mw);
+				parent.diagnose();
+			}
+			
 		}
 		
 	}
