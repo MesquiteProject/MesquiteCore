@@ -45,6 +45,18 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		return "";
 	}
 	
+	/*.................................................................................................................*/
+	public String getTitleOfTextCommandLink() {
+		return "";
+	}
+	/*.................................................................................................................*/
+	public String getCommandOfTextCommandLink() {
+		return "";
+	}
+	/*.................................................................................................................*/
+	public void processUserClickingOnTextCommandLink(String command) {
+	}
+
 	public  void setOutputTextListener(OutputTextListener textListener){
 	}
 
