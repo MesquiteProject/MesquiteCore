@@ -245,7 +245,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 	int totalWidth;
 	int totalHeight;
 	int firstTree=0;
-	int maxDisplays = 36;
+	int maxDisplays = 100;
 	MessagePanel messagePanel;
 	MesquitePanel containingPanel;
 	MesquiteTimer timer;
@@ -342,7 +342,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 			else mode = infoBar.getMode();
 			if (mode==InfoBar.GRAPHICS) { //graphical mode
 				Graphics g = pdfFile.getPDFGraphicsForComponent(containingPanel,null);
-				for (int itree=0; itree<(numColumns*numRows); itree++) {
+				for (int itree=0; itree<(numColumns*numRows)&& itree<treeDisplays.length; itree++) {
 					int xLoc = (int)treeDisplays[itree].getLocation().getX();
 					int yLoc = (int)treeDisplays[itree].getLocation().getY();
 					g.translate(xLoc,yLoc);
@@ -434,7 +434,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 				messagePanel.setMessage("Trees for taxa \"" + taxa.getName() + "\" from " + treeSourceTask.getNameAndParameters());
 		}
 		setFirstTree(0);
-		for (int itree=0; itree<(numColumns*numRows); itree++) {
+		for (int itree=0; itree<(numColumns*numRows)&& itree<treeDisplays.length; itree++) {
 			treeDisplays[itree].repaint();
 		}
 	}
@@ -465,7 +465,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 		treeScroll.setBounds(totalWidth, 0, 16, totalHeight);
 		containingPanel.setBounds(0,0,totalWidth, totalHeight);
 
-		for (int itree=0; itree<(numColumns*numRows); itree++) {
+		for (int itree=0; itree<(numColumns*numRows)&& itree<treeDisplays.length; itree++) {
 			if (treeDisplays[itree] !=null){
 				treeDisplays[itree].setTipsMargin(0);
 				treeDisplays[itree].setTaxonNameBuffer(4);
@@ -522,7 +522,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 				treeDisplays[itree].setTree(tree);
 				treeDisplays[itree].setNotice(Integer.toString(itree+treeNum + 1)); // for debugging purposes???
 				treeDisplays[itree].suppressDrawing(false);
-				if (itree<numColumns*numRows) {
+				if (itree<numColumns*numRows&& itree<treeDisplays.length) {
 					treeDisplays[itree].setVisible(true);
 					treeDisplays[itree].repaint();
 				}
@@ -539,11 +539,11 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 	public void setNumColumns(int newNum){
 		if (newNum>0) {
 			// need to reset all of tree display extras!!!!!
-			for (int itree = 0; itree<numColumns*numRows; itree++) {
+			for (int itree = 0; itree<numColumns*numRows&& itree<treeDisplays.length; itree++) {
 				treeDisplays[itree].setVisible(false);
 			}
 			numColumns = newNum;
-			for (int itree = 0; itree<numColumns*numRows; itree++) {
+			for (int itree = 0; itree<numColumns*numRows&& itree<treeDisplays.length; itree++) {
 				treeDisplays[itree].setVisible(true);
 			}
 
@@ -563,11 +563,11 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 	public void setNumRows(int newNum){
 		if (newNum>0) {
 			// need to reset all of tree display extras!!!!!
-			for (int itree = 0; itree<numColumns*numRows; itree++) {
+			for (int itree = 0; itree<numColumns*numRows && itree<treeDisplays.length; itree++) {
 				treeDisplays[itree].setVisible(false);
 			}
 			numRows = newNum;
-			for (int itree = 0; itree<numColumns*numRows; itree++) {
+			for (int itree = 0; itree<numColumns*numRows && itree<treeDisplays.length; itree++) {
 				treeDisplays[itree].setVisible(true);
 			}
 
