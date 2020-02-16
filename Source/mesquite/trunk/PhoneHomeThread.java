@@ -77,25 +77,26 @@ public class PhoneHomeThread extends Thread {
 	 */
 	public void checkForMessagesFromAllHomes() {
 		// Report Version to server
-		try {
-			if (!MesquiteTrunk.suppressVersionReporting) {
-				StringBuffer response = new StringBuffer();
-				String buildNum = Integer.toString(MesquiteTrunk.getBuildNumber());
-				if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
-					buildNum = "PreRelease-" + buildNum;
+		if (!MesquiteTrunk.suppressVersionReporting) {
+			StringBuffer response = new StringBuffer();
+			String buildNum = Integer.toString(MesquiteTrunk.getBuildNumber());
+			if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
+				buildNum = "PreRelease-" + buildNum;
+
+			try {
 				BaseHttpRequestMaker.contactServer(buildNum, MesquiteModule.versionReportURL, response);
-				String r = response.toString();
-				if (!StringUtil.blank(r) && r.indexOf("mq3rs") >= 0) {
-					if (r.indexOf("mq3rsshow") >= 0) { // show dialog at startup!!!!
-						AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Note", r, 600, 400,
-								null);
-					}
-				} else if (MesquiteTrunk.debugMode)
-					MesquiteMessage.warnProgrammer("no response or incorrect response from server on startup");
+			} catch (Throwable t) { // TODO catch and handle
+				if (MesquiteTrunk.debugMode)
+					MesquiteMessage.warnProgrammer("PROBLEM PHONING HOME to report version\n" + t.getCause());
 			}
-		} catch (Throwable t) { // TODO catch and handle
-			if (MesquiteTrunk.debugMode)
-				MesquiteMessage.warnProgrammer("PROBLEM PHONING HOME to report version\n" + t.getCause());
+
+			String r = response.toString();
+			if (!StringUtil.blank(r) && r.indexOf("mq3rs") >= 0) {
+				if (r.indexOf("mq3rsshow") >= 0) { // show dialog at startup!!!!
+					AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Note", r, 600, 400, null);
+				}
+			} else if (MesquiteTrunk.debugMode)
+				MesquiteMessage.warnProgrammer("no response or incorrect response from server on startup");
 		}
 
 		// Check Server for notice regarding the mesquite and the various installed
@@ -110,31 +111,32 @@ public class PhoneHomeThread extends Thread {
 			if (StringUtil.blank(mmi.getHomePhoneNumber())) {
 				continue;
 			}
+			int rec = phoneRecords.indexOfByName("#" + mmi.getClassName());
+			if (MesquiteTrunk.debugMode) {
+				MesquiteTrunk.mesquiteTrunk.logln("Checking server for notices regarding " + mmi.getPackageName());
+			}
+
+			PhoneHomeRecord phoneHomeRecord;
+			if (!MesquiteInteger.isCombinable(rec) || rec < 0) {// this module is not the phone records
+				phoneHomeRecord = new PhoneHomeRecord("#" + mmi.getClassName());
+				phoneRecords.addElement(phoneHomeRecord, false);
+			} else
+				phoneHomeRecord = (PhoneHomeRecord) phoneRecords.elementAt(rec);
+
+			String notice = "";
 			try {
-				int rec = phoneRecords.indexOfByName("#" + mmi.getClassName());
-				if (MesquiteTrunk.debugMode) {
-					MesquiteTrunk.mesquiteTrunk.logln("Checking server for notices regarding " + mmi.getPackageName());
-				}
-
-				PhoneHomeRecord phoneHomeRecord;
-				if (!MesquiteInteger.isCombinable(rec) || rec < 0) {// this module is not the phone records
-					phoneHomeRecord = new PhoneHomeRecord("#" + mmi.getClassName());
-					phoneRecords.addElement(phoneHomeRecord, false);
-				} else
-					phoneHomeRecord = (PhoneHomeRecord) phoneRecords.elementAt(rec);
-				String notice = PhoneHomeUtil.retrieveMessagesFromHome(mmi, phoneHomeRecord, logBuffer);
-
-				phoneHomeRecord.setCurrentValues(mmi);
-				if (!StringUtil.blank(notice)) {
-					if (mmi.getModuleClass() == mesquite.Mesquite.class)
-						notices.append("<h3>From Mesquite</h3>");
-					else if (!StringUtil.blank(mmi.getPackageName()))
-						notices.append("<h3>From " + mmi.getPackageName() + "</h3>");
-					else
-						notices.append("<h3>From " + mmi.getName() + "</h3>");
-					notices.append(notice);
-				}
+				notice = PhoneHomeUtil.retrieveMessagesFromHome(mmi, phoneHomeRecord, logBuffer);
 			} catch (Throwable t) { // TODO catch and handle errors explicitly
+			}
+			phoneHomeRecord.setCurrentValues(mmi);
+			if (!StringUtil.blank(notice)) {
+				if (mmi.getModuleClass() == mesquite.Mesquite.class)
+					notices.append("<h3>From Mesquite</h3>");
+				else if (!StringUtil.blank(mmi.getPackageName()))
+					notices.append("<h3>From " + mmi.getPackageName() + "</h3>");
+				else
+					notices.append("<h3>From " + mmi.getName() + "</h3>");
+				notices.append(notice);
 			}
 		}
 
