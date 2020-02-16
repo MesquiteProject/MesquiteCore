@@ -62,7 +62,11 @@ public class PhoneHomeThread extends Thread {
 					BaseHttpRequestMaker.sendInfoToServer(beans.elementAt(0), MesquiteModule.beansReportURL, null, 0);
 					beans.removeElementAt(0);
 				}
-			} catch (Throwable e) { // TODO Catch and handle
+			} catch (InterruptedException e) { // Kill thread if Interrupted
+				MesquiteTrunk.mesquiteTrunk.logln("PhoneHomeThread was interrupted");
+				e.printStackTrace();
+				break;
+			} catch (Throwable e) { // TODO Catch and handle exceptions from BaseHttpRequestMaker
 			}
 		}
 	}
