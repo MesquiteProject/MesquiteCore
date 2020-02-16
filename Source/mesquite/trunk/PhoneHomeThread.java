@@ -40,8 +40,7 @@ import mesquite.tol.lib.BaseHttpRequestMaker;
  * to the mesquite server every ten seconds
  */
 public class PhoneHomeThread extends Thread {
-	// TODO use generics
-	Vector beans = new Vector();
+	private Vector<NameValuePair[]> beans = new Vector<NameValuePair[]>();
 
 	public PhoneHomeThread() {
 		setPriority(Thread.MIN_PRIORITY);
@@ -55,27 +54,26 @@ public class PhoneHomeThread extends Thread {
 		 */
 		checkForMessagesFromAllHomes();
 
-		// Report beans to the mesqutie server
+		// Report beans to the Mesqutie server
 		while (!MesquiteTrunk.mesquiteExiting) {
 			try {
 				Thread.sleep(1000);
 				if (beans.size() > 0) {
-					NameValuePair[] b = (NameValuePair[]) beans.elementAt(0);
+					BaseHttpRequestMaker.sendInfoToServer(beans.elementAt(0), MesquiteModule.beansReportURL, null, 0);
 					beans.removeElementAt(0);
-					BaseHttpRequestMaker.sendInfoToServer(b, MesquiteModule.beansReportURL, null, 0);
 				}
-			} catch (Throwable e) {
+			} catch (Throwable e) { // TODO Catch and handle
 			}
 		}
 	}
 
 	public void postBean(NameValuePair[] pairs) {
-		beans.addElement(pairs); // TODO use generics
+		beans.addElement(pairs);
 	}
 
 	/**
-	 * Reports version to Mesquite server and checks for information about installed
-	 * modules
+	 * Reports version to Mesquite server and checks for information mesquite about
+	 * installed modules
 	 */
 	public void checkForMessagesFromAllHomes() {
 		// Report Version to server
@@ -95,12 +93,13 @@ public class PhoneHomeThread extends Thread {
 				} else if (MesquiteTrunk.debugMode)
 					MesquiteMessage.warnProgrammer("no response or incorrect response from server on startup");
 			}
-		} catch (Throwable t) {
+		} catch (Throwable t) { // TODO catch and handle
 			if (MesquiteTrunk.debugMode)
 				MesquiteMessage.warnProgrammer("PROBLEM PHONING HOME to report version\n" + t.getCause());
 		}
 
-		// Check Server for notice regarding the various installed modules
+		// Check Server for notice regarding the mesquite and the various installed
+		// modules
 		ListableVector phoneRecords = new ListableVector();
 		StringBuffer notices = new StringBuffer();
 		StringBuffer logBuffer = new StringBuffer();
@@ -108,34 +107,34 @@ public class PhoneHomeThread extends Thread {
 		PhoneHomeUtil.readOldPhoneRecords(path, phoneRecords);
 		for (int i = 0; i < MesquiteTrunk.mesquiteModulesInfoVector.size(); i++) {
 			MesquiteModuleInfo mmi = (MesquiteModuleInfo) MesquiteTrunk.mesquiteModulesInfoVector.elementAt(i);
-			if (!StringUtil.blank(mmi.getHomePhoneNumber())) {
-				try {
-					int rec = phoneRecords.indexOfByName("#" + mmi.getClassName());
-					if (MesquiteTrunk.debugMode) {
-						MesquiteTrunk.mesquiteTrunk
-								.logln("Checking server for notices regarding " + mmi.getPackageName());
-					}
-
-					PhoneHomeRecord phoneHomeRecord;
-					if (!MesquiteInteger.isCombinable(rec) || rec < 0) {// this module is not the phone records
-						phoneHomeRecord = new PhoneHomeRecord("#" + mmi.getClassName());
-						phoneRecords.addElement(phoneHomeRecord, false);
-					} else
-						phoneHomeRecord = (PhoneHomeRecord) phoneRecords.elementAt(rec);
-					String notice = PhoneHomeUtil.retrieveMessagesFromHome(mmi, phoneHomeRecord, logBuffer);
-
-					phoneHomeRecord.setCurrentValues(mmi);
-					if (!StringUtil.blank(notice)) {
-						if (mmi.getModuleClass() == mesquite.Mesquite.class)
-							notices.append("<h3>From Mesquite</h3>");
-						else if (!StringUtil.blank(mmi.getPackageName()))
-							notices.append("<h3>From " + mmi.getPackageName() + "</h3>");
-						else
-							notices.append("<h3>From " + mmi.getName() + "</h3>");
-						notices.append(notice);
-					}
-				} catch (Throwable t) { // TODO catch and handle errors explicitly
+			if (StringUtil.blank(mmi.getHomePhoneNumber())) {
+				continue;
+			}
+			try {
+				int rec = phoneRecords.indexOfByName("#" + mmi.getClassName());
+				if (MesquiteTrunk.debugMode) {
+					MesquiteTrunk.mesquiteTrunk.logln("Checking server for notices regarding " + mmi.getPackageName());
 				}
+
+				PhoneHomeRecord phoneHomeRecord;
+				if (!MesquiteInteger.isCombinable(rec) || rec < 0) {// this module is not the phone records
+					phoneHomeRecord = new PhoneHomeRecord("#" + mmi.getClassName());
+					phoneRecords.addElement(phoneHomeRecord, false);
+				} else
+					phoneHomeRecord = (PhoneHomeRecord) phoneRecords.elementAt(rec);
+				String notice = PhoneHomeUtil.retrieveMessagesFromHome(mmi, phoneHomeRecord, logBuffer);
+
+				phoneHomeRecord.setCurrentValues(mmi);
+				if (!StringUtil.blank(notice)) {
+					if (mmi.getModuleClass() == mesquite.Mesquite.class)
+						notices.append("<h3>From Mesquite</h3>");
+					else if (!StringUtil.blank(mmi.getPackageName()))
+						notices.append("<h3>From " + mmi.getPackageName() + "</h3>");
+					else
+						notices.append("<h3>From " + mmi.getName() + "</h3>");
+					notices.append(notice);
+				}
+			} catch (Throwable t) { // TODO catch and handle errors explicitly
 			}
 		}
 
