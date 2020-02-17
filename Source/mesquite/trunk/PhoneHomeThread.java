@@ -76,8 +76,8 @@ public class PhoneHomeThread extends Thread {
 	}
 
 	/**
-	 * Reports version to Mesquite server and checks for information mesquite about
-	 * installed modules
+	 * Reports version to Mesquite server and checks for information about mesquite
+	 * and installed modules
 	 */
 	public void checkForMessagesFromAllHomes() {
 		// Report Version to server
