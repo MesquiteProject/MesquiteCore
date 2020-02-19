@@ -66,8 +66,7 @@ public class PhoneHomeThread extends Thread {
 				MesquiteTrunk.mesquiteTrunk.logln("PhoneHomeThread was interrupted");
 				e.printStackTrace();
 				break;
-			} catch (Throwable e) { // TODO Catch and handle exceptions from BaseHttpRequestMaker
-			}
+			} 
 		}
 	}
 
@@ -87,12 +86,7 @@ public class PhoneHomeThread extends Thread {
 			if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
 				buildNum = "PreRelease-" + buildNum;
 
-			try {
-				BaseHttpRequestMaker.contactServer(buildNum, MesquiteModule.versionReportURL, response);
-			} catch (Throwable t) { // TODO catch and handle
-				if (MesquiteTrunk.debugMode)
-					MesquiteMessage.warnProgrammer("PROBLEM PHONING HOME to report version\n" + t.getCause());
-			}
+			BaseHttpRequestMaker.contactServer(buildNum, MesquiteModule.versionReportURL, response);
 
 			String r = response.toString();
 			if (!StringUtil.blank(r) && r.indexOf("mq3rs") >= 0) {
@@ -128,10 +122,7 @@ public class PhoneHomeThread extends Thread {
 				phoneHomeRecord = (PhoneHomeRecord) phoneRecords.elementAt(rec);
 
 			String notice = "";
-			try {
-				notice = PhoneHomeUtil.retrieveMessagesFromHome(mmi, phoneHomeRecord, logBuffer);
-			} catch (Throwable t) { // TODO catch and handle errors explicitly
-			}
+			notice = PhoneHomeUtil.retrieveMessagesFromHome(mmi, phoneHomeRecord, logBuffer);
 			phoneHomeRecord.setCurrentValues(mmi);
 			if (!StringUtil.blank(notice)) {
 				if (mmi.getModuleClass() == mesquite.Mesquite.class)
