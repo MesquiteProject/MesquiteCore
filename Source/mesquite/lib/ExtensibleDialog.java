@@ -1809,7 +1809,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 	/*.................................................................................................................*/
 	public TextArea addTextArea (String initialString, int numRows, Font font) {
-		return addTextArea(initialString, numRows, 40, font);
+		return addTextArea(initialString, numRows, 80, font);
 	}
 	/*.................................................................................................................*/
 	public TextArea addTextArea (String initialString, int numRows, int numColumns, Font font, int scrollbars, boolean textAreaFullDialogWidth) {
