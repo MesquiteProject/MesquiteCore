@@ -40,19 +40,30 @@ public class ShellScriptUtil  {
 			return StringUtil.protectFilePathForUnix(s);
 	}
 	/*.................................................................................................................*/
+	public static String getShellScriptCommandLineEnding(boolean requireCompletion) {  
+		if (requireCompletion) 
+			return  " && sleep 0.2 && " +StringUtil.lineEnding();
+	else 
+		return  " && " +StringUtil.lineEnding();
+	}
+	/*.................................................................................................................*/
 	public static String getWriteStringAsFile(String path, String contents) {
 		if (MesquiteTrunk.isWindows())
-			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
+			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForWindows(path) + getShellScriptCommandLineEnding(false);
 		else
-			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
+			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForUnix(path) + getShellScriptCommandLineEnding(false);
+			
+//		return "";
 	}
 
 	/*.................................................................................................................*/
 	public static String getAppendStringAsFile(String path, String contents) {
 		if (MesquiteTrunk.isWindows())
-			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForWindows(path) + getShellScriptCommandLineEnding(false);
 		else
-			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForUnix(path) + getShellScriptCommandLineEnding(false);
+			
+//		return "";
 	}
 
 	/*.................................................................................................................*
