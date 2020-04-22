@@ -41,10 +41,10 @@ public class ShellScriptUtil  {
 	}
 	/*.................................................................................................................*/
 	public static String getShellScriptCommandLineEnding(boolean requireCompletion) {  
-		if (requireCompletion) 
-			return  " && sleep 0.2 && " +StringUtil.lineEnding();
-	else 
-		return  " && " +StringUtil.lineEnding();
+	//if (requireCompletion) 
+			return  " &&  sleep 0.2 && " +StringUtil.lineEnding();
+	//else 
+	//	return  " && " +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
 	public static String getWriteStringAsFile(String path, String contents) {
