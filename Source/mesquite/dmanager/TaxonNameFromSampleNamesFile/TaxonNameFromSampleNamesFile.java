@@ -288,7 +288,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 
 		// got here and no match found -- log an error
 		//MesquiteMessage.warnUser("No matching name or code named '" + sampleCode + "' found in taxon names file.");
-		log("-");
+		//log("-");
 		return null;
 	}
 
@@ -307,12 +307,16 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 			}*/
 			String newName = getSeqNamesFromTabDelimitedFile(new MesquiteString(vc), taxa.getTaxonName(it));
 			if (StringUtil.notEmpty(newName)){
-				logln("Taxon \"" + taxa.getTaxonName(it) +"\" renamed to \"" + newName + "\"");
+				if (newName.equalsIgnoreCase(taxa.getTaxonName(it)))
+					logln(""+it+". Taxon \"" + taxa.getTaxonName(it) +"\" kept current name");
+				else
+					logln(""+it+". Taxon \"" + taxa.getTaxonName(it) +"\" renamed to \"" + newName + "\"");
 				taxa.setTaxonName(it, newName, false);
 				if (changeColor.getValue())
 					taxa.setAssociatedLong(colorNameRef, it, 14);
 				
-			}
+			} else
+				logln(""+it+". Taxon \"" + taxa.getTaxonName(it) +"\": no entry in names file.");
 			nameChanged = true;
 		}
 		return nameChanged;

@@ -345,6 +345,10 @@ public abstract class MesquiteTrunk extends MesquiteModule
 //		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.10")>=0 || System.getProperty("os.version").indexOf("10.11")>=0 || System.getProperty("os.version").indexOf("10.12")>=0|| System.getProperty("os.version").indexOf("10.13")>=0);
 	} 	
 	/*.................................................................................................................*/
+	public static boolean isMacOSXCatalinaOrLater(){
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=15);
+	} 	
+	/*.................................................................................................................*/
 	public static boolean isMacOSXJaguar(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
