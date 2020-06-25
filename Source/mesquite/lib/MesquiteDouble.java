@@ -840,7 +840,7 @@ public class MesquiteDouble implements Listable {
 		sFromDouble = myFormatter.format(d);
 		if (digits==0) 
 			sFromDouble = StringUtil.removeLastCharacterIfMatch(sFromDouble, '.');
-		else if (sFromDouble.indexOf(".")<0) //no decimal; add it.  Debugg.println
+		else if (sFromDouble.indexOf(".")<0 && sFromDouble.indexOf("E")<0) //no decimal; add it if it doesn't have an exponent
 			sFromDouble = sFromDouble + ".0";
 		sb.append(sFromDouble);
 		return sb.toString();
