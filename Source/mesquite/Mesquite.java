@@ -2494,6 +2494,8 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.noBeans = true;
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
+					else if (args[i].equals("-mqcat"))
+						; //started from Catalina executable
 					else if (args[i].equals("-mq17")) {
 						MesquiteMessage.warnUser("This executable is not compatible with current Mesquite");
 					}
