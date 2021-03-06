@@ -160,7 +160,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		helpString+= "If you choose Add As New Taxa then all incoming sequences will be added as new taxa, even if there already exist taxa in the matrix with identical names.";
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Incoming taxa match existing taxa",buttonPressed);
-		id.addLargeTextLabel("Some of the taxa already in the matrix have the same name as incoming taxa.  Please choose how incoming sequences with the same name as exising taxa will be treated.");
+		id.addLargeTextLabel("Some of the taxa already in the matrix have the same name as incoming taxa.  Please choose how incoming sequences with the same name as existing taxa will be treated.");
 		if (StringUtil.blank(helpString) && id.isInWizard())
 			helpString = "<h3>" + StringUtil.protectForXML("Incoming taxa match existing taxa") + "</h3>Please choose.";
 		id.appendToHelpString(helpString);
