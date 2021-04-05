@@ -421,6 +421,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		mCC2.setCompatibilityCheck(data.getStateClass());
 		textColorerName = new MesquiteString();
 		mCC2.setSelected(textColorerName);
+		ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Color only taxon names", MesquiteModule.makeCommand("toggleColorOnlyTaxonNames", this), table.colorOnlyTaxonNames);
 
 
 		MesquiteSubmenuSpec mSetColor = ownerModule.addSubmenu(ownerModule.displayMenu, "Assign Color to Selected", MesquiteModule.makeCommand("assignColor", this), ColorDistribution.standardColorNames);
@@ -924,6 +925,7 @@ public void requestFocus(){
 		if (widthsSet)
 			temp.addLine("setColumnWidth " + columnWidth);
 		temp.addLine("toggleBirdsEye " + table.showBirdsEyeView.toOffOnString());
+		temp.addLine("toggleColorOnlyTaxonNames " + table.colorOnlyTaxonNames.toOffOnString());
 		temp.addLine("toggleShowPaleGrid " + table.showPaleGrid.toOffOnString());
 		temp.addLine("toggleShowPaleCellColors " + table.showPaleCellColors.toOffOnString());
 		temp.addLine("toggleShowPaleExcluded " + showPaleExcluded.toOffOnString());
@@ -2086,6 +2088,10 @@ public void requestFocus(){
 			resetSequenceLedge();
 			table.repaintAll();
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not only taxon names are colored", "[on or off]", commandName, "toggleColorOnlyTaxonNames")) {
+			table.colorOnlyTaxonNames.toggleValue(ParseUtil.getFirstToken(arguments, pos));
+			table.repaintAll();
+		}
 		else if (checker.compare(this.getClass(), "Sets whether or not the grid is drawn in pale gray", "[on or off]", commandName, "toggleShowPaleGrid")) {
 			table.showPaleGrid.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 			table.paleGrid = table.showPaleGrid.getValue();
@@ -2963,6 +2969,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	MesquiteBoolean reduceCellBorders;
 
 	MesquiteBoolean showDefaultCharNames;
+	MesquiteBoolean colorOnlyTaxonNames;
 
 	MesquiteBoolean autoWithCharNames;
 
@@ -3043,6 +3050,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		showStates = new MesquiteBoolean(true);
 		reduceCellBorders = new MesquiteBoolean(false);
 		showDefaultCharNames = new MesquiteBoolean(false);
+		colorOnlyTaxonNames = new MesquiteBoolean(false);
 		autoWithCharNames = new MesquiteBoolean(!(data instanceof MolecularData));
 		showBirdsEyeView = new MesquiteBoolean(false);
 		showPaleGrid = new MesquiteBoolean(false);
@@ -3894,7 +3902,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 			try {
 				Color textColor = null;
-				if (textColorer != null && !(textColorer instanceof mesquite.charMatrices.NoColor.NoColor))
+				if (textColorer != null && !(textColorer instanceof mesquite.charMatrices.NoColor.NoColor) && !colorOnlyTaxonNames.getValue())
 					textColor = textColorer.getCellColor(column, row);
 
 				if (textColor == null) {
@@ -4074,6 +4082,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			textColor = ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black);
 		}
 		g.setColor(textColor);
+		Font oldFont = g.getFont();
+		if (showBoldCellText.getValue())
+			g.setFont(GraphicsUtil.getBoldFont(g)); 
 
 		String s = taxa.getAnnotation(row);
 
@@ -4089,7 +4100,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			else
 				g.drawString(t, xgnso, svp);
 		}
-
+		g.setFont(oldFont);
 		g.setColor(oldColor);
 
 	}
