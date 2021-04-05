@@ -1,0 +1,119 @@
+Here is the procedure used to build the script-based executable for Catalina and above.
+
+
+================== BUILDING EXECUTABLE
+Building an executable with Automator with these components (see screenshot automatorForMesquiteExecutable.png):
+
+(1) stores any files dropped on it (seems to get only 1!)
+(2) makes Mesquite_Support_Files a new folder (if it doesn't exist) [to hold the file of standard out]
+(3) retrieves paths to file dropped on it, and passes into next stage
+(4) Applescript figures out with Applescript where the executable is, to figure out the path to Mesquite.jar. Also gets path to dropped file. Also reads the Memory.txt file to figure out how much memory to give to Mesquite. Composes three together into a string that can be easily parsed by next stage:
+
+on getPath(this_text, stripLast)
+	set AppleScript's text item delimiters to the ":"
+	set the item_list to every text item of this_text
+	set num to the number of items in item_list
+	if stripLast then
+		set lasti to num - 2
+	else
+		set lasti to num
+	end if
+	set the item_list to items 2 through lasti of item_list
+	set AppleScript's text item delimiters to the "/"
+	set this_text to the item_list as string
+	set AppleScript's text item delimiters to ""
+	set this_text to "/" & this_text
+	return this_text
+end getPath
+
+on run {input, parameters}
+	set whereAmI to getPath((path to me as text), true)
+	set memoryFile to whereAmI & "/MesquiteByScript-Memory.txt"
+	set memory to 1
+	try
+		set lns to paragraphs of (read POSIX file memoryFile)
+		set memory to first item in lns
+	end try
+	#display dialog memory as text
+	set results to whereAmI
+	try
+		if input is not equal to {} then
+			set droppedFiles to getPath(input as text, false)
+			set results to results & ":" & droppedFiles
+		end if
+	end try
+	set results to memory & ":" & results
+	return results
+end run
+
+(5) Runs a shell script, taking as input the string from part (4):
+
+read whereAndWhat #where is Mesquite Folder, and what are dropped files
+IFS=':' read -r -a arr <<< "$whereAndWhat"
+MEMORY=${arr[0]}
+whereAmI=${arr[1]}
+if [[ ${#arr[@]} > 2 ]];
+then
+	droppedFiles=${arr[2]} #this gets just first file
+	java -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$droppedFiles" > Mesquite_Support_Files/MesquiteByScript_stdout.txt
+else
+	java -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" > Mesquite_Support_Files/MesquiteByScript_stdout.txt
+fi
+
+
+================== CUSTOMIZING APP Bundle
+In app bundle, Info.plist, change
+	<key>CFBundleIconFile</key>
+	<string>AutomatorApplet</string>
+
+to 
+	<key>CFBundleIconFile</key>
+	<string>Mesquite.icns</string>
+
+In the app bundle, Resources, add the file Mesquite.icns
+
+================== SIGNING EXECUTABLE
+Make duplicate of Mesquite app to be signed, and call it Mesquite.app
+
+Run the signBundle.sh script, i.e.:
+
+#!/bin/bash 
+xattr -cr Mesquite.app
+
+for f in $(find Mesquite.app/Contents); 
+do 
+	codesign -s "Developer ID Application: Wayne Maddison" $f;
+done
+
+codesign --force --deep --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
+#codesign --force --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+
+================== NOTARIZING EXECUTABLE
+====================================================
+NOTARIZING
+Zip using 
+	/usr/bin/ditto -c -k --keepParent Mesquite.app Mesquite.zip
+Submit for notarization using
+	xcrun altool --eval-app --primary-bundle-id org.mesquiteproject -u wmaddisn@zoology.ubc.ca -f Mesquite.zip
+
+Give not Apple-id password, but rather app-specific PASSWORD. (https://support.apple.com/en-us/HT204397)
+
+For regular Mesquite.app: hjbt-fpiw-yhus-tukk
+
+Will respond with a RequestUUID. To check status, enter (replace strange request uu id)
+
+	xcrun altool --eval-info <RequestUUID> -u wmaddisn@zoology.ubc.ca
+
+To get more details use  the URL given
+
+Somethow this might help also???
+xcrun altool --notarization-info <RequestUUID> -u wmaddisn@zoology.ubc.ca
+
+Once it's approved, run
+	xcrun stapler staple Mesquite.app
+
+---------
+	xcrun altool --eval-info REPLACEWITHREQUESTUUID -u wmaddisn@zoology.ubc.ca
+

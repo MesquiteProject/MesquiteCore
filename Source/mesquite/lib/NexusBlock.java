@@ -101,6 +101,7 @@ public abstract class NexusBlock implements Listable, Identifiable, Disposable {
 			for (int i = index+1; i<blocks.size(); i++) { //now look to all higher to see if nb should jump above them
 				NexusBlock nR = (NexusBlock)blocks.elementAt(i);
 				if (nb.mustBeAfter(nR) && (nb.getFile()==nR.getFile())) { //nb needs to fall below nR
+					Debugg.println("bubble down " + nb.getBlockName() + " to be after " + nR.getBlockName());
 					height = i;  //remember height of nR
 				}
 			}

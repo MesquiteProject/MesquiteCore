@@ -22,6 +22,7 @@ import mesquite.lists.lib.*;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics;
+import java.awt.Label;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -69,10 +70,13 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		//	addMenuItem("Delete *", makeCommand("deleteStar", this));  // for Wayne!!!!!!
 		addMenuItem("Delete Data For Selected Taxa", makeCommand("deleteData", this));
 		addMenuSeparator();
+		addMenuItem("(Right click cell for more options)", null);
 		addMenuItem("Sort Taxa by Presence of Data", makeCommand("sortByPresence", this));
 		addMenuItem("Prepend Sequence Length", makeCommand("prependLength", this));
 		addMenuItem("Prepend Number of Non-missing Sites", makeCommand("prependNumSites", this));
 		addMenuItem("Delete Stored Annotation", makeCommand("deleteAnnotation", this));
+		addMenuItem("Delete Stored Genbank Reference", makeCommand("deleteGenbankAnnotation", this));
+		addMenuItem("Delete Stored Publication Reference", makeCommand("deletePublicationAnnotation", this));
 		return true;
 	}
 
@@ -146,9 +150,15 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 	/*.................................................................................................................*/
 	public boolean arrowTouchInRow(Graphics g, int ic, int x, int y, boolean doubleClick, int modifiers){
-		if (MesquiteEvent.rightClick(modifiers)) {
+		if (MesquiteEvent.commandOrControlKeyDown(modifiers) || MesquiteEvent.rightClick(modifiers)) {
+			
 			MesquitePopup popup = new MesquitePopup(table.getMatrixPanel());
-
+			
+			MesquiteCommand mcEditCell = makeCommand("editCell", this);
+			mcEditCell.setDefaultArguments(""+ic);
+			MesquiteMenuItem mEditCellItem = new MesquiteMenuItem("Edit Cell...", this, mcEditCell, null);
+			popup.add(mEditCellItem);
+			
 			String copyMenuText = "Copy ";
 			if (observedStates != null) {
 				CharacterData data = observedStates.getParentData();
@@ -160,7 +170,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			}
 			MesquiteCommand mcCopy = makeCommand("copyData", this);
 			mcCopy.setDefaultArguments(""+ic);
-			MesquiteCheckMenuItem mCopyItem = new MesquiteCheckMenuItem(copyMenuText, this, mcCopy, null, null);
+			MesquiteMenuItem mCopyItem = new MesquiteMenuItem(copyMenuText, this, mcCopy, null);
 			popup.add(mCopyItem);
 
 			String pasteMenuText = "Paste ";
@@ -172,13 +182,13 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			}
 			MesquiteCommand mcPaste = makeCommand("pasteData", this);  //only if something in clipboard
 			mcPaste.setDefaultArguments(""+ic);
-			MesquiteCheckMenuItem mPasteItem = new MesquiteCheckMenuItem(pasteMenuText, this, mcPaste, null, null);
+			MesquiteMenuItem mPasteItem = new MesquiteMenuItem(pasteMenuText, this, mcPaste, null);
 			mPasteItem.setEnabled(StringUtil.notEmpty(localCopyDataClipboard));
 			popup.add(mPasteItem);
 
 			MesquiteCommand mcDelete = makeCommand("deleteDataTouched", this);
 			mcDelete.setDefaultArguments(""+ic);
-			MesquiteCheckMenuItem mDeleteItem = new MesquiteCheckMenuItem("Delete Data...", this, mcDelete, null, null);
+			MesquiteMenuItem mDeleteItem = new MesquiteMenuItem("Delete Data...", this, mcDelete, null);
 			popup.add(mDeleteItem);
 
 			popup.showPopup(x,y+18);
@@ -394,6 +404,36 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			parametersChanged();
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Edits the touched cell", null, commandName, "editCell")) {
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+		
+			String noteTM = getNote(it,CharacterData.taxonMatrixNotesRef);
+			String noteGB = getNote(it,MolecularData.genBankNumberRef);
+			String notePC = getNote(it,CharacterData.publicationCodeNameRef);
+			MesquiteInteger button = new MesquiteInteger();
+			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Edit notes", button);
+			
+			dialog.addLabel("Note: ", Label.LEFT);
+			SingleLineTextField noteTMField = dialog.addTextField(noteTM);
+			dialog.addLabel("Genbank: ", Label.LEFT);
+			SingleLineTextField noteGBField = dialog.addTextField(noteGB);
+			dialog.addLabel("Publication Code: ", Label.LEFT);
+			SingleLineTextField notePCField = dialog.addTextField(notePC);
+
+			noteTMField.requestFocus();
+			dialog.completeAndShowDialog(true,null);
+			boolean ok = (dialog.query()==0);
+			if (ok) {
+				setNote(it, noteTMField.getText(), CharacterData.taxonMatrixNotesRef);
+				setNote(it, noteGBField.getText(), MolecularData.genBankNumberRef);
+				setNote(it, notePCField.getText(), CharacterData.publicationCodeNameRef);
+			}
+			dialog.dispose();
+
+			outputInvalid();
+			parametersChanged();
+			return null;
+		}
 		else if (checker.compare(this.getClass(), "Deletes the notes for the selected taxa", null, commandName, "deleteAnnotation")) {
 			if (observedStates == null || taxa == null)
 				return null;
@@ -414,13 +454,53 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			parametersChanged();
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Deletes the genbank notes for the selected taxa", null, commandName, "deleteGenbankAnnotation")) {
+			if (observedStates == null || taxa == null)
+				return null;
+			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
+			for (int it = 0; it<taxa.getNumTaxa(); it++){
+				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
+					setNote(it, null, MolecularData.genBankNumberRef);
+				}
+			}
+			outputInvalid();
+			parametersChanged();
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Deletes the publication notes for the selected taxa", null, commandName, "deletePublicationAnnotation")) {
+			if (observedStates == null || taxa == null)
+				return null;
+			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
+			for (int it = 0; it<taxa.getNumTaxa(); it++){
+				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
+					setNote(it, null, MolecularData.publicationCodeNameRef);
+				}
+			}
+			outputInvalid();
+			parametersChanged();
+			return null;
+		}
 		else return  super.doCommand(commandName, arguments, checker);
 	}
 
 	/*...............................................................................................................*/
 	/** returns whether or not a cell of table is editable.*/
 	public boolean isCellEditable(int row){
-		return true;
+		return false;
 	}
 	/*...............................................................................................................*/
 	/** for those permitting editing, indicates user has edited to incoming string.*/
@@ -695,13 +775,25 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		}
 	}
 	public String getStringForTaxon(int it){
-		String note = getNote(it,MolecularData.genBankNumberRef);
-		if (note != null)
-			return note;
-		note = getNote(it,CharacterData.publicationCodeNameRef);
-		if (note != null)
-			return note;
-		note = getNote(it,CharacterData.taxonMatrixNotesRef);
+		String noteTM = getNote(it,CharacterData.taxonMatrixNotesRef);
+		String noteGB = getNote(it,MolecularData.genBankNumberRef);
+		String notePC = getNote(it,CharacterData.publicationCodeNameRef);
+		String note = null;
+		if (noteTM != null)
+			note = noteTM;
+		if (noteGB != null) {
+			if (note == null)
+				note = noteGB;
+			else
+				note += " – " + noteGB;
+		}
+		if (notePC != null) {
+			if (note == null)
+				note = notePC;
+			else
+				note += " – " + notePC;
+		}
+
 		if (note != null)
 			return note;
 		if (observedStates == null)
@@ -712,6 +804,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			return "Yes";
 		else
 			return "No Data";
+
 	}
 	public String getWidestString(){
 		return "88888888888";
