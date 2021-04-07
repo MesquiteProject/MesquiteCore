@@ -4437,6 +4437,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return false;
 	}
+	/** Excise node and clade above it from tree, zeroing information at each node in clade.*/
+	public synchronized static void pruneTaxaNotInCommon(MesquiteTree tree1, MesquiteTree tree2, boolean notify) {   
+		if (tree1.getTaxa() != tree2.getTaxa())
+			return;
+		for (int it=0; it<tree1.getNumTaxa(); it++) {
+			if (tree1.taxonInTree(it) && ! tree2.taxonInTree(it))
+				tree1.deleteClade(tree1.nodeOfTaxonNumber(it), notify);
+			else if (!tree1.taxonInTree(it) && tree2.taxonInTree(it))
+				tree2.deleteClade(tree2.nodeOfTaxonNumber(it), notify);
+		}
+	}
 	/*-----------------------------------------*/
 	/** Excise node and clade above it from tree but leave the clade intact, in case it is to be attached elsewhere.*/
 	public synchronized boolean snipClade(int node, boolean notify) {   
