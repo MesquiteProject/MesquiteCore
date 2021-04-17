@@ -200,13 +200,38 @@
     
 <h1 id="toc0"><a name="Mesquite installation for MacOS X"></a>Mesquite installation for MacOS X</h1>
  <br />
-System requirements: <strong>Mac OS X 10.6 or higher, with Java 1.6 to Java 10. Mesquite 3.6 will probably not  function under Java 11</strong>. (MacOS X 10.10 or higher with Java 1.8 recommended.)<br />
+System requirements: <strong>Mac OS X 10.6 or higher, with Java 1.6 or higher required</strong> (MacOS X 10.10 or higher with Java 1.8 [also called Java 8) recommended.)<br />
 <br />
 Instructions:<br />
 <ol><li>If you have an older version of Mesquite, you may want to delete it (by deleting Mesquite_Folder), so as to avoid getting confused as to what version of Mesquite is starting up. First, however, you may want to take from Mesquite_Folder/mesquite any third party packages (e.g., PDAP, TreeSetViz) before deleting the directory.</li>
-<li><a  href="https://github.com/MesquiteProject/MesquiteCore/releases" rel="nofollow">Download the latest version of Mesquite from the Mesquite Github repository.</a> <strong>For Mac OS X, use the files ending in .dmg. There are two alternatives, one for Java 1.6 (recommended for OS X 10.9, Mavericks, and lower), the other for Java 1.7 and above (recommended for OS X 10.10, Yosemite, and higher).</strong> </li>
-<li>For MacOS X 10.10 (Yosemite) and later versions of the MacOS, we recommend using Java 1.8 and the version of Mesquite for Java 1.7 and above.</li>
-<li><span style="line-height: 1.5;">If the downloaded file doesn't mount into a disk image automatically, double click it to mount. You will see a Mesquite_Folder. Drag this Mesquite_Folder to your hard drive (e.g., your Applications folder). Its contents should be approximately as follows:</span><ul><li><span style="line-height: 1.5;">Mesquite_Folder</span><ul><li>com/</li><li>corejava</li><li>documentation.html</li><li>edu/</li><li>examples/</li><li>images/</li><li>jars/</li><li>lesser.txt</li><li>lib/</li><li>mesquite/</li><li>Mesquite<span style="line-height: 1.5;">.app</span></li><li>org/</li><li>OtherWaysToStartMesquite</li><li>settings/</li><li>README-Starting Mesquite on Mac OS X.txt</li></ul></li></ul></li><li>Double click the Mesquite icon to start Mesquite. If you don't have Java installed, you will be asked to install it.</li><li>There are other executables to start Mesquite, within the folder OtherWaysToStartMesquite. They give you different options, for example, for amount of memory used. See the file &quot;README-Starting Mesquite on Mac OS X.txt&quot; for instructions.</li><li>On Mac OS X 10.9 or below, Mesquite runs best with Java 1.6. On Mac OS X 10.0 or higher, Mesquite runs best on Java 1.7 or higher. To install Java 1.7 or higher, get it from <a  href="http://java.com" rel="nofollow">http://java.com</a>.</li></ol><br />
+<li><a  href="https://github.com/MesquiteProject/MesquiteCore/releases" rel="nofollow">Download the latest version of Mesquite from the Mesquite Github repository.</a> <strong>For Mac OS X, use the files ending in .dmg. There are three alternatives:</strong>
+  <ol>
+    <li><strong>one for Java 1.6 (recommended for OS X 10.9, Mavericks, and lower)</strong></li>
+    <li><strong>one  for Java 1.7 and above (recommended for OS X 10.10, Yosemite, and higher)</strong></li>
+    <li><strong>one for OS X 10.15 Catalina and above (this version includes Java 14 or higher)</strong>.<br />
+      <br />
+      You can also modify the second version so that it runs under Java 8 on Catalina, as described below.
+      <br />
+      <br />
+    </li>
+  </ol>
+</li>
+<li><span style="line-height: 1.5;">If the downloaded file doesn't mount into a disk image automatically, double click it to mount. You will see a Mesquite_Folder. Drag this Mesquite_Folder to your hard drive (e.g., your Applications folder). Its contents should be approximately as follows:</span></li>
+</ol>
+<ol>
+  <ul><li><span style="line-height: 1.5;">Mesquite_Folder</span><ul><li>com/</li><li>corejava</li><li>documentation.html</li><li>edu/</li><li>examples/</li><li>images/</li><li>jars/</li><li>lesser.txt</li><li>lib/</li><li>mesquite/</li><li>Mesquite<span style="line-height: 1.5;">.app</span></li><li>org/</li><li>OtherWaysToStartMesquite</li><li>settings/</li><li>README-Starting Mesquite on Mac OS X.txt</li></ul></li></ul><li>Double click the Mesquite icon to start Mesquite. If you don't have Java installed, you will be asked to install it.</li><li>There are other executables to start Mesquite, within the folder OtherWaysToStartMesquite. They give you different options, for example, for amount of memory used. See the file &quot;README-Starting Mesquite on Mac OS X.txt&quot; for instructions.</li>
+  <li>On Mac OS X 10.9 or below, Mesquite runs best with Java 1.6. On Mac OS X 10.0-10.14, Mesquite runs best on Java 1.7 or higher. To install Java 1.7 or higher, get it from <a  href="http://java.com" rel="nofollow">http://java.com</a>. On Mac OS X 10.15 and above, Mesquite will run using the Java version that is included with the download (Java 14 or above), or you you can get it to run using Java 8 using the following steps:  </li>
+  <ul>
+    <li>Download the version of Mesquite for Java 1.7 and above (the second version mentioned)</li>
+    <li>Move the Mesquite Folder in that dmg file onto your hard disk, and open up the folder. Fine the  Mesquite app file (the one with the Mesquite icon), and throw it away.</li>
+    <li>Go to <a href="https://github.com/MesquiteProject/MesquiteCore/releases/tag/v3.6">https://github.com/MesquiteProject/MesquiteCore/releases/tag/v3.6</a></li>
+    <li> Download Mesquite.3.6-MacOSX.10.10.or.higher-Java-1.7plus.dmg</li>
+    <li> Open up that dmg, and open up the Mesquite Folder in it.</li>
+    <li>Take  the Mesquite app file from there and move it into the Mesquite Folder on your hard disk. That is, you are replacing the Mesquite app file from the latest version with the app file from version 3.6</li>
+    <li>Now start up Mesquite from  that app file</li>
+  </ul>
+</ol>
+<br />
 <br />
 More details of issues of using Mesquite under Mac OS X are described in the <a  href="Bugs%20and%20Troubleshooting.html">Support</a> page.<br />
 (Please email us (info {at} mesquiteproject.org) with questions or comments about downloading Mesquite).
