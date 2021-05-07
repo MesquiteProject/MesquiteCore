@@ -2465,6 +2465,8 @@ public class Mesquite extends MesquiteTrunk
 			}
 			catch (NoClassDefFoundError e) { //WAYNECHECK: DAVIDCHECK: need to add alternative macos application event handling methods for post-1.8 Java
 			}
+			catch (IllegalAccessError e) {
+			}
 		}
 	}
 
