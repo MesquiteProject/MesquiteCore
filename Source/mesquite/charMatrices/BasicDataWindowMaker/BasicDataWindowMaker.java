@@ -3597,8 +3597,8 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				}
 				fileInterpreter.setImportFileNumber(count);
 				// system.out.println("next file dropped is: " + nextFile);
-				MesquiteMessage.println("\n\nReading file " + nextFile.getName());
-				CommandRecord.tick("\n\nReading file " + nextFile.getName());
+				MesquiteMessage.println("\n\nReading file " + nextFile.getName()+ "  [" + count + " of " + files.size()+"]");
+				CommandRecord.tick("\n\nReading file " + nextFile.getName()+ "  [" + count + " of " + files.size()+"]");
 				actUponDroppedFileContents(fileInterpreter, nextFile.getAbsolutePath());
 
 				count++;
