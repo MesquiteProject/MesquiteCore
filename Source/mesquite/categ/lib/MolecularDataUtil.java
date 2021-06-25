@@ -224,7 +224,7 @@ public class MolecularDataUtil {
 				int stopsRC = getMinimumStops(data, it, modelSet);
 				if (stops<=stopsRC) {
 					data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
-				} else
+				} else if (verbose) 
 					module.logln("  Reverse complemented " + taxa.getTaxonName(it));
 			}
 		} else {
@@ -247,7 +247,8 @@ public class MolecularDataUtil {
 				if (score>1.0){
 					data.reverseComplement(0, data.getNumChars(), it, false, true);  
 					RC=true;
-					module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
+					if (verbose)
+						module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
 				}
 			//	else
 			//		module.logln("Sequence not reverse complemented " + (it+1));

@@ -1644,7 +1644,8 @@ public class CategoricalData extends CharacterData {
 			return false;
 		} 
 		else {
-			MesquiteTrunk.mesquiteTrunk.logln("  Passed checksum");
+			if (MesquiteTrunk.debugMode)   //DRM 25.June.2021
+				MesquiteTrunk.mesquiteTrunk.logln("  Passed checksum");
 			return true;
 		}
 	}
