@@ -285,7 +285,7 @@ public class MolecularDataUtil {
 				if (taxaToAdjust.isBitOn(it)) {
 
 					double score = 0;
-					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, true);
+					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, MesquiteTrunk.debugMode);
 
 					if (score>1.0){
 						data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
