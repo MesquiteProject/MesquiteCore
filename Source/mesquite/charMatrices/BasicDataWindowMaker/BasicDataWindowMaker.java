@@ -3597,16 +3597,16 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				}
 				fileInterpreter.setImportFileNumber(count);
 				// system.out.println("next file dropped is: " + nextFile);
-				MesquiteMessage.println("\n\nReading file " + nextFile.getName()+ "  [" + count + " of " + files.size()+"]");
-				CommandRecord.tick("\n\nReading file " + nextFile.getName()+ "  [" + count + " of " + files.size()+"]");
+				count++;
+				MesquiteMessage.println("Reading file " + count + " of " + files.size()+": " + nextFile.getName());
+				CommandRecord.tick("Reading file " + count + " of " + files.size()+": " + nextFile.getName());
 				actUponDroppedFileContents(fileInterpreter, nextFile.getAbsolutePath());
 
-				count++;
 			}
 		}
 		if (!abort && fileInterpreter!=null) {
 			if (adjustNewSequences) {
-				MesquiteMessage.println("Adjusting sequences ");
+				MesquiteMessage.println("Adjusting sequences... ");
 				if (!data.someApplicableInTaxon(referenceSequence, false)){  
 					MesquiteMessage.println("The reference sequence contains no data; adjustment cancelled.");
 				    adjustNewSequences = false;
@@ -3619,6 +3619,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, newTaxa,0, false);
 					data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED, null, null));
 				}
+				MesquiteMessage.println("\nImport completed. ");
 			}
 			fileInterpreter.setMaximumTaxonFilled(-1);
 			fileInterpreter.endRecordingTaxa(taxa);

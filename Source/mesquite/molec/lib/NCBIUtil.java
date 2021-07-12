@@ -633,7 +633,7 @@ public class NCBIUtil {
 		
 		
 		if (adjustNewSequences) {
-			MesquiteMessage.println("Adjusting sequences ");
+			MesquiteMessage.println("Adjusting sequences... ");
 			if (!data.someApplicableInTaxon(insertAfterTaxon, false)){  
 				MesquiteMessage.println("The reference sequence contains no data; adjustment cancelled.");
 			    adjustNewSequences = false;
@@ -647,6 +647,7 @@ public class NCBIUtil {
 				MolecularDataUtil.pairwiseAlignMatrix(mod, (MolecularData)data, referenceTaxon, newTaxa,0, addNewInternalGaps, true);
 				data.notifyListeners(mod, new Notification(CharacterData.DATA_CHANGED, null, null));
 			}
+			MesquiteMessage.println("Import completed. ");
 		}
 
 
