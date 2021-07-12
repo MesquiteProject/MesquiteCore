@@ -144,6 +144,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Top BLAST Matches",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Options for Top BLAST Matches");
 		int oldBlastType = blastType;
+		dialog.appendToHelpString("For the \"Reject hits with eValues greater than\" field, use values of the from \"1E-100\"");
 
 		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
 		//		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
