@@ -167,7 +167,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		
 		
 		
-		RadioButtons radio = id.addRadioButtons(new String[] {"Don't Add", "Replace Data","Replace If Empty, Otherwise Add","Replace If Empty, Otherwise Ignore","Add As New Taxa"},treatmentOfIncomingDuplicates);
+		RadioButtons radio = id.addRadioButtons(new String[] {"Ignore", "Replace Data","Replace If Empty, Otherwise Add","Replace If Empty, Otherwise Ignore","Add As New Taxa"},treatmentOfIncomingDuplicates);
 		
 		id.completeAndShowDialog(true);
 		
@@ -261,6 +261,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 							for (int ic=0; ic<numChars; ic++)
 								data.setState(ic, taxonNumber, cs);
 						added=false;
+						processFileName(fileName, data, taxa, taxonNumber);
 
 					} else if (!skipThisSequence) {  // adding to end, not replacing an existing one
 						if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
@@ -291,13 +292,13 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 								taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED), CharacterData.class, true);
 							}
 						}
+						processFileName(fileName, data, taxa, taxonNumber);
 					}
 
 					Taxon t = null;
 
 					if (taxonNumber>=0)
 						t = taxa.getTaxon(taxonNumber);
-					processFileName(fileName, data, taxa, taxonNumber);
 
 					if (t!=null) {
 						recordAsNewlyAddedTaxon(taxa,taxonNumber);
@@ -348,7 +349,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 						}
 
-					}
+					} 
 				}
 				if (added) 
 					lastTaxonNumber++;
