@@ -148,7 +148,7 @@ public boolean queryOptions(int it, int max) {
 			int totalAddedToStart = 0;
 			boolean someAdded = false;
 			for (int it = it1; it<=it2; it++) {  
-				if (row.getValue()!=it) {
+				if (row.getValue()!=it && data.hasDataForTaxon(it)) {  // June 2021 added hasDataForTaxon check
 					match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);
 					if (reverseComplementIfNecessary && !match && data instanceof DNAData) {
 						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(), it, it, row.getValue(), false, false, false);
