@@ -5055,15 +5055,21 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public int getMinColumnWidth() {
 		return 3;
 	}
-
+	boolean turnOffIntegrityWarnings = false;
 	public void repaintAll() {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		displayModifications = checkDisplayModifications();
 		if (data != null) {
 			String s = data.checkIntegrity();
-			if (s != null)
-				MesquiteTrunk.mesquiteTrunk.alert(s + " (" + data + ")");
+			if (s != null) {
+				if (turnOffIntegrityWarnings)
+					MesquiteTrunk.mesquiteTrunk.logln(s + " (" + data + ")");
+				else
+					turnOffIntegrityWarnings = !AlertDialog.query(window, "Problem with data", s + " (" + data + ")", "OK", "Don't warn again");
+
+			//	MesquiteTrunk.mesquiteTrunk.alert(s + " (" + data + ")");
+			}
 		}
 		MesquiteWindow.uncheckDoomed(this);
 		super.repaintAll();

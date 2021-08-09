@@ -2462,10 +2462,13 @@ public class Mesquite extends MesquiteTrunk
 				((EAWTHandler)fileHandler).register();
 
 			} catch (NoSuchMethodError e) {
+				System.out.println("File handling failed to register with macOS (NSME).");
 			}
 			catch (NoClassDefFoundError e) { //WAYNECHECK: DAVIDCHECK: need to add alternative macos application event handling methods for post-1.8 Java
+				System.out.println("File handling failed to register with macOS (NCME).");
 			}
 			catch (IllegalAccessError e) {
+				System.out.println("File handling failed to register with macOS (IAE).");
 			}
 		}
 	}

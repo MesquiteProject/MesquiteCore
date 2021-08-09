@@ -860,11 +860,11 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	NameReference migrateRef = NameReference.getNameReference("Migration");
 	/*....................................................................................................*/
-	private void miniTerminals(Graphics g, Tree tree, int node, int[] terminals, double terminalY, int miniSpacing, boolean atTip, Color containedColor) {
+	private void miniTerminals(Graphics g, Tree tree, int node, int[] terminals, double terminalY, int miniSpacing, boolean atTip, Color containedColor, TaxaPartition partitions) {
 		boolean inA =IntegerArray.inArray(node, terminals);
 		if (tree.nodeIsInternal(node) /*&& !inA*/) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
-				miniTerminals(g, tree, d, terminals, terminalY, miniSpacing, atTip, containedColor);
+				miniTerminals(g, tree, d, terminals, terminalY, miniSpacing, atTip, containedColor, partitions);
 			}
 		}
 		if (inA && inTree[node]) { //terminal
@@ -1051,10 +1051,10 @@ class WideTreeDrawing extends TreeDrawing  {
 		return y>0 && MesquiteDouble.isCombinable(y); // && y<treeDisplay.getBounds().height;
 	}
 	/*....................................................................................................*/
-	private void miniDraw(Graphics g, Tree tree, int node, int[] terminals, Color containedColor) {
+	private void miniDraw(Graphics g, Tree tree, int node, int[] terminals, Color containedColor, TaxaPartition partitions) {
 		if (!IntegerArray.inArray(node, terminals)) { //internal
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
-				miniDraw(g, tree, d, terminals, containedColor);
+				miniDraw(g, tree, d, terminals, containedColor, partitions);
 				if (inTree[d] && inTree[node]){
 
 					if (tree.getSelected(d))
@@ -1181,8 +1181,11 @@ class WideTreeDrawing extends TreeDrawing  {
 			if (!MesquiteInteger.isCombinable(aNodes[i]))
 				return;
 			else if (isInOrAncestor(containedTree, cNodes,aNodes[i])) {
+				TaxaPartition partitions = null;
+				if (containedTree.getTaxa() != null)
+					partitions = (TaxaPartition)containedTree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
 
-				miniTerminals(g, containedTree, aNodes[i], terminals, yC, taxaSpacing, atTip, cc);
+				miniTerminals(g, containedTree, aNodes[i], terminals, yC, taxaSpacing, atTip, cc, partitions);
 				miniCalcInternalLocs(containedTree, aNodes[i], terminals);
 				int mother = tree.motherOfNode(containingNode);
 				double ySpan = (yC-y[tree.motherOfNode(containingNode)]);
@@ -1204,7 +1207,7 @@ class WideTreeDrawing extends TreeDrawing  {
 				}
 				if (ySpan!=0)
 					miniSlantInternalLocs(containedTree, aNodes[i], terminals, yC, xC-x[tree.motherOfNode(containingNode)], ySpan);
-				miniDraw(g, containedTree, aNodes[i], terminals, cc);
+				miniDraw(g, containedTree, aNodes[i], terminals, cc, partitions);
 			}
 		}
 	}
