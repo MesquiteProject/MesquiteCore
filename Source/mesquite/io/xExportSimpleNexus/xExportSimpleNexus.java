@@ -153,7 +153,7 @@ public class xExportSimpleNexus extends FileInterpreterI {
 				f.useDataBlocks = useData;
 				f.ambiguityToMissing = convertAmbiguities;
 				f.interleaveAllowed = interleaveAllowed;
-				f.writeCharLabels = writeCharLabels;
+				f.writeCharStateLabelsSeparately = writeCharLabels;
 				//  writeOnlySelectedData ;
 				// writeOnlyIncludedData ;
 				f.writeOnlySelectedTaxa = writeOnlySelectedTaxa ;

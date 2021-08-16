@@ -463,7 +463,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
 			fractionApplicable = file.fractionApplicable;
-			writeCharLabels = file.writeCharLabels;
+			writeCharLabels = file.writeCharLabelInfo;
 		}
 
 

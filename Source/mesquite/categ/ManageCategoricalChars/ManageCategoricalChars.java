@@ -261,7 +261,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 	}
 	/*.................................................................................................................*/
 	public String getCharStateLabels(CharacterData data, MesquiteFile file) {
-		if (file.writeCharLabels){
+		if (file.writeCharStateLabelsSeparately){
 			String sS = "";
 			String csl = "\tCHARLABELS " + StringUtil.lineEnding() + "\t";
 			boolean found = false;
