@@ -23,7 +23,7 @@
 	<classpathentry exported="true" kind="lib" path="jars/jsch-0.1.54.jar"/>
 	<classpathentry kind="lib" path="jars/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="jars/commons-codec-1.11.jar"/>
-	<classpathentry kind="lib" path="jars/httpclient-4.5.13.jar"/>
-	<classpathentry kind="lib" path="jars/commons-io-2.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/httpclient-4.5.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/commons-io-2.11.0.jar"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>
