@@ -245,8 +245,6 @@ public class ExternalProcessManager implements Commandable  {
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
 	public boolean executeInShell(){
-		if (MesquiteTrunk.isJavaVersionLessThan(1.7))
-			return false;
 		proc = null;
 		externalProcess = new MesquiteExternalProcess();
 		externalProcess.start(directoryPath, stdOutFilePath, stdErrFilePath, getStringArrayWithSplitting(programCommand, programOptions));
