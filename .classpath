@@ -7,7 +7,6 @@
 	<classpathentry exported="true" kind="lib" path="jars/MRJToolkitStubs.zip"/>
 	<classpathentry exported="true" kind="lib" path="jars/pal.zip"/>
 	<classpathentry exported="true" kind="lib" path="jars/commons-httpclient-3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="jars/commons-lang-2.3.jar"/>
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
 	<classpathentry kind="src" path="Source"/>
 	<classpathentry exported="true" kind="lib" path="jars/gson-2.6.2.jar"/>

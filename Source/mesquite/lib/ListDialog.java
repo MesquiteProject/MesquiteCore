@@ -89,7 +89,7 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 			hideSecondaryCheckbox = addCheckBox(hideSecString, false);
 			hideSecondaryCheckbox.setState(hideSecondary);
 			hideSecondaryCheckbox.addItemListener(this);
-			requiresResetWorkaround = MesquiteTrunk.isMacOSX() && !MesquiteTrunk.isJavaVersionLessThan(1.5);
+			requiresResetWorkaround = MesquiteTrunk.isMacOSX();
 			if (requiresResetWorkaround)
 				thread = new WorkaroundThread(this);
 			resetShowSecondary(hideSecondary);
