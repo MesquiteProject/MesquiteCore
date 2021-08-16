@@ -10,7 +10,6 @@
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
 	<classpathentry kind="src" path="Source"/>
 	<classpathentry exported="true" kind="lib" path="jars/gson-2.6.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="jars/commons-lang3-3.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -24,5 +23,6 @@
 	<classpathentry kind="lib" path="jars/commons-codec-1.11.jar"/>
 	<classpathentry exported="true" kind="lib" path="jars/httpclient-4.5.13.jar"/>
 	<classpathentry exported="true" kind="lib" path="jars/commons-io-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/commons-lang3-3.12.0.jar"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>
