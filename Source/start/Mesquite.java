@@ -64,6 +64,7 @@ public class Mesquite {
 		ClassLoader cl = start.Mesquite.class.getClassLoader();
 		String loc = cl.getResource("start/Mesquite.class").getPath();
 		System.out.println("Starting Mesquite with Java: " + System.getProperty("java.version"));
+
 		startupNotices.addElement("start.Mesquite: Location of executable start class: " + loc);
 		
 		if (loc.startsWith("file:")){

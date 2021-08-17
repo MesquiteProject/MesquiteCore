@@ -393,6 +393,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		editingNotPermitted.setValue(data.isEditInhibited());
 		
 		ownerModule.addCheckMenuItemToSubmenu(null, cmm,"Editing Not Permitted", ownerModule.makeCommand("toggleEditingNotPermitted", this), editingNotPermitted);
+		
+		MesquiteMenuItemSpec mmaa = ownerModule.addMenuItem( "Next Matrix", ownerModule.makeCommand("nextMatrix",  this));
+		mmaa.setShortcut(KeyEvent.VK_RIGHT); //right
+		mmaa = ownerModule.addMenuItem( "Previous Matrix", ownerModule.makeCommand("previousMatrix",  this));
+		mmaa.setShortcut(KeyEvent.VK_LEFT); //left
 		ownerModule.addMenuSeparator();
 		
 		
@@ -1370,6 +1375,24 @@ public void requestFocus(){
 		return null;
 	}
 
+	public void switchToMatrix(int imNext) {
+		// ask coordinator to show that window
+		MesquiteModule bdwC = ownerModule.getEmployer();
+		Commandable mb = (Commandable)bdwC.doCommand("showExtraDataWindow", Integer.toString(imNext));
+		String cloneCommand =  Snapshot.getSnapshotCommands(ownerModule, null, "");
+		Puppeteer p = new Puppeteer(ownerModule);
+		MesquiteInteger pos = new MesquiteInteger(0);
+		CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
+		CommandRecord record = new CommandRecord(true);
+		MesquiteThread.setCurrentCommandRecord(record);
+		MesquiteModule.incrementMenuResetSuppression();	
+		Object obj = p.sendCommands(mb, cloneCommand, pos, "", false, null,CommandChecker.defaultChecker);
+		MesquiteModule.decrementMenuResetSuppression();	
+		MesquiteThread.setCurrentCommandRecord(previous);
+
+		// close this one
+		closeWindow();
+	}
 	/* ................................................................................................................. */
 	MesquiteInteger pos = new MesquiteInteger(0);
 
@@ -1392,6 +1415,32 @@ public void requestFocus(){
 		 */
 		else if (checker.compare(this.getClass(), "Returns the matrix info panel", null, commandName, "getInfoPanel")) {
 			return matrixInfoPanel;
+		}
+		else if (checker.compare(this.getClass(), "Goes to the next matrix", null, commandName, "nextMatrix")) { 
+			// figure out what is next matrix
+			MesquiteProject proj = data.getProject();
+			int im = proj.getMatrixNumber(data);
+			int imNext = 0;
+			if (im >= proj.getNumberCharMatrices()-1)
+				imNext = 0;
+			else
+				imNext = im+1;
+			
+			switchToMatrix(imNext);
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Goes to the previous matrix", null, commandName, "previousMatrix")) {
+			// figure out what is previous matrix
+			MesquiteProject proj = data.getProject();
+			int im = proj.getMatrixNumber(data);
+			int imPrev = 0;
+			if (im == 0)
+				imPrev =  proj.getNumberCharMatrices()-1;
+			else
+				imPrev = im-1;
+			
+			switchToMatrix(imPrev);
+			return null;
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether the info panel is on", null, commandName, "toggleInfoPanel")) {
 			infoPanelOn.toggleValue(ParseUtil.getFirstToken(arguments, pos));
