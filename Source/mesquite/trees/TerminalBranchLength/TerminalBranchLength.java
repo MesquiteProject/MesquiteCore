@@ -72,7 +72,7 @@ public class TerminalBranchLength extends NForTaxonWithTree {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
