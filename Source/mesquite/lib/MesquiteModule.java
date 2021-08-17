@@ -1139,9 +1139,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		StackTraceElement[] stt = e.getStackTrace();
 		String rep = MesquiteException.lastLocMessage() + "\n";
 		rep += getRootPath() + "\n";
+		rep += "Mesquite v. " + getMesquiteVersion() + "." +  getBuildNumber() + " on " +  System.getProperty("java.version") + "\n";
 		rep += e + "\n";
 		rep += s + "\n";
-		rep += "Mesquite v. " + getMesquiteVersion() + "." +  getBuildNumber() + " on " +  System.getProperty("java.version") + "\n";
 		for (int i= 0; i< stt.length; i++)
 			rep += stt[i] + "\n";
 		s = rep;
