@@ -1141,6 +1141,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		rep += getRootPath() + "\n";
 		rep += e + "\n";
 		rep += s + "\n";
+		rep += "Mesquite v. " + getMesquiteVersion() + "." +  getBuildNumber() + " on " +  System.getProperty("java.version") + "\n";
 		for (int i= 0; i< stt.length; i++)
 			rep += stt[i] + "\n";
 		s = rep;

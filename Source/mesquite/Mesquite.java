@@ -707,6 +707,7 @@ public class Mesquite extends MesquiteTrunk
 		addMenuItem(MesquiteTrunk.fileMenu, "Check Now for Notices/Installs...", new MesquiteCommand("checkNotices", this));
 		if (MesquiteTrunk.phoneHome){
 			phoneHomeThread = new PhoneHomeThread();
+			phoneHomeThread.setContactMessage(earlyWarning);
 			phoneHomeThread.start();
 		}
 		/**/
@@ -2453,6 +2454,7 @@ public class Mesquite extends MesquiteTrunk
 		CommandChecker.registerClass(System.class, System.class);
 	}
 
+	String earlyWarning = "";
 	private void registerMacHandlers(){
 		if (!MesquiteWindow.GUIavailable)
 			return;
@@ -2462,13 +2464,19 @@ public class Mesquite extends MesquiteTrunk
 				((EAWTHandler)fileHandler).register();
 
 			} catch (NoSuchMethodError e) {
-				System.out.println("File handling failed to register with macOS (NSME).");
+				String w = "File handling failed to register with macOS (NSME).";
+				earlyWarning += w;
+				System.out.println(w);
 			}
 			catch (NoClassDefFoundError e) { //WAYNECHECK: DAVIDCHECK: need to add alternative macos application event handling methods for post-1.8 Java
-				System.out.println("File handling failed to register with macOS (NCME).");
+				String w = "File handling failed to register with macOS (NCME).";
+				earlyWarning += w;
+				System.out.println(w);
 			}
 			catch (IllegalAccessError e) {
-				System.out.println("File handling failed to register with macOS (IAE).");
+				String w = "File handling failed to register with macOS (IAE).";
+				earlyWarning += w;
+				System.out.println(w);
 			}
 		}
 	}
