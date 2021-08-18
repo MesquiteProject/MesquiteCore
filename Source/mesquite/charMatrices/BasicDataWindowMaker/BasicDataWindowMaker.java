@@ -1425,7 +1425,8 @@ public void requestFocus(){
 				imNext = 0;
 			else
 				imNext = im+1;
-			
+			if (imNext == im)
+				return null;
 			switchToMatrix(imNext);
 			return null;
 		}
@@ -1439,6 +1440,8 @@ public void requestFocus(){
 			else
 				imPrev = im-1;
 			
+			if (imPrev == im)
+				return null;
 			switchToMatrix(imPrev);
 			return null;
 		}
