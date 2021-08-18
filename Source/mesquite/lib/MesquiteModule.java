@@ -1152,7 +1152,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		logln(s);
 		if (!PhoneHomeUtil.phoneHomeSuccessful || !MesquiteTrunk.reportErrors || MesquiteTrunk.suppressErrorReporting){
 			if (incompatibilityMessage != null)
-				discreetAlert(incompatibilityMessage);
+				discreetAlert(incompatibilityMessage + "\n" + rep);
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 			return;
