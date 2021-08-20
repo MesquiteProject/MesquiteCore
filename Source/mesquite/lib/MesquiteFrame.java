@@ -621,10 +621,14 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (windows == null || (!w.popAsTile && windows.indexOf(w)>=0))  //POPOUTBUGS: If window is popped out in separate window, then this doesn't work, in part as windows.indexOf(w)=0 but there is only one window.  
 			return;
 		if (w.popAsTile){
-			setVisible(w, false);  //remove from resources
 			w.poppedOut = false;
+			w.popAsTile= false;
+			setVisible(w, false);  //remove from resources
 			addPage(w, MAIN); 
+			w.poppedOut = false;
+			w.popAsTile= false;
 			setVisible(w, true);
+			w.resetMenus();
 		}
 		else {
 			MesquiteFrame parentFrame = w.getParentFrame();
