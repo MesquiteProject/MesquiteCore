@@ -3,7 +3,7 @@ To Run Mesquite on Linux
 SYSTEM REQUIREMENTS
 To run Mesquite, you need Java installed.  The version of Mesquite you have here runs on Java 1.8 or higher. If Mesquite doesn't work, you may need to try different versions of Java. Occasionally a new version of Java is released that has bugs, or adds a requirement that is not backwards-compatible, and Mesquite will be unable to run. 
 
-There is a bug in Oracle Java versions 11 to 16 (at least) on Linux that causes Mesquite to crash during startup with a StackOverflowError. The only workaround we know is to use Mesquite on Linux only with Java version 8 (i.e. 1.8) which is available from java.com. You may need to make adjustments so that your system knows to use Java 8 (e.g., see instructions here http://www.ormbunkar.se/aliview/#java8install).
+There is a bug in Oracle Java versions 11 to 16 (at least) on Linux that causes Mesquite to crash during startup with a StackOverflowError. The only workaround we know is to use Mesquite on Linux only with Java version 8 (i.e. 1.8) which is available from java.com. You may need to make adjustments so that your system knows to use Java 8 (e.g., see instructions here http://www.ormbunkar.se/aliview/#java8install, or see below).
 
 RUNNING MESQUITE
 Run Mesquite by double clicking mesquite.sh or running mesquite.sh from the command line like this:
@@ -24,4 +24,7 @@ Here is an example configuration:
 	java -Xmx4000M -Xss16m -d64 -Djava.library.path=lib -Djri.ignore.ule="yes" -jar Mesquite.jar
 
 This gives much memory to Mesquite, but 4000 MB (= 4 GB) memory exceeds the ability of 32 bit Java.  For that reason the command -d64 was added, to indicate you want to use 64 bit java.  
+
+If you run Mesquite directly from the command line, you can replace “java” by the full path to the Java 1.8 jre or jdk.  That will allow you to have multiple versions of Java on your computer, have Java 16 or some other newer version as the default, but still run Mesquite on Java 1.8.
+
 
