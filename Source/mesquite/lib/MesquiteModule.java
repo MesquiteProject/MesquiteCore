@@ -72,7 +72,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.61+";
+		return "3.70-";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -138,6 +138,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.51  = 898 released 28 June 2O18
 	//3.6  = 917 released 27 Dec 2O18
 	//3.61  = 927 released 26 Dec 2O19
+	
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
