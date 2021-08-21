@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->History of New Features<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 3.61<br />
-      26 December 2019<br /></td>
+    <td width="14%">Version 3.70<br />
+      August 2021<br /></td>
   </tr>
 </table>
 
@@ -207,7 +207,8 @@
   <br />
   <a name="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes" id="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes"></a>Features to come in the next release version of Mesquite are listed <a href="https://github.com/MesquiteProject/MesquiteCore/wiki/New-features-and-bug-fixes-in-the-development-version">on this web page</a>. These new features and bug fixes are already contained in latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub.</p>
  <p>&nbsp;</p>
- <hr />
+<hr />
+	  <hr />
  <h3>Next Version</h3>
  <h4 id="toc84">New Features </h4>
  <ul>
@@ -216,12 +217,17 @@
  </ul>
  <h4>Bug Fixes and Workarounds</h4>
  <ul>
-   <li>Export for MrBayes no longer generates two competing &quot;currentPartition&quot; partitions that would cause MrBayes to stop execution.</li>
-   <li>The OTU ID Code database code now correctly processes the path to the database. A bug was introduced into 3.61 that prevented proper processing in many cases, which led to failure to export correct FASTA files for use with tbl2asn for GenBank submission using Chromaseq.</li>
+   <li>New systems for starting Mesquite on various newer operating systems and newer versions of Java created.&nbsp;</li>
+   <li>&nbsp;Export for MrBayes no longer generates two competing &quot;currentPartition&quot; partitions that would cause MrBayes to stop execution.</li>
+<li>The OTU ID Code database code now correctly processes the path to the database. A bug was introduced into 3.61 that prevented proper processing in many cases, which led to failure to export correct FASTA files for use with tbl2asn for GenBank submission using Chromaseq.</li>
    <li>NEXUS with protein data sometimes were sometimes written incorrectly.</li>
    <li>TNT files did not have the character and state label information written. </li>
 <li>Miscellaneous small bugs fixed.</li>
  </ul>
+	   <h4>Known bugs</h4>
+	  <ul>
+		  <li>There is a StackOverflowError at startup when running Mesquite on Linux if newer versions of Java are used.  Until we fix this, please use Java 8 on Linux</li>
+	  </ul>
  <hr />
  <h3>Version 3.61</h3>
  <h4 id="toc83">New Features</h4>
@@ -509,7 +515,7 @@ underneath the matrix. The first button (red X) is to close the panel; the secon
     </div>
 	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
   <div id="footer">
-    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+    <p> ©2021 Wayne P. Maddison &amp;  David R. Maddison </p>
   <!-- end #footer --></div>
 <!-- end #container --></div>
 

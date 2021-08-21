@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Installation on Linux<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 3.61<br />
-      26 December 2019<br /></td>
+    <td width="14%">Version 3.70<br />
+      August 2021<br /></td>
   </tr>
 </table>
 
@@ -199,8 +199,8 @@
     
     
 <h1 id="toc0"><a name="Mesquite installation for UNIX/LINUX"></a>Mesquite installation for UNIX/LINUX</h1>
- Requirements: JRE or JDK 1.8 or better (<a  href="http://java.com/download" rel="nofollow">java.com/download</a>). (It is best to get the Sun-Oracle Java VM; Mesquite does not run on some third-party virtual machines.)<br />
-<br />
+	  Requirements: <strong>JRE or JDK 1.8</strong> (<a  href="http://java.com/download" rel="nofollow">java.com/download</a>). (It is best to get the Sun-Oracle Java VM; Mesquite does not run on some third-party virtual machines.)&nbsp; At the moment, <strong>Mesquite does not run on Linux for Java version 11 and above.<br />
+	  </strong> <br />
 Instructions:<br />
 <ol><li>If you have an older version of Mesquite, you may want to delete it (by deleting Mesquite_Folder), so as to avoid getting confused as to what version of Mesquite is starting up. First, however, you may want to take from Mesquite_Folder/mesquite any third party packages (e.g., PDAP, TreeSetViz) before deleting the directory.</li><li><a  href="https://github.com/MesquiteProject/MesquiteCore/releases" rel="nofollow">Download the latest version of Mesquite from the Mesquite Github repository.</a> <strong>For Linux, use the file ending in .tgz.</strong></li><li><span style="line-height: 1.5;">Extract all of the files from the tgz. You will see a Mesquite_Folder. Place this Mesquite_Folder where you want on your hard drive, though if it is in a folder that requires a password for you to modify, you may have problems updating in the future. The contents of Mesquite_Folder should be approximately as follows:</span></li></ol><br />
 <ul><ul><li><span style="line-height: 1.5;">Mesquite_Folder</span><ul><li>com/</li><li>corejava</li><li>documentation.html</li><li>edu/</li><li>examples/</li><li>images/</li><li>jars/</li><li>lesser.txt</li><li>lib/</li><li>mesquite/</li>
@@ -276,7 +276,7 @@ Depending on your configuration, you may need to give the explicit path to the j
 .text span.xtra { display:block; }
 
 -->
-</style><pre class="text">/usr/java/jre1.6.0/bin/java -cp /usr/local/Mesquite_Folder  -jar Mesquite.jar</pre>
+</style><pre class="text">/usr/java/jre1.8.0/bin/java -cp /usr/local/Mesquite_Folder  -jar Mesquite.jar</pre>
 
 If you've changed the name of Mesquite_Folder to, for instance, &quot;Mesquite2&quot;, you may need to use a command like:<br />
 
@@ -290,7 +290,7 @@ If you've changed the name of Mesquite_Folder to, for instance, &quot;Mesquite2&
 .text span.xtra { display:block; }
 
 -->
-</style><pre class="text">/usr/java/jre1.6.0/bin/java -cp /usr/local/Mesquite2  -jar Mesquite.jar</pre>
+</style><pre class="text">/usr/java/jre1.8.0/bin/java -cp /usr/local/Mesquite2  -jar Mesquite.jar</pre>
 
 If you've had to do all this because the shell script isn't working, please let us know what happened, and what you did to make Mesquite work. That way, we can make it easier for the next person.<br />
 <h3 id="toc2"><a name="Mesquite installation for UNIX/LINUX-If mesquite.sh fails-Window Managers"></a>Window Managers</h3>
@@ -367,7 +367,7 @@ More details of issues of using Mesquite under Linux/UNIX are described in the <
     </div>
 	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
   <div id="footer">
-    <p> ©2018 David R. Maddison &amp; Wayne P. Maddison</p>
+    <p> ©2021 Wayne P. Maddison &amp;  David R. Maddison </p>
   <!-- end #footer --></div>
 <!-- end #container --></div>
 
