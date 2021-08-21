@@ -678,7 +678,7 @@ public class Mesquite extends MesquiteTrunk
 		new MesquiteColorTable(); //initialize default charstate colors
 
 		resetContainingMenuBar();
-		/* hire all inits */
+	/* hire all inits */
 		if (verboseStartup) System.out.println("main init 29");
 		hireAllEmployees(MesquiteInit.class);
 

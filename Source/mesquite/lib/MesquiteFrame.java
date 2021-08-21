@@ -943,7 +943,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public void setWindowSize(MesquiteWindow ww,int width, int height, boolean expandOnly) {
-
 		Insets insets = getInsets();
 		storeInsets(insets);
 		boolean adjustWidthOnly = !MesquiteInteger.isCombinable(height);
@@ -998,7 +997,9 @@ public class MesquiteFrame extends Frame implements Commandable {
 		for (int i = 0; i<windows.size(); i++){
 			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 			w.resetContentsSize();
+			
 		}
+		
 		//storeInsets(getInsets());
 		saveFullDimensions();
 	}
@@ -1063,7 +1064,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 				poptile.setVisible(false);
 				poptile.setBounds(0,0,0,0);
 				resources.doLayout();
-			}
+		}
 			else {
 				resources.setBounds(insets.left, insets.top + tabHeight, effectiveResourcesWidth- BETWEENWIDTH, getBounds().height - insets.top - insets.bottom - tabHeight);
 				if (projectWindow != null)
@@ -1089,9 +1090,13 @@ public class MesquiteFrame extends Frame implements Commandable {
 				}
 				rBetweenPanel.setBounds(effectiveResourcesWidth + insets.left- BETWEENWIDTH, insets.top + tabHeight, BETWEENWIDTH, getBounds().height - insets.top - insets.bottom - tabHeight);
 				rBetweenPanel.setVisible(true);
-				resources.doLayout();
+				try {
+					resources.doLayout();
 				main.doLayout();
-			}
+				}
+				catch (StackOverflowError e) {
+				}
+		}
 			if (resizeContainedWindows && windows != null){
 
 				for (int i = 0; i<windows.size(); i++){

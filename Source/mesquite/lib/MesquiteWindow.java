@@ -1807,9 +1807,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		 */
 		if (MesquiteWindow.checkDoomed(this))
 			return;
+		try {
 		if (windowFinishedBuilding)
 			outerContents.validate();
 		windowResized();
+		}
+		catch (StackOverflowError e) {
+		}
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	public void pack(){

@@ -1,0 +1,45 @@
+<html><head>
+  <SCRIPT src="http://java.com/js/dtjava.js"></SCRIPT>
+<script>
+    function launchApplication(jnlpfile) {
+        dtjava.launch(            {
+                url : 'mesq.jnlp',
+                jnlp_content : 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPGpubHAgc3BlYz0iMS4wIiB4bWxuczpqZng9Imh0dHA6Ly9qYXZhZnguY29tIiBocmVmPSJtZXNxLmpubHAiPgogIDxpbmZvcm1hdGlvbj4KICAgIDx0aXRsZT5NZXNxdWl0ZTwvdGl0bGU+CiAgICA8dmVuZG9yPk1lc3F1aXRlIFByb2plY3QgVGVhbTwvdmVuZG9yPgogICAgPGRlc2NyaXB0aW9uPk1lc3F1aXRlPC9kZXNjcmlwdGlvbj4KICAgIDxvZmZsaW5lLWFsbG93ZWQvPgogIDwvaW5mb3JtYXRpb24+CiAgPHJlc291cmNlcz4KICAgIDxqMnNlIHZlcnNpb249IjEuNisiIGhyZWY9Imh0dHA6Ly9qYXZhLnN1bi5jb20vcHJvZHVjdHMvYXV0b2RsL2oyc2UiLz4KICA8L3Jlc291cmNlcz4KICA8amZ4OmphdmFmeC1kZXNjICB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgbWFpbi1jbGFzcz0ic3RhcnQuTWVzcXVpdGUiICBuYW1lPSJNZXNxdWl0ZSIgLz4KICA8dXBkYXRlIGNoZWNrPSJiYWNrZ3JvdW5kIi8+Cjwvam5scD4K'
+            },
+            {
+                javafx : '8.0+'
+            },
+            {}
+        );
+        return false;
+    }
+</script>
+
+<script>
+    function javafxEmbedMesquiteID() {
+        dtjava.embed(
+            {
+                id : 'MesquiteID',
+                url : 'mesq.jnlp',
+                placeholder : 'javafx-app-placeholder',
+                width : '300',
+                height : '250',
+                jnlp_content : 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPGpubHAgc3BlYz0iMS4wIiB4bWxuczpqZng9Imh0dHA6Ly9qYXZhZnguY29tIiBocmVmPSJtZXNxLmpubHAiPgogIDxpbmZvcm1hdGlvbj4KICAgIDx0aXRsZT5NZXNxdWl0ZTwvdGl0bGU+CiAgICA8dmVuZG9yPk1lc3F1aXRlIFByb2plY3QgVGVhbTwvdmVuZG9yPgogICAgPGRlc2NyaXB0aW9uPk1lc3F1aXRlPC9kZXNjcmlwdGlvbj4KICAgIDxvZmZsaW5lLWFsbG93ZWQvPgogIDwvaW5mb3JtYXRpb24+CiAgPHJlc291cmNlcz4KICAgIDxqMnNlIHZlcnNpb249IjEuNisiIGhyZWY9Imh0dHA6Ly9qYXZhLnN1bi5jb20vcHJvZHVjdHMvYXV0b2RsL2oyc2UiLz4KICA8L3Jlc291cmNlcz4KICA8amZ4OmphdmFmeC1kZXNjICB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgbWFpbi1jbGFzcz0ic3RhcnQuTWVzcXVpdGUiICBuYW1lPSJNZXNxdWl0ZSIgLz4KICA8dXBkYXRlIGNoZWNrPSJiYWNrZ3JvdW5kIi8+Cjwvam5scD4K'
+            },
+            {
+                javafx : '8.0+'
+            },
+            {}
+        );
+    }
+    <!-- Embed FX application into web page once page is loaded -->
+    dtjava.addOnloadCallback(javafxEmbedMesquiteID);
+</script>
+
+</head><body>
+<h2>Test page for <b>Mesquite</b></h2>
+  <b>Webstart:</b> <a href='mesq.jnlp' onclick="return launchApplication('mesq.jnlp');">click to launch this app as webstart</a><br><hr><br>
+
+  <!-- Applet will be inserted here -->
+  <div id='javafx-app-placeholder'></div>
+</body></html>

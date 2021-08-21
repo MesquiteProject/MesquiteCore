@@ -1,0 +1,17 @@
+||:start.Mesquite
+java.lang.StringBuilder
+java.lang.reflect.Method
+java.io.File
+java.lang.StringBuffer
+java.net.URLClassLoader
+java.lang.Class
+java.lang.System
+java.io.PrintStream
+java.lang.Throwable
+java.net.URL
+start.Mesquite
+java.lang.Object
+[Ljava.lang.String;
+java.lang.ClassLoader
+java.lang.String
+java.lang.Exception

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="mesq.jnlp">
+  <information>
+    <title>Mesquite</title>
+    <vendor>Mesquite Project Team</vendor>
+    <description>Mesquite</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+  </resources>
+  <jfx:javafx-desc  width="300" height="250" main-class="start.Mesquite"  name="Mesquite" />
+  <update check="background"/>
+</jnlp>
