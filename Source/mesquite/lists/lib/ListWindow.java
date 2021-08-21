@@ -536,7 +536,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		else if (checker.compare(this.getClass(), "Inverts which rows are selected", null, commandName, "invertSelection")) {
 			for (int im = 0; im < table.getNumRows(); im++){
 				if (table.isRowSelected(im)){
-					table.deselectRow(im); //2019: why this doesn't handle associable deselection, don't remember!
+					table.deselectRow(im); //2 019: why this doesn't handle associable deselection, don't remember!
 					if (table.getRowAssociable() != null){
 						table.getRowAssociable().setSelected(im, false);
 					}

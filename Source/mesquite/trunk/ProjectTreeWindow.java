@@ -26,27 +26,19 @@ public class ProjectTreeWindow extends MesquiteWindow implements SystemWindow {
 	int searchHeight = 20;
 	public ProjectTreeWindow (MesquiteModule ownerModule, BrowseHierarchy drawTask) {
 		super(ownerModule, false);
-		Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-00");
 		setWindowSize(300,300);
-		Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-01");
 		setWindowLocation(4,4, false);
-		Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-02");
 		this.ownerModule = ownerModule;
 		setFont(new Font ("SanSerif", Font.PLAIN, 10));
-		Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-03");
 
 //		getGraphicsArea().setLayout(new BorderLayout());
 		//getGraphicsArea().setBackground(Color.cyan);
 		if (drawTask!=null){
-			Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-1");
 			browser = drawTask.makeHierarchyPanel();
 			browser.setTitle(null);
-			Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-2");
 			addToWindow(browser);
 			
-			Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-3");
 			browser.setSize(getWidth(), getHeight() - searchHeight);
-			Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-4");
 			browser.setLocation(0, 0);
 			browser.showTypes(true);
 			browser.setBackground(Color.white);
@@ -55,17 +47,14 @@ public class ProjectTreeWindow extends MesquiteWindow implements SystemWindow {
 			browser.setRootNode(MesquiteTrunk.mesquiteTrunk.getProjectList());
 			searchStrip = new HelpSearchStrip(this, false);
 			addToWindow(searchStrip);
-			Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-5");
 			searchStrip.setBounds(4, getHeight()-searchHeight, getWidth()-4, searchHeight);
 			searchStrip.setVisible(true);
-			Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-6");
 			browser.setVisible(true);
 			setShowAnnotation(true);
 			incrementAnnotationArea();
 			setShowExplanation(true);
 			incrementExplanationArea();
 			setExplanation("Configuration of modules loaded: " + MesquiteTrunk.mesquiteTrunk.getConfiguration());
-			Debugg.println("@@@@@@@@@@@@@@@@@@@s5.PTW-7");
 		}
 		resetTitle();
 	}

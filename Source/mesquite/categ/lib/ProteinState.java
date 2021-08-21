@@ -155,7 +155,7 @@ public class ProteinState extends MolecularState{
 				if (useSymbols)  
 					temp+=ProteinData.symbolsAsStrings[e];
 				else
-					temp+=ProteinData.longNamesAsStrings[e];  //added Feb 2019
+					temp+=ProteinData.longNamesAsStrings[e];  //added Feb 2 019
 				first=false;
 			}
 		}

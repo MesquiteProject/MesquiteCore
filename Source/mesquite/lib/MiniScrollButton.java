@@ -62,7 +62,7 @@ public class MiniScrollButton extends MousePanel {
 		int hlf = 6;
 		int pg = 4;
 		int cg = 4;
-		if (orientation==LEFT) { //made more inclusive Dec 2019
+		if (orientation==LEFT) { //made more inclusive Dec 2 019
 			arrowPoly.npoints=0;
 			arrowPoly.addPoint(0, hlf);
 			arrowPoly.addPoint(wid-cg, 0);

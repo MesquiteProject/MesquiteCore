@@ -2241,7 +2241,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			}
 			if (firstColumnVisible >= numColumnsTotal || firstColumnVisible < 0)
 				firstColumnVisible = 0; 
-			if (horizScroll != null) { //Debugg.println
+			if (horizScroll != null) { 
 				horizScroll.setValue(firstColumnVisible);
 				horizScroll.setMaximum(numColumnsTotal);
 			}

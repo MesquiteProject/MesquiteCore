@@ -1090,12 +1090,9 @@ public class MesquiteFrame extends Frame implements Commandable {
 				}
 				rBetweenPanel.setBounds(effectiveResourcesWidth + insets.left- BETWEENWIDTH, insets.top + tabHeight, BETWEENWIDTH, getBounds().height - insets.top - insets.bottom - tabHeight);
 				rBetweenPanel.setVisible(true);
-				try {
 					resources.doLayout();
 				main.doLayout();
-				}
-				catch (StackOverflowError e) {
-				}
+				
 		}
 			if (resizeContainedWindows && windows != null){
 
