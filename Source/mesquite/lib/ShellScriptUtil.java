@@ -191,6 +191,7 @@ public class ShellScriptUtil  {
 				else {
 					scriptPath = scriptPath.replaceAll("//", "/");
 					pathArray = new String[] {scriptPath};
+			//		pathArray = new String[] {scriptPath, "&"};
 				}
 				/*ProcessBuilder processBuilder =new ProcessBuilder(scriptPath,"");
 				processBuilder.directory(new File(MesquiteFile.getDirectoryPathFromFilePath(scriptPath)));

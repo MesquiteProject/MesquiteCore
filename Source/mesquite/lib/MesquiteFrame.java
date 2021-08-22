@@ -621,10 +621,14 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (windows == null || (!w.popAsTile && windows.indexOf(w)>=0))  //POPOUTBUGS: If window is popped out in separate window, then this doesn't work, in part as windows.indexOf(w)=0 but there is only one window.  
 			return;
 		if (w.popAsTile){
-			setVisible(w, false);  //remove from resources
 			w.poppedOut = false;
+			w.popAsTile= false;
+			setVisible(w, false);  //remove from resources
 			addPage(w, MAIN); 
+			w.poppedOut = false;
+			w.popAsTile= false;
 			setVisible(w, true);
+			w.resetMenus();
 		}
 		else {
 			MesquiteFrame parentFrame = w.getParentFrame();
@@ -889,7 +893,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 	public void diagnose(){
 		System.out.println("  FRAME ~~~~~~~~~ visible = " + isVisible() + " size " + getBounds().width + " " + getBounds().height + " this =" + id);
 		System.out.println("  layout  = " + mainLayout);
-		for (int i = 0; i<windows.size(); i++){
+		if (windows != null)
+			for (int i = 0; i<windows.size(); i++){
 			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 			System.out.println("      " + w.getClass() + " visible = " + w.isVisible() + " loc " + w.getBounds().x + " " + w.getBounds().y + " size " + w.getBounds().width + " " + w.getBounds().height);
 		}
@@ -938,7 +943,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public void setWindowSize(MesquiteWindow ww,int width, int height, boolean expandOnly) {
-
 		Insets insets = getInsets();
 		storeInsets(insets);
 		boolean adjustWidthOnly = !MesquiteInteger.isCombinable(height);
@@ -993,7 +997,9 @@ public class MesquiteFrame extends Frame implements Commandable {
 		for (int i = 0; i<windows.size(); i++){
 			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 			w.resetContentsSize();
+			
 		}
+		
 		//storeInsets(getInsets());
 		saveFullDimensions();
 	}
@@ -1058,7 +1064,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 				poptile.setVisible(false);
 				poptile.setBounds(0,0,0,0);
 				resources.doLayout();
-			}
+		}
 			else {
 				resources.setBounds(insets.left, insets.top + tabHeight, effectiveResourcesWidth- BETWEENWIDTH, getBounds().height - insets.top - insets.bottom - tabHeight);
 				if (projectWindow != null)
@@ -1084,9 +1090,10 @@ public class MesquiteFrame extends Frame implements Commandable {
 				}
 				rBetweenPanel.setBounds(effectiveResourcesWidth + insets.left- BETWEENWIDTH, insets.top + tabHeight, BETWEENWIDTH, getBounds().height - insets.top - insets.bottom - tabHeight);
 				rBetweenPanel.setVisible(true);
-				resources.doLayout();
+					resources.doLayout();
 				main.doLayout();
-			}
+				
+		}
 			if (resizeContainedWindows && windows != null){
 
 				for (int i = 0; i<windows.size(); i++){

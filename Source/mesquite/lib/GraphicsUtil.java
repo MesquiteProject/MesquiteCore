@@ -37,6 +37,14 @@ public class GraphicsUtil {
 	public static void drawString(Graphics2D g2, String s, double x, double y) {
 		g2.drawString(s, (float)x, (float)y);
 	}
+	
+	
+	public static Font getBoldFont(Graphics g) {
+		Font oldFont = g.getFont();
+		FontMetrics fm = g.getFontMetrics(g.getFont());
+		Font boldFont = new Font(oldFont.getName(), Font.BOLD, oldFont.getSize());
+		return boldFont;
+	}
 	/*_________________________________________________*/
 	public static void drawLine(Graphics2D g2, double fromX, double fromY, double toX, double toY) {
 		Line2D line = new Line2D.Double(fromX, fromY, toX, toY);

@@ -451,9 +451,9 @@ public class NCBIUtil {
 
 /** returns up to 20 GenBank IDs given a list of accession numbers.  Note that the IDs may not be listed in the same order as the accession numbers!!!*/
 	/*.................................................................................................................*/
-	public synchronized static String[] getGenBankIDs20(String[] accessionNumbers, int startIndex, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
+	public synchronized static String[] getGenBankIDsMaxRequest(String[] accessionNumbers, int startIndex, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
+		String searchString="";
 		try {
-			String searchString="";
 			for (int i=0; i<maxGenBankRequest && i+startIndex<accessionNumbers.length;i++) {
 				if (StringUtil.notEmpty(accessionNumbers[i+startIndex])) {
 					searchString+=accessionNumbers[i+startIndex];
@@ -489,23 +489,24 @@ public class NCBIUtil {
 
 			return idList;
 		} catch ( Exception e ){
-			mod.logln("Cannot get GenBank IDs");
+			mod.logln("\nCannot get GenBank IDs:\n"+searchString+"\n");
 			return null;
 		}
 
 	}
-	static int maxGenBankRequest = 20;
+	static int maxGenBankRequest = 10;
 	/*.................................................................................................................*/
 	public synchronized static String[] getGenBankIDs(String[] accessionNumbers, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
 		if (accessionNumbers==null || accessionNumbers.length==0)
 			return null;
 		if (accessionNumbers.length<=maxGenBankRequest)
-			return getGenBankIDs20(accessionNumbers, 0,nucleotides, mod, writeLog);
+			return getGenBankIDsMaxRequest(accessionNumbers, 0,nucleotides, mod, writeLog);
 		String[] idList = new String[accessionNumbers.length];
-		for (int i=0;i<idList.length; i+=20) {
-			String[] nextList = getGenBankIDs20(accessionNumbers, i, nucleotides, mod, writeLog);
+		for (int i=0;i<idList.length; i+=maxGenBankRequest) {
+			String[] nextList = getGenBankIDsMaxRequest(accessionNumbers, i, nucleotides, mod, writeLog);
+			MesquiteThread.pauseForMilliseconds(200);
 			if (nextList!=null)
-				for (int j=0; j<20 && j<nextList.length && i+j<idList.length; j++) {
+				for (int j=0; j<maxGenBankRequest && j<nextList.length && i+j<idList.length; j++) {
 					idList[i+j]=nextList[j];
 				}
 		}
@@ -632,7 +633,7 @@ public class NCBIUtil {
 		
 		
 		if (adjustNewSequences) {
-			MesquiteMessage.println("Adjusting sequences ");
+			MesquiteMessage.println("Adjusting sequences... ");
 			if (!data.someApplicableInTaxon(insertAfterTaxon, false)){  
 				MesquiteMessage.println("The reference sequence contains no data; adjustment cancelled.");
 			    adjustNewSequences = false;
@@ -646,6 +647,7 @@ public class NCBIUtil {
 				MolecularDataUtil.pairwiseAlignMatrix(mod, (MolecularData)data, referenceTaxon, newTaxa,0, addNewInternalGaps, true);
 				data.notifyListeners(mod, new Notification(CharacterData.DATA_CHANGED, null, null));
 			}
+			MesquiteMessage.println("Import completed. ");
 		}
 
 
@@ -751,12 +753,13 @@ public class NCBIUtil {
 		}
 
 	}
+	static int fetchPause = 50;
 	/*.................................................................................................................*/
 	public synchronized static String[] fetchGenBankSequenceStrings(String[] idList, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, String fileFormat, String retMode, StringBuffer report){ 
 		String[] sequences = new String[idList.length];
 		for (int i=0; i<idList.length; i++) {
 			if (!StringUtil.blank(idList[i])) {
-
+				MesquiteThread.pauseForMilliseconds(fetchPause);
 				if (writeLog && mod!=null){
 					mod.log("Fetching " + idList[i] + " (" + (i+1) + " of " + idList.length+")");
 					mod.log(".");
@@ -777,6 +780,7 @@ public class NCBIUtil {
 		StringBuffer sequences = new StringBuffer();
 		for (int i=0; i<idList.length; i++) {
 			if (!StringUtil.blank(idList[i])) {
+				MesquiteThread.pauseForMilliseconds(fetchPause);
 
 				if (writeLog && mod!=null){
 					mod.log("Fetching " + idList[i]);
@@ -800,6 +804,7 @@ public class NCBIUtil {
 		StringBuffer sequences = new StringBuffer();
 		for (int i=0; i<idList.length; i++) {
 			if (!StringUtil.blank(idList[i])) {
+				MesquiteThread.pauseForMilliseconds(fetchPause);
 
 				if (writeLog && mod!=null){
 					mod.log("Fetching " + idList[i]);

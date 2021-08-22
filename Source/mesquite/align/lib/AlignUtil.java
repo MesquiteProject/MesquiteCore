@@ -422,7 +422,8 @@ public class AlignUtil {
 		if (failed)
 			MesquiteTrunk.mesquiteTrunk.alert("ERROR: alignment incorporation failed to recover states as in aligned matrix. " + failedReportString);
 		else {
-			MesquiteTrunk.mesquiteTrunk.logln("Checksum passed for incorporating data alignment. ");
+			if (MesquiteTrunk.debugMode)   //DRM 25.June.2021
+				MesquiteTrunk.mesquiteTrunk.logln("Checksum passed for incorporating data alignment. ");
 			if (numCharsAligned< icOrigEnd-icOrigStart+1 && numTaxaInOrig == origData.getNumTaxa()) {  // the aligned section has fewer characters than the old section
 				int ic = icOrigEnd;  //set ic to the end of the piece aligned in the original matrix
 				int numToDelete=0;

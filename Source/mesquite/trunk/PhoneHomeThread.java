@@ -46,6 +46,12 @@ public class PhoneHomeThread extends Thread {
 			}
 		}
 	}
+	 
+	String contactMessage = "";
+	public void setContactMessage(String contactMessage) {
+		this.contactMessage = contactMessage;
+	}
+	
 	public void postBean(NameValuePair[] pairs){
 		beans.addElement(pairs);
 	}
@@ -59,6 +65,8 @@ public class PhoneHomeThread extends Thread {
 				String buildNum = Integer.toString(MesquiteTrunk.getBuildNumber());
 				if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
 					buildNum = "PreRelease-" + buildNum;
+				if (contactMessage != null)
+					buildNum += "&" + contactMessage;
 				BaseHttpRequestMaker.contactServer(buildNum, MesquiteModule.versionReportURL, response);
 				String r = response.toString();
 			//if mq3rs is included in response, then this is real response

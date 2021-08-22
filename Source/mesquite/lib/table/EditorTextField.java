@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.table;
 
 import java.awt.*;
@@ -39,7 +39,7 @@ public class EditorTextField extends TextField  {
 	Undoer originalUndoer = null;
 	Listened listened = new Listened();
 	boolean somethingTyped = false;
-	
+
 	public EditorTextField (EditorPanel panel, int column, int row) {
 		super();
 		try {
@@ -54,12 +54,12 @@ public class EditorTextField extends TextField  {
 		textReturnedCommand = MesquiteModule.makeCommand("returnText", panel);
 		textReturnedCommand.setSuppressLogging(true);
 		setBackground(ColorDistribution.veryLightGray);
-	//	setBackground(ColorDistribution.cyan);
+		//	setBackground(ColorDistribution.cyan);
 		kListener = new KListener(panel.getMesquiteWindow(), this);
 		addKeyListener(kListener); 
 		addFocusListener(new FListener());
 	}
-	
+
 	public Listened getListened() {
 		return listened;
 	}
@@ -81,9 +81,9 @@ public class EditorTextField extends TextField  {
 		fontMetrics = g.getFontMetrics(getFont());
 		g.dispose();
 	}
-	
 
-private int ccc = 0;
+
+	private int ccc = 0;
 	public void setText(String s){
 		if (s == null)
 			super.setText("");
@@ -93,7 +93,7 @@ private int ccc = 0;
 		}
 		allowReturn = true;
 	}
-	
+
 	public String getOriginalText(){
 		return originalText;
 	}
@@ -124,7 +124,7 @@ private int ccc = 0;
 				panel.getWindow().setUndoer(new UndoInstructions(UndoInstructions.SINGLEDATACELL, column, row, new MesquiteString(getOriginalText()),new MesquiteString(getText()), (mesquite.lib.characters.CharacterData)panel.getTable().getColumnAssociable(), panel.getTable()));
 			else
 				panel.getWindow().setUndoer((Undoer)null);
-				
+
 		}
 		somethingTyped = false;
 		//setUndoer
@@ -139,8 +139,8 @@ private int ccc = 0;
 		this.row = row;
 	}
 	public void paint(Graphics g){ //^^^
-	   	if (MesquiteWindow.checkDoomed(this))
-	   		return;
+		if (MesquiteWindow.checkDoomed(this))
+			return;
 		super.paint(g);
 		if (fontMetrics==null) {
 			fontMetrics = g.getFontMetrics(getFont());
@@ -148,8 +148,8 @@ private int ccc = 0;
 		}
 		MesquiteWindow.uncheckDoomed(this);
 	}
-	
-	
+
+
 	public int getColumn() {
 		return column;
 	}
@@ -200,7 +200,7 @@ private int ccc = 0;
 	}
 	class FListener extends FocusAdapter {
 		public void focusLost(FocusEvent e){
-			
+
 			if (editing && !suppressFocusLost) {
 				wasEditingListener = editing;
 				selStart = getSelectionStart();
@@ -245,36 +245,38 @@ private int ccc = 0;
 		}
 		public void keyPressed(KeyEvent e){
 			//Event queue
-		if (e.getKeyCode()== KeyEvent.VK_ENTER) {
+			if (e.getKeyCode()== KeyEvent.VK_ENTER) {
 				panel.enterPressed(e);
 			}
 			else if (e.getKeyCode()== KeyEvent.VK_TAB) {
 				panel.tabPressed(e);
 			}
-			else if (e.getKeyCode()== KeyEvent.VK_RIGHT){
-				if (getSelectionStart()==0 && getSelectionEnd()== getText().length())
-					panel.rightArrowPressed(e);
+			else 	if (!MesquiteEvent.commandOrControlKeyDown(MesquiteEvent.getModifiers(e))) {
+				if (e.getKeyCode()== KeyEvent.VK_RIGHT){
+					if (getSelectionStart()==0 && getSelectionEnd()== getText().length())
+						panel.rightArrowPressed(e);
+				}
+				else if (e.getKeyCode()== KeyEvent.VK_LEFT) {
+					if (getSelectionStart()==0 && getSelectionEnd()== getText().length())
+						panel.leftArrowPressed(e);
+				}
+				else if (e.getKeyCode()== KeyEvent.VK_UP)
+					panel.upArrowPressed(e);
+				else if (e.getKeyCode()== KeyEvent.VK_DOWN)
+					panel.downArrowPressed(e);
+				else {  //not commandORControl down
+					somethingTyped=true;
+					if (window!=null)
+						if (textField.getOriginalText()!=null) {
+							originalUndoer = new UndoInstructions(UndoInstructions.EDITTEXTFIELD, new MesquiteString(textField.getOriginalText()),new MesquiteString(""), textField);
+							window.setUndoer(originalUndoer);
+						}
+				}
 			}
-			else if (e.getKeyCode()== KeyEvent.VK_LEFT) {
-				if (getSelectionStart()==0 && getSelectionEnd()== getText().length())
-					panel.leftArrowPressed(e);
-			}
-			else if (e.getKeyCode()== KeyEvent.VK_UP)
-				panel.upArrowPressed(e);
-			else if (e.getKeyCode()== KeyEvent.VK_DOWN)
-				panel.downArrowPressed(e);
-			else 	if (MesquiteEvent.commandOrControlKeyDown(MesquiteEvent.getModifiers(e))) {
+			else  {
 				if (window!=null & somethingTyped) {
 					window.setNewUndoState(new MesquiteString(textField.getText()));
 				}
-			}
-			else {  //not commandORControl down
-				somethingTyped=true;
-				if (window!=null)
-					if (textField.getOriginalText()!=null) {
-						originalUndoer = new UndoInstructions(UndoInstructions.EDITTEXTFIELD, new MesquiteString(textField.getOriginalText()),new MesquiteString(""), textField);
-						window.setUndoer(originalUndoer);
-					}
 			}
 
 		}

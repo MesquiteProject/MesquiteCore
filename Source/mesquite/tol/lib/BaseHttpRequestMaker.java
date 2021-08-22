@@ -56,11 +56,11 @@ public class BaseHttpRequestMaker {
 
 	public static final String MESQUITE_VERSION_URI = "http://mesquiteproject.org/pyMesquiteStartup";
 
-	public static boolean contactServer(String s, String URI, StringBuffer response) {
+	public static boolean contactServer(String message, String URI, StringBuffer response) {
 		HttpClient client = new HttpClient();
 		GetMethod method = new GetMethod(URI);
 		NameValuePair[] pairs = new NameValuePair[1];
-		pairs[0] = new NameValuePair("build", StringEscapeUtils.escapeHtml3("\t" + s + "\tOS =\t" + System.getProperty("os.name") + "\t" + System.getProperty("os.version") + "\tjava =\t" + System.getProperty("java.version") +"\t" + System.getProperty("java.vendor")));
+		pairs[0] = new NameValuePair("build", StringEscapeUtils.escapeHtml3("\t" + message + "\tOS =\t" + System.getProperty("os.name") + "\t" + System.getProperty("os.version") + "\tjava =\t" + System.getProperty("java.version") +"\t" + System.getProperty("java.vendor")));
 		method.setQueryString(pairs);
 
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 

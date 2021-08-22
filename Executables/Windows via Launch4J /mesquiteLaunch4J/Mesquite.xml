@@ -1,0 +1,21 @@
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <jar>../Mesquite.jar</jar>
+  <outfile>../Mesquite.exe</outfile>
+  <errTitle>Mesquite</errTitle>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <chdir>.</chdir>
+  <icon>Mesquite.ico</icon>
+  <classPath>
+    <mainClass>start.Mesquite</mainClass>
+    <cp>.</cp>
+    <cp>%EXEDIR%</cp>
+  </classPath>
+  <jre>
+    <minVersion>9.0.0</minVersion>
+	<opt>-Xmx1000M</opt>
+	<opt>-Xss4m</opt>
+	<opt>-Djava.library.path=lib</opt>
+	<opt>-Djri.ignore.ule="yes"</opt>
+ </jre>
+</launch4jConfig>

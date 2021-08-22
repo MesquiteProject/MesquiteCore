@@ -40,6 +40,17 @@ public abstract class TreeSearcher extends MesquiteModule  {
 
 	public  void setOutputTextListener(OutputTextListener textListener){
 	}
+	/*.................................................................................................................*/
+	public String getTitleOfTextCommandLink() {
+		return "";
+	}
+	/*.................................................................................................................*/
+	public String getCommandOfTextCommandLink() {
+		return "";
+	}
+	/*.................................................................................................................*/
+	public void processUserClickingOnTextCommandLink(String command) {
+	}
 
    	 
    	 public String[] getDefaultModule() {

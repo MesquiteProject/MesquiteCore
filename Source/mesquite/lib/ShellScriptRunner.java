@@ -80,6 +80,10 @@ public class ShellScriptRunner implements Commandable  {
 	public static boolean localScriptRunsCanDisplayTerminalWindow(){
 		return !MesquiteTrunk.isLinux();
 	}
+	/*.................................................................................................................*/
+	public void deleteRunningFile(){  
+		MesquiteFile.deleteFile(runningFilePath);
+	}
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 

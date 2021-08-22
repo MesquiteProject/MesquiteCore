@@ -103,7 +103,7 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI implements Ac
 		exportDialog.addLabel("MrBayes block: ");
 
 
-		TextArea fsText =exportDialog.addTextAreaSmallFont(addendum,16);
+		TextArea fsText =exportDialog.addTextAreaSmallFont(addendum,14);
 		exportDialog.addBlankLine();
 		Button setDefaultSearchStringButton = exportDialog.addAListenedButton("Set Default Search String...",null, this);
 		setDefaultSearchStringButton.setActionCommand("defSearch");
@@ -183,8 +183,8 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI implements Ac
 			if (!StringUtil.blank(list)) {
 				codPosPart += "\n\n [codon positions if you wish to use these]";
 				codPosPart +=list;
-				codPosPart += "\n\tpartition currentPartition = " + numberCharSets + ": " + names + ";";
-				codPosPart +="\n\tset partition = currentPartition;\n\tlset applyto=(";
+				codPosPart += "\n\tpartition currentCodPosPartition = " + numberCharSets + ": " + names + ";";
+				codPosPart +="\n\tset partition = currentCodPosPartition;\n\tlset applyto=(";
 				for (int i = 1; i<=numberCharSets; i++) {
 					codPosPart += i;
 					if (i<numberCharSets) 

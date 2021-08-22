@@ -58,6 +58,8 @@ public class MolecularDataUtil {
 			if (taxaToAdjust.isBitOn(it) && it!=referenceTaxon) {
 				if (verbose) 
 					module.logln("Aligning taxon " + (it+1) + " to taxon " + (referenceTaxon+1));
+				else if (it %10 ==0)
+					module.log(".");
 				originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,it, it);
 				long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), referenceTaxon, it,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 				int[] newGaps = aligner.getGapInsertionArray();
@@ -224,8 +226,11 @@ public class MolecularDataUtil {
 				int stopsRC = getMinimumStops(data, it, modelSet);
 				if (stops<=stopsRC) {
 					data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
-				} else
+				} else if (verbose) 
 					module.logln("  Reverse complemented " + taxa.getTaxonName(it));
+				else if (it %10 ==0)
+					module.log(".");
+
 			}
 		} else {
 			for (int it = itStart; it<taxa.getNumTaxa() && it<=itEnd; it++) {
@@ -247,7 +252,10 @@ public class MolecularDataUtil {
 				if (score>1.0){
 					data.reverseComplement(0, data.getNumChars(), it, false, true);  
 					RC=true;
-					module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
+					if (verbose)
+						module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
+					else if (it %10 ==0)
+						module.log(".");
 				}
 			//	else
 			//		module.logln("Sequence not reverse complemented " + (it+1));
@@ -276,8 +284,10 @@ public class MolecularDataUtil {
 					int stopsRC = getMinimumStops(data, it, modelSet);
 					if (stops<=stopsRC) {
 						data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
-					} else
+					} else if (verbose) 
 						module.logln("  Reverse complemented " + taxa.getTaxonName(it));
+					else if (it %10 ==0)
+						module.log(".");
 				}
 			}
 		} else {
@@ -285,16 +295,19 @@ public class MolecularDataUtil {
 				if (taxaToAdjust.isBitOn(it)) {
 
 					double score = 0;
-					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, true);
+					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, MesquiteTrunk.debugMode);
 
 					if (score>1.0){
 						data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
-						module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
+						if (verbose) 
+							module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
 						RC=true;
 					}
 					//	else
 					//		module.logln("Sequence not reverse complemented " + (it+1));
 
+					if (it %10 ==0)
+						module.log(".");
 				}
 			}
 

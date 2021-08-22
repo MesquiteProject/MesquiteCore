@@ -70,7 +70,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public boolean interleaveAllowed = true; //todo: this is temporary until general format options system built
 	public boolean simplifyNames = false;  //todo: this is temporary until general format options system built
 	public boolean ambiguityToMissing = false;  //todo: this is temporary until general format options system built
-	public boolean writeCharLabels = false;  //todo: this is temporary until general format options system built
+	public boolean writeCharLabelInfo = true;  //todo: this is temporary until general format options system built
+	public boolean writeCharStateLabelsSeparately = false;  //todo: this is temporary until general format options system built
 	public boolean writeExcludedCharacters=true;
 	public boolean writeTaxaWithAllMissing = true;
 	public boolean writeOnlySelectedTaxa = false;
@@ -793,7 +794,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		MainThread.incrementSuppressWaitWindow();
 		String tempFileName=null;
 		String tempDirectoryName=null;
-		if (!MesquiteWindow.GUIavailable ||  MesquiteWindow.suppressAllWindows || (MesquiteTrunk.isMacOS() && MesquiteTrunk.isJavaVersionLessThan(1.4))) {
+		if (!MesquiteWindow.GUIavailable ||  MesquiteWindow.suppressAllWindows) {
 			MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), message, 3);
 			fdlg.setResizable(true);
 			if (suggestedDir != null)

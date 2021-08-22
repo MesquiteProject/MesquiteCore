@@ -156,7 +156,7 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 				int taxonNumber = tree.taxonNumberOfNode(node);
 				TaxaGroup mi = (TaxaGroup)partitions.getProperty(taxonNumber);
 				if (mi!=null) {
-					fillNext(groupsAtNode[node], mi);
+					fillNext(groupsAtNode[node], mi); 
 				}
 			}
 			else 	for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {

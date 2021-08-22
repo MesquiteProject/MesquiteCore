@@ -1,6 +1,6 @@
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
- 
+
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -787,27 +787,27 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	protected void pasteIt(String s) {
 		int count = 0;
 		MesquiteInteger pos = new MesquiteInteger(0);
-			for (int i = 0; i < numColumnsTotal; i++) {
-				if (isColumnNameSelected(i) || isColumnSelected(i)) {
-						String t = StringUtil.getNextTabbedToken(s, pos);
-						if (t != null && columnNamesEditable && columnNamesCopyPaste)
-							returnedColumnNameText(i, t);
-					count++;
-				}
+		for (int i = 0; i < numColumnsTotal; i++) {
+			if (isColumnNameSelected(i) || isColumnSelected(i)) {
+				String t = StringUtil.getNextTabbedToken(s, pos);
+				if (t != null && columnNamesEditable && columnNamesCopyPaste)
+					returnedColumnNameText(i, t);
+				count++;
 			}
-		
+		}
+
 		for (int j = 0; j < numRowsTotal; j++) {
 			if (isRowNameSelected(j) || isRowSelected(j)) {
-					String t = StringUtil.getNextTabbedToken(s, pos);
-					if (t != null && rowNamesEditable && rowNamesCopyPaste)
-						returnedRowNameText(j, t);
+				String t = StringUtil.getNextTabbedToken(s, pos);
+				if (t != null && rowNamesEditable && rowNamesCopyPaste)
+					returnedRowNameText(j, t);
 				count++;
 			}
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
-						String t = StringUtil.getNextTabbedToken(s, pos);
-						if (t != null && isCellEditable(i, j))
-							returnedMatrixText(i, j, t);
+					String t = StringUtil.getNextTabbedToken(s, pos);
+					if (t != null && isCellEditable(i, j))
+						returnedMatrixText(i, j, t);
 					count++;
 				}
 			}
@@ -1122,25 +1122,27 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			key.setSuppressLogging(true);
 			key.doItMainThread(arguments, null, this);
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_RIGHT){
-			MesquiteCommand key = new MesquiteCommand("rightArrowPressed", arguments, this);
-			key.setSuppressLogging(true);
-			key.doItMainThread(arguments, null, this);
-		}
-		else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			MesquiteCommand key = new MesquiteCommand("leftArrowPressed", arguments, this);
-			key.setSuppressLogging(true);
-			key.doItMainThread(arguments, null, this);
-		}
-		else if (e.getKeyCode() == KeyEvent.VK_UP){
-			MesquiteCommand key = new MesquiteCommand("upArrowPressed", arguments, this);
-			key.setSuppressLogging(true);
-			key.doItMainThread(arguments, null, this);
-		}
-		else if (e.getKeyCode() == KeyEvent.VK_DOWN){
-			MesquiteCommand key = new MesquiteCommand("downArrowPressed", arguments, this);
-			key.setSuppressLogging(true);
-			key.doItMainThread(arguments, null, this);
+		else if (!MesquiteEvent.commandOrControlKeyDown(e.getModifiers())) {
+			if (e.getKeyCode() == KeyEvent.VK_RIGHT){
+				MesquiteCommand key = new MesquiteCommand("rightArrowPressed", arguments, this);
+				key.setSuppressLogging(true);
+				key.doItMainThread(arguments, null, this);
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				MesquiteCommand key = new MesquiteCommand("leftArrowPressed", arguments, this);
+				key.setSuppressLogging(true);
+				key.doItMainThread(arguments, null, this);
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_UP){
+				MesquiteCommand key = new MesquiteCommand("upArrowPressed", arguments, this);
+				key.setSuppressLogging(true);
+				key.doItMainThread(arguments, null, this);
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_DOWN){
+				MesquiteCommand key = new MesquiteCommand("downArrowPressed", arguments, this);
+				key.setSuppressLogging(true);
+				key.doItMainThread(arguments, null, this);
+			}
 		}
 
 	}
@@ -2216,13 +2218,44 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 
 	/* ............................................................................................................... */
 	/** Deletes the given column (but doesn't call for repaint) */
+	public void deleteColumns(int firstColumn, int lastColumn) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn))
+			return;
+
+		if (lastColumn < numColumnsTotal && firstColumn >= 0) { 
+			int numToDelete = lastColumn-firstColumn+1;
+			int[] newColumnWidths = new int[numColumnsTotal - numToDelete];
+			for (int c = 0; c < numColumnsTotal - numToDelete; c++)
+				if (c >= firstColumn)
+					newColumnWidths[c] = columnWidths[c + numToDelete];
+				else
+					newColumnWidths[c] = columnWidths[c];
+
+			columnWidths = newColumnWidths;
+
+			numColumnsTotal = numColumnsTotal - numToDelete;
+			for (int i = 0; i < numSelectTypes; i++) { 
+				columnsSelected[i] = new Bits(numColumnsTotal);
+				cellsSelected[i] = new Bits((numRowsTotal) * (numColumnsTotal));
+				columnNamesSelected[i] = new Bits(numColumnsTotal);
+			}
+			if (firstColumnVisible >= numColumnsTotal || firstColumnVisible < 0)
+				firstColumnVisible = 0; 
+			if (horizScroll != null) { 
+				horizScroll.setValue(firstColumnVisible);
+				horizScroll.setMaximum(numColumnsTotal);
+			}
+		}
+	}
+	/* ............................................................................................................... */
+	/** Deletes the given column (but doesn't call for repaint) */
 	public void deleteColumn(int column) {
 		if (!columnLegal(column))
 			return;
-		if (column < numColumnsTotal && column >= 0) {
+		if (column < numColumnsTotal && column >= 0) { 
 			int[] newColumnWidths = new int[numColumnsTotal - 1];
 			for (int c = 0; c < numColumnsTotal - 1; c++)
-				if (c > column)
+				if (c >= column)
 					newColumnWidths[c] = columnWidths[c + 1];
 				else
 					newColumnWidths[c] = columnWidths[c];
@@ -2230,7 +2263,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			columnWidths = newColumnWidths;
 
 			numColumnsTotal = numColumnsTotal - 1;
-			for (int i = 0; i < numSelectTypes; i++) {
+			for (int i = 0; i < numSelectTypes; i++) { 
 				columnsSelected[i] = new Bits(numColumnsTotal);
 				cellsSelected[i] = new Bits((numRowsTotal) * (numColumnsTotal));
 				columnNamesSelected[i] = new Bits(numColumnsTotal);
@@ -2420,7 +2453,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			if (numRowsPossiblyVisible>verticalScrollPageIncrement)
 				verticalScrollPageIncrement = numRowsPossiblyVisible;
 		}
-		
+
 		//vertScroll.setBlockIncrement(getNumRows()-1);
 		if (numRowsTotal < 2)
 			vertScroll.setBlockIncrement(1);
@@ -4448,7 +4481,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		if (!row.isCombinable()) {
 			incomingRow = 0;
 		}
-		
+
 		int incomingLastColumn = lastColumn.getValue();
 		if (!lastColumn.isCombinable()){   // can only happen on first time through
 			incomingLastColumn = -1;
@@ -4459,13 +4492,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		}
 		else
 			incomingLastColumn++;
-		
+
 		if (nextRow)
 			incomingRow++;
-		
+
 		if (incomingRow >= numRowsTotal)  //incomingRow is 0-based but numRowsTotal is 1-based
 			return false;
-		
+
 		for (int i = incomingRow; i < numRowsTotal; i++) { // go through the rows
 			if (wholeRowSelectedAnyWay(i)) {
 				row.setValue(i);

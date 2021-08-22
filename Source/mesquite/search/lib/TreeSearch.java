@@ -42,6 +42,26 @@ public String getMessageIfUserAbortRequested () {
 	return null;
 }
 
+/*.................................................................................................................*/
+public String getTitleOfTextCommandLink() {
+	if (searchTask==null)
+		return "";
+	return searchTask.getTitleOfTextCommandLink();
+}
+/*.................................................................................................................*/
+public String getCommandOfTextCommandLink() {
+	if (searchTask==null)
+		return "";
+	return searchTask.getCommandOfTextCommandLink();
+}
+
+/*.................................................................................................................*/
+public void processUserClickingOnTextCommandLink(String command) {
+	if (searchTask!=null)
+	 searchTask.processUserClickingOnTextCommandLink(command);
+}
+
+
 	/*.................................................................................................................*/
 	public  void setUserAborted(){
 		userAborted=true;

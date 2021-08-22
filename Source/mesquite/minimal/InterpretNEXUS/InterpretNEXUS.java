@@ -136,17 +136,19 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		return false; */
 		int index = blocks.indexOf(nb); //find current height
 		if (index >=0){
-			int height = index;
+			int neededHeight = index;
 			//make sure block is in OK place
 			for (int i = index-1; i>=0; i--) { //now look to all higher to see if nb should jump above them
 				NexusBlock nR = (NexusBlock)blocks.elementAt(i);
 				if (!nb.mustBeAfter(nR) && (nb.getFile()==nR.getFile())) { //nb needs to jump above nR
-					height = i;  //remember height of nR
+					if (i<neededHeight)
+						neededHeight = i;  //remember height of nR if it's the heighest one yet.
 				}
 			}
-			if (height < index){ //nb needs to jump to height; move it
+			
+			if (neededHeight < index){ //nb needs to jump to height; move it
 				blocks.removeElement(nb, false);
-				blocks.insertElementAt(nb, height, false);
+				blocks.insertElementAt(nb, neededHeight, false);
 				return true;
 			}
 		}
@@ -173,12 +175,13 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 				blocks.removeElement((NexusBlock)bs[i], false);
 				blocks.insertElementAt((NexusBlock)bs[i], 0, false);
 			}
+		}
+		for (int i=count-1; i>=0; i--) {
 			if (bs[i] instanceof TaxaBlock){
 				blocks.removeElement((NexusBlock)bs[i], false);
 				blocks.insertElementAt((NexusBlock)bs[i], 0, false);
 			}
 		}
-
 	}
 	/** Asks if block is sorted relative to other blocks in its file and before its file in file read order.
 	NOT USED as of 3. 02 */

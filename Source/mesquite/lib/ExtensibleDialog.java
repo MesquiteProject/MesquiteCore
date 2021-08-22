@@ -1809,7 +1809,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 	/*.................................................................................................................*/
 	public TextArea addTextArea (String initialString, int numRows, Font font) {
-		return addTextArea(initialString, numRows, 40, font);
+		return addTextArea(initialString, numRows, 80, font);
 	}
 	/*.................................................................................................................*/
 	public TextArea addTextArea (String initialString, int numRows, int numColumns, Font font, int scrollbars, boolean textAreaFullDialogWidth) {
@@ -2038,10 +2038,10 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public void mousePressed(MouseEvent e){
-		if (MesquiteTrunk.isMacOSXYosemiteOrLater() && MesquiteTrunk.isJavaVersionLessThan(1.7))  // workaround because of bug in Yosemite Java 1.6
-			checkForButtonHit(e);
+	//	if (MesquiteTrunk.isMacOSXYosemiteOrLater() && MesquiteTrunk.isJava VersionLessThan(1.7))  // workaround because of bug in Yosemite Java 1.6
+	//		checkForButtonHit(e);
 	}
-
+	
 	public void selectButton(String label){ //for use by scripting & console
 		buttonHit(label, null);
 		if (autoDispose)

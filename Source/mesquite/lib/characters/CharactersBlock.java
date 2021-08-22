@@ -37,9 +37,11 @@ public class CharactersBlock extends NexusBlock {
 		if (block==null)
 			return false;
 		if (data!=null && block instanceof TaxaBlock) {
-			return data.getTaxa() == ((TaxaBlock)block).getTaxa();
+			boolean isMatchingTaxa =  data.getTaxa() == ((TaxaBlock)block).getTaxa();
+			return isMatchingTaxa;
 		}
-		return (block.getBlockName().equalsIgnoreCase("TAXA"));
+		boolean isTaxa =  (block.getBlockName().equalsIgnoreCase("TAXA"));
+		return isTaxa;
 		
 	}
 	public void dispose(){

@@ -366,7 +366,7 @@ public class BipartitionVector extends Vector {
 	}
 
 	/*.................................................................................................................*/
-	private boolean getPartitions(Tree tree, int node){
+	private synchronized boolean getPartitions(Tree tree, int node){
 		if (node >= nodes.length) {
 
 			if (((!nodeArraySizeWarningForThisTree && numNodeArraySizeWarnings<10)||node>biggestNode)){
@@ -390,12 +390,14 @@ public class BipartitionVector extends Vector {
 				branchLengthArrayWarningForThisTree=true;
 			}
 			
-			nodes[node].setBit(it);
-			double length = tree.getBranchLength(node);
-			if (MesquiteDouble.isCombinable(length)) {
-				if (!MesquiteDouble.isCombinable(branchLengths[it]))
-					branchLengths[it] =0.0;
-				branchLengths[it] += length;
+			if (it>=0) {
+				nodes[node].setBit(it);
+				double length = tree.getBranchLength(node);
+				if (MesquiteDouble.isCombinable(length)) {
+					if (!MesquiteDouble.isCombinable(branchLengths[it]))
+						branchLengths[it] =0.0;
+					branchLengths[it] += length;
+				}
 			}
 			return true;
 		}

@@ -37,24 +37,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2019. Mesquite: A modular system for evolutionary analysis.  Version 3.61.  http://www.mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2021. Mesquite: A modular system for evolutionary analysis.  Version 3.70.  http://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.61";
+		return "3.70";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 361;
+		return 370;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.61;
+		return 3.70;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "December 2019"; //"April 2007";
+		return "August 2020"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -380,7 +380,7 @@ public class Mesquite extends MesquiteTrunk
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2019 W. Maddison and D. Maddison\n");
+		logInitString  += ("Copyright (c) 1997-2021 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
@@ -443,8 +443,8 @@ public class Mesquite extends MesquiteTrunk
 			prepareMesquite();
 		}
 		if (verboseStartup) System.out.println("main init 18");
-		if (isJavaVersionLessThan(1.6)){
-			discreetAlert("This version of Mesquite requires Java 1.6 or higher.  Please update your version of Java, or use an older version of Mesquite.  Please be aware however that earlier versions of Mesquite may have bugs that affect your results.  Please check the Mesquite website for information.");
+		if (isJavaVersionLessThan(1.8)){
+			discreetAlert("This version of Mesquite requires Java 1.8 or higher.  Please update your version of Java, or use an older version of Mesquite.  Please be aware however that earlier versions of Mesquite may have bugs that affect your results.  Please check the Mesquite website for information.");
 			exit(true, 0);
 		}
 
@@ -613,7 +613,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		logln(" ");
 
-		String ackn = "Mesquite makes use BrowserLauncher by Eric Albert,  corejava.Format by Horstmann & Cornell, ByteBuddy (http://bytebuddy.net), and iText by Lowagie & Soares  .";
+		String ackn = "Mesquite uses BrowserLauncher by Eric Albert,  corejava.Format by Horstmann & Cornell, ByteBuddy (http://bytebuddy.net), and iText by Lowagie & Soares  .";
 		ackn += "  Some modules make use of JAMA by The MathWorks and NIST, and JSci by Mark Hale, Jaco van Kooten and others (see Mesquite source code for details).";
 		ackn += "  The PAL library by Drummond and Strimmer is used by the GTR substitution model for DNA sequence simulations.";
 		if (MesquiteTrunk.isWindows())
@@ -678,7 +678,7 @@ public class Mesquite extends MesquiteTrunk
 		new MesquiteColorTable(); //initialize default charstate colors
 
 		resetContainingMenuBar();
-		/* hire all inits */
+	/* hire all inits */
 		if (verboseStartup) System.out.println("main init 29");
 		hireAllEmployees(MesquiteInit.class);
 
@@ -707,6 +707,7 @@ public class Mesquite extends MesquiteTrunk
 		addMenuItem(MesquiteTrunk.fileMenu, "Check Now for Notices/Installs...", new MesquiteCommand("checkNotices", this));
 		if (MesquiteTrunk.phoneHome){
 			phoneHomeThread = new PhoneHomeThread();
+			phoneHomeThread.setContactMessage(earlyWarning);
 			phoneHomeThread.start();
 		}
 		/**/
@@ -2453,6 +2454,7 @@ public class Mesquite extends MesquiteTrunk
 		CommandChecker.registerClass(System.class, System.class);
 	}
 
+	String earlyWarning = "";
 	private void registerMacHandlers(){
 		if (!MesquiteWindow.GUIavailable)
 			return;
@@ -2462,8 +2464,19 @@ public class Mesquite extends MesquiteTrunk
 				((EAWTHandler)fileHandler).register();
 
 			} catch (NoSuchMethodError e) {
+				String w = "File handling failed to register with macOS (NSME).";
+				earlyWarning += w;
+				System.out.println(w);
 			}
 			catch (NoClassDefFoundError e) { //WAYNECHECK: DAVIDCHECK: need to add alternative macos application event handling methods for post-1.8 Java
+				String w = "File handling failed to register with macOS (NCME).";
+				earlyWarning += w;
+				System.out.println(w);
+			}
+			catch (IllegalAccessError e) {
+				String w = "File handling failed to register with macOS (IAE).";
+				earlyWarning += w;
+				System.out.println(w);
 			}
 		}
 	}
@@ -2494,6 +2507,8 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.noBeans = true;
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
+					else if (args[i].equals("-mqcat"))
+						; //started from Catalina executable
 					else if (args[i].equals("-mq17")) {
 						MesquiteMessage.warnUser("This executable is not compatible with current Mesquite");
 					}

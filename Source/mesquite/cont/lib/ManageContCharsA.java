@@ -185,7 +185,7 @@ public abstract class ManageContCharsA extends CharMatrixManager {
 	}
 	/*.................................................................................................................*/
 	public String getCharStateLabels(CharacterData data, MesquiteFile file) {
-		if (file.writeCharLabels){
+		if (file.writeCharStateLabelsSeparately){
 			String csl = "CHARLABELS " + StringUtil.lineEnding();
 			boolean found = false;
 			for (int i = 0; i<data.getNumChars(); i++) {

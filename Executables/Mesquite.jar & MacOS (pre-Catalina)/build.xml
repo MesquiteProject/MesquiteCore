@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+ 
+<project name="Mesquite" default="default" basedir="."
+  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+ 
+  <property name="JAVA_HOME" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home"/>
+  <property name="build.src.dir" value="src"/>
+  <property name="build.classes.dir" value="classes"/>
+  <property name="build.dist.dir" value="dist"/>
+ 
+  <target name="default" depends="clean,compile">
+ 
+    <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+      uri="javafx:com.sun.javafx.tools.ant"
+      classpath="${JAVA_HOME}/lib/ant-javafx.jar"/>
+      <fx:application id="MesquiteID"
+        name="Mesquite"
+        mainClass="start.Mesquite"/>
+ 
+      <fx:resources id="appRes">
+        <fx:fileset dir="${build.dist.dir}" includes="mesquite.jar"/>
+      </fx:resources>
+ 
+      <fx:jar destfile="${build.dist.dir}/Mesquite.jar">
+        <fx:application refid="MesquiteID"/>
+        <fx:resources refid="appRes"/>
+        <fileset dir="${build.classes.dir}"/>
+      </fx:jar>
+ 
+      <fx:deploy width="300" height="250"
+        outdir="." embedJNLP="true"
+        outfile="mesq">
+ 
+        <fx:application refId="MesquiteID"/>
+ 
+        <fx:resources refid="appRes"/>
+ 
+        <fx:info title="Mesquite"
+          vendor="Mesquite Project Team"/>
+ 
+      </fx:deploy>
+ 
+  </target>
+ 
+  <target name="clean">
+    <mkdir dir="${build.classes.dir}"/>
+    <mkdir dir="${build.dist.dir}"/>
+
+    <delete>
+      <fileset dir="${build.classes.dir}" includes="**/*"/>
+      <fileset dir="${build.dist.dir}" includes="**/*"/>
+    </delete>
+ 
+  </target>
+ 
+  <target name="compile" depends="clean">
+ 
+    <javac includeantruntime="false"
+      srcdir="${build.src.dir}"
+      destdir="${build.classes.dir}"
+      fork="yes"
+      executable="${JAVA_HOME}/bin/javac"
+      source="1.7"
+      target="1.7"
+      debug="on">
+    </javac>
+  </target>
+ 
+</project>

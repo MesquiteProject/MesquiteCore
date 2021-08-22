@@ -26,6 +26,7 @@ public class TopologyCongruent extends BooleanForTree {
 	OneTreeSource constraintTreeSource;
 	Tree constraintTree;
 	MesquiteBoolean exactMatch = new MesquiteBoolean(false);
+	MesquiteBoolean onlyConsiderTaxaInCommon = new MesquiteBoolean(false);
 	StrictConsenser strictConsenser = new StrictConsenser();
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -35,6 +36,7 @@ public class TopologyCongruent extends BooleanForTree {
 		}
 		loadPreferences();
 		MesquiteMenuItemSpec exactMatchItem = addCheckMenuItem( null, "Topologies must be exactly equal", makeCommand("exactMatch",  this), exactMatch);
+		MesquiteMenuItemSpec onlyConsiderTaxaInCommonItem = addCheckMenuItem( null, "Only consider terminal taxa in common", makeCommand("onlyConsiderTaxaInCommon",  this), onlyConsiderTaxaInCommon);
 
 		if (!MesquiteThread.isScripting()) 
 			if (!queryOptions()) 
@@ -45,17 +47,21 @@ public class TopologyCongruent extends BooleanForTree {
 	public void processMorePreferences (String tag, String content) {
 		if ("exactMatch".equalsIgnoreCase(tag))
 			exactMatch.setFromTrueFalseString(content);
+		if ("onlyConsiderTaxaInCommon".equalsIgnoreCase(tag))
+			onlyConsiderTaxaInCommon.setFromTrueFalseString(content);
 	}
 	/*.................................................................................................................*/
 	public String prepareMorePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "exactMatch", exactMatch);  
+		StringUtil.appendXMLTag(buffer, 2, "onlyConsiderTaxaInCommon", onlyConsiderTaxaInCommon);  
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("exactMatch "+ exactMatch.toOffOnString()); 
+		temp.addLine("onlyConsiderTaxaInCommon "+ onlyConsiderTaxaInCommon.toOffOnString()); 
 		return temp;
 	}
 	/*.................................................................................................................*/
@@ -65,10 +71,12 @@ public class TopologyCongruent extends BooleanForTree {
 		dialog.addLabel(getName() + " Options");
 
 		Checkbox exactMatchCheck = dialog.addCheckBox("Topology must be exact match", exactMatch.getValue());
+		Checkbox onlyInCommonCheck = dialog.addCheckBox("Only terminal consider taxa in common", onlyConsiderTaxaInCommon.getValue());
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			exactMatch.setValue(exactMatchCheck.getState());
+			onlyConsiderTaxaInCommon.setValue(onlyInCommonCheck.getState());
 			storePreferences();
 
 		}
@@ -85,6 +93,14 @@ public class TopologyCongruent extends BooleanForTree {
 			}
 			return exactMatch;
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not only taxa in common should be considered", "[on off]", commandName, "onlyConsiderTaxaInCommon")) {
+			boolean oldValue = onlyConsiderTaxaInCommon.getValue();
+			onlyConsiderTaxaInCommon.toggleValue(arguments);
+			if (oldValue != onlyConsiderTaxaInCommon.getValue()) {
+				parametersChanged();
+			}
+			return onlyConsiderTaxaInCommon;
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 	}
@@ -100,10 +116,17 @@ public class TopologyCongruent extends BooleanForTree {
 		constraintTree = sourceTree.cloneTree();
 		if(constraintTree==null || constraintTree.getTaxa()!=tree.getTaxa())
 			return;
+
+		MesquiteTree tree1= tree.cloneTree();
+		MesquiteTree tree2 = (MesquiteTree)constraintTree;	
+		if (onlyConsiderTaxaInCommon.getValue()) 
+			MesquiteTree.pruneTaxaNotInCommon(tree1, tree2, false);
+		
+		
 		MesquiteBoolean isConsistent = new MesquiteBoolean(true);
 
 		if (exactMatch.getValue()) {
-			isConsistent.setValue(tree.equalsTopology(constraintTree, false));
+			isConsistent.setValue(tree1.equalsTopology(tree2, false));
 
 			result.setValue(isConsistent.getValue());
 			if (resultString!=null)
@@ -112,11 +135,11 @@ public class TopologyCongruent extends BooleanForTree {
 				else
 					resultString.setValue("Tree different");
 		} else {
-			strictConsenser.reset(tree.getTaxa());
-			strictConsenser.addTree(tree);
-			strictConsenser.addTree(constraintTree);
+			strictConsenser.reset(tree1.getTaxa());
+			strictConsenser.addTree(tree1);
+			strictConsenser.addTree(tree2);
 			Tree strict = strictConsenser.getConsensus();
-			isConsistent.setValue(strict.equalsTopology(constraintTree, false));
+			isConsistent.setValue(strict.equalsTopology(tree2, false));
 
 			result.setValue(isConsistent.getValue());
 			if (resultString!=null)

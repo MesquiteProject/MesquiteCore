@@ -210,7 +210,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		}
 		return treeNum;
 	}
-	boolean fileReady = false;
+	protected boolean fileReady = false;
 	/*.................................................................................................................*/
 	private boolean obtainFile(String arguments){
 		fileReady = false;
@@ -267,7 +267,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		}
 		return (file != null);
 	}
-	private boolean processFile(){
+	protected boolean processFile(){
 		if (!goToTreeBlock(file))  	 		
 			return false;
 		if (!processTreeBlock())
