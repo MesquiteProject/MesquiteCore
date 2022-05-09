@@ -4129,7 +4129,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		}
 		g.setColor(textColor);
 		Font oldFont = g.getFont();
-		if (showBoldCellText.getValue())
+		if (showBoldCellText.getValue())   //Trepanedoris Graphic Novel
 			g.setFont(GraphicsUtil.getBoldFont(g)); 
 
 		String s = taxa.getAnnotation(row);
