@@ -22,7 +22,7 @@ import mesquite.molec.lib.*;
 /*  Initiator: DRM
  * */
 
-public class LocalBlaster extends Blaster implements ShellScriptWatcher {
+public class LocalBlaster extends Blaster implements ShellScriptWatcher, OutputFileProcessor {
 	boolean preferencesSet = false;
 	String programOptions = "" ;
 	String databaseString = "nt" ;
@@ -32,6 +32,8 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 	boolean useIDInDefinition = true;
 	String[] databaseArray = null;
 	int numDatabases = 0;
+	ExternalProcessManager externalRunner;
+	boolean scriptBased = false;
 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -86,6 +88,31 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 			return queryOptions();
 		return true;
 	}
+	/*.................................................................................................................*/
+	public String getStdErr() {
+		 if (externalRunner!=null)
+			return externalRunner.getStdErr();
+		return "";
+	}
+	/*.................................................................................................................*/
+	public boolean useDefaultStdOutFileName() {
+		return false;
+	}
+	/*.................................................................................................................*/
+	public String getStdOut() {
+		if (externalRunner!=null)
+			return externalRunner.getStdOut();
+		return "";
+	}
+	
+	public boolean stopExecution(){
+		if (externalRunner!=null) {
+			externalRunner.stopExecution();
+		}
+		return false;
+	}
+	
+
 	/*.................................................................................................................*/
 	public String getDatabaseName () {
 		if (databaseString==null)
@@ -205,28 +232,32 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		String runningFilePath = rootDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFileName = "blastResults" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFilePath = rootDir + outFileName;
+		String[] outputFilePaths = new String[1];
+		outputFilePaths[0] = outFilePath;
 
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
-		String blastCommand = blastType + "  -query " + fileName;
-		blastCommand+= " -db "+database;
-		blastCommand+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
+		String blastArguments =  "  -query " + fileName;
+		blastArguments+= " -db "+database;
+		blastArguments+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
 
 		if (eValueCutoff>=0.0)
-			blastCommand+= " -evalue "+eValueCutoff;
+			blastArguments+= " -evalue "+eValueCutoff;
 
 		if (wordSize>3)
-			blastCommand+= " -word_size "+wordSize;
+			blastArguments+= " -word_size "+wordSize;
 		if (numThreads>1)
-			blastCommand+="  -num_threads " + numThreads;
+			blastArguments+="  -num_threads " + numThreads;
 
 		//	blastCommand+= " -gapopen 5 -gapextend 2 -reward 1 -penalty -3 ";
 
 
 
-		blastCommand+=" -out " + outFileName + " -outfmt 5";		
-		blastCommand+=" -max_target_seqs " + numHits; // + " -num_alignments " + numHits;// + " -num_descriptions " + numHits;		
-		blastCommand+=" " + programOptions + StringUtil.lineEnding();
+		blastArguments+=" -out " + outFileName + " -outfmt 5";		
+		blastArguments+=" -max_target_seqs " + numHits; // + " -num_alignments " + numHits;// + " -num_descriptions " + numHits;		
+		blastArguments+=" " + programOptions + StringUtil.lineEnding();
+		String blastCommand = blastType + blastArguments;
+		String programPath = "/usr/local/ncbi/blast/bin/" + blastType;
 		shellScript.append(blastCommand);
 		if (writeCommand)
 			logln("\n...................\nBLAST command: \n" + blastCommand);
@@ -236,8 +267,23 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 
 		timer.timeSinceLast();
 
-		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+		boolean success = false;
+		if (scriptBased) 
+			success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+		else {
+			String arguments = blastArguments;
+			arguments=StringUtil.stripBoundingWhitespace(arguments);
+			externalRunner = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true);
+			if (useDefaultStdOutFileName())
+				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+			else
+				externalRunner.setStdOutFileName(outFileName);
+			success = externalRunner.executeInShell();
+			if (success)
+				success = externalRunner.monitorAndCleanUpShell(null);
+		}
 
+		
 		if (success){
 			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, 1000, false);
 			if (blastResponse!=null && StringUtil.notEmpty(results)){
@@ -281,21 +327,47 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 
 		String outFileName = "blastResults" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFilePath = rootDir + outFileName;
+		String[] outputFilePaths = new String[1];
+		outputFilePaths[0] = outFilePath;
 
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 
-		String blastCommand = "blastdbcmd  -entry "+queryString + " -outfmt %f";
-		blastCommand+= " -db "+databaseArray[databaseNumber];
-		blastCommand+=" -out " + outFileName;		
+		String programPath = "/usr/local/ncbi/blast/bin/" + "blastdbcmd";
+
+		String blastArguments = "  -entry "+queryString + " -outfmt %f";
+		blastArguments+= " -db "+databaseArray[databaseNumber];
+		blastArguments+=" -out " + outFileName;		
+
+		String blastCommand = "blastdbcmd" + blastArguments;
 
 		shellScript.append(blastCommand);
 
 		String scriptPath = rootDir + "batchScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 
-		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+		
 
+		boolean success = false;
+		if (scriptBased) 
+			success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+		else {
+			String arguments = blastArguments;
+			arguments=StringUtil.stripBoundingWhitespace(arguments);
+			externalRunner = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true);
+			if (useDefaultStdOutFileName())
+				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+			else
+				externalRunner.setStdOutFileName(outFileName);
+			externalRunner.setRemoveQuotes(true);
+			success = externalRunner.executeInShell();
+			if (success)
+				success = externalRunner.monitorAndCleanUpShell(null);
+		}
+
+		
+		
+		
 		if (success){
 			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, 1000, false);
 			if (blastResponse!=null && StringUtil.notEmpty(results)){
@@ -331,6 +403,22 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		}
 
 	}
+
+	public String[] modifyOutputPaths(String[] outputFilePaths) {
+		// TODO Auto-generated method stub
+		return outputFilePaths;
+	}
+
+	public void processOutputFile(String[] outputFilePaths, int fileNum) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void processCompletedOutputFiles(String[] outputFilePaths) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	public  String[] getNucleotideIDsfromProteinIDs(String[] ID){
 		ID = NCBIUtil.cleanUpID(ID);
