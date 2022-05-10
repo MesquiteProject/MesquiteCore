@@ -34,6 +34,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher, OutputF
 	int numDatabases = 0;
 	ExternalProcessManager externalRunner;
 	boolean scriptBased = false;
+	String blastFolderPath = "";
 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -67,6 +68,8 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher, OutputF
 			localBlastDBHasTaxonomyIDs = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("useIDInDefinition".equalsIgnoreCase(tag))
 			useIDInDefinition = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("blastFolderPath".equalsIgnoreCase(tag))
+			blastFolderPath = StringUtil.cleanXMLEscapeCharacters(content);
 
 		preferencesSet = true;
 	}
@@ -78,6 +81,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher, OutputF
 		StringUtil.appendXMLTag(buffer, 2, "numThreads", numThreads);  
 		StringUtil.appendXMLTag(buffer, 2, "localBlastDBHasTaxonomyIDs", localBlastDBHasTaxonomyIDs);  
 		StringUtil.appendXMLTag(buffer, 2, "useIDInDefinition", useIDInDefinition);  
+		StringUtil.appendXMLTag(buffer, 2, "blastFolderPath", blastFolderPath);  
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -160,6 +164,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher, OutputF
 		}
 	}
 
+	SingleLineTextField executablePathField =  null;
 
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
@@ -184,6 +189,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher, OutputF
 		Checkbox useIDInDefinitionBox = dialog.addCheckBox("Use ID in Definition (NCBI-provided databases)", useIDInDefinition);
 		Checkbox localBlastDBHasTaxonomyIDsBox = dialog.addCheckBox("Local BLAST database has NCBI taxonomy IDs", localBlastDBHasTaxonomyIDs);
 		IntegerField numThreadsField = dialog.addIntegerField("Number of processor threads to use:", numThreads,20, 1, Integer.MAX_VALUE);
+		executablePathField = dialog.addTextField("Path to blast programs", blastFolderPath, 40);
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -194,6 +200,12 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher, OutputF
 			numThreads = numThreadsField.getValue();
 			localBlastDBHasTaxonomyIDs = localBlastDBHasTaxonomyIDsBox.getState();
 			useIDInDefinition = useIDInDefinitionBox.getState();
+			String tempPath = executablePathField.getText();
+			if (StringUtil.blank(tempPath)){
+				MesquiteMessage.discreetNotifyUser("The path to blast programs must be entered.");
+				return false;
+			}
+			blastFolderPath = tempPath;
 
 			storePreferences();
 		}
@@ -257,7 +269,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher, OutputF
 		blastArguments+=" -max_target_seqs " + numHits; // + " -num_alignments " + numHits;// + " -num_descriptions " + numHits;		
 		blastArguments+=" " + programOptions + StringUtil.lineEnding();
 		String blastCommand = blastType + blastArguments;
-		String programPath = "/usr/local/ncbi/blast/bin/" + blastType;
+		String programPath = blastFolderPath + blastType;
 		shellScript.append(blastCommand);
 		if (writeCommand)
 			logln("\n...................\nBLAST command: \n" + blastCommand);
@@ -333,7 +345,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher, OutputF
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 
-		String programPath = "/usr/local/ncbi/blast/bin/" + "blastdbcmd";
+		String programPath = blastFolderPath + "blastdbcmd";
 
 		String blastArguments = "  -entry "+queryString + " -outfmt %f";
 		blastArguments+= " -db "+databaseArray[databaseNumber];
