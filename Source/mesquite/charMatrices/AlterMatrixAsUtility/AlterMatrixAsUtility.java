@@ -52,7 +52,6 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 	}
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
-
 		DataAlterer tda= (DataAlterer)hireEmployee(DataAlterer.class, "How to alter data");
 		if (tda == null)
 			return false;
