@@ -21,18 +21,36 @@
 	<key>files2</key>
 	<dict>
 		<key>Java/mesquite.jar</key>
-		<data>
-		FsOSHqP2HGFFYd8jsyFxIC6kKEk=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			TOQwMihZO7A8i8OIiIcqaCDCXrQ=
+			</data>
+			<key>hash2</key>
+			<data>
+			6uYEYVmXkQqRUDk8P1UxDWFBJYaerM2FqrGoZJZ+mKo=
+			</data>
+		</dict>
 		<key>Resources/Mesquite.icns</key>
-		<data>
-		mqnGaSRzbpi8l2W1di+4pqXeH9s=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			mqnGaSRzbpi8l2W1di+4pqXeH9s=
+			</data>
+			<key>hash2</key>
+			<data>
+			i5EC+dPX7zdVv0gkr98Ez5XSpVYjE3Zym2KoGfXHfAk=
+			</data>
+		</dict>
 		<key>Resources/en.lproj/Localizable.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			1x7GcvnGdR/b251TU0nrD14zM/c=
+			</data>
+			<key>hash2</key>
+			<data>
+			+mlNWeuECqXqVd3n2W7JqWMCbbafAJeOxo6lFCIMGvg=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -55,6 +73,11 @@
 			<true/>
 			<key>weight</key>
 			<real>1100</real>
+		</dict>
+		<key>^Resources/Base\.lproj/</key>
+		<dict>
+			<key>weight</key>
+			<real>1010</real>
 		</dict>
 		<key>^version.plist$</key>
 		<true/>
@@ -114,6 +137,11 @@
 			<true/>
 			<key>weight</key>
 			<real>1100</real>
+		</dict>
+		<key>^Resources/Base\.lproj/</key>
+		<dict>
+			<key>weight</key>
+			<real>1010</real>
 		</dict>
 		<key>^[^/]+$</key>
 		<dict>

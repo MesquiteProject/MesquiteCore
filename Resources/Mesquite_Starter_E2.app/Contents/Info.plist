@@ -49,13 +49,12 @@
 <array>
 <string>-Djri.ignore.ule="yes"</string>
 <string>-Djava.library.path=lib</string>
-<string>-Xss4m</string>
-<string>-Xmx1000m</string>
+<string>-Xss8m</string>
+<string>-Xmx2000m</string>
 </array>
 <key>JVMArguments</key>
 <array>
 <string>-mqex</string>
-<string>-mq17</string>
 </array>
 </dict>
 </plist>
