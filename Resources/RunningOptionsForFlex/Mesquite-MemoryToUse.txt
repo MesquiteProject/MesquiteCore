@@ -1,0 +1,4 @@
+4
+
+INSTRUCTIONS
+On the first line, place the number of gigabytes of active memory (RAM) to reserve for Mesquite when run by "Mesquite-Starter-Flex.app". Use at least 1. Suggested is 2 or 4, or more if you have a very large set of taxa or sequence data.
