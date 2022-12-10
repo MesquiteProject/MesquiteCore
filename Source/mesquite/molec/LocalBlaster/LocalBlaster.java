@@ -18,6 +18,7 @@ import java.awt.Checkbox;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import mesquite.lib.*;
 import mesquite.molec.lib.*;
@@ -140,9 +141,60 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 	}
 
 	/*.................................................................................................................*/
+	public int getNumPhdFilesInDirectory(File folder, String aceFileDirectoryPath) {
+		int count = 0;
+		return count;
+	}
+	/*.................................................................................................................*/
+	public void allInFolder () {
+		File folder = new File(blastDatabaseFolderPath);
+		int count=0;
+		if (folder.isDirectory()) {
+			String[] files = folder.list();
+			for (int i=0; i<files.length; i++) { // going through the folders and finding the ace files
+				if (files[i]!=null ) {
+					String filePath = blastDatabaseFolderPath + MesquiteFile.fileSeparator + files[i];
+					File cFile = new File(filePath);
+					if (cFile.exists()) {
+						if (!cFile.isDirectory()) {
+							 if (files[i].endsWith(".nsq")) {
+								count++;
+							}
+						}
+					}
+				}
+			}
+			databaseArray= new String[count];
+			numDatabases=count;
+			count=0;
+			for (int i=0; i<files.length; i++) { // going through the folders and finding the ace files
+				if (files[i]!=null ) {
+					String filePath = blastDatabaseFolderPath + MesquiteFile.fileSeparator + files[i];
+					File cFile = new File(filePath);
+					if (cFile.exists()) {
+						if (!cFile.isDirectory()) {
+							 if (files[i].endsWith(".nsq")) {
+								 String fileNameBase = StringUtil.getAllButLastItem(files[i], ".");
+								databaseArray[count]= blastDatabaseFolderPath + MesquiteFile.fileSeparator +fileNameBase;
+								count++;
+							}
+						}
+					}
+				}
+			}
+		}
+
+	}
+	/*.................................................................................................................*/
 	public void processDatabases (String s) {
 		if (s==null)
 			databaseArray=null;
+		else if (s.equals("*")) {
+			if (databasesInDefaultLocation)
+				MesquiteMessage.discreetNotifyUser("Can only process all files if in non-default location");
+			else
+				allInFolder();
+		}
 		else if (s.indexOf(",")<0){
 			databaseArray= new String[1];
 			if (databasesInDefaultLocation)
