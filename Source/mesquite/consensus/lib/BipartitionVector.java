@@ -207,6 +207,7 @@ public class BipartitionVector extends Vector {
 	
 	/** Examines all contradictory clades and returnes the frequency value of the most frequent one. */
 	public double getMaximumDecimalFrequencyOfContradictoryNode(Tree tree, int node, boolean rooted){
+		boolean recordContradictoryGroup = MesquiteTrunk.debugMode;
 		Bits nodeBits = tree.getTerminalTaxaAsBits(node);
 		Bits treeBits = tree.getTerminalTaxaAsBits(tree.getRoot());
 		nodeBits.andBits(treeBits);  // this shouldn't be needed, but just in case...
@@ -221,11 +222,12 @@ public class BipartitionVector extends Vector {
 					double freq = getDecimalFrequency(bp);
 					if (freq>max) {
 						max=freq;
-						contradictoryCladeList = getTerminalTaxaList(tree,bpBits);
+						if (recordContradictoryGroup)
+							contradictoryCladeList = getTerminalTaxaList(tree,bpBits);
 					}
 			}
 		}
-		if (MesquiteTrunk.debugMode)
+		if (recordContradictoryGroup)
 			MesquiteMessage.println("node: " + node + ", contradictory group: " + contradictoryCladeList);
 		return max;
 	}
