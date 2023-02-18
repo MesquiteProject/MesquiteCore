@@ -99,6 +99,7 @@ public class IOUtil {
 		if (writeStandardPartition && !partByCodPos) {
 			Listable[] partition = (Listable[])characterPartition.getProperties();
 			partition = data.removeExcludedFromListable(partition);
+			partition = data.removeEmptyFromListable(partition);
 			if (nucleotides) {
 				String q;
 				for (int i=0; i<parts.length; i++) {
