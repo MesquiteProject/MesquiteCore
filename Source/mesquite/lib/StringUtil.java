@@ -67,6 +67,8 @@ public class StringUtil {
 
 	/* ................................................................................................................. */
 	public static int getNumberOfLines(String s) {
+		if (blank(s))
+			return 0;
 		s = StringUtil.replace(s, "\r\n", "\r");
 		s = StringUtil.replace(s, "\n", "\r");
 
