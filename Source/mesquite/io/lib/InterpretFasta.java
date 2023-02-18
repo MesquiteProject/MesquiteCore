@@ -566,7 +566,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		int counter = 1;
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || (taxa.getSelected(it))) && (!includeOnlyTaxaWithData || taxonHasData(data, it))){
-				if (fractionApplicable==1.0 || data.getFractionApplicableInTaxon(it, writeExcludedCharacters)>=fractionApplicable) {
+				if (fractionApplicable==1.0 || data.getFractionApplicableInTaxon(it, writeExcludedCharacters)>=fractionApplicable) {//TODO: deal with writeCharactersWithNoData
 
 					counter = 1;
 					outputBuffer.append(">");
@@ -577,7 +577,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					outputBuffer.append(getLineEnding());
 
 					for (int ic = 0; ic<numChars; ic++) {
-						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))){
+						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
 							int currentSize = outputBuffer.length();
 							boolean wroteMoreThanOneSymbol = false;
 							boolean wroteSymbol = false;
