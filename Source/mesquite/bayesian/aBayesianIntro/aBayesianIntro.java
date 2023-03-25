@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.mb.aMBIntro;
+package mesquite.bayesian.aBayesianIntro;
 /*~~  */
 
 import java.util.*;
@@ -22,22 +22,22 @@ import mesquite.lib.duties.*;
 
 
 /* ======================================================================== */
-public class aMBIntro extends PackageIntro {
+public class aBayesianIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		return true;
   	 }
   	 public Class getDutyClass(){
-  	 	return aMBIntro.class;
+  	 	return aBayesianIntro.class;
   	 }
 	/*.................................................................................................................*/
     	 public String getExplanation() {
-		return "Provides links to MrBayes analyses.";
+		return "Provides tools for Bayesian analyses.";
    	 }
    
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "MrBayes Package Introduction";
+		return "Bayesian Package Introduction";
    	 }
     		/*.................................................................................................................*/
     		/** Returns whether package is built-in (comes with default install of Mesquite)*/
@@ -47,7 +47,7 @@ public class aMBIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	/** Returns the name of the package of modules (e.g., "Basic Mesquite Package", "Rhetenor")*/
  	public String getPackageName(){
- 		return "MrBayes Interface Package";
+ 		return "Bayesian Interface Package";
  	}
 	/*.................................................................................................................*/
 	/** Returns citation for a package of modules*

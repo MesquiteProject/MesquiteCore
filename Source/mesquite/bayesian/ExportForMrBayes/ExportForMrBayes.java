@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.mb.ExportForMrBayes;
+package mesquite.bayesian.ExportForMrBayes;
 /*~~  */
 
 import java.util.*;
@@ -20,8 +20,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.bayesian.lib.*;
 import mesquite.categ.lib.*;
-import mesquite.mb.lib.*;
 
 
 

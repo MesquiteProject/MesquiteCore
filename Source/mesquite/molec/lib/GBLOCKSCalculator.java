@@ -237,7 +237,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	boolean tooManyGaps (CategoricalData data, int ic) {
 		if (hasApplicable==null)
 			return false;
-		if (removeAllGaps) {
+		if (removeAllGaps) {  // if removeAllGaps is true, having a single gap is too many
 			for (int it = 0; it<data.getNumTaxa(); it++) {
 				if (data.isInapplicable(ic, it))
 					return true;
