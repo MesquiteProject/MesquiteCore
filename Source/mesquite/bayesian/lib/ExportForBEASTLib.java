@@ -56,7 +56,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("duplicateTaxonNames".equalsIgnoreCase(tag))
 			duplicateTaxonSets = MesquiteBoolean.fromTrueFalseString(content);
@@ -64,7 +64,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 		preferencesSet = true;
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "duplicateTaxonNames", duplicateTaxonSets);  
@@ -77,7 +77,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
 	protected boolean convertAmbiguities = false;
-	protected boolean duplicateTaxonSets = true;
+	protected boolean duplicateTaxonSets = false;
 	protected boolean preferencesSet = false;
 	protected boolean useData = true;
 	protected String addendum = "";
@@ -220,10 +220,11 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			suggested = file.getFileName();
 		MesquiteFile f;
 		loadPreferences();
-		if (!usePrevious){
+	/*	if (!usePrevious){
 			if (!getExportOptions(data, data.anySelected(), data.getTaxa().anySelected()))
 				return false;
 		}
+		*/
 		addendum = getSetsBlock(file);
 
 		
