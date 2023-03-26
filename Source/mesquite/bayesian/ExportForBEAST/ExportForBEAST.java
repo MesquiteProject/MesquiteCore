@@ -33,7 +33,7 @@ public class ExportForBEAST extends ExportForBEASTLib {
   	 }
   	 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	public boolean isSubstantive(){
 		return true;

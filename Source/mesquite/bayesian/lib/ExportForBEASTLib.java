@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.basic.ManageSetsBlock.ManageSetsBlock;
 import mesquite.categ.lib.*;
@@ -55,44 +56,63 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 	}
 
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		 if ("defaultSearchString".equalsIgnoreCase(tag))
-			 defaultSearchString = StringUtil.cleanXMLEscapeCharacters(content);
+		if ("duplicateTaxonNames".equalsIgnoreCase(tag))
+			duplicateTaxonSets = MesquiteBoolean.fromTrueFalseString(content);
+		super.processSingleXMLPreference(tag, content);
+		preferencesSet = true;
 	}
-	/*.................................................................................................................*
+
+	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "defaultSearchString", defaultSearchString);  
+		StringUtil.appendXMLTag(buffer, 2, "duplicateTaxonNames", duplicateTaxonSets);  
+		buffer.append(super.preparePreferencesForXML());
+		preferencesSet = true;
 		return buffer.toString();
-	}
-	/*.................................................................................................................*
-	public  void actionPerformed(ActionEvent e) {
-		 if (e.getActionCommand().equalsIgnoreCase("defSearch")) {
-			String temp = MesquiteString.queryString(containerOfModule(), "Default Search String", "Default string setting search parameters for MCMC run", defaultSearchString, 5);
-			if (temp != null){
-				defaultSearchString = temp;
-				storePreferences();
-			}
-		}
 	}
 
 
 	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
 	protected boolean convertAmbiguities = false;
-	protected boolean simplifyNames = true;
+	protected boolean duplicateTaxonSets = true;
+	protected boolean preferencesSet = false;
 	protected boolean useData = true;
 	protected String addendum = "";
 	protected String fileName = "untitled.nex";
 	/*.................................................................................................................*/
 	public abstract String getProgramName();
 	/*.................................................................................................................*/
+
+	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), getName(), buttonPressed);
+		exportDialog.setSuppressLineEndQuery(true);
+		exportDialog.setDefaultButton(null);
+		String helpString = "If you check \"duplicate taxon sets\", Mesquite will produce two copies of each taxon set.  This will allow you to easily create BEAUTi both a MRCA Prior and a "
+				+ "Sampled Ancestors MRCA Prior for each taxon set.  As of 25 March 2023 BEAUTi required manual creation of a second taxon set to create the second prior.";
+		exportDialog.appendToHelpString(helpString);
+		Checkbox duplicateTaxonSetsCheckBox = exportDialog.addCheckBox("duplicate taxon sets", duplicateTaxonSets);
+
+		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
+
+		boolean ok = (exportDialog.query(dataSelected, taxaSelected)==0);
+
+		if (ok) {
+			duplicateTaxonSets = duplicateTaxonSetsCheckBox.getState();
+			storePreferences();
+		}
+
+		exportDialog.dispose();
+		return ok;
+	}		/*.................................................................................................................*/
 	String getTaxonName(Taxa taxa, int it){
 		return StringUtil.simplifyIfNeededForOutput(taxa.getTaxonName(it),true);
 	}
 	/*.................................................................................................................*/
-	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, MesquiteFile file, boolean isCurrent){
+	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, MesquiteFile file, boolean isCurrent, boolean duplicate){
 			String s= "";
 			if (taxaSet!=null && (taxaSet.getFile()==file || (taxaSet.getFile()==null && taxa.getFile()==file))) {
 				String sT = "";
@@ -112,7 +132,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 					}
 					else if (continuing>0) {
 						if (lastWritten != ic-1) {
-							sT += " " + getTaxonName(taxa,ic);
+							sT += " " + getTaxonName(taxa,ic-1);
 							lastWritten = ic-1;
 						}
 						else
@@ -125,12 +145,20 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 					sT += " " + getTaxonName(taxa, taxa.getNumTaxa()-1);
 				if (!StringUtil.blank(sT)) {
 					s+= "\tTAXSET " ;
-					if (isCurrent)
-						s += "* ";
-					s+= StringUtil.tokenize(taxaSet.getName()) + " ";
-					if (file.getProject().getNumberTaxas()>1)
-						s+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
-					s+= " = "+  sT + ";" + StringUtil.lineEnding();
+					String set1 = s;
+					String set2 = s;
+					set1+= StringUtil.tokenize(taxaSet.getName()) + " ";
+					set2+= StringUtil.tokenize(taxaSet.getName()+"_2") + " ";
+					if (file.getProject().getNumberTaxas()>1) {
+						set1+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
+						set2+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
+					}
+					set1+= " = "+  sT + ";" + StringUtil.lineEnding();
+					set2+= " = "+  sT + ";" + StringUtil.lineEnding();
+					if (duplicate)
+						s=set1+set2;
+					else
+						s=set1;
 				}
 			}
 			return s;
@@ -138,6 +166,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 		/*.................................................................................................................*/
 	public String getNexusCommands(MesquiteFile file, String blockName){ 
 		String s= "";
+		String specSet ="";
 		for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
 
 			Taxa taxa =  file.getProject().getTaxa(ids);
@@ -149,12 +178,14 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 					if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
 						ms.setNexusBlockStored(blockName);
 						ms.setName("UNTITLED");
-						s += nexusStringForSpecsSet(ms, taxa, file, true);
+						specSet = nexusStringForSpecsSet(ms, taxa, file, true, duplicateTaxonSets);
+						s += specSet;
 					}
 
 
 					for (int ims = 0; ims<numSets; ims++) {
-						s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
+						s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false, duplicateTaxonSets);
+						s += specSet;
 					}
 				}
 			}
@@ -175,6 +206,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
+		boolean usePrevious = args.parameterExists("usePrevious");
 		CategoricalData data = (CategoricalData)getProject().chooseData(containerOfModule(), file, null, CategoricalState.class, "Select data to export");
 		if (data ==null) {
 			showLogWindow(true);
@@ -188,8 +220,12 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			suggested = file.getFileName();
 		MesquiteFile f;
 		loadPreferences();
+		if (!usePrevious){
+			if (!getExportOptions(data, data.anySelected(), data.getTaxa().anySelected()))
+				return false;
+		}
 		addendum = getSetsBlock(file);
-		
+
 		
 		String path = getPathForExport(arguments, suggested, dir, fn);
 		if (path != null) {
@@ -198,7 +234,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 				f.useSimplifiedNexus = true;
 				f.useDataBlocks = useData;
 				f.ambiguityToMissing = convertAmbiguities;
-				f.simplifyNames =simplifyNames;
+				f.simplifyNames =true;
 				f.openWriting(true);
 				f.writeLine("#NEXUS" + StringUtil.lineEnding());
 				if (!useData)
