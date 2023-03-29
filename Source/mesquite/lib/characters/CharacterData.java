@@ -577,6 +577,15 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		return newArray;
 	}
+	/** Takes a listable, that in theory should be of length numChars, and returns a copy of it from which all 
+	 * entries corresponding to excluded characters are removed from the list */
+	public boolean[] getBooleanArrayOfIncludedAndNotEmpty() {
+		boolean[] newArray = new boolean[numChars]; 
+		for (int ic=0; ic<numChars; ic++) {
+			newArray[ic] = isCurrentlyIncluded(ic) && hasDataForCharacter(ic);
+		}
+		return newArray;
+	}
 	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer, MesquiteString report){
 		if (obj ==null)
 			return true;

@@ -20,22 +20,22 @@ public class IOUtil {
 	public static final String RAXMLFINALSCORENAME = "RAxMLScore (Final Gamma-based)";
 	/*.................................................................................................................*/
 
-	public static String[] getRAxMLRateModels(MesquiteModule mb, CharactersGroup[] parts){
-		if (parts==null || parts.length==0 || parts.length>20)
+	public static String[] getRAxMLRateModels(MesquiteModule mb, String[] partNames, String defaultModel){
+		if (partNames==null || partNames.length==0 || partNames.length>20)
 			return null;
-		String[] rateModels = new String[parts.length+1];
+		String[] rateModels = new String[partNames.length+1];
 		for (int i=0; i<rateModels.length; i++)
-			rateModels[i] = "JTT";
+			rateModels[i] = defaultModel;
 
 		if (!MesquiteThread.isScripting()) {
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
-			ExtensibleDialog dialog = new ExtensibleDialog(mb.containerOfModule(), "Protein Rate Models",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-			dialog.addLabel("Protein Rate Models");
+			ExtensibleDialog dialog = new ExtensibleDialog(mb.containerOfModule(), "Character Models",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			dialog.addLabel("Character Rate Models");
 
 			SingleLineTextField[] modelFields = new SingleLineTextField[rateModels.length];
 			for (int i=0; i<rateModels.length; i++)
-				if (i<parts.length)
-					modelFields[i] = dialog.addTextField(parts[i].getName()+":", rateModels[i], 20);
+				if (i<partNames.length)
+					modelFields[i] = dialog.addTextField(partNames[i]+":", rateModels[i], 20);
 				else
 					modelFields[i] = dialog.addTextField("unassigned:", rateModels[i], 20);
 
@@ -71,8 +71,16 @@ public class IOUtil {
 	/*.................................................................................................................*/
 
 	public static String getMultipleModelRAxMLString(MesquiteModule mb, CharacterData data, boolean partByCodPos){
+		return getMultipleModelRAxMLString(mb,data,partByCodPos, "JTT", "DNA", false, true);
+	}
+	/*.................................................................................................................*/
+
+	public static String getMultipleModelRAxMLString(MesquiteModule mb, CharacterData data, boolean partByCodPos, String proteinModel, String dnaModel, boolean isRAxMLNG, boolean specifyPartByPartModels){
 		boolean writeCodPosPartition = false;
 		boolean writeStandardPartition = false;
+		String localDNAModel = "DNA";
+		if (StringUtil.notEmpty(dnaModel) && isRAxMLNG)
+			localDNAModel=dnaModel;
 		CharactersGroup[] parts =null;
 		if (data instanceof DNAData)
 			writeCodPosPartition = ((DNAData)data).someCoding();
@@ -95,25 +103,38 @@ public class IOUtil {
 		boolean molecular = (data instanceof MolecularData);
 		boolean nucleotides = (data instanceof DNAData);
 		boolean protein = (data instanceof ProteinData);
+		String defaultModel ="";
+		if (protein)
+			defaultModel=proteinModel;
+		else 
+			defaultModel=localDNAModel;
+
 		String standardPart = "";
 		if (writeStandardPartition && !partByCodPos) {
+			String[] partNames= new String[parts.length];
+			for (int i=0; i<parts.length; i++) {
+				partNames[i]=parts[i].getName();
+			}
 			Listable[] partition = (Listable[])characterPartition.getProperties();
+			Debugg.println("partition length before removal of excluded or empty: " + partition.length);
 			partition = data.removeExcludedFromListable(partition);
+			Debugg.println("partition length after removal of excluded: " + partition.length);
 			partition = data.removeEmptyFromListable(partition);
-			if (nucleotides) {
+			Debugg.println("partition length after removal of empty: " + partition.length);
+			if ((nucleotides && !isRAxMLNG) || !specifyPartByPartModels) {
 				String q;
 				for (int i=0; i<parts.length; i++) {
 					q = ListableVector.getListOfMatches(partition, parts[i], CharacterStates.toExternal(0), true, ",");
 					if (q != null) {
-							sb.append("DNA, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+parts[i].getName(), true) + " = " +  q + "\n");
+							sb.append(defaultModel + ", " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+parts[i].getName(), true) + " = " +  q + "\n");
 					}
 				}
 				q = ListableVector.getListOfMatches(partition, null, CharacterStates.toExternal(0), true, ",");
 				if (q != null) {
-					sb.append("DNA, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_unassigned", true) + " = " +  q + "\n");
+					sb.append(defaultModel + ", " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_unassigned", true) + " = " +  q + "\n");
 				}
-			} else if (protein) {
-				String[] rateModels = getRAxMLRateModels(mb, parts);
+			} else if (protein || isRAxMLNG) {
+				String[] rateModels = getRAxMLRateModels(mb, partNames, defaultModel);
 				String q;
 				if (rateModels!=null) {
 					for (int i=0; i<parts.length; i++) {
@@ -141,21 +162,44 @@ public class IOUtil {
 					sb.append("MULTI, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_unassigned", true) + " = " +  q + "\n");
 				}
 			} 
-		} else if (writeCodPosPartition && partByCodPos) {//TODO: never accessed by Zephyr because in the only Zephyr call of this method, partByCodPos is false.
+		} else if (writeCodPosPartition && partByCodPos) {
 			//codon positions if nucleotide
-			int numberCharSets = 0;
-			boolean[] include = data.getBooleanArrayOfIncluded();
 			CodonPositionsSet codSet = (CodonPositionsSet)data.getCurrentSpecsSet(CodonPositionsSet.class);
-			for (int iw = 0; iw<4; iw++){
-				String locs = codSet.getListOfMatches(iw,0, include, true);
-				if (!StringUtil.blank(locs)) {
-					String charSetName = "";
-					if (iw==0) 
-						charSetName = StringUtil.tokenize("nonCoding");
-					else 
-						charSetName = StringUtil.tokenize("codonPos" + iw);			
-					numberCharSets++;
-					sb.append( "DNA, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+charSetName,true) + " = " +  locs + "\n");
+			
+			int numberCharSets = 0;
+			boolean[] include = data.getBooleanArrayOfIncludedAndNotEmpty();
+			if (specifyPartByPartModels && isRAxMLNG) {
+				String[] partNames= new String[4];
+				partNames[0] = "non-coding";
+				partNames[1] = "first positions";
+				partNames[2] = "second positions";
+				partNames[3] = "third positions";
+				String[] rateModels = getRAxMLRateModels(mb, partNames, defaultModel);
+				String q;
+				for (int iw = 0; iw<4; iw++){
+					String locs = codSet.getListOfMatches(iw,0, include, true);
+					if (!StringUtil.blank(locs)) {
+						String charSetName = "";
+						if (iw==0) 
+							charSetName = StringUtil.tokenize("nonCoding");
+						else 
+							charSetName = StringUtil.tokenize("codonPos" + iw);			
+						numberCharSets++;
+						sb.append(rateModels[iw] + ", " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+charSetName,true) + " = " +  locs + "\n");
+					}
+				}
+			} else {
+				for (int iw = 0; iw<4; iw++){
+					String locs = codSet.getListOfMatches(iw,0, include, true);
+					if (!StringUtil.blank(locs)) {
+						String charSetName = "";
+						if (iw==0) 
+							charSetName = StringUtil.tokenize("nonCoding");
+						else 
+							charSetName = StringUtil.tokenize("codonPos" + iw);			
+						numberCharSets++;
+						sb.append( localDNAModel + ", " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+charSetName,true) + " = " +  locs + "\n");
+					}
 				}
 			}
 			//	String codPos = ((DNAData)data).getCodonsAsNexusCharSets(numberCharSets, charSetList); // equivalent to list

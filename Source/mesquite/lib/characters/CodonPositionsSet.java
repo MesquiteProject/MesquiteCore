@@ -42,6 +42,14 @@ public class CodonPositionsSet  extends CharNumSet {
 		return new CodonPositionsSet("Codon Positions", numParts, (CharacterData)parent);
 	}
  	/*.................................................................................................................*/
+  	public Object[] getAsListable(){  
+		MesquiteInteger[] list = new MesquiteInteger[getNumberOfParts()];
+		for (int ic=0; ic<getNumberOfParts(); ic++) {
+			list[ic] = new MesquiteInteger(getInt(ic));
+		}
+		return list;
+	}
+	/*.................................................................................................................*/
 	/** Add num parts just after "starting" (filling with default values)  */
   	public boolean addParts(int starting, int num){  
 		boolean success = super.addParts(starting, num);
