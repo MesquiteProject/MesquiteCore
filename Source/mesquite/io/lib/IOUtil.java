@@ -104,8 +104,9 @@ public class IOUtil {
 		boolean nucleotides = (data instanceof DNAData);
 		boolean protein = (data instanceof ProteinData);
 		String defaultModel ="";
-		if (protein)
+		if (protein) {
 			defaultModel=proteinModel;
+		}
 		else 
 			defaultModel=localDNAModel;
 
@@ -116,11 +117,8 @@ public class IOUtil {
 				partNames[i]=parts[i].getName();
 			}
 			Listable[] partition = (Listable[])characterPartition.getProperties();
-			Debugg.println("partition length before removal of excluded or empty: " + partition.length);
 			partition = data.removeExcludedFromListable(partition);
-			Debugg.println("partition length after removal of excluded: " + partition.length);
 			partition = data.removeEmptyFromListable(partition);
-			Debugg.println("partition length after removal of empty: " + partition.length);
 			if ((nucleotides && !isRAxMLNG) || !specifyPartByPartModels) {
 				String q;
 				for (int i=0; i<parts.length; i++) {
@@ -162,7 +160,7 @@ public class IOUtil {
 					sb.append("MULTI, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_unassigned", true) + " = " +  q + "\n");
 				}
 			} 
-		} else if (writeCodPosPartition && partByCodPos) {
+		} else if (writeCodPosPartition && partByCodPos) {   //by codon position
 			//codon positions if nucleotide
 			CodonPositionsSet codSet = (CodonPositionsSet)data.getCurrentSpecsSet(CodonPositionsSet.class);
 			
