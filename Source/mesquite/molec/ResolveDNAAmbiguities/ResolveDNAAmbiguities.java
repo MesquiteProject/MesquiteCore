@@ -181,7 +181,7 @@ public class ResolveDNAAmbiguities extends DNADataAlterer implements AltererDNAC
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-			return true;
+			return false;
 		}
 	/*.................................................................................................................*/
 	public String getName() {
