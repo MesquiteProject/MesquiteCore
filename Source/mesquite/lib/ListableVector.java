@@ -859,12 +859,16 @@ public class ListableVector extends FileElement implements StringLister, Command
     	 		return  super.doCommand(commandName, arguments, checker);
 		return null;
    	 }
-	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
-	public void changed(Object caller, Object obj, Notification notification){
-		int code = Notification.getCode(notification); 
-		if (indexOf(obj)>=0 && code != MesquiteListener.LOCK_CHANGED && code != MesquiteListener.SELECTION_CHANGED && code != MesquiteListener.ANNOTATION_CHANGED && code != MesquiteListener.ANNOTATION_ADDED && code != MesquiteListener.ANNOTATION_DELETED)
-			notifyListeners(this, new Notification(MesquiteListener.ELEMENT_CHANGED));
-	}
+    /** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
+    		public void changed(Object caller, Object obj, Notification notification){
+    			int code = Notification.getCode(notification); 
+    			if (indexOf(obj)>=0 && code != MesquiteListener.LOCK_CHANGED && code != MesquiteListener.SELECTION_CHANGED && code != MesquiteListener.ANNOTATION_CHANGED && code != MesquiteListener.ANNOTATION_ADDED && code != MesquiteListener.ANNOTATION_DELETED)
+    				if (code == MesquiteListener.NAMES_CHANGED)
+    					notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
+    				else
+    					notifyListeners(this, new Notification(MesquiteListener.ELEMENT_CHANGED));
+    					
+    		}
 	/** passes which object was disposed*/
 	public void disposing(Object obj){
 	}
