@@ -214,6 +214,7 @@
    <li>For Local BLASTing, option to specify directories containing the BLAST executables and BLASTable databases.&nbsp; Also, can specify all files in a directory by entering &quot;*&quot; for the list of files.</li>
    <li>Added module for importing FASTA (DNA/RNA) files that looks at the taxon name as specified in the FASTA file, and determines if that taxon name matches the OTU ID code for a taxon currently in the matrix. If it does match, then the module can import the new sequence into that taxon. This appears in the Import dialog box as &quot;FASTA (DNA/RNA) - Taxon Names Match OTU ID Code&quot;.</li>
    <li>Export NEXUS for BEAST2 added (available from Files&gt;Export...), which exports simplified NEXUS files containing a data matrix as well as taxon sets suitable for import into BEAUTi.</li>
+   <li>For files having data from many loci as separate matrices (e.g. genomic data), an exporter has been added that writes a FASTA file for each taxon, within which are the taxon's sequences from each matrix (labelled by the name of the matrix). This can be useful for isolating that data for each taxon. (Name of exporter: &quot;FASTA File for each taxon, with sequences from each matrix&quot;.)</li>
  </ul>
 <hr />
 	 
