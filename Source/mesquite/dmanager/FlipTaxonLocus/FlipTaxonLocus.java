@@ -31,10 +31,13 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), "Python script in progress");
 		progressIndicator.start();
+//		String pythonCodeFilePath = StringUtil.protectFilePath(getPath()+"flipTaxonLocustoLocusTaxon.py");
+//		String pythonCodeFilePath = "'"+getPath()+"flipTaxonLocustoLocusTaxon.py"+"'";
 		String pythonCodeFilePath = getPath()+"flipTaxonLocustoLocusTaxon.py";
+
 		Debugg.println("directoryPath: " + directoryPath);
 		Debugg.println("pythonCodeFilePath: " + pythonCodeFilePath);
-		String pythonProgram = "python";
+		String pythonProgram = "python3";
 
 		externalRunner = new ExternalProcessManager(this, directoryPath, pythonProgram, pythonCodeFilePath, getName(), null, null, null, true);
 		externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
