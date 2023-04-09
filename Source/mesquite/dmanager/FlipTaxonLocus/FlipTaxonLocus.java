@@ -32,6 +32,8 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), "Python script in progress");
 		progressIndicator.start();
 		String pythonCodeFilePath = getPath()+MesquiteFile.fileSeparator+"flipTaxonLocustoLocusTaxon.py";
+		Debugg.println("directoryPath: " + directoryPath);
+		Debugg.println("pythonCodeFilePath: " + pythonCodeFilePath);
 		String pythonProgram = "python";
 
 		externalRunner = new ExternalProcessManager(this, directoryPath, pythonProgram, pythonCodeFilePath, getName(), null, null, null, true);
