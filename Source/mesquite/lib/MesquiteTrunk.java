@@ -101,6 +101,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean suppressSystemOutPrintln = false;
 	/** Default directory used in Open file dialogs and for consoles' current directory.  Adjusted by minimal.BasicFileCoordinator */
 	public static String suggestedDirectory = null;
+	public static String pythonDirectory = null;
 	/** Time of startup.*/
 	public static long startupTime;
 
