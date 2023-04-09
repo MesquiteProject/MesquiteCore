@@ -15,7 +15,6 @@ import mesquite.lib.MesquiteTrunk;
 /* ======================================================================== */
 public class FlipTaxonLocus extends GeneralFileMaker {
 
-	//protected String directoryPath=null;
 	ExternalProcessManager externalRunner;
 
 	/*.................................................................................................................*/
@@ -33,28 +32,18 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), "Python script in progress");
 		progressIndicator.start();
-		String outFileName = "pythOut.txt";
-		String outFilePath = directoryPath + outFileName;
-		String[] outputFilePaths = new String[1];
-		outputFilePaths[0] = outFilePath;
-		String pythonCode = getPath()+MesquiteFile.fileSeparator+"flipTaxonLocustoLocusTaxon.py";
+		String pythonCodeFilePath = getPath()+MesquiteFile.fileSeparator+"flipTaxonLocustoLocusTaxon.py";
+		String pythonProgram = "python3";
 
-		String arguments = "";
-
-		arguments=StringUtil.stripBoundingWhitespace(arguments);
-		externalRunner = new ExternalProcessManager(this, directoryPath, "python", pythonCode, getName(), outputFilePaths, null, null, true);
-//		externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+		externalRunner = new ExternalProcessManager(this, directoryPath, pythonProgram, pythonCodeFilePath, getName(), null, null, null, true);
 		success = externalRunner.executeInShell();
 		if (success)
 			success = externalRunner.monitorAndCleanUpShell(progressIndicator);
-
 
 		if (progressIndicator.isAborted()){
 			logln("Aborted by user\n");
 		}
 		progressIndicator.goAway();
-
-		if (success){}
 	}	
 
 
@@ -78,6 +67,10 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Flip Taxon x Locus to Locus x Taxon...";
+	}
+	/*.................................................................................................................*/
+	public String getExplanation() {
+		return "Invokes python to take a series of FASTA files each containing all of a taxon's sequences in each of a series of loci, and creating from this a series of FASTA files each containing all of the sequences for one locus for all taxa." ;
 	}
 
 
