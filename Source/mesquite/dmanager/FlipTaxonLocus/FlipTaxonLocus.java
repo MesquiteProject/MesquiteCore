@@ -10,7 +10,6 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.GeneralFileMaker;
-import mesquite.lib.MesquiteTrunk;
 
 /* ======================================================================== */
 public class FlipTaxonLocus extends GeneralFileMaker {
@@ -33,9 +32,10 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), "Python script in progress");
 		progressIndicator.start();
 		String pythonCodeFilePath = getPath()+MesquiteFile.fileSeparator+"flipTaxonLocustoLocusTaxon.py";
-		String pythonProgram = "python3";
+		String pythonProgram = "python";
 
 		externalRunner = new ExternalProcessManager(this, directoryPath, pythonProgram, pythonCodeFilePath, getName(), null, null, null, true);
+		externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
 		success = externalRunner.executeInShell();
 		if (success)
 			success = externalRunner.monitorAndCleanUpShell(progressIndicator);
