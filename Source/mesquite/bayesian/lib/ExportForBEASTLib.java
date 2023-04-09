@@ -77,14 +77,13 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
 	protected boolean convertAmbiguities = false;
-	protected boolean duplicateTaxonSets = false;
 	protected boolean preferencesSet = false;
 	protected boolean useData = true;
 	protected String addendum = "";
 	protected String fileName = "untitled.nex";
 	/*.................................................................................................................*/
 	public abstract String getProgramName();
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 
 	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -112,7 +111,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 		return StringUtil.simplifyIfNeededForOutput(taxa.getTaxonName(it),true);
 	}
 	/*.................................................................................................................*/
-	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, MesquiteFile file, boolean isCurrent, boolean duplicate){
+	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, MesquiteFile file, boolean isCurrent){
 			String s= "";
 			if (taxaSet!=null && (taxaSet.getFile()==file || (taxaSet.getFile()==null && taxa.getFile()==file))) {
 				String sT = "";
@@ -146,19 +145,12 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 				if (!StringUtil.blank(sT)) {
 					s+= "\tTAXSET " ;
 					String set1 = s;
-					String set2 = s;
 					set1+= StringUtil.tokenize(taxaSet.getName()) + " ";
-					set2+= StringUtil.tokenize(taxaSet.getName()+"_2") + " ";
 					if (file.getProject().getNumberTaxas()>1) {
 						set1+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
-						set2+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
 					}
 					set1+= " = "+  sT + ";" + StringUtil.lineEnding();
-					set2+= " = "+  sT + ";" + StringUtil.lineEnding();
-					if (duplicate)
-						s=set1+set2;
-					else
-						s=set1;
+					s=set1;
 				}
 			}
 			return s;
@@ -178,13 +170,13 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 					if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
 						ms.setNexusBlockStored(blockName);
 						ms.setName("UNTITLED");
-						specSet = nexusStringForSpecsSet(ms, taxa, file, true, duplicateTaxonSets);
+						specSet = nexusStringForSpecsSet(ms, taxa, file, true);
 						s += specSet;
 					}
 
 
 					for (int ims = 0; ims<numSets; ims++) {
-						s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false, duplicateTaxonSets);
+						s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
 						s += specSet;
 					}
 				}
