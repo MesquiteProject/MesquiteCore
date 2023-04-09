@@ -116,7 +116,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 			if (data.numCharsCurrentlyIncluded() < data.getNumChars())
 				anyExcluded = true;
 		}
-		getProject().getCharacterMatrices().incrementNotifySuppress(); //Manaus
+		getProject().getCharacterMatrices().incrementNotifySuppress(); 
 		if (!queryOptions())
 			return false;
 		CharacterData starter = null;   // this will be the new concatenated matrix
@@ -124,7 +124,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 		int countFailed = 0;
 		String name = "";
 		boolean found = false;
-		int deleted = 0;//Manaus
+		int deleted = 0;
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
 		for (int im = 0; im < datas.size(); im++){
@@ -143,7 +143,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 				name = name + "(" + data.getName() + ")";
 				if (removeConcatenated){
 						data.deleteMe(false);
-						deleted++;//Manaus
+						deleted++;
 				}
 			}
 			else 
@@ -156,9 +156,9 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 			discreetAlert("Two more more matrices should be selected first in order to concatenate them");
 		if (countFailed>0)
 			discreetAlert("Some matrices could not be concatenated into the first selected because they are of incompatible type or are linked to the first");
-		getProject().getCharacterMatrices().decrementNotifySuppress(); //Manaus
-		table.setNumRows(table.getNumRows()-deleted+1);//Manaus
-		((ListModule)employer).forceRecalculations();//Manaus
+		getProject().getCharacterMatrices().decrementNotifySuppress(); 
+		table.setNumRows(table.getNumRows()-deleted+1);
+		((ListModule)employer).forceRecalculations();
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		resetAllMenuBars();
