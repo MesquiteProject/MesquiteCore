@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # coding: utf-8
 
+#PYTHON 3
 
 # To convert directory of files, each named by taxon
 # and containing sequences named by locus,
@@ -34,7 +35,7 @@ else:
 for f in fastaFiles:
 	if not f.startswith("."):
 		taxonName = f[0:f.rfind('.')]
-		print "Taxon: ", taxonName
+		#print ("Taxon: ", taxonName)
 		lines = io.open(fastaDir + "/" + f, 'r', newline="\n")
 		for line in lines:
 			if line.startswith(">"):
@@ -42,11 +43,11 @@ for f in fastaFiles:
 				locusFilePath = outputDirectory + "/" + locusName + ".fas"
 				if not os.path.exists(locusFilePath):
 					locusFile = io.open(locusFilePath, 'w')
-					print "   locus: " + locusName
+					#print "   locus: " + locusName
 				else:
 					locusFile = io.open(locusFilePath, 'a')
-				locusFile.write(">".decode('utf-8'))
-				locusFile.write(taxonName.decode('utf-8'))
-				locusFile.write("\n".decode('utf-8'))
+				locusFile.write(">")
+				locusFile.write(taxonName)
+				locusFile.write("\n")
 			else:
-				locusFile.write(line.decode('utf-8'))
+				locusFile.write(line)

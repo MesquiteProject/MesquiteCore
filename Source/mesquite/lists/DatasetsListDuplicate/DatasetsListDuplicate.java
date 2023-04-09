@@ -54,7 +54,7 @@ public class DatasetsListDuplicate extends DatasetsListUtility {
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		boolean anyExcluded = false;
 		if (datas.size()>4 && MesquiteBoolean.yesNoQuery(containerOfModule(), "Are you sure you want to duplicate " + datas.size() + " matrices?")) {
-			return false;  //Manaus
+			return false; 
 		}
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
@@ -75,8 +75,6 @@ public class DatasetsListDuplicate extends DatasetsListUtility {
 			if (success){
 				starter.setName(datas.getUniqueName(data.getName() + " (duplicate)"));
 			}
-
-
 		}
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
