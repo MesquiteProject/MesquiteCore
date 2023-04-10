@@ -31,6 +31,7 @@ public class ExternalProcessManager implements Commandable  {
 	static int sleepTime = 50;
 	Process proc;
 	String directoryPath;
+	String[] programCommands;
 	String programCommand;
 	String programOptions;
 	String name;
@@ -59,6 +60,18 @@ public class ExternalProcessManager implements Commandable  {
 		this.ownerModule = ownerModule;
 		this.programCommand = programCommand;
 		this.programOptions = programOptions;
+		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdOutFileName;
+		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdErrFileName;
+		this.watcher = watcher;
+		this.visibleTerminal = visibleTerminal;
+	}
+	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String[] programCommands, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
+		this.directoryPath=directoryPath;
+		this.name = name;
+		this.outputFilePaths = outputFilePaths;
+		this.outputFileProcessor = outputFileProcessor;
+		this.ownerModule = ownerModule;
+		this.programCommands = programCommands;
 		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdOutFileName;
 		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdErrFileName;
 		this.watcher = watcher;
@@ -256,12 +269,25 @@ public class ExternalProcessManager implements Commandable  {
 
 	}
 	/*.................................................................................................................*/
+	public void setProgramCommands(String programCommand, String programOptions) {
+		programCommands = getStringArrayWithSplitting(programCommand, programOptions);
+	}
+	/*.................................................................................................................*/
+	public void setProgramCommands() {
+		programCommands = getStringArrayWithSplitting(programCommand, programOptions);
+	}
+	/*.................................................................................................................*/
+	public void setProgramCommands(String[] programCommands) {
+		this.programCommands = programCommands;
+	}
+	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
 	public boolean executeInShell(){
 		proc = null;
+		setProgramCommands();  // to be removed
 		externalProcess = new MesquiteExternalProcess();
-		externalProcess.start(directoryPath, stdOutFilePath, stdErrFilePath, getStringArrayWithSplitting(programCommand, programOptions));
+		externalProcess.start(directoryPath, stdOutFilePath, stdErrFilePath, programCommands);
 		proc = externalProcess.getProcess();
 		return proc!=null;
 	}

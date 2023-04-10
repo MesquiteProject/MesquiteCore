@@ -76,7 +76,7 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 	/*.................................................................................................................*/
 	public boolean loadModule() {
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
