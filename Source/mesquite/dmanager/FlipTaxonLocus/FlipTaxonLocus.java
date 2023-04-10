@@ -18,7 +18,6 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		loadPreferences();
 		return true;
 	}
 
@@ -68,12 +67,20 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 	}
 
 	/*.................................................................................................................*/
-	public String getName() {
-		return "Flip Taxon x Locus to Locus x Taxon...";
-	}
-	/*.................................................................................................................*/
 	public boolean loadModule() {
 		return false;
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease() {
+		return true;
+	}
+	/*.................................................................................................................*/
+	public String getName() {
+		return "Flip Taxon x Locus to Locus x Taxon";
+	}
+	/*.................................................................................................................*/
+	public String getNameForMenuItem() {
+		return "Flip Taxon x Locus to Locus x Taxon...";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
