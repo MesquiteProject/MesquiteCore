@@ -236,7 +236,7 @@ public class ExternalProcessManager implements Commandable  {
 			parser.setPunctuationString("");
 			parser.setWhitespaceString(" ");
 			parser.setAllowComments(false);
-			//parser.setNoQuoteCharacter();
+			parser.setNoQuoteCharacter();
 			int total = parser.getNumberOfTokens();
 			array = new String[total+1];
 			array[0]=string1;

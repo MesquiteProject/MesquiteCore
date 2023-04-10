@@ -36,7 +36,7 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 		Debugg.println("directoryPath: " + directoryPath);
 		Debugg.println("pythonCodeFilePath: " + pythonCodeFilePath);
-		String pythonProgram = "python3";
+		String pythonProgram = "python";
 
 		externalRunner = new ExternalProcessManager(this, directoryPath, pythonProgram, pythonCodeFilePath, getName(), null, null, null, true);
 		externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
@@ -72,6 +72,10 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Flip Taxon x Locus to Locus x Taxon...";
+	}
+	/*.................................................................................................................*/
+	public boolean loadModule() {
+		return true;
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
