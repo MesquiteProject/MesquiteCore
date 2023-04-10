@@ -29,7 +29,7 @@ import mesquite.molec.lib.*;
 public class LocalBlaster extends Blaster implements ActionListener,  ShellScriptWatcher, OutputFileProcessor {
 	boolean preferencesSet = false;
 	String programOptions = "" ;
-	String databaseString = "nt" ;
+	String databaseString = "*" ;
 	int numThreads = 1;
 	MesquiteTimer timer = new MesquiteTimer();
 	boolean localBlastDBHasTaxonomyIDs = true;
