@@ -13,8 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.LocalBlaster;
 
+import java.awt.Button;
 import java.awt.Checkbox;
 import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 import mesquite.lib.*;
 import mesquite.molec.lib.*;
@@ -22,16 +26,22 @@ import mesquite.molec.lib.*;
 /*  Initiator: DRM
  * */
 
-public class LocalBlaster extends Blaster implements ShellScriptWatcher {
+public class LocalBlaster extends Blaster implements ActionListener,  ShellScriptWatcher, OutputFileProcessor {
 	boolean preferencesSet = false;
 	String programOptions = "" ;
-	String databaseString = "nt" ;
+	String databaseString = "*" ;
 	int numThreads = 1;
 	MesquiteTimer timer = new MesquiteTimer();
 	boolean localBlastDBHasTaxonomyIDs = true;
 	boolean useIDInDefinition = true;
 	String[] databaseArray = null;
 	int numDatabases = 0;
+	ExternalProcessManager externalRunner;
+	boolean scriptBased = false;
+	boolean executablesInDefaultLocation = true;
+	String blastExecutableFolderPath = "";
+	boolean databasesInDefaultLocation = true;
+	String blastDatabaseFolderPath = "";
 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -65,6 +75,14 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 			localBlastDBHasTaxonomyIDs = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("useIDInDefinition".equalsIgnoreCase(tag))
 			useIDInDefinition = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("blastExecutableFolderPath".equalsIgnoreCase(tag))
+			blastExecutableFolderPath = StringUtil.cleanXMLEscapeCharacters(content);
+		else if ("blastDatabaseFolderPath".equalsIgnoreCase(tag))
+			blastDatabaseFolderPath = StringUtil.cleanXMLEscapeCharacters(content);
+		else if ("executablesInDefaultLocation".equalsIgnoreCase(tag))
+			executablesInDefaultLocation = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("databasesInDefaultLocation".equalsIgnoreCase(tag))
+			databasesInDefaultLocation = MesquiteBoolean.fromTrueFalseString(content);
 
 		preferencesSet = true;
 	}
@@ -76,6 +94,10 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		StringUtil.appendXMLTag(buffer, 2, "numThreads", numThreads);  
 		StringUtil.appendXMLTag(buffer, 2, "localBlastDBHasTaxonomyIDs", localBlastDBHasTaxonomyIDs);  
 		StringUtil.appendXMLTag(buffer, 2, "useIDInDefinition", useIDInDefinition);  
+		StringUtil.appendXMLTag(buffer, 2, "blastExecutableFolderPath", blastExecutableFolderPath);  
+		StringUtil.appendXMLTag(buffer, 2, "blastDatabaseFolderPath", blastDatabaseFolderPath);  
+		StringUtil.appendXMLTag(buffer, 2, "executablesInDefaultLocation", executablesInDefaultLocation);  
+		StringUtil.appendXMLTag(buffer, 2, "databasesInDefaultLocation", databasesInDefaultLocation);  
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -87,6 +109,31 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public String getStdErr() {
+		 if (externalRunner!=null)
+			return externalRunner.getStdErr();
+		return "";
+	}
+	/*.................................................................................................................*/
+	public boolean useDefaultStdOutFileName() {
+		return false;
+	}
+	/*.................................................................................................................*/
+	public String getStdOut() {
+		if (externalRunner!=null)
+			return externalRunner.getStdOut();
+		return "";
+	}
+	
+	public boolean stopExecution(){
+		if (externalRunner!=null) {
+			externalRunner.stopExecution();
+		}
+		return false;
+	}
+	
+
+	/*.................................................................................................................*/
 	public String getDatabaseName () {
 		if (databaseString==null)
 			return "";
@@ -94,12 +141,66 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 	}
 
 	/*.................................................................................................................*/
+	public int getNumPhdFilesInDirectory(File folder, String aceFileDirectoryPath) {
+		int count = 0;
+		return count;
+	}
+	/*.................................................................................................................*/
+	public void allInFolder () {
+		File folder = new File(blastDatabaseFolderPath);
+		int count=0;
+		if (folder.isDirectory()) {
+			String[] files = folder.list();
+			for (int i=0; i<files.length; i++) { // going through the folders and finding the ace files
+				if (files[i]!=null ) {
+					String filePath = blastDatabaseFolderPath + MesquiteFile.fileSeparator + files[i];
+					File cFile = new File(filePath);
+					if (cFile.exists()) {
+						if (!cFile.isDirectory()) {
+							 if (files[i].endsWith(".nsq")) {
+								count++;
+							}
+						}
+					}
+				}
+			}
+			databaseArray= new String[count];
+			numDatabases=count;
+			count=0;
+			for (int i=0; i<files.length; i++) { // going through the folders and finding the ace files
+				if (files[i]!=null ) {
+					String filePath = blastDatabaseFolderPath + MesquiteFile.fileSeparator + files[i];
+					File cFile = new File(filePath);
+					if (cFile.exists()) {
+						if (!cFile.isDirectory()) {
+							 if (files[i].endsWith(".nsq")) {
+								 String fileNameBase = StringUtil.getAllButLastItem(files[i], ".");
+								databaseArray[count]= blastDatabaseFolderPath + MesquiteFile.fileSeparator +fileNameBase;
+								count++;
+							}
+						}
+					}
+				}
+			}
+		}
+
+	}
+	/*.................................................................................................................*/
 	public void processDatabases (String s) {
 		if (s==null)
 			databaseArray=null;
+		else if (s.equals("*")) {
+			if (databasesInDefaultLocation)
+				MesquiteMessage.discreetNotifyUser("Can only process all files if in non-default location");
+			else
+				allInFolder();
+		}
 		else if (s.indexOf(",")<0){
 			databaseArray= new String[1];
-			databaseArray[0] = s;
+			if (databasesInDefaultLocation)
+				databaseArray[0]=s;
+			else 
+				databaseArray[0]= blastDatabaseFolderPath + MesquiteFile.fileSeparator +s;
 			numDatabases=1;
 		} else {
 			Parser parser = new Parser(s);
@@ -126,13 +227,32 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 				token = parser.getNextToken();
 				token = StringUtil.stripBoundingWhitespace(token);
 				if (StringUtil.notEmpty(token)) {
-					databaseArray[count]=token;
+					if (databasesInDefaultLocation)
+						databaseArray[count]=token;
+					else 
+						databaseArray[count]= blastDatabaseFolderPath + MesquiteFile.fileSeparator +token;
 					count++;
 				}
 			}
 		}
 	}
 
+	SingleLineTextField executablePathField =  null;
+	SingleLineTextField databasePathField =  null;
+	/*.................................................................................................................*/
+	public  void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equalsIgnoreCase("browseExecutable")) {
+			String directoryName = "";
+			String path = MesquiteFile.chooseDirectory("Choose directory containing the BLAST programs", directoryName);
+			if (StringUtil.notEmpty(path))
+				executablePathField.setText(path);
+		} else if (e.getActionCommand().equalsIgnoreCase("browseDatabase")) {
+			String directoryName = "";
+			String path = MesquiteFile.chooseDirectory("Choose directory containing the BLAST databases", directoryName);
+			if (StringUtil.notEmpty(path))
+				databasePathField.setText(path);
+		}
+	}
 
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
@@ -157,17 +277,40 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		Checkbox useIDInDefinitionBox = dialog.addCheckBox("Use ID in Definition (NCBI-provided databases)", useIDInDefinition);
 		Checkbox localBlastDBHasTaxonomyIDsBox = dialog.addCheckBox("Local BLAST database has NCBI taxonomy IDs", localBlastDBHasTaxonomyIDs);
 		IntegerField numThreadsField = dialog.addIntegerField("Number of processor threads to use:", numThreads,20, 1, Integer.MAX_VALUE);
+		Checkbox executablesInDefaultLocationBox = dialog.addCheckBox("BLAST programs in default location", executablesInDefaultLocation);
+		executablePathField = dialog.addTextField("Path to folder containing BLAST programs", blastExecutableFolderPath, 40);
+		Button browseButton = dialog.addAListenedButton("Browse...",null, this);
+		browseButton.setActionCommand("browseExecutable");
+		Checkbox databasesInDefaultLocationBox = dialog.addCheckBox("BLAST databases in default location", databasesInDefaultLocation);
+		databasePathField = dialog.addTextField("Path to folder containing BLAST databases", blastDatabaseFolderPath, 40);
+		Button browse2Button = dialog.addAListenedButton("Browse...",null, this);
+		browse2Button.setActionCommand("browseDatabase");
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			databaseString = databasesField.getText();
 			databaseString = StringUtil.removeNewLines(databaseString);
-			processDatabases(databaseString);
 			programOptions = programOptionsField.getText();
 			numThreads = numThreadsField.getValue();
 			localBlastDBHasTaxonomyIDs = localBlastDBHasTaxonomyIDsBox.getState();
 			useIDInDefinition = useIDInDefinitionBox.getState();
-
+			
+			executablesInDefaultLocation = executablesInDefaultLocationBox.getState();
+			String tempPath = executablePathField.getText();
+			if (StringUtil.blank(tempPath) && !executablesInDefaultLocation){
+				MesquiteMessage.discreetNotifyUser("The path to BLAST programs must be entered.");
+				return false;
+			}
+			blastExecutableFolderPath = tempPath;
+			
+			databasesInDefaultLocation = databasesInDefaultLocationBox.getState();
+			tempPath = databasePathField.getText();
+			if (StringUtil.blank(tempPath) && !databasesInDefaultLocation){
+				MesquiteMessage.discreetNotifyUser("The path to BLAST databases must be entered.");
+				return false;
+			}
+			blastDatabaseFolderPath = tempPath;
+			processDatabases(databaseString);
 			storePreferences();
 		}
 		dialog.dispose();
@@ -205,28 +348,34 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		String runningFilePath = rootDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFileName = "blastResults" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFilePath = rootDir + outFileName;
+		String[] outputFilePaths = new String[1];
+		outputFilePaths[0] = outFilePath;
 
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
-		String blastCommand = blastType + "  -query " + fileName;
-		blastCommand+= " -db "+database;
-		blastCommand+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
+		String blastArguments =  "  -query " + fileName;
+		blastArguments+= " -db "+database;
+		blastArguments+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
 
 		if (eValueCutoff>=0.0)
-			blastCommand+= " -evalue "+eValueCutoff;
+			blastArguments+= " -evalue "+eValueCutoff;
 
 		if (wordSize>3)
-			blastCommand+= " -word_size "+wordSize;
+			blastArguments+= " -word_size "+wordSize;
 		if (numThreads>1)
-			blastCommand+="  -num_threads " + numThreads;
+			blastArguments+="  -num_threads " + numThreads;
 
 		//	blastCommand+= " -gapopen 5 -gapextend 2 -reward 1 -penalty -3 ";
 
 
 
-		blastCommand+=" -out " + outFileName + " -outfmt 5";		
-		blastCommand+=" -max_target_seqs " + numHits; // + " -num_alignments " + numHits;// + " -num_descriptions " + numHits;		
-		blastCommand+=" " + programOptions + StringUtil.lineEnding();
+		blastArguments+=" -out " + outFileName + " -outfmt 5";		
+		blastArguments+=" -max_target_seqs " + numHits; // + " -num_alignments " + numHits;// + " -num_descriptions " + numHits;		
+		blastArguments+=" " + programOptions + StringUtil.lineEnding();
+		String blastCommand = blastType + blastArguments;
+		String programPath = blastType;
+		if (!executablesInDefaultLocation)
+			programPath = blastExecutableFolderPath + MesquiteFile.fileSeparator +blastType;
 		shellScript.append(blastCommand);
 		if (writeCommand)
 			logln("\n...................\nBLAST command: \n" + blastCommand);
@@ -236,8 +385,23 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 
 		timer.timeSinceLast();
 
-		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+		boolean success = false;
+		if (scriptBased) 
+			success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+		else {
+			String arguments = blastArguments;
+			arguments=StringUtil.stripBoundingWhitespace(arguments);
+			externalRunner = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true);
+			if (useDefaultStdOutFileName())
+				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+			else
+				externalRunner.setStdOutFileName(outFileName);
+			success = externalRunner.executeInShell();
+			if (success)
+				success = externalRunner.monitorAndCleanUpShell(null);
+		}
 
+		
 		if (success){
 			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, 1000, false);
 			if (blastResponse!=null && StringUtil.notEmpty(results)){
@@ -281,21 +445,49 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 
 		String outFileName = "blastResults" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFilePath = rootDir + outFileName;
+		String[] outputFilePaths = new String[1];
+		outputFilePaths[0] = outFilePath;
 
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 
-		String blastCommand = "blastdbcmd  -entry "+queryString + " -outfmt %f";
-		blastCommand+= " -db "+databaseArray[databaseNumber];
-		blastCommand+=" -out " + outFileName;		
+		String programPath = "blastdbcmd";
+		if (!executablesInDefaultLocation)
+			programPath = blastExecutableFolderPath + MesquiteFile.fileSeparator +"blastdbcmd";
+
+		String blastArguments = "  -entry "+queryString + " -outfmt %f";
+		blastArguments+= " -db "+databaseArray[databaseNumber];
+		blastArguments+=" -out " + outFileName;		
+
+		String blastCommand = "blastdbcmd" + blastArguments;
 
 		shellScript.append(blastCommand);
 
 		String scriptPath = rootDir + "batchScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 
-		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+		
 
+		boolean success = false;
+		if (scriptBased) 
+			success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+		else {
+			String arguments = blastArguments;
+			arguments=StringUtil.stripBoundingWhitespace(arguments);
+			externalRunner = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true);
+			if (useDefaultStdOutFileName())
+				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+			else
+				externalRunner.setStdOutFileName(outFileName);
+			externalRunner.setRemoveQuotes(true);
+			success = externalRunner.executeInShell();
+			if (success)
+				success = externalRunner.monitorAndCleanUpShell(null);
+		}
+
+		
+		
+		
 		if (success){
 			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, 1000, false);
 			if (blastResponse!=null && StringUtil.notEmpty(results)){
@@ -331,6 +523,22 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		}
 
 	}
+
+	public String[] modifyOutputPaths(String[] outputFilePaths) {
+		// TODO Auto-generated method stub
+		return outputFilePaths;
+	}
+
+	public void processOutputFile(String[] outputFilePaths, int fileNum) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void processCompletedOutputFiles(String[] outputFilePaths) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	public  String[] getNucleotideIDsfromProteinIDs(String[] ID){
 		ID = NCBIUtil.cleanUpID(ID);

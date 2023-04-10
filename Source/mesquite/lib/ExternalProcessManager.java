@@ -48,6 +48,7 @@ public class ExternalProcessManager implements Commandable  {
 	long stdOutLastModified = 0;
 	long stdErrLastModified = 0;
 	boolean badExitCode = false;
+	boolean removeQuotes = false;
 
 	
 	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
@@ -194,6 +195,12 @@ public class ExternalProcessManager implements Commandable  {
 			}
 		}
 	}
+	public boolean isRemoveQuotes() {
+		return removeQuotes;
+	}
+	public void setRemoveQuotes(boolean removeQuotes) {
+		this.removeQuotes = removeQuotes;
+	}
 
 	/*.................................................................................................................*/
 	public static String[] getStringArray(String string1, String...strings) {
@@ -216,7 +223,7 @@ public class ExternalProcessManager implements Commandable  {
 
 	}
 	/*.................................................................................................................*/
-	public static String[] getStringArrayWithSplitting(String string1, String string2) {
+	public  String[] getStringArrayWithSplitting(String string1, String string2) {
 		if (StringUtil.blank(string1))
 			return null;
 		String[] array;
@@ -227,15 +234,22 @@ public class ExternalProcessManager implements Commandable  {
 		} else {
 			Parser parser = new Parser(string2);
 			parser.setPunctuationString("");
+			parser.setWhitespaceString(" ");
+			parser.setAllowComments(false);
+			//parser.setNoQuoteCharacter();  // commented out April 2023 DRM
 			int total = parser.getNumberOfTokens();
 			array = new String[total+1];
 			array[0]=string1;
-			String token = parser.getFirstToken();
+			String token = parser.getFirstRawToken();  // May 2022 DRM
+			if (removeQuotes)
+				token = StringUtil.removeCharacters(token, "'");  // added April 2023 DRM
 			int count=0;
 			while (StringUtil.notEmpty(token)) {
 				count++;
 				array[count]=token;
-				token = parser.getNextToken();
+				token = parser.getUnalteredToken(false);   // May 2022 DRM
+				if (removeQuotes)
+					token = StringUtil.removeCharacters(token, "'");  // May 2022 DRM
 			}
 		}
 		return array;
@@ -310,7 +324,7 @@ public class ExternalProcessManager implements Commandable  {
 			if (proc!=null && !isAlive(proc)) {
 				stillGoing=false;
 				boolean goodValue = goodExitValue(proc.exitValue(), true);
-				if (!goodValue && !ownerModule.isDoomed() && !watcher.userAborted()) {
+				if (!goodValue && !ownerModule.isDoomed() && (watcher==null || !watcher.userAborted())) {
 					String message = name + " quit, possibly because of an error ("+proc.exitValue()+"). Please examine StandardOutputFile and StandardErrorFile in the analysis directory for information.";
 					if (ownerModule.okToInteractWithUser(MesquiteModule.CAN_PROCEED_ANYWAY, "Error in execution")){
 						AlertWithLinkToDirectory alert = new AlertWithLinkToDirectory(ownerModule.containerOfModule(),"Error in executing "+name, message, directoryPath);

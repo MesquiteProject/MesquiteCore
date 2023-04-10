@@ -390,7 +390,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 					//outputBuffer.append(" ");
 					counter = 1;
 					for (int ic = startChar; ic<numChars; ic++) {
-						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))){
+						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
 							int currentSize = outputBuffer.length();
 							appendPhylipStateToBuffer(data, ic, it, outputBuffer);
 							if (it==0)
@@ -420,6 +420,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
 			fractionApplicable = file.fractionApplicable;
+			writeCharactersWithNoData = file.writeCharactersWithNoData;
 		}
 		int countTaxa = 0;
 		for (int it = 0; it<numTaxa; it++)
@@ -431,10 +432,10 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 
 		outputBuffer.append(Integer.toString(numTaxa)+" ");
 
-		if (!writeExcludedCharacters)
-			outputBuffer.append(Integer.toString(data.getNumCharsIncluded())+this.getLineEnding());		
-		else
-			outputBuffer.append(Integer.toString(numChars)+this.getLineEnding());		
+//		if (!writeExcludedCharacters)
+			outputBuffer.append(Integer.toString(data.getNumCharacters(writeExcludedCharacters, writeCharactersWithNoData))+this.getLineEnding());		
+//		else
+//			outputBuffer.append(Integer.toString(numChars)+this.getLineEnding());		
 
 		exportBlock(taxa, data, outputBuffer, 0, numChars, true);
 		return outputBuffer;

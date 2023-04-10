@@ -119,11 +119,7 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 				w = (MesquiteWindow) containerOfModule();
 			if (w.getMode() != InfoBar.GRAPHICS || w.annotationHasFocus())
 				return;
-			if ((table == null || (table.anythingSelected() && !table
-					.editingAnything()))
-					&& (e.getKeyChar() == '\b'
-							|| e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e
-							.getKeyCode() == KeyEvent.VK_DELETE)) {
+			if ((table == null || (table.anythingSelected() && !table.editingAnything())) && (e.getKeyChar() == '\b' || e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)) {
 				deleteCommand.doItMainThread(null, "", this);
 			}
 		}
@@ -138,20 +134,16 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 
 	/* ................................................................................................................. */
 	public void endJob() {
-		if (containerOfModule() != null
-				&& ((MesquiteWindow) containerOfModule()) != null)
-			MesquiteWindow.removeKeyListener(
-					((MesquiteWindow) containerOfModule()), this);
+		if (containerOfModule() != null && ((MesquiteWindow) containerOfModule()) != null)
+			MesquiteWindow.removeKeyListener(((MesquiteWindow) containerOfModule()), this);
 		super.endJob();
 	}
 
 	public void setTableAndData(MesquiteTable table, CharacterData data) {
 		this.table = table;
 		this.data = data;
-		if (containerOfModule() != null
-				&& ((MesquiteWindow) containerOfModule()) != null)
-			MesquiteWindow.addKeyListener(
-					((MesquiteWindow) containerOfModule()), this);
+		if (containerOfModule() != null && ((MesquiteWindow) containerOfModule()) != null)
+			MesquiteWindow.addKeyListener(((MesquiteWindow) containerOfModule()), this);
 		addCharsMenuItem.setEnabled(data.canAddCharacters());
 		addCharsTool.setEnabled(data.canAddCharacters());
 	}
@@ -163,17 +155,11 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 							.anyRowSelected())))
 				return;
 			if (table.anyColumnSelected()) {
-				if (!MesquiteThread.isScripting()
-						&& !AlertDialog
-								.query(
-										containerOfModule(),
-										"Delete characters?",
-										"Are you sure you want to delete the selected characters?",
-										"Yes", "No"))
+				if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(),"Delete characters?","Are you sure you want to delete the selected characters?","Yes", "No"))
 					return;
 				Vector blocks = new Vector();
 				int count = 0;
-				while (table.anyColumnSelected()) {
+				while (table.anyColumnSelected()) {  // DELETING COLUMNS
 					count++;
 					int lastOfBlock = table.lastColumnSelected();
 					int firstOfBlock = table.startOfLastColumnBlockSelected();
@@ -182,39 +168,21 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 					if (lastOfBlock >= 0) {
 						for (int i = firstOfBlock; i <= lastOfBlock; i++)
 							table.deselectColumn(i);
-						data.deleteParts(firstOfBlock, lastOfBlock
-								- firstOfBlock + 1);
-						data.deleteInLinked(firstOfBlock, lastOfBlock
-								- firstOfBlock + 1, false);
-						blocks.addElement(new int[] { firstOfBlock,
-								lastOfBlock - firstOfBlock + 1 }); // do as
-																	// series of
-																	// contiguous
-																	// blocks
+						data.deleteParts(firstOfBlock, lastOfBlock - firstOfBlock + 1);
+						data.deleteInLinked(firstOfBlock, lastOfBlock - firstOfBlock + 1, false);
+						blocks.addElement(new int[] { firstOfBlock, lastOfBlock - firstOfBlock + 1 }); // do as series of contiguous blocks
 					}
 				}
 
 				if (blocks.size() == 1) {
-					data.notifyListeners(this, new Notification(
-							MesquiteListener.PARTS_DELETED, (int[]) blocks
-									.elementAt(0))); // do as series of
-														// contiguous blocks
-					data.notifyInLinked(new Notification(
-							MesquiteListener.PARTS_DELETED, (int[]) blocks
-									.elementAt(0))); // do as series of
-														// contiguous blocks
+					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, (int[]) blocks.elementAt(0))); // do as series of contiguous blocks
+					data.notifyInLinked(new Notification(MesquiteListener.PARTS_DELETED, (int[]) blocks.elementAt(0))); // do as series of contiguous blocks
 				} else {
-					data.notifyListeners(this, new Notification(
-							MesquiteListener.PARTS_DELETED)); // do as series
-																// of contiguous
-																// blocks
-					data.notifyInLinked(new Notification(
-							MesquiteListener.PARTS_DELETED)); // do as series
-																// of contiguous
-																// blocks
+					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED)); // do as series of contiguous blocks
+					data.notifyInLinked(new Notification(MesquiteListener.PARTS_DELETED)); // do as series of contiguous blocks
 				}
 			}
-			if (table.anyRowSelected()) {
+			if (table.anyRowSelected()) { // DELETING ROWS
 				Bits rows = table.getRowsSelected();
 				if (rows.numBitsOn() == data.getTaxa().getNumTaxa()) {
 					discreetAlert("You cannot delete all of the taxa; the command will be ignored");
@@ -224,13 +192,7 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 					discreetAlert("You cannot delete taxa; the taxa block is locked.");
 					return;
 				}
-				if (!MesquiteThread.isScripting()
-						&& !AlertDialog
-								.query(
-										containerOfModule(),
-										"Delete taxa?",
-										"Are you sure you want to delete the selected taxa?",
-										"Yes", "No"))
+				if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(),"Delete taxa?","Are you sure you want to delete the selected taxa?","Yes", "No"))
 					return;
 
 				for (int i = table.getNumRows() - 1; i >= 0; i--) {
@@ -239,35 +201,15 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 					}
 				}
 				Notification nn;
-
-				data.getTaxa().notifyListeners(this,
-						nn = new Notification(MesquiteListener.PARTS_DELETED));// do
-																				// as
-																				// series
-																				// of
-																				// contiguous
-																				// blocks
-				data.notifyListeners(this, new Notification(
-						MesquiteListener.PARTS_CHANGED)
-						.setNotificationNumber(nn.getNotificationNumber()));// do
-																			// as
-																			// series
-																			// of
-																			// contiguous
-																			// blocks
+				data.getTaxa().notifyListeners(this, nn = new Notification(MesquiteListener.PARTS_DELETED));// do as series of contiguous blocks
+				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED).setNotificationNumber(nn.getNotificationNumber()));// do as series of contiguous blocks
 			}
 		}
 	}
 
 	/* ................................................................................................................. */
-	public Object doCommand(String commandName, String arguments,
-			CommandChecker checker) {
-		if (checker
-				.compare(
-						this.getClass(),
-						"Adds characters to data matrix",
-						"[Character # before which new character are to be added] [row on which touched] [how many new characters]",
-						commandName, "addCharacters")) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Adds characters to data matrix", "[Character # before which new character are to be added] [row on which touched] [how many new characters]", commandName, "addCharacters")) {
 			if (data != null && data.canAddCharacters()) {
 
 				MesquiteInteger io = new MesquiteInteger(0);
@@ -275,107 +217,74 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 				int row = MesquiteInteger.fromString(arguments, io);
 				if (column >= -1) {
 					// column--; //to put characters before one touched
-					int howMany = MesquiteInteger.queryInteger(
-							containerOfModule(), "Add characters",
-							"How many characters to add?", 1, 1,
-							MesquiteInteger.infinite);
+					int howMany = MesquiteInteger.queryInteger(containerOfModule(), "Add characters", "How many characters to add?", 1, 1, MesquiteInteger.infinite);
 					if (MesquiteInteger.isCombinable(howMany) && howMany > 0) {
-						UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_ADDED,data);
+						UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_ADDED, data);
 						data.resetJustAdded();
 						UndoReference undoReference = new UndoReference(undoInstructions, null);
 						if (data.addParts(column, howMany)) {
 							data.addInLinked(column, howMany, true);
-							data.notifyListeners(this, new Notification(
-									MesquiteListener.PARTS_ADDED, new int[] {
-											column, howMany }, undoReference));
+							data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] { column, howMany }, undoReference));
 						}
 					}
 				} else if (column == -2) {
-					int howMany = MesquiteInteger.queryInteger(
-							containerOfModule(), "Add characters",
-							"How many characters to add?", 1, 1,
-							MesquiteInteger.infinite);
+					int howMany = MesquiteInteger.queryInteger(containerOfModule(), "Add characters", "How many characters to add?", 1, 1, MesquiteInteger.infinite);
 					if (MesquiteInteger.isCombinable(howMany) && howMany > 0) {
-						UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_ADDED,data);
+						UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_ADDED, data);
 						data.resetJustAdded();
 						UndoReference undoReference = new UndoReference(undoInstructions, null);
 						if (data.addParts(table.numColumnsTotal, howMany)) {
-							data.addInLinked(table.numColumnsTotal, howMany,
-									true);
-							data.notifyListeners(this, new Notification(
-									MesquiteListener.PARTS_ADDED, new int[] {
-											table.numColumnsTotal, howMany }, undoReference));
+							data.addInLinked(table.numColumnsTotal, howMany, true);
+							data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] { table.numColumnsTotal, howMany }, undoReference));
 						}
 					}
 				}
 			}
-		} else if (checker
-				.compare(
-						this.getClass(),
-						"Adds taxa to block of taxa",
-						"[column on which touched] [Taxon # before which new taxa are to be added] [how many new taxa]",
-						commandName, "addTaxa")) {
+		} else if (checker.compare(this.getClass(), "Adds taxa to block of taxa", "[column on which touched] [Taxon # before which new taxa are to be added] [how many new taxa]", commandName, "addTaxa")) {
 			if (data != null) {
 				MesquiteInteger io = new MesquiteInteger(0);
 				int column = MesquiteInteger.fromString(arguments, io);
 				int row = MesquiteInteger.fromString(arguments, io);
 				if (row >= -1) {
 					// row--; //to put taxa before one touched
-					int howMany = MesquiteInteger.queryInteger(
-							containerOfModule(), "Add taxa",
-							"How many taxa to add?", 1, 1, Taxa.MAXNUMTAXA
-									- data.getNumTaxa());
+					int howMany = MesquiteInteger.queryInteger(containerOfModule(), "Add taxa", "How many taxa to add?", 1, 1, Taxa.MAXNUMTAXA - data.getNumTaxa());
 					if (MesquiteInteger.isCombinable(howMany) && howMany > 0) {
 						data.getTaxa().addTaxa(row, howMany, true);
 					}
 				} else if (row == -2) {
-					int howMany = MesquiteInteger.queryInteger(
-							containerOfModule(), "Add taxa",
-							"How many taxa to add?", 1, 1, Taxa.MAXNUMTAXA
-									- data.getNumTaxa());
+					int howMany = MesquiteInteger.queryInteger(containerOfModule(), "Add taxa", "How many taxa to add?", 1, 1, Taxa.MAXNUMTAXA - data.getNumTaxa());
 					if (MesquiteInteger.isCombinable(howMany) && howMany > 0) {
-						data.getTaxa().addTaxa(table.numRowsTotal, howMany,
-								true);
+						data.getTaxa().addTaxa(table.numRowsTotal, howMany, true);
 					}
 				}
 			}
-		} else if (checker.compare(this.getClass(),
-				"Appends new character to end of matrix", "[How many to add]",
-				commandName, "addCharactersToEnd")) {
+		} else if (checker.compare(this.getClass(), "Appends new character to end of matrix", "[How many to add]", commandName, "addCharactersToEnd")) {
 			if (data != null && data.canAddCharacters()) {
 				MesquiteInteger io = new MesquiteInteger(0);
 				int howMany = MesquiteInteger.fromString(arguments, io);
 				if (!MesquiteInteger.isCombinable(howMany))
-					howMany = MesquiteInteger.queryInteger(containerOfModule(),
-							"Add characters", "How many characters to add?", 1,
-							1, MesquiteInteger.infinite);
+					howMany = MesquiteInteger.queryInteger(containerOfModule(), "Add characters", "How many characters to add?", 1, 1, MesquiteInteger.infinite);
 				if (MesquiteInteger.isCombinable(howMany) && howMany > 0) {
-					UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_ADDED,data);
+					UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_ADDED, data);
 					data.resetJustAdded();
 					UndoReference undoReference = new UndoReference(undoInstructions, null);
 					data.addParts(data.getNumChars(), howMany);
 					data.addInLinked(data.getNumChars(), howMany, true);
-					data.notifyListeners(this, new Notification( MesquiteListener.PARTS_ADDED, new int[] {data.getNumChars(), howMany }, undoReference));
+					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] { data.getNumChars(), howMany }, undoReference));
 				}
 			}
-		} else if (checker.compare(this.getClass(),
-				"Appends new taxa to end of block of taxa",
-				"[how many to add]", commandName, "addTaxaToEnd")) {
+		} else if (checker.compare(this.getClass(), "Appends new taxa to end of block of taxa", "[how many to add]", commandName, "addTaxaToEnd")) {
 			if (data != null) {
 				MesquiteInteger io = new MesquiteInteger(0);
 				int howMany = MesquiteInteger.fromString(arguments, io);
 				if (!MesquiteInteger.isCombinable(howMany))
-					howMany = MesquiteInteger.queryInteger(containerOfModule(),
-							"Add taxa", "How many taxa to add?", 1, 1,
-							Taxa.MAXNUMTAXA - data.getNumTaxa());
+					howMany = MesquiteInteger.queryInteger(containerOfModule(), "Add taxa", "How many taxa to add?", 1, 1, Taxa.MAXNUMTAXA - data.getNumTaxa());
 				if (MesquiteInteger.isCombinable(howMany) && howMany > 0) {
 					int wh = data.getNumTaxa();
 					data.getTaxa().addTaxa(wh, howMany, true);
 				}
 			}
-		} else if (checker.compare(this.getClass(),
-				"Deletes seleted characters or taxa", null, commandName,
-				"deleteSelected")) {
+		} else if (checker.compare(this.getClass(), "Deletes seleted characters or taxa", null, commandName, "deleteSelected")) {
 			deleteSelected(true);
 		} else
 			return super.doCommand(commandName, arguments, checker);

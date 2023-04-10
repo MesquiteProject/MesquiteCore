@@ -1003,6 +1003,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			row = currentNumRows-1;
 			firstInBlockDeleted = -1;
 			lastInBlockDeleted = -1;
+			((Listened)getCurrentObject()).incrementNotifySuppress();
+			
+	
+				
 			while(row>=0) {
 				if (table.isRowSelected(row) && owner.rowDeletable(row)){  // we've found a selected one
 					lastInBlockDeleted = row;
@@ -1018,6 +1022,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				row--;
 			}
 			table.setNumRows(currentNumRows-count);
+			((Listened)getCurrentObject()).decrementNotifySuppress();
 
 			//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
 			notifyRowDeletion(obj);

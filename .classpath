@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="jars/AppleJavaExtensions.jar"/>
-	<classpathentry exported="true" kind="lib" path="jars/iText.jar"/>
-	<classpathentry exported="true" kind="lib" path="jars/Jama-1.0.1.zip"/>
-	<classpathentry exported="true" kind="lib" path="jars/JSci.zip"/>
-	<classpathentry exported="true" kind="lib" path="jars/MRJToolkitStubs.zip"/>
-	<classpathentry exported="true" kind="lib" path="jars/pal.zip"/>
-	<classpathentry exported="true" kind="lib" path="jars/commons-httpclient-3.1.jar"/>
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
 	<classpathentry kind="src" path="Source"/>
-	<classpathentry exported="true" kind="lib" path="jars/gson-2.6.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="jars/commons-math3-3.6.1.jar"/>
-	<classpathentry kind="lib" path="jars/byte-buddy-agent-1.7.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="jars/jsch-0.1.54.jar"/>
-	<classpathentry kind="lib" path="jars/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="jars/commons-codec-1.11.jar"/>
-	<classpathentry exported="true" kind="lib" path="jars/httpclient-4.5.13.jar"/>
-	<classpathentry exported="true" kind="lib" path="jars/commons-io-2.11.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="jars/commons-lang3-3.12.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="jars/dom4j-2.1.3.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/AppleJavaExtensions.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/byte-buddy-agent-1.7.8.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/commons-codec-1.11.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/commons-io-2.11.0.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/commons-lang3-3.12.0.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/commons-text-1.9.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/dom4j-2.1.3.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/gson-2.6.2.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/httpclient-4.5.13.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/iText.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/Jama-1.0.1.zip"/>
+	<classpathentry kind="lib" path="Resources/jars/jsch-0.1.54.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/JSci.zip"/>
+	<classpathentry kind="lib" path="Resources/jars/MRJToolkitStubs.zip"/>
+	<classpathentry kind="lib" path="Resources/jars/pal.zip"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>

@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Molecular Data<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 3.70<br />
-      August 2021<br /></td>
+    <td width="14%">Version 3.80<br />
+      April 2023<br /></td>
   </tr>
 </table>
 
@@ -209,13 +209,16 @@
 <h3 id="toc4"><a name="Analyzing Molecular Data-BLASTing sequences-Top BLAST Matches"></a><a name="TopBlast"></a>Top BLAST Matches</h3>
  This tool will search a database using BLAST, and return information about the top hits, and optionally import them into the current matrix. You will be given the choice to either BLAST NCBI's database, or BLAST a local database that you have created. To use this tool, select a sequence or portion thereof in the data matrix. Choose Matrix&gt;Search&gt;Top BLAST Matches. You will be given the choice between BLASTing the NCBI GenBank Server, or BLASTing a local database, on your computer.<br />
 If you choose to BLAST GenBank directly, you will be asked to choose among various options, including:<br />
-<ul><li>maximum number of matches to be sought by Mesquite, and the eValue cutoff for acceptable hits</li><li>whether the report of results should be saved to a text file</li><li>whether details of the taxonomic lineage of the sequences should be reported</li><li>whether to import the top matches into the current matrix</li><li>the maximum time in seconds to wait for the BLAST search to complete.</li></ul><br />
-If you wish instead to BLAST a local database, perhaps containing sequences you generated, then you will first need to create a BLASTable database. You can do this by following the instructions on this <a  href="http://www.ncbi.nlm.nih.gov/guide/howto/run-blast-local" rel="nofollow">NCBI BLAST page</a>. After you install the NCBI tools, you can turn a FASTA file containing your sequences using the following instructions. Let's imagine that your FASTA file is called &quot;FASTAfileName&quot;, and that you wish to create a BLASTable nucleotide database called &quot;BLASTableDatabaseName&quot;. Then use the following command in your computer's terminal shell:<br />
-<br />
-<strong>makeblastdb -in FASTAfileName -out BLASTableDatabaseName -dbtype nucl</strong><br />
-<br />
-This will create three files, BLASTableDatabaseName.nin, BLASTableDatabaseName.nsq, and BLASTableDatabaseName.nhr. Move these to whatever folder is required for NCBI's BLAST tools to function (e.g., on the macOS, this is a &quot;db&quot; folder in a &quot;blast&quot; folder in your home directory). You can then BLAST the BLASTableDatabaseName file directly from within Mesquite. Within Mesquite, after you choose to BLAST a local database, you will first be asked to specify some details about the local database before you choose the BLAST options in the &quot;Local BLAST Options&quot; dialog box. In the &quot;Database to search&quot;, put the name of the database (e.g., &quot;BLASTableDatabaseName&quot;). You needn't enter any other options in this dialog box for databases you have created yourself. However, if you are going to do a blastX to a local protein database that you downloaded from GenBank, you will need to check &quot;Use ID in Definition&quot; box.<br />
-<br />
+<ul><li>maximum number of matches to be sought by Mesquite, and the eValue cutoff for acceptable hits</li><li>whether the report of results should be saved to a text file</li><li>whether details of the taxonomic lineage of the sequences should be reported</li><li>whether to import the top matches into the current matrix</li><li>the maximum time in seconds to wait for the BLAST search to complete.</li></ul>
+<p><br />
+  If you wish instead to BLAST a local database, perhaps containing sequences you generated, then you will first need to create a BLASTable database. You can do this by following the instructions on this <a href="http://www.ncbi.nlm.nih.gov/guide/howto/run-blast-local" rel="nofollow">NCBI BLAST page</a>. After you install the NCBI tools, you can turn a FASTA file containing your sequences using the following instructions. Let's imagine that your FASTA file is called &quot;FASTAfileName&quot;, and that you wish to create a BLASTable nucleotide database called &quot;BLASTableDatabaseName&quot;. Then use the following command in your computer's terminal shell:<br />
+  <br />
+  <strong>makeblastdb -in FASTAfileName -out BLASTableDatabaseName -dbtype nucl</strong><br />
+  <br />
+  This will create three files, BLASTableDatabaseName.nin, BLASTableDatabaseName.nsq, and BLASTableDatabaseName.nhr. Move these to whatever folder is required for NCBI's BLAST tools to function (e.g., on the macOS, this is a &quot;db&quot; folder in a &quot;blast&quot; folder in your home directory). You can then BLAST the BLASTableDatabaseName file directly from within Mesquite. Within Mesquite, after you choose to BLAST a local database, you will first be asked to specify some details about the local database before you choose the BLAST options in the &quot;Local BLAST Options&quot; dialog box. In the &quot;Database to search&quot;, put the name of the database (e.g., &quot;BLASTableDatabaseName&quot;). You needn't enter any other options in this dialog box for databases you have created yourself. However, if you are going to do a blastX to a local protein database that you downloaded from GenBank, you will need to check &quot;Use ID in Definition&quot; box.</p>
+<p>If your BLAST executables are not in the default folder that the installer placed them, then you will need uncheck "BLAST programs in default location" and specify the path to the folder.  If the BLAST databases are not in the default folder specified by the installer, then you will need uncheck "BLAST databases in default location" and  specify the path to their folder.  <br />
+  <br />
+</p>
 <h3 id="toc5"><a name="Analyzing Molecular Data-BLASTing sequences-Fetch &amp; Add GenBank Sequences"></a>Fetch &amp; Add GenBank Sequences</h3>
  This option, in Matrix&gt;Utilities&gt; Fetch &amp; Add GenBank Sequences, allows one to enter a comma-delimited list of GenBank accession numbers, and Mesquite will acquire these from GenBank and import them into the current matrix.<br />
 <br />
@@ -263,7 +266,7 @@ To build such a chart, begin with a file with a matrix of protein sequences. The
     </div>
 	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
   <div id="footer">
-    <p> ©2021 Wayne P. Maddison &amp;  David R. Maddison </p>
+    <p> ©2023 Wayne P. Maddison &amp;  David R. Maddison </p>
   <!-- end #footer --></div>
 <!-- end #container --></div>
 

@@ -554,11 +554,35 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return newListable;
 	}
 	/** Takes a listable, that in theory should be of length numChars, and returns a copy of it from which all 
+	 * entries corresponding to characters with no data are removed from the list */
+	public Listable[] removeEmptyFromListable(Listable[] listable) {
+		if (listable==null) return null;
+		int numWithData = getNumCharacters(true,false);
+		Listable[] newListable = new Listable[numWithData];
+		int count = 0;
+		for (int ic=0; count<newListable.length && ic<listable.length; ic++) {
+			if (hasDataForCharacter(ic)){
+				newListable[count] = listable[ic];
+				count++;
+			}
+		}
+		return newListable;
+	}
+	/** Takes a listable, that in theory should be of length numChars, and returns a copy of it from which all 
 	 * entries corresponding to excluded characters are removed from the list */
 	public boolean[] getBooleanArrayOfIncluded() {
 		boolean[] newArray = new boolean[numChars]; 
 		for (int ic=0; ic<numChars; ic++) {
 			newArray[ic] = isCurrentlyIncluded(ic);
+		}
+		return newArray;
+	}
+	/** Takes a listable, that in theory should be of length numChars, and returns a copy of it from which all 
+	 * entries corresponding to excluded characters are removed from the list */
+	public boolean[] getBooleanArrayOfIncludedAndNotEmpty() {
+		boolean[] newArray = new boolean[numChars]; 
+		for (int ic=0; ic<numChars; ic++) {
+			newArray[ic] = isCurrentlyIncluded(ic) && hasDataForCharacter(ic);
 		}
 		return newArray;
 	}
@@ -2423,6 +2447,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		int count=0;
 		for (int i = 0; i< getNumChars(); i++){
 			if (isCurrentlyIncluded(i))
+				count++;
+		}
+		return count;
+	}
+	/*.................................................................................................................*/
+	/** Returns number of characters, either counting excluded or not, and counting characters with no data, or not*/
+	public int getNumCharacters(boolean countExcluded, boolean countEmptyCharacters) {
+		int count=0;
+		for (int i = 0; i< getNumChars(); i++){
+			if ((countExcluded || isCurrentlyIncluded(i)) && (countEmptyCharacters || hasDataForCharacter(i)))
 				count++;
 		}
 		return count;

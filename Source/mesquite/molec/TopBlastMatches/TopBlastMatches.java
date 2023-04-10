@@ -400,7 +400,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 					results.append("\n");
 				}
 			}
-			results.append("-----------");
+			results.append("-----------\n");
 
 		}
 

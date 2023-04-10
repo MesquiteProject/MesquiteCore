@@ -192,12 +192,27 @@ public class BipartitionVector extends Vector {
 		return 0.0;
 	}
 	
+	String getTerminalTaxaList(Tree tree, Bits bits) {
+		StringBuffer sb = new StringBuffer();
+		boolean first = true;
+		for (int it=0; it<tree.getNumTaxa(); it++) {
+			if (bits.isBitOn(it)) {
+				if (!first) sb.append(", ");
+				sb.append(tree.getTaxa().getTaxonName(it));
+				first=false;
+			}
+		}
+		return sb.toString();
+	}
+	
 	/** Examines all contradictory clades and returnes the frequency value of the most frequent one. */
 	public double getMaximumDecimalFrequencyOfContradictoryNode(Tree tree, int node, boolean rooted){
+		boolean recordContradictoryGroup = MesquiteTrunk.debugMode;
 		Bits nodeBits = tree.getTerminalTaxaAsBits(node);
 		Bits treeBits = tree.getTerminalTaxaAsBits(tree.getRoot());
 		nodeBits.andBits(treeBits);  // this shouldn't be needed, but just in case...
-
+		String contradictoryCladeList = "";
+		
 		double max=0.0;
 		for (int i=0; i<size(); i++){
 			Bipartition bp = ((Bipartition)elementAt(i));
@@ -205,9 +220,15 @@ public class BipartitionVector extends Vector {
 			bpBits.andBits(treeBits);  //again, this shouldn't be needed, but just in case...
 			if (!compatible(nodeBits, bpBits)) {
 					double freq = getDecimalFrequency(bp);
-					if (freq>max) max=freq;
+					if (freq>max) {
+						max=freq;
+						if (recordContradictoryGroup)
+							contradictoryCladeList = getTerminalTaxaList(tree,bpBits);
+					}
 			}
 		}
+		if (recordContradictoryGroup)
+			MesquiteMessage.println("node: " + node + ", contradictory group: " + contradictoryCladeList);
 		return max;
 	}
 

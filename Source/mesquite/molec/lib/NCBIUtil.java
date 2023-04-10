@@ -654,7 +654,7 @@ public class NCBIUtil {
 		
 		String s;
 		if (report!=null){
-			report.append("Acquired: \n");
+			report.append("   Acquired: \n");
 			for (int it = itStart; it<= itEnd; it++){
 				s = taxa.getTaxon(it).getName();
 				report.append("  " + s + "\n");

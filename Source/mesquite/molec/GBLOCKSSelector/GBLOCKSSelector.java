@@ -73,7 +73,8 @@ public class GBLOCKSSelector extends CharacterSelector {
 
 			StringBuffer results = new StringBuffer();
 			if (gblocksCalculator.markCharacters(data, this, setToSelect, results)) {
-				logln(results.toString());
+				if (employer.okToInteractWithUser(CAN_PROCEED_ANYWAY, ""))
+					logln(results.toString());
 
 				// ======  now select the characters chosen
 				for (int ic=0; ic<data.getNumChars() && ic<setToSelect.length; ic++)

@@ -13,7 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+//import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.*;
 
 import java.awt.*;
 import java.io.UnsupportedEncodingException;
@@ -66,6 +67,8 @@ public class StringUtil {
 
 	/* ................................................................................................................. */
 	public static int getNumberOfLines(String s) {
+		if (blank(s))
+			return 0;
 		s = StringUtil.replace(s, "\r\n", "\r");
 		s = StringUtil.replace(s, "\n", "\r");
 
@@ -1499,6 +1502,19 @@ public class StringUtil {
 	/*.................................................................................................................*/
 	public static String protectFilePathForUnix(String filePath){  
 		return protectFilePathForUnix(filePath, true);
+	}
+
+	/*.................................................................................................................*/
+	public static String protectFilePath(String filePath){  
+		if (MesquiteTrunk.isWindows())
+			return protectFilePathForWindows(filePath);
+		else
+			return protectFilePathForUnix(filePath);
+	}
+
+	/*.................................................................................................................*/
+	public static String protectFilePathForCommandLine(String filePath){  
+		return "'" + filePath + "'";
 	}
 
 
