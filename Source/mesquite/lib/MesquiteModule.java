@@ -67,7 +67,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "9 April 2023";
+		return "10 April 2023";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -139,7 +139,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.6  = 917 released 27 Dec 2O18
 	//3.61  = 927 released 26 Dec 2O19
 	//3.70  = 940 released 21 Aug 2021
-	//3.80  = 949 released 9 Apr 2023
+	//3.80  = 949 released 10 Apr 2023
 
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
