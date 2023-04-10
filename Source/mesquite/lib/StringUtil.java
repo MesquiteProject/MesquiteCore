@@ -1512,6 +1512,11 @@ public class StringUtil {
 			return protectFilePathForUnix(filePath);
 	}
 
+	/*.................................................................................................................*/
+	public static String protectFilePathForCommandLine(String filePath){  
+		return "'" + filePath + "'";
+	}
+
 
 	/** protectForUnix is for filepaths that are to be inserted into a command file for execution on a UNIX platform.  
 	 * For example, it is used in formulating a batch file to be used to run an external alignment program.  

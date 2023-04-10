@@ -236,13 +236,13 @@ public class ExternalProcessManager implements Commandable  {
 			parser.setPunctuationString("");
 			parser.setWhitespaceString(" ");
 			parser.setAllowComments(false);
-			parser.setNoQuoteCharacter();
+			//parser.setNoQuoteCharacter();  // commented out April 2023 DRM
 			int total = parser.getNumberOfTokens();
 			array = new String[total+1];
 			array[0]=string1;
 			String token = parser.getFirstRawToken();  // May 2022 DRM
 			if (removeQuotes)
-				token = StringUtil.removeCharacters(token, "'");  // April 2023 DRM
+				token = StringUtil.removeCharacters(token, "'");  // added April 2023 DRM
 			int count=0;
 			while (StringUtil.notEmpty(token)) {
 				count++;
