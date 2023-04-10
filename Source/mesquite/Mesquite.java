@@ -37,28 +37,28 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2021. Mesquite: A modular system for evolutionary analysis.  Version 3.70.  http://www.mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2023. Mesquite: A modular system for evolutionary analysis.  Version 3.80.  http://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.70+";
+		return "3.80";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 370;
+		return 380;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.70;
+		return 3.80;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "August 2021"; //"April 2007";
+		return "April 2023"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -380,7 +380,7 @@ public class Mesquite extends MesquiteTrunk
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2021 W. Maddison and D. Maddison\n");
+		logInitString  += ("Copyright (c) 1997-2023 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
