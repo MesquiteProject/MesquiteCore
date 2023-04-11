@@ -31,35 +31,40 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 	/*.................................................................................................................*/
 	public void processDirectory(String directoryPath) {
-
+//		String pythonVersionStOut= ExternalProcessManager.executeAndGetStandardErr(this, "/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python", "-V");
+		
+//		String pythonVersionStOut= ExternalProcessManager.executeAndGetStandardErr(this, "python", "-V");
+/*		String raxmlng= ExternalProcessManager.executeAndGetStandardOut(this, "/usr/local/bin/raxml-ng", "-v");
+		logln("\nraxml-ng version: " + raxmlng);
+		String iqTreeV= ExternalProcessManager.executeAndGetStandardOut(this, "/usr/local/bin/iqtree2", "-V");
+		logln("\niq-tree version: " + iqTreeV);
+*/
+		
 		boolean success = false;
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
 
 		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), "Python script in progress");
 		progressIndicator.start();
-		String pythonCodeFilePath = StringUtil.protectFilePathForCommandLine(getPath()+"flipTaxonLocustoLocusTaxon.py");
-//		String pythonCodeFilePath = getPath()+"flipTaxonLocustoLocusTaxon.py";
 
-		String pythonProgram = "python";
-
-		externalRunner = new ExternalProcessManager(this, directoryPath, pythonProgram, pythonCodeFilePath, getName(), null, null, null, true);
+		String pythonCommand = "python";
+		String pythonOptions = StringUtil.protectFilePathForCommandLine(getPath()+"flipTaxonLocustoLocusTaxon.py");
+		
+		externalRunner = new ExternalProcessManager(this, directoryPath, pythonCommand, pythonOptions, getName(), null, null, null, true, true);
+//		externalRunner = new ExternalProcessManager(this, directoryPath, pythonProgramCommands, getName(), null, null, null, true);
 		externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
-		externalRunner.setRemoveQuotes(true);
 		success = externalRunner.executeInShell();
 		if (success)
 			success = externalRunner.monitorAndCleanUpShell(progressIndicator);
 
-		if (progressIndicator.isAborted()){
+		if (progressIndicator.isAborted())
 			logln("Aborted by user\n");
-		}
 		progressIndicator.goAway();
 	}	
 
 
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
-		boolean success= false;
 		String directoryPath = MesquiteFile.chooseDirectory("Choose directory containing data files:", null); 
 		if (StringUtil.blank(directoryPath))
 			return null;
