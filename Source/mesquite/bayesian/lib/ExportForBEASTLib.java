@@ -136,7 +136,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			return s;
    	}
 		/*.................................................................................................................*/
-	public String getNexusCommands(MesquiteFile file, String blockName){ 
+	 String getLocalNexusCommands(MesquiteFile file, String blockName){ 
 		String s= "";
 		String specSet ="";
 		for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
@@ -167,7 +167,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	}
 /*.................................................................................................................*/
 	public String getSetsBlock(MesquiteFile file){
-		String contents = getNexusCommands(file, "SETS");
+		String contents = getLocalNexusCommands(file, "SETS");
 		if (StringUtil.blank(contents))
 			return null;
 		String blocks="BEGIN SETS;" + StringUtil.lineEnding()+ contents;
