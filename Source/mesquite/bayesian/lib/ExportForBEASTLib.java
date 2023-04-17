@@ -166,7 +166,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 		return s;
 	}
 /*.................................................................................................................*/
-	public String getSetsBlock(MesquiteFile file){
+	 String getSetsBlock(MesquiteFile file){
 		String contents = getLocalNexusCommands(file, "SETS");
 		if (StringUtil.blank(contents))
 			return null;

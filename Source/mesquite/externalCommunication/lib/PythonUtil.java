@@ -35,9 +35,11 @@ public class PythonUtil {
 
 	}
 
-	public static String pythonVersion(MesquiteModule ownerModule) {
-		//		String pythonVersionStOut= ExternalProcessManager.executeAndGetStandardErr(this, "/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python", "-V");
-
+	public static String pythonVersion(MesquiteModule ownerModule, int version) {
+		if (version==2 || (version==0 && pythonPreference==2))
+			return ExternalProcessManager.executeAndGetStandardErr(ownerModule, getPythonPath(2), "-V");
+		else 
+			return ExternalProcessManager.executeAndGetStandardOut(ownerModule, getPythonPath(3), "-V");
 		//		String pythonVersionStOut= ExternalProcessManager.executeAndGetStandardErr(this, "python", "-V");
 		/*		String raxmlng= ExternalProcessManager.executeAndGetStandardOut(this, "/usr/local/bin/raxml-ng", "-v");
 		logln("\nraxml-ng version: " + raxmlng);
@@ -52,8 +54,6 @@ public class PythonUtil {
 		if (success)
 			success = scriptRunner.monitorAndCleanUpShell(progressIndicator);
 		 */
-
-		return null;
 
 	}
 
