@@ -6,10 +6,9 @@ import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.FileInterpreterI;
+import mesquite.molec.lib.MolecUtil;
 
 public class ExportTiledBaits extends FileInterpreterI {
-
-//TODO:  warn about uncertainty
 	
 	
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -18,6 +17,7 @@ public class ExportTiledBaits extends FileInterpreterI {
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		loadPreferences();
 		return true;
 	}
 	public void readFile(MesquiteProject mf, MesquiteFile mNF, String arguments) {
@@ -51,16 +51,49 @@ public class ExportTiledBaits extends FileInterpreterI {
 	}
 
 	/* ============================  exporting ============================*/
-	/*.................................................................................................................*/
-//	String fileName = "untitled.fas";
 	int baitLength = 120;
 	int tileAmount = 60;
+	boolean includeShortBaits = false;
+	
 	boolean getEndBaitIfShiftedEnough = false;
 	int shiftThresholdForEndBait = 30;
-//	boolean arbitrarilyResolveAmbiguity = true;
-	boolean includeShortBaits = false;
+	
+	boolean arbitrarilyResolveAmbiguity = false;
+	boolean randomlyChooseStateAsFallback = true;
+	boolean avoidStopCodons = true;
+	
+	boolean preferencesSet=false;
 
-	//	protected boolean buildFileName = false;
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference(String tag, String content) {
+		if ("baitLength".equalsIgnoreCase(tag))
+			baitLength = MesquiteInteger.fromString(content);
+		if ("tileAmount".equalsIgnoreCase(tag))
+			tileAmount = MesquiteInteger.fromString(content);
+
+		if ("arbitrarilyResolveAmbiguity".equalsIgnoreCase(tag))
+			arbitrarilyResolveAmbiguity = MesquiteBoolean.fromTrueFalseString(content);
+		if ("randomlyChooseStateAsFallback".equalsIgnoreCase(tag))
+			randomlyChooseStateAsFallback = MesquiteBoolean.fromTrueFalseString(content);
+		if ("avoidStopCodons".equalsIgnoreCase(tag))
+			avoidStopCodons = MesquiteBoolean.fromTrueFalseString(content);
+
+		preferencesSet = true;
+	}
+
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML() {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "baitLength", baitLength);
+		StringUtil.appendXMLTag(buffer, 2, "tileAmount", tileAmount);
+		
+		StringUtil.appendXMLTag(buffer, 2, "arbitrarilyResolveAmbiguity", arbitrarilyResolveAmbiguity);
+		StringUtil.appendXMLTag(buffer, 2, "randomlyChooseStateAsFallback", randomlyChooseStateAsFallback);
+		StringUtil.appendXMLTag(buffer, 2, "avoidStopCodons", avoidStopCodons);
+
+		preferencesSet = true;
+		return buffer.toString();
+	}
 
 	/*.................................................................................................................*/
 	public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
@@ -68,10 +101,23 @@ public class ExportTiledBaits extends FileInterpreterI {
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export Tiled Baits", buttonPressed);
 		exportDialog.setSuppressLineEndQuery(true);
 		exportDialog.setDefaultButton(null);
+		exportDialog.appendToHelpString("This will export a FASTA file containing sequences obtained from all matrices for all taxa (or only the selected taxa, if that option is chosen). "
+				+ "For each sequence in the matrix, one more more sequences will be written into the FASTA file.  If the sequence in the matrix is, say, 310 bases long, and the bait length is"
+				+ " set to 120, with a tile amount of 60, then the first 120 nucleotides will be written as one sequence, then nucleotides 61-180, then 121-240, then 181-300.  If "
+				+ " \"include baits shorter than the specified bait length\" is chosen, then there will also be addition sequences written for sites 241-310, and 301-310. "
+				+ " If there are ambiguous nucleotides contained in the file, these can be arbitrarily resolved.  This feature is equivalent to the Resolve DNA Ambiguity feature in the Alter menu.");
+		
+		
 
 		IntegerField baitLengthField= exportDialog.addIntegerField("Bait length", baitLength, 8);
 		IntegerField tileAmountField= exportDialog.addIntegerField("Tile amount", tileAmount, 8);
-		Checkbox includeShortBaitsBox= exportDialog.addCheckBox("Include short baits", includeShortBaits);
+		Checkbox includeShortBaitsBox= exportDialog.addCheckBox("Include baits shorter than the specified bait length", includeShortBaits);
+		
+		exportDialog.addHorizontalLine(1);
+
+		Checkbox arbitrarilyResolveAmbiguityBox = exportDialog.addCheckBox("Arbitrarily resolve ambiguities based upon other taxa's states", arbitrarilyResolveAmbiguity);
+		Checkbox randomlyChooseStateAsFallbackBox = exportDialog.addCheckBox("Randomly choose a contained state as fallback", randomlyChooseStateAsFallback);
+		Checkbox avoidStopCodonsBox = exportDialog.addCheckBox("Do not choose a state that would yield a stop codon", avoidStopCodons);
 
 		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
 
@@ -81,6 +127,10 @@ public class ExportTiledBaits extends FileInterpreterI {
 			baitLength = baitLengthField.getValue();
 			tileAmount = tileAmountField.getValue();
 			includeShortBaits = includeShortBaitsBox.getState();
+			randomlyChooseStateAsFallback = randomlyChooseStateAsFallbackBox.getState();
+			avoidStopCodons = avoidStopCodonsBox.getState();
+			arbitrarilyResolveAmbiguity = arbitrarilyResolveAmbiguityBox.getState();
+			storePreferences();
 		}
 
 		exportDialog.dispose();
@@ -117,9 +167,13 @@ public class ExportTiledBaits extends FileInterpreterI {
 		int count = 0;
 		int ic =0;
 		boolean nextStartSet = false;
+		DNAState charState = new DNAState();
 		for (ic = icStart; ic<numChars && count<baitLength; ic++) {
 			if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic,it)) {
-				if (data.isMultistateOrUncertainty(ic, it)) {  //TODO
+				if (arbitrarilyResolveAmbiguity && data.isMultistateOrUncertainty(ic, it)) {
+					charState = (DNAState)data.getCharacterState(charState, ic, siteNumber);
+					int stateToAssign = MolecUtil.resolveDNAAmbiguity(this, data,  ic,  it,  charState,  avoidStopCodons,  randomlyChooseStateAsFallback, false);
+					dataBuffer.append(data.getStateAsString(ic, stateToAssign));
 				}
 				else {
 					data.statesIntoStringBuffer(ic, it, dataBuffer, false);
@@ -184,6 +238,27 @@ public class ExportTiledBaits extends FileInterpreterI {
 		 
 		StringBuffer buffer = new StringBuffer(500);
 
+		boolean hasAmbiguities = false;
+		for (int taxaNumber=0; taxaNumber<getProject().getNumberTaxas(file) && !hasAmbiguities; taxaNumber++) {
+			Taxa taxa = (Taxa)getProject().getTaxa(file,taxaNumber);
+			int numMatrices = getProject().getNumberCharMatrices(null, taxa, DNAState.class, true);
+			for (int iM = 0; iM < numMatrices&& !hasAmbiguities; iM++){
+				DNAData data = (DNAData)getProject().getCharacterMatrixVisible(taxa, iM, DNAState.class);
+				if (data != null) {
+					if (data.hasMultistateOrUncertaintyOrMissing(true, writeOnlySelectedTaxa))
+						hasAmbiguities = true;
+				}
+			}
+		}
+
+		if (hasAmbiguities && !arbitrarilyResolveAmbiguity) {  
+			if (MesquiteThread.isScripting())
+				logln("WARNING!!!  Ambiguities detected in data");
+			else {
+				if (!AlertDialog.query(this, "Ambiguities Detected!", "Some cells contain ambiguity codes (e,g, R or Y) or missing data (X or N or ?).  Do you really want to continue? You could restart this process, and choose to resolve ambiguities", "Continue", "Cancel"))
+					return false;
+			}
+		}
 
 		for (int taxaNumber=0; taxaNumber<getProject().getNumberTaxas(file); taxaNumber++) {
 			Taxa taxa = (Taxa)getProject().getTaxa(file,taxaNumber);
