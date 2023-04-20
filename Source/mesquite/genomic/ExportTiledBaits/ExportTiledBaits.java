@@ -55,8 +55,8 @@ public class ExportTiledBaits extends FileInterpreterI {
 	int tileAmount = 60;
 	boolean includeShortBaits = false;
 	
-	boolean getEndBaitIfShiftedEnough = false;
-	int shiftThresholdForEndBait = 30;
+//	boolean getEndBaitIfShiftedEnough = false;
+//	int shiftThresholdForEndBait = 30;
 	
 	boolean arbitrarilyResolveAmbiguity = false;
 	boolean randomlyChooseStateAsFallback = true;
@@ -124,8 +124,10 @@ public class ExportTiledBaits extends FileInterpreterI {
 		boolean ok = (exportDialog.query(dataSelected, taxaSelected)==0);
 
 		if (ok) {
-			baitLength = baitLengthField.getValue();
-			tileAmount = tileAmountField.getValue();
+			if (baitLengthField.getValue()>10)
+				baitLength = baitLengthField.getValue();
+			if (tileAmountField.getValue()>10)
+				tileAmount = tileAmountField.getValue();
 			includeShortBaits = includeShortBaitsBox.getState();
 			randomlyChooseStateAsFallback = randomlyChooseStateAsFallbackBox.getState();
 			avoidStopCodons = avoidStopCodonsBox.getState();
@@ -302,11 +304,15 @@ public class ExportTiledBaits extends FileInterpreterI {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Exports for a FASTA file containing all of the sequences tiled." ;
+		return "Exports a FASTA file containing tiled sequences of a specified length from all matrices for all taxa (or only the selected taxa, if that option is chosen) that could be used as baits." ;
+	}
+	/*.................................................................................................................*/
+	public boolean isSubstantive() {
+		return true;
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 }

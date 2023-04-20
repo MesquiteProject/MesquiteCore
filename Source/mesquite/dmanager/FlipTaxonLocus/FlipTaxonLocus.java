@@ -84,6 +84,10 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public boolean isSubstantive() {
+		return true;
+	}
+/*.................................................................................................................*/
 	public String getName() {
 		return "Flip Taxon x Locus to Locus x Taxon";
 	}
