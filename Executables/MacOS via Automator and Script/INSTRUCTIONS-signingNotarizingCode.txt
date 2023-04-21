@@ -1,0 +1,172 @@
+For Apple Java executables:
+
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Info.plist
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/Mesquite
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Resources/Java/Mesquite.jar
+codesign --force -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+======
+
+For Oracle Java Executables 1.7: (used as of January 2018)
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Info.plist
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/JavaAppLauncher
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Java/mesquite.jar
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Resources/Mesquite.icns
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/PkgInfo
+codesign --force -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+
+======
+
+For Oracle Java Executables 1.8:
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Info.plist
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/Mesquite
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/libpackager.dylib
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Java/Mesquite.jar
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Java/Mesquite.cfg
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Resources/Mesquite.icns
+codesign --force -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+
+=====
+
+For Oracle Java Executables JDK14:
+EITHER
+codesign --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+
+
+codesign --force --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+
+
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/app/mesquite.jar
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/app/Mesquite.cfg
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Info.plist
+codesign --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/Mesquite 
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/libapplauncher.dylib
+codesign --verbose=4 --deep --force -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/runtime/Contents/MacOS/libjli.dylib
+codesign --force --deep --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+
+
+OR:
+
+for f in $(find Mesquite.app/Contents); 
+do 
+	codesign -s "Developer ID Application: Wayne Maddison" $f;
+done
+codesign --verbose=4 --deep --force -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/runtime/Contents/MacOS/libjli.dylib
+codesign --force --deep --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+
+(all of this is done by signBundle.sh)
+=====
+Mesquite (1GB).app
+Mesquite (2GB).app
+Mesquite (500MB).app
+
+FROM http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/packagingAppsForMac.html
+
+Sign your app using the codesign(1) tool, as shown in the following example:
+
+% codesign -s "Developer ID Application: CommonNameFromCertificate" ExampleApp.app
+To verify that the app is signed, the following command provides information about the signing status of the app:
+
+% codesign -d --verbose=4 ExampleApp.app
+To check whether an application can be launched when Gatekeeper is enabled, use the spctl command:
+
+% spctl --assess --verbose=4 --type execute ExampleApp.app
+
+====
+If certificate is expired
+NEW:
+Use XCode, Preferences, accounts:
+https://help.apple.com/xcode/mac/current/#/dev154b28f09
+
+====================================================
+NOTARIZING
+Sign app, as above
+Zip using 
+	/usr/bin/ditto -c -k --keepParent Mesquite.app Mesquite.zip
+Submit for notarization using
+	xcrun altool --eval-app --primary-bundle-id org.mesquiteproject -u wmaddisn@zoology.ubc.ca -f Mesquite.zip
+
+Give not Apple-id password, but rather app-specific PASSWORD. (https://support.apple.com/en-us/HT204397)
+
+For regular Mesquite.app: hjbt-fpiw-yhus-tukk
+
+Will respond with a RequestUUID. To check status, enter (replace strange request uu id)
+
+	xcrun altool --eval-info <RequestUUID> -u wmaddisn@zoology.ubc.ca
+	xcrun altool --eval-info 62e0a34a-d94e-451a-8f1a-b2cf23a5e8aa -u wmaddisn@zoology.ubc.ca
+
+To get more details use  the URL given
+
+Somethow this might help also???
+xcrun altool --notarization-info <RequestUUID> -u wmaddisn@zoology.ubc.ca
+
+
+Once it's approved, run
+	xcrun stapler staple Mesquite.app
+
+
+========
+xcrun altool --eval-info 5a7b3743-39e3-4362-8204-404f9bdac65a -u wmaddisn@zoology.ubc.ca
+
+xcrun altool --notarization-info 6000f74f-fe6f-463a-bf41-4595dfd8d1a3 -u wmaddisn@zoology.ubc.ca
+
+====================================================
+Then codesign and notarize the APP
+
+codesign --force --sign "Developer ID Application: Wayne Maddison" MesquiteDMG.dmg
+
+If you leave off the --verbose tag, and it does not print any output, indicates 'success'.
+
+Then sign and notarize the dmg
+xattr -cr MesquiteDMG.dmg
+codesign --force --sign "Developer ID Application: Wayne Maddison" MesquiteDMG.dmg
+xcrun altool --eval-app --primary-bundle-id org.mesquiteproject -u wmaddisn@zoology.ubc.ca -f MesquiteDMG.dmg
+(wait and it will give you the request UUID)
+
+App specific password for MesquiteDMG: ondx-llog-pdue-mxoo
+
+To check status:
+xcrun altool --eval-info 25beae4a-dbc9-4fca-b922-a35bd3e47974 -u wmaddisn@zoology.ubc.ca
+(where the weird thing is replaced by the request UUID)
+
+xcrun stapler staple MesquiteDMG.dmg
+
+
+https://stackoverflow.com/questions/52911791/hardened-runtime-for-java-and-mojave
+https://developer.apple.com/documentation/xcode/notarizing_macos_software_before_distribution/customizing_the_notarization_workflow
+https://github.com/AdoptOpenJDK/openjdk-support/issues/97
+https://stackoverflow.com/questions/56890749/macos-notarize-in-script
+
+
+
+
+-----------------
+OLD
+Open the Keychain Access app which can be found in Applications → Utilities.
+Select Keychain Access → Certificate Assistant → Create a Certificate from the menubar.
+For Name, enter mac-dev-env.
+For Identity Type, leave Self-Signed Root.
+For Certificate Type, select Code Signing.
+Leave Let me override defaults unchecked.
+Create the certificate and follow through until the window is closed.
+Next, select the certificate in the login keychain and press ⌘-I.
+Expand the Trust section.
+Select Always Trust for Code Signing, close and save.
+
+then on commandline
+sudo xcodebuild -license
+
+then try to sign again

@@ -18,6 +18,8 @@ import java.awt.*;
 import java.net.*;
 import java.util.*;
 import java.io.*;
+
+import mesquite.externalCommunication.lib.PythonUtil;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
@@ -120,6 +122,7 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit t0=taxon 1, t1=taxon 2, etc. Names in Tree Reading", makeCommand("toggleT0NamesTrees",  this), taxonT0Trees);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Print Tree Names by Default", makeCommand("printTreeNameByDefault",  this), printTreeNameByDefault);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Matrix Limits for Undo...", makeCommand("setMaxMatrixSizeUndo",  this));
+		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Python Settings...", makeCommand("pythonSettings",  this));
 
 		//comment out debug mode menu item for users 
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Debug Mode", makeCommand("toggleDebugMode",  this), debugMode);
@@ -311,6 +314,12 @@ public class Defaults extends MesquiteInit  {
 		else if ("suggestedDirectory".equalsIgnoreCase(tag)){
 			MesquiteTrunk.suggestedDirectory = StringUtil.cleanXMLEscapeCharacters(content);
 		}
+		else if ("python2Path".equalsIgnoreCase(tag)){
+			PythonUtil.python2Path = StringUtil.cleanXMLEscapeCharacters(content);
+		}
+		else if ("python3Path".equalsIgnoreCase(tag)){
+			PythonUtil.python3Path = StringUtil.cleanXMLEscapeCharacters(content);
+		}
 	}
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
@@ -322,6 +331,8 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfMatricesTreeBlocksSeparateInPanel", FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel);
 		StringUtil.appendXMLTag(buffer, 2, "useOtherChoicesInMenus", useOtherChoices);   
 		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.suggestedDirectory);
+		StringUtil.appendXMLTag(buffer, 2, "python2Path", PythonUtil.python2Path);
+		StringUtil.appendXMLTag(buffer, 2, "python3Path", PythonUtil.python3Path);
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
 		StringUtil.appendXMLTag(buffer, 2, "suppressXORMode", suppressXORMode);   
 		StringUtil.appendXMLTag(buffer, 2, "taxonTruncTrees", taxonTruncTrees);   
@@ -519,6 +530,9 @@ public class Defaults extends MesquiteInit  {
 			}
 
 		}
+		else if (checker.compare(getClass(), "Allows one to adjust settings for Python", "", commandName, "pythonSettings")) {
+			PythonUtil.pythonSettings(this);
+}
 		else if (checker.compare(getClass(), "Sets whether to show windows of each project as tabs within a single window", null, commandName, "toggleTabbedWindows")) {
 			tabbedWindows.toggleValue(null);
 			MesquiteWindow.compactWindows = tabbedWindows.getValue();

@@ -1270,6 +1270,22 @@ public class CategoricalData extends CharacterData {
 		long s = getStateRaw(ic,it);
 		return (CategoricalState.hasMultipleStates(s));
 	}
+
+	
+	
+	/*..........................................    ..................................................*/
+	/** returns whether any cell in the matrix has multiple states or is missing*/
+	public  boolean hasMultistateOrUncertaintyOrMissing(boolean countMissing, boolean considerOnlySelectedTaxa){
+		for (int it=0; it<numTaxa; it++)
+			if (!considerOnlySelectedTaxa || getTaxa().getSelected(it)){
+				for (int ic=0; ic<numChars; ic++){
+					if (isMultistateOrUncertainty(ic,  it) || (countMissing && isUnassigned(ic,it)))
+						return true;
+				}
+			}
+		return false;
+	}
+
 	/*..........................................  CategoricalData  ..................................................*/
 	/** returns the maximum symbol defined*/
 	public int getMaxSymbolDefined(){
@@ -2190,6 +2206,13 @@ public class CategoricalData extends CharacterData {
 				MesquiteMessage.println("Default model not found / " + dR.getDefault());
 			return cm;
 		}
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** returns string describing the state "state" of character ict. �*/
+	public String getStateAsString(int ic, int state){
+		if (state<=CategoricalState.maxCategoricalState && state>=0) 
+			return getStateSymbol(ic, state);
+		return "";
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) specified in the long array s.  The first element in s is presumed (for the sake of state symbols

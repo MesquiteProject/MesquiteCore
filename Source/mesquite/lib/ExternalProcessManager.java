@@ -31,8 +31,9 @@ public class ExternalProcessManager implements Commandable  {
 	static int sleepTime = 50;
 	Process proc;
 	String directoryPath;
-	String programCommand;
-	String programOptions;
+	String[] programCommands;
+	//String programCommand;
+	//String programOptions;
 	String name;
 	String[] outputFilePaths; //reconnect
 	String stdOutFilePath, stdErrFilePath;
@@ -48,7 +49,7 @@ public class ExternalProcessManager implements Commandable  {
 	long stdOutLastModified = 0;
 	long stdErrLastModified = 0;
 	boolean badExitCode = false;
-	boolean removeQuotes = false;
+	boolean removeQuotes = true;
 
 	
 	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
@@ -57,10 +58,38 @@ public class ExternalProcessManager implements Commandable  {
 		this.outputFilePaths = outputFilePaths;
 		this.outputFileProcessor = outputFileProcessor;
 		this.ownerModule = ownerModule;
-		this.programCommand = programCommand;
-		this.programOptions = programOptions;
+	//	this.programCommand = programCommand;
+	//	this.programOptions = programOptions;
+		this.programCommands = getStringArrayWithSplitting(programCommand, programOptions);
 		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdOutFileName;
 		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdErrFileName;
+		this.watcher = watcher;
+		this.visibleTerminal = visibleTerminal;
+	}
+	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal, boolean removeQuotes){
+		this.directoryPath=directoryPath;
+		this.name = name;
+		this.outputFilePaths = outputFilePaths;
+		this.outputFileProcessor = outputFileProcessor;
+		this.ownerModule = ownerModule;
+		this.removeQuotes = removeQuotes;
+	//	this.programCommand = programCommand;
+	//	this.programOptions = programOptions;
+		this.programCommands = getStringArrayWithSplitting(programCommand, programOptions);
+		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath)  + stdOutFileName;
+		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) +  stdErrFileName;
+		this.watcher = watcher;
+		this.visibleTerminal = visibleTerminal;
+	}
+	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String[] programCommands, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
+		this.directoryPath=directoryPath;
+		this.name = name;
+		this.outputFilePaths = outputFilePaths;
+		this.outputFileProcessor = outputFileProcessor;
+		this.ownerModule = ownerModule;
+		this.programCommands = programCommands;
+		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath)  + stdOutFileName;
+		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath)  + stdErrFileName;
 		this.watcher = watcher;
 		this.visibleTerminal = visibleTerminal;
 	}
@@ -149,6 +178,14 @@ public class ExternalProcessManager implements Commandable  {
 	public String getStdOut() {
 		return MesquiteFile.getFileContentsAsStringNoWarn(stdOutFilePath);
 	}
+	/*.................................................................................................................*/
+	public void emptyStdErr() {
+		 MesquiteFile.deleteFile(stdErrFilePath);
+	}
+	/*.................................................................................................................*/
+	public void emptyStdOut() {
+		 MesquiteFile.deleteFile(stdOutFilePath);
+	}
 	
 	OutputTextListener textListener;
 	
@@ -156,6 +193,43 @@ public class ExternalProcessManager implements Commandable  {
 		this.textListener= textListener;
 	}
 
+	
+	/*.................................................................................................................*/
+	public static String executeAndGetStandardOut(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions) {
+		boolean success = false;
+		ExternalProcessManager externalRunner = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, true);
+		externalRunner.emptyStdOut();
+		success = externalRunner.executeInShell();
+		if (success) {
+			success = externalRunner.monitorAndCleanUpShell(null);
+			return externalRunner.getStdOut();
+		}
+		return "";
+	}	
+	/*.................................................................................................................*/
+	public static String executeAndGetStandardOut(MesquiteModule ownerModule, String programCommand, String programOptions) {
+		String directoryPath = ownerModule.createSupportDirectory() + MesquiteFile.fileSeparator;  
+		return executeAndGetStandardOut(ownerModule, directoryPath, programCommand, programOptions);
+	//	ownerModule.deleteSupportDirectory();
+	}	
+	/*.................................................................................................................*/
+	public static String executeAndGetStandardErr(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions) {
+		boolean success = false;
+		ExternalProcessManager externalRunner = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, true);
+		externalRunner.emptyStdErr();
+		success = externalRunner.executeInShell();
+		if (success) {
+			success = externalRunner.monitorAndCleanUpShell(null);
+			return externalRunner.getStdErr();
+		}
+		return "";
+	}	
+	/*.................................................................................................................*/
+	public static String executeAndGetStandardErr(MesquiteModule ownerModule, String programCommand, String programOptions) {
+		String directoryPath = ownerModule.createSupportDirectory() + MesquiteFile.fileSeparator;  
+		return executeAndGetStandardErr(ownerModule, directoryPath, programCommand, programOptions);
+	//	ownerModule.deleteSupportDirectory();
+	}	
 	/*.................................................................................................................*/
 	public long getStdErrLastModified() {
 		File file = new File(stdErrFilePath);
@@ -202,7 +276,7 @@ public class ExternalProcessManager implements Commandable  {
 		this.removeQuotes = removeQuotes;
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public static String[] getStringArray(String string1, String...strings) {
 		if (StringUtil.blank(string1))
 			return null;
@@ -256,12 +330,37 @@ public class ExternalProcessManager implements Commandable  {
 
 	}
 	/*.................................................................................................................*/
+	public String programCommandsToString () {
+		if (programCommands==null)
+			return "";
+		StringBuffer sb = new StringBuffer();
+		for (int i=0; i<programCommands.length; i++) {
+			if (StringUtil.notEmpty(programCommands[i]))
+				sb.append(programCommands[i]);
+		}
+		return sb.toString();
+	}
+	/*.................................................................................................................*/
+	public void setProgramCommands(String programCommand, String programOptions) {
+		programCommands = getStringArrayWithSplitting(programCommand, programOptions);
+	}
+	/*.................................................................................................................*
+	public void setProgramCommands() {
+		programCommands = getStringArrayWithSplitting(programCommand, programOptions);
+	}
+	/*.................................................................................................................*/
+	public void setProgramCommands(String[] programCommands) {
+		this.programCommands = programCommands;
+	}
+	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
 	public boolean executeInShell(){
 		proc = null;
+//		if (programCommands==null && (programCommand!=null))
+//			setProgramCommands();  // to be removed
 		externalProcess = new MesquiteExternalProcess();
-		externalProcess.start(directoryPath, stdOutFilePath, stdErrFilePath, getStringArrayWithSplitting(programCommand, programOptions));
+		externalProcess.start(directoryPath, stdOutFilePath, stdErrFilePath, programCommands);
 		proc = externalProcess.getProcess();
 		return proc!=null;
 	}

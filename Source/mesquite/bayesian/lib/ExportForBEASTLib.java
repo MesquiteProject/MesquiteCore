@@ -119,29 +119,9 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 				int lastWritten = -1;
 				for (int ic=0; ic<taxa.getNumTaxa(); ic++) {
 					if (taxaSet.isBitOn(ic)) {
-						if (continuing == 0) {
-							sT += " " + getTaxonName(taxa,ic);
-							lastWritten = ic;
-							continuing = 1;
-						}
-						else if (continuing == 1) {
-							sT += " - ";
-							continuing = 2;
-						}
+						sT += " " + getTaxonName(taxa,ic);
 					}
-					else if (continuing>0) {
-						if (lastWritten != ic-1) {
-							sT += " " + getTaxonName(taxa,ic-1);
-							lastWritten = ic-1;
-						}
-						else
-							lastWritten = -1;
-						continuing = 0;
-					}
-
 				}
-				if (continuing>1)
-					sT += " " + getTaxonName(taxa, taxa.getNumTaxa()-1);
 				if (!StringUtil.blank(sT)) {
 					s+= "\tTAXSET " ;
 					String set1 = s;
@@ -156,7 +136,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			return s;
    	}
 		/*.................................................................................................................*/
-	public String getNexusCommands(MesquiteFile file, String blockName){ 
+	 String getLocalNexusCommands(MesquiteFile file, String blockName){ 
 		String s= "";
 		String specSet ="";
 		for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
@@ -186,8 +166,8 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 		return s;
 	}
 /*.................................................................................................................*/
-	public String getSetsBlock(MesquiteFile file){
-		String contents = getNexusCommands(file, "SETS");
+	 String getSetsBlock(MesquiteFile file){
+		String contents = getLocalNexusCommands(file, "SETS");
 		if (StringUtil.blank(contents))
 			return null;
 		String blocks="BEGIN SETS;" + StringUtil.lineEnding()+ contents;

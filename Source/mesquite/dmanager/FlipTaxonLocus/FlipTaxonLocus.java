@@ -16,6 +16,7 @@ package mesquite.dmanager.FlipTaxonLocus;
 
 import java.io.File;
 
+import mesquite.externalCommunication.lib.PythonUtil;
 import mesquite.lib.*;
 import mesquite.lib.duties.GeneralFileMaker;
 
@@ -31,35 +32,35 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 	/*.................................................................................................................*/
 	public void processDirectory(String directoryPath) {
+		if (!PythonUtil.pythonAvailable())
+			PythonUtil.pythonSettings(this);
+		if (!PythonUtil.pythonAvailable())
+			return;
 
 		boolean success = false;
-		MesquiteTimer timer = new MesquiteTimer();
-		timer.start();
-
 		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), "Python script in progress");
 		progressIndicator.start();
-		String pythonCodeFilePath = StringUtil.protectFilePathForCommandLine(getPath()+"flipTaxonLocustoLocusTaxon.py");
-//		String pythonCodeFilePath = getPath()+"flipTaxonLocustoLocusTaxon.py";
+		String pythonCommand = PythonUtil.python3Path;
+		String pythonOptions = StringUtil.protectFilePathForCommandLine(getPath()+"flipTaxonLocustoLocusTaxon.py");
 
-		String pythonProgram = "python";
-
-		externalRunner = new ExternalProcessManager(this, directoryPath, pythonProgram, pythonCodeFilePath, getName(), null, null, null, true);
+		if (!PythonUtil.python3Available()) {
+			pythonCommand = PythonUtil.python2Path;
+			pythonOptions = StringUtil.protectFilePathForCommandLine(getPath()+"flipTaxonLocustoLocusTaxon2.py");
+		}
+		
+		externalRunner = new ExternalProcessManager(this, directoryPath, pythonCommand, pythonOptions, getName(), null, null, null, true, true);
 		externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
-		externalRunner.setRemoveQuotes(true);
 		success = externalRunner.executeInShell();
 		if (success)
 			success = externalRunner.monitorAndCleanUpShell(progressIndicator);
-
-		if (progressIndicator.isAborted()){
+		if (progressIndicator.isAborted())
 			logln("Aborted by user\n");
-		}
 		progressIndicator.goAway();
 	}	
 
 
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
-		boolean success= false;
 		String directoryPath = MesquiteFile.chooseDirectory("Choose directory containing data files:", null); 
 		if (StringUtil.blank(directoryPath))
 			return null;
@@ -76,13 +77,25 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 	/*.................................................................................................................*/
 	public boolean loadModule() {
-		return false;
-	}
-	/*.................................................................................................................*/
-	public boolean isPrerelease() {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public boolean isPrerelease() {
+		return false;
+	}
+	/*.................................................................................................................*/
+	public boolean isSubstantive() {
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 381;  
+	}
+
+/*.................................................................................................................*/
 	public String getName() {
 		return "Flip Taxon x Locus to Locus x Taxon";
 	}

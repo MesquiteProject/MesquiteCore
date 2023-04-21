@@ -1,0 +1,75 @@
+For Apple Java executables:
+
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Info.plist
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/Mesquite
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Resources/Java/Mesquite.jar
+codesign --force -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+======
+
+For Oracle Java Executables 1.7: (used as of January 2018)
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Info.plist
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/JavaAppLauncher
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Java/mesquite.jar
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Resources/Mesquite.icns
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/PkgInfo
+codesign --force -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+
+======
+
+For Oracle Java Executables 1.8:
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Info.plist
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/Mesquite
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/MacOS/libpackager.dylib
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Java/Mesquite.jar
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Java/Mesquite.cfg
+codesign -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Resources/Mesquite.icns
+codesign --force -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+
+=====
+Mesquite (1GB).app
+Mesquite (2GB).app
+Mesquite (500MB).app
+
+FROM http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/packagingAppsForMac.html
+
+Sign your app using the codesign(1) tool, as shown in the following example:
+
+% codesign -s "Developer ID Application: CommonNameFromCertificate" ExampleApp.app
+To verify that the app is signed, the following command provides information about the signing status of the app:
+
+% codesign -d --verbose=4 ExampleApp.app
+To check whether an application can be launched when Gatekeeper is enabled, use the spctl command:
+
+% spctl --assess --verbose=4 --type execute ExampleApp.app
+
+=======
+Then codesign
+
+codesign --force --sign "Developer ID Application: Wayne Maddison" <pathToDMG>
+
+
+If you leave off the --verbose tag, and it does not print any output, indicates 'success'.
+
+====
+If certificate is expired
+Open the Keychain Access app which can be found in Applications → Utilities.
+Select Keychain Access → Certificate Assistant → Create a Certificate from the menubar.
+For Name, enter mac-dev-env.
+For Identity Type, leave Self-Signed Root.
+For Certificate Type, select Code Signing.
+Leave Let me override defaults unchecked.
+Create the certificate and follow through until the window is closed.
+Next, select the certificate in the login keychain and press ⌘-I.
+Expand the Trust section.
+Select Always Trust for Code Signing, close and save.
+
+then on commandline
+sudo xcodebuild -license
+
+then try to sign again
