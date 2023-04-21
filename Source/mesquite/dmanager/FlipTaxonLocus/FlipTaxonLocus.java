@@ -81,7 +81,7 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {
