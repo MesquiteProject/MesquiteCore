@@ -48,7 +48,7 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 			pythonOptions = StringUtil.protectFilePathForCommandLine(getPath()+"flipTaxonLocustoLocusTaxon2.py");
 		}
 		
-		externalRunner = new ExternalProcessManager(this, directoryPath, pythonCommand, pythonOptions, getName(), null, null, null, true, true);
+		externalRunner = new ExternalProcessManager(this, directoryPath, pythonCommand, pythonOptions, getName(), null, null, null, true, true, true, false);
 		externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
 		success = externalRunner.executeInShell();
 		if (success)

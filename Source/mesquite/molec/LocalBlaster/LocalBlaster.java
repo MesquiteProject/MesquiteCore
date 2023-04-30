@@ -474,7 +474,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 		else {
 			String arguments = blastArguments;
 			arguments=StringUtil.stripBoundingWhitespace(arguments);
-			externalRunner = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true);
+			externalRunner = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true, false, true, true);
 			if (useDefaultStdOutFileName())
 				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
 			else

@@ -49,7 +49,9 @@ public class ExternalProcessManager implements Commandable  {
 	long stdOutLastModified = 0;
 	long stdErrLastModified = 0;
 	boolean badExitCode = false;
+	boolean removeQuotesStart = true;
 	boolean removeQuotes = true;
+	boolean setNoQuoteChar = false;
 
 	
 	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
@@ -66,13 +68,15 @@ public class ExternalProcessManager implements Commandable  {
 		this.watcher = watcher;
 		this.visibleTerminal = visibleTerminal;
 	}
-	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal, boolean removeQuotes){
+	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal, boolean removeQuotesStart, boolean removeQuotes, boolean setNoQuoteChar){
 		this.directoryPath=directoryPath;
 		this.name = name;
 		this.outputFilePaths = outputFilePaths;
 		this.outputFileProcessor = outputFileProcessor;
 		this.ownerModule = ownerModule;
 		this.removeQuotes = removeQuotes;
+		this.removeQuotesStart = removeQuotesStart;
+		this.setNoQuoteChar =  setNoQuoteChar;
 	//	this.programCommand = programCommand;
 	//	this.programOptions = programOptions;
 		this.programCommands = getStringArrayWithSplitting(programCommand, programOptions);
@@ -195,9 +199,9 @@ public class ExternalProcessManager implements Commandable  {
 
 	
 	/*.................................................................................................................*/
-	public static String executeAndGetStandardOut(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions) {
+	public static String executeAndGetStandardOut(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, boolean removeQuotesStart, boolean removeQuotes, boolean setNoQuoteChar) {
 		boolean success = false;
-		ExternalProcessManager externalRunner = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, true);
+		ExternalProcessManager externalRunner = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, removeQuotesStart, removeQuotes, setNoQuoteChar);
 		externalRunner.emptyStdOut();
 		success = externalRunner.executeInShell();
 		if (success) {
@@ -207,15 +211,19 @@ public class ExternalProcessManager implements Commandable  {
 		return "";
 	}	
 	/*.................................................................................................................*/
+	public static String executeAndGetStandardOut(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions) {
+		return executeAndGetStandardOut(ownerModule, directoryPath, programCommand, programOptions, true, true, false);
+	}	
+/*.................................................................................................................*/
 	public static String executeAndGetStandardOut(MesquiteModule ownerModule, String programCommand, String programOptions) {
 		String directoryPath = ownerModule.createSupportDirectory() + MesquiteFile.fileSeparator;  
 		return executeAndGetStandardOut(ownerModule, directoryPath, programCommand, programOptions);
 	//	ownerModule.deleteSupportDirectory();
 	}	
 	/*.................................................................................................................*/
-	public static String executeAndGetStandardErr(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions) {
+	public static String executeAndGetStandardErr(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, boolean removeQuotesStart, boolean removeQuotes, boolean setNoQuoteChar) {
 		boolean success = false;
-		ExternalProcessManager externalRunner = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, true);
+		ExternalProcessManager externalRunner = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, removeQuotesStart, removeQuotes, setNoQuoteChar);
 		externalRunner.emptyStdErr();
 		success = externalRunner.executeInShell();
 		if (success) {
@@ -223,6 +231,10 @@ public class ExternalProcessManager implements Commandable  {
 			return externalRunner.getStdErr();
 		}
 		return "";
+	}	
+	/*.................................................................................................................*/
+	public static String executeAndGetStandardErr(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions) {
+		return executeAndGetStandardErr(ownerModule, directoryPath, programCommand, programOptions, true, true, false);
 	}	
 	/*.................................................................................................................*/
 	public static String executeAndGetStandardErr(MesquiteModule ownerModule, String programCommand, String programOptions) {
@@ -310,12 +322,13 @@ public class ExternalProcessManager implements Commandable  {
 			parser.setPunctuationString("");
 			parser.setWhitespaceString(" ");
 			parser.setAllowComments(false);
-			//parser.setNoQuoteCharacter();  // commented out April 2023 DRM
+			if (setNoQuoteChar)
+				parser.setNoQuoteCharacter();  // commented out April 2023 DRM
 			int total = parser.getNumberOfTokens();
 			array = new String[total+1];
 			array[0]=string1;
 			String token = parser.getFirstRawToken();  // May 2022 DRM
-			if (removeQuotes)
+			if (removeQuotesStart)
 				token = StringUtil.removeCharacters(token, "'");  // added April 2023 DRM
 			int count=0;
 			while (StringUtil.notEmpty(token)) {
