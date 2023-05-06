@@ -383,8 +383,15 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 				for (int pass=startThisPass; pass<passNumberOfIDs.length; pass++)
 					passNumberOfIDs[pass]=iDatabase;
 			}
-			else
-				results.append("   No hits returned.\n");
+			else {
+				Parser dataBaseParser = new Parser(database);
+				dataBaseParser.setPunctuationString("/\\");
+				String databaseName = dataBaseParser.getLastToken();
+				if (StringUtil.notEmpty(databaseName))
+					results.append("   No hits returned [" + databaseName + "]\n");
+				else 
+					results.append("   No hits returned\n");
+			}
 
 			for (int i=0; i<maxHits; i++) {
 				if (StringUtil.notEmpty(blastResults.getAccession(i))) {
