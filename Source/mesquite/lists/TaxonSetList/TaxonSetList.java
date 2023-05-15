@@ -37,7 +37,7 @@ public class TaxonSetList extends TaxaSpecssetList {
 	}
 	/*.................................................................................................................*/
 	public int currentTaxa = 0;
-	public Taxa taxa = null;
+	//public Taxa taxa = null;
 	TaxaSpecsListWindow window;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -77,7 +77,7 @@ public class TaxonSetList extends TaxaSpecssetList {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Instructs user as how to make new taxon set (TAXSET)", null, commandName, "newTaxSet")){
-			if (taxa !=null &&AlertDialog.query(containerOfModule(), "New Taxon Set", "To make a new taxon set (TAXSET), go to the List of Taxa window, select the taxa you want in the set, then choose Save Selected As Set.  Would you like to go to the List of Taxa window now?", "OK", "Cancel")) {
+			if (taxa !=null &&AlertDialog.query(containerOfModule(), "New Taxon Set", "To make a new taxon set (TAXSET), go to the List of Taxa window, select the taxa you want in the set, then choose List>Save selected as set.  Would you like to go to the List of Taxa window now?", "OK", "Cancel")) {
 				Object obj = taxa.doCommand("showMe", null, checker);
 			}
 		}
