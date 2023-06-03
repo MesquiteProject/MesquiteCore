@@ -125,10 +125,11 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 				if (!StringUtil.blank(sT)) {
 					s+= "\tTAXSET " ;
 					String set1 = s;
-					set1+= StringUtil.tokenize(taxaSet.getName()) + " ";
-					if (file.getProject().getNumberTaxas()>1) {
+					set1+= StringUtil.simplifyIfNeededForOutput(taxaSet.getName(),true) + " ";
+					/*if (file.getProject().getNumberTaxas()>1) {
 						set1+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
 					}
+					*/
 					set1+= " = "+  sT + ";" + StringUtil.lineEnding();
 					s=set1;
 				}
