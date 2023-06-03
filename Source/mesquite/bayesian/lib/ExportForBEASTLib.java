@@ -126,46 +126,84 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 					s+= "\tTAXSET " ;
 					String set1 = s;
 					set1+= StringUtil.simplifyIfNeededForOutput(taxaSet.getName(),true) + " ";
-					/*if (file.getProject().getNumberTaxas()>1) {
+					if (file.getProject().getNumberTaxas()>1) {
 						set1+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
 					}
-					*/
+					
 					set1+= " = "+  sT + ";" + StringUtil.lineEnding();
 					s=set1;
 				}
 			}
 			return s;
    	}
-		/*.................................................................................................................*/
-	 String getLocalNexusCommands(MesquiteFile file, String blockName){ 
-		String s= "";
-		String specSet ="";
-		for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
-
-			Taxa taxa =  file.getProject().getTaxa(ids);
-			if (taxa.getFile() == file){
-				int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
-				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
-				if (ssv!=null){
-					TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
-					if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
-						ms.setNexusBlockStored(blockName);
-						ms.setName("UNTITLED");
-						specSet = nexusStringForSpecsSet(ms, taxa, file, true);
-						s += specSet;
+	/*.................................................................................................................*/
+ boolean conflictingTaxsets(MesquiteFile file){ 
+	for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
+		Taxa taxa =  file.getProject().getTaxa(ids);
+		if (taxa.getFile() == file){
+			int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
+			SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+			if (ssv!=null){
+				TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
+				if (ms!=null && (ms.getNexusBlockStored()==null || "SETS".equalsIgnoreCase(ms.getNexusBlockStored()))) {
+					// compare ms to rest
+					for (int ims = 0; ims<numSets; ims++) {						// compare ms to rest
+						TaxaSelectionSet ms2 = (TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class);
+						Bits bits = ms.getBits();
+						Bits bits2 = ms2.getBits();
+						if (!Bits.compatible(bits,bits2))
+							return true;
 					}
+				}
 
-
-					for (int ims = 0; ims<numSets; ims++) {
-						s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
-						s += specSet;
+				for (int ims = 0; ims<numSets; ims++) {
+					ms = (TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class);
+					for (int jms = 0; jms<numSets; jms++) {						// compare ms to rest
+						if (ims!=jms) {
+							TaxaSelectionSet ms2 = (TaxaSelectionSet)taxa.getSpecsSet(jms, TaxaSelectionSet.class);
+							Bits bits = ms.getBits();
+							Bits bits2 = ms2.getBits();
+							if (!Bits.compatible(bits,bits2))
+								return true;
+						}
 					}
 				}
 			}
-
 		}
-		return s;
+
 	}
+	return false;
+}
+	/*.................................................................................................................*/
+String getLocalNexusCommands(MesquiteFile file, String blockName){ 
+	String s= "";
+	String specSet ="";
+	for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
+
+		Taxa taxa =  file.getProject().getTaxa(ids);
+		if (taxa.getFile() == file){
+			int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
+			SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+			if (ssv!=null){
+				TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
+				if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
+					ms.setNexusBlockStored(blockName);
+					ms.setName("UNTITLED");
+					specSet = nexusStringForSpecsSet(ms, taxa, file, true);
+					s += specSet;
+				}
+
+
+				for (int ims = 0; ims<numSets; ims++) {
+					s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
+					s += specSet;
+				}
+			}
+		}
+
+	}
+	return s;
+}
 /*.................................................................................................................*/
 	 String getSetsBlock(MesquiteFile file){
 		String contents = getLocalNexusCommands(file, "SETS");
@@ -184,6 +222,11 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 		if (data ==null) {
 			showLogWindow(true);
 			logln("WARNING: No suitable data available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
+			return false;
+		}
+		
+		if (conflictingTaxsets(file)) {
+			MesquiteMessage.discreetNotifyUser("WARNING: Incompatible taxon sets. Will not be importable into BEAUTi.");
 			return false;
 		}
 		MesquiteString dir = new MesquiteString();
