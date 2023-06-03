@@ -270,6 +270,23 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return list;
 		return "<h2>Characters of matrix <strong>" + StringUtil.protectForXML(getName()) + "</strong></h2><ul>" + list + "</ul>";
 	}
+	public boolean isInternalInapplicable(int ic, int it){
+		if (isInapplicable(ic,it)) {
+			boolean dataBeyondEnd = false;
+			boolean dataBeyondStart = false;
+			for (int ic2=0; ic2<numChars && !dataBeyondEnd; ic2++) {
+				if (!isInapplicable(ic2, it)) // it's data
+					dataBeyondEnd=true;
+			}
+			for (int ic2=ic-1; ic2>=0 && !dataBeyondStart; ic2--) {
+				if (!isInapplicable(ic2, it)) // it's data
+					dataBeyondStart=true;
+			}
+			if (dataBeyondStart && dataBeyondEnd)
+				return true;
+		}
+		return false;
+	}
 	public boolean uniquelyNamed(){
 		MesquiteProject p = null;
 		if (matrixManager != null)
@@ -2106,6 +2123,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}		
 		return false;
 	}
+	public boolean hasDataForCharacter(int ic, boolean selectedOnly){
+		int numTaxa = getNumTaxa();
+		boolean anySel = getTaxa().anySelected();
+		for (int it=0; it<numTaxa; it++) {
+			if (!selectedOnly || !anySel || getTaxa().getSelected(it)){
+				if (!isInapplicable(ic, it) && !isUnassigned(ic, it))
+					return true;
+			}
+		}		
+		return false;
+	}
+
 
 	public boolean hasDataForCharacters(int icStart, int icEnd){
 		for (int ic=icStart; ic<=icEnd; ic++)
