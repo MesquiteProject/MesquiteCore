@@ -167,7 +167,7 @@ public abstract class TaxaSpecssetList extends ListModule {
    	 		}
     	 		//return ((ListWindow)getModuleWindow()).getCurrentObject();
     	 	}
-    	 	else if (checker.compare(this.getClass(), "Replaces a stored character specification set by the current one", null, commandName, "replaceWithCurrent")) {
+    	 	else if (checker.compare(this.getClass(), "Replaces a stored taxon set by the current one", null, commandName, "replaceWithCurrent")) {
     	 		if (taxa!=null){
     	 			MesquiteTable t = ((ListWindow)getModuleWindow()).getTable();
     	 			int numRows = t.numRowsSelected();

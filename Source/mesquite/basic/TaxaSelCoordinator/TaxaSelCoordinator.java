@@ -66,35 +66,35 @@ public class TaxaSelCoordinator extends TaxaSelectCoordinator {
     	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Selects taxa in the set", null, commandName, "selectSet")) {
-			if (taxa !=null && table!=null) {
-				int whichSet = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-	 			SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
- 				if (ssv!=null) {
- 					TaxaSelectionSet chosen;
-  	 				if (!MesquiteInteger.isCombinable(whichSet))
-	 					chosen = (TaxaSelectionSet)ListDialog.queryList(containerOfModule(), "Set taxa selection", "Select taxa of which set?", MesquiteString.helpString,ssv, 0);
+    	 		if (taxa !=null && table!=null) {
+    	 			int whichSet = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+    	 			SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+    	 			if (ssv!=null) {
+    	 				TaxaSelectionSet chosen;
+    	 				if (!MesquiteInteger.isCombinable(whichSet))
+    	 					chosen = (TaxaSelectionSet)ListDialog.queryList(containerOfModule(), "Set taxa selection", "Select taxa of which set?", MesquiteString.helpString,ssv, 0);
     	 				else 
-	    	 				chosen = (TaxaSelectionSet)ssv.getSpecsSet(whichSet);
-	    	 			if (chosen!=null){
-	    	 				for (int i=0; i<taxa.getNumTaxa(); i++)
-	    	 					taxa.setSelected(i, chosen.isBitOn(i));
-						taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-	 					table.repaintAll();
-	    	 				return chosen;
-	    	 			}
+    	 					chosen = (TaxaSelectionSet)ssv.getSpecsSet(whichSet);
+    	 				if (chosen!=null){
+    	 					for (int i=0; i<taxa.getNumTaxa(); i++)
+    	 						taxa.setSelected(i, chosen.isBitOn(i));
+    	 					taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+    	 					table.repaintAll();
+    	 					return chosen;
+    	 				}
     	 			}
     	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Hires taxon selection module to operate on the taxa", "[name of module]", commandName, "doSelectTaxa")) {
-   	 		if (table!=null && taxa !=null){
-	    	 		TaxonSelector tda= (TaxonSelector)hireNamedEmployee(TaxonSelector.class, arguments);
-				if (tda!=null) {
-					tda.selectTaxa(taxa);
-	 	   			table.repaintAll();
-					if (!tda.pleaseLeaveMeOn())
-						fireEmployee(tda);
-				}
-			}
+    	 		if (table!=null && taxa !=null){
+    	 			TaxonSelector tda= (TaxonSelector)hireNamedEmployee(TaxonSelector.class, arguments);
+    	 			if (tda!=null) {
+    	 				tda.selectTaxa(taxa);
+    	 				table.repaintAll();
+    	 				if (!tda.pleaseLeaveMeOn())
+    	 					fireEmployee(tda);
+    	 			}
+    	 		}
     	 	}
     	 	else
     	 		return  super.doCommand(commandName, arguments, checker);

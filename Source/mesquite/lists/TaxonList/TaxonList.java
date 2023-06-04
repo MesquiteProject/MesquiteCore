@@ -100,7 +100,7 @@ public class TaxonList extends ListModule {
 			mss2.setList(TaxonUtility.class);
 			MesquiteSubmenuSpec mss3 = addSubmenu(null, "Taxon Names", MesquiteModule.makeCommand("doNames",  this));
 			mss3.setList(TaxonNameAlterer.class);
-			addMenuItem( "Save selected as set...", makeCommand("saveSelectedRows", this));
+			addMenuItem( "Save selected as taxon set...", makeCommand("saveSelectedRows", this));
 			addMenuSeparator();
 
 			/* default columns*
