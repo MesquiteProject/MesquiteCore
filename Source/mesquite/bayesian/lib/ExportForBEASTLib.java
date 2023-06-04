@@ -112,100 +112,109 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	}
 	/*.................................................................................................................*/
 	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, MesquiteFile file, boolean isCurrent){
-			String s= "";
-			if (taxaSet!=null && (taxaSet.getFile()==file || (taxaSet.getFile()==null && taxa.getFile()==file))) {
-				String sT = "";
-				int continuing = 0;
-				int lastWritten = -1;
-				for (int ic=0; ic<taxa.getNumTaxa(); ic++) {
-					if (taxaSet.isBitOn(ic)) {
-						sT += " " + getTaxonName(taxa,ic);
-					}
-				}
-				if (!StringUtil.blank(sT)) {
-					s+= "\tTAXSET " ;
-					String set1 = s;
-					set1+= StringUtil.simplifyIfNeededForOutput(taxaSet.getName(),true) + " ";
-					if (file.getProject().getNumberTaxas()>1) {
-						set1+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
-					}
-					
-					set1+= " = "+  sT + ";" + StringUtil.lineEnding();
-					s=set1;
+		String s= "";
+		if (taxaSet!=null && (taxaSet.getFile()==file || (taxaSet.getFile()==null && taxa.getFile()==file))) {
+			String sT = "";
+			int continuing = 0;
+			int lastWritten = -1;
+			for (int ic=0; ic<taxa.getNumTaxa(); ic++) {
+				if (taxaSet.isBitOn(ic)) {
+					sT += " " + getTaxonName(taxa,ic);
 				}
 			}
-			return s;
-   	}
-	/*.................................................................................................................*/
- boolean conflictingTaxsets(MesquiteFile file){ 
-	for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
-		Taxa taxa =  file.getProject().getTaxa(ids);
-		if (taxa.getFile() == file){
-			int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
-			SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
-			if (ssv!=null){
-				TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
-				if (ms!=null && (ms.getNexusBlockStored()==null || "SETS".equalsIgnoreCase(ms.getNexusBlockStored()))) {
-					// compare ms to rest
-					for (int ims = 0; ims<numSets; ims++) {						// compare ms to rest
-						TaxaSelectionSet ms2 = (TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class);
-						Bits bits = ms.getBits();
-						Bits bits2 = ms2.getBits();
-						if (!Bits.compatible(bits,bits2))
-							return true;
-					}
+			if (!StringUtil.blank(sT)) {
+				s+= "\tTAXSET " ;
+				String set1 = s;
+				set1+= StringUtil.simplifyIfNeededForOutput(taxaSet.getName(),true) + " ";
+				if (file.getProject().getNumberTaxas()>1) {
+					set1+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
 				}
 
-				for (int ims = 0; ims<numSets; ims++) {
-					ms = (TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class);
-					for (int jms = 0; jms<numSets; jms++) {						// compare ms to rest
-						if (ims!=jms) {
-							TaxaSelectionSet ms2 = (TaxaSelectionSet)taxa.getSpecsSet(jms, TaxaSelectionSet.class);
+				set1+= " = "+  sT + ";" + StringUtil.lineEnding();
+				s=set1;
+			}
+		}
+		return s;
+	}
+	/*.................................................................................................................*/
+	StringBuffer conflictingTaxsets(MesquiteFile file){ 
+		StringBuffer sb = new StringBuffer(0);
+		boolean conflict = false;
+		for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
+			Taxa taxa =  file.getProject().getTaxa(ids);
+			if (taxa.getFile() == file){
+				int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
+				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+				if (ssv!=null){
+					TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
+					if (ms!=null && (ms.getNexusBlockStored()==null || "SETS".equalsIgnoreCase(ms.getNexusBlockStored()))) {
+						// compare ms to rest
+						for (int ims = 0; ims<numSets; ims++) {						// compare ms to rest
+							TaxaSelectionSet ms2 = (TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class);
 							Bits bits = ms.getBits();
 							Bits bits2 = ms2.getBits();
-							if (!Bits.compatible(bits,bits2))
-								return true;
+							if (!Bits.compatible(bits,bits2)) {
+								conflict=true;
+								sb.append("  Default taxon set conflicts with taxon set \"" + ms2.getName()+"\"\n");
+							}
+						}
+					}
+
+					for (int ims = 0; ims<numSets; ims++) {
+						ms = (TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class);
+						for (int jms = 0; jms<numSets; jms++) {						// compare ms to rest
+							if (ims!=jms) {
+								TaxaSelectionSet ms2 = (TaxaSelectionSet)taxa.getSpecsSet(jms, TaxaSelectionSet.class);
+								Bits bits = ms.getBits();
+								Bits bits2 = ms2.getBits();
+								if (!Bits.compatible(bits,bits2)) {
+									conflict=true;
+									sb.append("  Taxon set \""+ms.getName()+"\" conflicts with taxon set \"" + ms2.getName()+"\"\n");
+								}
+							}
 						}
 					}
 				}
 			}
+
 		}
-
+		if (conflict)
+			return sb;
+		else
+			return null;
 	}
-	return false;
-}
 	/*.................................................................................................................*/
-String getLocalNexusCommands(MesquiteFile file, String blockName){ 
-	String s= "";
-	String specSet ="";
-	for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
+	String getLocalNexusCommands(MesquiteFile file, String blockName){ 
+		String s= "";
+		String specSet ="";
+		for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
 
-		Taxa taxa =  file.getProject().getTaxa(ids);
-		if (taxa.getFile() == file){
-			int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
-			SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
-			if (ssv!=null){
-				TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
-				if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
-					ms.setNexusBlockStored(blockName);
-					ms.setName("UNTITLED");
-					specSet = nexusStringForSpecsSet(ms, taxa, file, true);
-					s += specSet;
-				}
+			Taxa taxa =  file.getProject().getTaxa(ids);
+			if (taxa.getFile() == file){
+				int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
+				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+				if (ssv!=null){
+					TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
+					if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
+						ms.setNexusBlockStored(blockName);
+						ms.setName("UNTITLED");
+						specSet = nexusStringForSpecsSet(ms, taxa, file, true);
+						s += specSet;
+					}
 
 
-				for (int ims = 0; ims<numSets; ims++) {
-					s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
-					s += specSet;
+					for (int ims = 0; ims<numSets; ims++) {
+						s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
+						s += specSet;
+					}
 				}
 			}
-		}
 
+		}
+		return s;
 	}
-	return s;
-}
-/*.................................................................................................................*/
-	 String getSetsBlock(MesquiteFile file){
+	/*.................................................................................................................*/
+	String getSetsBlock(MesquiteFile file){
 		String contents = getLocalNexusCommands(file, "SETS");
 		if (StringUtil.blank(contents))
 			return null;
@@ -224,9 +233,14 @@ String getLocalNexusCommands(MesquiteFile file, String blockName){
 			logln("WARNING: No suitable data available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
 			return false;
 		}
-		
-		if (conflictingTaxsets(file)) {
-			MesquiteMessage.discreetNotifyUser("WARNING: Incompatible taxon sets. Will not be importable into BEAUTi.");
+
+		StringBuffer conflictingTaxSets = conflictingTaxsets(file);
+		if (conflictingTaxSets!=null) {
+			logln("\nConflicting taxon sets:");
+			logln(conflictingTaxSets.toString());
+			logln("");
+			showLogWindow(true);
+			MesquiteMessage.discreetNotifyUser("WARNING: Incompatible (partly overlapping) taxon sets (see log window). All taxon sets must be subsets of others or contain no taxa in common. The resulting file will not be importable into BEAUTi.");
 			return false;
 		}
 		MesquiteString dir = new MesquiteString();
@@ -236,14 +250,14 @@ String getLocalNexusCommands(MesquiteFile file, String blockName){
 			suggested = file.getFileName();
 		MesquiteFile f;
 		loadPreferences();
-	/*	if (!usePrevious){
+		/*	if (!usePrevious){
 			if (!getExportOptions(data, data.anySelected(), data.getTaxa().anySelected()))
 				return false;
 		}
-		*/
+		 */
 		addendum = getSetsBlock(file);
 
-		
+
 		String path = getPathForExport(arguments, suggested, dir, fn);
 		if (path != null) {
 			f = MesquiteFile.newFile(dir.getValue(), fn.getValue());
