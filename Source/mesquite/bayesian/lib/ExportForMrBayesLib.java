@@ -84,9 +84,91 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI implements Ac
 	protected boolean useData = true;
 	protected String addendum = "";
 	protected String fileName = "untitled.nex";
+	protected boolean includeTaxSetsAsConstraints = true;
 	static String defaultSearchString = "mcmcp ngen= 10000000 relburnin=yes burninfrac=0.25 printfreq=1000  samplefreq=1000 nchains=4 savebrlens=yes;";
 	/*.................................................................................................................*/
 	public abstract String getProgramName();
+	/*.................................................................................................................*/
+	String getTaxonName(Taxa taxa, int it){
+		return StringUtil.simplifyIfNeededForOutput(taxa.getTaxonName(it),true);
+	}
+	/*.................................................................................................................*/
+	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, boolean isCurrent){
+			String s= "";
+			if (taxaSet!=null) {
+				String sT = "";
+				int continuing = 0;
+				int lastWritten = -1;
+				for (int ic=0; ic<taxa.getNumTaxa(); ic++) {
+					if (taxaSet.isBitOn(ic)) {
+						if (continuing == 0) {
+							sT += " " + Taxon.toExternal(ic);
+							lastWritten = ic;
+							continuing = 1;
+						}
+						else if (continuing == 1) {
+							sT += " - ";
+							continuing = 2;
+						}
+					}
+					else if (continuing>0) {
+						if (lastWritten != ic-1) {
+							sT += " " + Taxon.toExternal(ic-1);
+							lastWritten = ic-1;
+						}
+						else
+							lastWritten = -1;
+						continuing = 0;
+					}
+
+				}
+				if (continuing>1)
+					sT += " " + Taxon.toExternal(taxa.getNumTaxa()-1);
+				if (!StringUtil.blank(sT)) {
+					s+= "\tconstraint " ;
+					s+= StringUtil.simplifyIfNeededForOutput(taxaSet.getName(), true) + " ";
+					s+= " = "+  sT + ";" + StringUtil.lineEnding();
+				}
+			}
+			return s;
+   	}
+	/*.................................................................................................................*
+	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, boolean isCurrent){
+		String s= "";
+		if (taxaSet!=null) {
+			String sT = "";
+			for (int it=0; it<taxa.getNumTaxa(); it++) {
+				if (taxaSet.isBitOn(it)) {
+					sT += " " + it;
+				}
+			}
+			if (!StringUtil.blank(sT)) {
+				s+= "\tconstraint " ;
+				String set1 = s;
+				set1+= StringUtil.simplifyIfNeededForOutput(taxaSet.getName(),true) + " ";
+
+				set1+= " = "+  sT + ";" + StringUtil.lineEnding();
+				s=set1;
+			}
+		}
+		return s;
+	}
+	/*.................................................................................................................*/
+	String getTaxSetsAsConstraints(Taxa taxa){ 
+		String s= "";
+
+		int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
+		SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+		if (ssv!=null && numSets>0){
+			TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
+			s+="\n\t[ [Taxon sets that can be used as constraints for node ages]\n";
+			for (int ims = 0; ims<numSets; ims++) {
+				s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, false);
+			}
+			s+="\n]\n";
+		}
+		return s;
+	}
 	/*.................................................................................................................*/
 
 	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
@@ -134,16 +216,16 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI implements Ac
 		if (data instanceof DNAData)
 			writeCodPosPartition = ((DNAData)data).someCoding();
 		CharacterPartition characterPartition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
-		if (characterPartition == null && !writeCodPosPartition)
-			return basicBlock();
+//		if (characterPartition == null && !writeCodPosPartition)
+//			return basicBlock();
 		if (characterPartition!=null) {
 			parts = characterPartition.getGroups();
 			writeStandardPartition = parts!=null;
 		}
 
-		if (!writeStandardPartition && !writeCodPosPartition) {
-			return basicBlock();
-		}
+//		if (!writeStandardPartition && !writeCodPosPartition && !includeTaxSetsAsConstraints) {
+//			return basicBlock();
+//		}
 		String sT = "begin mrbayes;\n\tset autoclose=yes nowarn=yes;  ";
 		CharInclusionSet incl = null;
 		if (data !=null) {
@@ -243,6 +325,8 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI implements Ac
 		if (StringUtil.notEmpty(s))
 			sT +=s + "\n";
 		sT += "\tprset applyto=(all) ratepr=variable;\n";
+		if (includeTaxSetsAsConstraints)
+			sT += getTaxSetsAsConstraints(data.getTaxa());
 		s=getPostPRSETCommands();  
 		if (StringUtil.notEmpty(s))
 			sT +=s + "\n";

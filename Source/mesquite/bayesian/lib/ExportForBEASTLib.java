@@ -106,7 +106,9 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 
 		exportDialog.dispose();
 		return ok;
-	}		/*.................................................................................................................*/
+	}		
+	
+	/*.................................................................................................................*/
 	String getTaxonName(Taxa taxa, int it){
 		return StringUtil.simplifyIfNeededForOutput(taxa.getTaxonName(it),true);
 	}
