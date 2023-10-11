@@ -271,6 +271,7 @@ public class ExternalProcessManager implements Commandable  {
 	public void processOutputFiles(){
 		if (outputFileProcessor!=null && outputFilePaths!=null && lastModified !=null) {
 			String[] paths = outputFileProcessor.modifyOutputPaths(outputFilePaths);
+			if (paths == null) return;
 			for (int i=0; i<paths.length && i<lastModified.length; i++) {
 				File file = new File(paths[i]);
 				long lastMod = file.lastModified();
