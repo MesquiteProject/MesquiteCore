@@ -44,13 +44,19 @@ public class CharSetListNum extends CharSetListAsst implements MesquiteListener 
 	public boolean requestPrimaryChoice(){
 		return true;  
 	}
+
 	public void setTableAndObject(MesquiteTable table, Object obj){
-		if (data !=null)
+		Object d = obj;
+		if (obj instanceof SpecsSetVector) {
+			d = ((SpecsSetVector)obj).getObjectCharacterized();
+		}
+		if (d instanceof CharacterData){
+			if (data !=null)
 			data.removeListener(this);
-		if (obj instanceof CharacterData)
-			data = (CharacterData)obj;
+			data = (CharacterData)d;
 		if (data !=null)
 			data.addListener(this);
+		}
 		//table would be used if selection needed
 	}
 	/*.................................................................................................................*/

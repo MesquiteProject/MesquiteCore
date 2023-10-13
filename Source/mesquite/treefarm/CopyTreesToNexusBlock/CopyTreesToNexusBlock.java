@@ -114,7 +114,7 @@ public class CopyTreesToNexusBlock extends FileProcessor {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Compile Trees in Nexus Block in file";
+		return "Compile Trees in Nexus Block into One File";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

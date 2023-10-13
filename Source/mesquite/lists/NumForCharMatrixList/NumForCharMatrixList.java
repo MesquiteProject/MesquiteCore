@@ -55,10 +55,11 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 			return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
 		}
 		shadeCells.setValue(false);
-		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells);
+		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells); //Debugg.println for some reasons this isn't triggering menu need. Even if needsMenu is overridden to force drop down, drop down is unpopulated!
 		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
 		return true;
 	}
+
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
  	If false then is hired only once; second attempt fails.*/
 	public boolean canHireMoreThanOnce(){

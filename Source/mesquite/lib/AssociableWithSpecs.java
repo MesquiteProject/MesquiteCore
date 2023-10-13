@@ -224,6 +224,7 @@ public abstract class AssociableWithSpecs extends Associable {
 	  		}
 	  		//not found; need to make new one
   			SpecsSetVector sv = new SpecsSetVector(typeName); 
+  			sv.setObjectCharacterized(this);
   			sv.setType(type);
   			specsVectors.addElement(sv);
   		}
@@ -248,6 +249,7 @@ public abstract class AssociableWithSpecs extends Associable {
 	  		//not found; need to make new one
 			String typeName = specsSet.getTypeName() + "s";
 			SpecsSetVector sv = new SpecsSetVector(typeName); 
+  			sv.setObjectCharacterized(this);
   			sv.setType(type);
   			specsVectors.addElement(sv);
   			sv.addSpecSet(specsSet);
@@ -313,6 +315,7 @@ public abstract class AssociableWithSpecs extends Associable {
 	  		//not found; need to make new one
 			String typeName = specsSet.getTypeName() + "s";
  			SpecsSetVector sv = new SpecsSetVector(typeName); 
+  			sv.setObjectCharacterized(this);
   			sv.setType(type);
   			specsVectors.addElement(sv);
 	  		sv.setCurrentSpecsSet(specsSet);

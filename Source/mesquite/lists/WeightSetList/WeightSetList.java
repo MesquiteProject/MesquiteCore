@@ -64,7 +64,7 @@ public class WeightSetList extends DataSpecssetList {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Instructs user as how to make new character weight set", null, commandName, "newWeightSet")){
-			Object obj = getMainObject();
+			Object obj = getCharacterMatrix();
 			if (!(obj instanceof CharacterData))
 				return null;
 			CharacterData data = (CharacterData)obj;

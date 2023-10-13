@@ -97,6 +97,13 @@ public abstract class DataSpecssetList extends ListModule {
 	/*.................................................................................................................*/
 	/* following required by ListModule*/
   	 public Object getMainObject(){
+  		 if (data == null)
+  	 		return null;
+  	 	return data.getSpecSetsVector(getItemType());
+  	 }
+	/*.................................................................................................................*/
+	/* For individual specs set lists to make new ones etc*/
+  	 public Object getCharacterMatrix(){
   	 	return data;
   	 }
   	 public int getNumberOfRows(){
@@ -145,7 +152,7 @@ public abstract class DataSpecssetList extends ListModule {
     	 		currentDataSet = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
     	 		if (getModuleWindow()!=null && MesquiteInteger.isCombinable(currentDataSet) && currentDataSet<getProject().getNumberCharMatrices(checker.getFile())) {
 				data = getProject().getCharacterMatrix(checker.getFile(), currentDataSet);
-    	 			((ListWindow)getModuleWindow()).setCurrentObject(data);
+    	 			((ListWindow)getModuleWindow()).setCurrentObject(data.getSpecSetsVector(getItemType())); 
     	 			((ListWindow)getModuleWindow()).repaintAll();
     	 		}
     	 	}

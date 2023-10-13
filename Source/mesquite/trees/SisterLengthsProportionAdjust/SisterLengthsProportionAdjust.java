@@ -41,7 +41,7 @@ public class SisterLengthsProportionAdjust extends TreeDisplayAssistantI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Adjust length balance of daughter nodes";
+		return "Adjust length balance of daughter nodes"; //Debugg.println here just to force me to look at again
 	}
 
 	/*.................................................................................................................*/
@@ -52,7 +52,10 @@ public class SisterLengthsProportionAdjust extends TreeDisplayAssistantI {
 
 	}
 	public boolean isSubstantive(){
-		return false;
+		return true;
+	}   	 
+	public boolean isPrerelease(){
+		return true;
 	}   	 
 }
 

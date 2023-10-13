@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 
 package mesquite.dmanager.lib; 
 
@@ -53,8 +53,8 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		else if ("fileExtension".equalsIgnoreCase(tag))
 			fileExtension = StringUtil.cleanXMLEscapeCharacters(content);
 		else if ("autoNEXUSSave".equalsIgnoreCase(tag)){
-				rRAN.setValue(content);
-				autoNEXUSSave = rRAN.getValue();
+			rRAN.setValue(content);
+			autoNEXUSSave = rRAN.getValue();
 		}
 	}
 	/*.................................................................................................................*/
@@ -201,12 +201,13 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 	protected boolean firstResultsOverall = true;
 	protected boolean firstResultsOverallFound = false;
 	protected StringBuffer resultsHeading = new StringBuffer();
-	
-	
+
+
 	protected String getSavedFilesDirectoryPath(MesquiteFile fileToRead) {
 		return fileToRead.getDirectoryName() + "savedFiles" + MesquiteFile.fileSeparator;
 	}
 	/*.................................................................................................................*/
+	boolean[] warned;
 	protected boolean beforeProcessFiles() {
 		if (fileProcessors != null){
 			boolean success = true;
@@ -256,19 +257,30 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 				return false;
 			}
 			boolean firstResult = true;
+			if (warned == null) {
+				warned = new boolean[fileProcessors.size()];
+			for (int i= 0; i< fileProcessors.size(); i++)
+				warned[i] = false;
+			}
+
 			if (fileProcessors != null){
-				boolean success = true;
+				boolean continuePlease = true;
 				MesquiteString result = new MesquiteString();
 				results.append(fileToRead.getFileName());
-				for (int i= 0; i< fileProcessors.size() && success; i++){
+				for (int i= 0; i< fileProcessors.size() && continuePlease; i++){
 					FileProcessor alterer = (FileProcessor)fileProcessors.elementAt(i);
 					if (alterer!=null) {
 						result.setValue((String)null);
-						success = alterer.processFile(fileToRead, result);
+						boolean success = alterer.processFile(fileToRead, result);
 
-						if (!success)
+						if (!success) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
 							logln("Sorry,  " + alterer.getNameAndParameters() + " did not succeed in processing the file " + fileToRead.getFileName());
-						else {
+							if (!warned[i]) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
+								continuePlease = AlertDialog.query(containerOfModule(), "Processing step failed", "Processing of file " + fileToRead.getFileName() + " by " + alterer.getNameAndParameters() + " failed. Do you want to continue with this file?", "Continue", "Stop with This File");
+								warned[i] = true;
+							}
+						}
+						if (continuePlease) {
 							if (alterer.pleaseSequester()) {
 								if (requestToSequester!=null)
 									requestToSequester.setValue(true);
@@ -336,7 +348,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		dialog.appendToHelpString("This dialog box provides various file-handling options for the files processed. ");
 		dialog.appendToHelpString("You can restrict which files are processed by specifying an extension, and you can ask for all the files to be resaved as NEXUS files. ");
 		dialog.appendToHelpString("Subsequent dialog boxes will provide additional processing options. ");
-		
+
 		SingleLineTextField extension = dialog.addTextField ("Process only files with this extension (e.g. .nex, .fas): ", fileExtension, 5);
 		Checkbox autoSave = dialog.addCheckBox("Resave all files as NEXUS", autoNEXUSSave);
 		addOptions(dialog);
@@ -345,7 +357,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		if (buttonPressed.getValue()==0)  {
 			autoNEXUSSave=autoSave.getState();
 			fileExtension = extension.getText();
-			
+
 			processOptions();
 			storePreferences();
 
@@ -421,7 +433,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 										cFile.renameTo(newFile); 
 									}
 								}
-								
+
 								project.getCoordinatorModule().closeFile(file, true);
 							}
 						}

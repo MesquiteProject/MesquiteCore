@@ -58,13 +58,18 @@ public class DataSpecsListWindow extends ListWindow implements MesquiteListener 
 			setTitle(((DataSpecssetList)ownerModule).getItemTypeNamePlural()); 
 		
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public Object getCurrentObject(){
-		return data;
+		return null; 
 	}
+	*/
 	public void setCurrentObject(Object obj){
 		if (obj instanceof CharacterData) {
-			data = (CharacterData)obj;
+			data = (CharacterData)obj;  
+			resetTitle();
+		}
+		else if (obj instanceof SpecsSetVector) {
+			data =(CharacterData)((SpecsSetVector)obj).getObjectCharacterized();  
 			resetTitle();
 		}
 		super.setCurrentObject(obj);

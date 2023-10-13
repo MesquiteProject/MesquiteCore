@@ -87,6 +87,40 @@ public class PatristicDistances {
 					}
 		}
 	}
+	
+	public double[][] getDistancesWithLengths(Tree tree, int numTaxa, double[][] distances){
+		if (distances == null || distances.length != numTaxa)
+			distances = new double[numTaxa][numTaxa];
+		Double2DArray.deassignArray(distances);
+		if (tree == null)
+			return null;
+		int root = tree.getRoot();
+		for (int taxon1=0; taxon1<numTaxa; taxon1++) {
+			int node1 = tree.nodeOfTaxonNumber(taxon1);
+			if (tree.nodeExists(node1)){
+				for (int taxon2=0; taxon2<numTaxa; taxon2++) {
+					double sumPath =0;
+					int node2 = tree.nodeOfTaxonNumber(taxon2);
+					if (tree.nodeExists(node2)){
+						int mrca = tree.mrca(node1, node2);
+						int node = node1;
+						while (node!=mrca && (node != root) && tree.nodeExists(node)){
+							sumPath += tree.getBranchLength(node, 1.0);
+							node = tree.motherOfNode(node);
+						}
+						node = node2;
+						while (node!=mrca && node != root && tree.nodeExists(node)){
+							sumPath += tree.getBranchLength(node, 1.0);
+							node = tree.motherOfNode(node);
+						}
+						distances[taxon1][taxon2]=sumPath;
+					}
+				}
+			}
+		}
+		return distances;
+	}
+
 
 }
 

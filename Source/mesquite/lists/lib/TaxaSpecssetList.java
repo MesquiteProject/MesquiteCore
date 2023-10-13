@@ -80,10 +80,19 @@ public abstract class TaxaSpecssetList extends ListModule {
 			super.endJob();
 	}
 	/*.................................................................................................................*/
-	/* following required by ListModule*/
-  	 public Object getMainObject(){
-  	 	return taxa;
+	/* following to help subtypes make new specssets*/
+  	 public Object getTaxa(){
+  	 	return taxa; 
   	 }
+ 	/*.................................................................................................................*/
+ 	/* following required by ListModule*/
+   	 public Object getMainObject(){
+  	 	if (taxa==null)
+  	 		return 0;
+  	 	else
+  	 		return taxa.getSpecSetsVector(getItemType());
+   	 }
+   	 
   	 public int getNumberOfRows(){
   	 	if (taxa==null)
   	 		return 0;
@@ -133,13 +142,13 @@ public abstract class TaxaSpecssetList extends ListModule {
 	   	 		taxa = t;
 	   	 		//if (taxa!=null)
 	   	 		//	taxa.addListener(this);
-    	 			((ListWindow)getModuleWindow()).setCurrentObject(taxa);
+    	 			((ListWindow)getModuleWindow()).setCurrentObject(taxa.getSpecSetsVector(getItemType()));
     	 			((ListWindow)getModuleWindow()).repaintAll();
 	   	 		return taxa;
    	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Returns the current taxa block", null, commandName, "getTaxa")) {
-    	 		return ((ListWindow)getModuleWindow()).getCurrentObject();
+    	 		return getTaxa();
     	 	}
     	 	else if (checker.compare(this.getClass(), "Stores the current specification set", null, commandName, "storeCurrent")) {
     	 		if (taxa!=null){
