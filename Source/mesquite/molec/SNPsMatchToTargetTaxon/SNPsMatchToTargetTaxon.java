@@ -249,7 +249,7 @@ public class SNPsMatchToTargetTaxon extends NumberForTaxon {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true; //this should likely not be released!
+		return true; //just for play; this should likely not be released!
 	}
 	public String getParameters() {
 		return "Number of states matching those of taxon \"" + taxonName +"\" in matrix from: " + matrixSourceTask.getParameters();
