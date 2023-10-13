@@ -88,7 +88,7 @@ public abstract class TaxaSpecssetList extends ListModule {
  	/* following required by ListModule*/
    	 public Object getMainObject(){
   	 	if (taxa==null)
-  	 		return 0;
+  	 		return null;
   	 	else
   	 		return taxa.getSpecSetsVector(getItemType());
    	 }

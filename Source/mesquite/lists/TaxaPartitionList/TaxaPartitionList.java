@@ -67,10 +67,11 @@ public class TaxaPartitionList extends TaxaSpecssetList {
 	public String getItemTypeNamePlural(){
 		return "Taxa partitions";
 	}
-	/* following required by ListModule*/
+	/* following required by ListModule*
 	public Object getMainObject(){
 		return taxa;
 	}
+	*/
 	public SpecsSet makeNewSpecsSet(Taxa taxa){
 		if (taxa != null)
 			return new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);
