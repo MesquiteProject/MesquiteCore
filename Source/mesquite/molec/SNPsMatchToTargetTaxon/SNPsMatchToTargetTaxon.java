@@ -71,6 +71,10 @@ public class SNPsMatchToTargetTaxon extends NumberForTaxon {
 	public boolean isSubstantive(){
 		return true;
 	}   	 
+	/*.................................................................................................................*/
+	public boolean isPrerelease() {
+		return true; //just for play; this should likely not be released!!
+	}
 
 	/*.................................................................................................................*/
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
@@ -247,11 +251,7 @@ public class SNPsMatchToTargetTaxon extends NumberForTaxon {
 		return "Number SNPs shared with selected taxon";  
 	}
 
-	/*.................................................................................................................*/
-	public boolean isPrerelease() {
-		return true; //just for play; this should likely not be released!
-	}
-	public String getParameters() {
+		public String getParameters() {
 		return "Number of states matching those of taxon \"" + taxonName +"\" in matrix from: " + matrixSourceTask.getParameters();
 	}
 	/*.................................................................................................................*/
