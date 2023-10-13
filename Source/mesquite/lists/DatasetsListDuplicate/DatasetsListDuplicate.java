@@ -53,7 +53,7 @@ public class DatasetsListDuplicate extends DatasetsListUtility {
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		boolean anyExcluded = false;
-		if (datas.size()>4 && MesquiteBoolean.yesNoQuery(containerOfModule(), "Are you sure you want to duplicate " + datas.size() + " matrices?")) {
+		if (datas.size()>4 && !MesquiteBoolean.yesNoQuery(containerOfModule(), "Are you sure you want to duplicate " + datas.size() + " matrices?")) {
 			return false; 
 		}
 		for (int im = 0; im < datas.size(); im++){

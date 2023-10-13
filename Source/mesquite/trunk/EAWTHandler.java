@@ -36,7 +36,7 @@ public class EAWTHandler implements FileOpener {
 	public void register(){
 		Application app = new Application();
 	    	EAWTH eawtH = new EAWTH();
-		app.addApplicationListener(eawtH);
+		//app.addApplicationListener(eawtH); Debugg.println no longer used
 	}
 	
 	public boolean isWaiting(){
