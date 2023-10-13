@@ -157,7 +157,12 @@ public abstract class DataSpecssetList extends ListModule {
     	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Returns the current data matrix", null, commandName, "getData")) {
-    	 		return ((ListWindow)getModuleWindow()).getCurrentObject();
+    	 		Object o = ((ListWindow)getModuleWindow()).getCurrentObject(); 
+    	 		if (o instanceof SpecsSetVector) {//Debugg.println -- make sure this handles all types returned
+    	 			SpecsSetVector ssv = (SpecsSetVector)o;
+    	 			o = (CharacterData)ssv.getObjectCharacterized();
+    	 		}
+    	 		return o;
     	 	}
     	 	else if (checker.compare(this.getClass(), "Stores the current specification set", null, commandName, "storeCurrent")) {
     	 		if (data!=null){

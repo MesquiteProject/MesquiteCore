@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.duties;
 
 import java.awt.*;
@@ -56,7 +56,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 	public abstract boolean appropriateBlockForReading(String blockName);
 	public abstract Object getSpecification(String token);
 	public abstract void setSpecification(SpecsSet specsSet, Object specification, int ic);
-	
+
 	/** Returns whether or not the NEXUS command has category tokens before character lists, e.g. the weight, or the partition name */
 	public boolean hasSpecificationTokens(){
 		return true;
@@ -66,11 +66,11 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 	public static boolean writeLinkWithCharacterMatrixName(MesquiteFile file, CharacterData data){
 		return (file.getProject().getNumberCharMatrices()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data));
 	}
-	
-/*.................................................................................................................*/
- 	/** A method called immediately after the project has been established.*/
- 	public void projectEstablished() {
-		 CharactersManager manager = (CharactersManager)findElementManager(mesquite.lib.characters.CharacterData.class);
+
+	/*.................................................................................................................*/
+	/** A method called immediately after the project has been established.*/
+	public void projectEstablished() {
+		CharactersManager manager = (CharactersManager)findElementManager(mesquite.lib.characters.CharacterData.class);
 		if (manager == null)
 			return;
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.charactersMenu, manager.getListsSubmenu(), upperCaseTypeName() + "s", makeCommand("showList",  this));
@@ -80,45 +80,48 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		mmis.setOwnerModuleID(getID());
 		/**/
 		super.projectEstablished();
- 	}
+	}
 	/*.................................................................................................................*/
-  	 public Snapshot getSnapshot(MesquiteFile file) { 
-   	 	Snapshot temp = new Snapshot();
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
 		for (int i = 0; i<getNumberOfEmployees(); i++) {
 			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
 			if (e instanceof ManagerAssistant) {
-				mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)e.doCommand("getData", null, CommandChecker.defaultChecker);
-  	 			MesquiteWindow w = e.getModuleWindow();
-  	 			if (w != null && w.isVisible())
-  	 				temp.addLine("showList " + getProject().getMatrixNumber(data), e); 
-  	 		}
-		}
-  	 	return temp;
-  	 }
-  	 MesquiteInteger pos = new MesquiteInteger(0);
-	/*.................................................................................................................*/
-    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	if (checker.compare(this.getClass(), "Shows the " + lowerCaseTypeName(), "[optional: number of data matrix for which to show " + lowerCaseTypeName() + "]", commandName, "showList")) {
-    	 		if (StringUtil.blank(arguments)) {
-	    	 		for (int i = 0; i< getProject().getNumberCharMatrices(checker.getFile()); i++) {
-	    	 			showSpecsSets(getProject().getCharacterMatrix(checker.getFile(), i), "List of " + upperCaseTypeName() + "s");
+				Object obj = e.doCommand("getData", null, CommandChecker.defaultChecker);
+				if (obj instanceof CharacterData) {
+					mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)obj;
+					MesquiteWindow w = e.getModuleWindow();
+					if (w != null && w.isVisible())
+						temp.addLine("showList " + getProject().getMatrixNumber(data), e); 
 				}
-    	 		}
-    	 		else {
-       	 			int t = MesquiteInteger.fromFirstToken(arguments, pos);
- 	 			if (MesquiteInteger.isCombinable(t) && t<getProject().getNumberCharMatrices(checker.getFile())) {
- 	 				return showSpecsSets(getProject().getCharacterMatrix(checker.getFile(), t), "List of " + upperCaseTypeName() + "s");
- 	 			}
-    	 		}
-    	 	}
-    	 	else
-    	 		return  super.doCommand(commandName, arguments, checker);
+			}
+		}
+		return temp;
+	}
+	MesquiteInteger pos = new MesquiteInteger(0);
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Shows the " + lowerCaseTypeName(), "[optional: number of data matrix for which to show " + lowerCaseTypeName() + "]", commandName, "showList")) {
+			if (StringUtil.blank(arguments)) {
+				for (int i = 0; i< getProject().getNumberCharMatrices(checker.getFile()); i++) {
+					showSpecsSets(getProject().getCharacterMatrix(checker.getFile(), i), "List of " + upperCaseTypeName() + "s");
+				}
+			}
+			else {
+				int t = MesquiteInteger.fromFirstToken(arguments, pos);
+				if (MesquiteInteger.isCombinable(t) && t<getProject().getNumberCharMatrices(checker.getFile())) {
+					return showSpecsSets(getProject().getCharacterMatrix(checker.getFile(), t), "List of " + upperCaseTypeName() + "s");
+				}
+			}
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
-   	 }
-   	
-   	public boolean isSubstantive(){
-   		return false;  
-   	}
+	}
+
+	public boolean isSubstantive(){
+		return false;  
+	}
 	/*.................................................................................................................*/
 	public String nexusStringForSpecsSetStandard(CharSpecsSet specsSet, mesquite.lib.characters.CharacterData data, MesquiteFile file, boolean isCurrent){
 		if (specsSet ==null || !(getElementClass().isAssignableFrom(specsSet.getClass())))
@@ -152,7 +155,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 			}
 		}
 		return s;
-   	}
+	}
 	public static String nexusCoreStringForSpecsSet(CharSpecsSet specsSet, CharacterData data){
 		return "";
 	}
@@ -163,7 +166,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 	public String getNexusCommands(MesquiteFile file, String blockName){ 
 		if (appropriateBlockForWriting(blockName)) { 
 			String s= "";
-	 		for (int ids = 0; ids<file.getProject().getNumberCharMatrices(file); ids++) {
+			for (int ids = 0; ids<file.getProject().getNumberCharMatrices(file); ids++) {
 				mesquite.lib.characters.CharacterData data =  file.getProject().getCharacterMatrix(file, ids);
 				if (data.getFile() == file && data.getWritable()){
 					int numSets = data.getNumSpecsSets(getElementClass());
@@ -175,8 +178,8 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 							ms.setName("UNTITLED");
 							s += nexusStringForSpecsSet( (CharSpecsSet)ms, data, file, true);
 						}
-						
-							
+
+
 						for (int ims = 0; ims<numSets; ims++) {
 							CharSpecsSet cs = (CharSpecsSet)data.getSpecsSet(ims, getElementClass());
 							s += nexusStringForSpecsSet(cs, data, file, false);
@@ -188,7 +191,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		}
 		return null;
 	}
-	
+
 	public  CharSelectionSet getSpecSetFromName(CharacterData data, String name){
 		SpecsSetVector ssv = data.getSpecSetsVector(CharSelectionSet.class);
 		if (ssv==null)
@@ -196,12 +199,12 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		return (CharSelectionSet)ssv.getElement(name);
 	}
 
-	
+
 	public  static Bits getCharBitsFromName(String name){
 		return null;
 	}
 
-	
+
 
 	/*.................................................................................................................*/
 	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
@@ -226,7 +229,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 				MesquiteProject project = file.getProject();
 				mesquite.lib.characters.CharacterData data=null;
 				String dataName = null;
-				
+
 				if (token.equalsIgnoreCase("(")) {
 					token = ParseUtil.getToken(command, startCharT); //CHARACTERS  //TODO: check to see what parameter is being set!
 					token = ParseUtil.getToken(command, startCharT); //=
@@ -245,7 +248,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 					else
 						data= project.getCharacterMatrix(0);
 				}
-					
+
 				if (data==null) {
 					MesquiteMessage.discreetNotifyUser("Sorry, a " + lowerCaseTypeName() + " could not be read because its associated data set was not found.  This can occur if you are fusing files, or if you have edited files by hand or with another program.  Another possible cause is that your current Mesquite configuration doesn't include packages to read matrices of that type.  Try restarting Mesquite after selecting \"Use all installed packages\" in the Activate/Deactivate submenu of the File menu.\n\nCommand: " + command);
 					return false;
@@ -256,13 +259,13 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 					token = ParseUtil.getToken(command, startCharT);  //getting name of first model
 
 				//CharactersGroup defaultProperty =  new CharactersGroup();
-	
+
 				Object specification = getSpecification(token);
-				
-		 		SpecsSet specsSet= getNewSpecsSet(nameOfSpecsSet, data);
-		 		specsSet.setNexusBlockStored(blockName);
-				
-		 		//=======================
+
+				SpecsSet specsSet= getNewSpecsSet(nameOfSpecsSet, data);
+				specsSet.setNexusBlockStored(blockName);
+
+				//=======================
 				int lastChar = -1;
 				boolean join = false;
 				boolean nextIsCharList = !hasSpecificationTokens();
@@ -289,7 +292,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 							if (MesquiteInteger.isCombinable(whichChar) && whichChar>=0) {
 								if (whichChar>= data.getNumChars())
 									whichChar = data.getNumChars()-1;
-								
+
 								if (join) {
 									int skip = 1;
 									//check here if next char is "\"; if so then need to skip
@@ -330,22 +333,22 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 					}
 					token = ParseUtil.getToken(command, startCharT); 
 				}
-				
-		 		//=======================
+
+				//=======================
 
 				if (isDefault) {
 					if (!"UNTITLED".equals(specsSet.getName())) {
-			 			data.storeSpecsSet(specsSet, getElementClass());
-			 		}
-			 		specsSet.addToFile(file, getProject(), this);
-			 		SpecsSet ss = specsSet.cloneSpecsSet();
+						data.storeSpecsSet(specsSet, getElementClass());
+					}
+					specsSet.addToFile(file, getProject(), this);
+					SpecsSet ss = specsSet.cloneSpecsSet();
 					data.setCurrentSpecsSet(ss, getElementClass());
 				}
 				else {
-		 			data.storeSpecsSet(specsSet, getElementClass());
-			 		specsSet.addToFile(file, getProject(), this);
-			 	}
-			 	return true;
+					data.storeSpecsSet(specsSet, getElementClass());
+					specsSet.addToFile(file, getProject(), this);
+				}
+				return true;
 			}
 		}
 		return false;
