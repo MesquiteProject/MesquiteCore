@@ -43,6 +43,7 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 	NumberForTree numberTask;
 	TreeVector treesBlock;
 	boolean suppressed = false;
+	MesquiteBoolean shadeCells = new MesquiteBoolean(false);
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (arguments !=null) {
@@ -57,6 +58,7 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 				return sorry("Number for tree (for list) can't start because no calculator module was successfully hired");
 			}
 		}
+		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells); 
 		return true;
 	}
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
@@ -76,6 +78,7 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 		Snapshot temp = new Snapshot();
 		temp.addLine("suppress"); 
 		temp.addLine("setValueTask ", numberTask); 
+		temp.addLine("toggleShadeCells " + shadeCells.toOffOnString());
 		temp.addLine("desuppress"); 
 		return temp;
 	}
@@ -90,6 +93,14 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 					parametersChanged();
 				}
 				return temp;
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to color cells", "[on or off]", commandName, "toggleShadeCells")) {
+			boolean current = shadeCells.getValue();
+			shadeCells.toggleValue(parser.getFirstToken(arguments));
+			if (current!=shadeCells.getValue()) {
+				outputInvalid();
+				parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Suppresses calculation", null, commandName, "suppress")) {
@@ -145,9 +156,20 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 			parametersChanged(notification);
 		}
 	}
+	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
+	public Color getBackgroundColorOfCell(int ic, boolean selected){
+		if (!shadeCells.getValue())
+			return null;
+		if (min.isCombinable() && max.isCombinable() && na != null && na.isCombinable(ic)){
+			return MesquiteColorTable.getGreenScale(na.getDouble(ic), min.getDoubleValue(), max.getDoubleValue(), false);
+		}
+		return null;
+	}
 	/*.................................................................................................................*/
 	NumberArray na = new NumberArray(0);
 	StringArray explArray = new StringArray(0);
+	MesquiteNumber min = new MesquiteNumber();
+	MesquiteNumber max = new MesquiteNumber();
 	/*.................................................................................................................*/
 	public void doCalcs(){
 		if (suppressed || numberTask==null || treesBlock == null)
@@ -168,6 +190,8 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 			na.setValue(ic, mn);
 			explArray.setValue(ic, expl.getValue());
 		}
+		na.placeMinimumValue(min);
+		na.placeMaximumValue(max);
 	}
 	public String getExplanationForRow(int ic){
 		if (explArray == null || explArray.getSize() <= ic)

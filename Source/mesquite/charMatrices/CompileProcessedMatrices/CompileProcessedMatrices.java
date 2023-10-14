@@ -127,6 +127,12 @@ public class CompileProcessedMatrices extends FileProcessor {
 
 	}
 
+	/*.................................................................................................................*/
+   	/** Called after processing a series of files.*/
+   	public  boolean afterProcessingSeriesOfFiles(){
+		MesquiteFile.deleteFile(tempFile);
+   		return true;
+   	}
 
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

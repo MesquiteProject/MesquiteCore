@@ -36,11 +36,12 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForMatrix.class, getName() + " needs a method to calculate a value for each of the character matrices.",
-		"You can select a value to show in the Number For Character Matrices submenu of the Columns menu of the List of Character Matrices Window. ");
+				"You can select a value to show in the Number For Character Matrices submenu of the Columns menu of the List of Character Matrices Window. ");
 	}
 	NumberForMatrix numberTask;
 	MesquiteBoolean shadeCells = new MesquiteBoolean(false);
 	MesquiteTable table;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (arguments !=null) {
@@ -48,14 +49,15 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 			if (numberTask==null) {
 				return sorry("Number for character matrix (for list) can't start because the requested module was not successfully hired");
 			}
-			return true;
 		}
+		else {
 		numberTask = (NumberForMatrix)hireEmployee(NumberForMatrix.class, "Value to calculate for character matrix (for List of Matrices window)");
 		if (numberTask==null) {
 			return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
 		}
+		}
 		shadeCells.setValue(false);
-		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells); //Debugg.println for some reasons this isn't triggering menu need. Even if needsMenu is overridden to force drop down, drop down is unpopulated!
+		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells); 
 		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
 		return true;
 	}
@@ -164,7 +166,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 				table.redrawFullRow(i);
 			}
 		}
-		
+
 		datas.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 
 	}
@@ -259,8 +261,11 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	}
 	public String getWidestString(){
 		if (numberTask==null)
-			return "888888";
-		return numberTask.getVeryShortName()+"   ";
+			return "88888888";
+		String name = numberTask.getVeryShortName()+"   ";
+		if (StringUtil.blank(name) || name.length()<8)
+			return "88888888";
+		return name;
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */

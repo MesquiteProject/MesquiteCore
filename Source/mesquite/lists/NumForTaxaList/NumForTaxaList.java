@@ -38,7 +38,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForTaxon.class, getName()  + " needs a method to calculate a value for each of the taxa.",
-		"You can select a value to show in the Number For Taxa submenu of the Columns menu of the List of Taxa Window. ");
+				"You can select a value to show in the Number For Taxa submenu of the Columns menu of the List of Taxa Window. ");
 	}
 	/*.................................................................................................................*/
 	NumberForTaxon numberTask;
@@ -46,6 +46,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	Taxa taxa;
 	boolean suppressed = false;
 	MesquiteTable table;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (arguments !=null) {
@@ -144,8 +145,8 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 				table.redrawFullRow(i);
 			}
 		}
-		
-			taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+
+		taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 
 	}
 
@@ -248,10 +249,10 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 		explArray.resetSize(numTaxa);
 		MesquiteNumber mn = new MesquiteNumber();
 		MesquiteString expl = new MesquiteString();
-		
+
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
-		
+
 		for (int ic=0; ic<numTaxa; ic++) {
 			CommandRecord.tick("Number for taxon in taxon list; examining taxon " + ic);
 			Taxon taxon = taxa.getTaxon(ic);

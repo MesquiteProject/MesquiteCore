@@ -59,7 +59,7 @@ public class DataSpecsListWindow extends ListWindow implements MesquiteListener 
 		
 	}
 	/*.................................................................................................................*
-	public Object getCurrentObject(){
+	public Object getCurrentObject(){ this is handled by MesquiteWindow's reference as stored below
 		return null; 
 	}
 	*/

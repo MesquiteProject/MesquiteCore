@@ -114,7 +114,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		showFootnotes = new MesquiteBoolean(true);
 		addCheckMenuItemToSubmenu(null, namesMenu, "Show Footnotes Etc.", makeCommand("toggleShowFootnotes", this), showFootnotes);
 		showNodeLabels = new MesquiteBoolean(true);
-		addCheckMenuItemToSubmenu(null, namesMenu, "Show Branch Names", makeCommand("toggleNodeLabels", this), showNodeLabels);
+		addCheckMenuItemToSubmenu(null, namesMenu, "Show Branch/Clade Names", makeCommand("toggleNodeLabels", this), showNodeLabels);
 		/*New code added Feb.15.07 oliver*/ //TODO: delete new code comments
 		centerNodeLabels = new MesquiteBoolean(false);
 		centerNodeLabelItem = addCheckMenuItemToSubmenu(null, namesMenu, "Center Branch Names", makeCommand("toggleCenterNodeNames", this), centerNodeLabels);

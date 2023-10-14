@@ -439,7 +439,6 @@ public class ListTable extends MesquiteTable {
 	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
 		window.setAnnotation("", null);
 		ListAssistant assistant = window.findAssistant(column);
-
 		if (assistant!=null) {
 			assistant.showPopUp(getColumnNamesPanel(), getLeftOfColumn(column), getColumnNamesRowHeight()+8);
 		}

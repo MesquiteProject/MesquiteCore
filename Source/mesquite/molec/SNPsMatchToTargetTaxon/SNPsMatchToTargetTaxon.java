@@ -73,7 +73,7 @@ public class SNPsMatchToTargetTaxon extends NumberForTaxon {
 	}   	 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true; //just for play; this should likely not be released!!
+		return true; //Debugg.println just for play; this should likely not be released!!
 	}
 
 	/*.................................................................................................................*/
