@@ -178,6 +178,9 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		if (StringUtil.blank(directoryPath)) {
 			directoryPath = MesquiteFile.chooseDirectory("Choose directory containing FASTA files to be processed:", previousDirectory); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 		}
+		if (StringUtil.blank(directoryPath)) {
+			return;
+		}
 		File directory = new File(directoryPath);
 		previousDirectory = directory.getParent();
 		storePreferences();

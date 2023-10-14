@@ -207,22 +207,35 @@
 <h3 id="toc3"><a name="Analyzing Molecular Data-BLASTing sequences-BLAST in Web Browser"></a>BLAST in Web Browser</h3>
  Select a sequence or portion thereof in the data matrix. Choose Matrix&gt;Search&gt;BLAST in Web Browser, and Mesquite will send a BLAST request to GenBank to search for matching sequences. Your default web browser should open and take you to NCBI's BLAST page.<br />
 <h3 id="toc4"><a name="Analyzing Molecular Data-BLASTing sequences-Top BLAST Matches"></a><a name="TopBlast"></a>Top BLAST Matches</h3>
- This tool will search a database using BLAST, and return information about the top hits, and optionally import them into the current matrix. You will be given the choice to either BLAST NCBI's database, or BLAST a local database that you have created. To use this tool, select a sequence or portion thereof in the data matrix. Choose Matrix&gt;Search&gt;Top BLAST Matches. You will be given the choice between BLASTing the NCBI GenBank Server, or BLASTing a local database, on your computer.<br />
-If you choose to BLAST GenBank directly, you will be asked to choose among various options, including:<br />
+ <p> This tool will search a database using BLAST, and return information about the top hits, and optionally import them into the current matrix. You will be given the choice to either BLAST NCBI's database, or BLAST a local database that you have created. To use this tool, select a sequence or portion thereof in the data matrix. Choose Matrix&gt;Search&gt;Top BLAST Matches. You will be given the choice between BLASTing the NCBI GenBank Server, or BLASTing a local database, on your computer.</p>
+ <p>You will first need to install the BLAST+ executables&nbsp; &nbsp;on your local computer.&nbsp; You can downoad the latest version from here:&nbsp;<a href="https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/">https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/</a>.  Note which folder they are installed in, as that will be relevant when you set up some of the tools. 
+ <h4>BLASTing GenBank</h4>  
+	 
+   If you choose to BLAST GenBank directly, you will be asked to choose among various options, including:<br />
+ </p>
 <ul><li>maximum number of matches to be sought by Mesquite, and the eValue cutoff for acceptable hits</li><li>whether the report of results should be saved to a text file</li><li>whether details of the taxonomic lineage of the sequences should be reported</li><li>whether to import the top matches into the current matrix</li><li>the maximum time in seconds to wait for the BLAST search to complete.</li></ul>
-<p><br />
-  If you wish instead to BLAST a local database, perhaps containing sequences you generated, then you will first need to create a BLASTable database. You can do this by following the instructions on this <a href="http://www.ncbi.nlm.nih.gov/guide/howto/run-blast-local" rel="nofollow">NCBI BLAST page</a>. After you install the NCBI tools, you can turn a FASTA file containing your sequences using the following instructions. Let's imagine that your FASTA file is called &quot;FASTAfileName&quot;, and that you wish to create a BLASTable nucleotide database called &quot;BLASTableDatabaseName&quot;. Then use the following command in your computer's terminal shell:<br />
-  <br />
-  <strong>makeblastdb -in FASTAfileName -out BLASTableDatabaseName -dbtype nucl</strong><br />
-	  <br />
-	Note:  if you are using the version 2.10.0 or later of NCBI tools, you will need to also add "-blastdb_version 4" to the command, as follows: <br />
+<p>
+ <h4>BLASTing a database on your computer</h4>  
+  <p>If you wish instead to BLAST a local database, perhaps containing sequences you generated, then you will first need to create a BLASTable database. You can do this in one of two ways:</p>
+  <p><em>Invoke the makeblastdb command yourself</em>: In your computer's command-line terminal shell, change to the directory containing the FASTA file. Let's imagine that your FASTA file is called &quot;FASTAfileName&quot;, and that you wish to create a BLASTable nucleotide database called &quot;BLASTableDatabaseName&quot;. Then use the following command in your computer's terminal shell:<br />
     <br />
-	<strong>makeblastdb -in FASTAfileName -out BLASTableDatabaseName -dbtype nucl -blastdb_version 4</strong><br />
-	
-  <br />
-  This will create three or four files, including BLASTableDatabaseName.nin, BLASTableDatabaseName.nsq, and BLASTableDatabaseName.nhr. Move the files created to whatever folder is required for NCBI's BLAST tools to function (e.g., on the macOS, this is a &quot;db&quot; folder in a &quot;blast&quot; folder in your home directory). You can then BLAST the BLASTableDatabaseName file directly from within Mesquite. Within Mesquite, after you choose to BLAST a local database, you will first be asked to specify some details about the local database before you choose the BLAST options in the &quot;Local BLAST Options&quot; dialog box. In the &quot;Database to search&quot;, put the name of the database (e.g., &quot;BLASTableDatabaseName&quot;). You needn't enter any other options in this dialog box for databases you have created yourself. However, if you are going to do a blastX to a local protein database that you downloaded from GenBank, you will need to check &quot;Use ID in Definition&quot; box.</p>
-<p>If your BLAST executables are not in the default folder that the installer placed them, then you will need uncheck "BLAST programs in default location" and specify the path to the folder.  If the BLAST databases are not in the default folder specified by the installer, then you will need uncheck "BLAST databases in default location" and  specify the path to their folder.  <br />
-  <br />
+    <strong>makeblastdb -in FASTAfileName -out BLASTableDatabaseName -dbtype nucl</strong><br />
+    <br />
+    Note:  if you are using the version 2.10.0 or later of NCBI BLAST+ tools, you will need to also add "-blastdb_version 4" to the command, as follows: <br />
+    <br />
+    <strong>makeblastdb -in FASTAfileName -out BLASTableDatabaseName -dbtype nucl -blastdb_version 4</strong><br />
+    
+    <br />
+    <em>Ask Mesquite to create the databases</em>: If you choose this option, then Mesquite will take a directory of FASTA files, and for each of them call makeblastdb to create a BLASTable database.  To do this, touch on Mesquite's log window. You will then see a Utilities menu. In there, choose &quot;Make BLASTable files from FASTA...&quot;. You will get a dialog box like this:</p>
+  <p> <img src="files/MakeBlast Options.png" width="609" height="207" alt=""/></p>
+  <p>After choosing your options here, you will be asked for the directory containing the FASTA files. After you choose, Mesquite will take each file in that directory that ends in the requested extension (e.g., &quot;fas&quot;), and ask makeblastdb to make a database for each one. The file names used will be based upon the original FASTA file name. So, for example, if the FASTA file name is &quot;fileName.fas&quot;, then the BLASTABLE database will be referred to as &quot;fileNameDB&quot;. </p>
+  <p>Either of these two approaches will create three or four files for each FASTA file, with extensions .nin, .nsq, and .nhr. </p>
+  <p>Move the files created to whatever folder is required for NCBI's BLAST tools to function (e.g., on the macOS, this is a &quot;db&quot; folder in a &quot;blast&quot; folder in your home directory). You can then BLAST the BLASTableDatabaseName file directly from within Mesquite. Within Mesquite, after you choose to BLAST a local database by choosing Matrix&gt;Search&gt;Top BLAST Matches and then choosing Lcoal Blaster, you will be presented with the Local BLAST Options dialog box: </p>
+  </p>
+  <img src="files/LocalBlast Options.png" width="694" height="488" alt=""/>
+  <p>In the &quot;Database to search&quot;, put the name of one or more databases (e.g., &quot;BLASTableDatabaseName&quot;); if you put multiple, then separate their nams by commas. These databases will need to be either in the default location expected by your installation of NCBI's BLAST executables (e.g., in a &quot;db&quot; folder within a &quot;blast&quot; folder within your home directory), or in another folder you specify - you choose those options using the choices that specify the database locations at the bottom of the dialog box. If you enter a &quot;*&quot; in the &quot;Databases to search&quot; field, then Mesquite will BLAST <strong>all</strong> databases that are contained within the folder containing the databases. You needn't enter any other options in this dialog box for databases you have created yourself. However, if you are going to do a blastX to a local protein database that you downloaded from GenBank, you will need to check &quot;Use ID in Definition&quot; box.</p>
+  <p>If your BLAST executables are not in the default folder that an installer placed them, then you will need uncheck "BLAST programs in default location" and specify the path to the folder.<br />
+    <br />
 </p>
 <h3 id="toc5"><a name="Analyzing Molecular Data-BLASTing sequences-Fetch &amp; Add GenBank Sequences"></a>Fetch &amp; Add GenBank Sequences</h3>
  This option, in Matrix&gt;Utilities&gt; Fetch &amp; Add GenBank Sequences, allows one to enter a comma-delimited list of GenBank accession numbers, and Mesquite will acquire these from GenBank and import them into the current matrix.<br />
