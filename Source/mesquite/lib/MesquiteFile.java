@@ -489,6 +489,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		this.directoryName = dir;
 	}
 	/*-------------------------------------------------------*/
+	public static String getPathWithSingleSeparatorAtEnd(String path) {
+		return StringUtil.stripTrailingWhitespaceAndPunctuation(path, fileSeparator) + fileSeparator; 
+
+	}
+	/*-------------------------------------------------------*/
 	/** opens existing file at given URL */
 	public static MesquiteFile open(URL url) {
 		MesquiteFile mF = new MesquiteFile();

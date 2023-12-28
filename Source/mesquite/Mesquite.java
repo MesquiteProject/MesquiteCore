@@ -525,6 +525,7 @@ public class Mesquite extends MesquiteTrunk
 		/*----*/
 
 		suggestedDirectory = mesquiteDirectoryPath + "examples";
+		appsDirectory = mesquiteDirectoryPath + "apps";
 		pythonDirectory = mesquiteDirectoryPath + "python";
 		if (mesquiteDirectory!=null)
 			logln("Mesquite directory: " + mesquiteDirectoryPath);
