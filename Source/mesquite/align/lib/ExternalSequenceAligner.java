@@ -25,6 +25,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
+import mesquite.externalCommunication.lib.AppInformationFile;
 import mesquite.lib.table.*;
 import mesquite.align.lib.*;
 
@@ -40,7 +41,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public static int runs = 0;
 	ShellScriptRunner scriptRunner;
 	ExternalProcessManager externalRunner;
-	boolean defaultExecutablePath=true;
+	boolean useDefaultExecutablePath=false;
+	AppInformationFile appInfoFile;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -77,8 +79,30 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	}
 	
 	/*.................................................................................................................*/
-	public String getExecutablePathWithinAppsDirectory() {
-		return getProgramName()+ MesquiteFile.fileSeparator + "Contents" + MesquiteFile.fileSeparator + "MacOS" + MesquiteFile.fileSeparator + getProgramName();
+	public String getAppNameWithinAppsDirectory() {
+		return null;
+	}
+	/*.................................................................................................................*/
+	public String getDefaultExecutablePath(){
+		if (appInfoFile==null) {
+			appInfoFile = new AppInformationFile(getAppNameWithinAppsDirectory());
+			boolean success = false;
+			if (appInfoFile!=null)
+				success = appInfoFile.processAppInfoFile();
+			if (!success) appInfoFile=null;
+		}
+		if (appInfoFile!=null) {
+			String fullPath = appInfoFile.getFullPath();
+			return fullPath;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	public String getExecutablePath(){
+		if (useDefaultExecutablePath) 
+			return getDefaultExecutablePath();
+		else
+			return programPath;
 	}
 	/*.................................................................................................................*/
 	public String getStdOut() {
@@ -125,16 +149,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return getExecutablePath();  
 	}
 	
-	/*.................................................................................................................*/
-	public String getExecutablePath(){
-		if (defaultExecutablePath) {
-			String appName = getProgramName();
-			String appPackagePath = MesquiteFile.getPathWithSingleSeparatorAtEnd(MesquiteTrunk.appsDirectory) +appName +".app";
-			return appPackagePath+ MesquiteFile.fileSeparator + "Contents" + MesquiteFile.fileSeparator + "MacOS" + MesquiteFile.fileSeparator + appName;
-		}
-		else
-			return programPath;
-	}
 
 	public boolean getDefaultExecutablePathAllowed() {
 		return false;
@@ -142,7 +156,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("defaultExecutablePath".equalsIgnoreCase(tag) && getDefaultExecutablePathAllowed())
-			defaultExecutablePath = MesquiteBoolean.fromTrueFalseString(content);
+			useDefaultExecutablePath = MesquiteBoolean.fromTrueFalseString(content);
 		if ("programPath".equalsIgnoreCase(tag)) {
 			programPath = StringUtil.cleanXMLEscapeCharacters(content);
 		}
@@ -155,7 +169,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		if (getDefaultExecutablePathAllowed())
-			StringUtil.appendXMLTag(buffer, 2, "defaultExecutablePath", defaultExecutablePath);  
+			StringUtil.appendXMLTag(buffer, 2, "defaultExecutablePath", useDefaultExecutablePath);  
 		StringUtil.appendXMLTag(buffer, 2, "programPath", programPath);  
 		StringUtil.appendXMLTag(buffer, 2, "programOptions", programOptions);  
 
@@ -195,7 +209,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		Checkbox defaultExecutablePathCheckBox =  null;
 		if (getDefaultExecutablePathAllowed()) {
-			defaultExecutablePathCheckBox = dialog.addCheckBox("Default path for "+ getProgramName(), defaultExecutablePath);
+			defaultExecutablePathCheckBox = dialog.addCheckBox("Default path for "+ getProgramName(), useDefaultExecutablePath);
 		}
 		programPathField = dialog.addTextField("Path to " + getProgramName() + ":", programPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
@@ -213,7 +227,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (buttonPressed.getValue()==0)  {
 			programPath = programPathField.getText();
 			if (defaultExecutablePathCheckBox!=null)
-				defaultExecutablePath = defaultExecutablePathCheckBox.getState();
+				useDefaultExecutablePath = defaultExecutablePathCheckBox.getState();
 			/*
 			 * File pp = new File(programPath);
 			if (!pp.canExecute()){

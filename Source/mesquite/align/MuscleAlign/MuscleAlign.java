@@ -71,6 +71,15 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	public String getHelpURL(){
 		return "http://www.drive5.com/muscle/manual/";
 	}
+	/*.................................................................................................................*/
+	public boolean getDefaultExecutablePathAllowed() {
+		return true;
+	}
+
+	/*.................................................................................................................*/
+	public String getAppNameWithinAppsDirectory() {
+		return "muscle.app";
+	}
 
 	/*.................................................................................................................*/
 	public String getHelpString() {

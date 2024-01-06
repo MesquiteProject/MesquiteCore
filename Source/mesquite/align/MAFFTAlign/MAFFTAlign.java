@@ -41,9 +41,6 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	public boolean showCitation() {
 		return true;
 	}
-	public boolean getDefaultExecutablePathAllowed() {
-		return true;
-	}
 	/*.................................................................................................................*/
 	public String getCitation()  {
 		return "Please remember to cite the version of MAFFT you used.";
@@ -73,10 +70,14 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	public String getProgramName(){
 		return "MAFFT";
 	}
+	/*.................................................................................................................*/
+	public boolean getDefaultExecutablePathAllowed() {
+		return true;
+	}
 
 	/*.................................................................................................................*/
-	public String getExecutablePathWithinAppsDirectory() {
-		return "mafft.app/Contents/Resources/mafft.bat";
+	public String getAppNameWithinAppsDirectory() {
+		return "mafft.app";
 	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
