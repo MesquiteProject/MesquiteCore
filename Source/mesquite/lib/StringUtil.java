@@ -1670,6 +1670,14 @@ public class StringUtil {
 		}
 	}
 	/*.................................................................................................................*/
+	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String flavor, boolean value){
+		if (sb!=null) {
+			appendStartXMLTag(sb,numTabs,tag, XMLUtil.FLAVOR, StringUtil.protectForXML(flavor));
+			sb.append(MesquiteBoolean.toTrueFalseString(value));
+			appendEndXMLTag(sb,tag);
+		}
+	}
+	/*.................................................................................................................*/
 	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, MesquiteModule module){
 		if (sb!=null) {
 			appendStartXMLTag(sb,numTabs,tag);
