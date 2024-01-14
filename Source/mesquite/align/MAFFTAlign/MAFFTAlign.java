@@ -70,14 +70,9 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	public String getProgramName(){
 		return "MAFFT";
 	}
-	/*.................................................................................................................*/
-	public boolean getDefaultExecutablePathAllowed() {
-		return true;
-	}
 
-	/*.................................................................................................................*/
-	public String getAppNameWithinAppsDirectory() {
-		return "mafft.app";
+	public String getAppOfficialName() {
+		return "mafft";
 	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {

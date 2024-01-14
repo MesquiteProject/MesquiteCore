@@ -71,16 +71,9 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	public String getHelpURL(){
 		return "http://www.drive5.com/muscle/manual/";
 	}
-	/*.................................................................................................................*/
-	public boolean getDefaultExecutablePathAllowed() {
-		return true;
+	public String getAppOfficialName() {
+		return "muscle";
 	}
-
-	/*.................................................................................................................*/
-	public String getAppNameWithinAppsDirectory() {
-		return "muscle.app";
-	}
-
 	/*.................................................................................................................*/
 	public String getHelpString() {
 	  String s =  " In the Muscle Options field, place any Muscle options you wish to use.  For example, if you wished to change the"

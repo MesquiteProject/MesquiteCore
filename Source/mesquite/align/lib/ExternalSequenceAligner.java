@@ -25,12 +25,14 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
+import mesquite.externalCommunication.AppHarvester.AppHarvester;
 import mesquite.externalCommunication.lib.AppInformationFile;
+import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.table.*;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
-public abstract class ExternalSequenceAligner extends MultipleSequenceAligner implements ActionListener, OutputFileProcessor, ShellScriptWatcher{
+public abstract class ExternalSequenceAligner extends MultipleSequenceAligner implements ActionListener, OutputFileProcessor, ShellScriptWatcher, AppUser{
 	String programPath;
 	SingleLineTextField programPathField =  null;
 	boolean preferencesSet = false;
@@ -43,12 +45,14 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	ExternalProcessManager externalRunner;
 	boolean useDefaultExecutablePath=false;
 	AppInformationFile appInfoFile;
+	boolean hasApp=false;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		rng = new Random(System.currentTimeMillis());
 		programOptions = getDefaultProgramOptions();
 		loadPreferences();
+		AppHarvester.examineAppsFolder(this);
 		//scriptBased = MesquiteTrunk.isJava VersionLessThan(1.7);
 		return true;
 	}
@@ -78,11 +82,16 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return false;
 	}
 	
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public String getAppNameWithinAppsDirectory() {
 		return null;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
+	public AppInformationFile getAppInfoFile() {
+		return AppHarvester.getAppInfoFileForProgram(this);
+	}
+
+	/*.................................................................................................................*
 	public String getDefaultExecutablePath(){
 		if (appInfoFile==null) {
 			appInfoFile = new AppInformationFile(getAppNameWithinAppsDirectory());
@@ -97,13 +106,44 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		}
 		return null;
 	}
+	
+	/*.................................................................................................................*/
+	public String getDefaultExecutablePath(){
+		if (appInfoFile==null) {
+			appInfoFile = getAppInfoFile();
+		}
+		if (appInfoFile!=null) {
+			String fullPath = appInfoFile.getFullPath();
+			return fullPath;
+		}
+		return null;
+	}
+
 	/*.................................................................................................................*/
 	public String getExecutablePath(){
-		if (useDefaultExecutablePath) 
+		if (useDefaultExecutablePath && getDefaultExecutablePathAllowed()) 
 			return getDefaultExecutablePath();
 		else
 			return programPath;
 	}
+	
+	public boolean getHasApp() {
+		return hasApp;
+	}
+	public void setHasApp(boolean hasApp) {
+		this.hasApp = hasApp;
+	}
+	public String getAppOfficialName() {
+		return "";
+	}
+
+	/*.................................................................................................................*/
+	public AppInformationFile getAppInfoFile() {
+		return AppHarvester.getAppInfoFileForProgram(this);
+	}
+
+	
+	
 	/*.................................................................................................................*/
 	public String getStdOut() {
 		if (scriptBased){
@@ -151,11 +191,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	
 
 	public boolean getDefaultExecutablePathAllowed() {
-		return false;
+		return getHasApp();
 	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("defaultExecutablePath".equalsIgnoreCase(tag) && getDefaultExecutablePathAllowed())
+		if ("defaultExecutablePath".equalsIgnoreCase(tag))
 			useDefaultExecutablePath = MesquiteBoolean.fromTrueFalseString(content);
 		if ("programPath".equalsIgnoreCase(tag)) {
 			programPath = StringUtil.cleanXMLEscapeCharacters(content);
@@ -168,7 +208,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-		if (getDefaultExecutablePathAllowed())
+	//if (getDefaultExecutablePathAllowed())
 			StringUtil.appendXMLTag(buffer, 2, "defaultExecutablePath", useDefaultExecutablePath);  
 		StringUtil.appendXMLTag(buffer, 2, "programPath", programPath);  
 		StringUtil.appendXMLTag(buffer, 2, "programOptions", programOptions);  
@@ -209,9 +249,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		Checkbox defaultExecutablePathCheckBox =  null;
 		if (getDefaultExecutablePathAllowed()) {
-			defaultExecutablePathCheckBox = dialog.addCheckBox("Default path for "+ getProgramName(), useDefaultExecutablePath);
-		}
-		programPathField = dialog.addTextField("Path to " + getProgramName() + ":", programPath, 40);
+			defaultExecutablePathCheckBox = dialog.addCheckBox("Use built-in app path for "+ getProgramName(), useDefaultExecutablePath);
+			programPathField = dialog.addTextField("Path to alternative version:", programPath, 40);
+		} else
+			programPathField = dialog.addTextField("Path to " + getProgramName() + ":", programPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");
 
