@@ -1,5 +1,7 @@
 package mesquite.externalCommunication.lib;
 
+import java.util.Vector;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -7,6 +9,7 @@ import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.StringUtil;
 import mesquite.lib.XMLUtil;
 
 public class AppInformationFile {
@@ -20,6 +23,7 @@ public class AppInformationFile {
 	String appsFilePath;
 	static final int infoFileVersion = 1;
 	String appNameWithinAppsDirectory;
+
 	
 	public AppInformationFile(String appNameWithinAppsDirectory) {
 		this.appNameWithinAppsDirectory = appNameWithinAppsDirectory;
@@ -31,6 +35,7 @@ public class AppInformationFile {
 		else
 			return appsFilePath + MesquiteFile.fileSeparator + "appinfo.xml";
 	}
+
 	/*.................................................................................................................*/
 	public boolean processAppInfoFile(){
 		appsFilePath = MesquiteFile.getPathWithSingleSeparatorAtEnd(MesquiteTrunk.appsDirectory) +appNameWithinAppsDirectory +MesquiteFile.fileSeparator;
