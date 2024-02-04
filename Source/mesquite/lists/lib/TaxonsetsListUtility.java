@@ -21,5 +21,5 @@ public abstract class TaxonsetsListUtility extends MesquiteModule  {
    		return false;
    	}
    	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
-   	public abstract boolean operateOnTaxaWithTaxonSet(Taxa taxa, TaxaSelectionSet taxSet, MesquiteTable table);
+   	public abstract boolean operateOnTaxa(Taxa taxa, MesquiteTable table);
 }

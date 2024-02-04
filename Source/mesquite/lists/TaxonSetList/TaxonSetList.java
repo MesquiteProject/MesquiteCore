@@ -85,23 +85,14 @@ public class TaxonSetList extends TaxaSpecssetList {
 
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Hires utility module to operate on the taxon sets", "[name of module]", commandName, "doUtility")) {
-			
+
 			if (taxa !=null){  // these are the taxa associated with this list
 				MesquiteTable table = ((ListWindow)getModuleWindow()).getTable();
-				if (table.anyRowSelected()){  
-					int selected = table.firstRowSelected();
-					if (MesquiteInteger.isCombinable(selected)) {
-						SpecsSetVector tsets = taxa.getSpecSetsVector(TaxaSelectionSet.class);
-						TaxaSelectionSet taxSet = null;
-						taxSet = (TaxaSelectionSet)tsets.elementAt(selected);
-						TaxonsetsListUtility tda= (TaxonsetsListUtility)hireNamedEmployee(TaxonsetsListUtility.class, arguments);
-						if (tda!=null) {
-							boolean a = tda.operateOnTaxaWithTaxonSet(taxa, taxSet, table);
-							if (!tda.pleaseLeaveMeOn())
-								fireEmployee(tda);
-						}
-
-					}
+				TaxonsetsListUtility tda= (TaxonsetsListUtility)hireNamedEmployee(TaxonsetsListUtility.class, arguments);
+				if (tda!=null) {
+							boolean a = tda.operateOnTaxa(taxa, table);
+				if (!tda.pleaseLeaveMeOn())
+					fireEmployee(tda);
 				}
 
 			}

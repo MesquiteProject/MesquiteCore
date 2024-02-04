@@ -46,15 +46,30 @@ public class TaxonsetsListSelect extends TaxonsetsListUtility {
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
-	/** Called to operate on the Taxa block using the taxSet.  Returns true if action is done*/
-	public boolean operateOnTaxaWithTaxonSet(Taxa taxa,TaxaSelectionSet taxSet, MesquiteTable table){
-		if (taxa !=null && taxSet!=null&& table!=null) {
-			
-			logln("selecting taxa in Taxon Set " + taxSet.getName());
-			for (int i=0; i<taxa.getNumTaxa(); i++)
-				taxa.setSelected(i, taxSet.isBitOn(i));
-			taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-			return true;
+	/** Called to operate on the Taxa block using the taxSets that are selected in the table.  Returns true if action is done*/
+	public boolean operateOnTaxa(Taxa taxa, MesquiteTable table){
+		if (taxa !=null && table!=null) {
+			if (table.anyRowSelected()){  
+				SpecsSetVector tsets = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+				TaxaSelectionSet taxSet = null;
+				for (int i=0; i<taxa.getNumTaxa(); i++)
+					taxa.setSelected(i, false);
+				for (int it=0; it<tsets.getNumSpecsSets(); it++) {
+					if (table.isRowSelected(it)) {
+						taxSet = (TaxaSelectionSet)tsets.elementAt(it);
+						if (taxSet!=null) {
+							logln("selecting taxa in Taxon Set " + taxSet.getName());
+							for (int i=0; i<taxa.getNumTaxa(); i++)
+								if (taxSet.isBitOn(i))
+									taxa.setSelected(i, true);
+						}
+					}
+
+				}
+				taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+				return true;
+			}
+
 		}
 
 		return false;
@@ -73,7 +88,7 @@ public class TaxonsetsListSelect extends TaxonsetsListUtility {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;  
+		return true;  
 	}
 	public void endJob() {
 		super.endJob();
