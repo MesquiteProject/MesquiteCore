@@ -185,6 +185,55 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 		else
 			return null;
 	}
+
+
+	/*.................................................................................................................*/
+
+	private String getCHARSETS(CharacterData data){
+		boolean writeStandardPartition = false;
+		CharactersGroup[] parts =null;
+		CharacterPartition characterPartition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
+		if (characterPartition!=null) {
+			parts = characterPartition.getGroups();
+			writeStandardPartition = parts!=null;
+		}
+
+		boolean writeCodPosPartition = false;
+		if (data instanceof DNAData)
+			writeCodPosPartition = ((DNAData)data).someCoding();
+
+		String charSetList = "";
+		if (writeStandardPartition) {
+			int numCharSets = 0;
+			for (int i=0; i<parts.length; i++) {
+				String q = ListableVector.getListOfMatches((Listable[])characterPartition.getProperties(), parts[i], CharacterStates.toExternal(0));
+				if (q != null) {
+					charSetList +=  "\n\tcharset " + StringUtil.simplifyIfNeededForOutput(parts[i].getName(),true) + " = " + q + ";";
+					numCharSets++;
+				}
+			}
+		} else if (writeCodPosPartition) {  // only do this if there are no defined partitions
+			//codon positions if nucleotide
+			//String names = "";
+			CodonPositionsSet codSet = (CodonPositionsSet)data.getCurrentSpecsSet(CodonPositionsSet.class);
+			for (int iw = 0; iw<4; iw++){
+				String locs = codSet.getListOfMatches(iw);
+				if (!StringUtil.blank(locs)) {
+					String charSetName = "";
+					if (iw==0) 
+						charSetName = StringUtil.tokenize("nonCoding");
+					else 
+						charSetName = StringUtil.tokenize("codonPos" + iw);			
+					charSetList += "\n\tcharset " + charSetName + " = " +  locs + ";";
+				}
+			}
+			
+		}
+
+		return charSetList;
+	}
+
+
 	/*.................................................................................................................*/
 	String getLocalNexusCommands(MesquiteFile file, String blockName){ 
 		String s= "";
@@ -210,6 +259,13 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 						s += specSet;
 					}
 				}
+				ListableVector alldatas = getProject().getCharacterMatrices();
+				for (int i=0; i<alldatas.size(); i++){
+					CharacterData data = (CharacterData)alldatas.elementAt(i);
+					if (data!=null)
+						s+=getCHARSETS(data);
+
+				}
 			}
 
 		}
@@ -221,7 +277,8 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 		if (StringUtil.blank(contents))
 			return null;
 		String blocks="BEGIN SETS;" + StringUtil.lineEnding()+ contents;
-		blocks += "END;" + StringUtil.lineEnding();
+		
+		blocks += "\nEND;" + StringUtil.lineEnding();
 		return blocks;
 	}
 
