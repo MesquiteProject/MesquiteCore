@@ -235,45 +235,34 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 
 
 	/*.................................................................................................................*/
-	String getLocalNexusCommands(MesquiteFile file, String blockName){ 
+	String getLocalNexusCommands(MesquiteFile file, String blockName, CategoricalData data){ 
 		String s= "";
 		String specSet ="";
-		for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
+		Taxa taxa = data.getTaxa();
 
-			Taxa taxa =  file.getProject().getTaxa(ids);
-			if (taxa.getFile() == file){
-				int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
-				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
-				if (ssv!=null){
-					TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
-					if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
-						ms.setNexusBlockStored(blockName);
-						ms.setName("UNTITLED");
-						specSet = nexusStringForSpecsSet(ms, taxa, file, true);
-						s += specSet;
-					}
-
-
-					for (int ims = 0; ims<numSets; ims++) {
-						s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
-						s += specSet;
-					}
-				}
-				ListableVector alldatas = getProject().getCharacterMatrices();
-				for (int i=0; i<alldatas.size(); i++){
-					CharacterData data = (CharacterData)alldatas.elementAt(i);
-					if (data!=null)
-						s+=getCHARSETS(data);
-
-				}
+		int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
+		SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+		if (ssv!=null){
+			TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
+			if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
+				ms.setNexusBlockStored(blockName);
+				ms.setName("UNTITLED");
+				specSet = nexusStringForSpecsSet(ms, taxa, file, true);
+				s += specSet;
 			}
 
+
+			for (int ims = 0; ims<numSets; ims++) {
+				s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
+				s += specSet;
+			}
 		}
+		s+=getCHARSETS(data);
 		return s;
 	}
 	/*.................................................................................................................*/
-	String getSetsBlock(MesquiteFile file){
-		String contents = getLocalNexusCommands(file, "SETS");
+	String getSetsBlock(MesquiteFile file, CategoricalData data){
+		String contents = getLocalNexusCommands(file, "SETS", data);
 		if (StringUtil.blank(contents))
 			return null;
 		String blocks="BEGIN SETS;" + StringUtil.lineEnding()+ contents;
@@ -314,7 +303,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 				return false;
 		}
 		 */
-		addendum = getSetsBlock(file);
+		addendum = getSetsBlock(file, data );
 
 
 		String path = getPathForExport(arguments, suggested, dir, fn);
