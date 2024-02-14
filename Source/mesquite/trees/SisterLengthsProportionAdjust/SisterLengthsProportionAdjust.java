@@ -41,13 +41,13 @@ public class SisterLengthsProportionAdjust extends TreeDisplayAssistantI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Adjust length balance of daughter nodes"; //Debugg.println here just to force me to look at again
+		return "Adjust length balance of sister nodes"; //Debugg.println here just to force me to look at again
 	}
 
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Provides a tool to adjust the proportion of length allocated to two daughter nodes. Thus, if two daughters had lengths 1.0 and 1.0, the proportion of the " 
-				+ "length belong to the left daughter would be 0.5. Adjusting to the proportion to 0.25 would shift the lengths to 0.5 and 1.5. Their total would be constant. This is especially "
+		return "Provides a tool to adjust the proportion of length allocated to two sister nodes. Thus, if the branch touched on had length 1.0 and its sister 1.0, the proportion of the " 
+				+ "length belong to this node would be 0.5. Adjusting to its proportion to 0.25 would shift the lengths to 0.5 and 1.5. Their total would be constant. This is especially "
 				+ "helpful to shift the allocation at the root of the tree, e.g. the balance between the outgroup and study group.";
 
 	}
@@ -73,7 +73,7 @@ class SLPAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 	public SLPAdjustToolExtra (SisterLengthsProportionAdjust ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		selectModule = ownerModule;
-		adjustTool = new TreeTool(this,  "adjustor", ownerModule.getPath() , "sisterLengthsAdjust.gif", 2,1,"Adjust daughter length proportions", "This tool adjusts branch lengths of left and right daughters, sliding their total branch length between them.");
+		adjustTool = new TreeTool(this,  "adjustor", ownerModule.getPath() , "sisterLengthsAdjust.gif", 2,1,"Adjust sister length proportions", "This tool adjusts branch lengths of two sister branches, sliding their total branch length between them.");
 		adjustTool.setTouchedCommand(MesquiteModule.makeCommand("touchedLengthsAdjust",  this));
 		if (ownerModule.containerOfModule() instanceof MesquiteWindow) {
 			((MesquiteWindow)ownerModule.containerOfModule()).addTool(adjustTool);
@@ -116,7 +116,7 @@ class SLPAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 				t = null;
 		}
 		
-		if (checker.compare(this.getClass(), "Touch on branch to change lengths of two daughters", "[branch number] [x coordinate touched] [y coordinate touched] [modifiers]", commandName, "touchedLengthsAdjust")) {
+		if (checker.compare(this.getClass(), "Touch on branch to change its length versus its sister\'s", "[branch number] [x coordinate touched] [y coordinate touched] [modifiers]", commandName, "touchedLengthsAdjust")) {
 			if (t==null)
 				return null;
 			MesquiteInteger io = new MesquiteInteger(0);
@@ -125,42 +125,49 @@ class SLPAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			int y= MesquiteInteger.fromString(arguments, io);
 			String mod= ParseUtil.getRemaining(arguments, io);
 
-
-			//If node has two daughters, proceed
-			if (t.numberOfDaughtersOfNode(node)==2) {
-				double leftLength = t.	getBranchLength(t.firstDaughterOfNode(node));
-				double rightLength = t.	getBranchLength(t.lastDaughterOfNode(node));
-				if (leftLength == MesquiteDouble.unassigned && rightLength == MesquiteDouble.unassigned)
-					AlertDialog.notice(selectModule.containerOfModule(), "Tool needs assigned branch lengths", "This tool can be applied only when least one of daughters has an assigned branch length.");
-				else if (leftLength + rightLength == 0)
-					AlertDialog.notice(selectModule.containerOfModule(), "Tool needs nonzero branch lengths", "This tool can be applied only when least one of daughters has a non-zero branch length.");
+			int mother = t.motherOfNode(node);
+			
+			//If node has just one sister, proceed
+			if (t.numberOfDaughtersOfNode(mother)==2) {
+				int sister = 0;
+				if (t.firstDaughterOfNode(mother) == node)
+					sister = t.lastDaughterOfNode(mother);
+				else
+					sister = t.firstDaughterOfNode(mother);
+					
+				double thisLength = t.getBranchLength(node);
+				double sisterLength = t.getBranchLength(sister);
+				if (thisLength == MesquiteDouble.unassigned && sisterLength == MesquiteDouble.unassigned)
+					AlertDialog.notice(selectModule.containerOfModule(), "Tool needs assigned branch lengths", "This tool can be applied only when least one of sisters has an assigned branch length.");
+				else if (thisLength + sisterLength == 0)
+					AlertDialog.notice(selectModule.containerOfModule(), "Tool needs nonzero branch lengths", "This tool can be applied only when least one of sisters has a non-zero branch length.");
 				else {
-					if (leftLength == MesquiteDouble.unassigned)
-						leftLength = 0;
-					if (rightLength == MesquiteDouble.unassigned)
-						rightLength = 0;
-					double totalLength = leftLength+rightLength;
+					if (thisLength == MesquiteDouble.unassigned)
+						thisLength = 0;
+					if (sisterLength == MesquiteDouble.unassigned)
+						sisterLength = 0;
+					double totalLength = thisLength+sisterLength;
 					String totalAsString = MesquiteDouble.toStringDigitsSpecified(totalLength, 5);
-					double proportionLeft = leftLength/totalLength;
-					double newProportion = MesquiteDouble.queryDouble(selectModule.containerOfModule(), "Set proportion", "Branch lengths of the two daughter branches of the node touched sum to " + totalAsString 
-							+ ". The proportion of this length currently assigned to the left daughter is currently shown below. " 
-							+ "To change this proportion, and thus slide branch length from one daughter to another, please enter below a new proportion of length for the left daughter.", proportionLeft);
-					if (!MesquiteDouble.isCombinable(newProportion) || newProportion<0 || newProportion>1) {
-						AlertDialog.notice(selectModule.containerOfModule(), "Tool needs nonzero branch lengths", "This tool can be applied only when least one of daughters has a non-zero branch length.");
+					double proportionThis = thisLength/totalLength;
+					double newProportion = MesquiteDouble.queryDouble(selectModule.containerOfModule(), "Set proportion", "Branch lengths of this touched branch and its sister branch sum to " + totalAsString 
+							+ ". The proportion of this length currently assigned to the touched branch is currently shown below. " 
+							+ "To change this proportion, and thus slide branch length from one sister to another, please enter below a new proportion of length for the touched branch.", proportionThis);
+					if (!MesquiteDouble.isCombinable(newProportion) || newProportion<=0 || newProportion>=1) {
+						AlertDialog.notice(selectModule.containerOfModule(), "Tool needs nonzero branch lengths", "This tool can be applied only when least one of sisters has a non-zero branch length.");
 						return null;
 					}
 					//OK, at this point, a good new proportion has been returned. Adjust lengths.
-					leftLength = totalLength*newProportion;
-					rightLength = totalLength - leftLength;
-					selectModule.logln("Setting left daughter's length to " + MesquiteDouble.toStringDigitsSpecified(leftLength, 5) + " and right daughter's to " +  MesquiteDouble.toStringDigitsSpecified(rightLength, 5));
-					t.setBranchLength(t.firstDaughterOfNode(node), leftLength, false);
-					t.setBranchLength(t.lastDaughterOfNode(node), rightLength, false);
+					thisLength = totalLength*newProportion;
+					sisterLength = totalLength - thisLength;
+					selectModule.logln("Setting touched branch\'s length to " + MesquiteDouble.toStringDigitsSpecified(thisLength, 5) + " and its sister\'s length to " +  MesquiteDouble.toStringDigitsSpecified(sisterLength, 5));
+					t.setBranchLength(node, thisLength, false);
+					t.setBranchLength(sister, sisterLength, false);
 					t.notifyListeners(this, new Notification(MesquiteListener.BRANCHLENGTHS_CHANGED));
 				
-					
+						
 				}
 			}
-			else AlertDialog.notice(selectModule.containerOfModule(), "Tool applies to binary divergences only", "This tool can be applied only to a node with two daughter branches.");
+			else AlertDialog.notice(selectModule.containerOfModule(), "Tool applies to binary divergences only", "This tool can be applied only to a branch that has a single sister branch.");
 
 		}
 		return null;
