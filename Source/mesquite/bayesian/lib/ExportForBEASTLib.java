@@ -185,43 +185,89 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 		else
 			return null;
 	}
+
+
 	/*.................................................................................................................*/
-	String getLocalNexusCommands(MesquiteFile file, String blockName){ 
-		String s= "";
-		String specSet ="";
-		for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
 
-			Taxa taxa =  file.getProject().getTaxa(ids);
-			if (taxa.getFile() == file){
-				int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
-				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
-				if (ssv!=null){
-					TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
-					if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
-						ms.setNexusBlockStored(blockName);
-						ms.setName("UNTITLED");
-						specSet = nexusStringForSpecsSet(ms, taxa, file, true);
-						s += specSet;
-					}
+	private String getCHARSETS(CharacterData data){
+		boolean writeStandardPartition = false;
+		CharactersGroup[] parts =null;
+		CharacterPartition characterPartition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
+		if (characterPartition!=null) {
+			parts = characterPartition.getGroups();
+			writeStandardPartition = parts!=null;
+		}
 
+		boolean writeCodPosPartition = false;
+		if (data instanceof DNAData)
+			writeCodPosPartition = ((DNAData)data).someCoding();
 
-					for (int ims = 0; ims<numSets; ims++) {
-						s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
-						s += specSet;
-					}
+		String charSetList = "";
+		if (writeStandardPartition) {
+			int numCharSets = 0;
+			for (int i=0; i<parts.length; i++) {
+				String q = ListableVector.getListOfMatches((Listable[])characterPartition.getProperties(), parts[i], CharacterStates.toExternal(0));
+				if (q != null) {
+					charSetList +=  "\n\tcharset " + StringUtil.simplifyIfNeededForOutput(parts[i].getName(),true) + " = " + q + ";";
+					numCharSets++;
 				}
 			}
-
+		} else if (writeCodPosPartition) {  // only do this if there are no defined partitions
+			//codon positions if nucleotide
+			//String names = "";
+			CodonPositionsSet codSet = (CodonPositionsSet)data.getCurrentSpecsSet(CodonPositionsSet.class);
+			for (int iw = 0; iw<4; iw++){
+				String locs = codSet.getListOfMatches(iw);
+				if (!StringUtil.blank(locs)) {
+					String charSetName = "";
+					if (iw==0) 
+						charSetName = StringUtil.tokenize("nonCoding");
+					else 
+						charSetName = StringUtil.tokenize("codonPos" + iw);			
+					charSetList += "\n\tcharset " + charSetName + " = " +  locs + ";";
+				}
+			}
+			
 		}
+
+		return charSetList;
+	}
+
+
+	/*.................................................................................................................*/
+	String getLocalNexusCommands(MesquiteFile file, String blockName, CategoricalData data){ 
+		String s= "";
+		String specSet ="";
+		Taxa taxa = data.getTaxa();
+
+		int numSets = taxa.getNumSpecsSets(TaxaSelectionSet.class);
+		SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+		if (ssv!=null){
+			TaxaSelectionSet ms = (TaxaSelectionSet)taxa.getCurrentSpecsSet(TaxaSelectionSet.class);
+			if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
+				ms.setNexusBlockStored(blockName);
+				ms.setName("UNTITLED");
+				specSet = nexusStringForSpecsSet(ms, taxa, file, true);
+				s += specSet;
+			}
+
+
+			for (int ims = 0; ims<numSets; ims++) {
+				s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
+				s += specSet;
+			}
+		}
+		s+=getCHARSETS(data);
 		return s;
 	}
 	/*.................................................................................................................*/
-	String getSetsBlock(MesquiteFile file){
-		String contents = getLocalNexusCommands(file, "SETS");
+	String getSetsBlock(MesquiteFile file, CategoricalData data){
+		String contents = getLocalNexusCommands(file, "SETS", data);
 		if (StringUtil.blank(contents))
 			return null;
 		String blocks="BEGIN SETS;" + StringUtil.lineEnding()+ contents;
-		blocks += "END;" + StringUtil.lineEnding();
+		
+		blocks += "\nEND;" + StringUtil.lineEnding();
 		return blocks;
 	}
 
@@ -257,7 +303,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 				return false;
 		}
 		 */
-		addendum = getSetsBlock(file);
+		addendum = getSetsBlock(file, data );
 
 
 		String path = getPathForExport(arguments, suggested, dir, fn);
