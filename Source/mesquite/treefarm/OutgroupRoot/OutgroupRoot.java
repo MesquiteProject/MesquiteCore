@@ -34,10 +34,8 @@ public class OutgroupRoot extends TreeAltererMult {
   	 }
 	/*.................................................................................................................*/
  	public void endJob() {
- 		if (warnings>warningsLimit) 
- 			logln("  (In addition, among the chosen trees,  numbers " + notRooted + " among others could not be rerooted)");
- 		else if (warnings>1)
- 			logln("  (In addition, among the chosen trees,  numbers " + notRooted + " could not be rerooted)");
+ 		if (warnings>1) 
+ 			logln("  (Some trees could not be rerooted. These include trees " + notRooted);
   	 	if (currentTaxa != null)
   	 		currentTaxa.removeListener(this);
  		super.endJob();
@@ -100,10 +98,9 @@ public class OutgroupRoot extends TreeAltererMult {
 			if (resultString != null)
 				resultString.setValue(w);
 			warnings++;
-			if (warnings<2)
+			if (warnings<warningsLimit)
 				logln(w);
-			else if (warnings<=warningsLimit)
-				notRooted += " " + treeNumber;
+			notRooted += " " + treeNumber;
 			return false;
 
 		}
