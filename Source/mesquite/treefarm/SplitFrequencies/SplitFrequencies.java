@@ -264,6 +264,7 @@ public class SplitFrequencies extends NumbersForNodes {
 		bipartitions.setRooted(false);
 
 		int numTrees = treeSourceTask.getNumberOfTrees(taxa);
+		
 		startingTree = 0;
 		if (MesquiteInteger.isCombinable(sampleSize)) {
 			startingTree = numTrees - sampleSize;
@@ -271,11 +272,15 @@ public class SplitFrequencies extends NumbersForNodes {
 				startingTree = 0;
 		} 
 		boolean done=false;
+		boolean warnDifferentNumTaxa = false;
+		int numTerminalsInTree = tree.numberOfTerminalsInClade(tree.getRoot());
 		int count = 0;
 		
 		if (numTrees>0 && startingTree <numTrees) {	
 			for (int iTree = startingTree; iTree<numTrees && !done; iTree++){
 				otherTree = treeSourceTask.getTree(taxa,iTree); 
+				if (otherTree.numberOfTerminalsInClade(otherTree.getRoot())!=numTerminalsInTree)
+					warnDifferentNumTaxa = true;
 				if (otherTree!=null) {
 					addTree(bipartitions, otherTree);   //now just adjust bipartitions in the vector if they are present in this otherTree
 					count++;
@@ -285,6 +290,8 @@ public class SplitFrequencies extends NumbersForNodes {
 			harvestResults(tree.getRoot(), tree, bipartitions, result);
 		}
 		logln("Number of trees examined: " + count);
+		if (warnDifferentNumTaxa)
+			MesquiteMessage.discreetNotifyUser("Warning!  Trees being examined for clade frequencies have a different number of taxa from the tree on which the values are being displayed!  This can yield unexpected results, including values of 0 that are caused only by lack of some taxa within that clade.");
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
