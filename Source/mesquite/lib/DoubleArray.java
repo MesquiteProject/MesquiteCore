@@ -305,6 +305,21 @@ public class DoubleArray implements Listable  {
 		return -1;
 	}
 	/*...........................................................*/
+	public static int[] indicesOf(double[] values, double match){
+		if (values==null)
+			return null;
+		int count = 0;
+		for (int i=0; i<values.length; i++)
+			if (values[i]== match)
+				count++;
+		int[] matches = new int[count];
+		count =0;
+		for (int i=0; i<values.length; i++)
+			if (values[i]== match)
+				matches[count++]= i;
+		return matches;
+	}
+	/*...........................................................*/
 	public static int countSame(double[] a, double match){
 		if (a==null)
 			return 0;
@@ -424,7 +439,7 @@ public class DoubleArray implements Listable  {
 			return "";
 		String s = "[ ";
 		for (int i=0; i<values.length; i++)
-			s += values[i] + "  ";//s +=  MesquiteDouble.toString(values[i]) + " ";
+			s +=  MesquiteDouble.toString(values[i]) + " ";
 		s += "]";
 		return s;
 	}

@@ -42,7 +42,7 @@ public class SNPsMatchToTargetTaxon extends NumberForTaxon {
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		treeTask = (OneTreeSource)hireEmployee(OneTreeSource.class, "Source of tree for patristic distances");
-		addMenuItem("Set Options for SNP matches...", MesquiteModule.makeCommand("setOptions", this));
+	//	addMenuItem("Set Options for SNP matches...", MesquiteModule.makeCommand("setOptions", this));
 		return true;
 	}
 	public void endJob(){
