@@ -138,6 +138,8 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 			boolean success = starter.concatenate(data, false, concatExcludedCharacters, true, prefixGroupLabelNames, false, false);
 			if (success){
 				count++;
+				if (count % 100== 0)
+					logln("Concatenated " + count + "Matrices");
 				if (count > 1)
 					name = name + "+";
 				name = name + "(" + data.getName() + ")";
