@@ -51,9 +51,13 @@ public class MesquiteTimer {
 		lastCheckedTime = System.currentTimeMillis();
 		accumulatedTime += System.currentTimeMillis() - currentBout;
 	}
+	public long timeSinceLastDontReset() {
+		long t =System.currentTimeMillis() -lastCheckedTime;
+		return  t;
+	}
 	public long timeSinceLast() {
 		long t =System.currentTimeMillis() -lastCheckedTime;
-		lastCheckedTime = System.currentTimeMillis();
+		lastCheckedTime = System.currentTimeMillis(); 
 		return  t;
 	}
 	public double timeSinceLastInSeconds() {

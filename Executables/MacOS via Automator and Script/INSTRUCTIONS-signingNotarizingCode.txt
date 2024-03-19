@@ -101,7 +101,7 @@ Submit for notarization using
 
 Give not Apple-id password, but rather app-specific PASSWORD. (https://support.apple.com/en-us/HT204397)
 
-For regular Mesquite.app: hjbt-fpiw-yhus-tukk
+For regular Mesquite.app: cmuh-mnuf-gbtf-dzds [hjbt-fpiw-yhus-tukk]
 
 Will respond with a RequestUUID. To check status, enter (replace strange request uu id)
 

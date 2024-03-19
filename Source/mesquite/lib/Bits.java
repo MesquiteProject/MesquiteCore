@@ -285,15 +285,7 @@ public class Bits implements Listable{
  		return count;
  	}
  	/*------------------------------------------*/
- 	public boolean single () {
- 		for (int i=0; i<numInts; i++)
- 			if (array[i]!=0)
- 				return true;
- 		return false;
- 	}
- 	
- 	/*------------------------------------------*/
- 	public int setNewRandomBit (Random rng) {
+  	public int setNewRandomBit (Random rng) {
  		int available = numBits - numBitsOn();
  		if (available<1)
  			return -1;
@@ -591,6 +583,13 @@ public class Bits implements Listable{
  				return i;
  			}
  		return -1;
+ 	}
+
+	public boolean exactlyOneBitOn () {
+ 		int i = firstBitOn();
+ 		if (i<0)
+ 			return false;
+ 		return i==lastBitOn();
  	}
 
 
