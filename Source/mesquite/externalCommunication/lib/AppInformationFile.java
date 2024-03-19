@@ -14,12 +14,14 @@ import mesquite.lib.XMLUtil;
 
 public class AppInformationFile {
 	String appName;
+	String appVariant;
 	String compiledAs;
 	String path;
 	String version;
 	String URL;
 	String license;
 	String licenseURL;
+	String citationURL;
 	String appsFilePath;
 	static final int infoFileVersion = 1;
 	String appNameWithinAppsDirectory;
@@ -56,6 +58,9 @@ public class AppInformationFile {
 				Element element = appInfoElement.element("appname");
 				if (element!=null)
 					appName = element.getStringValue();
+				element = appInfoElement.element("appvariant");
+				if (element!=null)
+					appVariant = element.getStringValue();
 				element = appInfoElement.element("compiledas");
 				if (element!=null)
 					compiledAs = element.getStringValue();
@@ -74,6 +79,9 @@ public class AppInformationFile {
 				element = appInfoElement.element("license");
 				if (element!=null)
 					licenseURL = element.getStringValue();
+				element = appInfoElement.element("citationURL");
+				if (element!=null)
+					citationURL = element.getStringValue();
 			}
 
 		}
@@ -81,6 +89,9 @@ public class AppInformationFile {
 	}
 	public String getAppName() {
 		return appName;
+	}
+	public String getAppVariant() {
+		return appVariant;
 	}
 	public String getCompiledAs() {
 		return compiledAs;
@@ -102,6 +113,9 @@ public class AppInformationFile {
 	}
 	public String getLicenseURL() {
 		return licenseURL;
+	}
+	public String getCitationURL() {
+		return citationURL;
 	}
 	
 }

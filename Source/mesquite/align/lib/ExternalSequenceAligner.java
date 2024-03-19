@@ -108,13 +108,22 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	}
 	
 	/*.................................................................................................................*/
+	public String getAppVariant(){
+		if (appInfoFile==null) {
+			appInfoFile = getAppInfoFile();
+		}
+		if (appInfoFile!=null) {
+			return appInfoFile.getAppVariant();
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	public String getDefaultExecutablePath(){
 		if (appInfoFile==null) {
 			appInfoFile = getAppInfoFile();
 		}
 		if (appInfoFile!=null) {
-			String fullPath = appInfoFile.getFullPath();
-			return fullPath;
+			return appInfoFile.getFullPath();
 		}
 		return null;
 	}
