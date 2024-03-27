@@ -563,6 +563,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		MesquiteSubmenuSpec mss4 = ownerModule.addSubmenu(null, "Character Inclusion/Exclusion");
 		ownerModule.addItemToSubmenu(null, mss4, "Include Selected Characters", ownerModule.makeCommand("includeSelectedCharacters", this));
 		ownerModule.addItemToSubmenu(null, mss4, "Exclude Selected Characters", ownerModule.makeCommand("excludeSelectedCharacters", this));
+		ownerModule.addItemToSubmenu(null, mss4, "Exclude Characters by GBLOCKS...", ownerModule.makeCommand("excludeGBLOCKSCharacters", this));
 
 		// private, to fix frameshifted footnotes
 		// ownerModule.addMenuItem( "Move Footnotes...", ownerModule.makeCommand("moveFootnotes", this));
@@ -1292,6 +1293,40 @@ public void requestFocus(){
 	}
 
 	/* ................................................................................................................. */
+	protected boolean excludeGBLOCKSCharacters(MesquiteModule module, MesquiteTable table) {
+		CharacterSelector gblocksTask;
+			boolean changed=false;
+			if (table !=null) {
+				gblocksTask = (CharacterSelector)module.hireNamedEmployee(CharacterSelector.class, "#GBLOCKSSelector");
+				if (gblocksTask == null)
+					return false;
+				data.deselectAll();
+				gblocksTask.selectCharacters(data);
+				
+
+				CharInclusionSet inclusionSet = (CharInclusionSet) data.getCurrentSpecsSet(CharInclusionSet.class);
+				if (inclusionSet == null) {
+					inclusionSet= new CharInclusionSet("Inclusion Set", data.getNumChars(), data);
+					inclusionSet.selectAll();
+					inclusionSet.addToFile(data.getFile(), data.getProject(), module.findElementManager(CharInclusionSet.class)); //THIS
+					data.setCurrentSpecsSet(inclusionSet, CharInclusionSet.class);
+				}
+				if (inclusionSet != null) {
+					for (int i=0; i<data.getNumChars(); i++) {
+						if (table.wholeColumnSelectedAnyWay(i) || table.isRowNameSelected(i)) {
+							inclusionSet.setSelected(i, false);
+							changed = true;
+						}
+					}
+				}
+				ownerModule.fireEmployee(gblocksTask);
+
+				if (changed)
+					data.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
+			}
+			return changed;
+	}
+	/* ................................................................................................................. */
 	MesquiteModule findCellColorerTaxa(String arguments) {
 		Parser parser = new Parser();
 		String s1 = parser.getFirstToken(arguments);
@@ -1770,6 +1805,10 @@ public void requestFocus(){
 		}
 		else if (checker.compare(this.getClass(), "Excludes selected characters", "[] []", commandName, "excludeSelectedCharacters")) {
 			if (data.setInclusionExclusion(ownerModule, table, false)) {
+			}
+		}
+		else if (checker.compare(this.getClass(), "Excludes GBLOCKS characters", "[] []", commandName, "excludeGBLOCKSCharacters")) {
+			if (excludeGBLOCKSCharacters(ownerModule, table)) {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Includes selected characters", "[] []", commandName, "includeSelectedCharacters")) {
