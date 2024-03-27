@@ -45,7 +45,7 @@ public class AppInformationFile {
 		String s = MesquiteFile.getFileContentsAsString(infoFilePath); 
 		Document doc = XMLUtil.getDocumentFromString(s);
 		if (doc==null) {
-			MesquiteMessage.discreetNotifyUser("WARNING: appInfo.xml file could not be found at " + appsFilePath);
+			MesquiteMessage.discreetNotifyUser("WARNING: properly formatted appInfo.xml file could not be found at " + appsFilePath);
 			return false;
 		}
 		Element rootElement = doc.getRootElement();
