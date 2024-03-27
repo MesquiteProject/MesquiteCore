@@ -69,7 +69,7 @@ public class CutSelectedTaxa extends TreeAltererMult {
 		}
 		if (!taxa.anySelected()) {
  			if (!unselectedAlreadyWarned)
- 				discreetAlert("Before trees can be rerooted using the selected taxa as outgroups, some taxa must be selected");
+ 				discreetAlert("Before taxa can be cut, some taxa must be selected");
  			unselectedAlreadyWarned = true;
 			return false;
 		}
