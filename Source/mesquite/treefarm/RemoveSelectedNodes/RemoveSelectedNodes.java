@@ -91,12 +91,12 @@ public class RemoveSelectedNodes extends TreeAltererMult {
 	}
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Remove Selected Internal Nodes from Tree";
+		return "Remove Selected Internal Branches from Tree";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Removes the selected internal nodes from the tree." ;
+ 		return "Removes the selected internal branches from the tree." ;
    	 }
 }
 
