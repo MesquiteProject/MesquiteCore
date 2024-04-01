@@ -44,7 +44,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	ShellScriptRunner scriptRunner;
 	ExternalProcessManager externalRunner;
 	boolean useDefaultExecutablePath=false;
-	AppInformationFile appInfoFile;
+	protected AppInformationFile appInfoFile;
 	boolean hasApp=false;
 
 	/*.................................................................................................................*/
@@ -81,7 +81,20 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public boolean useDefaultStdOutFileName() {
 		return false;
 	}
-	
+	/*.................................................................................................................*/
+	public String getCitation()  {
+		String addendum = "";
+		if (useDefaultExecutablePath && getDefaultExecutablePathAllowed()) 
+			if (appInfoFile!=null) {
+				if (StringUtil.notEmpty(appInfoFile.getCitation())) {
+					addendum = " " + appInfoFile.getCitation();
+				} else if (StringUtil.notEmpty(appInfoFile.getCitationURL())) {
+					addendum = " For citation information about " + getProgramName() + " see: " + appInfoFile.getCitationURL();
+				}
+			}
+		return super.getCitation() + addendum;
+	}
+
 	/*.................................................................................................................*
 	public String getAppNameWithinAppsDirectory() {
 		return null;

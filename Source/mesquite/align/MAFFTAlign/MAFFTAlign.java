@@ -105,6 +105,11 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	}
 	/*.................................................................................................................*/
 	public String getHelpURL(){
+		if (appInfoFile!=null) {
+			if (StringUtil.notEmpty(appInfoFile.getURL()))
+					return appInfoFile.getURL();
+		}
+			
 		return "http://mafft.cbrc.jp/alignment/software/manual/manual.html";
 	}
 

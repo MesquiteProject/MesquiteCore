@@ -72,6 +72,10 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	 }
 	/*.................................................................................................................*/
 	public String getHelpURL(){
+		if (appInfoFile!=null) {
+			if (StringUtil.notEmpty(appInfoFile.getURL()))
+					return appInfoFile.getURL();
+		}
 		return "http://www.drive5.com/muscle/manual/";
 	}
 	public String getAppOfficialName() {
