@@ -1301,7 +1301,7 @@ public void requestFocus(){
 				if (gblocksTask == null)
 					return false;
 				data.deselectAll();
-				gblocksTask.selectCharacters(data);
+				gblocksTask.selectCharacters(data);   // select characters using GBLOCKS
 				
 
 				CharInclusionSet inclusionSet = (CharInclusionSet) data.getCurrentSpecsSet(CharInclusionSet.class);
@@ -1314,9 +1314,11 @@ public void requestFocus(){
 				if (inclusionSet != null) {
 					for (int i=0; i<data.getNumChars(); i++) {
 						if (table.wholeColumnSelectedAnyWay(i) || table.isRowNameSelected(i)) {
-							inclusionSet.setSelected(i, false);
+							inclusionSet.setSelected(i, false);  //exclude this one
 							changed = true;
-						}
+						} else
+							inclusionSet.setSelected(i, true);   // include this one
+
 					}
 				}
 				ownerModule.fireEmployee(gblocksTask);
