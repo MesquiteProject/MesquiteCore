@@ -35,6 +35,7 @@ public class SelectBranches extends TreeDisplayAssistantI {
 		addItemToSubmenu(null, mss, "Terminal Branches", makeCommand("selectTerminal",  this));
 		addItemToSubmenu(null, mss, "Polytomous Nodes", makeCommand("selectPolytomies",  this));
 		addItemToSubmenu(null, mss, "Unbranched Internals", makeCommand("selectUnbranched",  this));
+//		addItemToSubmenu(null, mss, "Select Based upon Node Value", makeCommand("selectNodeValue",  this));
 		addItemToSubmenu(null, mss, "Root", makeCommand("selectRoot",  this));
 		return true;
 	} 
@@ -119,6 +120,14 @@ public class SelectBranches extends TreeDisplayAssistantI {
 			tree.setSelected(node, true);
 		else
 			tree.setSelected(node, false);
+	}
+	/*.................................................................................................................*/
+	private void selectNodeBasedOnValue(MesquiteTree tree, int node){   // selects based upon node value
+		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
+			selectNodeBasedOnValue(tree, daughter);
+		}
+		boolean nodeValueMatchesCriterion = false;  // TODO:  check this
+		tree.setSelected(node, nodeValueMatchesCriterion);
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -208,6 +217,16 @@ public class SelectBranches extends TreeDisplayAssistantI {
 				Tree tree = e.getTreeDisplay().getTree();
 				if (tree instanceof MesquiteTree){
 					selectUnbranched((MesquiteTree)tree, tree.getRoot());
+					((MesquiteTree)tree).notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Selects based upon node value", null, commandName, "selectNodeValue")) {
+			for (int i =0; i<extras.size(); i++){
+				TreeDisplayExtra e = (TreeDisplayExtra)extras.elementAt(i);
+				Tree tree = e.getTreeDisplay().getTree();
+				if (tree instanceof MesquiteTree){
+					selectNodeBasedOnValue((MesquiteTree)tree, tree.getRoot());
 					((MesquiteTree)tree).notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 				}
 			}
