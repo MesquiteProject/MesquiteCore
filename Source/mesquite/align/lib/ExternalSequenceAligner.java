@@ -43,7 +43,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public static int runs = 0;
 	ShellScriptRunner scriptRunner;
 	ExternalProcessManager externalRunner;
-	boolean useDefaultExecutablePath=false;
+	boolean useDefaultExecutablePath=true;
 	protected AppInformationFile appInfoFile;
 	boolean hasApp=false;
 
