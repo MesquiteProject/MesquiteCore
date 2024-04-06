@@ -118,7 +118,7 @@ public class IOUtil {
 			}
 			Listable[] partition = (Listable[])characterPartition.getProperties();
 			partition = data.removeExcludedFromListable(partition);
-			partition = data.removeEmptyFromListable(partition);
+			partition = data.removeEmptyFromListable(partition, false);
 			if ((nucleotides && !isRAxMLNG) || !specifyPartByPartModels) {
 				String q;
 				for (int i=0; i<parts.length; i++) {

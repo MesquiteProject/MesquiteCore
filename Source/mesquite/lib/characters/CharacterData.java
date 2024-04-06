@@ -572,9 +572,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/** Takes a listable, that in theory should be of length numChars, and returns a copy of it from which all 
 	 * entries corresponding to characters with no data are removed from the list */
-	public Listable[] removeEmptyFromListable(Listable[] listable) {
+	public Listable[] removeEmptyFromListable(Listable[] listable, boolean countExcluded) {
 		if (listable==null) return null;
-		int numWithData = getNumCharacters(true,false);
+		int numWithData = getNumCharacters(countExcluded,false);
 		Listable[] newListable = new Listable[numWithData];
 		int count = 0;
 		for (int ic=0; count<newListable.length && ic<listable.length; ic++) {
