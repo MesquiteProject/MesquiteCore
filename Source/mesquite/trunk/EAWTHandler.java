@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trunk;
 
 import java.util.*;
+import java.awt.desktop.QuitHandler;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.*;

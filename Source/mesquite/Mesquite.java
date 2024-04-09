@@ -15,6 +15,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite;
 
 import java.awt.*;
+
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
@@ -22,7 +23,6 @@ import java.lang.reflect.Method;
 import java.net.*;
 
 import javax.imageio.ImageIO;
-
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -2487,23 +2487,8 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 	}
-	/*
-	 * can't do this until we commit to JDK 9
-	public void handleQuitRequestWith​(java.awt.desktop.QuitEvent e, QuitResponse response){
-	}
-	private void registerQuitHandler() {
-		Desktop.setQuitHandler(java.awt.desktop.QuitHandler), Desktop.setQuitStrategy(java.awt.desktop.QuitStrategy)
-		// handleQuitRequestWith​(QuitEvent e, QuitResponse response)
-	}
-	*/
-    class PreventExitSecurityManager extends SecurityManager {
 
-        @Override
-        public void checkExit(int status) {
-        	Debugg.println("Please no ##############");
-  //          throw new SecurityException("Cannot exit this frame!");
-        }
-    }
+	
     
 	public Mesquite(){
 		super();
@@ -2602,12 +2587,12 @@ public class Mesquite extends MesquiteTrunk
 			}
 			mesq.registerMacHandlers();  //no longer useful unless old Java & OS
 			
-			/*/if JDK≥9 register quit handler
+			/*/if JDK≥9 register quit handler */
 			if (getJavaVersionAsDouble()>=1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
-				mesq.registerApplicationHandlers();
+				new ApplicationHandler9();
 			}
-			*/
-		    //System.setSecurityManager(new PreventExitSecurityManager()); //Debugg.printStackTrace()
+			
+
 			
 			if (MesquiteTrunk.debugMode)
 				System.out.println("main constructor 4");
