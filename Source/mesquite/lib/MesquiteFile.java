@@ -3251,16 +3251,17 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} else if (MesquiteTrunk.isWindows()){
-			try {
-				Runtime.getRuntime().exec(
-						new String[] { "explorer", file.getAbsolutePath() });
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		} else {
-			System.err.println("Sorry, can't show folder under this operating system");
+			File directoryPathFile = new File(path);
+			if (Desktop.isDesktopSupported()) {
+				try {
+					Desktop.getDesktop().open(directoryPathFile);
+				}
+				catch (IOException ex) {
+				}
+			}
 		}
+
 	}
 
 	/*.................................................................................................................*/
