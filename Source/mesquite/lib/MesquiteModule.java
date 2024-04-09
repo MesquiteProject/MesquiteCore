@@ -2735,11 +2735,23 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 
 	/*.................................................................................................................*/
-	/** Returns the name of the duty; set by the duty-defining library classes.*/
+	/** Returns the current date and time.*/
 	public String getDateAndTime() {
 		long time = System.currentTimeMillis();
-		Date dnow = new Date(time);
-		return dnow.toString();
+		return getDateAndTime(time);
+	}
+	/*.................................................................................................................*/
+	/** Returns the specified date and time.*/
+	public String getDateAndTime(long time) {
+		Date date = new Date(time);
+		return date.toString();
+	}
+	/*.................................................................................................................*/
+	/** Returns the specified date and time.*/
+	public String getFutureDateAndTime(long addedTimeInSeconds) {
+		long time = System.currentTimeMillis();
+		Date futureDate = new Date(time+addedTimeInSeconds*1000);
+		return futureDate.toString();
 	}
 
 	/*.................................................................................................................*/
