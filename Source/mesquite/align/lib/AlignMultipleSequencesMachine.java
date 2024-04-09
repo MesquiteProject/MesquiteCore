@@ -11,12 +11,14 @@ public class AlignMultipleSequencesMachine {
 	MesquiteModule ownerModule;
 	public static boolean separateThreadDefault = false;
 	public static boolean separateThread = separateThreadDefault;
+	public static boolean userRequestsSeparateThread = false;   // currently no way for user to adjust this
 
 	MultipleSequenceAligner aligner;
 	MolecularData data;
 	MesquiteTable table;
 	CalculationMonitor calculationMonitor;
 	SeparateThreadStorage separateThreadStorage;
+	
 
 	public AlignMultipleSequencesMachine (MesquiteModule ownerModule,SeparateThreadStorage separateThreadStorage, CalculationMonitor calculationMonitor, 	MultipleSequenceAligner aligner) {
 		this.ownerModule = ownerModule;
@@ -62,7 +64,7 @@ public class AlignMultipleSequencesMachine {
 			}
 		}
 		//firstRowWithSelectedCell() != 
-		if (aligner.permitSeparateThread() && (separateThread= !AlertDialog.query(ownerModule.containerOfModule(), "Separate Thread?", "Run on separate thread? (Beware! Don't close matrix window before done)","No", "Separate", 1, MesquiteThread.SEPARATETHREADHELPMESSAGE))){
+		if (userRequestsSeparateThread && aligner.permitSeparateThread() && (separateThread= !AlertDialog.query(ownerModule.containerOfModule(), "Separate Thread?", "Run on separate thread? (Beware! Don't close matrix window before done)","No", "Separate", 1, MesquiteThread.SEPARATETHREADHELPMESSAGE))){
 			AlignThread alignThread = new AlignThread(ownerModule, this, aligner, this.data, this.table);
 			alignThread.separateThread = true;
 			separateThreadStorage.setSeparateThread(separateThread);

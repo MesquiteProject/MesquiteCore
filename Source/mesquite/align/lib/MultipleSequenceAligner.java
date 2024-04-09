@@ -38,7 +38,7 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
     	 }
 
 	public boolean permitSeparateThread(){
-		return true;
+		return true;   
 	}
 	/**
 	 * Subclasses can override this to have access to full information about
