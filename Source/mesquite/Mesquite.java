@@ -2046,7 +2046,6 @@ public class Mesquite extends MesquiteTrunk
 			doomed = true;
 			showAbout = (about!= null && !about.isShowing());
 			storePreferences();
-			Debugg.printStackTrace("Main Mesquite module quitting");
 			logln("Main Mesquite module quitting  " );
 
 			iQuit();

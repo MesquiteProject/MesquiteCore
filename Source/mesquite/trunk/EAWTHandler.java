@@ -17,7 +17,6 @@ import java.util.*;
 
 import com.apple.eawt.*;
 
-import java.awt.desktop.QuitHandler;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.*;
