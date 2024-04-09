@@ -427,9 +427,6 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 16");
 
 
-		tempDirectory = createTempDirectory();
-
-
 		/*EMBEDDED include following if embedded *
 		setLayout( new BorderLayout() );
 		embeddedPanel = new Panel();
@@ -525,6 +522,10 @@ public class Mesquite extends MesquiteTrunk
 			about.repaint();
 		}
 		if (verboseStartup) System.out.println("main init 24");
+
+		tempDirectory = createTempDirectory();
+
+
 
 		/*----*/
 
