@@ -124,31 +124,36 @@ xcrun altool --eval-info 5a7b3743-39e3-4362-8204-404f9bdac65a -u wmaddisn@zoolog
 xcrun altool --notarization-info 6000f74f-fe6f-463a-bf41-4595dfd8d1a3 -u wmaddisn@zoology.ubc.ca
 
 ====================================================
-Then codesign and notarize the APP
+NEW 2024
+Then codesign and notarize the DMG (2024)
 
-codesign --force --sign "Developer ID Application: Wayne Maddison" MesquiteDMG.dmg
+////////
+PREP for notarizing (only need to redo if Apple changes stuff)
+application specific password 
+Mesquite DMG zesf-xwey-xiic-zpca
 
-If you leave off the --verbose tag, and it does not print any output, indicates 'success'.
+make credentials specific for Mesquite Helper Apps DMG
 
-Then sign and notarize the dmg
+xcrun notarytool store-credentials --apple-id "waynemaddison58@gmail.com" --team-id 8LT29UFQPL --password zesf-xwey-xiic-zpca
+
+ (indicate profile name as MesquiteDMG)
+
+ Check submission histories xcrun notarytool history  --keychain-profile "MesquiteDMG"
+/////////
+
+The actual signing and notarizing
+
+
 xattr -cr MesquiteDMG.dmg
 codesign --force --sign "Developer ID Application: Wayne Maddison" MesquiteDMG.dmg
-xcrun altool --eval-app --primary-bundle-id org.mesquiteproject -u wmaddisn@zoology.ubc.ca -f MesquiteDMG.dmg
-(wait and it will give you the request UUID)
 
-App specific password for MesquiteDMG: ondx-llog-pdue-mxoo
+xcrun notarytool submit --force --keychain-profile "MesquiteDMG" MesquiteDMG.dmg
 
-To check status:
-xcrun altool --eval-info 25beae4a-dbc9-4fca-b922-a35bd3e47974 -u wmaddisn@zoology.ubc.ca
-(where the weird thing is replaced by the request UUID)
 
+xcrun notarytool info --keychain-profile "MesquiteDMG" 50311eaf-eb3a-4a23-a0c0-49b6502d415d
+
+If succeeded:
 xcrun stapler staple MesquiteDMG.dmg
-
-
-https://stackoverflow.com/questions/52911791/hardened-runtime-for-java-and-mojave
-https://developer.apple.com/documentation/xcode/notarizing_macos_software_before_distribution/customizing_the_notarization_workflow
-https://github.com/AdoptOpenJDK/openjdk-support/issues/97
-https://stackoverflow.com/questions/56890749/macos-notarize-in-script
 
 
 

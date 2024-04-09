@@ -127,6 +127,10 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	public void endJob() {
 		deleteTempDirectory();
+		if (MesquiteTrunk.startedFromFlex2) {
+		String currentPIDPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + EAWTHandler.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "currentPID.txt";
+		MesquiteFile.deleteFile(currentPIDPath);
+		}
 	}
 
 	/*.................................................................................................................*/
@@ -267,7 +271,7 @@ public class Mesquite extends MesquiteTrunk
 			supportFilesDirectory = new File(supportFilesPath);
 			if (!supportFilesDirectory.exists())
 				supportFilesDirectory.mkdir();
-			if (!supportFilesDirectory.exists()){
+			if (!supportFilesDirectory.exists()){ 
 				writabilityWarned = true;
 				if (MesquiteWindow.headless)
 					System.out.println("Mesquite does not have permission to write its log file or its preferences files.  It has attempted to create both " + oldPath +
@@ -2042,6 +2046,7 @@ public class Mesquite extends MesquiteTrunk
 			doomed = true;
 			showAbout = (about!= null && !about.isShowing());
 			storePreferences();
+			Debugg.printStackTrace("Main Mesquite module quitting");
 			logln("Main Mesquite module quitting  " );
 
 			iQuit();
@@ -2482,7 +2487,24 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 	}
+	/*
+	 * can't do this until we commit to JDK 9
+	public void handleQuitRequestWith​(java.awt.desktop.QuitEvent e, QuitResponse response){
+	}
+	private void registerQuitHandler() {
+		Desktop.setQuitHandler(java.awt.desktop.QuitHandler), Desktop.setQuitStrategy(java.awt.desktop.QuitStrategy)
+		// handleQuitRequestWith​(QuitEvent e, QuitResponse response)
+	}
+	*/
+    class PreventExitSecurityManager extends SecurityManager {
 
+        @Override
+        public void checkExit(int status) {
+        	Debugg.println("Please no ##############");
+  //          throw new SecurityException("Cannot exit this frame!");
+        }
+    }
+    
 	public Mesquite(){
 		super();
 	}
@@ -2507,6 +2529,8 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.suppressErrorReporting = true;
 					else if (args[i].equals("-nb"))
 						MesquiteTrunk.noBeans = true;
+					else if (args[i].equals("-mqflex2"))
+						MesquiteTrunk.startedFromFlex2 = true;
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
 					else if (args[i].equals("-mqcat"))
@@ -2576,7 +2600,15 @@ public class Mesquite extends MesquiteTrunk
 				textEdgeCompensationHeight = 7; //6 on mac; 7 on pc
 				textEdgeCompensationWidth = 22; //12 on mac; 28 on pc
 			}
-			mesq.registerMacHandlers();
+			mesq.registerMacHandlers();  //no longer useful unless old Java & OS
+			
+			/*/if JDK≥9 register quit handler
+			if (getJavaVersionAsDouble()>=1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
+				mesq.registerApplicationHandlers();
+			}
+			*/
+		    //System.setSecurityManager(new PreventExitSecurityManager()); //Debugg.printStackTrace()
+			
 			if (MesquiteTrunk.debugMode)
 				System.out.println("main constructor 4");
 			MainThread.mainThread = new MainThread();
@@ -2599,13 +2631,20 @@ public class Mesquite extends MesquiteTrunk
 				// report arguments
 				String s = "Arguments: ";
 				for ( int i = 0; i < args.length; i++ ) {
-					s += " [ " + args[i] + " ]";
+					if (!MesquiteTrunk.startedFromFlex2 || (args[i]!=null && args[i].startsWith("-")))
+						s += " [ " + args[i] + " ]";
 				}
 				MesquiteTrunk.mesquiteTrunk.logln(s);
-
+					
 				for ( int i = 0; i < args.length; i++ ) {
-					if (args[i]!=null && !args[i].startsWith("-"))
-						mesquiteTrunk.openFile(args[i]);
+					if (args[i]!=null && !args[i].startsWith("-")) {
+						if (MesquiteTrunk.startedFromFlex2) { //the argument is not a file to open, but rather the encapsulatedpath of the app on macOS to find the list of files to open
+							EAWTHandler.encapsulatedPathOfExecutable= args[i];
+							//record the encapsulated path to the filesToOpen so that ConsoleThread can find any list of files
+						}
+						else
+							mesquiteTrunk.openFile(args[i]);
+					}
 				}
 			}
 

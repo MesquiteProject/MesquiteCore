@@ -22,21 +22,26 @@ import com.apple.eawt.*;
 
 
 /* ======================================================================== */
-public class EAWTHandler implements FileOpener {
+public class EAWTHandler  implements FileOpener {
 	boolean waiting = false;
 	Vector fileList;
 	Mesquite mesquite;
 	static boolean quitting = false;
+	static EAWTH eawtH = null;
 	public static Vector openFileThreads = new Vector();
+	public static String encapsulatedPathOfExecutable = null;
+	
 	public EAWTHandler (Mesquite mesquite) {
 		this.mesquite = mesquite;
 		fileList = new Vector();
 	}
-	
+	public static void handleOpenFile (String fileName){
+		eawtH.handleOpenFile(fileName);
+	}
 	public void register(){
 		Application app = new Application();
-	    	EAWTH eawtH = new EAWTH();
-		//app.addApplicationListener(eawtH); Debugg.println no longer used
+	    	eawtH = new EAWTH();
+	    	app.addApplicationListener(eawtH); 
 	}
 	
 	public boolean isWaiting(){
@@ -82,6 +87,9 @@ public class EAWTHandler implements FileOpener {
 		public void handleOpenApplication (ApplicationEvent e){
 		}
 		public void handleOpenFile (ApplicationEvent e){
+			handleOpenFile(e.getFilename());
+		}
+		public void handleOpenFile (String fileName){
 			MesquiteModule.incrementMenuResetSuppression();
 			if (((Mesquite)MesquiteTrunk.mesquiteTrunk).ready) {
 				CommandRecord cr = new CommandRecord((CommandThread)null, false);
@@ -89,14 +97,13 @@ public class EAWTHandler implements FileOpener {
 				MesquiteThread.setCurrentCommandRecord(cr);
 				openFileThreads.addElement(Thread.currentThread());
 			//	cr.suppressDebugWarning = true;
-				MesquiteTrunk.mesquiteTrunk.openFile(e.getFilename());
+				MesquiteTrunk.mesquiteTrunk.openFile(fileName);
 				MesquiteThread.setCurrentCommandRecord(prevR);
 				openFileThreads.removeElement(Thread.currentThread());
 			}
 			else {
 				waiting = true;
-				fileList.addElement(e.getFilename());
-
+				fileList.addElement(fileName);
 			}
 			MesquiteModule.decrementMenuResetSuppression();
 		}
