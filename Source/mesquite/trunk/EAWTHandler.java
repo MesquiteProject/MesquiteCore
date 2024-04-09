@@ -14,11 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trunk;
 
 import java.util.*;
+
+import com.apple.eawt.*;
+
 import java.awt.desktop.QuitHandler;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.*;
-import com.apple.eawt.*;
 
 
 
@@ -30,7 +32,6 @@ public class EAWTHandler  implements FileOpener {
 	static boolean quitting = false;
 	static EAWTH eawtH = null;
 	public static Vector openFileThreads = new Vector();
-	public static String encapsulatedPathOfExecutable = null;
 	
 	public EAWTHandler (Mesquite mesquite) {
 		this.mesquite = mesquite;
@@ -40,9 +41,14 @@ public class EAWTHandler  implements FileOpener {
 		eawtH.handleOpenFile(fileName);
 	}
 	public void register(){
-		Application app = new Application();
-	    	eawtH = new EAWTH();
+		try {
+			Application app = new Application();
 	    	app.addApplicationListener(eawtH); 
+		}
+		catch (Throwable e) {
+		}
+		
+	    	eawtH = new EAWTH();
 	}
 	
 	public boolean isWaiting(){

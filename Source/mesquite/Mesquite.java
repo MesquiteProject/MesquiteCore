@@ -128,7 +128,7 @@ public class Mesquite extends MesquiteTrunk
 	public void endJob() {
 		deleteTempDirectory();
 		if (MesquiteTrunk.startedFromFlex2) {
-		String currentPIDPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + EAWTHandler.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "currentPID.txt";
+		String currentPIDPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + MesquiteTrunk.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "currentPID.txt";
 		MesquiteFile.deleteFile(currentPIDPath);
 		}
 	}
@@ -2585,13 +2585,14 @@ public class Mesquite extends MesquiteTrunk
 				textEdgeCompensationHeight = 7; //6 on mac; 7 on pc
 				textEdgeCompensationWidth = 22; //12 on mac; 28 on pc
 			}
-			mesq.registerMacHandlers();  //no longer useful unless old Java & OS
 			
 			/*/if JDK≥9 register quit handler */
 			if (getJavaVersionAsDouble()>=1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
-				new ApplicationHandler9();
+				applicationHandler9 = new ApplicationHandler9(this);
 			}
-			
+			else
+				mesq.registerMacHandlers();  //no longer useful unless old Java & OS
+		
 
 			
 			if (MesquiteTrunk.debugMode)
@@ -2624,7 +2625,7 @@ public class Mesquite extends MesquiteTrunk
 				for ( int i = 0; i < args.length; i++ ) {
 					if (args[i]!=null && !args[i].startsWith("-")) {
 						if (MesquiteTrunk.startedFromFlex2) { //the argument is not a file to open, but rather the encapsulatedpath of the app on macOS to find the list of files to open
-							EAWTHandler.encapsulatedPathOfExecutable= args[i];
+							MesquiteTrunk.encapsulatedPathOfExecutable= args[i];
 							//record the encapsulated path to the filesToOpen so that ConsoleThread can find any list of files
 						}
 						else

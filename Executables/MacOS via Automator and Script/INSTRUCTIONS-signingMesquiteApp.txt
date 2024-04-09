@@ -1,0 +1,45 @@
+////////
+PREP for signing and notarizing
+make application specific password at https://appleid.apple.com
+App-specific password for mesquite app (named Mesquite.app2024 on appleid.apple.com): jlcf-htzx-uzfb-vhdo
+
+make credentials specific for raxml helper
+xcrun notarytool store-credentials --apple-id "waynemaddison58@gmail.com" --team-id 8LT29UFQPL --password jlcf-htzx-uzfb-vhdo
+ (indicate profile name as mesquiteApp)
+
+ Check submission histories xcrun notarytool history  --keychain-profile "mesquiteApp"
+/////////
+
+
+SIGNING mesquite.app
+
+codesign -s "Developer ID Application: Wayne Maddison" mesquite.app/Contents/Info.plist
+codesign -s "Developer ID Application: Wayne Maddison" mesquite.app/Contents/document.wflow
+codesign -s "Developer ID Application: Wayne Maddison" 'mesquite.app/Contents/MacOS/Automator Application Stub'
+codesign -s "Developer ID Application: Wayne Maddison" mesquite.app/Contents/Resources/ApplicationStub.icns
+codesign -s "Developer ID Application: Wayne Maddison" mesquite.app/Contents/Resources/Assets.car
+codesign -s "Developer ID Application: Wayne Maddison" mesquite.app/Contents/Resources/InfoPlist.loctable
+codesign -s "Developer ID Application: Wayne Maddison" mesquite.app/Contents/Resources/Mesquite.icns
+codesign --force --options runtime -s "Developer ID Application: Wayne Maddison" mesquite.app
+codesign -d --verbose=4 mesquite.app
+spctl --assess --verbose=4 --type execute mesquite.app
+/usr/bin/ditto -c -k --keepParent mesquite.app mesquite.zip
+
+=====
+
+NOTARIZING
+xcrun notarytool submit --keychain-profile "mesquiteApp" mesquite.zip
+
+Will respond with a SUBMISSION_ID. 
+
+To check status, do these: (replace SUBMISSION_ID with submissin id tetured)
+xcrun notarytool info --keychain-profile "mesquiteApp" SUBMISSION_ID
+xcrun notarytool log --keychain-profile "mesquiteApp" SUBMISSION_ID
+
+e.g.:
+xcrun notarytool info --keychain-profile "mesquiteApp" 63e14d40-efad-4410-9865-e6f6e575ee17
+
+
+AFTER SIGNED AND NOTARIZED
+
+xcrun stapler staple mesquite.app

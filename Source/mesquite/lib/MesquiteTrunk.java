@@ -18,6 +18,7 @@ import java.awt.*;
 
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.trunk.ApplicationHandler9;
 import mesquite.trunk.PhoneHomeThread;
 import mesquite.trunk.ProjectTreeWindow;
 
@@ -103,6 +104,10 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static String suggestedDirectory = null;
 	public static String appsDirectory = null;
 	public static String pythonDirectory = null;
+	public static String encapsulatedPathOfExecutable = null;
+
+	public ApplicationHandler9 applicationHandler9 = null;
+			
 	/** Time of startup.*/
 	public static long startupTime;
 

@@ -23,23 +23,28 @@ import mesquite.*;
 
 
 /* ======================================================================== */
-public class ApplicationHandler9  implements QuitHandler, AboutHandler {
+public class ApplicationHandler9  implements QuitHandler, AboutHandler, FileOpener {
 	static boolean quitting = false;
+	public static Vector openFileThreads = new Vector();
+	boolean waiting = false;
+	Vector fileList;
+	Mesquite mesquite;
 
-	public ApplicationHandler9 () {
-        Desktop desktop = Desktop.getDesktop();
+	public ApplicationHandler9 (Mesquite mesquite) {
+		Desktop desktop = Desktop.getDesktop();
 		desktop.setQuitHandler(this);
 		desktop.setAboutHandler(this);
+		this.mesquite = mesquite;
 	}
 
 	public void register(){
 	}
 
-public void handleAbout(AboutEvent e) {
-	if (((Mesquite)(MesquiteTrunk.mesquiteTrunk)).about!=null) {
-		((Mesquite)(MesquiteTrunk.mesquiteTrunk)).about.setVisible(true);
+	public void handleAbout(AboutEvent e) {
+		if (((Mesquite)(MesquiteTrunk.mesquiteTrunk)).about!=null) {
+			((Mesquite)(MesquiteTrunk.mesquiteTrunk)).about.setVisible(true);
+		}
 	}
-}
 	public void handleQuitRequestWith(QuitEvent e, QuitResponse response) {
 		if (quitting)
 			return;
@@ -53,6 +58,55 @@ public void handleAbout(AboutEvent e) {
 			q.start();
 		else
 			q.run();
+	}
+	public boolean isWaiting(){
+		return waiting;
+	}
+	public void openFilesNow() {
+		if (mesquite == null)
+			return;
+		mesquite.openFilesNowUsed = true;
+		MesquiteModule.incrementMenuResetSuppression();
+		waiting = false;
+		while (fileList.size()>0) {
+			Object obj = fileList.elementAt(0);
+			fileList.removeElement(obj);
+			String path = null;
+			if (obj instanceof File){
+				File f = (File)obj;
+				path = f.getAbsolutePath();
+			}
+			else
+				path = (String)obj;
+			CommandRecord cr = new CommandRecord((CommandThread)null, false);
+		//	cr.suppressDebugWarning = true;
+			openFileThreads.addElement(Thread.currentThread());
+			CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
+			MesquiteThread.setCurrentCommandRecord(cr);
+			MesquiteTrunk.mesquiteTrunk.openFile(path);
+			MesquiteThread.setCurrentCommandRecord(prevR);
+			openFileThreads.removeElement(Thread.currentThread());
+		}
+		MesquiteModule.decrementMenuResetSuppression();
+	}	
+	
+	public void handleOpenFile (String fileName){
+		MesquiteModule.incrementMenuResetSuppression();
+		if (((Mesquite)MesquiteTrunk.mesquiteTrunk).ready) {
+			CommandRecord cr = new CommandRecord((CommandThread)null, false);
+			CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
+			MesquiteThread.setCurrentCommandRecord(cr);
+			openFileThreads.addElement(Thread.currentThread());
+		//	cr.suppressDebugWarning = true;
+			MesquiteTrunk.mesquiteTrunk.openFile(fileName);
+			MesquiteThread.setCurrentCommandRecord(prevR);
+			openFileThreads.removeElement(Thread.currentThread());
+		}
+		else {
+			waiting = true;
+			fileList.addElement(fileName);
+		}
+		MesquiteModule.decrementMenuResetSuppression();
 	}
 
 	class QT extends Thread {

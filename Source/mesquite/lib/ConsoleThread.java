@@ -68,7 +68,7 @@ public class ConsoleThread extends Thread {
 				}
 
 				if (MesquiteTrunk.startedFromFlex2) {
-					String filesToOpenPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + EAWTHandler.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "filesToOpen.txt";
+					String filesToOpenPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + MesquiteTrunk.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "filesToOpen.txt";
 
 					if (MesquiteFile.fileExists(filesToOpenPath)) {
 						String[] files = MesquiteFile.getFileContentsAsStrings(filesToOpenPath);
@@ -76,7 +76,7 @@ public class ConsoleThread extends Thread {
 						Thread.sleep(40);
 						if (files != null) {
 							for (int i=0; i<files.length; i++) {
-								mesquite.trunk.EAWTHandler.handleOpenFile(files[i]);
+								MesquiteTrunk.mesquiteTrunk.applicationHandler9.handleOpenFile(files[i]);
 							}
 						}
 					}
