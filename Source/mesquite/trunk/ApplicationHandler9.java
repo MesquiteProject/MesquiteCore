@@ -31,10 +31,14 @@ public class ApplicationHandler9  implements QuitHandler, AboutHandler, FileOpen
 	Mesquite mesquite;
 
 	public ApplicationHandler9 (Mesquite mesquite) {
-		Desktop desktop = Desktop.getDesktop();
-		desktop.setQuitHandler(this);
-		desktop.setAboutHandler(this);
 		this.mesquite = mesquite;
+		Desktop desktop = Desktop.getDesktop();
+		try {
+			desktop.setQuitHandler(this);
+			desktop.setAboutHandler(this);
+		}
+		catch (Throwable e) {
+		}
 	}
 
 	public void register(){
