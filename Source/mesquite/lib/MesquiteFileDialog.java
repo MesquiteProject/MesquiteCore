@@ -37,7 +37,7 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 	public static MesquiteFileDialog currentFileDialog = null;
 	public MesquiteFileDialog (MesquiteWindow f, String message, int type) {
 		super(getFrame(f), message, type);
-		if (!StringUtil.blank(message) && (type == FileDialog.LOAD || type == FileDialog.SAVE) &&  (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) && MesquiteTrunk.getOSXVersion()>10){
+		if (!StringUtil.blank(message) && (type == FileDialog.LOAD || type == FileDialog.SAVE) &&  (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) && MesquiteTrunk.isMacOSXYosemiteOrLater()){
 			titleWindow = new JWindow(); 
 			titleWindow.setSize(twWidth,twHeight);
 			titleWindowLabel = new Label();

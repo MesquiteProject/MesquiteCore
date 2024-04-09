@@ -146,6 +146,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean suppressErrorReporting = false;
 	public static boolean noBeans = false;
 	public static boolean startedFromExecutable = false;
+	public static boolean startedFromFlex2 = false;
 	public static boolean debugMode = false;
 	public static boolean reportUnregisteredNeeds = false;
 	public static boolean mesquiteExiting = false;
@@ -283,12 +284,26 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 	
 	/*.................................................................................................................*/
-	public static int getOSXVersion() {
+	public static boolean isMacOSXMajorVersion10() {
+	   return getOSXMajorVersion()==10;
+	}
+	/*.................................................................................................................*/
+	public static int getOSXMajorVersion() {
 	    String osVersion = System.getProperty("os.version");
 	    String[] fragments = osVersion.split("\\.");
 
-	    // sanity check the "10." part of the version
-	    if (!fragments[0].equals("10")) return -1;
+	    try {
+	        int majorVersion = Integer.parseInt(fragments[0]);
+	        return majorVersion;
+	    } catch (NumberFormatException e) {
+	    }
+	    return -1;
+	}
+	/*.................................................................................................................*/
+	public static int getOSXMinorVersion() {
+	    String osVersion = System.getProperty("os.version");
+	    String[] fragments = osVersion.split("\\.");
+
 	    if (fragments.length < 2) return -1;
 
 	    try {
@@ -299,63 +314,68 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	    return -1;
 	}
 	/*.................................................................................................................*/
-	public static boolean isMacOSXPanther(){
+	public static boolean isMacOSX10MinorVersion(int minorVersion){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==3);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (isMacOSXMajorVersion10() && getOSXMinorVersion()==minorVersion);
+	}
+	/*.................................................................................................................*/
+	public static boolean isMacOSXPanther(){
+		return isMacOSX10MinorVersion(3);
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXPanther33(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==3) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && (isMacOSXMajorVersion10() && getOSXMinorVersion()==3) && mrj.startsWith("3.3");
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXAfterJaguarRunning33(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=3) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && 
+				(getOSXMajorVersion() > 10 || (isMacOSXMajorVersion10() && getOSXMinorVersion()>=3)) && mrj.startsWith("3.3");
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXBeforePanther(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()<3);
+		return System.getProperty("os.name").startsWith("Mac OS X") &&  (isMacOSXMajorVersion10() && getOSXMinorVersion()<3);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXBeforeSnowLeopard(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()<3);
+		return System.getProperty("os.name").startsWith("Mac OS X") &&  (isMacOSXMajorVersion10() && getOSXMinorVersion()<6);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXLeopard(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==5);
+		return isMacOSX10MinorVersion(5);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXYosemite(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==10);
+		return isMacOSX10MinorVersion(10);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXYosemiteOrLater(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=10);
+		return System.getProperty("os.name").startsWith("Mac OS X") &&  (getOSXMajorVersion()>10 ||  getOSXMinorVersion()>=10);
 //		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.10")>=0 || System.getProperty("os.version").indexOf("10.11")>=0 || System.getProperty("os.version").indexOf("10.12")>=0|| System.getProperty("os.version").indexOf("10.13")>=0);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXCatalinaOrLater(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=15);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXMajorVersion()>10 ||  getOSXMinorVersion()>=15);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXJaguar(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==2) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") &&  (isMacOSXMajorVersion10() && getOSXMinorVersion()==2) && mrj.startsWith("3.3");
 	}
 	public static boolean isLinux(){
 		return System.getProperty("os.name").indexOf("Linux")>=0 || System.getProperty("os.name").indexOf("linux")>=0 || System.getProperty("os.name").indexOf("LINUX")>=0;

@@ -78,7 +78,7 @@ public class ShellScriptRunner implements Commandable  {
 		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stErrorFileName;
 	}
 	public static boolean localScriptRunsCanDisplayTerminalWindow(){
-		return !MesquiteTrunk.isLinux();
+		return MesquiteTrunk.isWindows()  || (MesquiteTrunk.isMacOS() && !MesquiteTrunk.isMacOSXCatalinaOrLater()) ;  // not sure if Catalina is really the boundary.  Maybe can resurrect this if Terminal can be opened from a new MacOS.  TNT
 	}
 	/*.................................................................................................................*/
 	public void deleteRunningFile(){  
