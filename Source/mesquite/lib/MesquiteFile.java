@@ -3233,34 +3233,25 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/*.................................................................................................................*/
 	/** Returns whether a directory can be shown in the OS's file browser." */
 	public static boolean canShowDirectory() {
-		return (MesquiteTrunk.isMacOSX() || MesquiteTrunk.isWindows());
+		return true; //(MesquiteTrunk.isMacOSX() || MesquiteTrunk.isWindows());
 	}
 	/*.................................................................................................................*/
-	/** Shows the directory specified in path in the Finder or Windows Explorer" */
+	/** Shows the directory specified in path in the Finder or Explorer" */
 	public static void showDirectory(String path) {
 		if (path == null)
 			return;
 		File file = new File(path);
 		if (!file.exists()|| !file.isDirectory())
 			return;
-		if (MesquiteTrunk.isMacOSX()) {
 
+		if (Desktop.isDesktopSupported()) {
 			try {
-				Runtime.getRuntime().exec(
-						new String[] { "open", file.getAbsolutePath() });
-			} catch (IOException e) {
-				e.printStackTrace();
+				Desktop.getDesktop().open(file);
 			}
-		} else if (MesquiteTrunk.isWindows()){
-			try {
-				Runtime.getRuntime().exec(
-						new String[] { "explorer", file.getAbsolutePath() });
-			} catch (IOException e) {
-				e.printStackTrace();
+			catch (IOException ex) {
 			}
-		} else {
-			System.err.println("Sorry, can't show folder under this operating system");
 		}
+
 	}
 
 	/*.................................................................................................................*/

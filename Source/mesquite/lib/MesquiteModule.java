@@ -67,7 +67,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "6 April 2024";
+		return "8 April 2024";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -85,7 +85,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 971;  
+		return 972;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -2735,11 +2735,23 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 
 	/*.................................................................................................................*/
-	/** Returns the name of the duty; set by the duty-defining library classes.*/
+	/** Returns the current date and time.*/
 	public String getDateAndTime() {
 		long time = System.currentTimeMillis();
-		Date dnow = new Date(time);
-		return dnow.toString();
+		return getDateAndTime(time);
+	}
+	/*.................................................................................................................*/
+	/** Returns the specified date and time.*/
+	public String getDateAndTime(long time) {
+		Date date = new Date(time);
+		return date.toString();
+	}
+	/*.................................................................................................................*/
+	/** Returns the specified date and time.*/
+	public String getFutureDateAndTime(long addedTimeInSeconds) {
+		long time = System.currentTimeMillis();
+		Date futureDate = new Date(time+addedTimeInSeconds*1000);
+		return futureDate.toString();
 	}
 
 	/*.................................................................................................................*/
