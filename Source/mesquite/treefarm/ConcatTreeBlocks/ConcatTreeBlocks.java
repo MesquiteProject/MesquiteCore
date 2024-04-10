@@ -101,6 +101,7 @@ public class ConcatTreeBlocks extends TreeBlockListUtility  {
     	 	MesquiteFile file = getProject().chooseFile( "Select file to which to add the concatenated tree block");
 		incrementMenuResetSuppression();
 		getProject().incrementProjectWindowSuppression();
+		Vector v = pauseAllPausables();
 		TreeVector concat = new TreeVector(taxa);
    		for (int i=0; i<blocks.length; i++){
    			if (blocks[i].getTaxa() == taxa) {
@@ -119,7 +120,7 @@ public class ConcatTreeBlocks extends TreeBlockListUtility  {
    			else
    				otherTaxaBlockFound = true;
    		}
-
+   		unpauseAllPausables(v);
 		concat.setName("Concatenated");
 		concat.addToFile(file, getProject(), findElementManager(TreeVector.class));  
 		if (otherTaxaBlockFound)

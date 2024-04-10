@@ -22,7 +22,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class NumForTreeblockList extends TreeblocksListAssistant implements MesquiteListener {
+public class NumForTreeblockList extends TreeblocksListAssistant implements MesquiteListener, Pausable {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Number for Tree Block (in List of Tree Blocks window)";
@@ -71,6 +71,26 @@ public class NumForTreeblockList extends TreeblocksListAssistant implements Mesq
 			this.treeBlocks = (ListableVector)obj;
 		treeBlocks.addListener(this);
 		doCalcs();
+	}
+	/** Indicate what could be paused */
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	/** to ask Pausable to pause*/
+	public void pause() {
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause() {
+		paused = false;
+		doCalcs();
+		parametersChanged(null);
+	}
+	/*.................................................................................................................*/
+	boolean paused = false;
+	boolean okToCalc() {
+		return !paused;
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
@@ -133,7 +153,7 @@ public class NumForTreeblockList extends TreeblocksListAssistant implements Mesq
 	StringArray explArray = new StringArray(0);
 	/*.................................................................................................................*/
 	public void doCalcs(){
-		if (numberTask==null || treeBlocks == null)
+		if (!okToCalc() || numberTask==null || treeBlocks == null)
 			return;
 		outputInvalid();
 		int numBlocks = treeBlocks.size();

@@ -47,10 +47,11 @@ public class DuplicateTreeBlocks extends TreeBlockListUtility  {
    		}
 		incrementMenuResetSuppression();
 		getProject().incrementProjectWindowSuppression();
-   		for (int i=0; i<blocks.length; i++){
+		Vector v = pauseAllPausables();
+  		for (int i=0; i<blocks.length; i++){
    			blocks[i].doCommand("duplicateMe", null, CommandChecker.defaultChecker);
    		}
-
+  		unpauseAllPausables(v);
 		getProject().decrementProjectWindowSuppression();
 		decrementMenuResetSuppression();
 		resetAllMenuBars();

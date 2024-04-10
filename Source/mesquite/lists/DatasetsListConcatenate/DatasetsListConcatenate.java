@@ -127,6 +127,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 		int deleted = 0;
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
+		Vector v = pauseAllPausables();
 		for (int im = 0; im < datas.size(); im++){
 			found = true;
 			CharacterData data = (CharacterData)datas.elementAt(im);
@@ -159,6 +160,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 			discreetAlert("Two more more matrices should be selected first in order to concatenate them");
 		if (countFailed>0)
 			discreetAlert("Some matrices could not be concatenated into the first selected because they are of incompatible type or are linked to the first");
+		unpauseAllPausables(v);
 		getProject().getCharacterMatrices().decrementNotifySuppress(); 
 		table.setNumRows(table.getNumRows()-deleted+1);
 		((ListModule)employer).forceRecalculations();

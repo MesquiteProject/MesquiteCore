@@ -24,7 +24,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class NumForTaxaList extends TaxonListAssistant implements MesquiteListener {
+public class NumForTaxaList extends TaxonListAssistant implements MesquiteListener, Pausable {
 
 	/*.................................................................................................................*/
 	public String getName() {
@@ -89,9 +89,26 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 		return temp;
 	}
 
+	/** Indicate what could be paused */
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	/** to ask Pausable to pause*/
+	public void pause() {
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause() {
+		paused = false;
+		doCalcs();
+		parametersChanged(null);
+	}
 	/*.................................................................................................................*/
+	boolean paused = false;
+/*.................................................................................................................*/
 	boolean okToCalc() {
-		return !suppressedByScript;
+		return !suppressedByScript && !paused;
 	}
 	/*.................................................................................................................*/
 	public boolean querySelectBounds(MesquiteNumber lessThan, MesquiteNumber moreThan) {

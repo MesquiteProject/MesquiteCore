@@ -471,6 +471,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 							return null;
 				}
 
+				Vector v = owner.pauseAllPausables();
 				String[] text = new String[assoc.getNumberOfParts()];
 				for (int i=0; i<assoc.getNumberOfParts(); i++) {
 					text[i] = table.getMatrixText(column, i);
@@ -489,6 +490,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				processPostSwap(assoc);
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+				owner.unpauseAllPausables(v);
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
 					((CharacterData)assoc).compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "sorting of characters");
@@ -503,6 +505,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						if (!AlertDialog.query(this, "Sort Characters", "Are you sure you want to reorder the sequences?  It cannot be undone.", "Sort", "Cancel", 2))
 							return null;
 				}
+				Vector v = owner.pauseAllPausables();
 				String[] text = new String[assoc.getNumberOfParts()];
 				for (int i=0; i<assoc.getNumberOfParts(); i++) {
 					text[i] = getRowNameForSorting(i);
@@ -519,6 +522,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						m.elementsReordered((ListableVector)assoc);
 				}
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+				owner.unpauseAllPausables(v);
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
 					((CharacterData)assoc).compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "sorting of characters");
@@ -581,8 +585,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			int justAfter= MesquiteInteger.fromString(arguments, io);
 			if (!MesquiteInteger.isCombinable(justAfter))
 				justAfter = MesquiteInteger.queryInteger(this, "Move selected", "After which row should the selected rows be moved (enter 0 to move to first place)?", 0,  0, table.getNumRows()*10);
+			Vector v = owner.pauseAllPausables();
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedRowsDropped(justAfter-1); //-1 to convert to internal representation
+			owner.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Adds rows (and their corresponding objects)", "[number of rows to add]", commandName, "addRows")) {
 			MesquiteInteger io = new MesquiteInteger(0);
@@ -590,9 +596,11 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			int first = table.getNumRows();
 			if (!MesquiteInteger.isCombinable(num))
 				num = MesquiteInteger.queryInteger(this, "Add", "Add how many?", 1);
+			Vector v = owner.pauseAllPausables();
 			if (MesquiteInteger.isCombinable(num)){
 				addRows(num);
-				//					addRowsNotify(first, num);
+				owner.unpauseAllPausables(v);
+			//					addRowsNotify(first, num);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Selects a row", "[number of row]", commandName, "selectRow")) { //TODO: should this use internal or external character numbers???
@@ -975,6 +983,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			if (!AlertDialog.query(this, "Delete?",message, "Yes", "No"))
 				return;
 			MenuOwner.incrementMenuResetSuppression();
+			Vector v = owner.pauseAllPausables();
 			if (ownerModule != null && ownerModule.getProject() != null)
 				ownerModule.getProject().incrementProjectWindowSuppression();
 			
@@ -987,6 +996,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			int row = currentNumRows-1;
 			int firstInBlockDeleted = -1;
 			int lastInBlockDeleted = -1;
+
 			while(row>=0) {
 				if (table.isRowSelected(row) && owner.rowDeletable(row)){  // we've found a selected one
 					lastInBlockDeleted = row;
@@ -1000,6 +1010,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				row--;
 			}
+			
 			row = currentNumRows-1;
 			firstInBlockDeleted = -1;
 			lastInBlockDeleted = -1;
@@ -1032,7 +1043,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 
 			if (ownerModule != null && ownerModule.getProject() != null)
 				ownerModule.getProject().decrementProjectWindowSuppression();
-			MenuOwner.decrementMenuResetSuppression();
+			owner.unpauseAllPausables(v);
+		MenuOwner.decrementMenuResetSuppression();
 		}
 		else
 			ownerModule.alert("Rows must be selected before \"delete\" command is given");

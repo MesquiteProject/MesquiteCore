@@ -67,7 +67,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "9 April 2024";
+		return "10 April 2024";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -85,7 +85,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 974;  
+		return 975;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -595,6 +595,49 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	public final void parametersChanged() {
 		parametersChanged(null);
+	}
+	/*.................................................................................................................*/
+	/* This is the system to pause and restart calculations to avoid too many calculations with repeated notifications, e.g. in list windows */
+	public Vector pauseAllPausables() {
+		Vector v = new Vector();
+		
+		MesquiteTrunk.mesquiteTrunk.harvestPausables(v);
+		int num = v.size();
+		for (int i=0; i<num; i++) {
+			Object obj = v.elementAt(i);
+			if (obj instanceof Pausable) {
+				Pausable p = (Pausable)obj;
+				p.pause();
+			}
+		}
+		return v;
+		
+	}
+	public void harvestPausables(Vector pausables) {
+			if (module.getEmployeeVector()==null)
+				return ;
+			int num = module.getEmployeeVector().size();
+			for (int i=0; i<num; i++) {
+				Object obj = module.getEmployeeVector().elementAt(i);
+				MesquiteModule mb = (MesquiteModule)obj;
+				addPausables(pausables);
+				mb.harvestPausables(pausables);
+			}
+	}
+	
+	public void addPausables(Vector pausables) {
+	}
+
+	public void unpauseAllPausables(Vector v) {
+		
+		int num = v.size();
+		for (int i=0; i<num; i++) {
+			Object obj = v.elementAt(i);
+			if (obj instanceof Pausable) {
+				Pausable p = (Pausable)obj;
+				p.unpause();
+			}
+		}
 	}
 
 	/*.................................................................................................................*/
@@ -1313,7 +1356,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** If scripting, puts alert in log; otherwise puts up alert dialog.*/
 	public void discreetAlert( String s) {
-		discreetAlert(MesquiteThread.isScripting(), s);
+		discreetAlert(MesquiteThread.isScripting() || MesquiteThread.isQuietPlease(), s);
 	}
 	/*.................................................................................................................*/
 	/** If scripting, puts alert in log; otherwise puts up alert dialog.*/

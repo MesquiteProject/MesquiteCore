@@ -1799,11 +1799,13 @@ public void requestFocus(){
 			MesquiteInteger io = new MesquiteInteger(0);
 			int starting = CharacterStates.toInternal(MesquiteInteger.fromString(arguments, io));
 			int number = MesquiteInteger.fromString(arguments, io);
+			Vector v = ownerModule.pauseAllPausables();
 			if (data.deleteCharacters(starting, number, false)) {
 				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, new int[] { starting, number }));
 				data.deleteInLinked(starting, number, true);
 				table.setNumColumns(data.getNumChars());
 			}
+			ownerModule.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Excludes selected characters", "[] []", commandName, "excludeSelectedCharacters")) {
 			if (data.setInclusionExclusion(ownerModule, table, false)) {
@@ -1823,8 +1825,10 @@ public void requestFocus(){
 		MesquiteInteger io = new MesquiteInteger(0);
 			int starting = Taxon.toInternal(MesquiteInteger.fromString(arguments, io));
 			int number = MesquiteInteger.fromString(arguments, io);
+			Vector v = ownerModule.pauseAllPausables();
 			if (data.getTaxa().addTaxa(starting, number, true))
 				table.setNumRows(data.getNumTaxa());
+			ownerModule.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Deletes taxa", "[first taxon to be deleted] [number of taxa]", commandName, "deleteTaxa")) {
 			if (data.getTaxa().isEditInhibited())
@@ -1837,8 +1841,10 @@ public void requestFocus(){
 				ownerModule.discreetAlert("You cannot delete all taxa; the command will be ignored");
 				return null;
 			}
+			Vector v = ownerModule.pauseAllPausables();
 			if (data.getTaxa().deleteTaxa(starting, number, true))
 				table.setNumRows(data.getNumTaxa());
+			ownerModule.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected characters ", "[column to move after; -1 if at start]", commandName, "moveCharsTo")) {
 			if (data.isEditInhibited()) {
@@ -1853,8 +1859,10 @@ public void requestFocus(){
 			int justAfter = MesquiteInteger.fromString(arguments, io);
 			if (!MesquiteInteger.isCombinable(justAfter))
 				justAfter = MesquiteInteger.queryInteger(this, "Move characters", "After which column should the selected characters be moved (enter 0 to move to first place)?", 0, 0, table.getNumColumns() * 10);
+			Vector v = ownerModule.pauseAllPausables();
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedColumnsDropped(justAfter - 1); // -1 to convert to internal representation
+			ownerModule.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected taxa ", "[row to move after; -1 if at start]", commandName, "moveTaxaTo")) {
 			if (!table.anyRowSelected()) {
@@ -1865,8 +1873,10 @@ public void requestFocus(){
 			int justAfter = MesquiteInteger.fromString(arguments, io);
 			if (!MesquiteInteger.isCombinable(justAfter))
 				justAfter = MesquiteInteger.queryInteger(this, "Move taxa", "After which row should the selected taxa be moved (enter 0 to move to first place)?", 0, 0, table.getNumRows() * 10);
+			Vector v = ownerModule.pauseAllPausables();
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedRowsDropped(justAfter - 1); // -1 to convert to internal representation
+			ownerModule.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected block ", "[number of characters to move]", commandName, "moveSelectedBlock")) {
 			MesquiteInteger firstRow = new MesquiteInteger();
@@ -1890,6 +1900,7 @@ public void requestFocus(){
 			}
 			
 			if (MesquiteInteger.isCombinable(shiftAmount) && shiftAmount!=0) {
+				Vector v = ownerModule.pauseAllPausables();
 				MesquiteBoolean dataChanged = new MesquiteBoolean();
 				MesquiteInteger charAdded = new MesquiteInteger();
 				MesquiteInteger distanceMoved = new MesquiteInteger();
@@ -1900,6 +1911,7 @@ public void requestFocus(){
 				table.selectBlock(firstColumn.getValue()+distanceMoved.getValue(), firstRow.getValue(), lastColumn.getValue()+distanceMoved.getValue(), lastRow.getValue());
 				if (dataChanged.getValue())
 					contentsChanged();
+				ownerModule.unpauseAllPausables(v);
 			}
 		}
 		/* This is a hidden feature to help recover from consequences of bug of duplicate NOTES blocks in linked files in 1.0 to 1.02 */

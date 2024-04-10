@@ -65,6 +65,7 @@ public class DatasetsListDuplicate extends DatasetsListUtility {
 			queryOptions();
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
+		Vector v = pauseAllPausables();
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			CharacterData starter = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());  
@@ -76,6 +77,7 @@ public class DatasetsListDuplicate extends DatasetsListUtility {
 				starter.setName(datas.getUniqueName(data.getName() + " (duplicate)"));
 			}
 		}
+		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		resetAllMenuBars();

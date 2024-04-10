@@ -22,7 +22,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class NumForTreeList extends TreeListAssistant implements MesquiteListener {
+public class NumForTreeList extends TreeListAssistant implements MesquiteListener, Pausable {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Number for Tree (in List of Trees window)";
@@ -83,9 +83,6 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 		return temp;
 	}
 
-	boolean okToCalc() {
-		return !suppressedByScript;
-	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a tree", "[name of module]", commandName, "setValueTask")) {
@@ -131,6 +128,27 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 		if (numberTask==null)
 			return "";
 		return numberTask.getVeryShortName();
+	}
+	/*.................................................................................................................*/
+	/** Indicate what could be paused */
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	/** to ask Pausable to pause*/
+	public void pause() {
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause() {
+		paused = false;
+		doCalcs();
+		parametersChanged(null);
+	}
+	/*.................................................................................................................*/
+	boolean paused = false;
+	boolean okToCalc() {
+		return !suppressedByScript && !paused;
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/

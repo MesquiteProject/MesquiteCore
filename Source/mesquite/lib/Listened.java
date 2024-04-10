@@ -212,7 +212,7 @@ public class Listened implements Listenable {
 									MesquiteMessage.println("@Time: " +  time + " ms. " + "Object: " + this + ".   Listener: " + ls[m]);
 							} else {
 								try {
-									ls[m].changed(caller, this, notification);
+									ls[m].changed(caller, this, notification); // >>>>> NOTIFICATION IS HERE <<<<<
 								}
 								catch (Throwable e){  //added 2. 72 to avoid crash in changed from stopping all other listeners from hearing
 									try {

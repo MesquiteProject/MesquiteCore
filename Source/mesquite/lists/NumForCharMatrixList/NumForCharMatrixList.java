@@ -23,7 +23,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class NumForCharMatrixList extends DataSetsListAssistant implements MesquiteListener  {
+public class NumForCharMatrixList extends DataSetsListAssistant implements MesquiteListener, Pausable  {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Number for Matrix (in List of Character Matrices window)";
@@ -71,6 +71,27 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	public void employeeQuit(MesquiteModule m){
 		iQuit();
 	}
+	/** Indicate what could be paused */
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	/** to ask Pausable to pause*/
+	public void pause() {
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause() {
+		paused = false;
+		doCalcs();
+		parametersChanged(null);
+	}
+	/*.................................................................................................................*/
+	boolean paused = false;
+	boolean okToCalc() {
+		return !paused;
+	}
+
 	public void setTableAndObject(MesquiteTable table, Object obj){
 		if (datas !=null)
 			datas.removeListener(this);
@@ -79,10 +100,6 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 		datas.addListener(this);
 		this.table = table;
 		doCalcs();
-	}
-	/*.................................................................................................................*/
-	boolean okToCalc() {
-		return true; //return !areCalculationsPaused();
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
