@@ -93,6 +93,14 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 				executablePathField.setText(path);
 		}
 	}
+	/*.................................................................................................................*/
+	public static String getBLASTFileName(String fileName) {
+		if (MesquiteTrunk.isWindows()) {
+			return "\"\\\"" + fileName + "\\\"\"";
+		} else {
+			return "\' \"" + fileName + "\" \'";
+		}
+	}
 
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
@@ -147,7 +155,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		
 		String fileNameBase = StringUtil.getAllButLastItem(fileName, ".");
 		
-		String blastArguments = " -in " + fileName + " -out " + fileNameBase + "DB" + " -dbtype nucl -blastdb_version 4";
+		String blastArguments = " -in " + getBLASTFileName(fileName) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4";
 
 
 		String blastCommand = blastProgram + blastArguments;
