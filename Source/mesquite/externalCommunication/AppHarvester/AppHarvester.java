@@ -30,7 +30,7 @@ public class AppHarvester extends MesquiteInit {
 			String[] appsFiles = appsDir.list();
  			//StringArray.sort(nameRulesList);
  			for (int i=0; i<appsFiles.length; i++) {
- 				if (appsFiles[i]!=null && appsFiles[i].endsWith("app")) {
+ 				if (appsFiles[i]!=null && appsFiles[i].endsWith("app")&& !appsFiles[i].startsWith(".")) {
  					String appFilePath = appsDirPath + MesquiteFile.fileSeparator + appsFiles[i];
  					AppInformationFile appInfoFile = new AppInformationFile(appsFiles[i]);
  		 			boolean success = appInfoFile.processAppInfoFile();
