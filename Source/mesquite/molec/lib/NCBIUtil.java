@@ -21,7 +21,6 @@ import java.io.*;
 import org.dom4j.Element;
 
 import mesquite.lib.*;
-import mesquite.lib.Bits;
 import mesquite.lib.characters.*;
 import mesquite.categ.lib.*;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;   //is this guaranteed to be an installed package?
@@ -38,6 +37,18 @@ public class NCBIUtil {
 	public final static NameReference ACCESSION = new NameReference("GenBankAccession");
 	public final static NameReference FRAME = new NameReference("GenBankFrame");
 	public final static NameReference TAXONOMY = new NameReference("GenBankTaxonomy");
+
+	
+	
+	/*.................................................................................................................*/
+	public static String getBLASTFileInputName(String fileName) {
+		if (MesquiteTrunk.isWindows()) {
+			return "\"\\\"" + fileName + "\\\"\"";
+		} else {
+			return "\' \"" + fileName + "\" \'";
+		}
+	}
+
 	/*.................................................................................................................*/
 	public static boolean responseSaysBLASTIsReady(String response) {
 		if (StringUtil.blank(response))

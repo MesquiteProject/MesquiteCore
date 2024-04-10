@@ -107,6 +107,9 @@ public abstract class Blaster extends MesquiteModule   {
 			break;
 		}
 	}
+	
+	
+
 	static public String getBlastTypeName(int blastOption) {
 		if (blastOption<0 || blastOption>=blastTypeNames.length) return "";
 		return blastTypeNames[blastOption];
