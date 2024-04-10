@@ -82,7 +82,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	}
 	/*.................................................................................................................*/
 	boolean okToCalc() {
-		return !areCalculationsPaused();
+		return true; //return !areCalculationsPaused();
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
