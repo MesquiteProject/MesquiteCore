@@ -44,7 +44,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	NumberForTaxon numberTask;
 	MesquiteBoolean shadeCells;
 	Taxa taxa;
-	boolean suppressed = false;
+	boolean suppressedByScript = false;
 	MesquiteTable table;
 
 	/*.................................................................................................................*/
@@ -89,6 +89,10 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 		return temp;
 	}
 
+	/*.................................................................................................................*/
+	boolean okToCalc() {
+		return !suppressedByScript;
+	}
 	/*.................................................................................................................*/
 	public boolean querySelectBounds(MesquiteNumber lessThan, MesquiteNumber moreThan) {
 		if (lessThan==null || moreThan==null || numberTask==null)
@@ -156,7 +160,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 			NumberForTaxon temp= (NumberForTaxon)replaceEmployee(NumberForTaxon.class, arguments, "Number for a taxon", numberTask);
 			if (temp!=null) {
 				numberTask = temp;
-				if (!suppressed){
+				if (okToCalc()){
 					doCalcs();
 					parametersChanged();
 				}
@@ -181,11 +185,11 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 			}
 		}
 		else if (checker.compare(this.getClass(), "Suppresses calculation", null, commandName, "suppress")) {
-			suppressed = true;
+			suppressedByScript = true;
 		}
 		else if (checker.compare(this.getClass(), "Releases suppression of calculation", null, commandName, "desuppress")) {
-			if (suppressed){
-				suppressed = false;
+			if (suppressedByScript){
+				suppressedByScript = false;
 				outputInvalid();
 				doCalcs();
 				parametersChanged();
@@ -198,7 +202,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
 		this.table = table;
 		this.taxa = taxa;
-		if (!suppressed)
+		if (okToCalc())
 			doCalcs();
 	}
 	public String getTitle() {
@@ -220,7 +224,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	public void changed(Object caller, Object obj, Notification notification){
 		if (Notification.appearsCosmetic(notification))
 			return;
-		if (!suppressed){
+		if (okToCalc()){
 			outputInvalid();
 			doCalcs();
 			parametersChanged(notification);
@@ -228,7 +232,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-		if (!suppressed){
+		if (okToCalc()){
 			outputInvalid();
 			doCalcs();
 			parametersChanged(notification);
@@ -241,7 +245,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	MesquiteNumber max = new MesquiteNumber();
 	/*.................................................................................................................*/
 	public void doCalcs(){
-		if (suppressed || numberTask==null || taxa == null)
+		if (!okToCalc() || numberTask==null || taxa == null)
 			return;
 		int numTaxa = taxa.getNumTaxa();
 		na.resetSize(numTaxa);

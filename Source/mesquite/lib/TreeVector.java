@@ -323,6 +323,20 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 			}
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Shows majority rules consensus tree in tree window", null, commandName, "showConsensusInWindow")) {
+			ElementManager manager = getManager();
+			if (manager!=null && manager instanceof MesquiteModule) {
+				MesquiteFile file = getFile();
+				if (file!=null && file.getProject()!=null) {
+					CommandRecord oldR = MesquiteThread.getCurrentCommandRecord();
+					CommandRecord scr = new CommandRecord(true);
+					MesquiteThread.setCurrentCommandRecord(scr);
+					((MesquiteModule)manager).doCommand("showConsensusInWindow" ,Integer.toString(getFile().getProject().getFileElementNumber(this, getClass())), CommandChecker.defaultChecker);
+					MesquiteThread.setCurrentCommandRecord(oldR);
+				}
+			}
+			return null;
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 	}

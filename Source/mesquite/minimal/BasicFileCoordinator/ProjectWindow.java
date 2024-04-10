@@ -1338,6 +1338,7 @@ class TreesRPanel extends ElementPanel {
 	public TreesRPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, FileElement element){
 		super(bfc, container, w, element);
 		addCommand(false, "treeView.gif", "View\nTrees", "View Trees", new MesquiteCommand("showTreesInWindow", element));
+		addCommand(false, null, "View\nConsensus", "View Consensus", new MesquiteCommand("showConsensusInWindow", element));
 		addCommand(false, "trees.gif", "List &\nManage\nTrees", "List & Manage Trees", new MesquiteCommand("showMe", element));
 		addCommand(false, "chart.gif", "Chart\nTrees", "Chart Trees", new MesquiteCommand("chart", this));
 		addCommand(true, null, "-", "-", null);

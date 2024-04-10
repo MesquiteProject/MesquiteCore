@@ -139,7 +139,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 			if (success){
 				count++;
 				if (count % 100== 0)
-					logln("Concatenated " + count + "Matrices");
+					logln("Concatenated " + count + " Matrices");
 				if (count > 1)
 					name = name + "+";
 				name = name + "(" + data.getName() + ")";
@@ -152,6 +152,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 				countFailed++;
 
 		}
+		logln("Total matrices concatenated: " + count);
 		if (starter != null)
 			starter.setName(name);
 		if (! found)

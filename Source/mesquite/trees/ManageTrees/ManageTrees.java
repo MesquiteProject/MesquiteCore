@@ -477,6 +477,43 @@ public class ManageTrees extends TreesManager implements ItemListener {
 				}
 			}
 		}
+		else if (checker.compare(this.getClass(), "Shows a tree window showing the majority rules consensus for a particular trees block", "[number of tree block to show]", commandName, "showConsensusInWindow")) {
+			int t = MesquiteInteger.fromFirstToken(arguments, pos);
+			if (MesquiteInteger.isCombinable(t) && t<getProject().getNumberOfFileElements(TreeVector.class)) {
+				MesquiteModule fCoord = getFileCoordinator();
+				MesquiteModule treeWindowCoord = null;
+				if (fCoord!=null)
+					treeWindowCoord = fCoord.findEmployeeWithName("Tree Window Coordinator");
+				if (treeWindowCoord!=null){
+					TreeVector trees = (TreeVector)getProject().getFileElement(TreeVector.class, t);
+					if (trees == null)
+						return null;
+					Taxa taxa = trees.getTaxa();
+					//send script to tree window coord to makeTreeWindow with set of taxa and then set to stored trees and this tree vector
+					int whichTreeBlock = getTreeBlockNumber(taxa, trees);
+
+					
+					//Make new tree window and feed it script to show consensus
+					CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
+					CommandRecord scr = new CommandRecord(true);
+					MesquiteThread.setCurrentCommandRecord(scr);
+					String commands = "makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) 
+							+ "  #BasicTreeWindowMaker; tell It; setTreeSource  #mesquite.consensus.ConsensusTree.ConsensusTree;"
+							+ "  tell It; " 
+							+ "setTreeSource  #StoredTrees;"
+							+ " tell It; setTaxa " + getProject().getTaxaReferenceInternal(taxa) + " ;  setTreeBlock " + TreeVector.toExternal(whichTreeBlock)  + "; endTell; "
+							+ " setConsenser  #mesquite.consensus.MajRuleTree.MajRuleTree;"
+							+ "  endTell; " 
+							+ "getWindow; tell It; setSize 400 300; endTell; showWindowForce; endTell; ";
+					MesquiteInteger pos = new MesquiteInteger(0);
+					Puppeteer p = new Puppeteer(this);
+					p.execute(treeWindowCoord, commands, pos, null, false);
+					MesquiteThread.setCurrentCommandRecord(oldCR);
+					/*
+					 */
+				}
+			}
+		}
 		else if (checker.compare(this.getClass(), "Saves copy of a trees block to a separate file", "[index of trees block]", commandName, "exportTreesBlock")) {
 			int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(t) && t< getProject().getNumberOfFileElements(TreeVector.class)) {

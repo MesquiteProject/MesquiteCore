@@ -81,6 +81,10 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 		doCalcs();
 	}
 	/*.................................................................................................................*/
+	boolean okToCalc() {
+		return !areCalculationsPaused();
+	}
+	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
 	public void disposing(Object obj){
 		if (obj == datas)
@@ -229,7 +233,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	MesquiteNumber max = new MesquiteNumber();
 	/*.................................................................................................................*/
 	public void doCalcs(){
-		if (numberTask==null || datas == null)
+		if (!okToCalc() || numberTask==null || datas == null)
 			return;
 		outputInvalid();
 		int numBlocks = datas.size();

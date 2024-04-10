@@ -317,6 +317,20 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			mt.duringNotification = 0;
 	}
 	/*----------------*/
+	boolean pleaseBeQuiet = false;
+	public static boolean isQuietPlease() {
+		Thread thisThread = Thread.currentThread();
+		if (thisThread instanceof MesquiteThread) 
+			return ((MesquiteThread)thisThread).pleaseBeQuiet;
+		
+		return false;
+	}
+	public static void setQuietPlease(boolean quiet) {
+		Thread thisThread = Thread.currentThread();
+		if (thisThread instanceof MesquiteThread) 
+			((MesquiteThread)thisThread).pleaseBeQuiet = quiet;
+	}
+	/*----------------*/
 	public static boolean isScripting(){
 		return isScripting(false);
 	}

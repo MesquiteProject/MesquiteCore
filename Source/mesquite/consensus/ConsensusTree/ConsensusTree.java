@@ -206,6 +206,7 @@ public class ConsensusTree extends TreeSource {
 					}
 				}
 			}
+
 			if (verbose)
 				logln("Trees consensed");
 			//			if (count>0)

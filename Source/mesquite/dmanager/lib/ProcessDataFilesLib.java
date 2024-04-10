@@ -396,6 +396,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 					header += StringUtil.getDateTime(dnow) + StringUtil.lineEnding() + StringUtil.lineEnding();
 					MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", header, true);
 					beforeProcessFiles();
+					MesquiteThread.setQuietPlease(true);
 					for (int i=0; i<files.length; i++) {
 						progIndicator.setCurrentValue(i);
 						requestToSequester.setValue(false);
@@ -438,6 +439,7 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 							}
 						}
 					}
+					MesquiteThread.setQuietPlease(false);
 					afterProcessFiles();
 					progIndicator.goAway();
 				}

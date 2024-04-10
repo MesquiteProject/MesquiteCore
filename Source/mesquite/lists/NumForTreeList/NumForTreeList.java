@@ -36,13 +36,13 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForTree.class, getName() + " needs a method to calculate a value for each of the trees.",
-		"You can select a value to show in the Number For Trees submenu of the Columns menu of the List of Trees Window. ");
+				"You can select a value to show in the Number For Trees submenu of the Columns menu of the List of Trees Window. ");
 		e.setPriority(1);
 	}
 	/*.................................................................................................................*/
 	NumberForTree numberTask;
 	TreeVector treesBlock;
-	boolean suppressed = false;
+	boolean suppressedByScript = false;
 	MesquiteBoolean shadeCells = new MesquiteBoolean(false);
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -82,13 +82,17 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 		temp.addLine("desuppress"); 
 		return temp;
 	}
+
+	boolean okToCalc() {
+		return !suppressedByScript;
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a tree", "[name of module]", commandName, "setValueTask")) {
 			NumberForTree temp= (NumberForTree)replaceEmployee(NumberForTree.class, arguments, "Number for a tree", numberTask);
 			if (temp!=null) {
 				numberTask = temp;
-				if (!suppressed){
+				if (okToCalc()){
 					doCalcs();
 					parametersChanged();
 				}
@@ -104,11 +108,11 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 			}
 		}
 		else if (checker.compare(this.getClass(), "Suppresses calculation", null, commandName, "suppress")) {
-			suppressed = true;
+			suppressedByScript = true;
 		}
 		else if (checker.compare(this.getClass(), "Releases suppression of calculation", null, commandName, "desuppress")) {
-			if (suppressed){
-				suppressed = false;
+			if (suppressedByScript){
+				suppressedByScript = false;
 				outputInvalid();
 				doCalcs();
 				parametersChanged();
@@ -120,7 +124,7 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 	}
 	public void setTableAndTreeBlock(MesquiteTable table, TreeVector trees){
 		treesBlock = trees;
-		if (!suppressed)
+		if (okToCalc())
 			doCalcs();
 	}
 	public String getTitle() {
@@ -142,7 +146,7 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 	public void changed(Object caller, Object obj, Notification notification){
 		if (Notification.appearsCosmetic(notification))
 			return;
-		if (!suppressed){
+		if (okToCalc()){
 			outputInvalid();
 			doCalcs();
 			parametersChanged(notification);
@@ -150,7 +154,7 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-		if (!suppressed){
+		if (okToCalc()){
 			outputInvalid();
 			doCalcs();
 			parametersChanged(notification);
@@ -172,9 +176,9 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 	MesquiteNumber max = new MesquiteNumber();
 	/*.................................................................................................................*/
 	public void doCalcs(){
-		if (suppressed || numberTask==null || treesBlock == null)
+		if (!okToCalc() || numberTask==null || treesBlock == null)
 			return;
-		
+
 		int numTrees = treesBlock.size();
 		na.resetSize(numTrees);
 		explArray.resetSize(numTrees);
@@ -183,8 +187,8 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 		for (int ic=0; ic<numTrees; ic++) {
 			CommandRecord.tick("Number for tree in tree list; examining tree " + ic);
 			Tree tree = treesBlock.getTree(ic);
-		//	if (tree instanceof MesquiteTree)
-		//		((MesquiteTree)tree).setAssignedNumber(ic);
+			//	if (tree instanceof MesquiteTree)
+			//		((MesquiteTree)tree).setAssignedNumber(ic);
 			mn.setToUnassigned();
 			numberTask.calculateNumber(tree, mn, expl);
 			na.setValue(ic, mn);
