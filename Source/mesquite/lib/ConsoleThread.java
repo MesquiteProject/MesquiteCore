@@ -76,7 +76,10 @@ public class ConsoleThread extends Thread {
 						Thread.sleep(40);
 						if (files != null) {
 							for (int i=0; i<files.length; i++) {
-								MesquiteTrunk.mesquiteTrunk.applicationHandler9.handleOpenFile(files[i]);
+								if (MesquiteTrunk.mesquiteTrunk.applicationHandler9 != null)
+									MesquiteTrunk.mesquiteTrunk.applicationHandler9.handleOpenFile(files[i]);
+								else
+									EAWTHandler.handleOpenFile(files[i]);
 							}
 						}
 					}

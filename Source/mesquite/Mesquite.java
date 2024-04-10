@@ -2485,6 +2485,8 @@ public class Mesquite extends MesquiteTrunk
 				earlyWarning += w;
 				System.out.println(w);
 			}
+			catch (Throwable e) {
+			}
 		}
 	}
 
