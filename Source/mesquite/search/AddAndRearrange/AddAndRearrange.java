@@ -68,6 +68,9 @@ public class AddAndRearrange extends TreeSearcher implements Incrementable {
 		//TODO: if this is made to be persistent, need setHiringCommand for both
 	}
 
+	public  Class getCharacterClass() {
+		return null;
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();

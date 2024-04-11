@@ -80,13 +80,13 @@ public void processUserClickingOnTextCommandLink(String command) {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
 		if (arguments !=null) {
-			searchTask = (TreeSearcher)hireNamedEmployee(TreeSearcher.class,arguments);
+			searchTask = (TreeSearcher)hireNamedEmployee(TreeSearcher.class,arguments, condition);
 			if (searchTask==null) {
 				return sorry(getName() + " couldn't start because the requested tree searching module not obtained: "+arguments);
 			}
 		}
 		else {
-			searchTask= (TreeSearcher)hireEmployee(TreeSearcher.class, "Tree Searcher");
+			searchTask= (TreeSearcher)hireCompatibleEmployee(TreeSearcher.class, condition, "Tree Searcher");
 			if (searchTask==null) return sorry(getName() + " couldn't start because tree searching module not obtained.");
 		}
 		return true;
@@ -94,6 +94,14 @@ public void processUserClickingOnTextCommandLink(String command) {
 	public String getLogText() {
 		return searchTask.getLogText();
 	}
+
+	// optional, in case employer wants to force use of a matrix
+ public MatrixSourceCoord getMatrixSource() {
+	 return searchTask.getMatrixSource();
+ }
+ public void setMatrixSource(MatrixSourceCoord msource) {
+	 searchTask.setMatrixSource(msource);
+ }
 
 	/*.................................................................................................................*/
 	public String getHTMLDescriptionOfStatus(){

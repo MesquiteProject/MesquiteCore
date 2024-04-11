@@ -1779,6 +1779,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		for (int i = 0; i<taxa.getNumTaxa() && warning == null; i++)
 			if (i>= doubleCheckTaxaIDs.length || taxa.getTaxon(i).getID() != doubleCheckTaxaIDs[i])
 				warning = "Error in CharacterData: id of taxon " + i +" in Taxa doesn't match id* recorded in CharacterData";
+		if (warning != null)
+			MesquiteMessage.printStackTrace();
 		return warning;
 
 		/*	if (warning == null)
