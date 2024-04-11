@@ -354,7 +354,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 		String blastArguments =  "  -query " + fileName;
-		blastArguments+= " -db "+database;
+		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(database);
 		blastArguments+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
 
 		if (eValueCutoff>=0.0)
@@ -457,6 +457,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 
 		String blastArguments = "  -entry "+queryString + " -outfmt %f";
 		blastArguments+= " -db "+databaseArray[databaseNumber];
+	//	blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(databaseArray[databaseNumber]);
 		blastArguments+=" -out " + outFileName;		
 
 		String blastCommand = "blastdbcmd" + blastArguments;

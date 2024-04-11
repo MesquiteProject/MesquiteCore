@@ -26,6 +26,8 @@ public class AppInformationFile {
 	String appsFilePath;
 	static final int infoFileVersion = 1;
 	String appNameWithinAppsDirectory;
+	
+	static String externalCommunicationXMLTag = "externalCommunication";
 
 	
 	public AppInformationFile(String appNameWithinAppsDirectory) {
@@ -50,12 +52,12 @@ public class AppInformationFile {
 			return false;
 		}
 		Element rootElement = doc.getRootElement();
-		Element zephyrElement = rootElement.element("zephyr");
-		if (zephyrElement != null) {
-			String versionString = zephyrElement.attributeValue("version");
+		Element externalCommunicationElement = rootElement.element(externalCommunicationXMLTag);
+		if (externalCommunicationElement != null) {
+			String versionString = externalCommunicationElement.attributeValue("version");
 			int versionInXml = MesquiteInteger.fromString(versionString);
 			if (versionInXml==infoFileVersion) {
-				Element appInfoElement = zephyrElement.element("appinfo");
+				Element appInfoElement = externalCommunicationElement.element("appinfo");
 				Element element = appInfoElement.element("appname");
 				if (element!=null)
 					appName = element.getStringValue();
