@@ -1784,12 +1784,12 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		if (dataClass ==null)
 			return true;
 		if (dataClass instanceof Class){
-			return ((Class)dataClass).isAssignableFrom(data.getStateClass());
+			return ((Class)dataClass).isAssignableFrom(data.getStateClass()) || ((Class)dataClass).isAssignableFrom(data.getClass());
 		}
 		else if (dataClass instanceof Class[]){
 			Class[] dataClasses = ((Class[])dataClass);
 			for (int i=0; i<dataClasses.length; i++){
-				if (dataClasses[i].isAssignableFrom(data.getStateClass()))
+				if (dataClasses[i].isAssignableFrom(data.getStateClass()) || dataClasses[i].isAssignableFrom(data.getClass()))
 					return true;
 			}
 			return false;
