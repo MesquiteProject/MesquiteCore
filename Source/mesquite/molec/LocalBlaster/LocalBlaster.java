@@ -35,8 +35,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 	int numThreads = 1;
 	boolean hasApp=false;
 	MesquiteTimer timer = new MesquiteTimer();
-	boolean localBlastDBHasTaxonomyIDs = true;
-	boolean useIDInDefinition = true;
+	boolean localBlastDBHasTaxonomyIDs = false;
+	boolean useIDInDefinition = false;
 	String[] databaseArray = null;
 	int numDatabases = 0;
 	ExternalProcessManager externalRunner;
