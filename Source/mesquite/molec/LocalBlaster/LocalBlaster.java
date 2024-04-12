@@ -22,15 +22,18 @@ import java.io.File;
 
 import mesquite.lib.*;
 import mesquite.molec.lib.*;
+import mesquite.externalCommunication.AppHarvester.AppHarvester;
+import mesquite.externalCommunication.lib.*;
 
 /*  Initiator: DRM
  * */
 
-public class LocalBlaster extends Blaster implements ActionListener,  ShellScriptWatcher, OutputFileProcessor {
+public class LocalBlaster extends Blaster implements ActionListener,  AppUser, ShellScriptWatcher, OutputFileProcessor {
 	boolean preferencesSet = false;
 	String programOptions = "" ;
 	String databaseString = "*" ;
 	int numThreads = 1;
+	boolean hasApp=false;
 	MesquiteTimer timer = new MesquiteTimer();
 	boolean localBlastDBHasTaxonomyIDs = true;
 	boolean useIDInDefinition = true;
@@ -38,15 +41,17 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 	int numDatabases = 0;
 	ExternalProcessManager externalRunner;
 	boolean scriptBased = false;
-	boolean executablesInDefaultLocation = true;
+	boolean useDefaultExecutablePath = true;  //newApp
 	String blastExecutableFolderPath = "";
 	boolean databasesInDefaultLocation = true;
 	String blastDatabaseFolderPath = "";
+	AppInformationFile appInfoFile;
 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		programOptions = "";
 		timer.start();
+		appInfoFile = getAppInfoFile();
 		loadPreferences();
 		return true;
 	}
@@ -61,6 +66,75 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 
 	public boolean userAborted(){
 		return false;
+	}
+	public boolean getHasApp() {
+		return hasApp;
+	}
+	public void setHasApp(boolean hasApp) {
+		this.hasApp = hasApp;
+	}
+	public String getAppOfficialName() {
+		return "blast";
+	}
+	public String getProgramName(){
+		return "BLAST";
+	}
+	public boolean getDefaultExecutablePathAllowed() {
+		return getHasApp();
+	}
+	/*.................................................................................................................*/
+	public AppInformationFile getAppInfoFile() {
+		AppInformationFile aif = AppHarvester.getAppInfoFileForProgram(this);
+		setHasApp(aif!=null);
+		return aif;
+	}
+	/*.................................................................................................................*/
+	public String getDefaultExecutablePath(){
+		if (appInfoFile==null) {
+			appInfoFile = getAppInfoFile();
+		}
+		if (appInfoFile!=null) {
+			String fullPath = appInfoFile.getFullPath();
+			Debugg.println(getAppInfoForLog());
+			return fullPath;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	public String getVersionFromAppInfo(){
+		if (!useDefaultExecutablePath || !getDefaultExecutablePathAllowed()) 
+			return null;
+		if (appInfoFile==null) {
+			appInfoFile = getAppInfoFile();
+		}
+		if (appInfoFile!=null) {
+			return appInfoFile.getVersion();
+		}
+		return null;
+	}
+
+	/*.................................................................................................................*/
+	public String getAppInfoForLog(){
+		if (appInfoFile==null) {
+			appInfoFile = getAppInfoFile();
+		}
+		if (appInfoFile!=null) {
+			StringBuffer sb = new StringBuffer(0);
+			sb.append("\nVersion " + appInfoFile.getVersion());
+			return sb.toString();
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	public String getExecutablePath(){
+		if (useDefaultExecutablePath && getDefaultExecutablePathAllowed()) 
+			return getDefaultExecutablePath();
+		else
+			return blastExecutableFolderPath;
+	}
+
+	public boolean useAppInAppFolder() {
+		return useDefaultExecutablePath && getDefaultExecutablePathAllowed();
 	}
 
 	/*.................................................................................................................*/
@@ -79,10 +153,11 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 			blastExecutableFolderPath = StringUtil.cleanXMLEscapeCharacters(content);
 		else if ("blastDatabaseFolderPath".equalsIgnoreCase(tag))
 			blastDatabaseFolderPath = StringUtil.cleanXMLEscapeCharacters(content);
-		else if ("executablesInDefaultLocation".equalsIgnoreCase(tag))
-			executablesInDefaultLocation = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("useDefaultExecutablePath".equalsIgnoreCase(tag))
+			useDefaultExecutablePath = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("databasesInDefaultLocation".equalsIgnoreCase(tag))
 			databasesInDefaultLocation = MesquiteBoolean.fromTrueFalseString(content);
+		
 
 		preferencesSet = true;
 	}
@@ -96,7 +171,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 		StringUtil.appendXMLTag(buffer, 2, "useIDInDefinition", useIDInDefinition);  
 		StringUtil.appendXMLTag(buffer, 2, "blastExecutableFolderPath", blastExecutableFolderPath);  
 		StringUtil.appendXMLTag(buffer, 2, "blastDatabaseFolderPath", blastDatabaseFolderPath);  
-		StringUtil.appendXMLTag(buffer, 2, "executablesInDefaultLocation", executablesInDefaultLocation);  
+		StringUtil.appendXMLTag(buffer, 2, "useDefaultExecutablePath", useDefaultExecutablePath);  
 		StringUtil.appendXMLTag(buffer, 2, "databasesInDefaultLocation", databasesInDefaultLocation);  
 
 		preferencesSet = true;
@@ -254,6 +329,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 		}
 	}
 
+	Checkbox defaultExecutablePathCheckBox =  null;
+
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -277,8 +354,13 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 		Checkbox useIDInDefinitionBox = dialog.addCheckBox("Use ID in Definition (NCBI-provided databases)", useIDInDefinition);
 		Checkbox localBlastDBHasTaxonomyIDsBox = dialog.addCheckBox("Local BLAST database has NCBI taxonomy IDs", localBlastDBHasTaxonomyIDs);
 		IntegerField numThreadsField = dialog.addIntegerField("Number of processor threads to use:", numThreads,20, 1, Integer.MAX_VALUE);
-		Checkbox executablesInDefaultLocationBox = dialog.addCheckBox("BLAST programs in default location", executablesInDefaultLocation);
-		executablePathField = dialog.addTextField("Path to folder containing BLAST programs", blastExecutableFolderPath, 40);
+		if (getDefaultExecutablePathAllowed()) {
+			defaultExecutablePathCheckBox = dialog.addCheckBox("Use built-in apps for BLAST programs", useDefaultExecutablePath);
+			executablePathField = dialog.addTextField("Path to alternative folder containing BLAST programs", blastExecutableFolderPath, 40);
+		} else {
+			executablePathField = dialog.addTextField("Path to alternative folder containing BLAST programs", blastExecutableFolderPath, 40);
+			useDefaultExecutablePath=false;
+		}
 		Button browseButton = dialog.addAListenedButton("Browse...",null, this);
 		browseButton.setActionCommand("browseExecutable");
 		Checkbox databasesInDefaultLocationBox = dialog.addCheckBox("BLAST databases in default location", databasesInDefaultLocation);
@@ -295,9 +377,10 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 			localBlastDBHasTaxonomyIDs = localBlastDBHasTaxonomyIDsBox.getState();
 			useIDInDefinition = useIDInDefinitionBox.getState();
 			
-			executablesInDefaultLocation = executablesInDefaultLocationBox.getState();
+			if (defaultExecutablePathCheckBox!=null)
+				useDefaultExecutablePath = defaultExecutablePathCheckBox.getState();
 			String tempPath = executablePathField.getText();
-			if (StringUtil.blank(tempPath) && !executablesInDefaultLocation){
+			if (StringUtil.blank(tempPath) && !useDefaultExecutablePath){
 				MesquiteMessage.discreetNotifyUser("The path to BLAST programs must be entered.");
 				return false;
 			}
@@ -374,8 +457,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 		blastArguments+=" " + programOptions + StringUtil.lineEnding();
 		String blastCommand = blastType + blastArguments;
 		String programPath = blastType;
-		if (!executablesInDefaultLocation)
-			programPath = blastExecutableFolderPath + MesquiteFile.fileSeparator +blastType;
+		programPath = getExecutablePath() + MesquiteFile.fileSeparator +blastType;
 		shellScript.append(blastCommand);
 		if (writeCommand)
 			logln("\n...................\nBLAST command: \n" + blastCommand);
@@ -452,8 +534,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  ShellScrip
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 
 		String programPath = "blastdbcmd";
-		if (!executablesInDefaultLocation)
-			programPath = blastExecutableFolderPath + MesquiteFile.fileSeparator +"blastdbcmd";
+		programPath = getExecutablePath() + MesquiteFile.fileSeparator +"blastdbcmd";
 
 		String blastArguments = "  -entry "+queryString + " -outfmt %f";
 		blastArguments+= " -db "+databaseArray[databaseNumber];
