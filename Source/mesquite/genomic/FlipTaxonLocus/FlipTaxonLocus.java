@@ -12,7 +12,7 @@
  GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 
-package mesquite.dmanager.FlipTaxonLocus;
+package mesquite.genomic.FlipTaxonLocus;
 
 import java.io.File;
 
