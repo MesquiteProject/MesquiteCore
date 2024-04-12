@@ -530,7 +530,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				tempDataFile = (MesquiteFile)coord.doCommand("linkFileExp", failureText +" " + StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getProteinImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 			MesquiteThread.setCurrentCommandRecord(oldCR);
 			CharacterData alignedData = getProject().getCharacterMatrix(tempDataFile,  0);
-			alignedData.removeTaxaThatAreEntirelyGaps();
+			alignedData.setName("Temp matrix for alignment");
+			alignedData.removeTaxaThatAreEntirelyGaps();  
 			long[][] aligned = null;
 			Taxa alignedTaxa =  alignedData.getTaxa();
 			Taxa originalTaxa =  data.getTaxa();

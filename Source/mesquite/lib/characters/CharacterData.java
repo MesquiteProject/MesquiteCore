@@ -2183,7 +2183,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 						firstToDelete= it2;
 					} else break;
 				}
-				deleteTaxa(firstToDelete, numToDelete);
+				taxa.deleteTaxa(firstToDelete, numToDelete, true);  //used to be deleteTaxa( , )
 				it=it-numToDelete+1;
 				removedSome=true;
 			}
