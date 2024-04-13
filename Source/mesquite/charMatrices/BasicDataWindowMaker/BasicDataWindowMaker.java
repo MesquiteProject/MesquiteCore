@@ -4736,14 +4736,32 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		}
 		else if (data instanceof MolecularData) {
 			int count = 0;
+			CategoricalData cData = (CategoricalData) data;
 			for (int ic = 0; ic <= column; ic++) {
-				CategoricalData cData = (CategoricalData) data;
 				if (!cData.isInapplicable(ic, row))
 					count++;
 			}
 			if (count > 0) {
 				s += "; Sequence site " + count;
 			}
+			if (data instanceof DNAData) {
+				int[] counts = new int[5];
+				for (int ik =0; ik<5; ik++) counts[ik]= 0;
+				
+				for (int it = 0; it <= cData.getNumTaxa(); it++) {
+					long stateSet = cData.getState(column, it);
+					if (CategoricalState.isCombinable(stateSet) && !CategoricalState.hasMultipleStates(stateSet)) {
+						int state = CategoricalState.getOnlyElement(stateSet);
+						if (state >=0 && state<4)
+							counts[state]++;
+					}
+					else
+						counts[4]++;
+				}
+					s += "; [A: " + counts[0] + ", C: " + counts[1] + ", G: " + counts[2] + ", T: " + counts[3] + ", other: " + counts[4] + "]";
+
+			}
+
 		}
 		CharactersGroup g = data.getCurrentGroup(column);
 		if (g!= null)
