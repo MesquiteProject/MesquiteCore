@@ -33,18 +33,20 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 	String programOptions = "" ;
 	String databaseString = "*" ;
 	int numThreads = 1;
-	boolean hasApp=false;
 	MesquiteTimer timer = new MesquiteTimer();
 	boolean localBlastDBHasTaxonomyIDs = false;
 	boolean useIDInDefinition = false;
 	String[] databaseArray = null;
 	int numDatabases = 0;
 	ExternalProcessManager externalRunner;
-	boolean scriptBased = false;
-	boolean useDefaultExecutablePath = true;  //newApp
-	String blastExecutableFolderPath = "";
+	static final  boolean scriptBased = false;
 	boolean databasesInDefaultLocation = true;
 	String blastDatabaseFolderPath = "";
+	
+	
+	boolean hasApp=false;
+	boolean useDefaultExecutablePath = true;  //newApp
+	String blastExecutableFolderPath = "";
 	AppInformationFile appInfoFile;
 
 
@@ -333,6 +335,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
+		appInfoFile = getAppInfoFile();
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Local BLAST Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Local BLAST Options");

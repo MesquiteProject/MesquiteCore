@@ -20,18 +20,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import mesquite.externalCommunication.AppHarvester.AppHarvester;
+import mesquite.externalCommunication.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.molec.lib.*;
 
 
 /* ======================================================================== */
-public class ConvertFilesToBlastable extends UtilitiesAssistant implements ActionListener,  ShellScriptWatcher, OutputFileProcessor { 
+public class ConvertFilesToBlastable extends UtilitiesAssistant implements ActionListener,  AppUser, ShellScriptWatcher, OutputFileProcessor { 
 	boolean preferencesSet = false;
 	ExternalProcessManager externalRunner;
 	boolean scriptBased = false;
-	boolean executablesInDefaultLocation = true;
-	String blastExecutableFolderPath = "";
 	boolean databasesInDefaultLocation = true;
 	String blastDatabaseFolderPath = "";
 	static String previousDirectory = null;
@@ -40,11 +40,18 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 
 	static String blastProgram = "makeblastdb";
 
+	
+	boolean hasApp=false;
+	boolean useDefaultExecutablePath = true;  //newApp
+	String blastExecutableFolderPath = "";
+	AppInformationFile appInfoFile;
+
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		addMenuItem(null, "Make BLASTable files from FASTA...", makeCommand("makeBLASTable", this));
 		loadPreferences();
+		appInfoFile = getAppInfoFile();
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -60,14 +67,84 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 	public boolean isSubstantive(){
 		return false;
 	}
-	
+	public boolean getHasApp() {
+		return hasApp;
+	}
+	public void setHasApp(boolean hasApp) {
+		this.hasApp = hasApp;
+	}
+	public String getAppOfficialName() {
+		return "blast";
+	}
+	public String getProgramName(){
+		return "BLAST";
+	}
+
+	public boolean getDefaultExecutablePathAllowed() {
+		return getHasApp();
+	}
+	/*.................................................................................................................*/
+	public AppInformationFile getAppInfoFile() {
+		AppInformationFile aif = AppHarvester.getAppInfoFileForProgram(this);
+		setHasApp(aif!=null);
+		return aif;
+	}
+	/*.................................................................................................................*/
+	public String getDefaultExecutablePath(){
+		if (appInfoFile==null) {
+			appInfoFile = getAppInfoFile();
+		}
+		if (appInfoFile!=null) {
+			String fullPath = appInfoFile.getFullPath();
+			Debugg.println(getAppInfoForLog());
+			return fullPath;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	public String getVersionFromAppInfo(){
+		if (!useDefaultExecutablePath || !getDefaultExecutablePathAllowed()) 
+			return null;
+		if (appInfoFile==null) {
+			appInfoFile = getAppInfoFile();
+		}
+		if (appInfoFile!=null) {
+			return appInfoFile.getVersion();
+		}
+		return null;
+	}
+
+	/*.................................................................................................................*/
+	public String getAppInfoForLog(){
+		if (appInfoFile==null) {
+			appInfoFile = getAppInfoFile();
+		}
+		if (appInfoFile!=null) {
+			StringBuffer sb = new StringBuffer(0);
+			sb.append("\nVersion " + appInfoFile.getVersion());
+			return sb.toString();
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	public String getExecutablePath(){
+		if (useDefaultExecutablePath && getDefaultExecutablePathAllowed()) 
+			return getDefaultExecutablePath();
+		else
+			return blastExecutableFolderPath;
+	}
+
+	public boolean useAppInAppFolder() {
+		return useDefaultExecutablePath && getDefaultExecutablePathAllowed();
+	}
+
 	
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		 if ("blastExecutableFolderPath".equalsIgnoreCase(tag))
 			blastExecutableFolderPath = StringUtil.cleanXMLEscapeCharacters(content);
-		else if ("executablesInDefaultLocation".equalsIgnoreCase(tag))
-			executablesInDefaultLocation = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("useDefaultExecutablePath".equalsIgnoreCase(tag))
+			useDefaultExecutablePath = MesquiteBoolean.fromTrueFalseString(content);
 		else  if ("extension".equalsIgnoreCase(tag))
 			extension = StringUtil.cleanXMLEscapeCharacters(content);
 
@@ -77,7 +154,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "blastExecutableFolderPath", blastExecutableFolderPath);  
-		StringUtil.appendXMLTag(buffer, 2, "executablesInDefaultLocation", executablesInDefaultLocation);  
+		StringUtil.appendXMLTag(buffer, 2, "useDefaultExecutablePath", useDefaultExecutablePath);  
 		StringUtil.appendXMLTag(buffer, 2, "extension", extension);  
 
 		preferencesSet = true;
@@ -94,8 +171,11 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		}
 	}
 
+	Checkbox defaultExecutablePathCheckBox;
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
+		appInfoFile = getAppInfoFile();
+
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Make BLASTable Database Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Make BLASTable Database Options");
@@ -107,8 +187,15 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		//public TextArea addTextAreaSmallFont (String initialString, int numRows, int numColumns) {
 
 
-		Checkbox executablesInDefaultLocationBox = dialog.addCheckBox("BLAST programs in default location", executablesInDefaultLocation);
-		executablePathField = dialog.addTextField("Path to folder containing BLAST programs", blastExecutableFolderPath, 40);
+		//Checkbox executablesInDefaultLocationBox = dialog.addCheckBox("BLAST programs in default location", executablesInDefaultLocation);
+	//	executablePathField = dialog.addTextField("Path to folder containing BLAST programs", blastExecutableFolderPath, 40);
+		if (getDefaultExecutablePathAllowed()) {
+			defaultExecutablePathCheckBox = dialog.addCheckBox("Use built-in apps for BLAST programs", useDefaultExecutablePath);
+			executablePathField = dialog.addTextField("Path to alternative folder containing BLAST programs", blastExecutableFolderPath, 40);
+		} else {
+			executablePathField = dialog.addTextField("Path to alternative folder containing BLAST programs", blastExecutableFolderPath, 40);
+			useDefaultExecutablePath=false;
+		}
 		Button browseButton = dialog.addAListenedButton("Browse...",null, this);
 		browseButton.setActionCommand("browseExecutable");
 
@@ -117,9 +204,11 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			
-			executablesInDefaultLocation = executablesInDefaultLocationBox.getState();
+
+			if (defaultExecutablePathCheckBox!=null)
+				useDefaultExecutablePath = defaultExecutablePathCheckBox.getState();
 			String tempPath = executablePathField.getText();
-			if (StringUtil.blank(tempPath) && !executablesInDefaultLocation){
+			if (StringUtil.blank(tempPath) && !useDefaultExecutablePath){
 				MesquiteMessage.discreetNotifyUser("The path to BLAST programs must be entered.");
 				return false;
 			}
@@ -152,8 +241,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 
 		String blastCommand = blastProgram + blastArguments;
 		String programPath = blastProgram;
-		if (!executablesInDefaultLocation)
-			programPath = blastExecutableFolderPath + MesquiteFile.fileSeparator +blastProgram;
+		programPath = getExecutablePath() + MesquiteFile.fileSeparator +blastProgram;
 		
 		logln("\n...................\nBLAST command: \n" + blastCommand);
 
