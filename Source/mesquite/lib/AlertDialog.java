@@ -101,6 +101,13 @@ public class AlertDialog  {
 		return buttonPressed.getValue();
 	}
 
+	public static boolean quietQuery(Object parent, String title, String message, String okString, String cancelString, int whichIsDefault) {
+		if (MesquiteThread.isScripting() || MesquiteThread.isQuietPlease()) {
+			MesquiteTrunk.mesquiteTrunk.logln(message);
+			return true;
+	}
+		return query(parent, title, message, okString, cancelString, whichIsDefault, null);
+	}
 	public static boolean query(Object parent, String title, String message, String okString, String cancelString, int whichIsDefault) {
 		return query(parent, title, message, okString, cancelString, whichIsDefault, null);
 	}

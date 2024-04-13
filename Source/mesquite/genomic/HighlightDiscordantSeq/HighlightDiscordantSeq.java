@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.align.ColorMisaligned; 
+package mesquite.genomic.HighlightDiscordantSeq; 
 
 import java.util.*;
 import java.awt.*;
@@ -22,16 +22,16 @@ import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
-public class ColorMisaligned extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
+public class HighlightDiscordantSeq extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
 	int[][] freqs;
 	double[][] scores;
-	int[][] offsets; 
 	long oldID = -1;
 	long oldStatesVersion = -1;
-	int distance = 2;
-	int widthHalf = 2;
+	int spanRadius = 12;
+	double unusualityCutoff = 0.7;
+	double mostUnusual = 0;
 	long A = CategoricalState.makeSet(0);
 	long C = CategoricalState.makeSet(1);
 	long G = CategoricalState.makeSet(2);
@@ -61,9 +61,6 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 		return null;
 	}
 	/*.................................................................................................................*/
-	public boolean isSubstantive(){
-		return false;
-	}
 	/*.................................................................................................................*/
 	public void viewChanged(){
 	}
@@ -92,7 +89,7 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 		return (notIn*1.0/(tot));
 	}
 
-	//give score of comparison of sequence of states around ic in taxon it to 
+	/*give score of comparison of sequence of states around ic in taxon it to 
 	double score(DNAData dData, int ic, int it, int offset){
 		double s = 0;
 		for (int ic2 = ic-widthHalf; ic2<= ic + widthHalf; ic2++){ //surveying window
@@ -104,7 +101,42 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 		return s;
 
 	}
+	*/
 	boolean notCalculated = true;
+
+	double howUnusual(int[][] freqs, DNAData data, int ic, int it) {
+		if (ic<0 || ic>=data.getNumChars())
+			return 0;
+		int dominantFreq = -1;
+		int thisFreq = -1;
+		int f = freqs[ic][0];
+		if (f>dominantFreq)
+			dominantFreq = f;
+		if ((data.getState(ic, it) & A) != 0L && f> thisFreq) 
+			thisFreq = f;
+		f = freqs[ic][1];
+		if (f>dominantFreq)
+			dominantFreq = f;
+		if ((data.getState(ic, it) & C) != 0L && f> thisFreq) 
+			thisFreq = f;
+		f = freqs[ic][2];
+		if (f>dominantFreq)
+			dominantFreq = f;
+		if ((data.getState(ic, it) & G) != 0L && f> thisFreq) 
+			thisFreq = f;
+		f = freqs[ic][3];
+		if (f>dominantFreq)
+			dominantFreq = f;
+		if ((data.getState(ic, it) & T) != 0L && f> thisFreq) 
+			thisFreq = f;
+		if (thisFreq != 0)
+			return 1.0*(dominantFreq)/thisFreq;
+		return 0;
+	}
+
+
+
+
 	public void calculateNums(){
 		notCalculated = true;
 		if (!isActive())
@@ -116,11 +148,10 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 		if (freqs == null || freqs.length!=dData.getNumChars()){
 			freqs = new int[dData.getNumChars()][4];
 		}
-		if (offsets == null || offsets.length != dData.getNumChars() || offsets[0].length != dData.getNumTaxa()){
-			offsets = new int[dData.getNumChars()][dData.getNumTaxa()];
+		if (scores == null || scores.length != dData.getNumChars() || scores[0].length != dData.getNumTaxa()){
 			scores = new double[dData.getNumChars()][dData.getNumTaxa()];
 		}
-
+		 mostUnusual = 0;
 		//calculating frequencies for each character
 		for (int ic2 = 0; ic2 < dData.getNumChars(); ic2++)
 			for (int it2 = 0; it2 < dData.getNumTaxa(); it2++){
@@ -134,26 +165,26 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 					freqs[ic2][3]++;
 			}
 		//filling score and offsets matrices
+		//Score is average over blockRadius bases left and right (separated by not more than gapMax gaps) of how unusual is base in this taxon
+		//How unusual is base is the number of taxa with dominant state opposing it. If dominant state, nothing.
 		for (int ic = 0; ic<dData.getNumChars(); ic++){
 			for (int it = 0; it< dData.getNumTaxa(); it++){
-				double s = score(dData, ic, it, 0);
-				double best = s;
-				int o = 0;
-				for (int offset= -distance; offset<=distance; offset++){
-					if (ic+offset>=0 && ic+offset<dData.getNumChars()){
-						double sD = score(dData, ic, it,  offset);
-						if (sD < best) {
-							best = sD;
-							o = offset;
-						}
-					}
+				double spanUnusual = 0;
+				int spanAvailable = 0;
+				for (int offset= -spanRadius; offset<=spanRadius; offset++){
+					if (ic+offset>=0 && ic+offset<dData.getNumChars())
+						spanAvailable++;
+					double sD = howUnusual(freqs, dData,  ic+offset, it);
+					if (sD >=0)
+						spanUnusual += sD;
 				}
-				offsets[ic][it] = o;
-				scores[ic][it] = 0;
-				if (s != 0)
-					scores[ic][it] =  widthHalf+widthHalf - (best/s);
+				if (spanAvailable>0)
+				scores[ic][it] = spanUnusual * (spanRadius*2+1)/spanAvailable;
+				if (spanUnusual> mostUnusual)
+					mostUnusual = spanUnusual;
 			}
 		}
+		Debugg.println("mostUnusual " + mostUnusual);
 		notCalculated = false;
 		table.repaintAll();
 	}
@@ -165,7 +196,7 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Highlight Apparently Slightly Misaligned";
+		return "Highlight Unusual Subsequences";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -176,7 +207,7 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Colors aligned sequences to emphasize sections that seem slightly misaligned.";
+		return "Colors aligned sequences to emphasize sections that seem discordant with those of the other taxa.";
 	}
 	/*.................................................................................................................*/
 	ColorRecord[] legend;
@@ -193,14 +224,14 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 			legend[5] = new ColorRecord(ColorDistribution.straw, "Inapplicable");
 		}
 		return legend;
-		*/
+		 */
 	}
 	/*.................................................................................................................*/
 	public Color getCellColor(int ic, int it){
 		if (ic<0 || it<0 || notCalculated)
 			return null;
 
-		if (data == null || scores == null || offsets == null)
+		if (data == null || scores == null)
 			return null;
 		else if (data.isInapplicable(ic, it)){
 			return ColorDistribution.straw;
@@ -210,7 +241,7 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 				return Color.white;
 			DNAData	dData = (DNAData)data;
 			long state = dData.getState(ic, it);
-			if (offsets[ic][it] == 0) {
+			if (scores[ic][it] < mostUnusual*unusualityCutoff) {
 				if (A == (state & CategoricalState.statesBitsMask))
 					return DNAData.getDNAColorOfStatePale(0);
 				else if (C == (state & CategoricalState.statesBitsMask))
@@ -244,29 +275,21 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 				return MesquiteColorTable.getBlueScale(scores[ic][it], 0, 5, false);
 			 */
 		}
-//		return Color.black;
+		//		return Color.black;
 	}
 	/*.................................................................................................................*/
 	public String getCellString(int ic, int it){
 		if (ic<0 || it<0 || notCalculated)
 			return null;
 
-		if (data == null || scores == null || offsets == null)
+		if (data == null || scores == null)
 			return null;
 		else if (data.isInapplicable(ic, it)){
 			return "Gap";
 		}
 		else {
-			if (offsets[ic][it] == 0)
-				return "No clear misalignment";
-			if (offsets[ic][it] == 1)
-				return "Better shifted to right one site?";
-			if (offsets[ic][it] >= 2)
-				return "Better shifted to right two sites?";
-			if (offsets[ic][it] == -1)
-				return "Better shifted to left one site?";
-			if (offsets[ic][it] <= -2)
-				return "Better shifted to left two sites?";
+			if (scores[ic][it] < mostUnusual/2.0)
+				return "In unusal subsequence";
 		}
 		return null;
 	}
@@ -282,8 +305,12 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 	}
 
 	/*.................................................................................................................*/
+	public boolean isSubstantive() {
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return false;
+		return true;
 	}
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyDNAData();

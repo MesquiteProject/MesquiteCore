@@ -7,38 +7,40 @@
 	<key>AMStayOpen</key>
 	<false/>
 	<key>BuildMachineOSBuild</key>
-	<string>17A405001</string>
+	<string>22A380017</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>*</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>Automator workflow file</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>****</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-		</dict>
-	</array>
+<key>CFBundleDocumentTypes</key>
+<array>
+	<dict>
+		<key>CFBundleTypeExtensions</key>
+		<array>
+			<string>nex</string>
+		</array>
+		<key>CFBundleTypeName</key>
+		<string>Mesquite NEXUS file</string>
+		<key>CFBundleTypeOSTypes</key>
+		<array>
+			<string>TEXT</string>
+		</array>
+		<key>CFBundleTypeRole</key>
+		<string>Editor</string>
+	</dict>
+</array>
 	<key>CFBundleExecutable</key>
-	<string>Application Stub</string>
-	<key>CFBundleIconFile</key>
-	<string>Mesquite.icns</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.apple.automator.Mesquite_Starter_Flex-01AutomatorOrig-2021superFlex</string>
+	<string>Automator Application Stub</string>
+<key>CFBundleIconFile</key>
+<string>Mesquite.icns</string>
+<key>CFBundleIdentifier</key>
+<string>start.Mesquite</string>
+<key>CFBundleDisplayName</key>
+<string>Mesquite</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Mesquite_Starter_Flex-01AutomatorOrig-2021superFlex</string>
+	<string>Mesquite_Starter_Flex-01AutomatorOrig-Universal-2024</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -52,25 +54,25 @@
 	<key>CFBundleURLTypes</key>
 	<array/>
 	<key>CFBundleVersion</key>
-	<string>444.42</string>
+	<string>521.1</string>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
-	<string>10P70r</string>
+	<string>14E6097d</string>
 	<key>DTPlatformName</key>
 	<string>macosx</string>
 	<key>DTPlatformVersion</key>
-	<string>10.14</string>
+	<string>13.5</string>
 	<key>DTSDKBuild</key>
-	<string>18F82</string>
+	<string>22G62</string>
 	<key>DTSDKName</key>
-	<string>macosx10.14internal</string>
+	<string>macosx13.5.internal</string>
 	<key>DTXcode</key>
-	<string>1020</string>
+	<string>1430</string>
 	<key>DTXcodeBuild</key>
-	<string>10P70r</string>
+	<string>14E6097d</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.6</string>
+	<string>10.9</string>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>

@@ -16,6 +16,7 @@ package mesquite.charMatrices.AlterMatrixAsUtility;
 
 import mesquite.lists.lib.*;
 
+import java.util.Vector;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -60,6 +61,8 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 		getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
+		Vector v = pauseAllPausables();
+		
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (test.isCompatible(data, getProject(), this)){
@@ -75,6 +78,7 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 				firstTime = false;
 			}
 		}
+		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);

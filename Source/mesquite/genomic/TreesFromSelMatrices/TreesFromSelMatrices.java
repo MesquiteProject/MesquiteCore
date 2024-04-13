@@ -85,13 +85,20 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();
 		int count = 0;
-		for (int im = 0; im < datas.size(); im++){
+		boolean stop = false;
+		for (int im = 0; im < datas.size() && !stop; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (compatibleMatrix(data)) {
 				currentMatrix = data.getMCharactersDistribution();
 				int lastNumTrees = trees.size();
 				logln("Inferring trees from matrix " +data.getName()); 
 				inferenceTask.fillTreeBlock(trees);
+				if (trees.size() == lastNumTrees) {
+					if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
+						stop = true;
+					}
+					MesquiteThread.setQuietPlease(true);
+				}
 				boolean mult = false;
 				if (trees.size()-lastNumTrees>1)
 					mult = true;
@@ -108,10 +115,13 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 			else
 				logln("Tree not inferred from matrix " +data.getName() + " because it is of a data type incompatible with the tree inference method"); 
 		}
-		trees.setName("Trees from selected matrices (" + inferenceTask.getName() + ")");
+		MesquiteThread.setQuietPlease(false);
+		trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
+		String annot = trees.getAnnotation();
+		trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
 		trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
 		logln("Total matrices analyzed: " + count);
-
+		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		resetAllMenuBars();

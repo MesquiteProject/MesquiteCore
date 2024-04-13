@@ -28,6 +28,7 @@ public class NCBLOCKSSelector extends CharacterSelector {
 	String xmlPrefsString = null;
 	double proportionIncomp = 0.4;
 	int spanSize = 12;
+	boolean treatGapAsState = false;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -62,7 +63,6 @@ public class NCBLOCKSSelector extends CharacterSelector {
 	public boolean queryOptions(MesquiteModule mb, String action) {
 		if (!mb.okToInteractWithUser(mb.CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
-		Debugg.println("QUERY");
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(mb.containerOfModule(),  "Select using NCBLOCKS Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
@@ -93,27 +93,31 @@ public class NCBLOCKSSelector extends CharacterSelector {
 	boolean[] siteStatus;
 	boolean[] toSelect;
 	int NUMSTATES = 4;
-	
-	
+
+
 	int[][] counts;
+	int getState(long stateSet) {
+		if (treatGapAsState && CategoricalState.isUnassigned(stateSet))
+			return NUMSTATES-1;
+		if (CategoricalState.isCombinable(stateSet) && !CategoricalState.hasMultipleStates(stateSet))
+			return CategoricalState.getOnlyElement(stateSet);
+		return -1;
+	}
+
 	boolean nextIsIncompatible(CategoricalData data, int ic) {
 		if (ic+1>=data.getNumChars() || ic <0)
 			return false;
-		NUMSTATES = data.getMaxState()+1;
+		NUMSTATES = data.getMaxState()+2; //one extra for gaps as state
 		if (counts == null || counts.length != NUMSTATES)
 			counts = new int[NUMSTATES][NUMSTATES];
 		for (int i =0; i<NUMSTATES; i++) for (int k =0; k<NUMSTATES;k++) counts[i][k]= 0;
 
 		//first, harvest all patterns between the two columns
 		for (int it = 0; it <= data.getNumTaxa(); it++) {
-			long s1 = data.getState(ic, it);
-			long s2 = data.getState(ic+1, it);
-			if (CategoricalState.isCombinable(s1) && !CategoricalState.hasMultipleStates(s1) && CategoricalState.isCombinable(s2) && !CategoricalState.hasMultipleStates(s2)) {
-				int state1 = CategoricalState.getOnlyElement(s1);
-				int state2 = CategoricalState.getOnlyElement(s2);
-				if (state1 >=0 && state1<NUMSTATES && state2 >=0 && state2<NUMSTATES)
-					counts[state1][state2]++;
-			}
+			int state1 = getState(data.getState(ic, it));
+			int state2 = getState(data.getState(ic+1, it));
+			if (state1 >=0 && state1<NUMSTATES && state2 >=0 && state2<NUMSTATES)
+				counts[state1][state2]++;
 		}
 		//Now, for all pairs of states, see if all 4 patterns are present (00, 01, 10, 11)
 		for (int i =0; i<NUMSTATES; i++) 

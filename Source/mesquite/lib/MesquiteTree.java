@@ -3134,8 +3134,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						inProgressAddingTaxa = false;
 					}
 					
-					if (dWarn) { //modified 13 Nov 01
-						if (!AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Unrecognized taxon name", "Unrecognized name (\"" + c + "\") of terminal taxon in tree", "Continue", "Don't warn again", 0)) {
+					if (dWarn) { 
+						if (!AlertDialog.quietQuery(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Unrecognized taxon name", "Unrecognized name (\"" + c + "\") of terminal taxon in tree", "Continue", "Don't warn again", 0)) {
 							dWarn = false;
 						}
 						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " [permit t0 " + permitT0Names + "] (search for \"ERROR>\" in output in log file) " + path);
