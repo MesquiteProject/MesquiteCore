@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.DeleteCharsByGBLOCKS;
+package mesquite.molec.DeleteCharsByNCBLOCKS;
 /*~~  */
 
 
@@ -20,10 +20,10 @@ import mesquite.lib.duties.CharacterSelector;
 import mesquite.molec.lib.DeleteCharsBySelector;
 
 /* ======================================================================== */
-public class DeleteCharsByGBLOCKS extends DeleteCharsBySelector  {
+public class DeleteCharsByNCBLOCKS extends DeleteCharsBySelector {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		selectorTask = (CharacterSelector)hireNamedEmployee(CharacterSelector.class, "#GBLOCKSSelector");
+		selectorTask = (CharacterSelector)hireNamedEmployee(CharacterSelector.class, "#NCBLOCKSSelector");
 		if (selectorTask == null)
 			return false;
 		return true;
@@ -32,7 +32,7 @@ public class DeleteCharsByGBLOCKS extends DeleteCharsBySelector  {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return false;
+		return true;
 	}
 
 	/*.................................................................................................................*/
@@ -41,19 +41,19 @@ public class DeleteCharsByGBLOCKS extends DeleteCharsBySelector  {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Delete Sites by GBLOCKS";
+		return "Delete Sites by NCBLOCKS";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Deletes characters according to GBLOCKS criteria." ;
+		return "Deletes characters according to NCBLOCKS criteria." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 380;  
+		return NEXTRELEASE;  
 	}
 
 }
