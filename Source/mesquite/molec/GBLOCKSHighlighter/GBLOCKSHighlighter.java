@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.HighlightDiscordantSeq; 
+package mesquite.molec.GBLOCKSHighlighter; 
 
 import java.util.*;
 import java.awt.*;
@@ -19,35 +19,65 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.molec.lib.GBLOCKSCalculator;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
-public class HighlightDiscordantSeq extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
+public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
-	int[][] freqs;
-	double[][] scores;
-	long oldID = -1;
-	long oldStatesVersion = -1;
-	int spanRadius = 12;
-	double unusualityCutoff = 0.7;
-	double mostUnusual = 0;
+	MesquiteString xmlPrefs= new MesquiteString();
+	String xmlPrefsString = null;
+	GBLOCKSCalculator gblocksCalculator;
 	long A = CategoricalState.makeSet(0);
 	long C = CategoricalState.makeSet(1);
 	long G = CategoricalState.makeSet(2);
 	long T = CategoricalState.makeSet(3);
+	static boolean askedOnceThisRun = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
+		loadPreferences(xmlPrefs);
+		xmlPrefsString = xmlPrefs.getValue();
+		gblocksCalculator = new GBLOCKSCalculator(this, xmlPrefsString);
+		Debugg.printStackTrace("Remember options");
 		return true;
 	}
+	/*.................................................................................................................*/
+	boolean optionsSet = false;
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		if (gblocksCalculator!=null){
+			String s = gblocksCalculator.preparePreferencesForXML();
+			if (StringUtil.notEmpty(s))
+				buffer.append(s);
+		}
+		return buffer.toString();
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Asks to set GBLOCKS options", "[]", commandName, "setGBOptions")) {
+			if (gblocksCalculator.queryOptions(this, "Select")) {
+				askedOnceThisRun = true;
+				optionsSet = true;
+				calculateNums();
+			}
+		}
+
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+	MesquiteMenuItemSpec mmis;
 	public boolean setActiveColors(boolean active){
 		boolean wasActive = isActive();
 		setActive(active);
 		if (isActive() && !wasActive){
+			mmis = addMenuItem("GBLOCKS options...", makeCommand("setGBOptions", this));
 			calculateNums();
 
 		}
 		else {
+			deleteMenuItem(mmis);
 		}
 		resetContainingMenuBar();
 		return true; //TODO: check success
@@ -73,70 +103,9 @@ public class HighlightDiscordantSeq extends DataWindowAssistantID implements Cel
 		data.addListener(this);
 		calculateNums();
 	}
-	double compareStateToSite(long state, int ic){
-		int notIn = 0;
-		if ((A & state) == 0L)  //state doesn't include A; therefore column's freq of A to cost
-			notIn += freqs[ic][0];
-		if ((C & state) == 0L) //likewise for C
-			notIn += freqs[ic][1];
-		if ((G & state) == 0L)
-			notIn += freqs[ic][2];
-		if ((T & state) == 0L)
-			notIn += freqs[ic][3];
-		int tot = freqs[ic][0] + freqs[ic][1] + freqs[ic][2] + freqs[ic][3];
-		if (tot == 0)
-			return 0;
-		return (notIn*1.0/(tot));
-	}
 
-	/*give score of comparison of sequence of states around ic in taxon it to 
-	double score(DNAData dData, int ic, int it, int offset){
-		double s = 0;
-		for (int ic2 = ic-widthHalf; ic2<= ic + widthHalf; ic2++){ //surveying window
-			if (ic2>=0 && ic2<dData.getNumChars() && ic2+offset>=0 && ic2+offset<dData.getNumChars()){
-				long state = dData.getState(ic2, it);
-				s += compareStateToSite(state, ic2+offset);
-			}
-		}
-		return s;
-
-	}
-	*/
 	boolean notCalculated = true;
-
-	double howUnusual(int[][] freqs, DNAData data, int ic, int it) {
-		if (ic<0 || ic>=data.getNumChars())
-			return 0;
-		int dominantFreq = -1;
-		int thisFreq = -1;
-		int f = freqs[ic][0];
-		if (f>dominantFreq)
-			dominantFreq = f;
-		if ((data.getState(ic, it) & A) != 0L && f> thisFreq) 
-			thisFreq = f;
-		f = freqs[ic][1];
-		if (f>dominantFreq)
-			dominantFreq = f;
-		if ((data.getState(ic, it) & C) != 0L && f> thisFreq) 
-			thisFreq = f;
-		f = freqs[ic][2];
-		if (f>dominantFreq)
-			dominantFreq = f;
-		if ((data.getState(ic, it) & G) != 0L && f> thisFreq) 
-			thisFreq = f;
-		f = freqs[ic][3];
-		if (f>dominantFreq)
-			dominantFreq = f;
-		if ((data.getState(ic, it) & T) != 0L && f> thisFreq) 
-			thisFreq = f;
-		if (thisFreq != 0)
-			return 1.0*(dominantFreq)/thisFreq;
-		return 0;
-	}
-
-
-
-
+	boolean[] setToSelect = null;
 	public void calculateNums(){
 		notCalculated = true;
 		if (!isActive())
@@ -144,47 +113,17 @@ public class HighlightDiscordantSeq extends DataWindowAssistantID implements Cel
 		if (data == null || !(data instanceof DNAData)) {
 			return;
 		}
-		DNAData dData = (DNAData)data;
-		if (freqs == null || freqs.length!=dData.getNumChars()){
-			freqs = new int[dData.getNumChars()][4];
+		if (!optionsSet && !askedOnceThisRun) {
+			if (!gblocksCalculator.queryOptions(this, "Select"))
+			return;
+			else
+				askedOnceThisRun = true;
 		}
-		if (scores == null || scores.length != dData.getNumChars() || scores[0].length != dData.getNumTaxa()){
-			scores = new double[dData.getNumChars()][dData.getNumTaxa()];
-		}
-		 mostUnusual = 0;
-		//calculating frequencies for each character
-		for (int ic2 = 0; ic2 < dData.getNumChars(); ic2++)
-			for (int it2 = 0; it2 < dData.getNumTaxa(); it2++){
-				if ((A & dData.getState(ic2, it2)) != 0L)
-					freqs[ic2][0]++;
-				if ((C & dData.getState(ic2, it2)) != 0L)
-					freqs[ic2][1]++;
-				if ((G & dData.getState(ic2, it2)) != 0L)
-					freqs[ic2][2]++;
-				if ((T & dData.getState(ic2, it2)) != 0L)
-					freqs[ic2][3]++;
-			}
-		//filling score and offsets matrices
-		//Score is average over blockRadius bases left and right (separated by not more than gapMax gaps) of how unusual is base in this taxon
-		//How unusual is base is the number of taxa with dominant state opposing it. If dominant state, nothing.
-		for (int ic = 0; ic<dData.getNumChars(); ic++){
-			for (int it = 0; it< dData.getNumTaxa(); it++){
-				double spanUnusual = 0;
-				int spanAvailable = 0;
-				for (int offset= -spanRadius; offset<=spanRadius; offset++){
-					if (ic+offset>=0 && ic+offset<dData.getNumChars())
-						spanAvailable++;
-					double sD = howUnusual(freqs, dData,  ic+offset, it);
-					if (sD >=0)
-						spanUnusual += sD;
-				}
-				if (spanAvailable>0)
-				scores[ic][it] = spanUnusual * (spanRadius*2+1)/spanAvailable;
-				if (spanUnusual> mostUnusual)
-					mostUnusual = spanUnusual;
-			}
-		}
-		Debugg.println("mostUnusual " + mostUnusual);
+		optionsSet = true;
+		setToSelect = new boolean[data.getNumChars()];
+		if (!gblocksCalculator.markCharacters(data, this, setToSelect, null))
+			return;
+
 		notCalculated = false;
 		table.repaintAll();
 	}
@@ -196,7 +135,7 @@ public class HighlightDiscordantSeq extends DataWindowAssistantID implements Cel
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Highlight Unusual Subsequences";
+		return "Highlight by GBLOCKS Acceptance";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -231,7 +170,7 @@ public class HighlightDiscordantSeq extends DataWindowAssistantID implements Cel
 		if (ic<0 || it<0 || notCalculated)
 			return null;
 
-		if (data == null || scores == null)
+		if (data == null || setToSelect == null)
 			return null;
 		else if (data.isInapplicable(ic, it)){
 			return ColorDistribution.straw;
@@ -241,7 +180,7 @@ public class HighlightDiscordantSeq extends DataWindowAssistantID implements Cel
 				return Color.white;
 			DNAData	dData = (DNAData)data;
 			long state = dData.getState(ic, it);
-			if (scores[ic][it] < mostUnusual*unusualityCutoff) {
+			if (ic < setToSelect.length && setToSelect[ic]) {
 				if (A == (state & CategoricalState.statesBitsMask))
 					return DNAData.getDNAColorOfStatePale(0);
 				else if (C == (state & CategoricalState.statesBitsMask))
@@ -282,15 +221,6 @@ public class HighlightDiscordantSeq extends DataWindowAssistantID implements Cel
 		if (ic<0 || it<0 || notCalculated)
 			return null;
 
-		if (data == null || scores == null)
-			return null;
-		else if (data.isInapplicable(ic, it)){
-			return "Gap";
-		}
-		else {
-			if (scores[ic][it] < mostUnusual/2.0)
-				return "In unusal subsequence";
-		}
 		return null;
 	}
 	/** passes which object changed, along with optional code number (type of change) and integers (e.g. which character)*/

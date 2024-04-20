@@ -85,6 +85,8 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();
 		int count = 0;
+		int numFailed =0;
+		String stringFailed = "";
 		boolean stop = false;
 		for (int im = 0; im < datas.size() && !stop; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
@@ -94,6 +96,8 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 				logln("Inferring trees from matrix " +data.getName()); 
 				inferenceTask.fillTreeBlock(trees);
 				if (trees.size() == lastNumTrees) {
+					numFailed++;
+					stringFailed += "\t" + data.getName() + "\n";
 					if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
 						stop = true;
 					}
@@ -121,6 +125,11 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 		trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
 		trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
 		logln("Total matrices analyzed: " + count);
+		if (numFailed > 0) {
+			discreetAlert("Trees were not obtained for " + numFailed + " of the matrices. See log for details");
+			logln("Trees were not obtained for these matrices:");
+			logln(stringFailed);
+		}
 		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
