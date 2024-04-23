@@ -113,7 +113,7 @@ public class MesquiteTextWindow extends MesquiteWindow implements FocusListener 
 		}
 	}
 	public void focusLost(FocusEvent e){
-
+		Debugg.printStackTrace();
 	}
 	/*.................................................................................................................*/
 	/** to be overridden by MesquiteWindows for a text version of their contents*/

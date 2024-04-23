@@ -36,19 +36,23 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	static final double defaultGapThreshold = 0.0;
 	static final boolean defaultChooseAmbiguousSites = true;
 	static final boolean defaultCountWithinApplicable = false;
+	static final double defaultTermGapsPropForgiven = 0.0;
+	static final boolean defaultIgnoreTaxaWithoutSequence = true;
+	static final double defaultMaxTermAbsProportion = 0.5;
 
 	double IS = defaultIS;   // fraction of identical residues that is upper boundary for non-conserved sequences
-	int ISint=0;  // integral version of above
 	double FS = defaultFS;  // fraction of identical residues that is upper boundary for conserved sequences
-	int FSint = 0;  //integeral version of above
 	int CP=defaultCP;  //block size limit for non-conserved blocks
 	int BL=defaultBL;  //  small region block size limit 
 	double gapThreshold = defaultGapThreshold;   // the fraction of gaps allowed at a site
-	int gapThresholdInt = 0;
+
 	boolean removeAllGaps = true;
 	boolean chooseAmbiguousSites = defaultChooseAmbiguousSites;
 	boolean countWithinApplicable = defaultCountWithinApplicable;   // count fractions of identical residues only within those taxa without gaps at a site
-	boolean[] hasApplicable=null;
+	double termGapsPropForgiven = defaultTermGapsPropForgiven;
+	double maxTermAbsencesProportion = defaultMaxTermAbsProportion;
+	boolean ignoreTaxaWithoutSequence = defaultIgnoreTaxaWithoutSequence;
+	boolean[] taxonHasSequence=null;
 
 	//boolean preferencesSet = false;
 
@@ -80,6 +84,10 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 			chooseAmbiguousSites = MesquiteBoolean.fromTrueFalseString(content);
 		if ("countWithinApplicable".equalsIgnoreCase(tag))
 			countWithinApplicable = MesquiteBoolean.fromTrueFalseString(content);
+		if ("termGapsPropForgiven".equalsIgnoreCase(tag))
+			termGapsPropForgiven = MesquiteDouble.fromString(content);
+		//	if ("ignoreTaxaWithoutSequence".equalsIgnoreCase(tag))
+		//		ignoreTaxaWithoutSequence = MesquiteBoolean.fromTrueFalseString(content);
 	}
 
 	/*.................................................................................................................*/
@@ -92,10 +100,12 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		StringUtil.appendXMLTag(buffer, 2, "gapThreshold", gapThreshold);  
 		StringUtil.appendXMLTag(buffer, 2, "chooseAmbiguousSites", chooseAmbiguousSites);  
 		StringUtil.appendXMLTag(buffer, 2, "countWithinApplicable", countWithinApplicable);  
+		StringUtil.appendXMLTag(buffer, 2, "termGapsPropForgiven", termGapsPropForgiven);  
+		//	StringUtil.appendXMLTag(buffer, 2, "ignoreTaxaWithoutSequence", ignoreTaxaWithoutSequence);  
 
 		return buffer.toString();
 	}
-	
+
 	public boolean getChooseAmbiguousSites() {
 		return chooseAmbiguousSites;
 	}
@@ -104,7 +114,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		this.chooseAmbiguousSites = chooseAmbiguousSites;
 	}
 
-	
+
 	Button useDefaultsButton = null;
 	DoubleField ISfield = null;
 	DoubleField FSfield=null;
@@ -113,6 +123,8 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	IntegerField BLfield=null;
 	DoubleField gapThresholdField=null;
 	Checkbox chooseAmbiguousSitesCheckbox=null;
+	DoubleField termGapsPropForgivenField=null;
+	//Checkbox ignoreTaxaWithoutSequenceCheckbox=null;
 	/*.................................................................................................................*/
 	public String getActionToUse(String action) {
 		String actionToUse = "Choose";
@@ -160,19 +172,22 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 
 	/*.................................................................................................................*/
 	public void addToQueryOptions(ExtensibleDialog dialog, String action) {
-		ISfield = dialog.addDoubleField("Minimum fraction of identical residues for conserved positions", IS, 4);
-		FSfield = dialog.addDoubleField("Minimum fraction of identical residues for highly-conserved positions", FS, 4);
-		countWithinApplicableCheckbox = dialog.addCheckBox("count fraction only within taxa with non-gaps at that position", countWithinApplicable);
+		ISfield = dialog.addDoubleField("Minimum fraction of identical residues for conserved positions (b1)", IS, 4);
+		FSfield = dialog.addDoubleField("Minimum fraction of identical residues for highly-conserved positions (b2)", FS, 4);
+		CPfield = dialog.addIntegerField("Maximum length of non-conserved blocks (b3)", CP, 4);
+		BLfield = dialog.addIntegerField("Minimum length of a block (b4)", BL, 4);
 		dialog.addHorizontalLine(1);
-		CPfield = dialog.addIntegerField("Maximum length of non-conserved blocks", CP, 4);
-		BLfield = dialog.addIntegerField("Minimum length of a block", BL, 4);
+		dialog.addLabel("Mesquite-specific extensions:");
+		countWithinApplicableCheckbox = dialog.addCheckBox("Count fractions only within taxa with non-gaps at that position", countWithinApplicable);
 
 		gapThresholdField = dialog.addDoubleField("Fraction of gaps allowed in a character", gapThreshold, 4);
-		
+		termGapsPropForgivenField = dialog.addDoubleField("Prop. terminal gaps forgiven", termGapsPropForgiven, 4);
+		//ignoreTaxaWithoutSequenceCheckbox = dialog.addCheckBox("Ignore taxa without any sequence*", ignoreTaxaWithoutSequence);
 		dialog.addHorizontalLine(1);
 		String actionToUse = getActionToUse(action);
 
 		chooseAmbiguousSitesCheckbox = dialog.addCheckBox(actionToUse.toLowerCase()+ " sites in ambiguously aligned regions", chooseAmbiguousSites);
+		dialog.addHorizontalLine(1);
 	}
 	/*.................................................................................................................*/
 	public void processQueryOptions(ExtensibleDialog dialog) {
@@ -183,6 +198,8 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		gapThreshold = gapThresholdField.getValue();
 		countWithinApplicable = countWithinApplicableCheckbox.getState();
 		chooseAmbiguousSites = chooseAmbiguousSitesCheckbox.getState();
+		termGapsPropForgiven = termGapsPropForgivenField.getValue();
+		//ignoreTaxaWithoutSequence = ignoreTaxaWithoutSequenceCheckbox.getState();
 	}
 	/*.................................................................................................................*/
 	public void setToDefaults() {
@@ -193,6 +210,8 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		gapThresholdField.setValue(defaultGapThreshold);
 		countWithinApplicableCheckbox.setState(defaultCountWithinApplicable);
 		chooseAmbiguousSitesCheckbox.setState(defaultChooseAmbiguousSites);
+		termGapsPropForgivenField.setValue(defaultTermGapsPropForgiven);
+		//ignoreTaxaWithoutSequenceCheckbox.setState(defaultIgnoreTaxaWithoutSequence);
 	}
 
 
@@ -226,7 +245,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	int numNonGaps (CategoricalData data, int ic) {
 		int count=0;
 		for (int it = 0; it<data.getNumTaxa(); it++) {   // calculate proportions
-			if (!data.isInapplicable(ic, it)) { 
+			if (!data.isInapplicable(ic, it)) { // doesn't need to consider terminal gaps etc. since if the base is there, it's there!
 				count++;
 			}
 		}
@@ -234,21 +253,77 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	}
 
 	/*.................................................................................................................*/
-	boolean tooManyGaps (CategoricalData data, int ic) {
-		if (hasApplicable==null)
+	int[] firstBase, lastBase, numSequencesAtSite;
+	int numTaxaWithSequence;
+	/*.................................................................................................................*/
+	int getNumTaxaCountableAtSite(int ic) {
+		if (ic<0 || ic>numSequencesAtSite.length)
+			return 0;
+		return numSequencesAtSite[ic];
+	}
+	/*.................................................................................................................*/
+	int getNumTaxaInTerminalGapsAtSite(int ic) {
+		if (ic<0 || ic>numSequencesAtSite.length)
+			return 0;
+		return numSequencesAtSite[ic];
+	}
+	boolean isInTermGaps(int ic, int it) {
+		if (it<0 || it>firstBase.length)
 			return false;
+		if (ic<firstBase[it] || ic>lastBase[it])
+			return true;
+		return false;
+	}
+
+	//A gap is forgiven if it is a terminal gap, and the number of terminal gaps at this site is below the proportion threshold
+	boolean isGapForgiven(int ic, int it) {
+		if (!taxonHasSequence[it])
+			return true;
+		if (termGapsPropForgiven==0)
+			return false;
+		if (!isInTermGaps(ic, it))
+			return false;
+		// count number of sequences within terminal gap region
+		int countTG =0;
+		int countTotal = 0;
+		for (int it2 = 0; it2<taxonHasSequence.length; it2++) {
+			if (taxonHasSequence[it2]) {
+				countTotal++;
+				if (isInTermGaps(ic, it2))
+					countTG++;
+			}
+		}
+		double propInTermGaps = 1.0*countTG/countTotal;
+		return propInTermGaps <= termGapsPropForgiven;
+	}
+	/*.................................................................................................................*/
+	boolean tooManyGaps (CategoricalData data, int ic) {
+		if (taxonHasSequence==null)
+			return false;
+		if (false && maxTermAbsencesProportion<1.0) {
+			int numTaxaInSequenceAtSite = 0;
+			for (int it = 0; it<data.getNumTaxa(); it++) {
+				if (!isInTermGaps(ic, it) && taxonHasSequence[it])
+					numTaxaInSequenceAtSite++;
+			}
+
+			if (1-(1.0*numTaxaInSequenceAtSite/numTaxaWithSequence) > maxTermAbsencesProportion)
+				return true;
+
+		}
+
 		if (removeAllGaps) {  // if removeAllGaps is true, having a single gap is too many
 			for (int it = 0; it<data.getNumTaxa(); it++) {
-				if (data.isInapplicable(ic, it))
+				if (data.isInapplicable(ic, it) && !isGapForgiven(ic, it)) //any unpermitted gap is too many //$$$ previous version didn't permit taxa to be sequenceless
 					return true;
 			}
 		} else {
 			int count = 0;
 			for (int it = 0; it<data.getNumTaxa(); it++) {
-				if (data.isInapplicable(ic, it) && it<hasApplicable.length && hasApplicable[it])
+				if ((data.isInapplicable(ic, it) && !isGapForgiven(ic, it)) && taxonHasSequence[it])
 					count++;
 			}
-			if (count >gapThresholdInt)
+			if (count >(int)(gapThreshold*getNumTaxaCountableAtSite(ic)))  //more than permitted
 				return true;
 		}
 		return false;
@@ -262,7 +337,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	static final int HIGHLYCONSERVED = 3;
 
 	/*.................................................................................................................*/
-	void setCharacterStatus(CategoricalData data, int[] status){
+	void setCharacterStatus(CategoricalData data, int[] status, int[] firstBase, int[] lastBase){
 		if (data==null || status == null )
 			return;
 		for (int ic=0; ic<data.getNumChars() && ic<status.length; ic++) {
@@ -271,9 +346,9 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 			else {
 				int maxIdentical = maxNumberIdenticalResidues(data, ic);
 				if (!countWithinApplicable) {
-					if (maxIdentical<ISint)
+					if (maxIdentical<(int)(IS*getNumTaxaCountableAtSite(ic))+1)
 						status[ic] = NONCONSERVED; 
-					else if (maxIdentical<FSint)
+					else if (maxIdentical<(int)(FS*getNumTaxaCountableAtSite(ic)))
 						status[ic] = CONSERVED; 
 					else 
 						status[ic] = HIGHLYCONSERVED; 
@@ -334,16 +409,60 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 			return false;
 		if (data!=null && data.getNumChars()>0){
 
-			hasApplicable = new boolean[data.getNumTaxa()];
-			for (int it = 0; it<data.getNumTaxa() && it<hasApplicable.length; it++) {
-				hasApplicable[it]=data.anyApplicableAfter(0, it);
+			//preparing array memory
+			if (taxonHasSequence == null || taxonHasSequence.length != data.getNumTaxa()) {
+				taxonHasSequence = new boolean[data.getNumTaxa()];
+				firstBase = new int[data.getNumTaxa()]; // for taxon it, first base in sequence
+				lastBase = new int[data.getNumTaxa()]; // for taxon ic, last base in sequence
+			}			
+			if (numSequencesAtSite == null || numSequencesAtSite.length != data.getNumChars())
+				numSequencesAtSite = new int[data.getNumChars()];  // at char ic, the number of taxa that are "in sequence", i.e. not in terminal gap area
+
+
+			// figure out which taxa have any sequence at all
+			numTaxaWithSequence = 0;
+			for (int it = 0; it<data.getNumTaxa() && it<taxonHasSequence.length; it++) {
+				taxonHasSequence[it]=data.anyApplicableAfter(0, it);
+				if (taxonHasSequence[it])
+					numTaxaWithSequence++;
 			}
 
-			int numTaxaWithApplicable = data.getNumTaxaWithAnyApplicable();
-			ISint= (int)(IS*numTaxaWithApplicable)+1;
-			FSint= (int)(FS*numTaxaWithApplicable);
-			gapThresholdInt = 	(int)(gapThreshold*numTaxaWithApplicable);
+
 			removeAllGaps=(gapThreshold==0.0);
+
+			//figuring out first and last bases so that edges of applicability of sequences can be considered
+			for (int it = 0; it< data.getNumTaxa(); it++) {
+				int first = -1;
+				for (int ic=0; ic<data.getNumChars(); ic++) {
+					if (!data.isInapplicable(ic, it)) {
+						first=ic;
+						break;
+					}
+				}
+				firstBase[it] = first;
+
+				int last = -1;
+				for (int ic=data.getNumChars()-1; ic>=0; ic--) {
+					if (!data.isInapplicable(ic, it)) {
+						last=ic;
+						break;
+					}
+				}
+				lastBase[it] = last;
+			}
+			//figuring out number of taxa that are "in sequence" for each site
+			for (int ic=0; ic<data.getNumChars(); ic++) {
+				if (termGapsPropForgiven > 0.0) {
+					int count = 0;
+					for (int it = 0; it< data.getNumTaxa(); it++)
+						if (lastBase[it]<0 || (ic >= firstBase[it] && ic <=lastBase[it]))
+							count++;
+					numSequencesAtSite[ic]=count;
+				}
+				else {
+					numSequencesAtSite[ic]=numTaxaWithSequence;
+				}
+			}
 
 
 			//boolean[] charToMark = new boolean[data.getNumChars()];
@@ -353,7 +472,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 				charToMark[ic] = false;
 			}
 
-			setCharacterStatus((CategoricalData)data, status);
+			setCharacterStatus((CategoricalData)data, status, firstBase, lastBase);
 
 			// ======  first look for "stretches of contiguous nonconserved positions"
 			int blockStart=-1;
@@ -479,8 +598,10 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 					results.append("Minimum fraction of identical residues for a highly-conserved position: " + FS+"\n");
 					results.append("Counting fraction within only those taxa that have non-gaps at that position\n");
 				} else {
-					results.append("Minimum number of identical residues for a conserved position: " + ISint+"\n");
-					results.append("Minimum number of identical residues for a highly-conserved position: " + FSint+"\n");
+					results.append("Minimum fraction of identical residues for a conserved position: " + IS+"\n");
+					results.append("Minimum fraction of identical residues for a highly-conserved position: " + FS+"\n");
+					//results.append("Minimum number of identical residues for a conserved position: " + ISint+"\n");
+					//results.append("Minimum number of identical residues for a highly-conserved position: " + FSint+"\n");
 					results.append("Counting fraction within all taxa\n");
 				}
 				results.append("Maximum number of contiguous non-conserved positions: " + CP+"\n");
