@@ -34,11 +34,11 @@ public class MesquiteTextWindow extends MesquiteWindow implements FocusListener 
 		super(module, showInfoBar);// ���
 		this.assignedTitle = assignedTitle;
 		//setBackground(Color.white);
-		setWindowSize(400, 450);
+		setWindowSize(200, 250);
 		if (wrap)
-			tA= new TextArea("", 90, 90,  TextArea.SCROLLBARS_VERTICAL_ONLY);
+			tA= new TextArea("", 50, 50,  TextArea.SCROLLBARS_VERTICAL_ONLY);
 		else
-			tA= new TextArea("", 90, 90,  TextArea.SCROLLBARS_BOTH);
+			tA= new TextArea("", 50, 50,  TextArea.SCROLLBARS_BOTH);
 		tA.setEditable(false);
 		tA.setBackground(Color.white);
 		tA.setForeground(Color.black);
@@ -113,8 +113,11 @@ public class MesquiteTextWindow extends MesquiteWindow implements FocusListener 
 		}
 	}
 	public void focusLost(FocusEvent e){
-		Debugg.printStackTrace();
+		tA.addNotify(); //A workaround for Java 22 and probably older in which text areas were disappearing
 	}
+	
+
+
 	/*.................................................................................................................*/
 	/** to be overridden by MesquiteWindows for a text version of their contents*/
 	public String getTextContents() {
@@ -156,8 +159,9 @@ public class MesquiteTextWindow extends MesquiteWindow implements FocusListener 
 	/** Sets the window size.  To be used instead of setSize. */
 	public void setWindowSize(int width, int height) {
 		super.setWindowSize(width, height);
-		if (tA!=null)
+		if (tA!=null) {
 			tA.setSize(getWidth(), getHeight());
+		}
 	}
 	/*.................................................................................................................*/
 	/** Sets the window font size.  */

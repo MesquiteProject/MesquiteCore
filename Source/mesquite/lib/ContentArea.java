@@ -95,6 +95,9 @@ public class ContentArea extends MousePanel {
 		}
 		super.setCursor(c);
 	}
+	
+	
+
 	public void addSidePanel(MousePanel p, int width){
 		if (p!= null && sidePanels.indexOf(p)<0) {
 

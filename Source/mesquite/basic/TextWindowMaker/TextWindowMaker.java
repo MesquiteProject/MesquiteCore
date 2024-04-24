@@ -45,6 +45,7 @@ public class TextWindowMaker extends FileAssistantN {
 		addMenuItem("Delete Note", makeCommand("deleteNote", this));
  		resetContainingMenuBar();
  		resetAllWindowsMenus();
+ 		
  		return true;
   	 }
 	 

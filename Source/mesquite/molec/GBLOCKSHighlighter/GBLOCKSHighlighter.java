@@ -39,7 +39,7 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 		loadPreferences(xmlPrefs);
 		xmlPrefsString = xmlPrefs.getValue();
 		gblocksCalculator = new GBLOCKSCalculator(this, xmlPrefsString);
-		Debugg.printStackTrace("Remember options");
+		// delete this module or make it debugg only. If public, then remember options Debugg.printStackTrace("Remember options");
 		return true;
 	}
 	/*.................................................................................................................*/

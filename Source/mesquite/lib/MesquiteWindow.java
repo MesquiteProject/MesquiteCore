@@ -1278,6 +1278,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			return graphics[0].getMainPanel();
 		return null;
 	}
+
 	/** returns whether that panel is a side panel */
 	public boolean hasSidePanel(MousePanel sp) {
 		if (graphics[0] != null)
