@@ -1271,6 +1271,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		catch (Exception e){
 		}
 	}
+	
+	public boolean isConnectedGraphics() {
+		if (interContents == null )
+			return false;
+		return interContents.getParent() != null;
+
+	}
 	/*.................................................................................................................*/
 	/** Gets the main graphics content area in which modules can add their components */
 	public Panel getGraphicsArea() {
