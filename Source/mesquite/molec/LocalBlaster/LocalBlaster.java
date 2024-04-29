@@ -228,7 +228,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 		int count=0;
 		if (folder.isDirectory()) {
 			String[] files = folder.list();
-			for (int i=0; i<files.length; i++) { // going through the folders and finding the ace files
+			for (int i=0; i<files.length; i++) { // going through the folders and finding the nsq files to count them
 				if (files[i]!=null ) {
 					String filePath = blastDatabaseFolderPath + MesquiteFile.fileSeparator + files[i];
 					File cFile = new File(filePath);
@@ -244,7 +244,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 			databaseArray= new String[count];
 			numDatabases=count;
 			count=0;
-			for (int i=0; i<files.length; i++) { // going through the folders and finding the ace files
+			for (int i=0; i<files.length; i++) { // now that we have the count, store details
 				if (files[i]!=null ) {
 					String filePath = blastDatabaseFolderPath + MesquiteFile.fileSeparator + files[i];
 					File cFile = new File(filePath);
@@ -413,6 +413,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 		if (iDatabase<0 || iDatabase>= databaseArray.length)
 			return null;
 		return databaseArray[iDatabase];
+//		return NCBIUtil.getBLASTFileInputName(databaseArray[iDatabase]);
 	}
 	
 
@@ -440,7 +441,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 		String blastArguments =  "  -query " + fileName;
-		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(database);
+		blastArguments+= " -db "+database;
+//		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(database);
 		blastArguments+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
 
 		if (eValueCutoff>=0.0)
