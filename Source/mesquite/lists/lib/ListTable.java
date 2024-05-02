@@ -90,6 +90,7 @@ public class ListTable extends MesquiteTable {
 				if (b.numBitsOn()==1 && b.firstBitOn() == after){
 					return;
 				}
+				Vector v = window.getOwnerModule().pauseAllPausables();
 				Associable assoc = (Associable)window.getCurrentObject();
 				long[] fullChecksumBefore = null;
 				if (assoc instanceof CharacterData)
@@ -105,9 +106,11 @@ public class ListTable extends MesquiteTable {
 				while (i<getNumRows()){
 					if (b.isBitOn(i)) {
 						if (assoc instanceof CharacterData && !asked && ((CharacterData)assoc).isMolecularSequence() && i!=after) {
-							if (!AlertDialog.query(window, "Move?", "These are molecular sequences.  Are you sure you want to move the sites to a different location?  It cannot be undone.", "Move", "Cancel"))
+							if (!AlertDialog.query(window, "Move?", "These are molecular sequences.  Are you sure you want to move the sites to a different location?  It cannot be undone.", "Move", "Cancel")) {
+								window.getOwnerModule().unpauseAllPausables(v);
 								return;
-							asked = true;
+						}
+						asked = true;
 						}
 						deselectRow(i);
 						b.clearBit(i);
@@ -120,6 +123,8 @@ public class ListTable extends MesquiteTable {
 					else
 						i++;
 				}
+
+				window.getOwnerModule().unpauseAllPausables(v);
 				
 				if (assoc instanceof TreeVector)
 					((TreeVector)assoc).resetAssignedNumbers();

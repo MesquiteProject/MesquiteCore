@@ -37,7 +37,7 @@ public class CharListPartition extends CharListAssistant {
 	/*.................................................................................................................*/
 	CharacterData data=null;
 	MesquiteTable table=null;
-	MesquiteSubmenuSpec mss, mEGC, mDGC, mEGN;
+	MesquiteSubmenuSpec mss, mEGC, mDGC;
 	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, mss2, msRCP;
 	CharactersGroupVector groups;
 	/*.................................................................................................................*/
@@ -272,8 +272,9 @@ public class CharListPartition extends CharListAssistant {
 		deleteMenuItem(nNG);
 		deleteMenuItem(mEGC);
 		deleteMenuItem(mDGC);
-		deleteMenuItem(mEGN);
+	//	deleteMenuItem(mEGN);
 		deleteMenuItem(nNG);
+		deleteMenuItem(msRCP);
 		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
 		if (data != null && data instanceof DNAData)

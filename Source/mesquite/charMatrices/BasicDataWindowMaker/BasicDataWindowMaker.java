@@ -1859,10 +1859,8 @@ public void requestFocus(){
 			int justAfter = MesquiteInteger.fromString(arguments, io);
 			if (!MesquiteInteger.isCombinable(justAfter))
 				justAfter = MesquiteInteger.queryInteger(this, "Move characters", "After which column should the selected characters be moved (enter 0 to move to first place)?", 0, 0, table.getNumColumns() * 10);
-			Vector v = ownerModule.pauseAllPausables();
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedColumnsDropped(justAfter - 1); // -1 to convert to internal representation
-			ownerModule.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected taxa ", "[row to move after; -1 if at start]", commandName, "moveTaxaTo")) {
 			if (!table.anyRowSelected()) {
@@ -1873,10 +1871,8 @@ public void requestFocus(){
 			int justAfter = MesquiteInteger.fromString(arguments, io);
 			if (!MesquiteInteger.isCombinable(justAfter))
 				justAfter = MesquiteInteger.queryInteger(this, "Move taxa", "After which row should the selected taxa be moved (enter 0 to move to first place)?", 0, 0, table.getNumRows() * 10);
-			Vector v = ownerModule.pauseAllPausables();
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedRowsDropped(justAfter - 1); // -1 to convert to internal representation
-			ownerModule.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected block ", "[number of characters to move]", commandName, "moveSelectedBlock")) {
 			MesquiteInteger firstRow = new MesquiteInteger();
@@ -4922,6 +4918,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED, taxa);
 		undoInstructions.recordPreviousOrder(taxa);
 		UndoReference undoReference = new UndoReference(undoInstructions, editorModule);
+		Vector v = window.getOwnerModule().pauseAllPausables();
 		int i = 0;
 		while (i < getNumRows()) {
 			if (sel.isBitOn(i)) {
@@ -4937,6 +4934,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				i++;
 		}
 		synchronizeRowSelection(data);
+		window.getOwnerModule().unpauseAllPausables(v);
 		taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 
 		editorModule.getModuleWindow().contentsChanged();
@@ -4958,6 +4956,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED, data);
 		undoInstructions.recordPreviousOrder(data);
 		UndoReference undoReference = new UndoReference(undoInstructions, editorModule);
+		Vector v = window.getOwnerModule().pauseAllPausables();
 		while (i < getNumColumns()) {
 			if (sel.isBitOn(i)) {
 				if (!asked && data.isMolecularSequence() && i != after) {
@@ -4980,6 +4979,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		data.compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "character moving");
 
 		synchronizeColumnSelection(data);
+		window.getOwnerModule().unpauseAllPausables(v);
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 		data.notifyInLinked(new Notification(MesquiteListener.PARTS_MOVED));
 

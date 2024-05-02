@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.DeleteCharsByNCBLOCKS;
+package mesquite.molec.DeleteCharsByPhyCN;
 /*~~  */
 
 
@@ -20,10 +20,10 @@ import mesquite.lib.duties.CharacterSelector;
 import mesquite.molec.lib.DeleteCharsBySelector;
 
 /* ======================================================================== */
-public class DeleteCharsByNCBLOCKS extends DeleteCharsBySelector {
+public class DeleteCharsByPhyCN extends DeleteCharsBySelector {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		selectorTask = (CharacterSelector)hireNamedEmployee(CharacterSelector.class, "#NCBLOCKSSelector");
+		selectorTask = (CharacterSelector)hireNamedEmployee(CharacterSelector.class, "#PhyCNSelector");
 		if (selectorTask == null)
 			return false;
 		return true;
@@ -41,12 +41,12 @@ public class DeleteCharsByNCBLOCKS extends DeleteCharsBySelector {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Delete Sites by NCBLOCKS";
+		return "Delete Sites by PhyCN";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Deletes characters according to NCBLOCKS criteria." ;
+		return "Deletes characters according to PhyCN criteria." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
