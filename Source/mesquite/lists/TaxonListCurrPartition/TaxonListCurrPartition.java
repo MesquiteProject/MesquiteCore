@@ -36,7 +36,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	Taxa taxa;
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC;
-	MesquiteMenuItemSpec mCreatec, mScs, mStc, mRssc, mLine, nNG, mLine2, ms2;
+	MesquiteMenuItemSpec mCreatec, mScs, mStc, mRssc, mLine, nNG, mLine2, ms2, mCreateTaxac;
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -192,6 +192,74 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
 		}	
 	}
+	
+	/*.................................................................................................................*/   //WAYNECHECK
+	private Taxa createTaxonBlock(int numTaxa) {
+		incrementMenuResetSuppression();
+		Taxa newTaxa=null;
+		String title= getProject().getTaxas().getUniqueName("Taxa");
+		MesquiteBoolean answer = new MesquiteBoolean(true);
+		MesquiteFile file = getProject().chooseFile( "Select file to which to add the new block of taxa"); //added 20 Dec 01
+
+		newTaxa = new Taxa(numTaxa);
+		if (title!=null)
+			newTaxa.setName(title);
+		if (newTaxa==null)
+			return null;
+		newTaxa.addToFile(file, getProject(), null);
+
+		decrementMenuResetSuppression();
+		return newTaxa;
+	}
+	/*.................................................................................................................*/
+
+	private void createTaxonBlockBasedOnNames() {
+		if (taxa!=null){
+			int numGroups=0;
+			TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
+			if (part!=null) {
+				Bits taxonProcessed = new Bits(taxa.getNumTaxa());
+				for (int it=0; it<taxa.getNumTaxa(); it++) {  // first we count
+					if (!taxonProcessed.isBitOn(it)) {
+						TaxaGroup tg = part.getTaxaGroup(it);
+						if (tg!=null){
+							numGroups++;
+							taxonProcessed.setBit(it, true);
+							for (int ij=it+1; ij<taxa.getNumTaxa(); ij++) {
+								TaxaGroup tg2 = part.getTaxaGroup(ij);
+								if (tg2!=null && tg.equals(tg2))  // we've encountered this one before.
+									taxonProcessed.setBit(ij, true);
+							}
+
+						}
+					}
+				}
+				int count=0;
+				taxonProcessed.clearAllBits();
+				Taxa newTaxa = createTaxonBlock(numGroups);   // now create taxa
+				for (int it=0; it<taxa.getNumTaxa(); it++) {  // now name the new taxa
+					if (!taxonProcessed.isBitOn(it)) {
+						TaxaGroup tg = part.getTaxaGroup(it);
+						if (tg!=null){
+							String name = tg.getName();
+							if (count<newTaxa.getNumTaxa())
+								newTaxa.getTaxon(count).setName(name);
+							count++;
+							taxonProcessed.setBit(it, true);
+							for (int ij=it+1; ij<taxa.getNumTaxa(); ij++) {
+								TaxaGroup tg2 = part.getTaxaGroup(ij);
+								if (tg2!=null && tg.equals(tg2))  // we've encountered this one before.
+									taxonProcessed.setBit(ij, true);
+							}
+
+						}
+					}
+				}
+			}
+		}
+
+	}	
+
 
 	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
@@ -283,6 +351,10 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			createPartitionBasedOnNames();
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
+		else if (checker.compare(this.getClass(), "Creates a taxa partition based upon the names of taxa", null, commandName, "createTaxonBlock")) {
+			createTaxonBlockBasedOnNames();
+			//return ((ListWindow)getModuleWindow()).getCurrentObject();
+		}
 		else if (checker.compare(this.getClass(), "Loads the stored taxa partition to be the current one", "[number of partition to load]", commandName, "loadToCurrent")) {
 			if (taxa !=null) {
 				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
@@ -313,6 +385,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		deleteMenuItem(mss);
 		deleteMenuItem(mScs);
 		deleteMenuItem(mCreatec);
+		deleteMenuItem(mCreateTaxac);
 		deleteMenuItem(mRssc);
 		deleteMenuItem(mLine);
 		deleteMenuItem(mLine2);
@@ -333,6 +406,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mCreatec = addMenuItem("Create partition based on taxon names...", makeCommand("createBasedOnNames",  this));
+		mCreateTaxac = addMenuItem("Create taxon block based on current groups...", makeCommand("createTaxonBlock",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {
 			mStc = addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));
