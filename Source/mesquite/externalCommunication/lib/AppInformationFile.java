@@ -23,6 +23,7 @@ public class AppInformationFile {
 	String licenseURL;
 	String citationURL;
 	String citation;
+	String otherProperties;
 	String appsFilePath;
 	static final int infoFileVersion = 1;
 	String appNameWithinAppsDirectory;
@@ -79,6 +80,9 @@ public class AppInformationFile {
 				element = appInfoElement.element("licenseURL");
 				if (element!=null)
 					license = element.getStringValue();
+				element = appInfoElement.element("otherproperties");
+				if (element!=null)
+					otherProperties = element.getStringValue();
 				element = appInfoElement.element("license");
 				if (element!=null)
 					licenseURL = element.getStringValue();
@@ -110,6 +114,9 @@ public class AppInformationFile {
 	}
 	public String getVersion() {
 		return version;
+	}
+	public String getOtherProperties() {
+		return otherProperties;
 	}
 	public String getURL() {
 		return URL;
