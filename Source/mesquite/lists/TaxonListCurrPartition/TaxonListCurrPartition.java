@@ -36,7 +36,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	Taxa taxa;
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, ms2;
+	MesquiteMenuItemSpec mCreatec, mScs, mStc, mRssc, mLine, nNG, mLine2, ms2;
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -51,10 +51,9 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			groups.removeListener(this);
 		super.endJob();
 	}
-	private void setGroup(TaxaGroup group, String arguments){
+	private void setGroup(TaxaGroup group, String name, Bits bits, boolean notify){
 		if (table !=null && taxa!=null) {
 			boolean changed=false;
-			String name = parser.getFirstToken(arguments);
 			if (group == null && StringUtil.blank(name))
 				return;
 			TaxaPartition partition = (TaxaPartition) taxa.getCurrentSpecsSet(TaxaPartition.class);
@@ -71,7 +70,16 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 
 			if (group != null) {
 				if (partition != null) {
-					if (employer!=null && employer instanceof ListModule) {
+					if (bits!=null) {
+						for (int i=0; i<taxa.getNumTaxa(); i++) {
+							if (bits.isBitOn(i)) {
+								partition.setProperty(group, i);
+								if (!changed)
+									outputInvalid();
+								changed = true;
+							}
+						}
+					} else if (employer!=null && employer instanceof ListModule) {
 						int c = ((ListModule)employer).getMyColumn(this);
 						for (int i=0; i<taxa.getNumTaxa(); i++) {
 							if (table.isCellSelectedAnyWay(c, i)) {
@@ -83,7 +91,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 						}
 					}
 				}
-				if (changed)
+				if (changed && notify)
 					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
 				parametersChanged();
 			}
@@ -114,11 +122,82 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		}
 	}
 	
+	
+	/*.................................................................................................................*/
+	public  static TaxaGroup createNewTaxonGroup(MesquiteModule module, MesquiteFile file) {
+		String n = "Untitled Group";
+		if (file==null)
+			return null;
+		n = file.getFileElements().getUniqueName(n);
+		GroupDialog d = new GroupDialog(module.getProject(),module.containerOfModule(), "New Taxon Group", n, Color.white, null, TaxaGroup.supportsSymbols());
+		d.completeAndShowDialog();
+		String name = d.getName();
+		boolean ok = d.query()==0;
+		Color c = d.getColor();
+		MesquiteSymbol symbol = d.getSymbol();
+
+		d.dispose();
+		if (!ok)
+			return null;
+		//String name = MesquiteString.queryString(containerOfModule(), "New character group", "New character group label", "Untitled Group");
+		if (StringUtil.blank(name))
+			return null;
+		TaxaGroup group = new TaxaGroup();
+		group.setName(name);
+		if (symbol!=null)
+			group.setSymbol(symbol);
+		group.addToFile(file, file.getProject(), null);
+		if (c!=null) {
+			group.setColor(c);
+		}
+		return group;
+	}
+
+	/*.................................................................................................................*/
+	private String groupNameFromTaxonName(String taxonName) {
+		String name = StringUtil.getAllButLastItem(taxonName, " ");  //TODO:   give options
+		return name;
+	}
+	/*.................................................................................................................*/
+
+	private void createPartitionBasedOnNames() {
+		if (taxa!=null){
+			String groupName = "";
+			String name="";
+			Bits taxonProcessed = new Bits(taxa.getNumTaxa());
+			Bits taxonInGroup = new Bits(taxa.getNumTaxa());
+			MesquiteFile file=taxa.getFile();
+
+			for (int it=0; it<taxa.getNumTaxa(); it++) {
+				if (!taxonProcessed.isBitOn(it)) {
+					groupName = groupNameFromTaxonName(taxa.getTaxonName(it));
+					TaxaGroup group = new TaxaGroup();
+					group.setName(groupName);
+					group.addToFile(file, file.getProject(), null);
+					taxonProcessed.setBit(it, true);
+					taxonInGroup.setBit(it,true);
+					for (int ij=it+1; ij<taxa.getNumTaxa(); ij++) {
+						name = groupNameFromTaxonName(taxa.getTaxonName(ij));
+						if (groupName!=null && groupName.equalsIgnoreCase(name)) {   // would have same name as the current group, therefore set as this group
+							taxonInGroup.setBit(ij,true);
+							taxonProcessed.setBit(ij, true);
+						}
+
+					}
+					setGroup(group, name, taxonInGroup, false);
+					taxonInGroup.clearAllBits();
+					
+				}
+			}
+			taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
+		}	
+	}
+
 	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets to which group a taxon belongs in the current taxa partition", "[name of group]", commandName, "setPartition")) {
-			setGroup(null, arguments);
+			setGroup(null, parser.getFirstToken(arguments),null, true);
 		}
 		else if (checker.compare(this.getClass(), "Edits the name, color, and symbol of a taxon group label", "[name of group]", commandName, "editGroup")) {
 			String name = parser.getFirstToken(arguments);
@@ -160,7 +239,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		else if (checker.compare(this.getClass(), "Creates a new group for use in taxon partitions", null, commandName, "newGroup")) {
 			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, taxa.getFile());
 			if (group!=null)
-				setGroup(group, group.getName());
+				setGroup(group, parser.getFirstToken(group.getName()), null, true);
 			return group;
 		}
 		else if (checker.compare(this.getClass(), "Stores the current taxa partition as a TAXAPARTITION", null, commandName, "storeCurrent")) {
@@ -200,6 +279,10 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			}
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
+		else if (checker.compare(this.getClass(), "Creates a taxa partition based upon the names of taxa", null, commandName, "createBasedOnNames")) {
+			createPartitionBasedOnNames();
+			//return ((ListWindow)getModuleWindow()).getCurrentObject();
+		}
 		else if (checker.compare(this.getClass(), "Loads the stored taxa partition to be the current one", "[number of partition to load]", commandName, "loadToCurrent")) {
 			if (taxa !=null) {
 				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
@@ -229,6 +312,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		/* hire employees here */
 		deleteMenuItem(mss);
 		deleteMenuItem(mScs);
+		deleteMenuItem(mCreatec);
 		deleteMenuItem(mRssc);
 		deleteMenuItem(mLine);
 		deleteMenuItem(mLine2);
@@ -248,6 +332,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 
 		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
+		mCreatec = addMenuItem("Create partition based on taxon names...", makeCommand("createBasedOnNames",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {
 			mStc = addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));
