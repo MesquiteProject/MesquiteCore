@@ -25,6 +25,7 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class TaxonListCurrPartition extends TaxonListAssistant {
+	NameParser nameParser;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Group Membership (taxa)";
@@ -42,6 +43,9 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 		groups.addListener(this);
+		if (nameParser==null)
+			nameParser = new NameParser(this, "taxon");
+		loadPreferences();
 		return true;
 	}
 	public void endJob(){
@@ -152,12 +156,24 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		}
 		return group;
 	}
+	
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		if (nameParser!=null){
+			String s = nameParser.preparePreferencesForXML(); 
+			if (StringUtil.notEmpty(s))
+				buffer.append(s);
+		}
+		return buffer.toString();
+	}
 
 	/*.................................................................................................................*/
-	private String groupNameFromTaxonName(String taxonName) {
-		String name = StringUtil.getAllButLastItem(taxonName, " ");  //TODO:   give options
-		return name;
+	public void processSingleXMLPreference (String tag, String content) {
+		if (nameParser!=null)
+			nameParser.processSingleXMLPreference(tag,content);
 	}
+
 	/*.................................................................................................................*/
 
 	private void createPartitionBasedOnNames() {
@@ -166,18 +182,24 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			String name="";
 			Bits taxonProcessed = new Bits(taxa.getNumTaxa());
 			Bits taxonInGroup = new Bits(taxa.getNumTaxa());
-			MesquiteFile file=taxa.getFile();
+			if (nameParser==null)
+				nameParser = new NameParser(this, "taxon");
+			if (!MesquiteThread.isScripting())
+				if (nameParser.queryOptions()) {
+					storePreferences();
+				}
+				else
+					return;
+			int c = ((ListModule)employer).getMyColumn(this);
 
 			for (int it=0; it<taxa.getNumTaxa(); it++) {
-				if (!taxonProcessed.isBitOn(it)) {
-					groupName = groupNameFromTaxonName(taxa.getTaxonName(it));
-					TaxaGroup group = new TaxaGroup();
-					group.setName(groupName);
-					group.addToFile(file, file.getProject(), null);
+				if (!taxonProcessed.isBitOn(it)  && (table.isCellSelectedAnyWay(c, it))) {
+					groupName = nameParser.extractPart(taxa.getTaxonName(it));
+					TaxaGroup group = TaxaGroup.makeGroupIfNovel(this, groupName,taxa,groups);
 					taxonProcessed.setBit(it, true);
 					taxonInGroup.setBit(it,true);
 					for (int ij=it+1; ij<taxa.getNumTaxa(); ij++) {
-						name = groupNameFromTaxonName(taxa.getTaxonName(ij));
+						name = nameParser.extractPart(taxa.getTaxonName(ij));
 						if (groupName!=null && groupName.equalsIgnoreCase(name)) {   // would have same name as the current group, therefore set as this group
 							taxonInGroup.setBit(ij,true);
 							taxonProcessed.setBit(ij, true);
@@ -405,7 +427,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 
 		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
-		mCreatec = addMenuItem("Create partition based on taxon names...", makeCommand("createBasedOnNames",  this));
+		mCreatec = addMenuItem("Create and assign groups based on taxon names...", makeCommand("createBasedOnNames",  this));
 		mCreateTaxac = addMenuItem("Create taxon block based on current groups...", makeCommand("createTaxonBlock",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {

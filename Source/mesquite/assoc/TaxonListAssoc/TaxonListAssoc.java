@@ -44,7 +44,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	Taxa taxa, otherTaxa;
 	MesquiteTable table=null;
-	MesquiteMenuItemSpec m0, m1, m2, m3, m4, m5;
+	MesquiteMenuItemSpec m0, m1, m2, m3, m4, m5, m6;
 	AssociationSource associationTask;
 	MesquiteWindow containingWindow;
 	TaxaAssociation association;
@@ -54,7 +54,8 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	boolean ignoreCase = true;
 	boolean matchNumbers=false;
 	int minDigitsToMatch = 3;
-
+	NameParser nameParser;
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		associationTask = (AssociationSource)hireNamedEmployee(AssociationSource.class, "#mesquite.assoc.StoredAssociations.StoredAssociations");
@@ -65,8 +66,29 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			containingWindow = (MesquiteWindow)f;
 			containingWindow.addSidePanel(panel = new AssocEditor(this), 160);
 		}
+		if (nameParser==null)
+			nameParser = new NameParser(this, "taxon");
+		loadPreferences();
 		return true;
 	}
+	
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		if (nameParser!=null){
+			String s = nameParser.preparePreferencesForXML(); 
+			if (StringUtil.notEmpty(s))
+				buffer.append(s);
+		}
+		return buffer.toString();
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if (nameParser!=null)
+			nameParser.processSingleXMLPreference(tag,content);
+	}
+
 	public MesquiteWindow getContainingWindow(){
 		return containingWindow;
 	}
@@ -166,6 +188,37 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
 		}
 	}
+	/*.................................................................................................................*
+	private String populationNameFromSpecimenName(String taxonName) {
+		String name = StringUtil.getAllButLastItem(taxonName, " ");  //TODO:   give options
+		return name;
+	}
+	/*.................................................................................................................*/
+	private void calculateAssociation(){
+		boolean changed = false;
+		if (taxa!=null && association != null) {  // taxa is population, otherTaxa is contained/specimens
+			Taxa otherTaxa = association.getOtherTaxa(taxa);
+			if (nameParser==null)
+				nameParser = new NameParser(this, "taxon");
+			if (!MesquiteThread.isScripting())
+				nameParser.queryOptions();
+			for (int it=0; it<taxa.getNumTaxa(); it++)
+				for (int ito = 0; ito<otherTaxa.getNumTaxa(); ito++){
+					String name = taxa.getTaxonName(it);
+					String nameOther = nameParser.extractPart(otherTaxa.getTaxonName(ito));
+					if (name == null || nameOther == null)
+						continue;
+					boolean matches = name.equals(nameOther);
+					if (matches){
+						//association.zeroAllAssociations(taxa.getTaxon(it));
+						association.setAssociation(taxa.getTaxon(it), otherTaxa.getTaxon(ito), true);
+						changed = true;
+					}
+				}
+
+			if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
+		}
+	}
 	/*.................................................................................................................*/
 	private void setAssociate(Taxon taxon, boolean add, boolean append){
 		if (table !=null && taxa!=null && association != null) {
@@ -212,6 +265,9 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		}
 		else  if (checker.compare(this.getClass(), "Resets the association", null, commandName, "resetAssociation")) {
 			resetAssociation(false);
+		}
+		else  if (checker.compare(this.getClass(), "Calculates associates based upon an algorithm", null, commandName, "calculateAssociation")) {
+			calculateAssociation();
 		}
 		else  if (checker.compare(this.getClass(), "Automatically sets associates if there is an exact match of names", null, commandName, "autoAssignExact")) {
 			if (queryOptions())
@@ -277,7 +333,9 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		deleteMenuItem(m3);
 		deleteMenuItem(m4);
 		deleteMenuItem(m5);
+		deleteMenuItem(m6);
 		m0 = addMenuItem(null, "Auto-assign Matches...", makeCommand("autoAssignExact", this));
+		m6 = addMenuItem(null, "Calculate Matches...", makeCommand("calculateAssociation", this));
 		m1 = addMenuItem(null, "Assign Associate...", makeCommand("setAssociate", this));
 		m2 = addMenuItem(null, "Add Associate...", makeCommand("addAssociate", this));
 		m3 = addMenuItem(null, "Remove Associates", makeCommand("removeAssociates", this));

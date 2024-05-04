@@ -41,6 +41,15 @@ public class TaxaGroup extends GroupLabel {
 		return group;
 	}
 	/*.................................................................................................................*/
+	public static TaxaGroup makeGroupIfNovel(MesquiteModule mod, String name, Taxa taxa, TaxaGroupVector groups){
+		TaxaGroup group = (TaxaGroup)groups.getElement(name);
+		if (group !=null) {
+			return group;
+		} else {
+			return makeGroup(mod, name, taxa, groups);
+		}
+	}
+	/*.................................................................................................................*/
 	public void editMe(){
 		GroupDialog d = new GroupDialog(getProject(),getProject().getCoordinatorModule().containerOfModule(), "Edit Taxa Group", getName(), getColor(), getSymbol(), supportsSymbols());
 

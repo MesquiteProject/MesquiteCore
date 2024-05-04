@@ -956,6 +956,56 @@ public class StringUtil {
 		return numMatches;
 	}
 	/*.................................................................................................................*/
+	public static int getNumMatchingStrings(String token, String match) {
+		if (token==null) return 0;
+		int numMatches = 0;
+		int index =-1;
+		boolean completed=false;
+
+		while (!completed) {
+			index = token.indexOf(match,index+1);
+			if (index>=0) 
+				numMatches++;
+			else
+				completed=true;
+		}
+		return numMatches;
+	}
+	/*.................................................................................................................*/
+	public static int getIndexOfMatchingString(String token, String match, int matchNumber, boolean fromStart, boolean includeString) {
+		if (StringUtil.blank(token) || match==null || match=="") return 0;
+		int numMatches = 0;
+		int currentIndex =-1;
+		int index = -1;
+		boolean completed=false;
+
+		if (!fromStart) {
+			int totalNumberMatches = getNumMatchingStrings(token, match);
+			matchNumber = totalNumberMatches - matchNumber+1;			
+		}
+
+		if (matchNumber>0)
+			while (!completed) {
+				currentIndex = token.indexOf(match,currentIndex+1);
+				if (currentIndex>=0) {
+					numMatches++;
+					if (numMatches>=matchNumber) { // found it
+						index=currentIndex;
+						if (fromStart && !includeString)
+							index+= match.length();
+						else if (!fromStart && includeString)
+							index+= match.length();
+						completed=true;
+					}
+				}
+				else
+					completed=true;
+			}
+
+
+		return index;
+	}
+	/*.................................................................................................................*/
 	public static String punctuationToUnderline(String token) {
 		if (token==null)
 			return null;
@@ -1766,11 +1816,11 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 		return simplifyIfNeededForOutput(s,simplify, false);
 	}
 	/*.................................................................................................................*/
-	public static String simplifyIfNeededForOutput(String s, boolean simplify, boolean forMesquiteUse){
+	public static String simplifyIfNeededForOutput(String s, boolean simplify, boolean underlineToBlanks){
 		String token = s;
 		if (simplify) {
 			token = cleanseStringOfFancyChars(token,false,true);
-			if (forMesquiteUse)
+			if (underlineToBlanks)
 				token = underlineToBlanks(token);
 		}
 		else
