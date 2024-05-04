@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.NCBLOCKSSelector;
+package mesquite.molec.PhyCNSelector;
 /*~~  */
 
 import mesquite.categ.lib.CategoricalData;
@@ -21,7 +21,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class NCBLOCKSSelector extends CharacterSelector {
+public class PhyCNSelector extends CharacterSelector {
 
 
 	MesquiteString xmlPrefs= new MesquiteString();
@@ -64,7 +64,7 @@ public class NCBLOCKSSelector extends CharacterSelector {
 		if (!mb.okToInteractWithUser(mb.CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(mb.containerOfModule(),  "Select using NCBLOCKS Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(mb.containerOfModule(),  "Select using PhyCN Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		PIField = dialog.addDoubleField("Proportion of neighbouring sites in conflict", proportionIncomp, 4);
 		SSField = dialog.addIntegerField("Length of blocks", spanSize, 4);
@@ -184,16 +184,16 @@ public class NCBLOCKSSelector extends CharacterSelector {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "NCBLOCKS Selectior";
+		return "PhyCN Selectior";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "NCBLOCKS Selector...";
+		return "PhyCN Selector...";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Neighbour-Conflicts Blocks: Selects blocks of characters in which many are incompatible with the site before or after (in a clique analysis sense)." ;
+		return "Phylogenetic Conflict Among Neighbours (PhyCN): Selects blocks of characters in which many are incompatible with the site before or after (in a clique analysis sense)." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

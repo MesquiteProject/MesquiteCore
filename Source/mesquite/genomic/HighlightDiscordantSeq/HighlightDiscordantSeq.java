@@ -62,6 +62,12 @@ public class HighlightDiscordantSeq extends DataWindowAssistantID implements Cel
 	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
+	/**Returns true if the module is to appear in menus and other places in which users can choose, and if can be selected in any way other than by direct request*/
+	public boolean loadModule(){
+		return false; 		//Debugg.println: not ready for prime time
+
+	}
+	/*.................................................................................................................*/
 	public void viewChanged(){
 	}
 	/*.................................................................................................................*/
