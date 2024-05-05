@@ -79,30 +79,30 @@ public class ExportForBPP extends FileInterpreterI {
 
 	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
-	boolean includeTaxaBlock = true;
-	boolean convertToBranchLengths = true;
+	String startOfControlFile = "speciesdelimitation=";
+	String endOfControlFile = "end";
 	String fileName = "BPP.ctl";
 
 	public boolean getExportOptions(TreeVector trees){
-		/*MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export tree file for DELINEATE", buttonPressed);
-		String helpString = "This will save a tree file ready to be uploaded into Open Tree (opentreeoflife.org).  It will optionally convert node values "+
-		"such as consensus frequences as branch lengths (as that is how Open Tree imports support values for branches).";
-		exportDialog.appendToHelpString(helpString);
-		exportDialog.setSuppressLineEndQuery(true);
-		exportDialog.setDefaultButton(null);
-		Checkbox convertToBranchLengthsBox = exportDialog.addCheckBox("convert node values to branch lengths", convertToBranchLengths);
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(this.containerOfModule(), "BPP export options", buttonPressed);
+		
+		dialog.addLabel("Text for start of control file");
+		TextArea startOfCtlFileField = dialog.addTextArea(startOfControlFile, 8);
+		
+		dialog.addLabel("Text for end of control file");
+		TextArea endOfCtlFileField = dialog.addTextArea(endOfControlFile, 8);
 
-		exportDialog.completeAndShowDialog();
 
-		boolean ok = (exportDialog.query()==0);
-
-		convertToBranchLengths = convertToBranchLengthsBox.getState();
-
-		exportDialog.dispose();
-		return ok;
-		*/
-		return true;
+		dialog.completeAndShowDialog(true);
+		if (buttonPressed.getValue()==0)  {
+			startOfControlFile = startOfCtlFileField.getText();
+			endOfControlFile = endOfCtlFileField.getText();
+			
+		}
+		//storePreferences();  // do this here even if Cancel pressed as the File Locations subdialog box might have been used
+		dialog.dispose();
+		return (buttonPressed.getValue()==0);
 	}	
 	/*.................................................................................................................*/
 	/** Called to provoke any necessary initialization.  This helps prevent the module's initialization queries to the user from
@@ -232,19 +232,33 @@ public class ExportForBPP extends FileInterpreterI {
 		
 		
 		Taxa otherTaxa = association.getOtherTaxa(taxa);
-		CharacterData data = findDataToExport(file, arguments, otherTaxa);
-		if (data == null)
+		StringBuffer matrixBuffer = new StringBuffer(100);
+		int numMatrices = getProject().getNumberCharMatrices(null, otherTaxa, MolecularState.class, true);
+		if (numMatrices<1)
 			return false;
-
-		StringBuffer matrixBuffer = new StringBuffer(otherTaxa.getNumTaxa()*(20 + data.getNumChars()));
-		matrixBuffer.append(Integer.toString(otherTaxa.getNumTaxa())+" ");
-		matrixBuffer.append(""+data.getNumChars()+this.getLineEnding());		
-		exportBlock(otherTaxa,  data,  matrixBuffer, true);
-
-			
+		for (int iM = 0; iM < numMatrices; iM++){
+			CharacterData data = getProject().getCharacterMatrixVisible(otherTaxa, iM, MolecularState.class);
+			if (data != null) {		
+				matrixBuffer.append(Integer.toString(otherTaxa.getNumTaxa())+" ");
+				matrixBuffer.append(""+data.getNumChars()+this.getLineEnding());		
+				exportBlock(otherTaxa,  data,  matrixBuffer, true);
+				matrixBuffer.append(this.getLineEnding());		
+			}
+		}
 			
 			
 		StringBuffer controlFileBuffer = new StringBuffer(100);
+		Random random = new Random(System.currentTimeMillis());
+		controlFileBuffer.append("seed = "+ random.nextInt()+"\n\n");
+		
+		controlFileBuffer.append("seqfile = " + suggestedFileName(null, "chars.txt", null)+"\n");
+		controlFileBuffer.append("imapfile = " + suggestedFileName(null, "imap.txt", null)+"\n");
+		controlFileBuffer.append("outfile = " + suggestedFileName(null, "out.txt", null)+"\n");
+		controlFileBuffer.append("mcmcfile = " + suggestedFileName(null, "mcmc.txt", null)+"\n");
+
+
+		controlFileBuffer.append(startOfControlFile);
+		controlFileBuffer.append("\n\n");
 		controlFileBuffer.append("species&tree = "+taxa.getNumTaxa());
 		for (int it=0; it<taxa.getNumTaxa(); it++) {
 			controlFileBuffer.append(" "+prepareExportName(taxa.getTaxonName(it)));
@@ -267,6 +281,8 @@ public class ExportForBPP extends FileInterpreterI {
 			else 
 				controlFileBuffer.append(" "+1);
 		}
+		controlFileBuffer.append("\n\n");
+		controlFileBuffer.append(endOfControlFile);
 
 
 		StringBuffer imapFileBuffer = new StringBuffer(100);

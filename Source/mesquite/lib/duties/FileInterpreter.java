@@ -249,12 +249,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		 */
 	}
 	/*.................................................................................................................*/
-	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suffix, String suggestedFileEnding, String filePath) {
-		if (outputBuffer == null)
-			return;
-		String output = outputBuffer.toString();
-
-		if (StringUtil.blank(filePath)) {
+	public String suggestedFileName( String suffix, String suggestedFileEnding, String filePath) {
 			String name = getProject().getHomeFileName();
 			if (suffix==null)
 				suffix="";
@@ -267,6 +262,17 @@ public abstract class FileInterpreter extends MesquiteModule  {
 			if (StringUtil.notEmpty(suffix))
 				name+=suffix+".";
 			name += suggestedFileEnding;
+			return name;
+
+	}
+	/*.................................................................................................................*/
+	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suffix, String suggestedFileEnding, String filePath) {
+		if (outputBuffer == null)
+			return;
+		String output = outputBuffer.toString();
+
+		if (StringUtil.blank(filePath)) {
+			String name = suggestedFileName(suffix, suggestedFileEnding, filePath);
 			saveExportedFile(output, arguments, name);
 		}
 		else
