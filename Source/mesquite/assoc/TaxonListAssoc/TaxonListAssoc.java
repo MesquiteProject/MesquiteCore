@@ -188,11 +188,6 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
 		}
 	}
-	/*.................................................................................................................*
-	private String populationNameFromSpecimenName(String taxonName) {
-		String name = StringUtil.getAllButLastItem(taxonName, " ");  //TODO:   give options
-		return name;
-	}
 	/*.................................................................................................................*/
 	private void calculateAssociation(){
 		boolean changed = false;
@@ -200,8 +195,13 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			Taxa otherTaxa = association.getOtherTaxa(taxa);
 			if (nameParser==null)
 				nameParser = new NameParser(this, "taxon");
-			if (!MesquiteThread.isScripting())
-				nameParser.queryOptions();
+			if (!MesquiteThread.isScripting()) {
+				String helpString = "This tool requires that the taxon names of the master block of taxa are formed as reduced versions of the taxon names of the "
+						+ "other block of taxa.  In particular, the taxon names of the master block must exactly match a portion of the names of the other block.  "
+						+ "This tool find the match by removing the start and/or end of the longer names according to the criteria you specify, and, if that shorter name"
+						+ "matches the name of a taxon in the master block, then the other taxon having that longer name is associated with the taxon in the master block.";
+				nameParser.queryOptions("Options for matching associates", "Associates will be found by examining their names", helpString);
+			}
 			for (int it=0; it<taxa.getNumTaxa(); it++)
 				for (int ito = 0; ito<otherTaxa.getNumTaxa(); ito++){
 					String name = taxa.getTaxonName(it);

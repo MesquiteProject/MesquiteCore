@@ -150,7 +150,7 @@ public class ExportAssociation extends FileInterpreterI {
 		Arguments args = new Arguments(new Parser(arguments), true);
 		boolean usePrevious = args.parameterExists("usePrevious");
 
-		Taxa taxa = 	 getProject().chooseTaxa(getModuleWindow(), "Choose taxa block"); 
+		Taxa taxa = 	 getProject().chooseTaxa(getModuleWindow(), "Choose taxa to be listed first in each row:"); 
 		if (taxa==null) 
 			return false;
 		if (taxa!=currentTaxa || associationTask==null) {

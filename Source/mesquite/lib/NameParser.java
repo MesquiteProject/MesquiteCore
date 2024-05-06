@@ -24,10 +24,13 @@ public class NameParser implements XMLPreferencesProcessor{
 		this.ownerModule = ownerModule;
 	}
 	
-	public boolean queryOptions(){
+	public boolean queryOptions(String title, String label, String helpString){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(ownerModule.containerOfModule(), "Options for Extracting Part of Name", buttonPressed);
-		
+		ExtensibleDialog dialog = new ExtensibleDialog(ownerModule.containerOfModule(), title, buttonPressed);
+		dialog.appendToHelpString(helpString);
+		dialog.addLabel(label);
+		dialog.addHorizontalLine(2);
+
 		dialog.addLabel("Options for portion to be removed at start of name");
 		Checkbox considerStartBoundaryField = dialog.addCheckBox("remove start of name", considerStartBoundary);
 		SingleLineTextField startBoundaryField = dialog.addTextField("String delimiting portion at start to be removed:", startBoundary, 8, true);

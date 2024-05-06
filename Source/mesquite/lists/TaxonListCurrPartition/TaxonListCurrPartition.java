@@ -184,12 +184,16 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			Bits taxonInGroup = new Bits(taxa.getNumTaxa());
 			if (nameParser==null)
 				nameParser = new NameParser(this, "taxon");
-			if (!MesquiteThread.isScripting())
-				if (nameParser.queryOptions()) {
+			if (!MesquiteThread.isScripting()) {
+				String helpString = "Taxon groups will be created based upon a portion of the taxon names.  In particular, the name of each taxon will be reduced "
+						+ "by removing a piece from the start and/or end; that reduced name will become the name of the taxon group.  If two taxa have the same"
+						+ " reduced name, the will be assigned to the same taxon group";
+				if (nameParser.queryOptions("Options for Creating Groups", "Taxon group names will be extracted from taxon names.", helpString)) {
 					storePreferences();
 				}
 				else
 					return;
+			}
 			int c = ((ListModule)employer).getMyColumn(this);
 
 			for (int it=0; it<taxa.getNumTaxa(); it++) {
@@ -215,7 +219,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		}	
 	}
 	
-	/*.................................................................................................................*/   //WAYNECHECK
+	/*.................................................................................................................  //WAYNECHECK
 	private Taxa createTaxonBlock(int numTaxa) {
 		incrementMenuResetSuppression();
 		Taxa newTaxa=null;
@@ -233,9 +237,9 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		decrementMenuResetSuppression();
 		return newTaxa;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 
-	private void createTaxonBlockBasedOnNames() {
+	public void createTaxonBlockBasedOnNames(Taxa taxa) {
 		if (taxa!=null){
 			int numGroups=0;
 			TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
@@ -281,6 +285,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		}
 
 	}	
+	/*.................................................................................................................*/
 
 
 	MesquiteInteger pos = new MesquiteInteger(0);
@@ -373,8 +378,9 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			createPartitionBasedOnNames();
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
-		else if (checker.compare(this.getClass(), "Creates a taxa partition based upon the names of taxa", null, commandName, "createTaxonBlock")) {
-			createTaxonBlockBasedOnNames();
+		else if (checker.compare(this.getClass(), "Creates a taxa block based upon the names of taxa", null, commandName, "createTaxonBlock")) {
+			if (taxa!=null)
+				taxa.createTaxonBlockBasedOnNames();
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
 		else if (checker.compare(this.getClass(), "Loads the stored taxa partition to be the current one", "[number of partition to load]", commandName, "loadToCurrent")) {

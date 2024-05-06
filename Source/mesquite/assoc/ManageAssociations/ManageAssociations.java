@@ -19,16 +19,21 @@ import java.awt.*;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lists.lib.ListModule;
 import mesquite.assoc.lib.*;
 
 /* ========================================================================  */
 public class ManageAssociations extends AssociationsManager {
 	ListableVector associationsVector; //establish listeners to all of the taxa
 	ListableVector blocks;
+	NameParser nameParser;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		associationsVector = new ListableVector();
 		blocks = new ListableVector();
+		if (nameParser==null)
+			nameParser = new NameParser(this, "taxon");
+		loadPreferences();
 		return true;
 	}
  	public String getKeywords(){
@@ -37,6 +42,7 @@ public class ManageAssociations extends AssociationsManager {
  	public void endJob(){
  		associationsVector.dispose(true);
  		blocks.dispose(true);
+ 		nameParser = null;
 		super.endJob();
  	}
 	public boolean isPrerelease(){
@@ -49,9 +55,26 @@ public class ManageAssociations extends AssociationsManager {
 		}
 	}
 	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		if (nameParser!=null){
+			String s = nameParser.preparePreferencesForXML(); 
+			if (StringUtil.notEmpty(s))
+				buffer.append(s);
+		}
+		return buffer.toString();
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if (nameParser!=null)
+			nameParser.processSingleXMLPreference(tag,content);
+	}
+	/*.................................................................................................................*/
 	/** A method called immediately after the file has been read in.*/
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Association...", makeCommand("newAssociation",  this));
+		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "Group Taxa for Population Analysis...", makeCommand("createTaxaAndAssociation",  this));
 		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Edit Association", makeCommand("editAssociation",  this), associationsVector);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
 		super.projectEstablished();
@@ -331,6 +354,111 @@ public class ManageAssociations extends AssociationsManager {
 			toBeEdited.setText(newBlock);
 		return null;
 	}
+	
+	/*.................................................................................................................*/
+	private boolean novelGroupName(StringArray names, String name) {
+		if (names==null) return true;
+		return !names.exists(name);
+	}
+	/*.................................................................................................................*/
+
+	private Taxa createNewMasterTaxaBlockBasedOnNames(Taxa taxa) {
+		if (taxa!=null){
+			String groupName = "";
+			String name="";
+			Bits taxonProcessed = new Bits(taxa.getNumTaxa());
+			Bits taxonInGroup = new Bits(taxa.getNumTaxa());
+			if (nameParser==null)
+				nameParser = new NameParser(this, "taxon");
+			if (!MesquiteThread.isScripting()) {
+				String helpString = "New master taxa will be created based upon a portion of the taxon names of the contained taxon.  In particular, the name of each contained taxon will be reduced "
+						+ "by removing a piece from the start and/or end; that reduced name will become the name of the new master taxon.  If two contained taxa have the same"
+						+ " reduced name, the will be assigned to the same master taxon";
+				if (nameParser.queryOptions("Options for Creating Master Taxa", "Master taxon names will be extracted from taxon names.", helpString)) {
+					storePreferences();
+				}
+				else
+					return null;
+			}
+
+			StringArray masterTaxaNames = new StringArray(0);
+			
+			for (int it=0; it<taxa.getNumTaxa(); it++) {
+				if (!taxonProcessed.isBitOn(it)) {
+					groupName = nameParser.extractPart(taxa.getTaxonName(it));
+					if (novelGroupName(masterTaxaNames, groupName))
+						masterTaxaNames.addAndFillNextUnassigned(groupName);
+					taxonProcessed.setBit(it, true);
+					taxonInGroup.setBit(it,true);
+					for (int ij=it+1; ij<taxa.getNumTaxa(); ij++) {
+						name = nameParser.extractPart(taxa.getTaxonName(ij));
+						if (groupName!=null && groupName.equalsIgnoreCase(name)) {   // would have same name as the current group, therefore set as this group
+							taxonInGroup.setBit(ij,true);
+							taxonProcessed.setBit(ij, true);
+						}
+
+					}
+					taxonInGroup.clearAllBits();
+					
+				}
+			}
+			int numMasterTaxa = masterTaxaNames.getFilledSize();
+			Taxa masterTaxa =  taxa.createTaxonBlock(numMasterTaxa);
+			masterTaxa.setName("Populations");
+			for (int it=0; it<masterTaxa.getNumTaxa(); it++) {
+				masterTaxa.setTaxonName(it, masterTaxaNames.getValue(it));
+			}
+			return  masterTaxa;
+		}	
+		return null;
+	}
+	/*.................................................................................................................*/
+	private TaxaAssociation createNewPopulationTaxaBlockAndAssociation(){
+		boolean changed = false;
+		MesquiteProject project = getProject();
+		String helpString;
+		Taxa otherTaxa= null;
+		ListableVector taxas = project.getTaxas();
+		if (project.getNumberTaxas()==1){
+			otherTaxa = project.getTaxa(0);
+		} else {
+			helpString = "Please choose the set of taxa to be the contained taxa (e.g., gene, parasite). ";
+			otherTaxa = (Taxa)ListDialog.queryList(containerOfModule(), "Select taxa", "Select the block of taxaa for the individual specimen/gene copies.", helpString, taxas, 0);
+		}
+
+		Taxa masterTaxa = createNewMasterTaxaBlockBasedOnNames(otherTaxa);
+		TaxaAssociation association=null;
+		if (masterTaxa!=null)
+			association = makeNewAssociation(masterTaxa, otherTaxa, "Populations-Specimens");
+
+		if (association != null) {  // taxa is population, otherTaxa is contained/specimens
+			if (nameParser==null) {
+				nameParser = new NameParser(this, "taxon");
+				if (!MesquiteThread.isScripting()) {
+					helpString = "Taxa in the specimens/gene copies block will be matched with populations based upon their names.  In particular, the name of each specimen/gene copy will be reduced "
+							+ "by removing a piece from the start and/or end; that reduced name will be compared to the name of a population taxon.";
+					nameParser.queryOptions("Options for matching associates", "Associates will be found by examining their names", helpString);
+				}
+			}
+			for (int it=0; it<masterTaxa.getNumTaxa(); it++)
+				for (int ito = 0; ito<otherTaxa.getNumTaxa(); ito++){
+					String name = masterTaxa.getTaxonName(it);
+					String nameOther = nameParser.extractPart(otherTaxa.getTaxonName(ito));
+					if (name == null || nameOther == null)
+						continue;
+					boolean matches = name.equals(nameOther);
+					if (matches){
+						//association.zeroAllAssociations(taxa.getTaxon(it));
+						association.setAssociation(masterTaxa.getTaxon(it), otherTaxa.getTaxon(ito), true);
+						changed = true;
+					}
+				}
+
+			if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
+			return association;
+		}
+		return null;
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Calls up the association editor window", "[number of association block to edit]", commandName, "editAssociation")) {
@@ -390,6 +518,9 @@ public class ManageAssociations extends AssociationsManager {
 				return null;
 			return editInTaxonList(association, true);
 		}
+		else if (checker.compare(this.getClass(), "Creates a new taxa block (corresponding to populations) and an association block linking the specimens to the populations", null, commandName, "createTaxaAndAssociation")) {
+			return createNewPopulationTaxaBlockAndAssociation();
+		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -397,6 +528,9 @@ public class ManageAssociations extends AssociationsManager {
 	}
 
 	public TaxaAssociation makeNewAssociation(Taxa taxaA, Taxa taxaB){
+		return makeNewAssociation(taxaA, taxaB, null);
+	}
+	public TaxaAssociation makeNewAssociation(Taxa taxaA, Taxa taxaB, String associationName){
 		/* get taxa A, taxa B */
 		MesquiteProject project = getProject();
 		if (project.getNumberTaxas()==1){
@@ -438,7 +572,9 @@ public class ManageAssociations extends AssociationsManager {
 
 		if (taxaA==null ||taxaB==null || file == null)
 			return null;
-		String name = MesquiteString.queryString(containerOfModule(), "Name of Association", "Association", associationsVector.getUniqueName("Taxa Association"));
+		String name = associationName;
+		if (StringUtil.blank(associationName))
+			name = MesquiteString.queryString(containerOfModule(), "Name of Association", "Association", associationsVector.getUniqueName("Taxa Association"));
 		if (name==null)
 			return null;
 		if (StringUtil.blank(name))
