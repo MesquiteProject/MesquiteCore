@@ -36,9 +36,8 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	static final double defaultGapThreshold = 0.0;
 	static final boolean defaultChooseAmbiguousSites = true;
 	static final boolean defaultCountWithinApplicable = false;
-	static final double defaultTermGapsPropForgiven = 0.0;
+	//static final double defaultTermGapsPropForgiven = 0.0;
 	static final boolean defaultIgnoreTaxaWithoutSequence = true;
-	static final double defaultMaxTermAbsProportion = 0.5;
 
 	double IS = defaultIS;   // fraction of identical residues that is upper boundary for non-conserved sequences
 	double FS = defaultFS;  // fraction of identical residues that is upper boundary for conserved sequences
@@ -49,8 +48,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	boolean removeAllGaps = true;
 	boolean chooseAmbiguousSites = defaultChooseAmbiguousSites;
 	boolean countWithinApplicable = defaultCountWithinApplicable;   // count fractions of identical residues only within those taxa without gaps at a site
-	double termGapsPropForgiven = defaultTermGapsPropForgiven;
-	double maxTermAbsencesProportion = defaultMaxTermAbsProportion;
+	//double termGapsPropForgiven = defaultTermGapsPropForgiven;
 	boolean ignoreTaxaWithoutSequence = defaultIgnoreTaxaWithoutSequence;
 	boolean[] taxonHasSequence=null;
 
@@ -84,8 +82,8 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 			chooseAmbiguousSites = MesquiteBoolean.fromTrueFalseString(content);
 		if ("countWithinApplicable".equalsIgnoreCase(tag))
 			countWithinApplicable = MesquiteBoolean.fromTrueFalseString(content);
-		if ("termGapsPropForgiven".equalsIgnoreCase(tag))
-			termGapsPropForgiven = MesquiteDouble.fromString(content);
+		//if ("termGapsPropForgiven".equalsIgnoreCase(tag))
+		//	termGapsPropForgiven = MesquiteDouble.fromString(content);
 		//	if ("ignoreTaxaWithoutSequence".equalsIgnoreCase(tag))
 		//		ignoreTaxaWithoutSequence = MesquiteBoolean.fromTrueFalseString(content);
 	}
@@ -100,7 +98,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		StringUtil.appendXMLTag(buffer, 2, "gapThreshold", gapThreshold);  
 		StringUtil.appendXMLTag(buffer, 2, "chooseAmbiguousSites", chooseAmbiguousSites);  
 		StringUtil.appendXMLTag(buffer, 2, "countWithinApplicable", countWithinApplicable);  
-		StringUtil.appendXMLTag(buffer, 2, "termGapsPropForgiven", termGapsPropForgiven);  
+		//StringUtil.appendXMLTag(buffer, 2, "termGapsPropForgiven", termGapsPropForgiven);  
 		//	StringUtil.appendXMLTag(buffer, 2, "ignoreTaxaWithoutSequence", ignoreTaxaWithoutSequence);  
 
 		return buffer.toString();
@@ -122,7 +120,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	IntegerField CPfield =null;
 	IntegerField BLfield=null;
 	DoubleField gapThresholdField=null;
-	Checkbox chooseAmbiguousSitesCheckbox=null;
+	RadioButtons chooseAmbiguousSitesRadioButtons=null;
 	DoubleField termGapsPropForgivenField=null;
 	//Checkbox ignoreTaxaWithoutSequenceCheckbox=null;
 	/*.................................................................................................................*/
@@ -181,12 +179,17 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		countWithinApplicableCheckbox = dialog.addCheckBox("Count fractions only within taxa with non-gaps at that position", countWithinApplicable);
 
 		gapThresholdField = dialog.addDoubleField("Fraction of gaps allowed in a character", gapThreshold, 4);
-		termGapsPropForgivenField = dialog.addDoubleField("Prop. terminal gaps forgiven", termGapsPropForgiven, 4);
+		//termGapsPropForgivenField = dialog.addDoubleField("Prop. terminal gaps forgiven", termGapsPropForgiven, 4);
 		//ignoreTaxaWithoutSequenceCheckbox = dialog.addCheckBox("Ignore taxa without any sequence*", ignoreTaxaWithoutSequence);
 		dialog.addHorizontalLine(1);
 		String actionToUse = getActionToUse(action);
 
-		chooseAmbiguousSitesCheckbox = dialog.addCheckBox(actionToUse.toLowerCase()+ " sites in ambiguously aligned regions", chooseAmbiguousSites);
+	//	chooseAmbiguousSitesCheckbox = dialog.addCheckBox(actionToUse.toLowerCase()+ " sites in ambiguously aligned regions", chooseAmbiguousSites);
+		int c = 0;
+		if (!chooseAmbiguousSites)
+			c = 1;
+		chooseAmbiguousSitesRadioButtons = dialog.addRadioButtons (new String[] {action + " \"bad\" blocks (doubtfully aligned)", action + " \"good\" blocks (reasonably aligned)"}, c);
+
 		dialog.addHorizontalLine(1);
 	}
 	/*.................................................................................................................*/
@@ -197,8 +200,10 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		BL = BLfield.getValue();
 		gapThreshold = gapThresholdField.getValue();
 		countWithinApplicable = countWithinApplicableCheckbox.getState();
-		chooseAmbiguousSites = chooseAmbiguousSitesCheckbox.getState();
-		termGapsPropForgiven = termGapsPropForgivenField.getValue();
+		int c  = chooseAmbiguousSitesRadioButtons.getValue();
+		chooseAmbiguousSites = (c == 0);
+		
+		//termGapsPropForgiven = termGapsPropForgivenField.getValue();
 		//ignoreTaxaWithoutSequence = ignoreTaxaWithoutSequenceCheckbox.getState();
 	}
 	/*.................................................................................................................*/
@@ -209,8 +214,11 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		BLfield.setValue(defaultBL);
 		gapThresholdField.setValue(defaultGapThreshold);
 		countWithinApplicableCheckbox.setState(defaultCountWithinApplicable);
-		chooseAmbiguousSitesCheckbox.setState(defaultChooseAmbiguousSites);
-		termGapsPropForgivenField.setValue(defaultTermGapsPropForgiven);
+		if (defaultChooseAmbiguousSites)
+			chooseAmbiguousSitesRadioButtons.setValue(0);
+		else
+			chooseAmbiguousSitesRadioButtons.setValue(1);
+	//	termGapsPropForgivenField.setValue(defaultTermGapsPropForgiven);
 		//ignoreTaxaWithoutSequenceCheckbox.setState(defaultIgnoreTaxaWithoutSequence);
 	}
 
@@ -279,8 +287,8 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	boolean isGapForgiven(int ic, int it) {
 		if (!taxonHasSequence[it])
 			return true;
-		if (termGapsPropForgiven==0)
-			return false;
+/*	//	if (termGapsPropForgiven==0)
+	//		return false;
 		if (!isInTermGaps(ic, it))
 			return false;
 		// count number of sequences within terminal gap region
@@ -295,22 +303,14 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		}
 		double propInTermGaps = 1.0*countTG/countTotal;
 		return propInTermGaps <= termGapsPropForgiven;
+		*/
+		return false;
 	}
 	/*.................................................................................................................*/
 	boolean tooManyGaps (CategoricalData data, int ic) {
 		if (taxonHasSequence==null)
 			return false;
-		if (false && maxTermAbsencesProportion<1.0) {
-			int numTaxaInSequenceAtSite = 0;
-			for (int it = 0; it<data.getNumTaxa(); it++) {
-				if (!isInTermGaps(ic, it) && taxonHasSequence[it])
-					numTaxaInSequenceAtSite++;
-			}
-
-			if (1-(1.0*numTaxaInSequenceAtSite/numTaxaWithSequence) > maxTermAbsencesProportion)
-				return true;
-
-		}
+		
 
 		if (removeAllGaps) {  // if removeAllGaps is true, having a single gap is too many
 			for (int it = 0; it<data.getNumTaxa(); it++) {
@@ -452,16 +452,16 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 			}
 			//figuring out number of taxa that are "in sequence" for each site
 			for (int ic=0; ic<data.getNumChars(); ic++) {
-				if (termGapsPropForgiven > 0.0) {
+				/*if (termGapsPropForgiven > 0.0) {
 					int count = 0;
 					for (int it = 0; it< data.getNumTaxa(); it++)
 						if (lastBase[it]<0 || (ic >= firstBase[it] && ic <=lastBase[it]))
 							count++;
 					numSequencesAtSite[ic]=count;
 				}
-				else {
+				else { */
 					numSequencesAtSite[ic]=numTaxaWithSequence;
-				}
+				//}
 			}
 
 

@@ -132,6 +132,15 @@ public class RadioButtons implements ItemListener {
 		}
 		return 0;
 	}
+	/*.................................................................................................................*/
+	public void setValue (int k) {
+		for (int i=0; i< numCheckBoxes; i++) {
+			if (k == i)
+				checkboxArray[i].setState(true);
+			else
+				checkboxArray[i].setState(false);
+		}
+	}
 
 }
 

@@ -12,6 +12,8 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.lib;
+import java.util.Vector;
+
 import mesquite.categ.lib.RequiresAnyMolecularData;
 
 import mesquite.lib.*;
@@ -45,11 +47,16 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 		if (undoReference!=null)
 			undoInstructions =data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_DELETED});
 		
-
+		data.incrementNotifySuppress();
+		Vector v = pauseAllPausables();
+		if (getProject() != null)
+			getProject().incrementProjectWindowSuppression();
+		
 		//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
 		int ic = data.getNumChars()-1;
 		int firstInBlockDeleted = -1;
 		int lastInBlockDeleted = -1;
+		int blockCount = 0;
 		while(ic>=0) {
 			if (data.getSelected(ic)){  // we've found a selected one
 				lastInBlockDeleted = ic;
@@ -60,13 +67,21 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 					ic--;
 				}
 
+				if (blockCount % 50 == 0)
+					logln("Deleting characters, block " + blockCount);
 				data.deleteCharacters(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);  // now prepare contiguous block for deletion
 				data.deleteInLinked(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);
+				blockCount++;
 			}
 			ic--;
 		}
-		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+		if (getProject() != null)
+			getProject().decrementProjectWindowSuppression();
+		unpauseAllPausables(v);
+		data.decrementNotifySuppress();
 		
+		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+
 		
 		if (undoReference!=null){
 			if (undoInstructions!=null){
