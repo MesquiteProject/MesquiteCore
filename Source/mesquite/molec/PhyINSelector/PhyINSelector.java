@@ -331,32 +331,15 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 	/** Called to select characters*/
 	public void selectCharacters(CharacterData data){
 		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
-			MesquiteTimer timer = new MesquiteTimer();
-			timer.start();
 			markThoseWithConflict((CategoricalData)data);
-			timer.end();
-			Debugg.println(" time to assess " + timer.getAccumulatedTime());
-			timer.reset();
-			timer.start();
 			for (int ic=0; ic<hasConflict.length; ic++) {
 				selectSpanByProportion(ic, hasConflict, toSelect, proportionIncompat, spanSize);
 			}
-			timer.end();
-			Debugg.println(" time to selectSpan " + timer.getAccumulatedTime());
-			timer.reset();
-			timer.start();
 			for (int ic=0; ic<data.getNumChars(); ic++) {
 				if (toSelect[ic])
 					data.setSelected(ic, true);
 			}
-			timer.end();
-			Debugg.println(" time to select " + timer.getAccumulatedTime());
-			timer.reset();
-			timer.start();
-
 			data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-			timer.end();
-			Debugg.println(" time to notify " + timer.getAccumulatedTime());
 		}
 	}
 

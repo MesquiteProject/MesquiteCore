@@ -954,7 +954,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return deleted;
 	}
 	/*-----------------------------------------------------------*/
-	/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
+
+/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
 	public boolean deleteParts(int starting, int num){
 		if (num<=0)
 			return false;
@@ -964,11 +965,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return false;
 		if (!checkThread(false))
 			return false;
+
 		nDel++;
 		if (num+starting>numChars)
 			num = numChars-starting;
 		int newNumChars = numChars - num;
-
 		//adjusting character id's 
 		long[] newCharIDs = new long[newNumChars];
 		for (int i=0; i<starting; i++) {
@@ -1052,7 +1053,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			characterIllustrations = newCharacterIllustrations;
 		}
 		numChars = newNumChars;
-		calculateFirstLastApplicable();
+		//calculateFirstLastApplicable();
 		super.deleteParts(starting, num); //for specs sets
 		uncheckThread();
 		return true;

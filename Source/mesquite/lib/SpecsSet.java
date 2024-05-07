@@ -74,6 +74,7 @@ public abstract class SpecsSet extends FileElement {
 	/** Add num parts just after "starting" (filling with default values)  */
   	public abstract boolean addParts(int starting, int num);
 	/*.................................................................................................................*/
+  	
 	/** Delete parts specified  */
 	public abstract boolean deleteParts(int starting, int num);
 	/*.................................................................................................................*/
