@@ -49,7 +49,7 @@ public class ExportAssociation extends FileInterpreterI {
 	}
 	/*.................................................................................................................*/
 	public String preferredDataFileExtension() {
-		return "txt";
+		return "dat";
 	}
 	/*.................................................................................................................*/
 	public boolean canExportEver() {  
@@ -177,7 +177,7 @@ public class ExportAssociation extends FileInterpreterI {
 			Taxon taxon = taxa.getTaxon(it);
 			Taxon[] associatedTaxa = association.getAssociates(taxon);
 			for (int j=0; j<associatedTaxa.length; j++) {
-				outputBuffer.append(prepareExportName(associatedTaxa[j].getName())+"\t" +prepareExportName(taxon.getName())+"\n");
+				outputBuffer.append(prepareExportName(taxon.getName())+"\t" +prepareExportName(associatedTaxa[j].getName())+"\n");
 			}
 			
 		}
