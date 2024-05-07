@@ -191,13 +191,12 @@ public class xExportForStarBeast extends FileInterpreterI {
 						suggested = fn.getValue();  // get fileName chosen by user
 						if (suggested.endsWith(".nex"))
 							suggested = StringUtil.getAllButLastItem(suggested, ".");
-						fn.setValue(suggested+"."+data.getName()+".nex");
+						//fn.setValue(data.getName()+"."+suggested+".nex");
+						//fn.setValue(suggested+"."+data.getName()+".nex");
 					}
-					else {
-						fn.setValue(suggested+"."+data.getName()+".nex");
-						dir.setValue(directoryPath);
-						path = directoryPath + fn.getValue();
-					}
+					fn.setValue(data.getName()+"."+suggested+".nex");
+					//dir.setValue(directoryPath);
+					path = directoryPath + fn.getValue();
 					firstMatrix=false;
 					if (exportAFile(path, dir, fn, data)) 
 						exported = true;
@@ -209,13 +208,13 @@ public class xExportForStarBeast extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Export for StarBEAST";
+		return "Export for StarBeast";
 	}
 	/*.................................................................................................................*/
 
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Exports NEXUS files for StarBEAST." ;
+		return "Exports NEXUS files for StarBeast." ;
 	}
 	/*.................................................................................................................*/
 
