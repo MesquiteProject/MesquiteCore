@@ -225,6 +225,8 @@ public class ExportForBPP extends FileInterpreterI {
 			}
 
 		Tree tree = oneTreeSourceTask.getTree(currentTaxa);
+		if (tree==null)
+			return false;
 		
 		TaxaAssociation association = associationTask.getCurrentAssociation(currentTaxa);
 		if (association==null)
