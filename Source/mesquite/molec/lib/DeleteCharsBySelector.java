@@ -69,6 +69,9 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 
 				if (blockCount % 50 == 0)
 					logln("Deleting characters, block " + blockCount);
+				//There is a huge time cost here in deleteParts in ObjSpecsSet every loop
+				// better to design new deleteCharacters and asosciated deleteParts that is passed an array of blocks to be deleted (start and end)
+				//Debugg.printlnd
 				data.deleteCharacters(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);  // now prepare contiguous block for deletion
 				data.deleteInLinked(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);
 				blockCount++;

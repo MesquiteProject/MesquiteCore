@@ -157,7 +157,7 @@ public abstract class NumSpecsSet extends SpecsSet  {
 		setDirty(true);
  		nums.deleteParts(starting, num);
 		numParts = nums.getSize();
-		return true;
+	return true;
 	}
 	/*.................................................................................................................*/
  	/** */
