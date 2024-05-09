@@ -16,6 +16,9 @@ package mesquite.molec.DeleteCharsByPhyIN;
 
 
 
+import mesquite.categ.lib.RequiresAnyDNAData;
+
+import mesquite.lib.CompatibilityTest;
 import mesquite.lib.duties.CharacterSelector;
 import mesquite.molec.lib.DeleteCharsBySelector;
 
@@ -30,6 +33,10 @@ public class DeleteCharsByPhyIN extends DeleteCharsBySelector {
 	}
 
 
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyDNAData();
+	}
+	
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
 		return true;
