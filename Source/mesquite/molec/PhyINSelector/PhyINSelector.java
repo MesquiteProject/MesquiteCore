@@ -31,7 +31,7 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 	//Primary PhyIN parameters
 	double proportionIncompat = 0.4;
 	int blockSize = 12;
-	int neighbourDistance = 1;
+	int neighbourDistance = 3;
 	MesquiteBoolean treatGapAsState = new MesquiteBoolean(true);
 	// AAATAAAAAAACCAAAAAAAAAAA
 	// AAATTAAAAACCAAAAAAAAAAAA
@@ -276,7 +276,7 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 	boolean[] toSelect;
 	int[] taxonSequenceStart, taxonSequenceEnd;
 	int NUMSTATES = 4;
-
+	int numTaxaWithSequence = 0;
 
 	boolean[][] statePairs;
 
@@ -401,10 +401,12 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 			hasConflict[ic] = false;
 			toSelect[ic] = false;
 		}
-
+		numTaxaWithSequence = 0;
 		for (int it=0; it<data.getNumTaxa(); it++) {
 			taxonSequenceStart[it] = getFirstInSequence(data, it);
 			taxonSequenceEnd[it] = getLastInSequence(data, it);
+			if (taxonSequenceStart[it]>=0)
+				numTaxaWithSequence++;
 		}
 
 		NUMSTATES = data.getMaxState()+1; 
@@ -449,14 +451,16 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 	boolean isGapBlockBoundary(int k) {
 		int i = 0;
 		for (i = 0; k+i<siteGappiness.length && i<minGappyBoundary; i++)
-			if (siteGappiness[k+i]> siteGappinessThreshold)
+			if (gappySite(k+i))
 				return false;
 		return true;
 	}
 	boolean gappySite(int k) {
-		return siteGappiness[k]>siteGappinessThreshold;
+		return siteGappiness[k]>=siteGappinessThreshold;
 	}
 	void markGappyBlocks(CategoricalData data) {
+		if (numTaxaWithSequence == 0)
+			return;
 		int numChars = data.getNumChars();
 		int numTaxa = data.getNumTaxa();
 		if (siteGappiness == null || siteGappiness.length != numChars) {
@@ -468,7 +472,7 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 				if (taxonSequenceStart[it]>=0 && data.isInapplicable(ic,it)) //if taxonSequenceStart < 0 then taxon has no data
 					gapCount++;
 			}
-			siteGappiness[ic] = 1.0*gapCount/numTaxa;
+			siteGappiness[ic] = 1.0*gapCount/numTaxaWithSequence;
 		}
 
 		for (int blockStart=0; blockStart<numChars; blockStart++) { //let's look for gappy blocks
@@ -488,7 +492,7 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 								if (gappySite(k))  // stored as double[] in case criterion shifts, e.g., to average
 									badSiteCount++;
 							double blockGappiness = 1.0*badSiteCount/(blockEnd-blockStart+1);
-							if (blockGappiness >blockGappinessThreshold)
+							if (blockGappiness >=blockGappinessThreshold)
 								for (int k = blockStart; k <= blockEnd; k++)
 									toSelect[k] = true;
 

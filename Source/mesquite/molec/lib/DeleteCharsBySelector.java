@@ -67,6 +67,7 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 					ic--;
 				}
 
+				blockCount++;
 				if (blockCount % 50 == 0)
 					logln("Deleting characters, block " + blockCount);
 				//There is a huge time cost here in deleteParts in ObjSpecsSet every loop
@@ -74,7 +75,6 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 				//Debugg.printlnd
 				data.deleteCharacters(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);  // now prepare contiguous block for deletion
 				data.deleteInLinked(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);
-				blockCount++;
 			}
 			ic--;
 		}
