@@ -29,10 +29,10 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 	String xmlPrefsString = null;
 
 	//Primary PhyIN parameters
-	double proportionIncompat = 0.4;
-	int blockSize = 12;
-	int neighbourDistance = 3;
-	MesquiteBoolean treatGapAsState = new MesquiteBoolean(true);
+	double proportionIncompat = 0.4; //(-p)
+	int blockSize = 12; //(-b)
+	int neighbourDistance = 1; //(-d)
+	MesquiteBoolean treatGapAsState = new MesquiteBoolean(true); //(-e)
 	// AAATAAAAAAACCAAAAAAAAAAA
 	// AAATTAAAAACCAAAAAAAAAAAA
 	// AAAATAAAAAAACAAAAAAAAAAA
@@ -239,10 +239,10 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 
 		dialog.addHorizontalLine(1);
 		Checkbox fG = dialog.addCheckBox("Filter also by gappiness", filterGappiness.getValue());
-		DoubleField pgSField = dialog.addDoubleField("Proportion of gaps that marks site as bad", siteGappinessThreshold, 4);
-		IntegerField minGBS = dialog.addIntegerField("Minimum length of bad block", minGappyBlockSize, 4);
-		IntegerField minGB = dialog.addIntegerField("Stretch of good that resets block", minGappyBoundary, 4);
-		DoubleField pgBField = dialog.addDoubleField("Proportion of bad sites for block to be bad", blockGappinessThreshold, 4);
+		DoubleField pgSField = dialog.addDoubleField("Proportion of gaps that marks site as too gappy (\"bad\") (-gSiteGT)", siteGappinessThreshold, 4);
+		IntegerField minGBS = dialog.addIntegerField("Minimum length of bad block (-gBlockSize)", minGappyBlockSize, 4);
+		IntegerField minGB = dialog.addIntegerField("Stretch of good that resets block (-gBoundary)", minGappyBoundary, 4);
+		DoubleField pgBField = dialog.addDoubleField("Proportion of bad sites for block to be bad (-gBlockGT)", blockGappinessThreshold, 4);
 
 
 		dialog.completeAndShowDialog(true);
@@ -449,8 +449,7 @@ public class PhyINSelector extends CharacterSelectorPersistent {
 	//This is an auxilliary criterion, here just so that it can assess in the pre-trimmed fullness of the alignment
 	double[] siteGappiness;
 	boolean isGapBlockBoundary(int k) {
-		int i = 0;
-		for (i = 0; k+i<siteGappiness.length && i<minGappyBoundary; i++)
+		for (int i = 0; k+i<siteGappiness.length && i<minGappyBoundary; i++)
 			if (gappySite(k+i))
 				return false;
 		return true;
