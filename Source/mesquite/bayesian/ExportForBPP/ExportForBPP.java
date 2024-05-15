@@ -80,7 +80,7 @@ public class ExportForBPP extends FileInterpreterI {
 	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
 	String startOfControlFile = "speciesdelimitation = 1 1 2 1\nspeciestree = 0\nspeciesmodelprior = 1\n";
-	String endOfControlFile = "cleandata = 0\n\nthetaprior = 3 0.004\n\ntauprior = 3 0.002\n\nfinetune =  1: 5 0.001 0.001  0.001 0.3 0.33 1.0\n\nprint = 1 0 0 0 0\nburnin = 8000\nsampfreq = 10\nnsample = 1000\n\n";
+	String endOfControlFile = "\ncleandata = 0\n\nthetaprior = 3 0.004\n\ntauprior = 3 0.002\n\nfinetune =  1: 5 0.001 0.001  0.001 0.3 0.33 1.0\n\nprint = 1 0 0 0 0\nburnin = 8000\nsampfreq = 10\nnsample = 1000\n\n";
 	String fileName = "BPP.ctl";
 
 	public boolean getExportOptions(TreeVector trees){
@@ -283,8 +283,8 @@ public class ExportForBPP extends FileInterpreterI {
 			else 
 				controlFileBuffer.append(" "+1);
 		}
-		controlFileBuffer.append("usedata = 1\n");
-		controlFileBuffer.append("nlock = " +numMatrices+"\n\n");
+		controlFileBuffer.append("\n\nusedata = 1\n");
+		controlFileBuffer.append("nloci = " +numMatrices+"\n\n");
 		controlFileBuffer.append(endOfControlFile);
 
 
