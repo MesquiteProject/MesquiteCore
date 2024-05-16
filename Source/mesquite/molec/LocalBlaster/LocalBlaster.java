@@ -84,6 +84,10 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 	public boolean getDefaultExecutablePathAllowed() {
 		return getHasApp();
 	}
+	public boolean requestPrimaryChoice() {
+		return true;
+	}
+
 	/*.................................................................................................................*/
 	public AppInformationFile getAppInfoFile() {
 		AppInformationFile aif = AppHarvester.getAppInfoFileForProgram(this);
