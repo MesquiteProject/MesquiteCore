@@ -730,9 +730,10 @@ public class DNAData extends MolecularData {
 	/** Returns true if there is more than one code within the current genetic code set */
 	public boolean getVariableCodes() {
 		GeneticCode genCode = getGeneticCode(0);
-		for (int ic=1;ic<getNumChars(); ic++)
-			if (!genCode.equals(getGeneticCode(ic)))
-				return true;
+		if (genCode!=null)
+			for (int ic=1;ic<getNumChars(); ic++)
+				if (!genCode.equals(getGeneticCode(ic)))
+					return true;
 		return false;
 	}
 	/* ................................................................................................................. */
