@@ -91,8 +91,12 @@ public class ShellScriptRunner implements Commandable  {
 		Snapshot temp = new Snapshot();
 		if (proc!=null) {
 			long childID = ShellScriptUtil.getChildProcessID(proc);
+			if (MesquiteTrunk.debugMode) {
+				System.out.println("Process ID of script: "+ ShellScriptUtil.getProcessID(proc));
+				System.out.println("Process ID of first child of script: "+ ShellScriptUtil.getProcessID(proc));
+			}
 			if (MesquiteLong.isCombinable(childID)) {
-				temp.addLine("setProcessID " + ShellScriptUtil.getChildProcessID(proc));
+				temp.addLine("setProcessID " + childID);
 				Debugg.println("---------  CHILD Process ID: " + childID);
 			}
 		}
@@ -121,6 +125,13 @@ public class ShellScriptRunner implements Commandable  {
 			long temp = MesquiteLong.fromString(s);
 			if (MesquiteLong.isCombinable(temp)) {
 				ProcessHandle procH = ShellScriptUtil.getProcessHandleFromProcID(temp);
+				if (MesquiteTrunk.debugMode) {
+					System.out.println("Attempting to reconnect with external analysis with process ID "+ temp);
+					if (procH==null)
+						System.out.println("Active process could not be found, ProcessHandle is null");
+					else
+						System.out.println("Active process found");
+				}
 				Debugg.println("\n||||||  processID doCommand: " +temp);
 				Debugg.println("\n||||||  procH doCommand: " +procH);
 				if (procH!=null && reconnectToExternal) {
@@ -210,8 +221,12 @@ public class ShellScriptRunner implements Commandable  {
 	/*.................................................................................................................*/
 	public void reconnectToExternalProcess(ProcessHandle procH) {
 		this.procH = procH;
+		if (MesquiteTrunk.debugMode) {
+			System.out.println("Reconnecting to external : "+ ShellScriptUtil.getProcessID(proc));
+			System.out.println("Process ID of first child of script: "+ ShellScriptUtil.getProcessID(proc));
+		}
 		Debugg.println("***** reconnectToExternalProcess, procH: " + procH);
-		externalProcessManager = new MesquiteExternalProcess(procH);
+		externalProcessManager = new MesquiteExternalProcess(procH, false);
 		setOutErrFilePaths();
 		File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
 		File errorFile = new File(stdErrFilePath);
@@ -238,7 +253,7 @@ public class ShellScriptRunner implements Commandable  {
 					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
 			}
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);  
-			externalProcessManager = new MesquiteExternalProcess(proc);
+			externalProcessManager = new MesquiteExternalProcess(proc, true);
 			File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
 			File errorFile = new File(stdErrFilePath);
 			externalProcessManager.startFileTailers(outputFile, errorFile);   

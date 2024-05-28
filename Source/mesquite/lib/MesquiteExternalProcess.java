@@ -32,16 +32,19 @@ public class MesquiteExternalProcess  {
 	String outputFilePath;
 	String errorFilePath;
 	MesquiteInteger errorCode;
+	boolean keyProcessIsChildOfProcess = false;
 
 
-	public MesquiteExternalProcess(Process proc) {
+	public MesquiteExternalProcess(Process proc, boolean keyProcessIsChildOfProcess) {
 		if (proc!=null)
 			this.proc = proc;
+		this.keyProcessIsChildOfProcess = keyProcessIsChildOfProcess;
 	}
-	public MesquiteExternalProcess(ProcessHandle procH) {
+	public MesquiteExternalProcess(ProcessHandle procH, boolean keyProcessIsChildOfProcess) {
 		if (procH!=null) {
 			this.procH = procH;
 		}
+		this.keyProcessIsChildOfProcess = keyProcessIsChildOfProcess;
 	}
 	public MesquiteExternalProcess() {
 	}
@@ -67,7 +70,7 @@ public class MesquiteExternalProcess  {
 		this.outputFilePath = outputFilePath;
 		this.errorFilePath = errorFilePath;
 		errorCode = new MesquiteInteger(ProcessUtil.NOERROR);
-		Process proc = ProcessUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
+		this.proc = ProcessUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
 		this.procH = proc.toHandle();
 
 	}
@@ -80,13 +83,13 @@ public class MesquiteExternalProcess  {
 	}
 	/*.................................................................................................................*/
 
-	public void setProcess(Process proc) {
-		this.proc = proc;
+	public ProcessHandle getProcessHandle() {
+		return procH;
 	}
 	/*.................................................................................................................*/
 
-	public ProcessHandle getProcessHandle() {
-		return procH;
+	public void setProcess(Process proc) {
+		this.proc = proc;
 	}
 	/*.................................................................................................................*/
 
@@ -96,24 +99,34 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 	public void kill () {
 		if (proc!=null) {
-			ProcessHandle childH = ShellScriptUtil.getChildProcess(proc);
-/*			try {
-				InputStream errorStream = childH.getErrorStream();
-				errorStream.close();
-				OutputStream outputStream = childH.getOutputStream();
-				outputStream.close();
-				endFileTailers();
+			if (keyProcessIsChildOfProcess) {
+				ProcessHandle childH = ShellScriptUtil.getChildProcess(proc);
+				childH.destroy();
+				try {
+					Thread.sleep(100);
+					if (ExternalProcessManager.isAlive(childH))
+						childH.destroyForcibly();
+				} catch (Exception e) {
+				}
+			} else {   // not a childProcess
+				try {
+					InputStream errorStream = proc.getErrorStream();
+					errorStream.close();
+					OutputStream outputStream = proc.getOutputStream();
+					outputStream.close();
+					endFileTailers();
 
-			} catch (IOException e) {
-				MesquiteMessage.println("Couldn't close streams of process.");
-			}
-			*/
-			childH.destroy();
-			try {
-				Thread.sleep(100);
-				if (ExternalProcessManager.isAlive(proc))
-					childH.destroyForcibly();
-			} catch (Exception e) {
+				} catch (IOException e) {
+					MesquiteMessage.println("Couldn't close streams of process.");
+				}
+
+				proc.destroy();
+				try {
+					Thread.sleep(100);
+					if (ExternalProcessManager.isAlive(proc))
+						proc.destroyForcibly();
+				} catch (Exception e) {
+				}
 			}
 		} else if (procH!=null) {
 			procH.destroy();
