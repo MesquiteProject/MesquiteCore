@@ -48,6 +48,7 @@ public class ShellScriptRunner implements Commandable  {
 	long stdOutLastModified = 0;
 	long stdErrLastModified = 0;
 	boolean aborted = false;
+	boolean dontKill = false;
 
 	
 	public ShellScriptRunner(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
@@ -172,6 +173,13 @@ public class ShellScriptRunner implements Commandable  {
 	public void setVisibleTerminal(boolean visibleTerminal) {
 		this.visibleTerminal = visibleTerminal;
 	}
+	public void setDontKill(boolean dontKill) {
+		this.dontKill = dontKill;
+		if (externalProcessManager!=null)
+			externalProcessManager.setDontKill(dontKill);
+
+	}
+
 	/*.................................................................................................................*/
 	public String getStdErr() {
 		if (externalProcessManager!=null)

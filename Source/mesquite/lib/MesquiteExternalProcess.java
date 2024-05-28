@@ -34,6 +34,7 @@ public class MesquiteExternalProcess  {
 	MesquiteInteger errorCode;
 	boolean keyProcessIsChildOfProcess = false;
 	boolean diesOnClosing=true;
+	boolean dontKill = false;
 
 
 	public MesquiteExternalProcess(Process proc, boolean keyProcessIsChildOfProcess) {
@@ -55,6 +56,10 @@ public class MesquiteExternalProcess  {
 			return errorCode.getValue();
 		return ProcessUtil.NOERROR;
 	}
+	public void setDontKill(boolean dontKill) {
+		this.dontKill = dontKill;
+	}
+
 	/*.................................................................................................................*/
 
 	public void restart(String directoryPath, String outputFilePath, String errorFilePath) {
@@ -105,6 +110,8 @@ public class MesquiteExternalProcess  {
 	}
 	/*.................................................................................................................*/
 	public void kill () {
+		if (dontKill)
+			return;
 		if (proc!=null) {
 			if (keyProcessIsChildOfProcess) {  // it's the child process that counts - presumably as script-based
 				ProcessHandle childH = ShellScriptUtil.getChildProcess(proc);
