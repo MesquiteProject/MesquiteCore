@@ -26,7 +26,8 @@ public class MesquiteExternalProcess  {
 	BufferedWriter inputBufferedWriter;
 	OutputFileTailer errorReader;
 	OutputFileTailer outputReader;
-	Process proc;
+	Process proc =null;
+	ProcessHandle procH = null;
 	String directoryPath;
 	String outputFilePath;
 	String errorFilePath;
@@ -34,13 +35,15 @@ public class MesquiteExternalProcess  {
 
 
 	public MesquiteExternalProcess(Process proc) {
-		this.proc = proc;
+		if (proc!=null)
+			this.proc = proc;
+	}
+	public MesquiteExternalProcess(ProcessHandle procH) {
+		if (procH!=null) {
+			this.procH = procH;
+		}
 	}
 	public MesquiteExternalProcess() {
-	}
-	/*.................................................................................................................*/
-	public Process getProcess() {
-		return proc;
 	}
 	/*.................................................................................................................*/
 	public int getErrorCode() {
@@ -64,34 +67,60 @@ public class MesquiteExternalProcess  {
 		this.outputFilePath = outputFilePath;
 		this.errorFilePath = errorFilePath;
 		errorCode = new MesquiteInteger(ProcessUtil.NOERROR);
-		this.proc = ProcessUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
+		Process proc = ProcessUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
+		this.procH = proc.toHandle();
 
 	}
 
 
+	/*.................................................................................................................*/
+
+	public void setProcessHandle(ProcessHandle procH) {
+		this.procH = procH;
+	}
 	/*.................................................................................................................*/
 
 	public void setProcess(Process proc) {
 		this.proc = proc;
 	}
 	/*.................................................................................................................*/
+
+	public ProcessHandle getProcessHandle() {
+		return procH;
+	}
+	/*.................................................................................................................*/
+
+	public Process getProcess() {
+		return proc;
+	}
+	/*.................................................................................................................*/
 	public void kill () {
 		if (proc!=null) {
-			try {
-				InputStream errorStream = proc.getErrorStream();
+			ProcessHandle childH = ShellScriptUtil.getChildProcess(proc);
+/*			try {
+				InputStream errorStream = childH.getErrorStream();
 				errorStream.close();
-				OutputStream outputStream = proc.getOutputStream();
+				OutputStream outputStream = childH.getOutputStream();
 				outputStream.close();
 				endFileTailers();
 
 			} catch (IOException e) {
 				MesquiteMessage.println("Couldn't close streams of process.");
 			}
-			proc.destroy();
+			*/
+			childH.destroy();
 			try {
 				Thread.sleep(100);
 				if (ExternalProcessManager.isAlive(proc))
-					proc.destroyForcibly();
+					childH.destroyForcibly();
+			} catch (Exception e) {
+			}
+		} else if (procH!=null) {
+			procH.destroy();
+			try {
+				Thread.sleep(100);
+				if (ExternalProcessManager.isAlive(procH))
+					procH.destroyForcibly();
 			} catch (Exception e) {
 			}
 		}
@@ -112,14 +141,19 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 
 	public boolean processRunning() {
-		if (proc==null)
+		if (proc!=null && procH==null)
+			procH = proc.toHandle();
+		if (procH==null)
 			return false;
 		try {
-			proc.exitValue();
+		//	if (procH.isAlive())
+		//		Debugg.println("process MesquiteExternalProcess is ALIVE");
+		//	else 
+		//		Debugg.println("process MesquiteExternalProcess is DEAD");
+			return procH.isAlive();
 		} catch (IllegalThreadStateException e) {
 			return true;
 		}
-		return false;
 	}
 	public void endFileTailers() {
 		if (outputReader!=null)
