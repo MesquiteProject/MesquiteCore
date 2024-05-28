@@ -375,17 +375,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** Notifies all employees that a file is about to be closed.*/
-	public void fileCloseRequested () {
+	public boolean fileCloseRequested () {
 		if (employees==null || doomed)
-			return;
+			return true;
 		Enumeration e = employees.elements();
-		while (e.hasMoreElements()) {
+		boolean close = true;
+		while (e.hasMoreElements() && close) {
 			Object obj = e.nextElement();
 			MesquiteModule mbe = (MesquiteModule)obj;
 			if (mbe!=null) {
-				mbe.fileCloseRequested(); 
+				if (!mbe.fileCloseRequested())
+					close=false;
 			}
 		}
+		return close;
 	}
 	/*.................................................................................................................*/
 	/** To be called by a module to close down on its own (as opposed to being fired).  This might happen, for

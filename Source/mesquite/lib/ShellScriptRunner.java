@@ -97,6 +97,8 @@ public class ShellScriptRunner implements Commandable  {
 			}
 			if (MesquiteLong.isCombinable(childID)) {
 				temp.addLine("setProcessID " + childID);
+				if (externalProcessManager!=null)
+					externalProcessManager.setDiesOnClosing(false);//at this point set run to not be killed automatically on closing. 
 				Debugg.println("---------  CHILD Process ID: " + childID);
 			}
 		}
