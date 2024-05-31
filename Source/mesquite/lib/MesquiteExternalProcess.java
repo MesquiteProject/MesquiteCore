@@ -173,10 +173,6 @@ public class MesquiteExternalProcess  {
 		if (procH==null)
 			return false;
 		try {
-		//	if (procH.isAlive())
-		//		Debugg.println("process MesquiteExternalProcess is ALIVE");
-		//	else 
-		//		Debugg.println("process MesquiteExternalProcess is DEAD");
 			return procH.isAlive();
 		} catch (IllegalThreadStateException e) {
 			return true;

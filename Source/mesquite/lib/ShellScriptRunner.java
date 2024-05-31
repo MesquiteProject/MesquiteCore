@@ -100,7 +100,6 @@ public class ShellScriptRunner implements Commandable  {
 				temp.addLine("setProcessID " + childID);
 				if (externalProcessManager!=null)
 					externalProcessManager.setDiesOnClosing(false);//at this point set run to not be killed automatically on closing. 
-				Debugg.println("---------  CHILD Process ID: " + childID);
 			}
 		}
 		if (ShellScriptUtil.useRunningFile)
@@ -135,8 +134,6 @@ public class ShellScriptRunner implements Commandable  {
 					else
 						System.out.println("Active process found");
 				}
-				Debugg.println("\n||||||  processID doCommand: " +temp);
-				Debugg.println("\n||||||  procH doCommand: " +procH);
 				if (procH!=null && reconnectToExternal) {
 					reconnectToExternalProcess(procH);
 					reconnectToExternal = false;
@@ -235,7 +232,6 @@ public class ShellScriptRunner implements Commandable  {
 			System.out.println("Reconnecting to external : "+ ShellScriptUtil.getProcessID(proc));
 			System.out.println("Process ID of first child of script: "+ ShellScriptUtil.getProcessID(proc));
 		}
-		Debugg.println("***** reconnectToExternalProcess, procH: " + procH);
 		externalProcessManager = new MesquiteExternalProcess(procH, false);
 		setOutErrFilePaths();
 		File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
@@ -249,10 +245,6 @@ public class ShellScriptRunner implements Commandable  {
 	public boolean executeInShell(){
 		proc = null;
 		try{
-			Debugg.println("\n\n==================\nexecuteInShell: new system");
-			Debugg.println("scriptBased ");
-			Debugg.println("useRunningFile: "+ShellScriptUtil.useRunningFile);
-			Debugg.println("==================\n");
 			ShellScriptUtil.setScriptFileToBeExecutable(scriptPath);
 			if (ShellScriptUtil.useRunningFile && !StringUtil.blank(runningFilePath)) {
 				if (StringUtil.blank(runningFileMessage))
@@ -322,7 +314,6 @@ public class ShellScriptRunner implements Commandable  {
 
 		while (processRunning() && stillGoing){
 			count++;
-			//Debugg.println("===  monitorAndCleanUpShell loop "+ count);
 			if (aborted)
 				return false;
 			if (watcher!=null && watcher.fatalErrorDetected()) {

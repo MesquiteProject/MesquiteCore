@@ -386,11 +386,6 @@ public class ExternalProcessManager implements Commandable  {
 	/*.................................................................................................................*/
 	public boolean processRunning() {
 		if (proc!=null) {
-		//	if (proc.isAlive())
-		//		Debugg.println("process is ALIVE");
-		//	else  
-		//		Debugg.println("process is DEAD");
-			
 			return proc.isAlive();
 		}
 		return true;
