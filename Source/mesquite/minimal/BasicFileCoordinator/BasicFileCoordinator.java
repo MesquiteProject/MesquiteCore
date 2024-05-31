@@ -983,7 +983,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					iQuit();
 				}
 				else {
-					fileCloseRequested();
+					boolean close = fileCloseRequested();
+					if (!close)  //WAYNECHECK
+						return false;
 					if (!getProject().isDirty()) {
 						waitWriting(null);
 						logln("Closing " + getProject().getName());

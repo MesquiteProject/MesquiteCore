@@ -132,12 +132,17 @@ public class ExternalProcessManager implements Commandable  {
 		if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(1.8)) 
 			return proc.isAlive();
 	try {
-			proc.exitValue();
+		proc.exitValue();
 			return false;
 		} catch (Exception e) {
 			return true;
 		}
 		
+	}
+	public static boolean isAlive(ProcessHandle procH) {
+		if (MesquiteTrunk.isJavaGreaterThanOrEqualTo(1.8)) 
+			return procH.isAlive();
+		else return true;
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
@@ -379,7 +384,10 @@ public class ExternalProcessManager implements Commandable  {
 		return proc!=null;
 	}
 	/*.................................................................................................................*/
-	public boolean runStillGoing() {
+	public boolean processRunning() {
+		if (proc!=null) {
+			return proc.isAlive();
+		}
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -412,7 +420,7 @@ public class ExternalProcessManager implements Commandable  {
 			LongArray.deassignArray(lastModified);
 		}
 
-		while (runStillGoing() && stillGoing){
+		while (processRunning() && stillGoing){
 
 			if (watcher!=null && watcher.fatalErrorDetected()) {
 				return false;

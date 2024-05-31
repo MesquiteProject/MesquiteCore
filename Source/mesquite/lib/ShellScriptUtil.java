@@ -30,7 +30,8 @@ public class ShellScriptUtil  {
 	static int sleepTime = 50;
 	public static int recoveryDelay = 0;
 	public static final String runningFileName = "running";
-	
+	public static boolean useRunningFile = false;
+
 
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
@@ -172,12 +173,60 @@ public class ShellScriptUtil  {
 		return null;
 	}
 
+	/*.................................................................................................................*/
+	public static long getProcessID(Process proc) {
+		if (proc==null)
+			return MesquiteLong.impossible;
+		try {
+			long procID = proc.pid();
+			return procID;
+		} catch (UnsupportedOperationException e) {
+		}
+		return MesquiteLong.impossible;
+	}
+	/*.................................................................................................................*/
+	public static long getChildProcessID(Process proc) {
+		ProcessHandle childH = getChildProcess(proc);
+		if (childH!=null)
+			return getProcessID(childH);
+		return MesquiteLong.impossible;
+	}
+	/*.................................................................................................................*/
+	public static long getProcessID(ProcessHandle procH) {
+		if (procH==null)
+			return MesquiteLong.impossible;
+		try {
+			long procID = procH.pid();
+			return procID;
+		} catch (UnsupportedOperationException e) {
+		}
+		return MesquiteLong.impossible;
+	}
+	/*.................................................................................................................*/
+	public static ProcessHandle getProcessHandleFromProcID(long processID) {
+		ProcessHandle process = null;
+		Optional<ProcessHandle> possibleProcess = ProcessHandle.of(processID);
+		if(possibleProcess.isPresent()) process = possibleProcess.get();
+		return process;
+	}
 
 	/*.................................................................................................................*/
 	@Deprecated
 	public  static Process executeScript(String scriptPath){ 
 		return executeScript(scriptPath, true);
 	}
+	
+
+	public static ProcessHandle getChildProcess(Process proc){
+		if (proc!=null) {
+			ProcessHandle childH=null;
+			Optional<ProcessHandle> possibleChild = proc.children().findFirst();
+			if(possibleChild.isPresent()) childH = possibleChild.get();
+			return childH;
+		}
+		return null;
+	}
+	
 	/*.................................................................................................................*/
 	public static Process executeScript(String scriptPath, boolean visibleTerminal){ 
 		//TODO: retool this to use ProcessBuilder
@@ -277,6 +326,7 @@ public class ShellScriptUtil  {
 	}
 
 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
 	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
@@ -289,7 +339,7 @@ public class ShellScriptUtil  {
 		}
 		try{
 			ShellScriptUtil.setScriptFileToBeExecutable(scriptPath);
-			if (!StringUtil.blank(runningFilePath)) {
+			if (ShellScriptUtil.useRunningFile && !StringUtil.blank(runningFilePath)) {
 				if (StringUtil.blank(runningFileMessage))
 					MesquiteFile.putFileContents(runningFilePath, "Script running...", true);
 				else
@@ -304,8 +354,8 @@ public class ShellScriptUtil  {
 				MesquiteMessage.notifyProgrammer("Process is null in shell script executed by " + name);
 				return false;
 			}
-			else if (!StringUtil.blank(runningFilePath))   // is file at runningFilePath; watch for its disappearance
-				while (MesquiteFile.fileExists(runningFilePath) && stillGoing){
+			else if (!StringUtil.blank(runningFilePath) || !ShellScriptUtil.useRunningFile )   // is file at runningFilePath; watch for its disappearance
+				while ((!ShellScriptUtil.useRunningFile || MesquiteFile.fileExists(runningFilePath)) && stillGoing){
 					processOutputFiles (outputFileProcessor, outputFilePaths, lastModified);
 					try {
 						Thread.sleep(sleepTime);
@@ -337,7 +387,7 @@ public class ShellScriptUtil  {
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
 	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name){
-		return executeAndWaitForShell( scriptPath,  runningFilePath,  runningFileMessage,  appendRemoveCommand,  name, null, null, null, true);
+		return executeAndWaitForShell( scriptPath, runningFilePath,  runningFileMessage,  appendRemoveCommand,  name, null, null, null, true);
 	}
 	/*.................................................................................................................*/
 	public static boolean executeAndWaitForShell(String scriptPath, String name){
