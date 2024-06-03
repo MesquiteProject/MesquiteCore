@@ -130,7 +130,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 		Vector v = pauseAllPausables();
 		Vector chunks = new Vector();
 		int chunksize = 200;
-		if (false && datas.size()>(int)(chunksize*1.2)) {
+		if (datas.size()>(int)(chunksize*1.2)) {
 			// if many matrices, do in chunks.
 			CharacterData chunk = null;
 			for (int im = 0; im < datas.size(); im++){

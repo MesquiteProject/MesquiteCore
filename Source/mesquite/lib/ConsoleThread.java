@@ -83,6 +83,13 @@ public class ConsoleThread extends Thread {
 							}
 						}
 					}
+					String comeToFrontPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + MesquiteTrunk.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "comeToFront.txt";
+
+					if (MesquiteFile.fileExists(comeToFrontPath)) {
+						MesquiteFile.deleteFile(comeToFrontPath);
+						MesquiteTrunk.mesquiteTrunk.doCommand("showAllWindows", null, CommandChecker.defaultChecker);
+						
+					}
 				}
 
 
