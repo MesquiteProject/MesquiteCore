@@ -66,9 +66,12 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (test.isCompatible(data, getProject(), this)){
-				logln("Altering matrix \"" + data.getName() + "\"");
+				if (datas.size()<=50)
+					logln("Altering matrix \"" + data.getName() + "\"");
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 				boolean a = tda.alterData(data, null, null, alteredDataParameters);
+				if (datas.size()>50 && im != 0 && im % 50 == 0)
+					logln("Altered " + (im+1) +  " matrices.");
 				if (a){
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 					if (alteredDataParameters.getSubcodes()!=null)
