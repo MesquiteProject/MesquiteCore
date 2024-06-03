@@ -112,7 +112,7 @@ public class AlterAllMatrices extends FileProcessor {
    			CharacterData data = proj.getCharacterMatrix(file, im);
    			if (test.isCompatible(data.getStateClass(), getProject(), this)) {
    				success = true;
-   				logln("About to alter matrix \"" + data.getName() + "\"");
+   				logln("Altering matrix \"" + data.getName() + "\"");
    				alterTask.alterData(data, null, null);  // do not measure success based upon whether data were altered.
    			}
    		}

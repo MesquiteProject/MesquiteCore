@@ -66,7 +66,7 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (test.isCompatible(data, getProject(), this)){
-				logln("About to alter matrix \"" + data.getName() + "\"");
+				logln("Altering matrix \"" + data.getName() + "\"");
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 				boolean a = tda.alterData(data, null, null, alteredDataParameters);
 				if (a){
