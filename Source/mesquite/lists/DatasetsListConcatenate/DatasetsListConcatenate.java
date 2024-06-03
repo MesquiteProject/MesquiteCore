@@ -119,16 +119,60 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 		getProject().getCharacterMatrices().incrementNotifySuppress(); 
 		if (!queryOptions())
 			return false;
-		CharacterData starter = null;   // this will be the new concatenated matrix
 		int count = 0;
 		int countFailed = 0;
 		String name = "";
 		boolean found = false;
+		CharacterData starter = null;   // this will be the new concatenated matrix
 		int deleted = 0;
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
 		Vector v = pauseAllPausables();
-		for (int im = 0; im < datas.size(); im++){
+		Vector chunks = new Vector();
+		int chunksize = 200;
+		if (false && datas.size()>(int)(chunksize*1.2)) {
+			// if many matrices, do in chunks.
+			CharacterData chunk = null;
+			for (int im = 0; im < datas.size(); im++){
+				found = true;
+				CharacterData data = (CharacterData)datas.elementAt(im);
+				if (im != 0 && im % chunksize == 0 && datas.size() - im > (int)(chunksize*.2)) //time to start a new chunk!
+					chunk = null;
+				if (chunk == null){
+					chunk = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());  
+					chunk.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
+					chunks.addElement(chunk);
+					if (starter == null) {
+						starter = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());  
+						starter.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
+					}
+
+				}
+				boolean success = chunk.concatenate(data, false, concatExcludedCharacters, true, prefixGroupLabelNames, false, false);
+				if (success){
+					count++;
+					if (count % 100== 0)
+						logln("Concatenated " + count + " Matrices");
+					if (count > 1)
+						name = name + "+";
+					name = name + "(" + data.getName() + ")";
+					if (removeConcatenated){
+							data.deleteMe(false);
+							deleted++;
+					}
+				}
+				else 
+					countFailed++;
+			}
+
+			for (int im = 0; im < chunks.size(); im++){
+				CharacterData ch = (CharacterData)chunks.elementAt(im);
+			boolean success = starter.concatenate(ch, false, concatExcludedCharacters, true, false, false, false);
+			ch.deleteMe(false);
+			}
+			
+		}
+		else for (int im = 0; im < datas.size(); im++){
 			found = true;
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (starter == null){

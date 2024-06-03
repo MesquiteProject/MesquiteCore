@@ -62,7 +62,7 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
 		Vector v = pauseAllPausables();
-		
+		int count = 0;
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (test.isCompatible(data, getProject(), this)){
@@ -71,16 +71,18 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 				boolean a = tda.alterData(data, null, null, alteredDataParameters);
 				if (datas.size()>50 && im != 0 && im % 50 == 0)
-					logln("Altered " + (im+1) +  " matrices.");
+					logln("" + (im+1) +  " matrices altered.");
 				if (a){
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 					if (alteredDataParameters.getSubcodes()!=null)
 						notification.setSubcodes(alteredDataParameters.getSubcodes());
 					data.notifyListeners(this, notification);
+					count++;
 				}
 				firstTime = false;
 			}
 		}
+		logln("Altered: " + (count) +  " matrices.");
 		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
