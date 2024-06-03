@@ -2107,8 +2107,9 @@ public class Mesquite extends MesquiteTrunk
 				Object obj = e.nextElement();
 				MesquiteWindow mw = (MesquiteWindow)obj;
 				MesquiteFrame mf = mw.getParentFrame();
-				if (mf.isVisible())
+				if (mf.isVisible()) {
 					mf.setVisible(true);
+				}
 			}
 		}
 		else if (checker.compare(this.getClass(), "Closes all current projects and files", null, commandName, "closeAllProjects")) {
