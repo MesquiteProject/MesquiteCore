@@ -151,7 +151,8 @@ public class MesquiteExternalProcess  {
 			} catch (Exception e) {
 			}
 		}
-	//	endFileTailers();
+		//DAVIDCHECK: this is called in one one of the forks above so I added it at the end just in case
+		endFileTailers();
 	}
 
 	/*.................................................................................................................*/

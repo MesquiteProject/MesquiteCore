@@ -352,6 +352,9 @@ public class ShellScriptRunner implements Commandable  {
 
 		if (outputFileProcessor!=null)
 			outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
+		//DAVIDCHECK this dispose was not beinc called. Not sure if this is the place.
+		if (externalProcessManager != null)
+			externalProcessManager.dispose();
 		return true;
 	}
 
