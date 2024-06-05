@@ -954,7 +954,30 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return deleted;
 	}
 	/*-----------------------------------------------------------*/
+	/** deletes characters listed in toBeDeleted.
+	 * This will be the way it's called from the outside
+	 * Can call this passing it its own selection getSelectedBits() or create a Bits from some other source */
+	public boolean deletePartsMarked(Bits toBeDeleted){
+		//deleting characters. 
+		
+		// find blocks
+		//then call deletePartsByBlocks
+		//Debugg.println
+		return true;
+	}
+	/*-----------------------------------------------------------*/
+	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
+	 * Assumes that these blocks are in sequence!!! */
+	protected boolean deletePartsByBlocks(int[] startOfBlock, int[] numInBlock){
+		//deleting characters. Go from last block to first block
+		//
+		//Debugg.println
+		
+		// must call super in order to delete in similar way. However, base class has brute force version to avoid all having to program their details
+		return true;
+	}
 
+	/*-----------------------------------------------------------*/
 /** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
 	public boolean deleteParts(int starting, int num){
 		if (num<=0)

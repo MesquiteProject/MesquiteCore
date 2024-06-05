@@ -709,6 +709,18 @@ public class CategoricalData extends CharacterData {
 		}
 		return super.deleteParts(starting, num);
 	}
+	
+	/*..........................................  CategoricalData  ..................................................*/
+	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
+	 * Assumes that these blocks are in sequence!!!*/
+	protected boolean deletePartsByBlocks(int[] startOfBlock, int[] numInBlock){
+		//deleting characters. Go from last block to first block
+
+		//Debugg.println
+
+
+		return super.deletePartsByBlocks(startOfBlock, numInBlock);
+	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**Adds num taxa after position "starting"; returns true iff successful.*/
 	public boolean addTaxa(int starting, int num){

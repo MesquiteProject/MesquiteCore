@@ -130,7 +130,8 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 		Vector v = pauseAllPausables();
 		Vector chunks = new Vector();
 		int chunksize = 200;
-		if (datas.size()>(int)(chunksize*1.2)) {
+		int numMatrices = datas.size();
+		if (numMatrices>(int)(chunksize*1.2)) {
 			// if many matrices, do in chunks.
 			CharacterData chunk = null;
 			for (int im = 0; im < datas.size(); im++){
@@ -197,6 +198,8 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 				countFailed++;
 
 		}
+		if (numMatrices>20)
+				name = "Concat. (" + count +")";
 		logln("Total matrices concatenated: " + count);
 		if (starter != null)
 			starter.setName(name);

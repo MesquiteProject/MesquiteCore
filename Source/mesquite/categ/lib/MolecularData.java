@@ -171,6 +171,38 @@ public class MolecularData extends CategoricalData {
 		return super.addParts(starting, num);
 	}
 	/*-----------------------------------------------------------*/
+	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
+	 * Assumes that these blocks are in sequence!!!*/
+	protected boolean deletePartsByBlocks(int[] startOfBlock, int[] numInBlock){
+		//deleting characters; deal with inversions. Go from last block to first block
+
+		if (inversions != null){
+			for (int k = startOfBlock.length-1; k>=0; k--) {
+				int starting = startOfBlock[k];
+				int num = numInBlock[k];
+				for (int it = 0; it<inversions.length && it< getNumTaxa(); it++){
+					for (int ip = 0; ip< inversions[it].size(); ip++){
+						Mesquite3DIntPoint p = (Mesquite3DIntPoint)inversions[it].elementAt(ip);
+						if (starting <= p.x){//deletion will affect point
+							if (p.x < starting+num) //point is being deleted also
+								p.x = starting;  //snap left edge of flip to right margin of deleted area
+							else
+								p.x -= num; //push to left
+						}
+						if (starting <= p.y){//deletion will affect point
+							if (p.y < starting+num) //point is being deleted also
+								p.y = starting-1;   //snap right edge of flip to left margin of deleted area-1
+							else
+								p.y -= num; //push to left
+						}
+					}
+				}
+			}
+		}
+
+		return super.deletePartsByBlocks(startOfBlock, numInBlock);
+	}
+	/*-----------------------------------------------------------*/
 	/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
 	public boolean deleteParts(int starting, int num){
 		//deleting characters; deal with inversions
@@ -467,7 +499,7 @@ public class MolecularData extends CategoricalData {
 			}
 
 		}
-		
+
 /*...............................................................................................................*/
 	/** Sets the GenBank number of a particular taxon in this data object. */
 	public void setGenBankNumber(int it, String s){
@@ -534,7 +566,7 @@ public class MolecularData extends CategoricalData {
 	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
 		return getSequenceAsFasta(includeGaps, convertMultStateToMissing, it, getTaxa().getTaxonName(it));
 	}
-	
+
 	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it, String sequenceName) {
 		Taxa taxa = getTaxa();
 

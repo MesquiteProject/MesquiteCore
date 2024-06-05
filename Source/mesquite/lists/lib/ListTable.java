@@ -124,7 +124,6 @@ public class ListTable extends MesquiteTable {
 						i++;
 				}
 
-				window.getOwnerModule().unpauseAllPausables(v);
 				
 				if (assoc instanceof TreeVector)
 					((TreeVector)assoc).resetAssignedNumbers();
@@ -141,6 +140,7 @@ public class ListTable extends MesquiteTable {
 				*/
 				synchronizeRowSelection(((Associable)window.getCurrentObject()));
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+				window.getOwnerModule().unpauseAllPausables(v);
 				if (window.owner.resetMenusOnNameChange()){
 					//MesquiteWindow.resetAllTitles();
 					window.owner.getProject().refreshProjectWindow();
