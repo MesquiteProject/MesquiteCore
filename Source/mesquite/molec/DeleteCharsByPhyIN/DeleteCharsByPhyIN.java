@@ -43,6 +43,10 @@ public class DeleteCharsByPhyIN extends DeleteCharsBySelector {
 	}
 
 	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice() {
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean showCitation(){
 		return false;
 	}

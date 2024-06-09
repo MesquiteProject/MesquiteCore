@@ -282,6 +282,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 			na.setValue(ic, mn);
 			explArray.setValue(ic, expl.getValue());
 		}
+		CommandRecord.tick("");
 		na.placeMinimumValue(min);
 		na.placeMaximumValue(max);
 	}
