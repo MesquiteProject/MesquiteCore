@@ -1300,6 +1300,7 @@ public void requestFocus(){
 				gblocksTask = (CharacterSelector)module.hireNamedEmployee(CharacterSelector.class, "#GBLOCKSSelector");
 				if (gblocksTask == null)
 					return false;
+				table.deselectAll();
 				data.deselectAll();
 				gblocksTask.selectCharacters(data);   // select characters using GBLOCKS
 				
