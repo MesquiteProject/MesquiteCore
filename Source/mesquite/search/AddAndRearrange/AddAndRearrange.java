@@ -322,15 +322,16 @@ public class AddAndRearrange extends TreeSearcher implements Incrementable {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public void fillTreeBlock(TreeVector treeList){
+	public int fillTreeBlock(TreeVector treeList){
 		if (treeList==null)
-			return;
+			return NULLVALUE;
 		Taxa taxa = treeList.getTaxa();
 		TreeVector trees = getTrees(taxa);
 		treeList.setName("Trees from Mesquite's heuristic search");
 		treeList.setAnnotation ("Parameters: "  + getParameters(), false);
 		if (trees!=null)
 			treeList.addElements(trees, false);
+		return NOERROR;
 	}
 	/*.................................................................................................................*/
 	public String getParameters() {

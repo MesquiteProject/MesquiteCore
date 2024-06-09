@@ -96,9 +96,14 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	 public String getExtraIntermediateTreeWindowCommands (){
 		 return "";
 	 }
+	 
+	 
+	public static int NULLVALUE = -2;
+	public static int USERABORTONINITIALIZE = -1;
+	public static int NOERROR = 0;
 
    	 /** Fills the passed tree block with trees. */
-  	public abstract void fillTreeBlock(TreeVector treeList);
+  	public abstract int fillTreeBlock(TreeVector treeList);
   	  
 	public void setNumberTask(NumberForTree numTask){
 	}
