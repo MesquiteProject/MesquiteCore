@@ -11,35 +11,32 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lib.duties;
+package mesquite.molec.lib;
 
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 
 
 /* ======================================================================== */
-/**This is superclass of modules to select characters in a table.*/
+/**Trims sites in molecular data, e.g. GBLOCKS*/
 
-public abstract class CharacterSelectorPersistent extends CharacterSelector  {
+public abstract class SequenceTrimmer extends MesquiteModule  {
 
    	 public Class getDutyClass() {
-   	 	return CharacterSelectorPersistent.class;
+   	 	return SequenceTrimmer.class;
    	 }
  	public String getDutyName() {
- 		return "Character selector (Persistent)";
-   	}
-   	
-   	/** if returns true, then requests to remain on even after operateData is called.  Default is false*/
-   	public boolean pleaseLeaveMeOn(){
-   		return true;
-   	}
+ 		return "Sequence Trimmer";
+   	 }
+  	 public String[] getDefaultModule() {
+    	 	return new String[] {"#TrimByPhyIN", "#TrimGappySites"};
+    	 }
 
-   	/** Tells module it will be used in a persistent way, so add menu items etc.*/
-   	public abstract void pleasePersist();
-   	
+	public abstract boolean trimSites(CharacterData data, UndoReference undoReference);
 
 }
-
 
 

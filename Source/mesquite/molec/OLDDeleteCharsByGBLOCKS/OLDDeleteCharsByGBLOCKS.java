@@ -21,6 +21,7 @@ import mesquite.molec.lib.DeleteCharsBySelector;
 
 /* ======================================================================== */
 public class OLDDeleteCharsByGBLOCKS extends DeleteCharsBySelector  {
+	//Debugg.println RETAINED TEMPORARILY UNTIL NEW VERSION VIA FlagByGBLOCKS settles in. Turn on loadModule here and in other old modules to try out (DeleteCharsByGLBOCKS OLDDeleteCharsByGBLOCKS, OLDGBLOCKSSelector)
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		selectorTask = (CharacterSelector)hireNamedEmployee(CharacterSelector.class, "#OLDGBLOCKSSelector");
@@ -31,10 +32,19 @@ public class OLDDeleteCharsByGBLOCKS extends DeleteCharsBySelector  {
 
 //Delete this Debugg.println
 	/*.................................................................................................................*/
+	public boolean loadModule() {
+		return false;
+	}
+	/*.................................................................................................................*/
 	public boolean isPrerelease() {
 		return false;
 	}
 
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public boolean requestPrimaryChoice(){
+		return false;  
+	}
 	/*.................................................................................................................*/
 	public boolean showCitation(){
 		return false;

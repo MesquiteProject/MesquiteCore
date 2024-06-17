@@ -11,31 +11,38 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.DeleteCharsByGBLOCKS;
+package mesquite.molec.TrimByGBLOCKS;
 /*~~  */
 
 
 
-import mesquite.lib.duties.CharacterSelector;
-import mesquite.molec.lib.DeleteCharsBySelector;
+import mesquite.categ.lib.RequiresAnyDNAData;
+
+
+import mesquite.lib.CompatibilityTest;
+import mesquite.molec.lib.SiteFlagger;
+import mesquite.molec.lib.TrimSitesByFlagger;
 
 /* ======================================================================== */
-public class DeleteCharsByGBLOCKS extends DeleteCharsBySelector  {
-	//Debugg.println RETAINED TEMPORARILY UNTIL NEW VERSION VIA FlagByGBLOCKS settles in. Turn on loadModule here and in other old modules to try out (DeleteCharsByGLBOCKS OLDDeleteCharsByGBLOCKS, OLDGBLOCKSSelector)
+public class TrimByGBLOCKS extends TrimSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		selectorTask = (CharacterSelector)hireNamedEmployee(CharacterSelector.class, "#GBLOCKSSelector");
-		if (selectorTask == null)
+		flaggerTask = (SiteFlagger)hireNamedEmployee(SiteFlagger.class, "#FlagByGBLOCKS");
+		if (flaggerTask == null)
 			return false;
 		return true;
 	}
 
 
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyDNAData();
+	}
+	
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return false;
+		return true;
 	}
-	public boolean loadModule() {
+	public boolean requestPrimaryChoice() {
 		return false;
 	}
 
@@ -45,7 +52,7 @@ public class DeleteCharsByGBLOCKS extends DeleteCharsBySelector  {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Delete Sites by GBLOCKS";
+		return "Trim Sites by GBLOCKS";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
@@ -57,7 +64,7 @@ public class DeleteCharsByGBLOCKS extends DeleteCharsBySelector  {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 380;  
+		return NEXTRELEASE;  
 	}
 
 }

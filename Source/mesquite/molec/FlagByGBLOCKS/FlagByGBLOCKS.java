@@ -11,23 +11,45 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.lib;
+package mesquite.molec.FlagByGBLOCKS;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+
+
+import java.awt.Button;
+import java.awt.Checkbox;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.*;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.ProteinState;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
+import mesquite.lib.DoubleField;
+import mesquite.lib.ExtensibleDialog;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.RadioButtons;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.molec.lib.SiteFlagger;
 
 /* ======================================================================== */
-public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListener {
-
+public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 
 	static final double defaultIS = 0.50;   
 	static final double defaultFS = 0.85;  
@@ -39,29 +61,53 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	//static final double defaultTermGapsPropForgiven = 0.0;
 	static final boolean defaultIgnoreTaxaWithoutSequence = true;
 
-	double IS = defaultIS;   // fraction of identical residues that is upper boundary for non-conserved sequences
-	double FS = defaultFS;  // fraction of identical residues that is upper boundary for conserved sequences
+	double IS = defaultIS;   // proportion of identical residues that is upper boundary for non-conserved sequences
+	double FS = defaultFS;  // proportion of identical residues that is upper boundary for conserved sequences
 	int CP=defaultCP;  //block size limit for non-conserved blocks
 	int BL=defaultBL;  //  small region block size limit 
-	double gapThreshold = defaultGapThreshold;   // the fraction of gaps allowed at a site
+	double gapThreshold = defaultGapThreshold;   // the proportion of gaps allowed at a site
 
 	boolean removeAllGaps = true;
-	boolean chooseAmbiguousSites = defaultChooseAmbiguousSites;
-	boolean countWithinApplicable = defaultCountWithinApplicable;   // count fractions of identical residues only within those taxa without gaps at a site
+	MesquiteBoolean chooseAmbiguousSites = new MesquiteBoolean(defaultChooseAmbiguousSites);
+	MesquiteBoolean countWithinApplicable  = new MesquiteBoolean(defaultCountWithinApplicable);   // count proportion of identical residues only within those taxa without gaps at a site
 	//double termGapsPropForgiven = defaultTermGapsPropForgiven;
 	boolean ignoreTaxaWithoutSequence = defaultIgnoreTaxaWithoutSequence;
 	boolean[] taxonHasSequence=null;
 
-	//boolean preferencesSet = false;
-
-
-	public GBLOCKSCalculator (MesquiteModule ownerModule, String xmlPrefsString){
-		XMLUtil.readXMLPreferences(ownerModule, this, xmlPrefsString);
-
+	/*.................................................................................................................*/
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.prefsRead) 
+			transferPrefsFromOldGBLOCKSSelector();
+		else
+			loadPreferences();
+		if (!MesquiteThread.isScripting()) {
+			if (!queryOptions("GBLOCKS"))
+				return false;
+		}
+		addMenuItem("GBLOCK Selection Options...",  makeCommand("setOptions",  this));
+		return true;
 	}
-
-
-
+	
+	/*.................................................................................................................*/
+	//A service for those with older installations. Grabs prefs from old version, which has been converted into a MesquiteInit merely to capture the preferences.
+	public void transferPrefsFromOldGBLOCKSSelector() {
+		if (MesquiteDouble.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.IS))
+			IS = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.IS;
+		if (MesquiteDouble.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.FS))
+			FS = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.FS;
+		if (MesquiteDouble.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.gapThreshold))
+			gapThreshold = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.gapThreshold;
+		if (MesquiteInteger.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.CP))
+			CP = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.CP;
+		if (MesquiteInteger.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.BL))
+			BL = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.BL;
+		if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.chooseAmbiguousSitesRead)
+			chooseAmbiguousSites.setValue(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.chooseAmbiguousSites);
+		if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.countWithinApplicableRead)
+			countWithinApplicable.setValue(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.countWithinApplicable);
+		mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.instanceOfMe.prefsCaptured();
+	}
+	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String flavor, String content){
 		processSingleXMLPreference(tag, null, content);
 	}
@@ -79,9 +125,9 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		if ("gapThreshold".equalsIgnoreCase(tag))
 			gapThreshold = MesquiteDouble.fromString(content);
 		if ("chooseAmbiguousSites".equalsIgnoreCase(tag))
-			chooseAmbiguousSites = MesquiteBoolean.fromTrueFalseString(content);
+			chooseAmbiguousSites.setFromTrueFalseString(content);
 		if ("countWithinApplicable".equalsIgnoreCase(tag))
-			countWithinApplicable = MesquiteBoolean.fromTrueFalseString(content);
+			countWithinApplicable.setFromTrueFalseString(content);
 		//if ("termGapsPropForgiven".equalsIgnoreCase(tag))
 		//	termGapsPropForgiven = MesquiteDouble.fromString(content);
 		//	if ("ignoreTaxaWithoutSequence".equalsIgnoreCase(tag))
@@ -103,15 +149,104 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 
 		return buffer.toString();
 	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
 
-	public boolean getChooseAmbiguousSites() {
-		return chooseAmbiguousSites;
+		temp.addLine("setIS " + IS);
+		temp.addLine("setFS " + FS);
+		temp.addLine("setCP " + CP);
+		temp.addLine("setBL " + BL);
+		temp.addLine("setGapThreshold " + gapThreshold);
+		temp.addLine("setChooseAmbiguousSites" + chooseAmbiguousSites.toOffOnString());
+		temp.addLine("setCountWithinApplicable " + countWithinApplicable.toOffOnString());
+		return temp;
 	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Presents options dialog box.", "[on or off]", commandName, "setOptions")) {
+			boolean q = queryOptions("GBLOCKS");
+			if (q)
+				parametersChanged();
 
-	public void setChooseAmbiguousSites(boolean chooseAmbiguousSites) {
-		this.chooseAmbiguousSites = chooseAmbiguousSites;
+		}
+		else if (checker.compare(this.getClass(), "Sets proportion of fraction of identical residues that is upper boundary for non-conserved sequences.", "[on or off]", commandName, "setIS")) {
+			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
+			if (MesquiteDouble.isCombinable(s)){
+				IS = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets proportion of identical residues that is upper boundary for conserved sequences.", "[on or off]", commandName, "setFS")) {
+			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
+			if (MesquiteDouble.isCombinable(s)){
+				FS = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets block size limit for non-conserved blocks.", "[integer]", commandName, "setCP")) {
+			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(s)){
+				CP = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+			}
+
+		}
+		else if (checker.compare(this.getClass(), "Sets small region block size limit.", "[integer]", commandName, "setBL")) {
+			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(s)){
+				BL = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+			}
+
+		}
+		else if (checker.compare(this.getClass(), "Sets the proportion of gaps allowed at a site.", "[on or off]", commandName, "setGapThreshold")) {
+			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
+			if (MesquiteDouble.isCombinable(s)){
+				gapThreshold = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to treat gaps as an extra state.", "[on or off]", commandName, "setChooseAmbiguousSites")) {
+			boolean current = chooseAmbiguousSites.getValue();
+			chooseAmbiguousSites.toggleValue(parser.getFirstToken(arguments));
+			if (current!=chooseAmbiguousSites.getValue()) {
+				parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to count proportion of identical residues only within those taxa without gaps at a site.", "[on or off]", commandName, "setCountWithinApplicable")) {
+			boolean current = countWithinApplicable.getValue();
+			countWithinApplicable.toggleValue(parser.getFirstToken(arguments));
+			if (current!=countWithinApplicable.getValue()) {
+				parametersChanged();
+			}
+		}
+
+
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
-
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+		/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public boolean requestPrimaryChoice(){
+		return true;  
+	}
+	
 
 	Button useDefaultsButton = null;
 	DoubleField ISfield = null;
@@ -134,13 +269,13 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	/*.................................................................................................................*/
 	/**This queryOptions is provided in case the module that uses this GBLOCKSCalculator doesn't want to add extra options, and just wants to use
 	 * a simple dialog box to query for options. If the ownermodule wishes, it can make its own dialog box; use this one as a template. */
-	public boolean queryOptions(MesquiteModule mb, String action) {
-		if (!mb.okToInteractWithUser(mb.CAN_PROCEED_ANYWAY, "Querying Options")) 
+	public boolean queryOptions(String action) {
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		String actionToUse = getActionToUse(action);
 
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(mb.containerOfModule(),  actionToUse+ " using GBLOCKS Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  actionToUse+ " using GBLOCKS Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		String helpString = "This feature will " + actionToUse.toLowerCase() +  " characters using the GBLOCKS algorithm, as described in Castresana (2000).";
 
 		dialog.appendToHelpString(helpString);
@@ -156,7 +291,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			processQueryOptions(dialog);
-			mb.storePreferences();
+			storePreferences();
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
@@ -176,7 +311,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		BLfield = dialog.addIntegerField("Minimum length of a block (b4)", BL, 4);
 		dialog.addHorizontalLine(1);
 		dialog.addLabel("Mesquite-specific extensions:");
-		countWithinApplicableCheckbox = dialog.addCheckBox("Count fractions only within taxa with non-gaps at that position", countWithinApplicable);
+		countWithinApplicableCheckbox = dialog.addCheckBox("Count fractions only within taxa with non-gaps at that position", countWithinApplicable.getValue());
 
 		gapThresholdField = dialog.addDoubleField("Fraction of gaps allowed in a character", gapThreshold, 4);
 		//termGapsPropForgivenField = dialog.addDoubleField("Prop. terminal gaps forgiven", termGapsPropForgiven, 4);
@@ -186,7 +321,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 
 	//	chooseAmbiguousSitesCheckbox = dialog.addCheckBox(actionToUse.toLowerCase()+ " sites in ambiguously aligned regions", chooseAmbiguousSites);
 		int c = 0;
-		if (!chooseAmbiguousSites)
+		if (!chooseAmbiguousSites.getValue())
 			c = 1;
 		chooseAmbiguousSitesRadioButtons = dialog.addRadioButtons (new String[] {action + " \"bad\" blocks (doubtfully aligned)", action + " \"good\" blocks (reasonably aligned)"}, c);
 
@@ -199,9 +334,9 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 		CP = CPfield.getValue();
 		BL = BLfield.getValue();
 		gapThreshold = gapThresholdField.getValue();
-		countWithinApplicable = countWithinApplicableCheckbox.getState();
+		countWithinApplicable.setValue(countWithinApplicableCheckbox.getState());
 		int c  = chooseAmbiguousSitesRadioButtons.getValue();
-		chooseAmbiguousSites = (c == 0);
+		chooseAmbiguousSites.setValue(c == 0);
 		
 		//termGapsPropForgiven = termGapsPropForgivenField.getValue();
 		//ignoreTaxaWithoutSequence = ignoreTaxaWithoutSequenceCheckbox.getState();
@@ -345,7 +480,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 				status[ic] = NONCONSERVED; 
 			else {
 				int maxIdentical = maxNumberIdenticalResidues(data, ic);
-				if (!countWithinApplicable) {
+				if (!countWithinApplicable.getValue()) {
 					if (maxIdentical<(int)(IS*getNumTaxaCountableAtSite(ic))+1)
 						status[ic] = NONCONSERVED; 
 					else if (maxIdentical<(int)(FS*getNumTaxaCountableAtSite(ic)))
@@ -366,48 +501,54 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	}
 
 	/*.................................................................................................................*/
-	void setToSelectRange(boolean[] setToSelect, int icStart, int icEnd){
+	void setToSelectRange(Bits setToSelect, int icStart, int icEnd){
 		if (setToSelect==null)
 			return;
-		for (int ic=icStart; ic<=icEnd && ic<setToSelect.length; ic++)
-			setToSelect[ic]=true;
+		for (int ic=icStart; ic<=icEnd && ic<setToSelect.getSize(); ic++)
+			setToSelect.setBit(ic, true);
 	}
 	/*.................................................................................................................*/
-	void examineRemainingBlock(int[] status, boolean[] setToSelect, int icStart, int icEnd){
-		for (int ic=icStart; ic<=icEnd && ic<setToSelect.length; ic++)
+	void examineRemainingBlock(int[] status, Bits setToSelect, int icStart, int icEnd){
+		for (int ic=icStart; ic<=icEnd && ic<setToSelect.getSize(); ic++)
 			if (status[ic]!=HIGHLYCONSERVED)  // if it is not highly conserved, then need to select it
-				setToSelect[ic]=true;
+				setToSelect.setBit(ic, true);
 			else  // the moment we have a highly conserved one, get out of loop
 				break;
 		for (int ic=icEnd; ic>=icStart; ic--)
 			if (status[ic]!=HIGHLYCONSERVED)  // if it is not highly conserved, then need to select it
-				setToSelect[ic]=true;
+				setToSelect.setBit(ic, true);
 			else  // the moment we have a highly conserved one, get out of loop
 				break;
 	}
 	/*.................................................................................................................*/
-	void examineRegionAroundGap(int[] status, boolean[] setToSelect, int icGap){
-		setToSelect[icGap]=true;
-		for (int ic=icGap+1; ic<setToSelect.length; ic++){  // look up
-			if (setToSelect[ic])  // the moment we find one we have already excluded, break
+	void examineRegionAroundGap(int[] status, Bits setToSelect, int icGap){
+		setToSelect.setBit(icGap, true);
+		for (int ic=icGap+1; ic<setToSelect.getSize(); ic++){  // look up
+			if (setToSelect.isBitOn(ic))  // the moment we find one we have already excluded, break
 				break;
 			if (status[ic] == NONCONSERVED)  // if it is not highly conserved, then need to select it
-				setToSelect[ic]=true;
+				setToSelect.setBit(ic, true);
 		}
 		for (int ic=icGap-1; ic>=0; ic--) {
-			if (setToSelect[ic])  // the moment we find one we have already excluded, break
+			if (setToSelect.isBitOn(ic))  // the moment we find one we have already excluded, break
 				break;
 			if (status[ic] == NONCONSERVED)  // if it is not highly conserved, then need to select it
-				setToSelect[ic]=true;
+				setToSelect.setBit(ic, true);
 		}
 	}
 
 	/*.................................................................................................................*/
 	/** Called to mark characters*/
-	public boolean markCharacters(CharacterData data, MesquiteModule mb, boolean[] charToMark, StringBuffer results){
-		if (charToMark==null)
-			return false;
-		if (data!=null && data.getNumChars()>0){
+	public Bits flagSites(CharacterData data, Bits flags) {
+		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
+			if (flags == null)
+				flags = new Bits(data.getNumChars());
+			else {
+				if (flags.getSize()< data.getNumChars())
+					flags.resetSize(data.getNumChars());
+				flags.clearAllBits();
+			}		
+
 
 			//preparing array memory
 			if (taxonHasSequence == null || taxonHasSequence.length != data.getNumTaxa()) {
@@ -469,7 +610,6 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 			int[] status = new int[data.getNumChars()];
 			for (int ic=0; ic<status.length; ic++) {
 				status[ic]=STATUSUNSET;
-				charToMark[ic] = false;
 			}
 
 			setCharacterStatus((CategoricalData)data, status, firstBase, lastBase);
@@ -483,12 +623,12 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						if (ic-blockStart+1 > CP)  // block is big enough to be selected
-							setToSelectRange(charToMark,blockStart,ic);
+							setToSelectRange(flags,blockStart,ic);
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
 						if (ic-blockStart > CP)  // block is big enough to be selected
-							setToSelectRange(charToMark,blockStart,ic-1);
+							setToSelectRange(flags,blockStart,ic-1);
 					}	
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
 				}
@@ -498,18 +638,18 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 
 			blockStart=-1;
 
-			for (int ic=0; ic<data.getNumChars() && ic<charToMark.length; ic++){
-				if (!charToMark[ic]){  // we are in a remaining block
+			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
+				if (!flags.isBitOn(ic)){  // we are in a remaining block
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
-						examineRemainingBlock(status, charToMark,blockStart,ic);
+						examineRemainingBlock(status, flags,blockStart,ic);
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
 						if (ic-blockStart > CP)  // block is big enough to be selected
-							examineRemainingBlock(status, charToMark,blockStart,ic-1);
+							examineRemainingBlock(status, flags,blockStart,ic-1);
 					}	
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
 				}
@@ -518,20 +658,20 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 			// ======  checking for small blocks
 			blockStart=-1;
 
-			for (int ic=0; ic<data.getNumChars() && ic<charToMark.length; ic++){
-				if (!charToMark[ic]){
+			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
+				if (!flags.isBitOn(ic)){
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						if (ic-blockStart+1 < BL){  // block is big enough to be selected
-							setToSelectRange(charToMark,blockStart,ic);
+							setToSelectRange(flags,blockStart,ic);
 						}
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
 						if (ic-blockStart < BL){  // block is big enough to be selected
-							setToSelectRange(charToMark,blockStart,ic-1);
+							setToSelectRange(flags,blockStart,ic-1);
 						}
 					}	
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
@@ -541,9 +681,9 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 			// ======  checking for gaps and nearby non-conserved
 
 
-			for (int ic=0; ic<data.getNumChars() && ic<charToMark.length; ic++){
-				if (!charToMark[ic] && tooManyGaps((CategoricalData)data,ic)){  // let's start at any gap that is not yet excluded
-					examineRegionAroundGap(status, charToMark,ic);
+			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
+				if (!flags.isBitOn(ic) && tooManyGaps((CategoricalData)data,ic)){  // let's start at any gap that is not yet excluded
+					examineRegionAroundGap(status, flags,ic);
 
 				}
 			}
@@ -551,20 +691,20 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 			// ======  checking for small blocks
 			blockStart=-1;
 
-			for (int ic=0; ic<data.getNumChars() && ic<charToMark.length; ic++){
-				if (!charToMark[ic]){
+			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
+				if (!flags.isBitOn(ic)){
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						if (ic-blockStart+1 < BL){  // block is big enough to be selected
-							setToSelectRange(charToMark,blockStart,ic);
+							setToSelectRange(flags,blockStart,ic);
 						}
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
 						if (ic-blockStart < BL){  // block is big enough to be selected
-							setToSelectRange(charToMark,blockStart,ic-1);
+							setToSelectRange(flags,blockStart,ic-1);
 						}
 					}	
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
@@ -575,8 +715,8 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 
 			blockStart=-1;
 			StringBuffer blocks = new StringBuffer();
-			for (int ic=0; ic<data.getNumChars() && ic<charToMark.length; ic++){
-				if (!charToMark[ic]){
+			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
+				if (!flags.isBitOn(ic)){
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
 					}
@@ -590,10 +730,10 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
 				}
 			}
-
+			/*
 			if (results!=null) {
 				results.append("\nGBLOCKS analysis\n");
-				if (countWithinApplicable) {
+				if (countWithinApplicable.getValue()) {
 					results.append("Minimum fraction of identical residues for a conserved position: " + IS+"\n");
 					results.append("Minimum fraction of identical residues for a highly-conserved position: " + FS+"\n");
 					results.append("Counting fraction within only those taxa that have non-gaps at that position\n");
@@ -615,16 +755,36 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 				results.append("Flank positions of the blocks chosen by the GBLOCKS algorithm: \n");
 				results.append(blocks.toString());
 
-				if (chooseAmbiguousSites)
+				if (chooseAmbiguousSites.getValue())
 					results.append("\nNote:  selected characters are those that are the least conserved and more ambiguously aligned regions, and would typically be excluded before analysis.\n");
 				else 
 					results.append("\nNote:  selected characters are those that are the more conserved regions, and would typically be included in any analysis.\n");
 			}
-
+*/
 
 		}
-		return true;
+		return flags;
 	}
 
+	/*.................................................................................................................*/
+	
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	public String getName() {
+		return "Flag Sites by GBLOCKS";
+	}
+	/*.................................................................................................................*/
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Flags sites according to an extended version of GBLOCKS criteria (Castresana, 2000)." ;
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return NEXTRELEASE;  
+	}
 }
+
 

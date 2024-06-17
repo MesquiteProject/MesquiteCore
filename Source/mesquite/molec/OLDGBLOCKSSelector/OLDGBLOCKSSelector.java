@@ -22,6 +22,7 @@ import mesquite.molec.lib.*;
 /* ======================================================================== */
 public class OLDGBLOCKSSelector extends CharacterSelector {
 
+	//Debugg.println RETAINED TEMPORARILY UNTIL NEW VERSION VIA FlagByGBLOCKS settles in. Turn on loadModule here and in other old modules to try out (DeleteCharsByGLBOCKS OLDDeleteCharsByGBLOCKS, OLDGBLOCKSSelector)
 
 	MesquiteString xmlPrefs= new MesquiteString();
 	String xmlPrefsString = null;
@@ -54,10 +55,13 @@ public class OLDGBLOCKSSelector extends CharacterSelector {
 	public boolean isPrerelease(){
 		return true;  //delete this module! Debugg.println
 	}
+	public boolean loadModule() {
+		return false;
+	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 
 

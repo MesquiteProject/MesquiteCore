@@ -563,7 +563,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		MesquiteSubmenuSpec mss4 = ownerModule.addSubmenu(null, "Character Inclusion/Exclusion");
 		ownerModule.addItemToSubmenu(null, mss4, "Include Selected Characters", ownerModule.makeCommand("includeSelectedCharacters", this));
 		ownerModule.addItemToSubmenu(null, mss4, "Exclude Selected Characters", ownerModule.makeCommand("excludeSelectedCharacters", this));
-		ownerModule.addItemToSubmenu(null, mss4, "Exclude Characters by GBLOCKS...", ownerModule.makeCommand("excludeGBLOCKSCharacters", this));
+		//DAVIDCHECK: not sure if useful ownerModule.addItemToSubmenu(null, mss4, "Exclude Characters by GBLOCKS...", ownerModule.makeCommand("excludeGBLOCKSCharacters", this));
 
 		// private, to fix frameshifted footnotes
 		// ownerModule.addMenuItem( "Move Footnotes...", ownerModule.makeCommand("moveFootnotes", this));

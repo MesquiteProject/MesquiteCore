@@ -42,7 +42,7 @@ public class Fill extends DataAlterer implements AltererSimpleCell {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/

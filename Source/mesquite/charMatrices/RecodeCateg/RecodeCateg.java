@@ -37,7 +37,7 @@ public class RecodeCateg extends CategDataAlterer implements AltererSimpleCell {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
    	public void alterCell(CharacterData cData, int ic, int it){

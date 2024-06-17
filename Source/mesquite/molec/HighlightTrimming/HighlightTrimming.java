@@ -11,55 +11,83 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.GBLOCKSHighlighter; 
+package mesquite.molec.HighlightTrimming; 
 
 import java.util.*;
+
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
-import mesquite.molec.lib.GBLOCKSCalculator;
+import mesquite.molec.lib.SiteFlagger;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
-public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
+public class HighlightTrimming extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
-	MesquiteString xmlPrefs= new MesquiteString();
-	String xmlPrefsString = null;
-	GBLOCKSCalculator gblocksCalculator;
 	long A = CategoricalState.makeSet(0);
 	long C = CategoricalState.makeSet(1);
 	long G = CategoricalState.makeSet(2);
 	long T = CategoricalState.makeSet(3);
-	static boolean askedOnceThisRun = false;
+	Vector flaggers = new Vector();
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		loadPreferences(xmlPrefs);
-		xmlPrefsString = xmlPrefs.getValue();
-		gblocksCalculator = new GBLOCKSCalculator(this, xmlPrefsString);
-		// delete this module or make it debugg only. If public, then remember options Debugg.printStackTrace("Remember options");
+		//	flaggerTask = (SiteFlagger)hireEmployee(SiteFlagger.class, "Trimming or flagging method to highlight");
+		//	if (flaggerTask == null)
+		//		return false;
 		return true;
 	}
 	/*.................................................................................................................*/
-	boolean optionsSet = false;
-	public String preparePreferencesForXML () {
-		StringBuffer buffer = new StringBuffer();
-		if (gblocksCalculator!=null){
-			String s = gblocksCalculator.preparePreferencesForXML();
-			if (StringUtil.notEmpty(s))
-				buffer.append(s);
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine("cleanFlaggers"); 
+		for (int i = 0; i<flaggers.size(); i++) {
+			temp.addLine("addFlaggerViaScript ", (SiteFlagger)flaggers.elementAt(i)); 
 		}
-		return buffer.toString();
+		return temp;
+	}
+
+	void cleanFlaggers() {
+		for (int i = 0; i<flaggers.size(); i++) {
+			SiteFlagger f = (SiteFlagger)flaggers.elementAt(i); 
+			fireEmployee(f);
+		}
+		flaggers.removeAllElements();
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Asks to set GBLOCKS options", "[]", commandName, "setGBOptions")) {
-			if (gblocksCalculator.queryOptions(this, "Select")) {
-				askedOnceThisRun = true;
-				optionsSet = true;
+		if (checker.compare(this.getClass(), "Asks to set what flagger or trimmer to highlight", "[name of module]", commandName, "cleanFlaggers")) {
+			cleanFlaggers();
+		}
+		else if (checker.compare(this.getClass(), "Reset trimmers to highlight", null, commandName, "resetFlaggers")) {
+			cleanFlaggers();
+			SiteFlagger flaggerTask = (SiteFlagger)hireEmployee(SiteFlagger.class, "Trimming or flagging method to highlight");
+			if (flaggerTask !=null){
+				flaggers.addElement(flaggerTask);
 				calculateNums();
+				parametersChanged();
+				return flaggerTask;
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets additional flagger or trimmer to highlight", "[name of module]", commandName, "addFlaggerViaScript")) {
+			SiteFlagger temp = (SiteFlagger)hireNamedEmployee(SiteFlagger.class, arguments);
+			if (temp !=null){
+				flaggers.addElement(temp);
+				calculateNums();
+				return temp;
+			}
+		}
+		else if (checker.compare(this.getClass(), "Asks to set what flagger or trimmer to highlight", "[name of module]", commandName, "addFlagger")) {
+			SiteFlagger temp = (SiteFlagger)hireEmployee(SiteFlagger.class, "Additional flagger or trimmer to highlight");
+			if (temp !=null){
+				flaggers.addElement(temp);
+				calculateNums();
+				parametersChanged();
+				return temp;
 			}
 		}
 
@@ -67,12 +95,24 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	MesquiteMenuItemSpec mmis;
+	boolean flaggerInitialized = false;
+	/*.................................................................................................................*/
 	public boolean setActiveColors(boolean active){
 		boolean wasActive = isActive();
 		setActive(active);
 		if (isActive() && !wasActive){
-			mmis = addMenuItem("GBLOCKS options...", makeCommand("setGBOptions", this));
+			if (!flaggerInitialized) {
+				SiteFlagger flaggerTask = (SiteFlagger)hireEmployee(SiteFlagger.class, "Trimming or flagging method to highlight");
+				if (flaggerTask == null)
+					return false;
+				flaggerInitialized = true;
+				flaggers.addElement(flaggerTask);
+			}
+			mmis = addMenuItem("Reset Trimmers to be Highlighted...", makeCommand("resetFlaggers", this));
+			mmis = addMenuItem("Add Trimmer to be Highlighted...", makeCommand("addFlagger", this));
 			calculateNums();
 
 		}
@@ -82,6 +122,7 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 		resetContainingMenuBar();
 		return true; //TODO: check success
 	}
+
 	public void endJob(){
 		if (data!=null)
 			data.removeListener(this);
@@ -91,12 +132,6 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 		return null;
 	}
 	/*.................................................................................................................*/
-	/*.................................................................................................................*/
-	/**Returns true if the module is to appear in menus and other places in which users can choose, and if can be selected in any way other than by direct request*/
-	public boolean loadModule(){
-		return false; 		//Debugg.println: not ready for prime time
-
-	}
 	/*.................................................................................................................*/
 	public void viewChanged(){
 	}
@@ -110,27 +145,27 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 		calculateNums();
 	}
 
-	boolean notCalculated = true;
-	boolean[] setToSelect = null;
+	Bits flags, tempFlags;
+
 	public void calculateNums(){
-		notCalculated = true;
 		if (!isActive())
 			return;
 		if (data == null || !(data instanceof DNAData)) {
 			return;
 		}
-		if (!optionsSet && !askedOnceThisRun) {
-			if (!gblocksCalculator.queryOptions(this, "Select"))
-			return;
+		if (flags == null)
+			flags = new Bits(data.getNumChars());
+		for (int i = 0; i<flaggers.size(); i++) {
+			SiteFlagger flaggerTask = (SiteFlagger)flaggers.elementAt(i);
+			tempFlags = flaggerTask.flagSites(data, tempFlags);
+			if (i == 0) {
+				flags.resetSize(tempFlags.getSize()); 
+				flags.setBits(tempFlags);
+			}
 			else
-				askedOnceThisRun = true;
+				flags.orBits(tempFlags);
 		}
-		optionsSet = true;
-		setToSelect = new boolean[data.getNumChars()];
-		if (!gblocksCalculator.markCharacters(data, this, setToSelect, null))
-			return;
 
-		notCalculated = false;
 		table.repaintAll();
 	}
 	/*.................................................................................................................*/
@@ -141,7 +176,7 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Highlight by GBLOCKS Acceptance";
+		return "Highlight by Trimming Methods";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -152,7 +187,7 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Colors aligned sequences to emphasize sections that seem discordant with those of the other taxa.";
+		return "Colors aligned sequences to darken sections that might be trimmed.";
 	}
 	/*.................................................................................................................*/
 	ColorRecord[] legend;
@@ -173,28 +208,26 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 	}
 	/*.................................................................................................................*/
 	public Color getCellColor(int ic, int it){
-		if (ic<0 || it<0 || notCalculated)
+		if (ic<0 || it<0 || flags == null)
 			return null;
 
-		if (data == null || setToSelect == null)
+		if (data == null)
 			return null;
-		else if (data.isInapplicable(ic, it)){
-			return ColorDistribution.straw;
-		}
 		else {
 			if (!(data instanceof DNAData))
 				return Color.white;
 			DNAData	dData = (DNAData)data;
 			long state = dData.getState(ic, it);
-			if (ic < setToSelect.length && setToSelect[ic]) {
+			if (ic < flags.getSize() && flags.isBitOn(ic)) {
 				if (A == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStatePale(0);
+					return DNAData.getDNAColorOfStateVeryDark(0);
 				else if (C == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStatePale(1);
+					return DNAData.getDNAColorOfStateVeryDark(1);
 				else if (G == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStatePale(2);
+					return DNAData.getDNAColorOfStateVeryDark(2);
 				else if (T == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStatePale(3);
+					return DNAData.getDNAColorOfStateVeryDark(3);
+				return Color.black;
 			}
 			else {
 				if (A == (state & CategoricalState.statesBitsMask))
@@ -205,8 +238,8 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 					return DNAData.getDNAColorOfState(2);
 				else if (T == (state & CategoricalState.statesBitsMask))
 					return DNAData.getDNAColorOfState(3);
+				return ColorDistribution.veryLightGray;
 			}
-			return ColorDistribution.veryLightGray;
 			/*
 			if (offsets[ic][it] == 0)
 				return Color.white;
@@ -224,7 +257,7 @@ public class GBLOCKSHighlighter extends DataWindowAssistantID implements CellCol
 	}
 	/*.................................................................................................................*/
 	public String getCellString(int ic, int it){
-		if (ic<0 || it<0 || notCalculated)
+		if (ic<0 || it<0)
 			return null;
 
 		return null;

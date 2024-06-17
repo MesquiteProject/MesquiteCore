@@ -33,7 +33,7 @@ public class InverseContState extends ContDataAlterer  implements AltererContinu
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
    	/** Called to alter data in those cells selected in table*/
    	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){

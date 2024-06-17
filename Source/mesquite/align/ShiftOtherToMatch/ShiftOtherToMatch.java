@@ -46,7 +46,7 @@ public class ShiftOtherToMatch extends CategDataAlterer  implements AltererAlign
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {

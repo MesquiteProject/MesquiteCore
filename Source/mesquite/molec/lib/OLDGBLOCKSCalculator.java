@@ -28,7 +28,7 @@ import mesquite.lib.duties.*;
 /* ======================================================================== */
 public class OLDGBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListener {
 
-
+//Debugg.println RETAINED TEMPORARILY UNTIL NEW VERSION VIA FlagByGBLOCKS settles in
 	static final double defaultIS = 0.50;   
 	static final double defaultFS = 0.85;  
 	static final int defaultCP=8;  

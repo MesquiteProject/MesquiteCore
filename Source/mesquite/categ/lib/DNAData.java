@@ -34,6 +34,7 @@ public class DNAData extends MolecularData {
 
 	public static Color dnaRed, dnaGreen, dnaYellow, dnaBlue;
 	public static Color dnaRedPale, dnaGreenPale, dnaYellowPale, dnaBluePale, dnaInapplicable, dnaUnassigned;
+	public static Color dnaRedVeryDark, dnaGreenVeryDark, dnaYellowVeryDark, dnaBlueVeryDark, dnaInapplicableVeryDark, dnaUnassignedVeryDark;
 
 	CodonPositionsSet codonPositionsSet = null;
 
@@ -53,6 +54,14 @@ public class DNAData extends MolecularData {
 		dnaBluePale = new Color((float) 0.7, (float) 0.7, (float) 1);
 		dnaInapplicable = new Color((float)0.93, (float)0.90, (float)0.87);  //ColorDistribution.inapplicable
 		dnaUnassigned = new Color((float)0.92, (float)0.94, (float)0.98); //ColorDistribution.unassigned;
+
+		dnaRedVeryDark = new Color((float) 0.3, (float) 0.1, (float) 0.1);
+		dnaGreenVeryDark = new Color((float) 0.1, (float) 0.3, (float) 0.1);
+		dnaYellowVeryDark = new Color((float) 0.2, (float) 0.2, (float) 0.1);
+		dnaBlueVeryDark = new Color((float) 0.1, (float) 0.1, (float) 0.3);
+		dnaInapplicableVeryDark = new Color((float)0.1, (float)1, (float)1);  //ColorDistribution.inapplicable
+		dnaUnassignedVeryDark = new Color((float)0, (float)0, (float)0); //ColorDistribution.unassigned;
+
 		A = "A";
 		C = "C";
 		G = "G";
@@ -256,6 +265,18 @@ public class DNAData extends MolecularData {
 			return dnaBluePale;
 		else
 			return dnaUnassigned;
+	}
+	public static Color getDNAColorOfStateVeryDark(int istate) {
+		if (istate == 0)
+			return dnaRedVeryDark;
+		else if (istate == 1)
+			return dnaGreenVeryDark;
+		else if (istate == 2)
+			return dnaYellowVeryDark;
+		else if (istate == 3)
+			return dnaBlueVeryDark;
+		else
+			return dnaUnassignedVeryDark;
 	}
 	/** returns the color of character ic; e.g., to indicate codon positions */
 	public Color getDefaultCharacterColor(int ic) {
