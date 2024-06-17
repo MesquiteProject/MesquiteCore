@@ -97,10 +97,11 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
-	MesquiteMenuItemSpec mmis;
+	MesquiteMenuItemSpec mmis, mmis2;
 	boolean flaggerInitialized = false;
 	/*.................................................................................................................*/
 	public boolean setActiveColors(boolean active){
+		Debugg.println("savtive " + active);
 		boolean wasActive = isActive();
 		setActive(active);
 		if (isActive() && !wasActive){
@@ -112,12 +113,17 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 				flaggers.addElement(flaggerTask);
 			}
 			mmis = addMenuItem("Reset Trimmers to be Highlighted...", makeCommand("resetFlaggers", this));
-			mmis = addMenuItem("Add Trimmer to be Highlighted...", makeCommand("addFlagger", this));
+			mmis2 = addMenuItem("Add Trimmer to be Highlighted...", makeCommand("addFlagger", this));
 			calculateNums();
 
 		}
 		else {
 			deleteMenuItem(mmis);
+			deleteMenuItem(mmis2);
+			if (!active) {
+				cleanFlaggers();
+				flaggerInitialized = false;
+			}
 		}
 		resetContainingMenuBar();
 		return true; //TODO: check success
@@ -126,6 +132,8 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	public void endJob(){
 		if (data!=null)
 			data.removeListener(this);
+		deleteMenuItem(mmis);
+		deleteMenuItem(mmis2);
 		super.endJob();
 	}
 	public String getColorsExplanation(){
