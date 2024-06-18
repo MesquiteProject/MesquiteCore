@@ -159,6 +159,29 @@ public abstract class AssociableWithSpecs extends Associable {
   		}
   		return true;
 	}
+	
+	/** Deletes parts by blocks.
+	 * blocks[i][0] is start of block; blocks[i][1] is end of block
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! */
+	protected boolean deletePartsByBlocks(int[][] blocks){ 
+		
+		if (!super.deletePartsByBlocks(blocks))
+			return false;
+  		if (specsVectors!=null){ //update size of specification sets
+	  		for (int i=0; i<specsVectors.size(); i++) {
+	  			SpecsSetVector sv = (SpecsSetVector)specsVectors.elementAt(i);
+	  			for (int j=0; j<sv.size(); j++) {
+	  				SpecsSet css = (SpecsSet)sv.elementAt(j);
+	  				css.deletePartsByBlocks(blocks);
+	  			}
+	  			SpecsSet currentSS = sv.getCurrentSpecsSet();
+	  			if (currentSS!=null)
+	  				currentSS.deletePartsByBlocks(blocks);
+	  		}
+  		}
+		return true;
+	}
+	
 	public boolean moveParts(int starting, int num, int justAfter){
 		if (!super.moveParts(starting, num, justAfter))
 			return false;

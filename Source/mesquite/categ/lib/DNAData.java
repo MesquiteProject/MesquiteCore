@@ -55,12 +55,12 @@ public class DNAData extends MolecularData {
 		dnaInapplicable = new Color((float)0.93, (float)0.90, (float)0.87);  //ColorDistribution.inapplicable
 		dnaUnassigned = new Color((float)0.92, (float)0.94, (float)0.98); //ColorDistribution.unassigned;
 
-		dnaRedVeryDark = new Color((float) 0.3, (float) 0.1, (float) 0.1);
-		dnaGreenVeryDark = new Color((float) 0.1, (float) 0.3, (float) 0.1);
-		dnaYellowVeryDark = new Color((float) 0.2, (float) 0.2, (float) 0.1);
-		dnaBlueVeryDark = new Color((float) 0.1, (float) 0.1, (float) 0.3);
-		dnaInapplicableVeryDark = new Color((float)0.1, (float)1, (float)1);  //ColorDistribution.inapplicable
-		dnaUnassignedVeryDark = new Color((float)0, (float)0, (float)0); //ColorDistribution.unassigned;
+		dnaRedVeryDark = new Color((float) 0.35, (float) 0.13, (float) 0.13);
+		dnaGreenVeryDark = new Color((float) 0.13, (float) 0.35, (float) 0.13);
+		dnaYellowVeryDark = new Color((float) 0.23, (float) 0.23, (float) 0.13);
+		dnaBlueVeryDark = new Color((float) 0.13, (float) 0.13, (float) 0.35);
+		dnaInapplicableVeryDark = new Color((float)0.1, (float)0.1, (float)0.1);  //ColorDistribution.inapplicable
+		dnaUnassignedVeryDark = new Color((float)0.1, (float)0.1, (float)0.1); //ColorDistribution.unassigned;
 
 		A = "A";
 		C = "C";

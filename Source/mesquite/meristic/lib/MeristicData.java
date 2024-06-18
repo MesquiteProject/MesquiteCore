@@ -395,8 +395,9 @@ public class MeristicData extends CharacterData implements ItemContainer {
 			return false;
 		if (num+starting>numChars)
 			num = numChars-starting;
-		int newNumChars =numChars-num;
+		int newNumChars =numChars-num; //don't updated numChars yet; do it in superclass
 
+		incrementStatesVersion();
 		Vector newMatrices = new Vector();
 		for (int item = 0; item<getNumItems(); item++){
 			Integer2DArray newMatrix = new Integer2DArray(newNumChars, numTaxa);
@@ -417,6 +418,17 @@ public class MeristicData extends CharacterData implements ItemContainer {
 		matrices.removeAllElements();
 		matrices = newMatrices;
 		return super.deleteParts(starting, num);
+	}
+	/*..........................................MeristicData................*/
+	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
+	 * Assumes that these blocks are in sequence!!!*/
+	protected boolean deletePartsByBlocks(int[][] blocks){
+		incrementStatesVersion();
+		for (int item = 0; item<getNumItems(); item++){
+			Integer2DArray matrix = ((Integer2DArray)matrices.elementAt(item));
+			matrix.deleteColumnsByBlocks(blocks);
+		}
+		return super.deletePartsByBlocks(blocks);
 	}
 	/*..........................................MeristicData................*/
 	/**swaps characters first and second.*/

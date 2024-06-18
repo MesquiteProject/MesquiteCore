@@ -962,6 +962,53 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		setDirty(true);
 		return true;
 	}
+	/*-------------------------------------------------------*/
+	/** Deletes parts by blocks.
+	 * blocks[i][0] is start of block; blocks[i][1] is end of block
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! */
+	protected boolean deletePartsByBlocks(int[][] blocks){ 
+		
+		if (bits!=null) {
+			for (int i=0; i< bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				b.deletePartsByBlocks(blocks);
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i< longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				b.deletePartsByBlocks(blocks);
+			}
+		}
+		if (doubles!=null)
+			for (int i=0; i< doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				b.deletePartsByBlocks(blocks);
+			}
+		if (objects!=null)
+			for (int i=0; i< objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				b.deletePartsByBlocks(blocks);
+			}
+		if (defaultOrder != null){
+			defaultOrder = IntegerArray.deletePartsByBlocks(defaultOrder, blocks);
+		}
+		if (currentOrder != null){
+			currentOrder = IntegerArray.deletePartsByBlocks(currentOrder, blocks);
+		}
+		if (previousOrder != null){
+			previousOrder = IntegerArray.deletePartsByBlocks(previousOrder, blocks);
+		}
+		
+		//figuring out how many deleted total to adjust numParts
+		int shift = 0;
+		for (int block = 0; block<blocks.length; block++) 
+			shift += blocks[block][1]-blocks[block][0]+1;		
+		numParts = numParts-shift;
+		
+		setDirty(true);
+		return true;
+	}
 	/*-----------------------------------------*/
 	public boolean moveParts(int starting, int num, int justAfter){
 		if (num==0)

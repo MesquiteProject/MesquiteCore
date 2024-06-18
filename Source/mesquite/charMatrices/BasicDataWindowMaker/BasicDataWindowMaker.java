@@ -5048,6 +5048,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				if (!MesquiteThread.isScripting() && !AlertDialog.query(window, "Delete characters?", "The data for the selected characters have been cleared.  Do you also want to delete the selected characters?", "Yes", "No"))
 					return;
 				Vector blocks = new Vector();
+				/* Old
 				while (anyColumnSelected()) {
 					int lastOfBlock = lastColumnSelected();
 					int firstOfBlock = startOfLastColumnBlockSelected();
@@ -5059,6 +5060,23 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 						blocks.addElement(new int[] { firstOfBlock, lastOfBlock - firstOfBlock + 1 }); // do as series of contiguous blocks
 					}
 				}
+				*/
+				Bits toBeDeleted = new Bits(data.getNumChars());
+				
+				while (anyColumnSelected()) {  // DELETING COLUMNS
+					int lastOfBlock = lastColumnSelected();
+					int firstOfBlock = startOfLastColumnBlockSelected();
+					if (lastOfBlock >= 0) {
+						for (int i = firstOfBlock; i <= lastOfBlock; i++) {
+							deselectColumn(i);
+							data.setSelected(i, false);
+							toBeDeleted.setBit(i, true);
+						}
+						blocks.addElement(new int[] { firstOfBlock, lastOfBlock - firstOfBlock + 1 }); // do as series of contiguous blocks
+					}
+				}
+				data.deletePartsMarked(toBeDeleted, false);
+				data.deleteInLinkedMarked(toBeDeleted, false);
 
 				if (blocks.size() == 1) {
 					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, (int[]) blocks.elementAt(0))); // do as series of contiguous blocks

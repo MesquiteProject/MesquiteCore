@@ -26,7 +26,7 @@ public class LongArray implements Listable {
 	long[] values;
 	NameReference name=null;
 	int autoExpandAmount = 0;
-	
+
 	public LongArray(int num){	
 		this(num, 0);
 	}
@@ -37,7 +37,7 @@ public class LongArray implements Listable {
 			values[i] =  MesquiteLong.unassigned;
 		this.autoExpandAmount = autoExpandAmount;
 	}
-		
+
 	//used for Associables that might need to record whether reference is to part or in between part
 	//intially for MesquiteTree to know if info applies to node or branch ancestral to node
 	boolean between = false;
@@ -258,6 +258,35 @@ public class LongArray implements Listable {
 		for (int i=starting+num; i<d.length; i++)
 			newValues[i-num]=d[i];
 		return newValues;
+	}
+	/*...........................................................*/
+	public void deletePartsByBlocks(int[][] blocks) {
+		values = deletePartsByBlocks(values, blocks);
+	}
+	/*...........................................................*/
+	public static long[] deletePartsByBlocks(long[] d, int[][] blocks) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		long[] newD = new long[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
 	}
 	/*...........................................................*/
 	public static long[] getMoveParts(long[] d, int starting, int num, int justAfter) {

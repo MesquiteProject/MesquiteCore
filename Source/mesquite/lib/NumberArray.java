@@ -1053,6 +1053,16 @@ public class NumberArray {
 		length -= num;
 	}
 	/*...........................................................*/
+	public void deletePartsByBlocks(int[][] blocks) {
+		intValues = IntegerArray.deletePartsByBlocks(intValues, blocks);
+		doubleValues = DoubleArray.deletePartsByBlocks(doubleValues, blocks);
+		longValues = LongArray.deletePartsByBlocks(longValues, blocks);
+		int shift = 0;
+		for (int block = 0; block<blocks.length; block++) 
+			shift += blocks[block][1]-blocks[block][0]+1;
+		length -= shift;
+	}
+	/*...........................................................*/
 	public void moveParts (int starting, int num, int justAfter){
 		if (num<=0)
 			return;

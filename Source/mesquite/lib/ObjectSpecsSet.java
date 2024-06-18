@@ -142,6 +142,16 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		numParts = newNumParts;
 		return true;
 	}
+	/*.................................................................................................................*/
+	/** Deletes parts by blocks.
+	 * blocks[i][0] is start of block; blocks[i][1] is end of block
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! */
+	protected boolean deletePartsByBlocks(int[][] blocks){ 
+		setDirty(true);
+ 		properties = ObjectArray.deletePartsByBlocks(properties, blocks, this); //neeed to getPropertyStrange
+ 		numParts = properties.length;
+		return true;
+	}
 	/*...........................................................*/
 	public boolean swapParts( int first, int second, boolean notify) {
 		if (first<0 || first>=properties.length || second<0 || second>=properties.length) 

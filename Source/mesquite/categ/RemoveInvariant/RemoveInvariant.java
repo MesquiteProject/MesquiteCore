@@ -43,12 +43,13 @@ public class RemoveInvariant extends DataAlterer  implements AltererWholeCharact
 		bits.clearAllBits();
 		for (int ic = 0; ic<cData.getNumChars(); ic++){  // first let's record which ones need deletion
 			if (!cData.charIsVariable(ic, false)) {
+				removedSome = true;
 				bits.setBit(ic);
 			}
 		}
-
-		removedSome = cData.deleteCharacters(bits, "Removing invariant characters; counting down ", false);
-		cData.deleteInLinked(bits,"Removing invariant characters; counting down ", false);
+		
+		cData.deletePartsMarked(bits, false);
+		cData.deleteInLinkedMarked(bits, false);
 		return removedSome;
 	}
 

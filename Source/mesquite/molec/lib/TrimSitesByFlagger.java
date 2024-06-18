@@ -47,7 +47,8 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
 		
-		//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
+		//WayneEFF
+		/* odlNOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
 		int ic = data.getNumChars()-1;
 		int firstInBlockDeleted = -1;
 		int lastInBlockDeleted = -1;
@@ -73,6 +74,9 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 			}
 			ic--;
 		}
+		*/
+		data.deletePartsMarked(flags, false);
+		data.deleteInLinkedMarked(flags, false);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		unpauseAllPausables(v);

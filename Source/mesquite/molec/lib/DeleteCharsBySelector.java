@@ -52,7 +52,13 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
 		
+		
 		//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
+		
+		Bits toBeDeleted = data.getSelectedBits();
+		data.deletePartsMarked(toBeDeleted, false);
+		data.deleteInLinkedMarked(toBeDeleted, false);
+/* old //WayneEFF
 		int ic = data.getNumChars()-1;
 		int firstInBlockDeleted = -1;
 		int lastInBlockDeleted = -1;
@@ -78,6 +84,7 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 			}
 			ic--;
 		}
+		*/
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		unpauseAllPausables(v);

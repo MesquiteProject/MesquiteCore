@@ -53,10 +53,12 @@ public abstract class ModelSet  extends CharObjectSpecsSet {
  	/** return array of character models (can also get indivitually using getModel)*/
 	public CharacterModel[] getModels() {
 		Object p = getProperties();
+		
 		if (p==null)
 			return null;
-		else
+		else {
 			return (CharacterModel[])p;
+		}
 	}
  	/*.................................................................................................................*/
  	/** returns model for specified character*/

@@ -95,7 +95,7 @@ public class CategoricalData extends CharacterData {
 		}
 		return count;
 	}
-	
+
 	public void getDataBlockBoundaries(int it, int icStart, int icEnd, int whichBlock, MesquiteInteger blockStart, MesquiteInteger blockEnd) {
 		if (blockStart==null || blockEnd==null) 
 			return;
@@ -271,7 +271,7 @@ public class CategoricalData extends CharacterData {
 	public void copyDataBlock(CharacterData sourceData, int icSourceStart,  int itSourceStart, int icStart, int icEnd, int itStart, int itEnd){
 		if (sourceData == null)
 			return;
-		
+
 		for (int ic=icStart; ic<=icEnd; ic++){
 			for (int it=itStart; it<=itEnd; it++) {
 				int itSource = it-itStart+itSourceStart;
@@ -709,17 +709,24 @@ public class CategoricalData extends CharacterData {
 		}
 		return super.deleteParts(starting, num);
 	}
-	
+
 	/*..........................................  CategoricalData  ..................................................*/
 	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
 	 * Assumes that these blocks are in sequence!!!*/
-	protected boolean deletePartsByBlocks(int[] startOfBlock, int[] numInBlock){
-		//deleting characters. Go from last block to first block
+	protected boolean deletePartsByBlocks(int[][] blocks){
+		
+		incrementStatesVersion();
+		if (!usingShortMatrix())
+			matrix = Long2DArray.deleteColumnsByBlocks(matrix, blocks);
+		else
+			matrixShort = Short2DArray.deleteColumnsByBlocks(matrixShort, blocks);
 
-		//Debugg.println
-
-
-		return super.deletePartsByBlocks(startOfBlock, numInBlock);
+		stateNames = StringArray.deleteColumnsByBlocks(stateNames, blocks);
+		stateNotes = StringArray.deleteColumnsByBlocks(stateNotes, blocks);
+		stateAnnotations = Object2DArray.deleteColumnsByBlocks(stateAnnotations, blocks);
+		
+		//numChars = newNumChars; don't do this since super.deleteCharacters needs to remember old number
+		return super.deletePartsByBlocks(blocks);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**Adds num taxa after position "starting"; returns true iff successful.*/
@@ -1283,8 +1290,8 @@ public class CategoricalData extends CharacterData {
 		return (CategoricalState.hasMultipleStates(s));
 	}
 
-	
-	
+
+
 	/*..........................................    ..................................................*/
 	/** returns whether any cell in the matrix has multiple states or is missing*/
 	public  boolean hasMultistateOrUncertaintyOrMissing(boolean countMissing, boolean considerOnlySelectedTaxa){
@@ -1961,7 +1968,7 @@ public class CategoricalData extends CharacterData {
 	/*-----------------------------------------------------------*/
 	/** checks to see if the two characters have identical distributions of states */
 	public boolean samePattern(int oic, int ic){
-		
+
 		for (int it=0; it<numTaxa; it++) {
 			if (!sameState(oic, it, ic, it))
 				return false;
@@ -1971,7 +1978,7 @@ public class CategoricalData extends CharacterData {
 	/*-----------------------------------------------------------*/
 	/** Sets all cells in a character to inapplicable */
 	public void clearCharacter(int ic){
-		
+
 		for (int it=0; it<numTaxa; it++) {
 			setToInapplicable(ic,it);
 		}
@@ -1979,7 +1986,7 @@ public class CategoricalData extends CharacterData {
 	/*-----------------------------------------------------------*/
 	/** Sets all cells in a taxon to inapplicable */
 	public void clearTaxon(int it){
-		
+
 		for (int ic=0; ic<numChars; ic++) {
 			setToInapplicable(ic,it);
 		}
@@ -1992,7 +1999,7 @@ public class CategoricalData extends CharacterData {
 			if (cData.stateNames == null) {  // incoming stateNames is null
 				if (stateNames!=null)  // this state names is not null, so lets set the values to null
 					for (int is = 0; is<= CategoricalState.maxCategoricalState; is++) 
-							setStateName(ic, is, null);
+						setStateName(ic, is, null);
 			}
 			else {
 				for (int is = 0; is<= CategoricalState.maxCategoricalState; is++) {
@@ -2137,7 +2144,7 @@ public class CategoricalData extends CharacterData {
 				if (array1[i]!=array2[i])
 					return false;
 		return true;
-		
+
 	}
 	/*..........................................CategoricalData................*/
 	/** returns a String summarizing the frequencies of states of a character .*/

@@ -1080,7 +1080,7 @@ public class ManageCharacters extends CharactersManager {
 	}
 	
 	public MesquiteModule showListOfCharacterMatrices(String arguments){
-		String concatMessage = "To concatenate matrices, select their rows in the List of Character Matrices window, and choose List>Utilities>Concatenate Selected Matrices.";
+		String concatMessage = "To concatenate matrices, select their rows in the List of Character Matrices window, and choose List>Utilities>Concatenate Matrices.";
 		//Check to see if already has lister for this
 		for (int i = 0; i<getNumberOfEmployees(); i++) {
 			Object e=getEmployeeVector().elementAt(i);

@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -124,6 +124,60 @@ public class ObjectArray implements Listable {
 		return true;
 	}
 	/*...........................................................*/
+	public void deletePartsByBlocks(int[][] blocks) {
+		values = deletePartsByBlocks(values, blocks);
+	}
+	/*...........................................................*/
+	public static Object[] deletePartsByBlocks(Object[] d, int[][] blocks) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		Object[] newD = new Object[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
+	public static Object[] deletePartsByBlocks(Object[] d, int[][] blocks, ObjectSpecsSet specsSet) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		Object[] newD =  specsSet.getNewPropertyStorage(newNum);
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
 	public static Object[] addParts(Object[] values, int starting, int num){
 		if (num<=0 || values == null)
 			return values;
@@ -152,7 +206,7 @@ public class ObjectArray implements Listable {
 			num = values.length-starting;
 		int newNumParts = values.length-num;
 		Object[] newValues = new Object[newNumParts];
-		
+
 		for (int i=0; i<starting; i++) {
 			newValues[i] = values[i];
 		}
@@ -188,12 +242,12 @@ public class ObjectArray implements Listable {
 			return false;
 
 		Object[] newValues = new Object [values.length];
-		
+
 		if (starting>justAfter){
 			int count =0;
 			for (int i=0; i<=justAfter; i++)
 				newValues[count++]=values[i];
-			
+
 			for (int i=starting; i<=starting+num-1; i++)
 				newValues[count++]=values[i];
 			for (int i=justAfter+1; i<=starting-1; i++)
@@ -205,7 +259,7 @@ public class ObjectArray implements Listable {
 			int count =0;
 			for (int i=0; i<=starting-1; i++)
 				newValues[count++]=values[i];
-			
+
 			for (int i=starting+num; i<=justAfter; i++)
 				newValues[count++]=values[i];
 			for (int i=starting; i<=starting+num-1; i++)

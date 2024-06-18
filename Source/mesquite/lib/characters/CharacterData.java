@@ -934,51 +934,146 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return deleted;
 	}
 	/*-----------------------------------------------------------*/
-	/** Deletes characters that are turned on in a Bits. */
-	public final boolean deleteCharacters(Bits bits, String progressNote, boolean notify){
-		int ic = numChars;
-		boolean deleted = false;
-		while (ic>=0) {
-			int start = bits.startOfBlock(ic);
-			if (bits.isBitOn(ic)){
-				boolean del = deleteParts(start, ic-start+1);
-				if (del)
-					deleted=true;
-			} 
-			if (StringUtil.notEmpty(progressNote)) 
-				CommandRecord.setDetailsOfProgress(progressNote + " " + ic);
-			ic=start-1;
-		}
-		if (deleted && notify)
-			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
-		return deleted;
-	}
+
 	/*-----------------------------------------------------------*/
 	/** deletes characters listed in toBeDeleted.
 	 * This will be the way it's called from the outside
 	 * Can call this passing it its own selection getSelectedBits() or create a Bits from some other source */
-	public boolean deletePartsMarked(Bits toBeDeleted){
-		//deleting characters. 
-		
+	public boolean deletePartsMarked(Bits toBeDeleted, boolean notify){
+		//deleting characters marked by bits. 
+
+		if (toBeDeleted == null)
+			return false;
+
 		// find blocks
-		//then call deletePartsByBlocks
-		//Debugg.println
+		int[][] blocks = toBeDeleted.getBlocks(getNumChars());
+		
+		deletePartsByBlocks(blocks);
+		if (notify)
+			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 		return true;
 	}
 	/*-----------------------------------------------------------*/
-	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
-	 * Assumes that these blocks are in sequence!!! */
-	protected boolean deletePartsByBlocks(int[] startOfBlock, int[] numInBlock){
-		//deleting characters. Go from last block to first block
-		//
-		//Debugg.println
+	/** Deletes parts by blocks.
+	 * blocks[i][0] is start of block; blocks[i][1] is end of block
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!!
+	 * Note: it would have been simpler to pass Bits directly instead of blocks, but there was a history not yet undone.
+	 * See, for example, StringArray deletePartsFlagged
+	 *  */
+	protected boolean deletePartsByBlocks(int[][] blocks){ 
+
+		if (!checkThread(false))
+			return false;
+
+		nDel++;
+
+		//adjusting character id's 
+		charIDs = LongArray.deletePartsByBlocks(charIDs, blocks);
+
+		notifyOfChangeLowLevel(MesquiteListener.PARTS_DELETED, 0, 0, 0);  
 		
-		// must call super in order to delete in similar way. However, base class has brute force version to avoid all having to program their details
+		uniqueIDs = StringArray.deletePartsByBlocks(uniqueIDs, blocks);
+		characterNames = StringArray.deletePartsByBlocks(characterNames, blocks);
+		footnotes = StringArray.deleteColumnsByBlocks(footnotes, blocks);
+		if (cellObjects.size()>0){
+			for (int k =0; k<cellObjects.size(); k++){
+				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
+				Object[][] newObjects = Object2DArray.deleteColumnsByBlocks(objArray.getMatrix(), blocks);
+				objArray.setMatrix(newObjects);
+			}
+		}
+		cellObjectsDisplay = Bits.deleteColumnsByBlocks(cellObjectsDisplay, blocks);
+		if (anyChangesSinceSave)
+			changedSinceSave = Bits.deleteColumnsByBlocks(changedSinceSave, blocks);
+		characterIllustrations = MesquiteImage.deletePartsByBlocks(characterIllustrations, blocks);
+
+		//How much deleted?.
+		int shift = 0;  //this will record how many deleted total, and the current distance to left array elements need to be shifted.
+		for (int block = 0; block<blocks.length; block++) 
+			shift += blocks[block][1]- blocks[block][0]+1;
+		numChars -= shift;
+		
+		//calculateFirstLastApplicable();
+		super.deletePartsByBlocks(blocks); //for specs sets
+		uncheckThread();
 		return true;
 	}
 
+	/**
+	 * search for WAYNEEFF
+	 * find all places this could help
+
+CharacterData
+updated:
+charIDs
+uniqueIDs
+characterNames
+footnotes
+cellObjects
+cellObjectsDisplay
+changedSinceSave
+characterIllustrations
+numChars
+>>>>>CHECK:
+lowLevelChanges 
+>>>>>FIX:
+deleteInLinked
+
+CategoricalData
+matrix or matrixShort
+stateNames
+stateNotes
+stateAnnotations
+
+MolecularData√
+inverstions
+
+ContinuousData√
+items matrices
+>>>>CHECK WITH EXAMPLE
+
+ScaledData √
+MeristicData √
+=======================
+AssociableWithSpecs √
+SpecsSet s in specsSetVectors
+
+Associable √
+bits
+longs
+doubles
+objects
+defaultOrder
+currentOrder
+previousOrder
+numParts
+=======================
+
+search for ByBlocks( to find all
+Bits
+DoubleArray
+IntegerArray
+LongArray
+NumberArray
+ObjectArray
+
+Double2DArray
+Integer2DArray
+Long2DArray
+Object2DArray
+Short2DArray
+
+SpecsSet
+BitsSpecSet
+NumSpecsSet
+ObjectSpecsSet
+StringArray
+
+MesquiteImage
+
+*/
 	/*-----------------------------------------------------------*/
-/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
+	/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
 	public boolean deleteParts(int starting, int num){
 		if (num<=0)
 			return false;
@@ -1083,7 +1178,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*-----------------------------------------------------------*/
 	/** Deletes characters in linked data matrices. */
-	public final void deleteInLinked(int starting, int num, boolean notify){
+	public final void deleteInLinked(int starting, int num, boolean notify){ //WAYNEEFF Debugg.println
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1094,12 +1189,23 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 	}
 	/*-----------------------------------------------------------*/
-	/** Deletes characters flagged in the Bits in linked data matrices. */
-	public final void deleteInLinked(Bits bits, String progressNote,  boolean notify){
+	/** Deletes characters in linked data matrices. */
+	public final void deleteInLinkedMarked(Bits bits, boolean notify){ //WAYNEEFF Debugg.println
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
-				d.deleteCharacters(bits, progressNote, notify);
+				d.deletePartsMarked(bits, notify);
+				if (notify)
+					d.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+			}
+		}
+	}
+	/** Deletes characters in linked data matrices. */
+	protected void deleteInLinkedByBlocks(int[][] blocks){ //WAYNEEFF Debugg.println
+		if (linkedDatas.size()>0){
+			for (int i=0; i<linkedDatas.size(); i++){
+				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
+				d.deletePartsByBlocks(blocks);
 			}
 		}
 	}
@@ -1112,6 +1218,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return moved;
 	}
 
+	/*-----------------------------------------------------------*/
 	public String[][] getFootnotes(){	
 		return footnotes;
 	}
@@ -2218,7 +2325,20 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 
 
-	public boolean removeCharactersThatAreEntirelyGaps(int icStart, int icEnd, boolean notify){
+	
+public boolean removeCharactersThatAreEntirelyGaps(int icStart, int icEnd, boolean notify){
+	boolean removedSome =  false;
+	Bits bits = new Bits(getNumChars());
+		for (int ic=icStart; ic<getNumChars() && ic<icEnd; ic++)
+			if (entirelyInapplicable(ic)) {
+				bits.setBit(ic, true);
+				removedSome = true;
+			}
+		int[][] blocks = bits.getBlocks(-1);
+		deletePartsMarked(bits, notify);
+		deleteInLinkedMarked(bits, notify);
+
+		/* old //WayneEFF
 		boolean removedSome = false;
 		for (int ic = icEnd; ic>=icStart; ic--){
 			if (entirelyInapplicable(ic)) {
@@ -2236,11 +2356,22 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				removedSome=true;
 			}
 		}
+		*/
 		return removedSome;
 	}
 
-	public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
-		boolean removedSome = false;
+public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
+	boolean removedSome =  false;
+	Bits bits = new Bits(getNumChars());
+	for (int ic=0; ic<getNumChars(); ic++)
+		if (entirelyInapplicable(ic)) {
+			bits.setBit(ic, true);
+			removedSome = true;
+		}
+	deletePartsMarked(bits, notify);
+	deleteInLinkedMarked(bits, notify);
+/*		boolean removedSome = false; //WayneEFF
+
 		for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyInapplicable(ic)) {
 				int numToDelete = 1;
@@ -2251,19 +2382,29 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 						firstToDelete= ic2;
 					} else break;
 				}
-				deleteCharacters(firstToDelete, numToDelete, notify);
+				deleteCharacters(firstToDelete, numToDelete, notify);  
 				deleteInLinked(firstToDelete,numToDelete,notify);
 				ic=ic-numToDelete+1;
 				removedSome=true;
 			}
-		}
+		}*/
 		return removedSome;
 	}
 
 
 
+
 	public boolean removeCharactersThatAreEntirelyUnassigned(boolean notify){
-		boolean removedSome = false;
+		boolean removedSome =  false;
+		Bits bits = new Bits(getNumChars());
+		for (int ic=0; ic<getNumChars(); ic++)
+			if (entirelyUnassigned(ic)) {
+				bits.setBit(ic, true);
+				removedSome = true;
+			}
+		deletePartsMarked(bits, notify);
+		deleteInLinkedMarked(bits, notify);
+		/*boolean removedSome = false;  //WayneEFF
 		for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyUnassigned(ic)) {
 				int numToDelete = 1;
@@ -2280,11 +2421,23 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				removedSome=true;
 			}
 		}
+		*/
 		return removedSome;
 	}
+	
+
 	public boolean removeCharactersThatAreEntirelyUnassignedOrInapplicable(boolean notify){
-		boolean removedSome = false;
-		for (int ic = getNumChars()-1; ic>=0; ic--){
+		boolean removedSome =  false;
+		Bits bits = new Bits(getNumChars());
+		for (int ic=0; ic<getNumChars(); ic++)
+			if (entirelyUnassignedOrInapplicable(ic)) {
+				bits.setBit(ic, true);
+				removedSome = true;
+			}
+		deletePartsMarked(bits, notify);
+		deleteInLinkedMarked(bits, notify);
+/*		boolean removedSome = false;  //WayneEFF
+ * for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyUnassignedOrInapplicable(ic)) {
 				int numToDelete = 1;
 				int firstToDelete = ic;
@@ -2299,7 +2452,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				ic=ic-numToDelete+1;
 				removedSome=true;
 			}
-		}
+		} */
 		return removedSome;
 	}
 
@@ -2864,7 +3017,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return;
 		}
 		else {
-			
+
 			if (cellObjectsDisplay==null)
 				cellObjectsDisplay = new boolean[numChars][numTaxa];
 			if ( !(ic<0 || ic>=cellObjectsDisplay.length || it<0 || cellObjectsDisplay[ic]==null || it>=cellObjectsDisplay[ic].length))

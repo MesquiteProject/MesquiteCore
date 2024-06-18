@@ -30,11 +30,11 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Infer Trees from Selected Matrices";
+		return "Infer Trees from Matrices";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Trees from Selected Matrices...";
+		return "Trees from Matrices...";
 	}
 
 	public String getExplanation() {

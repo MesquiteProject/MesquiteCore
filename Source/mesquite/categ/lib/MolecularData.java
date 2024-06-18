@@ -173,13 +173,14 @@ public class MolecularData extends CategoricalData {
 	/*-----------------------------------------------------------*/
 	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
 	 * Assumes that these blocks are in sequence!!!*/
-	protected boolean deletePartsByBlocks(int[] startOfBlock, int[] numInBlock){
-		//deleting characters; deal with inversions. Go from last block to first block
-
+	protected boolean deletePartsByBlocks(int[][] blocks){
+		/*Deleting characters; deal with inversions. 
+		 * This does  it sequentially last block to first block,
+		 * but this calculation doesn't compress matrices, so it's OK in efficiency*/
 		if (inversions != null){
-			for (int k = startOfBlock.length-1; k>=0; k--) {
-				int starting = startOfBlock[k];
-				int num = numInBlock[k];
+			for (int k = blocks.length-1; k>=0; k--) {
+				int starting = blocks[k][0];
+				int num = blocks[k][1]-starting+1;
 				for (int it = 0; it<inversions.length && it< getNumTaxa(); it++){
 					for (int ip = 0; ip< inversions[it].size(); ip++){
 						Mesquite3DIntPoint p = (Mesquite3DIntPoint)inversions[it].elementAt(ip);
@@ -200,7 +201,7 @@ public class MolecularData extends CategoricalData {
 			}
 		}
 
-		return super.deletePartsByBlocks(startOfBlock, numInBlock);
+		return super.deletePartsByBlocks(blocks);
 	}
 	/*-----------------------------------------------------------*/
 	/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/

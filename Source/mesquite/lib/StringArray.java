@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -67,7 +67,7 @@ public class StringArray implements StringLister, Listable {
 				array[j+1]=temp;
 			}
 		}
-		
+
 	}
 	/*...........................................................*/
 	public String getValue(int index){
@@ -204,7 +204,7 @@ public class StringArray implements StringLister, Listable {
 	public int getSize() {
 		return values.length;
 	}
-	
+
 	/** Concatenates the two String arrays together */
 	public static String[] concatenate(String[] d1, String[] d2) {
 		if (d1==null && d2==null)
@@ -227,10 +227,10 @@ public class StringArray implements StringLister, Listable {
 		}
 		if (newNumParts==0)
 			return null;
-		
+
 		String[] newValues = new String[newNumParts];
-		
-		
+
+
 		if (d1!=null)
 			for (int i=0; i< d1Length; i++) {
 				newValues[i] = d1[i];
@@ -253,10 +253,10 @@ public class StringArray implements StringLister, Listable {
 			starting = -1;
 		if (starting>d.length) 
 			starting = d.length-1;
-		
+
 		int newNumParts = d.length+num;
 		String[] newValues = new String[newNumParts];
-		
+
 		for (int i=0; i<= starting; i++) {
 			newValues[i] = d[i];
 		}
@@ -273,6 +273,95 @@ public class StringArray implements StringLister, Listable {
 		String[] sa = addParts(d,-1,1);
 		sa[0]=s;
 		return sa;
+	}
+	/*...........................................................*/
+	public void deletePartsByBlocks(int[][] blocks) {
+		values = deletePartsByBlocks(values, blocks);
+	}
+	/*...........................................................*
+	public static String[] deletePartsFlagged(String[] d, Bits originalFlags) {
+		if (originalFlags == null)
+			return d;
+		if(d == null)
+			return null;
+		Bits flags = originalFlags.cloneBits(); 
+		int receive =flags.nextBit(0, true);
+		int source = flags.nextBit(receive, false);
+		int lastFilled = -1;
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		while (source >=0) {
+			d[receive] = d[source];
+			lastFilled = receive;
+			flags.setBit(source, true); // set to available to receive
+			flags.setBit(receive, false); // set to available to receive
+			receive =flags.nextBit(++receive, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNum = receive;
+		String[] newD = new String[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
+	public static String[] deletePartsByBlocks(String[] d, int[][] blocks) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		String[] newD = new String[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
+	public static String[][] deleteColumnsByBlocks(String[][] d, int[][] blocks){
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		
+		int numRows= d[0].length;
+		int availableSlot = blocks[0][0];
+
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				for (int it=0; it<numRows && it< d[ic].length; it++) {
+					d[availableSlot][it] = d[ic][it];
+				}
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNumColumns = availableSlot;
+		String[][] newMatrix=new String[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+			newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
 	}
 	/*...........................................................*/
 	public void deleteParts(int starting, int num) {
@@ -340,7 +429,7 @@ public class StringArray implements StringLister, Listable {
 			int count =0;
 			for (int i=0; i<=justAfter; i++)
 				newValues[count++]=d[i];
-			
+
 			for (int i=starting; i<=starting+num-1; i++)
 				newValues[count++]=d[i];
 			for (int i=justAfter+1; i<=starting-1; i++)
@@ -352,7 +441,7 @@ public class StringArray implements StringLister, Listable {
 			int count =0;
 			for (int i=0; i<=starting-1; i++)
 				newValues[count++]=d[i];
-			
+
 			for (int i=starting+num; i<=justAfter; i++)
 				newValues[count++]=d[i];
 			for (int i=starting; i<=starting+num-1; i++)
@@ -381,7 +470,7 @@ public class StringArray implements StringLister, Listable {
 				int count =0;
 				for (int i=0; i<=justAfter; i++)
 					newValues[count++]=d[column][i];
-				
+
 				for (int i=starting; i<=starting+num-1; i++)
 					newValues[count++]=d[column][i];
 				for (int i=justAfter+1; i<=starting-1; i++)
@@ -393,7 +482,7 @@ public class StringArray implements StringLister, Listable {
 				int count =0;
 				for (int i=0; i<=starting-1; i++)
 					newValues[count++]=d[column][i];
-				
+
 				for (int i=starting+num; i<=justAfter; i++)
 					newValues[count++]=d[column][i];
 				for (int i=starting; i<=starting+num-1; i++)
@@ -479,7 +568,7 @@ public class StringArray implements StringLister, Listable {
 	public void setName(String nr){
 		name = NameReference.getNameReference(nr);
 	}
-		/*...........................................................*/
+	/*...........................................................*/
 	public void setNameReference(NameReference nr){
 		name = nr;
 	}

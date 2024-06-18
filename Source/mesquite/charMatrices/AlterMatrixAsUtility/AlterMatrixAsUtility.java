@@ -30,7 +30,7 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 		return "Alter Matrix As Utility";
 	}
 	public String getNameForMenuItem() {
-		return "Alter/Transform Selected Matrices...";
+		return "Alter/Transform Matrices...";
 	}
 
 	public String getExplanation() {

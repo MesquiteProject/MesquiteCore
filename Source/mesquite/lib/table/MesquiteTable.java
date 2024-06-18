@@ -2937,7 +2937,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	public void blankColumn(int column) {
 		if (!columnLegal(column))
 			return;
-		for (int r = firstRowVisible; r < getNumRows(); r++)
+		for (int r = firstRowVisible; r < getNumRows() && r <= lastRowVisible; r++)
 			// TODO: this and similar places (e.g. redrawMatrix) need to use getNumRowsVisible instead
 			matrix.blankCell(column, r);
 	}

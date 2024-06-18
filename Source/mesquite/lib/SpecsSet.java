@@ -78,6 +78,10 @@ public abstract class SpecsSet extends FileElement {
 	/** Delete parts specified  */
 	public abstract boolean deleteParts(int starting, int num);
 	/*.................................................................................................................*/
+  	
+	/** Delete parts specified  */
+	protected abstract boolean deletePartsByBlocks(int[][] blocks);
+	/*.................................................................................................................*/
 	/** Move num parts starting at first, to just after parts justAfter  */
 	public abstract boolean moveParts(int starting, int num, int justAfter);
 	/*----*/

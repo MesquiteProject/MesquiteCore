@@ -1018,7 +1018,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			
 	
 				
-			while(row>=0) {
+			//WayneEFF
+		while(row>=0) {
 				if (table.isRowSelected(row) && owner.rowDeletable(row)){  // we've found a selected one
 					lastInBlockDeleted = row;
 					while(row>=0) {  // now let's look for the first non-selected one

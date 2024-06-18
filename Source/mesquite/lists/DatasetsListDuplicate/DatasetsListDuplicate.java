@@ -27,7 +27,7 @@ public class DatasetsListDuplicate extends DatasetsListUtility {
 	boolean duplicateExcludedCharacters = false;
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Duplicate Selected Matrices";
+		return "Duplicate Matrices";
 	}
 
 	public String getExplanation() {

@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -165,7 +165,7 @@ public class DoubleArray implements Listable  {
 			}
 			return newMatrix;
 		}
-		*/
+		 */
 		if (starting<0) 
 			starting = -1;
 		if (starting>d.length) 
@@ -201,6 +201,35 @@ public class DoubleArray implements Listable  {
 		return newValues;
 	}
 	/*...........................................................*/
+	public void deletePartsByBlocks(int[][] blocks) {
+		values = deletePartsByBlocks(values, blocks);
+	}
+	/*...........................................................*/
+	public static double[] deletePartsByBlocks(double[] d, int[][] blocks) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		double[] newD = new double[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
 	public void moveParts(int starting, int num, int justAfter) {
 		moveParts(values, starting, num, justAfter);
 	}
@@ -217,7 +246,7 @@ public class DoubleArray implements Listable  {
 			int count =0;
 			for (int i=0; i<=justAfter; i++)
 				newValues[count++]=d[i];
-			
+
 			for (int i=starting; i<=starting+num-1; i++)
 				newValues[count++]=d[i];
 			for (int i=justAfter+1; i<=starting-1; i++)
@@ -229,7 +258,7 @@ public class DoubleArray implements Listable  {
 			int count =0;
 			for (int i=0; i<=starting-1; i++)
 				newValues[count++]=d[i];
-			
+
 			for (int i=starting+num; i<=justAfter; i++)
 				newValues[count++]=d[i];
 			for (int i=starting; i<=starting+num-1; i++)
@@ -378,7 +407,7 @@ public class DoubleArray implements Listable  {
 	public static void sort(double[] array){
 		if (array==null || array.length<=1)
 			return;
-		
+
 		for (int i=1; i<array.length; i++) {
 			for (int j= i-1; j>=0 && array[j]>array[j+1]; j--) {
 				double temp = array[j];
@@ -386,13 +415,13 @@ public class DoubleArray implements Listable  {
 				array[j+1]=temp;
 			}
 		}
-		
+
 	}
 	/*...........................................................*/
 	public static void sortByFirst(double[] array, double[] other){
 		if (array==null || array.length<=1 || other==null || other.length<=1 || array.length !=other.length)
 			return;
-		
+
 		for (int i=1; i<array.length; i++) {
 			for (int j= i-1; j>=0 && array[j]>array[j+1]; j--) {
 				double temp = array[j];
@@ -403,7 +432,7 @@ public class DoubleArray implements Listable  {
 				other[j+1]=temp;
 			}
 		}
-		
+
 	}
 	/*...........................................................*/
 	public int getSize() {

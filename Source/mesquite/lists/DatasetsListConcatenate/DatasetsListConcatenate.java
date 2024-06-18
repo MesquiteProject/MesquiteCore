@@ -33,11 +33,11 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 	boolean preferencesSet=false;
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Concatenate Selected Matrices";
+		return "Concatenate Matrices";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Concatenate Selected Matrices...";
+		return "Concatenate Matrices...";
 	}
 
 	public String getExplanation() {

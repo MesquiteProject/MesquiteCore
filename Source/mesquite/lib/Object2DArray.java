@@ -177,5 +177,38 @@ public class Object2DArray implements Listable {
 		return d;
 	}
 	/*...........................................................*/
+	public static Object[][] deleteColumnsByBlocks(Object[][] d, int[][] blocks){
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		
+		int numRows= d[0].length;
+		int availableSlot = blocks[0][0];
+
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				for (int it=0; it<numRows && it< d[ic].length; it++) {
+					d[availableSlot][it] = d[ic][it];
+				}
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNumColumns = availableSlot;
+		Object[][] newMatrix=new Object[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+			newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
+}
+	/*...........................................................*/
 }
 
