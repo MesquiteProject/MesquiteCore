@@ -556,6 +556,8 @@ public class Bits implements Listable{
 	/*------------------------------------------*/
 	/** returns the next bit, starting at startBit, that has the same value as "on" */
 	public int nextBit (int startBit, boolean on) {
+		if (startBit>=getSize())
+			return -1;
 		//first, see if there are any bits remaining in the current Int that are the same value as "on";
 		if (startBit<0)
 			startBit = 0;

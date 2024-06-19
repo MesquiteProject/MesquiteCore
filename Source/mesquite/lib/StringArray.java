@@ -278,27 +278,25 @@ public class StringArray implements StringLister, Listable {
 	public void deletePartsByBlocks(int[][] blocks) {
 		values = deletePartsByBlocks(values, blocks);
 	}
-	/*...........................................................*
+	/*...........................................................*/
 	public static String[] deletePartsFlagged(String[] d, Bits originalFlags) {
+		if (d == null)
+			return null;
 		if (originalFlags == null)
 			return d;
-		if(d == null)
-			return null;
 		Bits flags = originalFlags.cloneBits(); 
-		int receive =flags.nextBit(0, true);
-		int source = flags.nextBit(receive, false);
-		int lastFilled = -1;
-		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
-		while (source >=0) {
-			d[receive] = d[source];
-			lastFilled = receive;
+		int toFill =flags.nextBit(0, true); //find next to be cleared
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1;
+		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.
+			d[toFill] = d[source]; //move content from source to place
+			highestFilled = toFill;
 			flags.setBit(source, true); // set to available to receive
-			flags.setBit(receive, false); // set to available to receive
-			receive =flags.nextBit(++receive, true);
+			toFill =flags.nextBit(++toFill, true);
 			source =flags.nextBit(++source, false);	
 		}
 		//Next, trim leftovers
-		int newNum = receive;
+		int newNum = highestFilled+1;
 		String[] newD = new String[newNum];
 		for (int i=0; i<newNum; i++) 
 			newD[i] = d[i];

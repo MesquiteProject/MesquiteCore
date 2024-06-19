@@ -256,8 +256,49 @@ public class Short2DArray {
 		return newMatrix;
 	}
 	/*...........................................................*/
-	public static short[][] deleteColumnsByBlocks(short[][] d, int[][] blocks){
+	public static short[][] deleteColumnsFlagged(short[][] d, Bits originalFlags) {
 		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		int numRows= d[0].length;
+		if (numRows == 0)
+			return d;
+		if (originalFlags == null)
+			return d;
+
+		Bits flags = originalFlags.cloneBits(); 
+		int toFill =flags.nextBit(0, true); //find next to be cleared
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1; //
+		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.
+			for (int it=0; it<numRows; it++)
+				d[toFill][it] = d[source][it]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNumColumns = highestFilled+1;
+		short[][] newMatrix=new short[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+				newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
+	}
+	/*...........................................................*/
+	public static short[][] deleteColumnsByBlocks(short[][] d, int[][] blocks){
+		Bits b = new Bits(d.length);
+		for (int block = 0; block<blocks.length; block++) {
+			int start = blocks[block][0];
+			int end = blocks[block][1];
+			for (int ic=start; ic<=end; ic++)
+				b.setBit(ic, true);
+		}
+		return deleteColumnsFlagged(d, b);
+		
+/*		if (d == null)
 			return null;
 		if (d.length <= 0)
 			return d;
@@ -289,6 +330,7 @@ public class Short2DArray {
 			for (int it=0; it<numRows && it< d[ic].length; it++) 
 			newMatrix[ic][it] = d[ic][it];
 		return newMatrix;
+		*/
 }
 	
 	/*...........................................................*/
