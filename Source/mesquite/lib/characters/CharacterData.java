@@ -939,28 +939,66 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/** deletes characters listed in toBeDeleted.
 	 * This will be the way it's called from the outside
 	 * Can call this passing it its own selection getSelectedBits() or create a Bits from some other source */
-	public boolean deletePartsMarked(Bits toBeDeleted, boolean notify){
+	public boolean deletePartsFlagged(Bits toBeDeleted, boolean notify){
 		//deleting characters marked by bits. 
 
 		if (toBeDeleted == null)
 			return false;
 
-		// find blocks
-		int[][] blocks = toBeDeleted.getBlocks(getNumChars());
-		
-		deletePartsByBlocks(blocks);
+		deletePartsFlagged(toBeDeleted);
 		if (notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 		return true;
 	}
 	/*-----------------------------------------------------------*/
-	/** Deletes parts by blocks.
+	/** Deletes parts flagged for deletion in Bits */
+	protected boolean deletePartsFlagged(Bits toBeDeleted){ 
+
+		if (!checkThread(false))
+			return false;
+		if (toBeDeleted == null)
+			return false;
+		
+		if (toBeDeleted.getSize()>numChars)
+			toBeDeleted.resetSize(numChars);
+
+		nDel++;
+		//adjusting character id's 
+		charIDs = LongArray.deletePartsFlagged(charIDs, toBeDeleted);
+
+		notifyOfChangeLowLevel(MesquiteListener.PARTS_DELETED, 0, 0, 0);  
+		
+		uniqueIDs = StringArray.deletePartsFlagged(uniqueIDs, toBeDeleted);
+		characterNames = StringArray.deletePartsFlagged(characterNames, toBeDeleted);
+		footnotes = StringArray.deleteColumnsFlagged(footnotes, toBeDeleted);
+		if (cellObjects.size()>0){
+			for (int k =0; k<cellObjects.size(); k++){
+				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
+				Object[][] newObjects = Object2DArray.deleteColumnsFlagged(objArray.getMatrix(), toBeDeleted);
+				objArray.setMatrix(newObjects);
+			}
+		}
+		cellObjectsDisplay = Bits.deleteColumnsFlagged(cellObjectsDisplay, toBeDeleted);
+		if (anyChangesSinceSave)
+			changedSinceSave = Bits.deleteColumnsFlagged(changedSinceSave, toBeDeleted);
+		characterIllustrations = MesquiteImage.deletePartsFlagged(characterIllustrations, toBeDeleted);
+
+		//How much deleted?.
+		numChars -= toBeDeleted.numBitsOn();
+		
+		//calculateFirstLastApplicable();
+		super.deletePartsFlagged(toBeDeleted); //for specs sets
+		uncheckThread();
+		return true;
+	}	
+	/*-----------------------------------------------------------*/
+	/** Deletes parts By Blocks.
 	 * blocks[i][0] is start of block; blocks[i][1] is end of block
 	 * Assumes that these blocks are in sequence, non-overlapping, etc!!!
 	 * Note: it would have been simpler to pass Bits directly instead of blocks, but there was a history not yet undone.
 	 * See, for example, StringArray deletePartsFlagged
-	 *  */
-	protected boolean deletePartsByBlocks(int[][] blocks){ 
+	 *  *
+	protected boolean deletePartsBy Blocks(int[][] blocks){ 
 
 		if (!checkThread(false))
 			return false;
@@ -968,24 +1006,24 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		nDel++;
 
 		//adjusting character id's 
-		charIDs = LongArray.deletePartsByBlocks(charIDs, blocks);
+		charIDs = LongArray.deletePartsBy Blocks(charIDs, blocks);
 
 		notifyOfChangeLowLevel(MesquiteListener.PARTS_DELETED, 0, 0, 0);  
 		
-		uniqueIDs = StringArray.deletePartsByBlocks(uniqueIDs, blocks);
-		characterNames = StringArray.deletePartsByBlocks(characterNames, blocks);
-		footnotes = StringArray.deleteColumnsByBlocks(footnotes, blocks);
+		uniqueIDs = StringArray.deletePartsBy Blocks(uniqueIDs, blocks);
+		characterNames = StringArray.deletePartsBy Blocks(characterNames, blocks);
+		footnotes = StringArray.deleteColumnsBy Blocks(footnotes, blocks);
 		if (cellObjects.size()>0){
 			for (int k =0; k<cellObjects.size(); k++){
 				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
-				Object[][] newObjects = Object2DArray.deleteColumnsByBlocks(objArray.getMatrix(), blocks);
+				Object[][] newObjects = Object2DArray.deleteColumnsBy Blocks(objArray.getMatrix(), blocks);
 				objArray.setMatrix(newObjects);
 			}
 		}
-		cellObjectsDisplay = Bits.deleteColumnsByBlocks(cellObjectsDisplay, blocks);
+		cellObjectsDisplay = Bits.deleteColumnsBy Blocks(cellObjectsDisplay, blocks);
 		if (anyChangesSinceSave)
-			changedSinceSave = Bits.deleteColumnsByBlocks(changedSinceSave, blocks);
-		characterIllustrations = MesquiteImage.deletePartsByBlocks(characterIllustrations, blocks);
+			changedSinceSave = Bits.deleteColumnsBy Blocks(changedSinceSave, blocks);
+		characterIllustrations = MesquiteImage.deletePartsBy Blocks(characterIllustrations, blocks);
 
 		//How much deleted?.
 		int shift = 0;  //this will record how many deleted total, and the current distance to left array elements need to be shifted.
@@ -994,82 +1032,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		numChars -= shift;
 		
 		//calculateFirstLastApplicable();
-		super.deletePartsByBlocks(blocks); //for specs sets
+		super.deletePartsBy Blocks(blocks); //for specs sets
 		uncheckThread();
 		return true;
 	}
 
-	/**
-	 * search for WAYNEEFF
-	 * find all places this could help
 
-CharacterData
-updated:
-charIDs
-uniqueIDs
-characterNames
-footnotes
-cellObjects
-cellObjectsDisplay
-changedSinceSave
-characterIllustrations
-numChars
->>>>>CHECK:
-lowLevelChanges 
->>>>>FIX:
-deleteInLinked
-
-CategoricalData
-matrix or matrixShort
-stateNames
-stateNotes
-stateAnnotations
-
-MolecularData√
-inverstions
-
-ContinuousData√
-items matrices
->>>>CHECK WITH EXAMPLE
-
-ScaledData √
-MeristicData √
-=======================
-AssociableWithSpecs √
-SpecsSet s in specsSetVectors
-
-Associable √
-bits
-longs
-doubles
-objects
-defaultOrder
-currentOrder
-previousOrder
-numParts
-=======================
-
-search for ByBlocks( to find all
-Bits
-DoubleArray
-IntegerArray
-LongArray
-NumberArray
-ObjectArray
-
-Double2DArray
-Integer2DArray
-Long2DArray
-Object2DArray
-Short2DArray
-
-SpecsSet
-BitsSpecSet
-NumSpecsSet
-ObjectSpecsSet
-StringArray
-
-MesquiteImage
 
 */
 	/*-----------------------------------------------------------*/
@@ -1190,22 +1158,20 @@ MesquiteImage
 	}
 	/*-----------------------------------------------------------*/
 	/** Deletes characters in linked data matrices. */
-	public final void deleteInLinkedMarked(Bits bits, boolean notify){ //WAYNEEFF Debugg.println
+	public final void deleteInLinkedFlagged(Bits bits, boolean notify){ //WAYNEEFF Debugg.println
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
-				d.deletePartsMarked(bits, notify);
-				if (notify)
-					d.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+				d.deletePartsFlagged(bits, notify);
 			}
 		}
 	}
-	/** Deletes characters in linked data matrices. */
-	protected void deleteInLinkedByBlocks(int[][] blocks){ //WAYNEEFF Debugg.println
+	/** Deletes characters in linked data matrices. *
+	protected void deleteInLinkedBy Blocks(int[][] blocks){ //WAYNEEFF Debugg.println
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
-				d.deletePartsByBlocks(blocks);
+				d.deletePartsBy Blocks(blocks);
 			}
 		}
 	}
@@ -2335,10 +2301,10 @@ public boolean removeCharactersThatAreEntirelyGaps(int icStart, int icEnd, boole
 				removedSome = true;
 			}
 		int[][] blocks = bits.getBlocks(-1);
-		deletePartsMarked(bits, notify);
-		deleteInLinkedMarked(bits, notify);
+		deletePartsFlagged(bits, notify);
+		deleteInLinkedFlagged(bits, notify);
 
-		/* old //WayneEFF
+		/* old 
 		boolean removedSome = false;
 		for (int ic = icEnd; ic>=icStart; ic--){
 			if (entirelyInapplicable(ic)) {
@@ -2368,9 +2334,9 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 			bits.setBit(ic, true);
 			removedSome = true;
 		}
-	deletePartsMarked(bits, notify);
-	deleteInLinkedMarked(bits, notify);
-/*		boolean removedSome = false; //WayneEFF
+	deletePartsFlagged(bits, notify);
+	deleteInLinkedFlagged(bits, notify);
+/*		old
 
 		for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyInapplicable(ic)) {
@@ -2402,9 +2368,9 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 				bits.setBit(ic, true);
 				removedSome = true;
 			}
-		deletePartsMarked(bits, notify);
-		deleteInLinkedMarked(bits, notify);
-		/*boolean removedSome = false;  //WayneEFF
+		deletePartsFlagged(bits, notify);
+		deleteInLinkedFlagged(bits, notify);
+		/* old
 		for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyUnassigned(ic)) {
 				int numToDelete = 1;
@@ -2434,9 +2400,9 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 				bits.setBit(ic, true);
 				removedSome = true;
 			}
-		deletePartsMarked(bits, notify);
-		deleteInLinkedMarked(bits, notify);
-/*		boolean removedSome = false;  //WayneEFF
+		deletePartsFlagged(bits, notify);
+		deleteInLinkedFlagged(bits, notify);
+/*		 old
  * for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyUnassignedOrInapplicable(ic)) {
 				int numToDelete = 1;

@@ -191,12 +191,20 @@ public abstract class BitsSpecsSet extends SpecsSet  {
 		return true;
 	}
 	/*.................................................................................................................*/
+	/** Deletes parts flagged in Bits.*/
+	protected boolean deletePartsFlagged(Bits toBeDeleted){ 
+		setDirty(true);
+		myBits.deletePartsFlagged(toBeDeleted); 
+ 		numParts = myBits.getSize();
+		return true;
+	}
+	/*.................................................................................................................*/
 	/** Deletes parts by blocks.
 	 * blocks[i][0] is start of block; blocks[i][1] is end of block
-	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! */
-	protected boolean deletePartsByBlocks(int[][] blocks){ 
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! *
+	protected boolean deletePartsBy Blocks(int[][] blocks){ 
 		setDirty(true);
- 		myBits.deletePartsByBlocks(blocks);
+ 		myBits.deletePartsBy Blocks(blocks);
  		numParts = myBits.getSize();
 		return true;
 	}

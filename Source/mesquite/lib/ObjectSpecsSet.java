@@ -143,12 +143,20 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		return true;
 	}
 	/*.................................................................................................................*/
+	/** Deletes parts flagged in Bits.*/
+	protected boolean deletePartsFlagged(Bits toBeDeleted){ 
+		setDirty(true);
+ 		properties = ObjectArray.deletePartsFlagged(properties, toBeDeleted, this); //need to getPropertyStrange
+ 		numParts = properties.length;
+		return true;
+	}
+	/*.................................................................................................................*/
 	/** Deletes parts by blocks.
 	 * blocks[i][0] is start of block; blocks[i][1] is end of block
-	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! */
-	protected boolean deletePartsByBlocks(int[][] blocks){ 
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! *
+	protected boolean deletePartsBy Blocks(int[][] blocks){ 
 		setDirty(true);
- 		properties = ObjectArray.deletePartsByBlocks(properties, blocks, this); //neeed to getPropertyStrange
+ 		properties = ObjectArray.deletePartsBy Blocks(properties, blocks, this); //neeed to getPropertyStrange
  		numParts = properties.length;
 		return true;
 	}

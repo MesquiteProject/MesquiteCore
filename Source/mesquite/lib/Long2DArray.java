@@ -303,7 +303,39 @@ public class Long2DArray {
 	}
 	
 	/*...........................................................*/
-	public static long[][] deleteColumnsByBlocks(long[][] d, int[][] blocks){
+	public static long[][] deleteColumnsFlagged(long[][] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		int numRows= d[0].length;
+		if (numRows == 0)
+			return d;
+		if (toDelete == null)
+			return d;
+
+		Bits flags = toDelete.cloneBits(); 
+		int toFill =flags.nextBit(0, true); //find next to be cleared
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1; //
+		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.
+			for (int it=0; it<numRows; it++)
+				d[toFill][it] = d[source][it]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNumColumns = highestFilled+1;
+		long[][] newMatrix=new long[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+				newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
+	}	
+	/*...........................................................*
+	public static long[][] deleteColumnsBy Blocks(long[][] d, int[][] blocks){
 		if (d == null)
 			return null;
 		if (d.length <= 0)

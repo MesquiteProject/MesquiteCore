@@ -75,8 +75,8 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 			ic--;
 		}
 		*/
-		data.deletePartsMarked(flags, false);
-		data.deleteInLinkedMarked(flags, false);
+		data.deletePartsFlagged(flags, false);
+		data.deleteInLinkedFlagged(flags, false);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		unpauseAllPausables(v);

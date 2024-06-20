@@ -647,8 +647,8 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 					count++;
 		}
 			if (count>0) {
-				data.deletePartsMarked(bits, false);
-				data.deleteInLinkedMarked(bits, false);
+				data.deletePartsFlagged(bits, false);
+				data.deleteInLinkedFlagged(bits, false);
 			}
 				/* old wayneeff
 		while(row>=0) {

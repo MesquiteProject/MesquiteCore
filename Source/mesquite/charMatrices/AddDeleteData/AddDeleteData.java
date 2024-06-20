@@ -177,10 +177,9 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 					}
 				}
 				/**/
-				//WayneEFF   	Debugg.println
-			/**
-new efficient version
-				 */
+				//
+
+				/* new efficient version  that uses deletePartsFlagged so as not to have to do in pieces*/
 				Bits toBeDeleted = new Bits(data.getNumChars());
 		
 				while (table.anyColumnSelected()) {  // DELETING COLUMNS
@@ -195,8 +194,8 @@ new efficient version
 						blocks.addElement(new int[] { firstOfBlock, lastOfBlock - firstOfBlock + 1 }); // do as series of contiguous blocks
 					}
 				}
-				data.deletePartsMarked(toBeDeleted, false);
-				data.deleteInLinkedMarked(toBeDeleted, false);
+				data.deletePartsFlagged(toBeDeleted, false);
+				data.deleteInLinkedFlagged(toBeDeleted, false);
 				/*	*/
 		
 
