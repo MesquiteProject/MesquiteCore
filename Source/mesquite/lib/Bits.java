@@ -653,7 +653,8 @@ public class Bits implements Listable{
 	public int[][] getBlocks(int upperBoundary){
 		int numBlocks = 0;
 		int ball = -1;
-		while (ball <= getSize() && (upperBoundary<0 || ball < upperBoundary)) {
+		boolean done = false;
+		while (ball <= getSize() && !done && (upperBoundary<0 || ball < upperBoundary)) {
 			int nextStart = nextBit(ball, true);
 			int nextEnd = -1;
 			if (nextStart >=0) { //block found
@@ -666,12 +667,12 @@ public class Bits implements Listable{
 				ball = nextEnd+1;
 			}
 			else
-				ball = upperBoundary; //done
+				done = true; //done
 		}
 		int[][] blocks = new int[numBlocks][2];
 		int block = 0;
 		ball = -1;
-		while (ball < getSize() && (upperBoundary<0 || ball < upperBoundary)) {
+		while (ball < getSize() && !done && (upperBoundary<0 || ball < upperBoundary)) {
 			int nextStart = nextBit(ball, true);
 			int nextEnd = -1;
 			if (nextStart >=0) { //block found
@@ -686,7 +687,7 @@ public class Bits implements Listable{
 				ball = nextEnd+1;
 			}
 			else
-				ball = upperBoundary; //done
+				done = true; //done
 		}
 		return blocks;
 	}
