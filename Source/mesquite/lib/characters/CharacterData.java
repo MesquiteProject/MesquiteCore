@@ -2300,7 +2300,7 @@ public boolean removeCharactersThatAreEntirelyGaps(int icStart, int icEnd, boole
 				bits.setBit(ic, true);
 				removedSome = true;
 			}
-		int[][] blocks = bits.getBlocks(-1);
+	//	int[][] blocks = bits.getBlocks(-1);
 		deletePartsFlagged(bits, notify);
 		deleteInLinkedFlagged(bits, notify);
 
