@@ -38,12 +38,12 @@ public class SelectGappySites extends SelectSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Select Gappy Sites";
+		return "Select Gappy Regions";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Select sites that are too gappy." ;
+		return "Select sites or blocks of sites that are too gappy." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
