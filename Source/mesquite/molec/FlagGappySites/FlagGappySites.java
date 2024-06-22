@@ -16,13 +16,10 @@ package mesquite.molec.FlagGappySites;
 
 
 
-import java.awt.Button;
 import java.awt.Checkbox;
 
-import mesquite.categ.lib.CategoricalData;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
 import mesquite.lib.DoubleField;
 import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.IntegerField;
@@ -30,7 +27,6 @@ import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
