@@ -160,12 +160,20 @@ public abstract class NumSpecsSet extends SpecsSet  {
 	return true;
 	}
 	/*.................................................................................................................*/
+	/** Deletes parts flagged in Bits.*/
+	protected boolean deletePartsFlagged(Bits toBeDeleted){ 
+		setDirty(true);
+ 		nums.deletePartsFlagged(toBeDeleted); 
+ 		numParts = nums.getSize();
+		return true;
+	}
+	/*.................................................................................................................*/
 	/** Deletes parts by blocks.
 	 * blocks[i][0] is start of block; blocks[i][1] is end of block
-	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! */
-	protected boolean deletePartsByBlocks(int[][] blocks){ 
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! *
+	protected boolean deletePartsBy Blocks(int[][] blocks){ 
 		setDirty(true);
- 		nums.deletePartsByBlocks(blocks);
+ 		nums.deletePartsBy Blocks(blocks);
  		numParts = nums.getSize();
 		return true;
 	}

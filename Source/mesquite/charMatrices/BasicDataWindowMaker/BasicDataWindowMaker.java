@@ -4983,7 +4983,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		window.getOwnerModule().unpauseAllPausables(v);
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 		data.notifyInLinked(new Notification(MesquiteListener.PARTS_MOVED));
-
+	//	Debugg.println("scd " + getLastColumnVisible() why is last column disappearing when moved?);
+		resetNumColumnsVisible();
+	//	Debugg.println("  " + getLastColumnVisible());
+		repaint();
 		editorModule.getModuleWindow().contentsChanged();
 	}
 
@@ -5075,8 +5078,8 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 						blocks.addElement(new int[] { firstOfBlock, lastOfBlock - firstOfBlock + 1 }); // do as series of contiguous blocks
 					}
 				}
-				data.deletePartsMarked(toBeDeleted, false);
-				data.deleteInLinkedMarked(toBeDeleted, false);
+				data.deletePartsFlagged(toBeDeleted, false);
+				data.deleteInLinkedFlagged(toBeDeleted, false);
 
 				if (blocks.size() == 1) {
 					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, (int[]) blocks.elementAt(0))); // do as series of contiguous blocks

@@ -1018,7 +1018,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			
 	
 				
-			//WayneEFF
+			//Note that this method is overridden in CharacterList so as to be able to use the deletePartsFlagged system
 		while(row>=0) {
 				if (table.isRowSelected(row) && owner.rowDeletable(row)){  // we've found a selected one
 					lastInBlockDeleted = row;

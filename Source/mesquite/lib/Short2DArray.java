@@ -256,7 +256,7 @@ public class Short2DArray {
 		return newMatrix;
 	}
 	/*...........................................................*/
-	public static short[][] deleteColumnsFlagged(short[][] d, Bits originalFlags) {
+	public static short[][] deleteColumnsFlagged(short[][] d, Bits toDelete) {
 		if (d == null)
 			return null;
 		if (d.length <= 0)
@@ -264,10 +264,10 @@ public class Short2DArray {
 		int numRows= d[0].length;
 		if (numRows == 0)
 			return d;
-		if (originalFlags == null)
+		if (toDelete == null)
 			return d;
 
-		Bits flags = originalFlags.cloneBits(); 
+		Bits flags = toDelete.cloneBits(); 
 		int toFill =flags.nextBit(0, true); //find next to be cleared
 		int source = flags.nextBit(toFill, false); //find source to move into it
 		int highestFilled = toFill-1; //
@@ -287,18 +287,9 @@ public class Short2DArray {
 				newMatrix[ic][it] = d[ic][it];
 		return newMatrix;
 	}
-	/*...........................................................*/
-	public static short[][] deleteColumnsByBlocks(short[][] d, int[][] blocks){
-		Bits b = new Bits(d.length);
-		for (int block = 0; block<blocks.length; block++) {
-			int start = blocks[block][0];
-			int end = blocks[block][1];
-			for (int ic=start; ic<=end; ic++)
-				b.setBit(ic, true);
-		}
-		return deleteColumnsFlagged(d, b);
-		
-/*		if (d == null)
+	/*...........................................................*
+	public static short[][] deleteColumnsBy Blocks(short[][] d, int[][] blocks){
+		if (d == null)
 			return null;
 		if (d.length <= 0)
 			return d;
@@ -330,7 +321,7 @@ public class Short2DArray {
 			for (int it=0; it<numRows && it< d[ic].length; it++) 
 			newMatrix[ic][it] = d[ic][it];
 		return newMatrix;
-		*/
+		
 }
 	
 	/*...........................................................*/

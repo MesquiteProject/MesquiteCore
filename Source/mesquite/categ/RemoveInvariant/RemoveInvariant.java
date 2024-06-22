@@ -48,8 +48,8 @@ public class RemoveInvariant extends DataAlterer  implements AltererWholeCharact
 			}
 		}
 		
-		cData.deletePartsMarked(bits, false);
-		cData.deleteInLinkedMarked(bits, false);
+		cData.deletePartsFlagged(bits, false);
+		cData.deleteInLinkedFlagged(bits, false);
 		return removedSome;
 	}
 

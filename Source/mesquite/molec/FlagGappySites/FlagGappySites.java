@@ -325,7 +325,7 @@ public class FlagGappySites extends SiteFlagger {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Deletes sites or regions of sites with a certain proportion of gaps." ;
+		return "Flags sites or regions of sites with a certain proportion of gaps." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

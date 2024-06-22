@@ -240,7 +240,31 @@ public abstract class MesquiteImage extends Image {
 		}
 	}
 	/*...........................................................*/
-	public static Image[] deletePartsByBlocks(Image[] d, int[][] blocks) {
+	public static Image[] deletePartsFlagged(Image[] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (toDelete == null)
+			return d;
+		Bits flags = toDelete.cloneBits(); 
+		int toFill =flags.nextBit(0, true); //find next to be cleared
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1;
+		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.
+			d[toFill] = d[source]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNum = highestFilled+1;
+		Image[] newD = new Image[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*
+	public static Image[] deletePartsBy Blocks(Image[] d, int[][] blocks) {
 		if (d == null)
 			return d;
 		if (blocks == null || blocks.length == 0)
@@ -264,6 +288,7 @@ public abstract class MesquiteImage extends Image {
 			newD[i] = d[i];
 		return newD;
 	}
+	/**/
 }
 
 

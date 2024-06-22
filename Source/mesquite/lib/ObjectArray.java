@@ -123,12 +123,12 @@ public class ObjectArray implements Listable {
 		values = deleteParts(values, starting, num);
 		return true;
 	}
-	/*...........................................................*/
-	public void deletePartsByBlocks(int[][] blocks) {
-		values = deletePartsByBlocks(values, blocks);
+	/*...........................................................*
+	public void deletePartsBy Blocks(int[][] blocks) {
+		values = deletePartsBy Blocks(values, blocks);
 	}
-	/*...........................................................*/
-	public static Object[] deletePartsByBlocks(Object[] d, int[][] blocks) {
+	/*...........................................................*
+	public static Object[] deletePartsBy Blocks(Object[] d, int[][] blocks) {
 		if (d == null)
 			return d;
 		if (blocks == null || blocks.length == 0)
@@ -152,8 +152,8 @@ public class ObjectArray implements Listable {
 			newD[i] = d[i];
 		return newD;
 	}
-	/*...........................................................*/
-	public static Object[] deletePartsByBlocks(Object[] d, int[][] blocks, ObjectSpecsSet specsSet) {
+	/*...........................................................*
+	public static Object[] deletePartsBy Blocks(Object[] d, int[][] blocks, ObjectSpecsSet specsSet) {
 		if (d == null)
 			return d;
 		if (blocks == null || blocks.length == 0)
@@ -173,6 +173,43 @@ public class ObjectArray implements Listable {
 		//Next, trim leftovers
 		int newNum = availableSlot;
 		Object[] newD =  specsSet.getNewPropertyStorage(newNum);
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
+	public void deletePartsFlagged(Bits toDelete) {
+		values = deletePartsFlagged(values, toDelete);
+	}
+	/*...........................................................*/
+	public static Object[] deletePartsFlagged(Object[] d, Bits toDelete) {
+		return deletePartsFlagged(d, toDelete, null);
+	}
+	/*...........................................................*/
+	public static Object[] deletePartsFlagged(Object[] d, Bits toDelete, ObjectSpecsSet specsSet) {
+		if (d == null)
+			return null;
+		if (toDelete == null)
+			return d;
+		Bits flags = toDelete.cloneBits(); 
+		int toFill =flags.nextBit(0, true); //find next to be cleared
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1;
+		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.
+			d[toFill] = d[source]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNum = highestFilled+1;
+		Object[] newD = null;
+		if (specsSet == null)
+			newD = new Object[newNum];
+		else
+			newD =  specsSet.getNewPropertyStorage(newNum);
+
 		for (int i=0; i<newNum; i++) 
 			newD[i] = d[i];
 		return newD;

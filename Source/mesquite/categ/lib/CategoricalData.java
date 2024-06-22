@@ -711,22 +711,36 @@ public class CategoricalData extends CharacterData {
 	}
 
 	/*..........................................  CategoricalData  ..................................................*/
+	/** deletes characters flagged for deletion in Bits*/
+	protected boolean deletePartsFlagged(Bits toDelete){
+		incrementStatesVersion();
+		if (!usingShortMatrix())
+			matrix = Long2DArray.deleteColumnsFlagged(matrix, toDelete);
+		else
+			matrixShort = Short2DArray.deleteColumnsFlagged(matrixShort, toDelete);
+
+		stateNames = StringArray.deleteColumnsFlagged(stateNames, toDelete);
+		stateNotes = StringArray.deleteColumnsFlagged(stateNotes, toDelete);
+		stateAnnotations = Object2DArray.deleteColumnsFlagged(stateAnnotations, toDelete);
+		return super.deletePartsFlagged(toDelete);
+	}
+	/*..........................................  CategoricalData  ..................................................*/
 	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
-	 * Assumes that these blocks are in sequence!!!*/
-	protected boolean deletePartsByBlocks(int[][] blocks){
+	 * Assumes that these blocks are in sequence!!!*
+	protected boolean deletePartsBy Blocks(int[][] blocks){
 		
 		incrementStatesVersion();
 		if (!usingShortMatrix())
-			matrix = Long2DArray.deleteColumnsByBlocks(matrix, blocks);
+			matrix = Long2DArray.deleteColumnsBy Blocks(matrix, blocks);
 		else
-			matrixShort = Short2DArray.deleteColumnsByBlocks(matrixShort, blocks);
+			matrixShort = Short2DArray.deleteColumnsBy Blocks(matrixShort, blocks);
 
-		stateNames = StringArray.deleteColumnsByBlocks(stateNames, blocks);
-		stateNotes = StringArray.deleteColumnsByBlocks(stateNotes, blocks);
-		stateAnnotations = Object2DArray.deleteColumnsByBlocks(stateAnnotations, blocks);
+		stateNames = StringArray.deleteColumnsBy Blocks(stateNames, blocks);
+		stateNotes = StringArray.deleteColumnsBy Blocks(stateNotes, blocks);
+		stateAnnotations = Object2DArray.deleteColumnsBy Blocks(stateAnnotations, blocks);
 		
 		//numChars = newNumChars; don't do this since super.deleteCharacters needs to remember old number
-		return super.deletePartsByBlocks(blocks);
+		return super.deletePartsBy Blocks(blocks);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**Adds num taxa after position "starting"; returns true iff successful.*/

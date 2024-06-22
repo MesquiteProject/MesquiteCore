@@ -1053,10 +1053,19 @@ public class NumberArray {
 		length -= num;
 	}
 	/*...........................................................*/
-	public void deletePartsByBlocks(int[][] blocks) {
-		intValues = IntegerArray.deletePartsByBlocks(intValues, blocks);
-		doubleValues = DoubleArray.deletePartsByBlocks(doubleValues, blocks);
-		longValues = LongArray.deletePartsByBlocks(longValues, blocks);
+	public void deletePartsFlagged(Bits toDelete) {
+		if (toDelete == null)
+			return;
+		intValues = IntegerArray.deletePartsFlagged(intValues, toDelete);
+		doubleValues = DoubleArray.deletePartsFlagged(doubleValues, toDelete);
+		longValues = LongArray.deletePartsFlagged(longValues, toDelete);
+		length -= toDelete.numBitsOn();;
+	}
+	/*...........................................................*
+	public void deletePartsBy Blocks(int[][] blocks) {
+		intValues = IntegerArray.deletePartsBy Blocks(intValues, blocks);
+		doubleValues = DoubleArray.deletePartsBy Blocks(doubleValues, blocks);
+		longValues = LongArray.deletePartsBy Blocks(longValues, blocks);
 		int shift = 0;
 		for (int block = 0; block<blocks.length; block++) 
 			shift += blocks[block][1]-blocks[block][0]+1;

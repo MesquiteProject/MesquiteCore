@@ -201,7 +201,58 @@ public class Bits implements Listable{
 		array=newArray;
 	}
 	/*...........................................................*/
-	public void deletePartsByBlocks(int[][] blocks) {
+	public void deletePartsFlagged(Bits toDelete) {
+		if (toDelete == null)
+			return;
+		Bits flags = toDelete.cloneBits(); 
+		int toFill =flags.nextBit(0, true); //find next to be cleared
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1;
+		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.
+			setBit(toFill, isBitOn(source)); //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNum = highestFilled+1;
+		resetSize(newNum);
+	}	
+	/*...........................................................*/
+	public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		int numRows= d[0].length;
+		if (numRows == 0)
+			return d;
+		if (toDelete == null)
+			return d;
+
+		Bits flags = toDelete.cloneBits(); 
+		int toFill =flags.nextBit(0, true); //find next to be cleared
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1; //
+		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.
+			for (int it=0; it<numRows; it++)
+				d[toFill][it] = d[source][it]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNumColumns = highestFilled+1;
+		boolean[][] newMatrix=new boolean[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+				newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
+	}	
+	/*...........................................................*
+	public void deletePartsBy Blocks(int[][] blocks) {
 		if (blocks == null || blocks.length == 0)
 			return;
 		int availableSlot = blocks[0][0];
@@ -220,15 +271,15 @@ public class Bits implements Listable{
 		int newNum = availableSlot;
 		resetSize(newNum);
 	}
-	/*...........................................................*/
-	public static boolean[][] deleteColumnsByBlocks(boolean[][] d, int[][] blocks){
+	/*...........................................................*
+	public static boolean[][] deleteColumnsBy Blocks(boolean[][] d, int[][] blocks){
 		if (d == null)
 			return null;
 		if (d.length <= 0)
 			return d;
 		if (blocks == null || blocks.length == 0)
 			return d;
-		
+
 		int numRows= d[0].length;
 		int availableSlot = blocks[0][0];
 
@@ -250,9 +301,9 @@ public class Bits implements Listable{
 		boolean[][] newMatrix=new boolean[newNumColumns][numRows];
 		for (int ic=0; ic<newNumColumns; ic++) 
 			for (int it=0; it<numRows && it< d[ic].length; it++) 
-			newMatrix[ic][it] = d[ic][it];
+				newMatrix[ic][it] = d[ic][it];
 		return newMatrix;
-}
+	}
 	/*...........................................................*/
 	public void swapParts(int first, int second) {
 		if (first<0 || first>=numBits || second<0 || second>=numBits) 
@@ -578,12 +629,32 @@ public class Bits implements Listable{
 		}
 		return -1;  //didn't find any, return signal that none found
 	}
-
+	/*------------------------------------------*/
+	public static Bits getBits(int[][] blocks) {
+		if (blocks == null)
+			return null;
+		int max = -1;
+		for (int block = 0; block<blocks.length; block++) {
+			int end = blocks[block][1];
+			if (max < end)
+				max = end;
+		}
+		Bits b = new Bits(max+1);
+		for (int block = 0; block<blocks.length; block++) {
+			int start = blocks[block][0];
+			int end = blocks[block][1];
+			for (int ic=start; ic<=end; ic++)
+				b.setBit(ic, true);
+		}
+		return b;
+	}
+	/*------------------------------------------*/
 	/** pass -1 for upperBoundary if none */
 	public int[][] getBlocks(int upperBoundary){
 		int numBlocks = 0;
 		int ball = -1;
-		while (ball <= getSize() && (upperBoundary<0 || ball < upperBoundary)) {
+		boolean done = false;
+		while (ball <= getSize() && !done && (upperBoundary<0 || ball < upperBoundary)) {
 			int nextStart = nextBit(ball, true);
 			int nextEnd = -1;
 			if (nextStart >=0) { //block found
@@ -596,12 +667,12 @@ public class Bits implements Listable{
 				ball = nextEnd+1;
 			}
 			else
-				ball = upperBoundary; //done
+				done = true; //done
 		}
 		int[][] blocks = new int[numBlocks][2];
 		int block = 0;
 		ball = -1;
-		while (ball < getSize() && (upperBoundary<0 || ball < upperBoundary)) {
+		while (ball < getSize() && !done && (upperBoundary<0 || ball < upperBoundary)) {
 			int nextStart = nextBit(ball, true);
 			int nextEnd = -1;
 			if (nextStart >=0) { //block found
@@ -616,7 +687,7 @@ public class Bits implements Listable{
 				ball = nextEnd+1;
 			}
 			else
-				ball = upperBoundary; //done
+				done = true; //done
 		}
 		return blocks;
 	}

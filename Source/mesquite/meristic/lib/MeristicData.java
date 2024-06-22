@@ -420,15 +420,25 @@ public class MeristicData extends CharacterData implements ItemContainer {
 		return super.deleteParts(starting, num);
 	}
 	/*..........................................MeristicData................*/
-	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
-	 * Assumes that these blocks are in sequence!!!*/
-	protected boolean deletePartsByBlocks(int[][] blocks){
+	/** deletes characters flagged for deletion in Bits*/
+	protected boolean deletePartsFlagged(Bits toDelete){
 		incrementStatesVersion();
 		for (int item = 0; item<getNumItems(); item++){
 			Integer2DArray matrix = ((Integer2DArray)matrices.elementAt(item));
-			matrix.deleteColumnsByBlocks(blocks);
+			matrix.deleteColumnsFlagged(toDelete);
 		}
-		return super.deletePartsByBlocks(blocks);
+		return super.deletePartsFlagged(toDelete);
+	}
+	/*..........................................MeristicData................*/
+	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
+	 * Assumes that these blocks are in sequence!!!*
+	protected boolean deletePartsBy Blocks(int[][] blocks){
+		incrementStatesVersion();
+		for (int item = 0; item<getNumItems(); item++){
+			Integer2DArray matrix = ((Integer2DArray)matrices.elementAt(item));
+			matrix.deleteColumnsBy Blocks(blocks);
+		}
+		return super.deletePartsBy Blocks(blocks);
 	}
 	/*..........................................MeristicData................*/
 	/**swaps characters first and second.*/

@@ -333,12 +333,50 @@ public class Double2DArray {
 		return numT;
 	}
 	
-	public void deleteColumnsByBlocks(int[][] blocks){
-		values = deleteColumnsByBlocks(values, blocks);
+	/*...........................................................*/
+	public void deleteColumnsFlagged(Bits toDelete){
+		values = deleteColumnsFlagged(values, toDelete);
 		numC = values.length;
 	}
 	/*...........................................................*/
-	public static double[][] deleteColumnsByBlocks(double[][] d, int[][] blocks){
+	public static double[][] deleteColumnsFlagged(double[][] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		int numRows= d[0].length;
+		if (numRows == 0)
+			return d;
+		if (toDelete == null)
+			return d;
+
+		Bits flags = toDelete.cloneBits(); 
+		int toFill =flags.nextBit(0, true); //find next to be cleared
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1; //
+		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.
+			for (int it=0; it<numRows; it++)
+				d[toFill][it] = d[source][it]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNumColumns = highestFilled+1;
+		double[][] newMatrix=new double[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+				newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
+	}	
+	/*...........................................................*
+	public void deleteColumnsBy Blocks(int[][] blocks){
+		values = deleteColumnsBy Blocks(values, blocks);
+		numC = values.length;
+	}
+	/*...........................................................*
+	public static double[][] deleteColumnsBy Blocks(double[][] d, int[][] blocks){
 		if (d.length <= 0)
 			return d;
 		if (blocks == null || blocks.length == 0)

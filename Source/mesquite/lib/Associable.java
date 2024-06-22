@@ -962,42 +962,83 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		setDirty(true);
 		return true;
 	}
-	/*-------------------------------------------------------*/
-	/** Deletes parts by blocks.
-	 * blocks[i][0] is start of block; blocks[i][1] is end of block
-	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! */
-	protected boolean deletePartsByBlocks(int[][] blocks){ 
+	/** Deletes parts flagged for deletion in Bits*/
+	protected boolean deletePartsFlagged(Bits toDelete){ 
 		
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
-				b.deletePartsByBlocks(blocks);
+				b.deletePartsFlagged(toDelete);
 			}
 		}
 		if (longs!=null) {
 			for (int i=0; i< longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
-				b.deletePartsByBlocks(blocks);
+				b.deletePartsFlagged(toDelete);
 			}
 		}
 		if (doubles!=null)
 			for (int i=0; i< doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				b.deletePartsByBlocks(blocks);
+				b.deletePartsFlagged(toDelete);
 			}
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				b.deletePartsByBlocks(blocks);
+				b.deletePartsFlagged(toDelete);
 			}
 		if (defaultOrder != null){
-			defaultOrder = IntegerArray.deletePartsByBlocks(defaultOrder, blocks);
+			defaultOrder = IntegerArray.deletePartsFlagged(defaultOrder, toDelete);
 		}
 		if (currentOrder != null){
-			currentOrder = IntegerArray.deletePartsByBlocks(currentOrder, blocks);
+			currentOrder = IntegerArray.deletePartsFlagged(currentOrder, toDelete);
 		}
 		if (previousOrder != null){
-			previousOrder = IntegerArray.deletePartsByBlocks(previousOrder, blocks);
+			previousOrder = IntegerArray.deletePartsFlagged(previousOrder, toDelete);
+		}
+		
+		//figuring out how many deleted total to adjust numParts
+		numParts = numParts-toDelete.numBitsOn();
+		
+		setDirty(true);
+		return true;
+	}	
+	/*-------------------------------------------------------*/
+	/** Deletes parts by blocks.
+	 * blocks[i][0] is start of block; blocks[i][1] is end of block
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! *
+	protected boolean deletePartsBy Blocks(int[][] blocks){ 
+		
+		if (bits!=null) {
+			for (int i=0; i< bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				b.deletePartsBy Blocks(blocks);
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i< longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				b.deletePartsBy Blocks(blocks);
+			}
+		}
+		if (doubles!=null)
+			for (int i=0; i< doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				b.deletePartsBy Blocks(blocks);
+			}
+		if (objects!=null)
+			for (int i=0; i< objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				b.deletePartsBy Blocks(blocks);
+			}
+		if (defaultOrder != null){
+			defaultOrder = IntegerArray.deletePartsBy Blocks(defaultOrder, blocks);
+		}
+		if (currentOrder != null){
+			currentOrder = IntegerArray.deletePartsBy Blocks(currentOrder, blocks);
+		}
+		if (previousOrder != null){
+			previousOrder = IntegerArray.deletePartsBy Blocks(previousOrder, blocks);
 		}
 		
 		//figuring out how many deleted total to adjust numParts

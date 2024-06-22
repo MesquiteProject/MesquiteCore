@@ -171,12 +171,46 @@ public class MolecularData extends CategoricalData {
 		return super.addParts(starting, num);
 	}
 	/*-----------------------------------------------------------*/
-	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
-	 * Assumes that these blocks are in sequence!!!*/
-	protected boolean deletePartsByBlocks(int[][] blocks){
+	/** deletes characters flagged for deletion in Bits*/
+	protected boolean deletePartsFlagged(Bits toDelete){
 		/*Deleting characters; deal with inversions. 
 		 * This does  it sequentially last block to first block,
 		 * but this calculation doesn't compress matrices, so it's OK in efficiency*/
+		
+		if (inversions != null){
+			int[][] blocks = toDelete.getBlocks(-1);
+			for (int k = blocks.length-1; k>=0; k--) {
+				int starting = blocks[k][0];
+				int num = blocks[k][1]-starting+1;
+				for (int it = 0; it<inversions.length && it< getNumTaxa(); it++){
+					for (int ip = 0; ip< inversions[it].size(); ip++){
+						Mesquite3DIntPoint p = (Mesquite3DIntPoint)inversions[it].elementAt(ip);
+						if (starting <= p.x){//deletion will affect point
+							if (p.x < starting+num) //point is being deleted also
+								p.x = starting;  //snap left edge of flip to right margin of deleted area
+							else
+								p.x -= num; //push to left
+						}
+						if (starting <= p.y){//deletion will affect point
+							if (p.y < starting+num) //point is being deleted also
+								p.y = starting-1;   //snap right edge of flip to left margin of deleted area-1
+							else
+								p.y -= num; //push to left
+						}
+					}
+				}
+			}
+		}
+		return super.deletePartsFlagged(toDelete);
+	}
+
+		/*-----------------------------------------------------------*/
+	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
+	 * Assumes that these blocks are in sequence!!!*
+	protected boolean deletePartsBy Blocks(int[][] blocks){
+		/*Deleting characters; deal with inversions. 
+		 * This does  it sequentially last block to first block,
+		 * but this calculation doesn't compress matrices, so it's OK in efficiency*
 		if (inversions != null){
 			for (int k = blocks.length-1; k>=0; k--) {
 				int starting = blocks[k][0];
@@ -201,7 +235,7 @@ public class MolecularData extends CategoricalData {
 			}
 		}
 
-		return super.deletePartsByBlocks(blocks);
+		return super.deletePartsBy Blocks(blocks);
 	}
 	/*-----------------------------------------------------------*/
 	/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
