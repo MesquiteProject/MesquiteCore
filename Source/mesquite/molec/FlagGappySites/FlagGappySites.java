@@ -37,18 +37,24 @@ import mesquite.molec.lib.SiteFlagger;
 public class FlagGappySites extends SiteFlagger {
 	
 	/** TODO?
-	 * -- ignore terminal gaps
-	 * -- ignore taxa without data
+	 * Java
+	 * -- option + toggle to ignore terminal gaps
+	 * -- option + toggle to ignore taxa without data
+	 * 
+	 * Python
+	 * -- option + toggle  to ignore terminal gaps
+	 * -- toggle for option to ignore taxa without data
+	 * -- option to do sites only
 	 */
 	/*Gappiness assessment parameters =================================*/
-	static boolean filterGapIndSiteDEFAULT = true;
+	static boolean filterSiteGappinessDEFAULT = true;
 	static boolean filterBlockGappinessDEFAULT = false;
 	static double siteGappinessThresholdDEFAULT = 0.5; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
-	static int minGappyBlockSizeDEFAULT = 4; // If in a block of at least this many sites, the first and last site is bad,
+	static int minGappyBlockSizeDEFAULT = 5; // If in a block of at least this many sites, the first and last site is bad,
 	static double blockGappinessThresholdDEFAULT = 0.5; // and the proportion of bad sites is this high or higher,
 	static int minGappyBoundaryDEFAULT = 4; // and there are no stretches of this many good sites in a row,
 
-	MesquiteBoolean filterGapIndSite = new MesquiteBoolean(filterGapIndSiteDEFAULT);
+	MesquiteBoolean filterSiteGappiness = new MesquiteBoolean(filterSiteGappinessDEFAULT);
 	MesquiteBoolean filterBlockGappiness = new MesquiteBoolean(filterBlockGappinessDEFAULT);
 	double siteGappinessThreshold = siteGappinessThresholdDEFAULT; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
 	int minGappyBlockSize = minGappyBlockSizeDEFAULT; // If in a block of at least this many sites, the first and last site is bad,
@@ -86,7 +92,7 @@ public class FlagGappySites extends SiteFlagger {
 		StringBuffer buffer = new StringBuffer(200);
 	//	StringUtil.appendXMLTag(buffer, 2, "threshold", threshold);  
 		StringUtil.appendXMLTag(buffer, 2, "filterBlockGappiness", filterBlockGappiness);  
-		StringUtil.appendXMLTag(buffer, 2, "filterGapIndSite", filterGapIndSite);  
+		StringUtil.appendXMLTag(buffer, 2, "filterSiteGappiness", filterSiteGappiness);  
 		StringUtil.appendXMLTag(buffer, 2, "siteGappinessThreshold", siteGappinessThreshold);  
 		StringUtil.appendXMLTag(buffer, 2, "minGappyBlockSize", minGappyBlockSize);  
 		StringUtil.appendXMLTag(buffer, 2, "blockGappinessThreshold", blockGappinessThreshold);  
@@ -111,15 +117,15 @@ public class FlagGappySites extends SiteFlagger {
 			minGappyBoundary = MesquiteInteger.fromString(content);
 		if ("filterBlockGappiness".equalsIgnoreCase(tag))
 			filterBlockGappiness.setValue(MesquiteBoolean.fromTrueFalseString(content));
-		if ("filterGapIndSite".equalsIgnoreCase(tag))
-			filterGapIndSite.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("filterSiteGappiness".equalsIgnoreCase(tag))
+			filterSiteGappiness.setValue(MesquiteBoolean.fromTrueFalseString(content));
 	}
 	/*.................................................................................................................*/
  	 public Snapshot getSnapshot(MesquiteFile file) { 
   	 	Snapshot temp = new Snapshot();
 	 //	temp.addLine("setThreshold " + threshold); 
 		temp.addLine("setfilterBlockGappiness " + filterBlockGappiness.toOffOnString());
-		temp.addLine("setfilterGapIndSite " + filterGapIndSite.toOffOnString());
+		temp.addLine("setfilterSiteGappiness " + filterSiteGappiness.toOffOnString());
 		temp.addLine("setSiteGappinessThreshold " + siteGappinessThreshold);
 		temp.addLine("setMinGappyBlockSize " + minGappyBlockSize);
 		temp.addLine("setBlockGappinessThreshold " + blockGappinessThreshold);
@@ -141,7 +147,7 @@ public class FlagGappySites extends SiteFlagger {
 		pgSField = dialog.addDoubleField("Proportion of gaps that marks site as too gappy (\"bad\")", siteGappinessThreshold, 4);
 		dialog.addHorizontalLine(1);
 		dialog.addLabel("Selecting individual sites");
-		fIGS = dialog.addCheckBox("Select individual gappy sites (whether or not part of gappy block)", filterGapIndSite.getValue());
+		fIGS = dialog.addCheckBox("Select individual gappy sites (whether or not part of gappy block)", filterSiteGappiness.getValue());
 		dialog.addHorizontalLine(1);
 		dialog.addLabel("Selecting blocks");
 		fG = dialog.addCheckBox("Select gappy blocks", filterBlockGappiness.getValue());
@@ -159,7 +165,7 @@ public class FlagGappySites extends SiteFlagger {
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			filterBlockGappiness.setValue(fG.getState());
-			filterGapIndSite.setValue(fIGS.getState());
+			filterSiteGappiness.setValue(fIGS.getState());
 			siteGappinessThreshold = pgSField.getValue();
 			minGappyBlockSize = minGBS.getValue();
 			minGappyBoundary = minGB.getValue();
@@ -186,10 +192,10 @@ public class FlagGappySites extends SiteFlagger {
 				parametersChanged();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to filter individual sites by gappiness also.", "[on or off]", commandName, "setfilterGapIndSite")) {
-			boolean current = filterGapIndSite.getValue();
-			filterGapIndSite.toggleValue(parser.getFirstToken(arguments));
-			if (current!=filterGapIndSite.getValue()) {
+		else if (checker.compare(this.getClass(), "Sets whether or not to filter individual sites by gappiness also.", "[on or off]", commandName, "setfilterSiteGappiness")) {
+			boolean current = filterSiteGappiness.getValue();
+			filterSiteGappiness.toggleValue(parser.getFirstToken(arguments));
+			if (current!=filterSiteGappiness.getValue()) {
 				parametersChanged();
 			}
 		}
@@ -263,11 +269,13 @@ public class FlagGappySites extends SiteFlagger {
  		for (int ic=0; ic<numChars; ic++) {
  			int gapCount = 0;
  			for (int it = 0; it<numTaxa; it++) {
- 				if (data.isInapplicable(ic,it)) //if taxonSequenceStart < 0 then taxon has no data
+ 				if (data.isInapplicable(ic,it)) //Also filter by taxon having no data?
  					gapCount++;
  			}
  			siteGappiness[ic] = 1.0*gapCount/numTaxa;
- 			if (filterGapIndSite.getValue() && gappySite(ic))
+ 			if (gapCount == numTaxa)//if all gaps, delete regardless
+ 				flags.setBit(ic, true);
+ 			else if (filterSiteGappiness.getValue() && gappySite(ic))
  				flags.setBit(ic, true); 				
  		}
 
@@ -316,7 +324,7 @@ public class FlagGappySites extends SiteFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Gappy Regions";
+		return "Gappy Sites or Regions";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

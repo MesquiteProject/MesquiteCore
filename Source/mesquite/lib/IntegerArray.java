@@ -361,8 +361,10 @@ public class IntegerArray  implements Listable  {
 			return null;
 		if (toDelete == null)
 			return d;
+		int toFill =toDelete.nextBit(0, true); //find next to be cleared
+		if (toFill <0)
+			return d;
 		Bits flags = toDelete.cloneBits(); 
-		int toFill =flags.nextBit(0, true); //find next to be cleared
 		int source = flags.nextBit(toFill, false); //find source to move into it
 		int highestFilled = toFill-1;
 		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.

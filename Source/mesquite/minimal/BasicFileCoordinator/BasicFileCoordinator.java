@@ -711,10 +711,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 			return null;
 		}
-		if (p.autosave){
+		/*if (p.autosave){
 			saveAllFiles();
 			p.autosave = false;
 		}
+		*/
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
 	}
@@ -1459,6 +1460,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			return null;
 		return s;
 	}
+	
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns the total number of character data matrices stored in the project", null, commandName, "getNumberOfDataSets")) {
@@ -1644,6 +1646,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					return null;
 				int count = 0;
 				for (int i=0; i<fInterpreters.length; i++){
+					Debugg.println("FI " + fInterpreters[i]);
 					try {
 						if (((FileInterpreterI)fInterpreters[i]).canExportProject(getProject()))
 							count++;
@@ -1670,6 +1673,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 				exporter = (FileInterpreterI)ListDialog.queryList(containerOfModule(), "Export format", "Export part or all of the information as a file of the following format",MesquiteString.helpString, fInterpretersCanExport, 0);
 			}
+			Debugg.println("exporter " + exporter);
 			export(exporter, file, arguments);
 		}
 		else if (checker.compare(this.getClass(), "NOT FUNCTIONING", null, commandName, "saveLinkagesAs")) {

@@ -13,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.dmanager.ProcessDataFiles; 
 
+import java.awt.event.KeyEvent;
+
 import mesquite.dmanager.lib.ProcessDataFilesLib;
 
 
@@ -33,6 +35,16 @@ public class ProcessDataFiles extends ProcessDataFilesLib {
 		return false;
 	}
 
+	/*.................................................................................................................*/
+	/** Returns the shortcut used for the menu item for the module*/
+	public int getShortcutForMenuItem(){
+		return KeyEvent.VK_O;
+	}
+	/*.................................................................................................................*/
+	/** Returns whether the shortcut needs shift*/
+	public boolean getShortcutForMenuItemNeedsShift(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
 		return "Processes a folder of data files.";

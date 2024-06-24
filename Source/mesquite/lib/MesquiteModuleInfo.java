@@ -36,6 +36,8 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	boolean URLinPackageIntroDirectory;
 	String htmlExplanation;
 	String nameForMenuItem;
+	int shortcutForMenuItem;
+	boolean shortcutNeedsShift;
 	String authors;
 	String version;
 	int versionInt;
@@ -105,6 +107,8 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 		this.name = mb.getName(); //�
 		this.nameForMenuItem = mb.getNameForMenuItem(); //�
  		this.authors =mb.getAuthors();//�
+		this.shortcutForMenuItem = mb.getShortcutForMenuItem(); //�
+		this.shortcutNeedsShift = mb.getShortcutForMenuItemNeedsShift(); //�
  		this.version =mb.getVersion();//�
  		this.loadModule = mb.loadModule();
  		
@@ -300,11 +304,18 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 		 numStarts++;
 	}
 
-	
 	/** returns name to be used in menu item to hire the module.  By default this is the same as the name of the module, but can be different if the
 	module overrides its own getNameForMenuItem method.*/
 	public String getNameForMenuItem() {
 		return nameForMenuItem;
+	}
+	/** returns whether menu item has a shortcut.*/
+	public int getShortcutForMenuItem() {
+		return shortcutForMenuItem;
+	}
+	/** returns whether menu item shortcut needs shift held down.*/
+	public boolean getShortcutForMenuItemNeedsShift() {
+		return shortcutNeedsShift;
 	}
 	/** returns the vector of command descriptions accumulated during startup */
 	public Vector getMenus () {

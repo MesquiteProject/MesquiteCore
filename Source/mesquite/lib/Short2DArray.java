@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -19,7 +19,7 @@ import java.awt.*;
 public class Short2DArray {
 	short[][] values;
 	int numC;
-	 int numT;
+	int numT;
 	NameReference name=null;
 	public Short2DArray(int numC, int numT){
 		this.numC = numC;
@@ -78,7 +78,7 @@ public class Short2DArray {
 	/*...........................................................*/
 	public void setValue(int ic, int it, short value) {
 		if (values!=null && ic >=0 && ic < values.length)
-		 	if (it >=0 && it < values[ic].length)
+			if (it >=0 && it < values[ic].length)
 				values[ic][it] = value;
 	}
 	/*...........................................................*/
@@ -96,13 +96,13 @@ public class Short2DArray {
 	public void zeroArray(){
 		for (int ic=0; ic<values.length; ic++)
 			for (int it=0; it<values[ic].length; it++)
-			values[ic][it] =  0;
+				values[ic][it] =  0;
 	}
 	/*...........................................................*/
 	public void deassignArray(){
 		for (int ic=0; ic<values.length; ic++)
 			for (int it=0; it<values[ic].length; it++)
-			values[ic][it] =  ShortArray.unassigned;
+				values[ic][it] =  ShortArray.unassigned;
 	}
 	/*...........................................................*/
 	/** Changes the array size to the new dimensions*/
@@ -149,7 +149,7 @@ public class Short2DArray {
 			int count =0;
 			for (int i=0; i<=justAfter; i++)
 				newValues[count++]=d[i];
-			
+
 			for (int i=starting; i<=starting+num-1; i++)
 				newValues[count++]=d[i];
 			for (int i=justAfter+1; i<=starting-1; i++)
@@ -161,7 +161,7 @@ public class Short2DArray {
 			int count =0;
 			for (int i=0; i<=starting-1; i++)
 				newValues[count++]=d[i];
-			
+
 			for (int i=starting+num; i<=justAfter; i++)
 				newValues[count++]=d[i];
 			for (int i=starting; i<=starting+num-1; i++)
@@ -172,7 +172,7 @@ public class Short2DArray {
 		for (int i=0; i<d.length; i++)
 			d[i]=newValues[i];
 	}
-	
+
 	/*...........................................................*/
 	public static short[][] addColumns(short[][] d, int numRows, short defaultValue, int starting, int num){
 		if (num <= 0 || d == null)
@@ -219,7 +219,7 @@ public class Short2DArray {
 				newMatrix[ic + starting + num + 1][it] = d[starting + ic+1][it]; //transferring old second part
 		}
 		return newMatrix;
-		
+
 	}
 	/*...........................................................*/
 	public static short[][] addColumns(short[][] d, short defaultValue, int starting, int num){
@@ -242,7 +242,7 @@ public class Short2DArray {
 		if (d.length <= 0)
 			return new short[numChars-num][];
 		int numTaxa = d[0].length;
-		
+
 		short[][] newMatrix=new short[newNumChars][numTaxa];
 		for (int ic=0; ic<starting; ic++){
 			for (int it=0; it<numTaxa && it< d[ic].length; it++) 
@@ -267,9 +267,14 @@ public class Short2DArray {
 		if (toDelete == null)
 			return d;
 
+		int toFill =toDelete.nextBit(0, true); //find next to be cleared
+		if (toFill <0)
+			return d;
 		Bits flags = toDelete.cloneBits(); 
-		int toFill =flags.nextBit(0, true); //find next to be cleared
+		if (toFill <0)
+			return d;
 		int source = flags.nextBit(toFill, false); //find source to move into it
+
 		int highestFilled = toFill-1; //
 		while (source >=0 && toFill >=0) { //First, compact storage toward the start of the array.
 			for (int it=0; it<numRows; it++)
@@ -321,9 +326,9 @@ public class Short2DArray {
 			for (int it=0; it<numRows && it< d[ic].length; it++) 
 			newMatrix[ic][it] = d[ic][it];
 		return newMatrix;
-		
+
 }
-	
+
 	/*...........................................................*/
 	public void setNameReference(NameReference nr){
 		name = nr;
@@ -348,7 +353,7 @@ public class Short2DArray {
 		for (int j=0; j<numRows; j++) {
 			result.append('[');
 			for (int i=0; i<numColumns; i++) {
-				
+
 				result.append(Short.toString(matrix[i][j]));
 				result.append(' ');
 			}

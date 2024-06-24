@@ -47,7 +47,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 	MesquiteModule helpURLOwnerModule=null;
 	Button button0, button1, button2;
-	Button[] buttons = new Button[10];
+//	Button[] buttons = new Button[10];
 	Image helpImage;
 	boolean useManualPage = false;
 	public String defaultOKLabel = "OK";

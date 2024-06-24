@@ -1383,9 +1383,14 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			}
 			else if (!considerPriorities || ((obj instanceof Priority && ((Priority)obj).getPriority()==priorityLevel) || (!(obj instanceof Priority) && priorityLevel==0))) {
 				Listable mw = (Listable)obj;
+				int shortcut = -1;
+				boolean shortcutNeedsShift = false;
 				String name = null;
-				if (mw instanceof MesquiteModule)
+				if (mw instanceof MesquiteModule) {
 					name = ((MesquiteModule)mw).getNameForMenuItem();
+					shortcut = ((MesquiteModule)mw).getShortcutForMenuItem();
+					shortcutNeedsShift = ((MesquiteModule)mw).getShortcutForMenuItemNeedsShift();
+				}
 				else
 					name = mw.getName();
 				if (mmi.getListableFilter()==null || mmi.getListableFilter().isInstance(mw)) {
@@ -1408,6 +1413,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 
 						if (compatible) {
 							MesquiteMenuItem m =new MesquiteMenuItem(name, null /*mmi.ownerModule*/, mmi.command, j.toString());
+							if (shortcut>=0)
+								m.setShortcut(new MenuShortcut(shortcut, shortcutNeedsShift));
 							m.setHiddenStatus(hiddenStatus);
 							j.add(1);
 							m.setDocument(mmi.getDocumentItems());
@@ -1421,6 +1428,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						m.setHiddenStatus(hiddenStatus);
 						m.setDocument(mmi.getDocumentItems());
 						m.setReferent(mw);
+						if (shortcut>=0)
+							m.setShortcut(new MenuShortcut(shortcut, shortcutNeedsShift));
 						MesquiteMenu.add(menu, m);
 					}
 				}
@@ -1443,6 +1452,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						m.setHiddenStatus(hiddenStatus, mmi.getDutyClass());
 						m.setDocument(mmi.getDocumentItems());
 						m.setReferent(mbi);
+						int shortcut = mbi.getShortcutForMenuItem();
+						if (shortcut>=0)
+							m.setShortcut(new MenuShortcut(shortcut, mbi.getShortcutForMenuItemNeedsShift()));
 						MesquiteMenu.add(menu, m);
 
 					}
@@ -1486,6 +1498,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 								m.setDocument(mmi.getDocumentItems());
 								m.setHiddenStatus(hiddenStatus2, mbi.getHireSubchoice());
 								m.setReferent(smbi);
+								int shortcut = smbi.getShortcutForMenuItem();
+								if (shortcut>=0)
+									m.setShortcut(new MenuShortcut(shortcut, smbi.getShortcutForMenuItemNeedsShift()));
 								submenu.add(m);
 							}
 						}
@@ -1598,8 +1613,12 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 
 				String name = null;
 				String referentID = null;
+				int shortcut = -1;
+				boolean shortcutNeedsShift = false;
 				if (mw instanceof MesquiteModule) {
 					name = ((MesquiteModule)mw).getNameForMenuItem();
+					shortcut = ((MesquiteModule)mw).getShortcutForMenuItem();
+					shortcutNeedsShift = ((MesquiteModule)mw).getShortcutForMenuItemNeedsShift();
 					referentID = Long.toString(((MesquiteModule)mw).getID());
 				}
 				else {
@@ -1636,6 +1655,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 							;
 						else if (submenu.getSelected()!=null){ //selected string available for checkmark 
 							MesquiteCheckMenuItem m =new MesquiteCheckMenuItem(name, null /*msms.ownerModule*/, msms.command, j.toString() + " " + ParseUtil.tokenize(name), submenu.getSelected());
+							if (shortcut>=0)
+								m.setShortcut(new MenuShortcut(shortcut, shortcutNeedsShift));
 							m.setReferentID(referentID);
 							j.add(1);
 							//m.setDocument(msms.getDocumentItems());
@@ -1646,6 +1667,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						else {
 							MesquiteMenuItem m =new MesquiteMenuItem(name, null /*msms.ownerModule*/, msms.command, j.toString());
 							j.add(1);
+							if (shortcut>=0)
+								m.setShortcut(new MenuShortcut(shortcut, shortcutNeedsShift));
 							m.setHiddenStatus(hiddenStatus);
 							m.setDocument(msms.getDocumentItems());
 							m.setReferent(mw);
@@ -1713,6 +1736,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						if (submenu.getSelected()!=null){ //selected string available for checkmark 
 							MesquiteCheckMenuItem m =new MesquiteCheckMenuItem(mbi.getNameForMenuItem(), null, msms.command, StringUtil.tokenize(mbi.getName()), submenu.getSelected());  
 							//m.setDocument(msms.getDocumentItems());
+							if (mbi.getShortcutForMenuItem()>=0)
+								m.setShortcut(new MenuShortcut(mbi.getShortcutForMenuItem(), mbi.getShortcutForMenuItemNeedsShift()));
 							m.setReferent(mbi);
 							m.setHiddenStatus(hiddenStatus, msms.getDutyClass());
 							if (primary)
@@ -1723,6 +1748,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						}
 						else {
 							MesquiteMenuItem m =new MesquiteMenuItem(mbi.getNameForMenuItem(), null, msms.command, StringUtil.tokenize(mbi.getName()));  
+							if (mbi.getShortcutForMenuItem()>=0)
+								m.setShortcut(new MenuShortcut(mbi.getShortcutForMenuItem(), mbi.getShortcutForMenuItemNeedsShift()));
 							m.setDocument(msms.getDocumentItems());
 							m.setReferent(mbi);
 							m.setHiddenStatus(hiddenStatus, msms.getDutyClass());
@@ -1778,6 +1805,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 							else if (submenu.getSelected()!=null){ //selected string available for checkmark 
 								MesquiteCheckMenuItem m =new MesquiteCheckMenuItem(smbi.getNameForMenuItem(), null, msms.command, "$ " + StringUtil.tokenize(mbi.getName()) + "  " + StringUtil.tokenize(smbi.getName()), submenu.getSelected());  
 								//m.setDocument(msms.getDocumentItems());
+								if (smbi.getShortcutForMenuItem()>=0)
+									m.setShortcut(new MenuShortcut(smbi.getShortcutForMenuItem(), smbi.getShortcutForMenuItemNeedsShift()));
 								m.setReferent(smbi);
 								m.setHiddenStatus(hiddenStatus2, mbi.getHireSubchoice());
 								//submenu2.add(m);
@@ -1788,6 +1817,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 							}
 							else {
 								MesquiteMenuItem m =new MesquiteMenuItem(smbi.getNameForMenuItem(), null, msms.command, "$ " + StringUtil.tokenize(mbi.getName()) + "  " + StringUtil.tokenize(smbi.getName()));
+								if (smbi.getShortcutForMenuItem()>=0)
+									m.setShortcut(new MenuShortcut(smbi.getShortcutForMenuItem(), smbi.getShortcutForMenuItemNeedsShift()));
 								m.setDocument(msms.getDocumentItems());
 								m.setHiddenStatus(hiddenStatus2, mbi.getHireSubchoice());
 								m.setReferent(smbi);

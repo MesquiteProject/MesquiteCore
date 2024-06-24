@@ -15,6 +15,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
 import java.io.*;
@@ -2563,6 +2564,16 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Returns the name of the module for menu items.  Unless overridden returns getName()*/
 	public String getNameForMenuItem(){
 		return getName();
+	}
+	/*.................................................................................................................*/
+	/** Returns the shortcut used for the menu item for the module*/
+	public int getShortcutForMenuItem(){
+		return -1;
+	}
+	/*.................................................................................................................*/
+	/** Returns whether the shortcut needs shift*/
+	public boolean getShortcutForMenuItemNeedsShift(){
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** Returns the name of the module*/

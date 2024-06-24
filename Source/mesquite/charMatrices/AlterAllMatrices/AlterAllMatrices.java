@@ -121,14 +121,14 @@ public class AlterAllMatrices extends FileProcessor {
    	}
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Alter All Matrices";
+	return "Alter Matrices";
 	 }
 		/*.................................................................................................................*/
 	 public String getNameAndParameters() {
 		 if (alterTask==null)
-			 return "Alter All Matrices";
+			 return "Alter Matrices";
 		 else
-			 return "Alter All Matrices (" + alterTask.getName() + ")";
+			 return "Alter Matrices (" + alterTask.getName() + ")";
 	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/

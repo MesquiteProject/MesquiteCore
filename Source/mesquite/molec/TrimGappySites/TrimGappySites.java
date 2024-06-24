@@ -39,12 +39,12 @@ public class TrimGappySites extends TrimSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Trim Gappy Sites";
+		return "Trim Gappy Sites or Regions";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Deletes sites that are too gappy." ;
+		return "Deletes sites or blocks of sites that are too gappy." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

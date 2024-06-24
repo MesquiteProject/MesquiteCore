@@ -72,7 +72,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public static int totalFinalized = 0;  // to catch memory leaks
 	private int idNumber;
 	public boolean developing = true;
-	public boolean autosave = false;
+//	public boolean autosave = false;
 	public boolean isDoomed = false;
 	public long timePreviouslySavedAsRecorded = 0;
 	public long timePreviouslySavedByFile = 0;
@@ -1207,8 +1207,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public void removeNexusBlock(NexusBlock block) {
 		if (nexusBlocks != null) {
 			if (block !=null) {
-				if (files.indexOf(block.getFile())<0)
+				if (files.indexOf(block.getFile())<0) {
 					MesquiteMessage.warnProgrammer("Error: NEXUS block found referring to file that no longer exists " + block.getClass());
+				Debugg.printStackTrace();
+				}
 				block.dispose();
 				nexusBlocks.removeElement(block, true);
 			}

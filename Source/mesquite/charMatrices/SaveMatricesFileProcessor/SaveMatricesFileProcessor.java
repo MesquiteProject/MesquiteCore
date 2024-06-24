@@ -256,10 +256,10 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	}
 	/*.................................................................................................................*/
 	public String getNameAndParameters() {
-		if (exporterTask==null)
+		//if (exporterTask==null)
 			return "Export Matrices";
-		else
-			return "Export Matrices (" + exporterTask.getName() + ")";
+	//	else
+	///		return "Export Matrices (" + exporterTask.getName() + ")";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
