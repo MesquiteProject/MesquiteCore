@@ -260,6 +260,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return "";
 	}
 	/*.................................................................................................................*/
+	public void queryOptionsOtherThanEmployees () {
+	 		if (queryOptions())
+	 			storePreferences();
+	}
+	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  
 			return true;

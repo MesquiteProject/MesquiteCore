@@ -90,6 +90,10 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 				return temp;
 			}
 		}
+		else if (checker.compare(this.getClass(), "Delete sites flagged and darkened", null, commandName, "deleteDark")) {
+			if (data != null && flags != null && AlertDialog.query(containerOfModule(),  "Delete?",  "Are you sure you want to delete the darkened (highlighted) characters?"))
+				data.deletePartsFlagged(flags, true);
+		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -97,7 +101,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
-	MesquiteMenuItemSpec mmir, mmis, mmis2;
+	MesquiteMenuItemSpec mmir, mmis, mmis2, mmis3, mmir2;
 	boolean flaggerInitialized = false;
 	/*.................................................................................................................*/
 	public boolean setActiveColors(boolean active){
@@ -115,13 +119,18 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			mmir = addMenuItem("-", null);
 			mmis = addMenuItem("Reset Trimmers to be Highlighted...", makeCommand("resetFlaggers", this));
 			mmis2 = addMenuItem("Add Trimmer to be Highlighted...", makeCommand("addFlagger", this));
+			mmis3 = addMenuItem("Delete Sites Highlighted Dark", makeCommand("deleteDark", this));
+			mmir2 = addMenuItem("-", null);
+			
 			calculateNums();
 
 		}
 		else {
 			deleteMenuItem(mmir);
+			deleteMenuItem(mmir2);
 			deleteMenuItem(mmis);
 			deleteMenuItem(mmis2);
+			deleteMenuItem(mmis3);
 			if (!active) {
 				cleanFlaggers();
 				flaggerInitialized = false;
@@ -135,8 +144,10 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		if (data!=null)
 			data.removeListener(this);
 		deleteMenuItem(mmir);
+		deleteMenuItem(mmir2);
 		deleteMenuItem(mmis);
 		deleteMenuItem(mmis2);
+		deleteMenuItem(mmis3);
 		super.endJob();
 	}
 	public String getColorsExplanation(){

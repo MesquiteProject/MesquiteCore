@@ -79,13 +79,17 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
 		if (!MesquiteThread.isScripting()) {
-			if (!queryOptions(this, "PhyIN"))
+			if (!queryOptions())
 				return false;
 		}
 		addMenuItem("PhyIN Options...",  makeCommand("setOptions",  this));
 		return true;
 	}
 	/*.................................................................................................................*/
+	public void queryOptionsOtherThanEmployees () {
+	 		if (queryOptions())
+	 			storePreferences();
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -98,7 +102,7 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Presents options dialog box.", "[on or off]", commandName, "setOptions")) {
-			boolean q = queryOptions(this, "PhyIN");
+			boolean q = queryOptions();
 			if (q)
 				parametersChanged();
 
@@ -166,11 +170,11 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 	IntegerField NDField;
 	DoubleField PIField;
 	Checkbox tGAS;
-	public boolean queryOptions(MesquiteModule mb, String action) {
-		if (!mb.okToInteractWithUser(mb.CAN_PROCEED_ANYWAY, "Querying Options")) 
+	public boolean queryOptions() {
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(mb.containerOfModule(),  "Select using PhyIN Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Select using PhyIN Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		dialog.addLabel("PhyIN criteria for incompatible sites:");
 		SSField = dialog.addIntegerField("Length of blocks (-b)", blockSize, 4);

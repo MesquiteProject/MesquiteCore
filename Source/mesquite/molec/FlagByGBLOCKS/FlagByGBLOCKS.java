@@ -81,7 +81,7 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 		else
 			loadPreferences();
 		if (!MesquiteThread.isScripting()) {
-			if (!queryOptions("GBLOCKS"))
+			if (!queryOptions())
 				return false;
 		}
 		addMenuItem("GBLOCK Selection Options...",  makeCommand("setOptions",  this));
@@ -150,6 +150,11 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
+	public void queryOptionsOtherThanEmployees () {
+	 		if (queryOptions())
+	 			storePreferences();
+	}
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 
@@ -165,7 +170,7 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Presents options dialog box.", "[on or off]", commandName, "setOptions")) {
-			boolean q = queryOptions("GBLOCKS");
+			boolean q = queryOptions();
 			if (q)
 				parametersChanged();
 
@@ -269,10 +274,10 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 	/*.................................................................................................................*/
 	/**This queryOptions is provided in case the module that uses this GBLOCKSCalculator doesn't want to add extra options, and just wants to use
 	 * a simple dialog box to query for options. If the ownermodule wishes, it can make its own dialog box; use this one as a template. */
-	public boolean queryOptions(String action) {
+	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
-		String actionToUse = getActionToUse(action);
+		String actionToUse = getActionToUse("GBLOCKS");
 
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  actionToUse+ " using GBLOCKS Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
@@ -282,7 +287,7 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 
 		dialog.addLabel(actionToUse + " Characters using Extended GBLOCKS Algorithm");
 
-		addToQueryOptions(dialog, action);
+		addToQueryOptions(dialog, "GBLOCKS");
 
 		dialog.addNewDialogPanel();
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);

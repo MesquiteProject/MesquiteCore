@@ -563,6 +563,30 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public MesquiteModuleInfo getModuleInfo(){
 		return moduleInfo;
 	}
+	/*.................................................................................................................*/
+	/** Notifies all employees to re-query the user about all options and setting OTHER THAN setting employees.*/
+	public void employeesQueryOptionsOtherThanEmployees () {
+		if (doomed)
+			return;
+		queryOptionsOtherThanEmployees();
+		if (employees==null)
+			return;
+		Enumeration e = employees.elements();
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			MesquiteModule mbe = (MesquiteModule)obj;
+			if (mbe!=null) {
+				mbe.employeesQueryOptionsOtherThanEmployees();
+			}
+		}
+	}
+	/*.................................................................................................................*/
+	/** Query the user about all options and setting OTHER THAN setting employees.*/
+	public void queryOptionsOtherThanEmployees () {
+		
+	}
+
+	/*.................................................................................................................*/
 	/** Notifies all employees that a class field has changed.*/
 	public void classFieldChanged (Class c, String fieldName) {
 		if (employees==null || doomed)

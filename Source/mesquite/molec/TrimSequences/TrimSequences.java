@@ -62,10 +62,25 @@ public class TrimSequences extends MolecularDataAlterer implements AltererWholeC
 	public boolean isSubstantive(){
 		return true;
 	}
-	/*public CompatibilityTest getCompatibilityTest(){
-		return new RequiresAnyMolecularData();
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine("setTrimmer", trimmer); 
+		return temp;
 	}
-	*/
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets trimmer module", "[name of module]", commandName, "setTrimmer")) {
+			SequenceTrimmer temp = (SequenceTrimmer)replaceEmployee(SequenceTrimmer.class, arguments, "Sequence trimmer", trimmer);
+			if (temp !=null){
+				trimmer = temp;
+				return temp;
+			}
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){

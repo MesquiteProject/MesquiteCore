@@ -20,8 +20,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Date;
 import java.util.Vector;
+
+import javax.swing.JLabel;
 
 import mesquite.lib.AlertDialog;
 import mesquite.lib.CommandChecker;
@@ -56,7 +59,7 @@ import mesquite.lib.duties.NexusFileInterpreter;
 public class ProcessDataFiles extends GeneralFileMaker implements ActionListener { 
 	/*.................................................................................................................*/
 
-	MesquiteProject project = null;
+	MesquiteProject processProject = null;
 	FileCoordinator fileCoord = null;
 	String directoryPath=null;
 	ProgressIndicator progIndicator = null;
@@ -93,32 +96,147 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	/*.................................................................................................................*/
 
 	/** Todo:
-	 * Add button to save script and load script.
+	 * Add button to load script.
+	 * Provoke all employees already hired and scripted to ask for their parameters again? 
+	 * -- Have this as a button in process dialog to reset non-employee parameters. (aligners, trimmers, etc.?)
 	 * 
 	 */
 	/*.................................................................................................................*/
+	void executeScript(String script) {
+		//Assumes fileProcessorsCleared etc.
+		Puppeteer p = new Puppeteer(this);
+		CommandRecord mr = MesquiteThread.getCurrentCommandRecord();
+
+		MesquiteThread.setCurrentCommandRecord(CommandRecord.macroRecord); //was macroRecord
+		p.execute(this, script, new MesquiteInteger(0), null, false);
+		MesquiteThread.setCurrentCommandRecord(mr);
+
+		EmployeeVector employees = processProject.getCoordinatorModule().getEmployeeVector();
+		for (int i= 0; i<employees.size(); i++) {
+			MesquiteModule mb = (MesquiteModule)employees.elementAt(i);
+			if (mb instanceof FileProcessor)
+				recordProcessor((FileProcessor)mb);
+		}
+	
+	}
+	/*=============================================================================================================*/
+	JLabel intro1, intro2;
+	List processorList = null;
+
+	void removeAllProcessors() {
+		if (processorList != null)
+			processorList.removeAll();
+		for (int i= 0; i< fileProcessors.size(); i++){
+			FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
+			processProject.getCoordinatorModule().fireEmployee(fProcessor);
+		}
+		if (fileProcessors != null)
+			fileProcessors.removeAllElements();
+
+	}
+	/*.................................................................................................................*/
+	public boolean showProcessDialog(boolean firstAppearance) {
+		//DLOG DLOG
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Processing Files",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+
+		Debugg.println("fileProcessors.size() " + fileProcessors.size());
+		if (fileProcessors.size()==0) {
+			intro1 = dialog.addLabel("For each file examined, how do you want to process it?");
+			intro2 = dialog.addLabel("");
+		}
+		else {
+			if (firstAppearance) {
+				intro1 = dialog.addLabel("For each file examined, how do you want to process it?");
+				intro2 = dialog.addLabel("The processing steps used previously are:");
+
+			}
+			else {
+				intro1 = dialog.addLabel("Do you want to add another step in processing each file?");
+				intro2 = dialog.addLabel("The processing steps already requested are:");
+			}
+		}
+		String[] steps = new String[fileProcessors.size()];
+		for (int i = 0; i<steps.length; i++){
+			if (fileProcessors.elementAt(i)!=null)
+				steps[i] = "(" + (i+1) + ") " + ((FileProcessor)fileProcessors.elementAt(i)).getNameAndParameters();
+		}
+		processorList = dialog.addList (steps, null, null, 8);
+
+		dialog.addHorizontalLine(1);
+		dialog.addBlankLine();
+		Button clearButton = null;
+		clearButton = dialog.addAListenedButton("Clear", null, this);
+		clearButton.setActionCommand("clear");
+		Button resetParamButton = null;
+		resetParamButton = dialog.addAListenedButton("Reset Parameters", null, this);
+		resetParamButton.setActionCommand("resetParams");
+		Button loadButton = null;
+		loadButton = dialog.addAListenedButton("Load Script", null, this);
+		loadButton.setActionCommand("load");
+		dialog.completeAndShowDialog("Add Step", "Cancel", "PROCESS", "PROCESS");
+
+
+
+		dialog.dispose();
+		boolean addProcess =  (buttonPressed.getValue()==0);
+		if (buttonPressed.getValue()==0)
+			addProcess = true;
+		else if (buttonPressed.getValue()==1)
+			cancelProcessing = true;
+		else if (buttonPressed.getValue()==2) {
+			addProcess = false;
+			storePreferences();
+		}
+		return addProcess;
+	}
+
+	/*.................................................................................................................*/
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equalsIgnoreCase("Clear")) {
+			removeAllProcessors();
+			intro1.setText("For each file examined, how do you want to process it?");
+			intro2.setText("");
+			currentScript = "";
+			preferencesScript = "";
+		} 
+		else if (e.getActionCommand().equalsIgnoreCase("Load")) {
+			MesquiteFile f = MesquiteFile.open(true, (FilenameFilter)null, "Open text file with processing script", null);
+			if (f!= null) {
+				String script = MesquiteFile.getFileContentsAsString(f.getPath());
+				if (!StringUtil.blank(script)) {
+					removeAllProcessors();
+					
+					executeScript(script);
+					currentScript = script;
+					preferencesScript = script;
+					for (int i = 0; i<fileProcessors.size(); i++){
+						if (fileProcessors.elementAt(i)!=null)
+							processorList.add("(" + (i+1) + ") " + ((FileProcessor)fileProcessors.elementAt(i)).getNameAndParameters());
+					}
+					intro1.setText("Do you want to add another step in processing each file?");
+					intro2.setText("The processing steps already requested are:");
+				}
+			}
+		} 
+		else if (e.getActionCommand().equalsIgnoreCase("resetParams")) {
+			for (int i= 0; i< fileProcessors.size(); i++){
+				FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
+				fProcessor.employeesQueryOptionsOtherThanEmployees();
+			}
+			currentScript = recaptureScript();
+			preferencesScript = currentScript;
+
+		}
+	}
+	/*=============================================================================================================*/
 	protected boolean selectProcessors(){
 		if (!firstFile)
 			return true;
-		firstFile = false;
-		if (fileProcessors == null)
-			fileProcessors = new Vector();
-		
+
 		if (preferencesScript != null){
 			//here we hire the processors implied by the preferences script
-			Puppeteer p = new Puppeteer(this);
-			CommandRecord mr = MesquiteThread.getCurrentCommandRecord();
-			MesquiteThread.setCurrentCommandRecord(CommandRecord.macroRecord);
-			p.execute(this, preferencesScript, new MesquiteInteger(0), null, false);
-			MesquiteThread.setCurrentCommandRecord(mr);
-
-			EmployeeVector employees = getEmployeeVector();
-			for (int i= 0; i<employees.size(); i++) {
-				MesquiteModule mb = (MesquiteModule)employees.elementAt(i);
-				if (mb instanceof FileProcessor)
-					fileProcessors.addElement(mb);
-			}
-
+			executeScript(preferencesScript);
 		}	
 		currentScript = preferencesScript;
 		if (currentScript == null)
@@ -130,7 +248,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 
 			//You have hit ADD, so let's add to current script. 
 			//Look for and hire the next processor, and capture its script for later use
-			FileProcessor processor = (FileProcessor)project.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
+			FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
 			if (processor == null) {
 				cancelProcessing = true;
 			}
@@ -138,7 +256,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
 				String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
 				currentScript +="\ntell It;\n" + sn + "\nendTell;";
-				fileProcessors.addElement(processor);
+				recordProcessor(processor);
 			}
 			firstAppearance = false;
 		}
@@ -154,15 +272,18 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 
 		return true;
 	}
-
+	void recordProcessor(FileProcessor processor){
+		if (fileProcessors == null)
+			fileProcessors = new Vector();
+		if (fileProcessors.indexOf(processor)<0)
+			fileProcessors.addElement(processor);
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the module processing files", "[name of module]", commandName, "addProcessor")) {
-			FileProcessor processor = (FileProcessor)project.getCoordinatorModule().hireNamedEmployee(FileProcessor.class, arguments);
+			FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireNamedEmployee(FileProcessor.class, arguments);
 			if (processor!=null) {
-				if (fileProcessors == null)
-					fileProcessors = new Vector();
-				fileProcessors.addElement(processor);
+				recordProcessor(processor);
 			}
 			return processor;
 		}
@@ -189,81 +310,12 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	public void writeFile(MesquiteFile nMF){
 		NexusFileInterpreter nfi =(NexusFileInterpreter) fileCoord.findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
 		if (nfi!=null) {
-			nfi.writeFile(project, nMF);
+			nfi.writeFile(processProject, nMF);
 		}
 	}
 
 
 
-	List processorList = null;
-
-	void removeAllProcessors() {
-		if (processorList != null)
-			processorList.removeAll();
-		for (int i= 0; i< fileProcessors.size(); i++){
-			FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
-			project.getCoordinatorModule().fireEmployee(fProcessor);
-		}
-		if (fileProcessors != null)
-			fileProcessors.removeAllElements();
-
-	}
-	/*.................................................................................................................*/
-	public boolean showProcessDialog(boolean firstAppearance) {
-		//DLOG DLOG
-		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Processing Files",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-
-		if (fileProcessors.size()==0) {
-			dialog.addLabel("For each file examined, how do you want to process it, as a first step?");
-		}
-		else {
-			if (firstAppearance) {
-				dialog.addLabel("For each file examined, how do you want to process it?");
-				dialog.addLabel("The processing steps used the previous time are:");
-
-			}
-			else {
-				dialog.addLabel("Do you want to add another step in processing each file?");
-				dialog.addLabel("The processing steps already requested are:");
-			}
-		}
-		String[] steps = new String[fileProcessors.size()];
-		for (int i = 0; i<steps.length; i++){
-			if (fileProcessors.elementAt(i)!=null)
-				steps[i] = "(" + (i+1) + ") " + ((FileProcessor)fileProcessors.elementAt(i)).getNameAndParameters();
-		}
-		processorList = dialog.addList (steps, null, null, 8);
-
-		dialog.addHorizontalLine(1);
-		dialog.addBlankLine();
-		Button clearButton = null;
-		clearButton = dialog.addAListenedButton("Clear", null, this);
-		clearButton.setActionCommand("clear");
-		dialog.completeAndShowDialog("Add", "Cancel", "PROCESS", "PROCESS");
-
-
-
-		dialog.dispose();
-		boolean addProcess =  (buttonPressed.getValue()==0);
-		if (buttonPressed.getValue()==0)
-			addProcess = true;
-		else if (buttonPressed.getValue()==1)
-			cancelProcessing = true;
-		else if (buttonPressed.getValue()==2) {
-			addProcess = false;
-			storePreferences();
-		}
-		return addProcess;
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("Clear")) {
-			removeAllProcessors();
-			currentScript = "";
-			preferencesScript = "";
-		} 
-	}
 
 	protected boolean firstResultsOverall = true;
 	protected boolean firstResultsOverallFound = false;
@@ -321,10 +373,11 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 					progIndicator.setAbort();
 					progIndicator.goAway();
 				}
-				project.removeAllFileElements(TreeVector.class, false);	
-				project.removeAllFileElements(CharacterData.class, false);	
-				project.removeAllFileElements(Taxa.class, false);	
+				processProject.removeAllFileElements(TreeVector.class, false);	
+				processProject.removeAllFileElements(CharacterData.class, false);	
+				processProject.removeAllFileElements(Taxa.class, false);	
 				decrementMenuResetSuppression();
+				firstFile = false;
 				return false;
 			}
 			boolean firstResult = true;
@@ -350,6 +403,9 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 								continuePlease = AlertDialog.query(containerOfModule(), "Processing step failed", "Processing of file " + fileToRead.getFileName() + " by " + fProcessor.getNameAndParameters() + " failed. Do you want to continue with this file?", "Continue", "Stop with This File");
 								warned[i] = true;
 							}
+						}
+						else if (firstFile) {
+							logln("First file processed using " + fProcessor.getNameAndParameters());
 						}
 						if (continuePlease) {
 							if (fProcessor.pleaseSequester()) {
@@ -388,9 +444,9 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 			}
 
 			firstFile = false;
-			project.removeAllFileElements(TreeVector.class, false);	
-			project.removeAllFileElements(CharacterData.class, false);	
-			project.removeAllFileElements(Taxa.class, false);	
+			processProject.removeAllFileElements(TreeVector.class, false);	
+			processProject.removeAllFileElements(CharacterData.class, false);	
+			processProject.removeAllFileElements(Taxa.class, false);	
 
 		}
 		decrementMenuResetSuppression();
@@ -411,7 +467,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		File directory = new File(directoryPath);
 
 		firstFile = true;
-		project.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
+		processProject.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
 		boolean abort = false;
 		String path = "";
 		StringBuffer results = new StringBuffer();
@@ -470,19 +526,33 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 								}
 							}
 
-							project.getCoordinatorModule().closeFile(file, true);
+							processProject.getCoordinatorModule().closeFile(file, true);
 						}
 					}
 				}
 				MesquiteThread.setQuietPlease(false);
 				afterProcessFiles();
+
+				String finalScript = recaptureScript();
+				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingScript.txt", finalScript, true);
+
 				removeAllProcessors();
 				progIndicator.goAway();
 			}
 
 
 		}
-		project.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
+		processProject.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
+	}
+	String recaptureScript() {
+		String s = "";
+		for (int i = 0; i< fileProcessors.size(); i++) {
+			FileProcessor processor = (FileProcessor)fileProcessors.elementAt(i);
+			s += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
+			String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
+			s +="\ntell It;\n" + sn + "\nendTell;";
+		}
+		return s;
 	}
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstFile;
@@ -543,7 +613,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 			return null;
 		if (StringUtil.blank(importerString))
 			return null;
-		project = fileCoord.initiateProject(writingFile.getFileName(), writingFile);
+		processProject = fileCoord.initiateProject(writingFile.getFileName(), writingFile);
 		importer = (FileInterpreter)fileCoord.findEmployeeWithName(importerString);
 
 
@@ -557,9 +627,9 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		//and inside that, //DLOG asks abotu processors
 		if (success){
 			//project.autosave = true;
-			return project;
+			return processProject;
 		}
-		project.developing = false;
+		processProject.developing = false;
 		return null;
 	}
 	/*.................................................................................................................*/

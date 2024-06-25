@@ -17,6 +17,7 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.table.*;
+import mesquite.molec.lib.SequenceTrimmer;
 import mesquite.lib.characters.*;
 
 

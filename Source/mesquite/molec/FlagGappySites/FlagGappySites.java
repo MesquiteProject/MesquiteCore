@@ -20,6 +20,7 @@ import java.awt.Checkbox;
 
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.DoubleField;
 import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.IntegerField;
@@ -177,6 +178,10 @@ public class FlagGappySites extends SiteFlagger {
 		return (buttonPressed.getValue()==0);
 	}
 
+		public void queryOptionsOtherThanEmployees () {
+   	 		if (queryOptions())
+   	 			storePreferences();
+		}
 	/*.................................................................................................................*/
    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
   	 	if (checker.compare(this.getClass(), "Sets options for gappiness", "", commandName, "setOptions")) {
@@ -260,7 +265,7 @@ public class FlagGappySites extends SiteFlagger {
 				flags.resetSize(data.getNumChars());
 			flags.clearAllBits();
 		}
-		
+		Debugg.println("FLAG GAPPY $$$$$$$$$$$$$$$");
 		int numTaxa = data.getNumTaxa();
  		int numChars = data.getNumChars();
  		if (siteGappiness == null || siteGappiness.length != numChars) {
