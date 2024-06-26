@@ -122,7 +122,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	/*=============================================================================================================*/
 	JLabel intro1, intro2;
 	List processorList = null;
-
+	boolean fromSavedScript = false;
+	
 	void removeAllProcessors() {
 		if (processorList != null)
 			processorList.removeAll();
@@ -134,28 +135,45 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 			fileProcessors.removeAllElements();
 
 	}
+	
+	void resetProcessorList() {
+		if (processorList != null)
+			processorList.removeAll();
+		for (int i = 0; i<fileProcessors.size(); i++){
+			if (fileProcessors.elementAt(i)!=null)
+				processorList.add("(" + (i+1) + ") " + ((FileProcessor)fileProcessors.elementAt(i)).getNameAndParameters());
+		}
+			
+	}
+	
+	void setIntro(boolean fromSavedScript) {
+		if (fileProcessors.size()==0) {
+			intro1.setText("For each file examined, how do you want to process it?");
+			intro2.setText("");
+		}
+		else {
+			if (fromSavedScript) {
+				intro1.setText("For each file examined, how do you want to process it?");
+				intro2.setText("The processing steps used previously are:");
+
+			}
+			else {
+				intro1.setText("Do you want to add another step in processing each file?");
+				intro2.setText("The processing steps already requested are:");
+			}
+		}
+	}
 	/*.................................................................................................................*/
-	public boolean showProcessDialog(boolean firstAppearance) {
+	public boolean showProcessDialog() {
 		//DLOG DLOG
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Processing Files",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		Debugg.println("fileProcessors.size() " + fileProcessors.size());
-		if (fileProcessors.size()==0) {
-			intro1 = dialog.addLabel("For each file examined, how do you want to process it?");
-			intro2 = dialog.addLabel("");
-		}
-		else {
-			if (firstAppearance) {
-				intro1 = dialog.addLabel("For each file examined, how do you want to process it?");
-				intro2 = dialog.addLabel("The processing steps used previously are:");
-
-			}
-			else {
-				intro1 = dialog.addLabel("Do you want to add another step in processing each file?");
-				intro2 = dialog.addLabel("The processing steps already requested are:");
-			}
-		}
+		intro1 = dialog.addLabel("xxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxx  xxxxxxxxx");
+		intro2 = dialog.addLabel("                  ");
+		setIntro(fromSavedScript);
+		
 		String[] steps = new String[fileProcessors.size()];
 		for (int i = 0; i<steps.length; i++){
 			if (fileProcessors.elementAt(i)!=null)
@@ -163,40 +181,54 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		}
 		processorList = dialog.addList (steps, null, null, 8);
 
-		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
-		Button clearButton = null;
-		clearButton = dialog.addAListenedButton("Clear", null, this);
-		clearButton.setActionCommand("clear");
-		Button resetParamButton = null;
-		resetParamButton = dialog.addAListenedButton("Reset Parameters", null, this);
-		resetParamButton.setActionCommand("resetParams");
 		Button loadButton = null;
 		loadButton = dialog.addAListenedButton("Load Script", null, this);
 		loadButton.setActionCommand("load");
-		dialog.completeAndShowDialog("Add Step", "Cancel", "PROCESS", "PROCESS");
+		Button clearButton = null;
+		clearButton = dialog.addAListenedButton("Clear All", null, this);
+		clearButton.setActionCommand("clear");
+		Button addButton = null;
+		addButton = dialog.addAListenedButton("Add Step", null, this);
+		addButton.setActionCommand("add");
+		dialog.addHorizontalLine(1);
+		dialog.addBlankLine();
+		
+		Button resetParamButton = null;
+		resetParamButton = dialog.addAListenedButton("Review Settings", null, this);
+		resetParamButton.setActionCommand("resetParams");
+		dialog.addHorizontalLine(1);
+		dialog.completeAndShowDialog("Process", "Cancel", null, "PROCESS");
 
 
 
 		dialog.dispose();
-		boolean addProcess =  (buttonPressed.getValue()==0);
-		if (buttonPressed.getValue()==0)
-			addProcess = true;
-		else if (buttonPressed.getValue()==1)
-			cancelProcessing = true;
-		else if (buttonPressed.getValue()==2) {
-			addProcess = false;
-			storePreferences();
-		}
-		return addProcess;
+		return (buttonPressed.getValue()==0);
 	}
 
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("Clear")) {
+		if (e.getActionCommand().equalsIgnoreCase("Add")) {
+			//You have hit ADD, so let's add to current script. 
+			//Look for and hire the next processor, and capture its script for later use
+			boolean wasUTIS = MesquiteThread.unknownThreadIsScripting;
+			MesquiteThread.unknownThreadIsScripting = false;
+			FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
+			MesquiteThread.unknownThreadIsScripting = wasUTIS;
+			if (processor != null) {
+				currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
+				String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
+				currentScript +="\ntell It;\n" + sn + "\nendTell;";
+				recordProcessor(processor);
+				setIntro(fromSavedScript);
+				resetProcessorList();
+				fromSavedScript = false;
+			}
+		}
+		else if (e.getActionCommand().equalsIgnoreCase("Clear")) {
 			removeAllProcessors();
-			intro1.setText("For each file examined, how do you want to process it?");
-			intro2.setText("");
+			fromSavedScript = false;
+			setIntro(fromSavedScript);
 			currentScript = "";
 			preferencesScript = "";
 		} 
@@ -210,12 +242,9 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 					executeScript(script);
 					currentScript = script;
 					preferencesScript = script;
-					for (int i = 0; i<fileProcessors.size(); i++){
-						if (fileProcessors.elementAt(i)!=null)
-							processorList.add("(" + (i+1) + ") " + ((FileProcessor)fileProcessors.elementAt(i)).getNameAndParameters());
-					}
-					intro1.setText("Do you want to add another step in processing each file?");
-					intro2.setText("The processing steps already requested are:");
+					resetProcessorList();
+					fromSavedScript = true;
+					setIntro(fromSavedScript);
 				}
 			}
 		} 
@@ -226,6 +255,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 			}
 			currentScript = recaptureScript();
 			preferencesScript = currentScript;
+			resetProcessorList();
 
 		}
 	}
@@ -237,35 +267,18 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		if (preferencesScript != null){
 			//here we hire the processors implied by the preferences script
 			executeScript(preferencesScript);
+			fromSavedScript = true;
 		}	
 		currentScript = preferencesScript;
 		if (currentScript == null)
 			currentScript = "";
-		boolean firstAppearance = true;
 
 		//Show Dialog to controc processing
-		while (!cancelProcessing && showProcessDialog(firstAppearance)){
-
-			//You have hit ADD, so let's add to current script. 
-			//Look for and hire the next processor, and capture its script for later use
-			FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
-			if (processor == null) {
-				cancelProcessing = true;
-			}
-			else {
-				currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
-				String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
-				currentScript +="\ntell It;\n" + sn + "\nendTell;";
-				recordProcessor(processor);
-			}
-			firstAppearance = false;
-		}
-
-		//You have hit either PROCESS or CANCEL.
-		if (cancelProcessing){
+		if (!showProcessDialog()){
 			removeAllProcessors();
 			return false;
 		}
+
 		//Process must have been hit. Capture the current script.
 		preferencesScript = currentScript;
 		storePreferences();

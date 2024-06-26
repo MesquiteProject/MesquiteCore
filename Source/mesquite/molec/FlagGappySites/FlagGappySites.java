@@ -143,7 +143,7 @@ public class FlagGappySites extends SiteFlagger {
  	DoubleField pgBField;
 	 private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Select Gappy Sites or Blocks",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Gappy Sites or Blocks",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		pgSField = dialog.addDoubleField("Proportion of gaps that marks site as too gappy (\"bad\")", siteGappinessThreshold, 4);
 		dialog.addHorizontalLine(1);

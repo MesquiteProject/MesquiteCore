@@ -128,7 +128,7 @@ public class AlterAllMatrices extends FileProcessor {
 		 if (alterTask==null)
 			 return "Alter Matrices";
 		 else
-			 return "Alter Matrices (" + alterTask.getName() + ")";
+			 return alterTask.getNameAndParameters();
 	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/

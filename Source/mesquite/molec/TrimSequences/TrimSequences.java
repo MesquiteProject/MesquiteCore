@@ -140,6 +140,12 @@ public class TrimSequences extends MolecularDataAlterer implements AltererWholeC
 		return "Trim Sequences";
 	}
 	/*.................................................................................................................*/
+	public String getNameAndParameters() {
+		if (trimmer == null)
+			return "Trim Sequences"; 
+		return "Trim Sequences (" + trimmer.getName() + ")";
+	}
+	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Arranges for sites to be trimmed." ;

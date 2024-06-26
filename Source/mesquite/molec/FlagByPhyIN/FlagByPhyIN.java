@@ -174,7 +174,7 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Select using PhyIN Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for PhyIN Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		dialog.addLabel("PhyIN criteria for incompatible sites:");
 		SSField = dialog.addIntegerField("Length of blocks (-b)", blockSize, 4);

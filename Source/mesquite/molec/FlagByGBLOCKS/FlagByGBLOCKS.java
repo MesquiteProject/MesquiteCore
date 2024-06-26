@@ -264,28 +264,20 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 	DoubleField termGapsPropForgivenField=null;
 	//Checkbox ignoreTaxaWithoutSequenceCheckbox=null;
 	/*.................................................................................................................*/
-	public String getActionToUse(String action) {
-		String actionToUse = "Choose";
-		if (StringUtil.notEmpty(action))
-			actionToUse=action;
-		return actionToUse;
-	}
-
 	/*.................................................................................................................*/
 	/**This queryOptions is provided in case the module that uses this GBLOCKSCalculator doesn't want to add extra options, and just wants to use
 	 * a simple dialog box to query for options. If the ownermodule wishes, it can make its own dialog box; use this one as a template. */
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
-		String actionToUse = getActionToUse("GBLOCKS");
 
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  actionToUse+ " using GBLOCKS Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		String helpString = "This feature will " + actionToUse.toLowerCase() +  " characters using the GBLOCKS algorithm, as described in Castresana (2000).";
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for GBLOCKS Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		String helpString = "This feature will choose characters using the GBLOCKS algorithm, as described in Castresana (2000).";
 
 		dialog.appendToHelpString(helpString);
 
-		dialog.addLabel(actionToUse + " Characters using Extended GBLOCKS Algorithm");
+		dialog.addLabel("Extended GBLOCKS Algorithm");
 
 		addToQueryOptions(dialog, "GBLOCKS");
 
@@ -322,7 +314,6 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 		//termGapsPropForgivenField = dialog.addDoubleField("Prop. terminal gaps forgiven", termGapsPropForgiven, 4);
 		//ignoreTaxaWithoutSequenceCheckbox = dialog.addCheckBox("Ignore taxa without any sequence*", ignoreTaxaWithoutSequence);
 		dialog.addHorizontalLine(1);
-		String actionToUse = getActionToUse(action);
 
 	//	chooseAmbiguousSitesCheckbox = dialog.addCheckBox(actionToUse.toLowerCase()+ " sites in ambiguously aligned regions", chooseAmbiguousSites);
 		int c = 0;

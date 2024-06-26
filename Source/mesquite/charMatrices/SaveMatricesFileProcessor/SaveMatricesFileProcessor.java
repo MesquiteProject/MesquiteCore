@@ -35,16 +35,12 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	FileInterpreter exporterTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		/*if (arguments !=null) {
-			exporterTask = (FileInterpreter)hireNamedEmployee(FileInterpreter.class, arguments);
-			if (exporterTask == null)
-				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
+		if (!MesquiteThread.isScripting()) {
+			directoryPath = getProject().getHomeDirectoryName();
+			directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+			if (StringUtil.blank(directoryPath))
+				return false;
 		}
-		else {
-			exporterTask = (FileInterpreter)hireEmployee(FileInterpreter.class, "Exporter");
-			if (exporterTask == null)
-				return sorry(getName() + " couldn't start because no exporter obtained.");
-		}*/
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -71,7 +67,17 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setFileInterpreter ", exporterTask);  
+		temp.addLine("setDirectoryPath " + ParseUtil.tokenize(directoryPath));  
 		return temp;
+	}
+	public void queryOptionsOtherThanEmployees() {
+		String current = "";
+		if (directoryPath != null)
+			current = " (current: " + StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator) + ")";
+
+		String temp = MesquiteFile.chooseDirectory("Where to save files?" + current); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+		if (!StringUtil.blank(temp))
+			directoryPath = temp;
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -82,6 +88,9 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 				return exporterTask;
 			}
 
+		}
+		else if (checker.compare(this.getClass(), "Sets the directory path", "[path]", commandName, "setDirectoryPath")) {
+			directoryPath = parser.getFirstToken(arguments);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -97,7 +106,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	String exporterString = "NEXUS file";
 	String directoryPath;
 	boolean queryOptions(){
-		directoryPath = getProject().getHomeDirectoryName();
+
 		Taxa taxa = null;
 		if (getProject().getNumberTaxas()==0) {
 			discreetAlert("Data matrices cannot be exported until taxa exist in file.");
@@ -139,9 +148,6 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		dialog.completeAndShowDialog();
 
 
-		directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
-		if (StringUtil.blank(directoryPath))
-			return false;
 		exporterString = exporterChoice.getSelectedItem();
 
 		dialog.dispose();
@@ -256,10 +262,12 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	}
 	/*.................................................................................................................*/
 	public String getNameAndParameters() {
-		//if (exporterTask==null)
+		if (directoryPath == null)
 			return "Export Matrices";
-	//	else
-	///		return "Export Matrices (" + exporterTask.getName() + ")";
+		else {
+			
+			return "Export Matrices (in " + StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator) + ")";
+		}
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

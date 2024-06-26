@@ -96,6 +96,13 @@ public class MultipleAlignService extends CategDataAlterer  implements AltererAl
 		return "Align Sequences in Matrix";
   	 }
  	/*.................................................................................................................*/
+	 public String getNameAndParameters() {
+		 if (aligner == null)
+		return "Align Sequences in Matrix";
+		 else
+			 return "Align Sequences in Matrix (" + aligner.getName() + ")";
+	 }
+	/*.................................................................................................................*/
 	 public String getNameForMenuItem() {
 	return "Align Sequences in Matrix...";
 	 }
