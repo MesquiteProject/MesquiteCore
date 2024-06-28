@@ -1230,7 +1230,9 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return relativeTo;
 		int count;
 		int lastSlashCount=0;
-		
+
+		if (!containedAt(relativeTo, fileSeparator, relativeTo.length()-1))
+			relativeTo += fileSeparator;
 		for (count = 0; count< relativeTo.length() && count<path.length() && relativeTo.charAt(count)==path.charAt(count); count++){
 			if (relativeTo.charAt(count)=='/' ||containedAt(relativeTo, fileSeparator, count))
 				lastSlashCount = count+1;  // we will want to take the part from just past the slash onward

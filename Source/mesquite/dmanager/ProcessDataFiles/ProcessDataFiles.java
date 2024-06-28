@@ -169,7 +169,6 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Processing Files",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
-		Debugg.println("fileProcessors.size() " + fileProcessors.size());
 		intro1 = dialog.addLabel("xxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxx  xxxxxxxxx");
 		intro2 = dialog.addLabel("                  ");
 		setIntro(fromSavedScript);
@@ -215,6 +214,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 			MesquiteThread.unknownThreadIsScripting = false;
 			FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
 			MesquiteThread.unknownThreadIsScripting = wasUTIS;
+			processor.setBaseDirectory(directoryPath);
 			if (processor != null) {
 				currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
 				String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
@@ -296,6 +296,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		if (checker.compare(this.getClass(), "Sets the module processing files", "[name of module]", commandName, "addProcessor")) {
 			FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireNamedEmployee(FileProcessor.class, arguments);
 			if (processor!=null) {
+				processor.setBaseDirectory(directoryPath);
 				recordProcessor(processor);
 			}
 			return processor;

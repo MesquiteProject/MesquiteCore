@@ -51,6 +51,36 @@ public class CompileProcessedMatrices extends FileProcessor {
 		return false;
 	}
 	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("setOpenAfterward " + openAfterCompiled);  
+		return temp;
+	}
+	
+	boolean OACOptionAlreadySet = false;
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets whether to open after compilation", "[path]", commandName, "setOpenAfterward")) {
+			openAfterCompiled = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			OACOptionAlreadySet = true;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}	
+	
+	/*.................................................................................................................*/
+	void queryOpenAfter() {
+		int def = 2;
+		if (openAfterCompiled)
+			def = 1;
+		openAfterCompiled = AlertDialog.query(containerOfModule(), "Open when done?", "Open file of compiled matrices when finished?", "Open", "Don't", def);
+	}
+	/*.................................................................................................................*/
+	public void queryOptionsOtherThanEmployees () {
+	 	queryOpenAfter();
+	}
+	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("openAfterCompiled".equalsIgnoreCase(tag)) {
 			openAfterCompiled = MesquiteBoolean.fromOffOnString(content);
@@ -126,10 +156,8 @@ ListableVector taxonNames = new ListableVector();
 				return false;
 			saveFile = MesquiteFile.composePath(directory, fileName);
 			tempFile = MesquiteFile.composePath(directory, MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + fileName)) ;
-			int def = 2;
-			if (openAfterCompiled)
-				def = 1;
-			openAfterCompiled = AlertDialog.query(containerOfModule(), "Open when done?", "Open file of compiled matrices when finished?", "Open", "Don't", def);
+		 	if (!OACOptionAlreadySet)
+		 		queryOpenAfter();
 			storePreferences();
 		}
 		if (saveFile == null)

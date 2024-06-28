@@ -227,6 +227,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		preferencesSet = true;
 	}
+	
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
@@ -387,9 +388,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		decrementMenuResetSuppression();
 		return success;
 	}
+	protected boolean optionsAlreadySet = false;
 	/*.................................................................................................................*/
 	public long[][] alignSequences(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon) {
-		if (!queryOptions())
+		if (!optionsAlreadySet && !queryOptions())
 			return null;
 		if (!(matrix.getParentData() != null && matrix.getParentData() instanceof MolecularData)){
 			discreetAlert( "Sorry, " + getName() + " works only if given a full MolecularData object");
@@ -467,6 +469,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 		shellScript.append(getProgramCommand());
 		StringBuffer argumentsForLogging = new StringBuffer();
+		if (programOptions == null);
+			programOptions = "";
+
 		logln("Options: " + programOptions + " " + getQueryProgramOptions());
 		if (programOptionsComeFirst()){
 			shellScript.append(" " + programOptions + " " + getQueryProgramOptions() + " ");

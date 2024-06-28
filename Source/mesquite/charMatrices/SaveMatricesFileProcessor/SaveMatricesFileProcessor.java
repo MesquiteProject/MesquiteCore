@@ -33,6 +33,9 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	CharacterData data;
 	MesquiteSubmenuSpec mss= null;
 	FileInterpreter exporterTask;
+	String exporterString = null;
+	String directoryPath, baseDirectoryPath;
+	String relativeDirectoryPath;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (!MesquiteThread.isScripting()) {
@@ -64,33 +67,56 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		return false; 
 	}
 	/*.................................................................................................................*/
+   	/** Called to inform module what is base directory of files.*/
+   	public void setBaseDirectory(String path){
+   		baseDirectoryPath = path;
+		if (baseDirectoryPath != null && directoryPath == null && relativeDirectoryPath != null)
+			directoryPath = MesquiteFile.composePath(baseDirectoryPath, relativeDirectoryPath);
+  	}
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setFileInterpreter ", exporterTask);  
-		temp.addLine("setDirectoryPath " + ParseUtil.tokenize(directoryPath));  
+		if (directoryPath.contains(baseDirectoryPath))
+			temp.addLine("setRelativeDirectoryPath " + ParseUtil.tokenize(MesquiteFile.decomposePath(baseDirectoryPath, directoryPath)));  
+		else
+			temp.addLine("setDirectoryPath " + ParseUtil.tokenize(directoryPath));  
 		return temp;
 	}
+	/*.................................................................................................................*/
 	public void queryOptionsOtherThanEmployees() {
 		String current = "";
 		if (directoryPath != null)
 			current = " (current: " + StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator) + ")";
 
 		String temp = MesquiteFile.chooseDirectory("Where to save files?" + current); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
-		if (!StringUtil.blank(temp))
+		if (!StringUtil.blank(temp)) {
 			directoryPath = temp;
+			if (baseDirectoryPath!= null) {
+				relativeDirectoryPath = MesquiteFile.decomposePath(baseDirectoryPath, directoryPath);
+			}
+			}
+		queryOptions();
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+//set file interpreter not being respected..arguments.
 		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setFileInterpreter")) {
 			FileInterpreter temp =  (FileInterpreter)replaceEmployee(FileInterpreter.class, arguments, "Exporter", exporterTask);
 			if (temp!=null) {
 				exporterTask = temp;
+				exporterString = exporterTask.getName();
 				return exporterTask;
 			}
 
 		}
 		else if (checker.compare(this.getClass(), "Sets the directory path", "[path]", commandName, "setDirectoryPath")) {
 			directoryPath = parser.getFirstToken(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Sets the relative directory path", "[path]", commandName, "setRelativeDirectoryPath")) {
+			String relativeDirectoryPath = parser.getFirstToken(arguments);
+			if (baseDirectoryPath != null)
+				directoryPath = MesquiteFile.composePath(baseDirectoryPath, relativeDirectoryPath);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -103,10 +129,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	}
 
 	/*.................................................................................................................*/
-	String exporterString = "NEXUS file";
-	String directoryPath;
 	boolean queryOptions(){
-
 		Taxa taxa = null;
 		if (getProject().getNumberTaxas()==0) {
 			discreetAlert("Data matrices cannot be exported until taxa exist in file.");
@@ -159,8 +182,8 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	/** Called to alter file. */
 	public boolean processFile(MesquiteFile file){
 		boolean usePrevious = false;
-		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
-			if (!queryOptions())
+		if (exporterString == null && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
+			if (!queryOptions())  
 				return false;
 
 		}
@@ -168,6 +191,9 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 			usePrevious = true;
 		MesquiteProject proj = file.getProject();
 		FileCoordinator coord = getFileCoordinator();
+		if (exporterString == null)
+			exporterString = "NEXUS file";
+
 		exporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
 		if (exporterTask == null)
 			return false;
@@ -262,12 +288,13 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	}
 	/*.................................................................................................................*/
 	public String getNameAndParameters() {
-		if (directoryPath == null)
-			return "Export Matrices";
-		else {
+		String addendum = "";
+		if (exporterString != null)
+			addendum += " as " + exporterString;
+		if (directoryPath != null) 
+				addendum += " in " + StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator);
 			
-			return "Export Matrices (in " + StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator) + ")";
-		}
+		return "Export Matrices" + addendum;
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

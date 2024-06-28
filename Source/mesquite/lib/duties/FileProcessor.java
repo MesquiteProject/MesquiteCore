@@ -45,6 +45,10 @@ public abstract class FileProcessor extends MesquiteModule  {
    		return false;
    	}
 	/*.................................................................................................................*/
+   	/** Called to inform module what is base directory of files.*/
+   	public void setBaseDirectory(String path){
+   	}
+	/*.................................................................................................................*/
    	/** Called before processing a series of files.*/
    	public  boolean beforeProcessingSeriesOfFiles(){
    		return true;

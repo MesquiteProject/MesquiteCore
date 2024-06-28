@@ -75,6 +75,38 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 		return "mafft";
 	}
 	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = super.getSnapshot(file);
+		if (temp == null)
+			temp = new Snapshot();
+		temp.addLine("setAlignmentMethod " + alignmentMethod);  
+		temp.addLine("setAlignmentMethodText " + ParseUtil.tokenize(alignmentMethodText));  
+		temp.addLine("setUseMaxCores " + useMaxCores);
+		temp.addLine("optionsSet");
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the alignment method", "[number]", commandName, "setAlignmentMethod")) {
+			alignmentMethod = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets the text of the alignment method", "[text]", commandName, "setAlignmentMethodText")) {
+			String temp = parser.getFirstToken(arguments);
+			if (temp != null)
+				alignmentMethodText = temp;
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to use maximum number of cores", "[true or false]", commandName, "setUseMaxCores")) {
+			useMaxCores = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Records that options set", "", commandName, "optionsSet")) {
+			optionsAlreadySet = true;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}	
+	
+	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("alignmentMethod".equalsIgnoreCase(tag)) {
 			alignmentMethod = MesquiteInteger.fromString(content);
@@ -218,7 +250,10 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 		String options = "";
 		if (useMaxCores)
 			options+=" --thread -1 ";
-		options += " " + alignmentMethodText + " ";
+		if (alignmentMethodText == null)
+			options += " ";
+		else
+			options += " " + alignmentMethodText + " ";
 		return options;
 	}
 
