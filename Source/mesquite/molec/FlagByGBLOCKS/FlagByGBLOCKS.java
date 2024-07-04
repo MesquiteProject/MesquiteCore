@@ -767,7 +767,7 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Flag Sites by GBLOCKS";
+		return "GBLOCKS Criterion";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

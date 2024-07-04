@@ -105,7 +105,6 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	boolean flaggerInitialized = false;
 	/*.................................................................................................................*/
 	public boolean setActiveColors(boolean active){
-		Debugg.println("savtive " + active);
 		boolean wasActive = isActive();
 		setActive(active);
 		if (isActive() && !wasActive){

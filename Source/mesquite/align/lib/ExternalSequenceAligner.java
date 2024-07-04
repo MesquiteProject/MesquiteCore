@@ -240,6 +240,22 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("setIncludeGaps " + includeGaps);
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets whether to include gaps", "[true or false]", commandName, "setIncludeGaps")) {
+			includeGaps = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}	
+	
+	/*.................................................................................................................*/
 	public String getHelpString(){
 		return "";
 	}

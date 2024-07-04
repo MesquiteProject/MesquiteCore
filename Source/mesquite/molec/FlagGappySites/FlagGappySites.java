@@ -16,7 +16,10 @@ package mesquite.molec.FlagGappySites;
 
 
 
+import java.awt.Button;
 import java.awt.Checkbox;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
@@ -35,32 +38,27 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.molec.lib.SiteFlagger;
 
 /* ======================================================================== */
-public class FlagGappySites extends SiteFlagger {
+public class FlagGappySites extends SiteFlagger implements ActionListener {
 	
 	/** TODO?
-	 * Java
-	 * -- option + toggle to ignore terminal gaps
-	 * -- option + toggle to ignore taxa without data
-	 * 
-	 * Python
-	 * -- option + toggle  to ignore terminal gaps
-	 * -- toggle for option to ignore taxa without data
-	 * -- option to do sites only
+	 * --  call this SGF for simple gappiness filter? Or Gapsi?
+	 * --  toggle to ignore terminal gaps?
+	 * --  toggle to ignore taxa without data?
 	 */
 	/*Gappiness assessment parameters =================================*/
 	static boolean filterSiteGappinessDEFAULT = true;
 	static boolean filterBlockGappinessDEFAULT = false;
 	static double siteGappinessThresholdDEFAULT = 0.5; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
-	static int minGappyBlockSizeDEFAULT = 5; // If in a block of at least this many sites, the first and last site is bad,
+	static int gappyBlockSizeDEFAULT = 5; // If in a block of at least this many sites, the first and last site is bad,
 	static double blockGappinessThresholdDEFAULT = 0.5; // and the proportion of bad sites is this high or higher,
-	static int minGappyBoundaryDEFAULT = 4; // and there are no stretches of this many good sites in a row,
+	static int gappyBoundaryDEFAULT = 4; // and there are no stretches of this many good sites in a row,
 
 	MesquiteBoolean filterSiteGappiness = new MesquiteBoolean(filterSiteGappinessDEFAULT);
 	MesquiteBoolean filterBlockGappiness = new MesquiteBoolean(filterBlockGappinessDEFAULT);
 	double siteGappinessThreshold = siteGappinessThresholdDEFAULT; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
-	int minGappyBlockSize = minGappyBlockSizeDEFAULT; // If in a block of at least this many sites, the first and last site is bad,
+	int gappyBlockSize = gappyBlockSizeDEFAULT; // If in a block of at least this many sites, the first and last site is bad,
 	double blockGappinessThreshold = blockGappinessThresholdDEFAULT; // and the proportion of bad sites is this high or higher,
-	int minGappyBoundary = minGappyBoundaryDEFAULT; // and there are no stretches of this many good sites in a row,
+	int gappyBoundary = gappyBoundaryDEFAULT; // and there are no stretches of this many good sites in a row,
 	// then select the block.
 
 	// CCCCAA--A--A------TTTT--AACCCC
@@ -69,13 +67,13 @@ public class FlagGappySites extends SiteFlagger {
 	// CCCCAAG----A------------AACCCC
 	//        ***********
 	//
-	// in the above, the column after the Gs is the first bad site, and the two following As columns are too narrow to stop the block. However, the Ts
+	// in the above, the column after the Gs is the first bad site, 
+	// and the two following As columns are too narrow to stop the block. However, the Ts
 	// columns are 4 in a row, so they stop the block
 	 /**/
 
 
 	
-//	double threshold = MesquiteDouble.unassigned;
 	boolean queried = false;
 
 	/*.................................................................................................................*/
@@ -91,13 +89,12 @@ public class FlagGappySites extends SiteFlagger {
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-	//	StringUtil.appendXMLTag(buffer, 2, "threshold", threshold);  
 		StringUtil.appendXMLTag(buffer, 2, "filterBlockGappiness", filterBlockGappiness);  
 		StringUtil.appendXMLTag(buffer, 2, "filterSiteGappiness", filterSiteGappiness);  
 		StringUtil.appendXMLTag(buffer, 2, "siteGappinessThreshold", siteGappinessThreshold);  
-		StringUtil.appendXMLTag(buffer, 2, "minGappyBlockSize", minGappyBlockSize);  
+		StringUtil.appendXMLTag(buffer, 2, "gappyBlockSize", gappyBlockSize);  
 		StringUtil.appendXMLTag(buffer, 2, "blockGappinessThreshold", blockGappinessThreshold);  
-		StringUtil.appendXMLTag(buffer, 2, "minGappyBoundary", minGappyBoundary);  
+		StringUtil.appendXMLTag(buffer, 2, "gappyBoundary", gappyBoundary);  
 		return buffer.toString();
 	}
 	public void processSingleXMLPreference (String tag, String flavor, String content){
@@ -106,16 +103,14 @@ public class FlagGappySites extends SiteFlagger {
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-	//	if ("threshold".equalsIgnoreCase(tag))
-	//		threshold = MesquiteDouble.fromString(content);
 		if ("blockGappinessThreshold".equalsIgnoreCase(tag))
 			blockGappinessThreshold = MesquiteDouble.fromString(content);
 		if ("siteGappinessThreshold".equalsIgnoreCase(tag))
 			siteGappinessThreshold = MesquiteDouble.fromString(content);
-		if ("minGappyBlockSize".equalsIgnoreCase(tag))
-			minGappyBlockSize = MesquiteInteger.fromString(content);
-		if ("minGappyBoundary".equalsIgnoreCase(tag))
-			minGappyBoundary = MesquiteInteger.fromString(content);
+		if ("gappyBlockSize".equalsIgnoreCase(tag))
+			gappyBlockSize = MesquiteInteger.fromString(content);
+		if ("gappyBoundary".equalsIgnoreCase(tag))
+			gappyBoundary = MesquiteInteger.fromString(content);
 		if ("filterBlockGappiness".equalsIgnoreCase(tag))
 			filterBlockGappiness.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("filterSiteGappiness".equalsIgnoreCase(tag))
@@ -124,13 +119,12 @@ public class FlagGappySites extends SiteFlagger {
 	/*.................................................................................................................*/
  	 public Snapshot getSnapshot(MesquiteFile file) { 
   	 	Snapshot temp = new Snapshot();
-	 //	temp.addLine("setThreshold " + threshold); 
 		temp.addLine("setfilterBlockGappiness " + filterBlockGappiness.toOffOnString());
 		temp.addLine("setfilterSiteGappiness " + filterSiteGappiness.toOffOnString());
 		temp.addLine("setSiteGappinessThreshold " + siteGappinessThreshold);
-		temp.addLine("setMinGappyBlockSize " + minGappyBlockSize);
+		temp.addLine("setgappyBlockSize " + gappyBlockSize);
 		temp.addLine("setBlockGappinessThreshold " + blockGappinessThreshold);
-		temp.addLine("setMinGappyBoundary " + minGappyBoundary);
+		temp.addLine("setgappyBoundary " + gappyBoundary);
  	 	return temp;
  	 }
 
@@ -138,8 +132,8 @@ public class FlagGappySites extends SiteFlagger {
  	DoubleField pgSField;
  	Checkbox fIGS;
  	Checkbox fG;
- 	IntegerField minGBS;
- 	IntegerField minGB;
+ 	IntegerField gBS;
+ 	IntegerField gB;
  	DoubleField pgBField;
 	 private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -152,15 +146,17 @@ public class FlagGappySites extends SiteFlagger {
 		dialog.addHorizontalLine(1);
 		dialog.addLabel("Selecting blocks");
 		fG = dialog.addCheckBox("Select gappy blocks", filterBlockGappiness.getValue());
-		minGBS = dialog.addIntegerField("Minimum length of bad block", minGappyBlockSize, 4);
-		minGB = dialog.addIntegerField("Stretch of good that resets block", minGappyBoundary, 4);
+		gBS = dialog.addIntegerField("Minimum length of bad block", gappyBlockSize, 4);
+		gB = dialog.addIntegerField("Stretch of good that resets block", gappyBoundary, 4);
 		pgBField = dialog.addDoubleField("Proportion of bad sites for block to be bad", blockGappinessThreshold, 4);
 
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
-		//Button useDefaultsButton = null;
-		//useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
-		//useDefaultsButton.setActionCommand("setToDefaults");
+		Button useDefaultsButton = null;
+		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
+		useDefaultsButton.setActionCommand("setToDefaults");
+		dialog.addHorizontalLine(1);
+		dialog.addBlankLine();
 
 
 		dialog.completeAndShowDialog(true);
@@ -168,8 +164,8 @@ public class FlagGappySites extends SiteFlagger {
 			filterBlockGappiness.setValue(fG.getState());
 			filterSiteGappiness.setValue(fIGS.getState());
 			siteGappinessThreshold = pgSField.getValue();
-			minGappyBlockSize = minGBS.getValue();
-			minGappyBoundary = minGB.getValue();
+			gappyBlockSize = gBS.getValue();
+			gappyBoundary = gB.getValue();
 			blockGappinessThreshold = pgBField.getValue();
 
 			storePreferences();
@@ -178,6 +174,18 @@ public class FlagGappySites extends SiteFlagger {
 		return (buttonPressed.getValue()==0);
 	}
 
+		/*.................................................................................................................*/
+		public void actionPerformed(ActionEvent e) {
+			if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
+				pgSField.setValue(siteGappinessThresholdDEFAULT);
+				fIGS.setState(filterSiteGappinessDEFAULT);
+				fG.setState(filterBlockGappinessDEFAULT);
+				gBS.setValue(gappyBlockSizeDEFAULT);
+				gB.setValue(gappyBoundaryDEFAULT);
+				pgBField.setValue(blockGappinessThresholdDEFAULT);
+
+			} 
+		}
 		public void queryOptionsOtherThanEmployees () {
    	 		if (queryOptions())
    	 			storePreferences();
@@ -204,19 +212,19 @@ public class FlagGappySites extends SiteFlagger {
 				parametersChanged();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets minimum size of bad gappy block.", "[on or off]", commandName, "setMinGappyBlockSize")) {
+		else if (checker.compare(this.getClass(), "Sets minimum size of bad gappy block.", "[on or off]", commandName, "setgappyBlockSize")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
-				minGappyBlockSize = s;
+				gappyBlockSize = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
 			}
 
 		}
-		else if (checker.compare(this.getClass(), "Sets required size to form a non-gappy boundary.", "[on or off]", commandName, "setMinGappyBoundary")) {
+		else if (checker.compare(this.getClass(), "Sets required size to form a non-gappy boundary.", "[on or off]", commandName, "setgappyBoundary")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
-				minGappyBoundary = s;
+				gappyBoundary = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
 			}
@@ -248,7 +256,7 @@ public class FlagGappySites extends SiteFlagger {
  	/*======================================================*/
  	double[] siteGappiness;
  	boolean isGapBlockBoundary(int k) {
- 		for (int i = 0; k+i<siteGappiness.length && i<minGappyBoundary; i++)
+ 		for (int i = 0; k+i<siteGappiness.length && i<gappyBoundary; i++)
  			if (gappySite(k+i))
  				return false;
  		return true;
@@ -265,7 +273,6 @@ public class FlagGappySites extends SiteFlagger {
 				flags.resetSize(data.getNumChars());
 			flags.clearAllBits();
 		}
-		Debugg.println("FLAG GAPPY $$$$$$$$$$$$$$$");
 		int numTaxa = data.getNumTaxa();
  		int numChars = data.getNumChars();
  		if (siteGappiness == null || siteGappiness.length != numChars) {
@@ -295,7 +302,7 @@ public class FlagGappySites extends SiteFlagger {
  							int blockEnd = candidateNextBoundary-1;
 
  							//blockStart is the potential start of a block; blockEnd is a possible end. If the block is long enough, ask if its blockGappiness is bad
- 							if (blockEnd-blockStart+1 >= minGappyBlockSize){
+ 							if (blockEnd-blockStart+1 >= gappyBlockSize){
  								//block is big enough, but is it bad enough?
  								int badSiteCount = 0;
  								for (int k = blockStart; k <= blockEnd; k++)

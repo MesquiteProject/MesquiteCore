@@ -24,6 +24,7 @@ import javax.swing.text.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 
 import java.awt.datatransfer.*;
@@ -36,6 +37,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import mesquite.lib.table.*;
+import mesquite.molec.lib.SiteFlagger;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.ContinuousData;
@@ -563,6 +565,10 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		MesquiteSubmenuSpec mss4 = ownerModule.addSubmenu(null, "Character Inclusion/Exclusion");
 		ownerModule.addItemToSubmenu(null, mss4, "Include Selected Characters", ownerModule.makeCommand("includeSelectedCharacters", this));
 		ownerModule.addItemToSubmenu(null, mss4, "Exclude Selected Characters", ownerModule.makeCommand("excludeSelectedCharacters", this));
+		if (data instanceof MolecularData) {
+			ownerModule.addItemToSubmenu(null, mss4, "Add Exclusions by Trimming Method...", ownerModule.makeCommand("addExclusionByFlagger", this));
+			ownerModule.addItemToSubmenu(null, mss4, "Replace Exclusions by Trimming Method...", ownerModule.makeCommand("replaceExclusionByFlagger", this));
+		}
 		//DAVIDCHECK: not sure if useful ownerModule.addItemToSubmenu(null, mss4, "Exclude Characters by GBLOCKS...", ownerModule.makeCommand("excludeGBLOCKSCharacters", this));
 
 		// private, to fix frameshifted footnotes
@@ -1292,7 +1298,7 @@ public void requestFocus(){
 		return null;
 	}
 
-	/* ................................................................................................................. */
+	/* ................................................................................................................. *
 	protected boolean excludeGBLOCKSCharacters(MesquiteModule module, MesquiteTable table) {
 		CharacterSelector gblocksTask;
 			boolean changed=false;
@@ -1808,14 +1814,20 @@ public void requestFocus(){
 			}
 			ownerModule.unpauseAllPausables(v);
 		}
+		else if (checker.compare(this.getClass(), "Excludes characters by a trimming method, adding to existing exclusion", "[] []", commandName, "addExclusionByFlagger")) {
+			excludeByTrimmingMethod(false);
+		}
+		else if (checker.compare(this.getClass(), "Excludes characters by a trimming method, replacing existing exclusion", "[] []", commandName, "replaceExclusionByFlagger")) {
+			excludeByTrimmingMethod(true);
+		}
 		else if (checker.compare(this.getClass(), "Excludes selected characters", "[] []", commandName, "excludeSelectedCharacters")) {
 			if (data.setInclusionExclusion(ownerModule, table, false)) {
 			}
 		}
-		else if (checker.compare(this.getClass(), "Excludes GBLOCKS characters", "[] []", commandName, "excludeGBLOCKSCharacters")) {
+		/*else if (checker.compare(this.getClass(), "Excludes GBLOCKS characters", "[] []", commandName, "excludeGBLOCKSCharacters")) {
 			if (excludeGBLOCKSCharacters(ownerModule, table)) {
 			}
-		}
+		}*/
 		else if (checker.compare(this.getClass(), "Includes selected characters", "[] []", commandName, "includeSelectedCharacters")) {
 			if (data.setInclusionExclusion(ownerModule, table, true)) {
 			}
@@ -2258,6 +2270,27 @@ public void requestFocus(){
 		return null;
 	}
 
+	void excludeByTrimmingMethod(boolean replace) {
+		SiteFlagger flagger = (SiteFlagger)ownerModule.hireEmployee(SiteFlagger.class, "Trimming method");
+		if (flagger ==null)
+			return;
+		Bits flags = flagger.flagSites(data, null); //if input flags is null, make one and return it. Otherwise, adjust the one input.
+		CharInclusionSet inclusionSet = (CharInclusionSet) data.getCurrentSpecsSet(CharInclusionSet.class);
+		if (inclusionSet == null) {
+			inclusionSet= new CharInclusionSet("Inclusion Set", data.getNumChars(), data);
+			inclusionSet.selectAll();
+			inclusionSet.addToFile(data.getFile(), data.getProject(), ownerModule.findElementManager(CharInclusionSet.class)); //THIS
+			data.setCurrentSpecsSet(inclusionSet, CharInclusionSet.class);
+		}
+		if (inclusionSet != null) {
+			if (replace)
+				inclusionSet.selectAll();
+			for (int i=0; i<data.getNumChars(); i++) 
+				inclusionSet.setSelected(i, !flags.isBitOn(i));
+		}
+		contentsChanged();
+		ownerModule.fireEmployee(flagger);
+	}
 	SequenceLedge sequenceLedge;
 
 	public void resetSequenceLedge() {

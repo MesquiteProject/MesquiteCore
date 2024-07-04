@@ -82,6 +82,24 @@ public class ClustalAlign extends ExternalSequenceAligner{
 	}
 
 	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = super.getSnapshot(file);
+		if (temp == null)
+			temp = new Snapshot();
+		temp.addLine("optionsSet");
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Records that options set", "", commandName, "optionsSet")) {
+			optionsAlreadySet = true;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}	
+	
+	/*.................................................................................................................*/
 	public String getProgramCommand(){
 		if (MesquiteTrunk.isWindows())
 			return "call " + StringUtil.protectFilePathForWindows(getProgramPath());

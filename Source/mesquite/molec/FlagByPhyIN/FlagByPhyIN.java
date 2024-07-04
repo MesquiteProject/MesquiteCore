@@ -47,8 +47,8 @@ import mesquite.molec.lib.SiteFlagger;
 public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 
 	//Primary PhyIN parameters =================================
-	static double proportionIncompatDEFAULT = 0.4; //(-p)
-	static int blockSizeDEFAULT = 12; //(-b)
+	static double proportionIncompatDEFAULT = 0.5; //(-p)
+	static int blockSizeDEFAULT = 10; //(-b)
 	static int neighbourDistanceDEFAULT = 2; //(-d)
 	static boolean treatGapAsStateDEFAULT = true; //(-e)
 
@@ -56,20 +56,26 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 	int blockSize = blockSizeDEFAULT; //(-b)
 	int neighbourDistance = neighbourDistanceDEFAULT; //(-d)
 	MesquiteBoolean treatGapAsState = new MesquiteBoolean(treatGapAsStateDEFAULT); //(-e)
-	// AAATAAAAAAACCAAAAAAAAAAA
-	// AAATTAAAAACCAAAAAAAAAAAA
-	// AAAATAAAAAAACAAAAAAAAAAA
-	// AAAAAAAAAACAAAAAAAAAAAAA
+	
+	// Example with parameters b=10, d=1, p = 0.5
+	// AAATAAAAAACCAAAAAAAAAAA
+	// AAATTAAAACCAAAAAAAAAAAA
+	// AAAATAAAAAACAAAAAAAAAAA
+	// AAAAAAAAACAAAAAAAAAAAAA
 	//    ><
+	//          ><
 	//           ><
-	//            ><
-	//    ©©     ©©©
-	//    ssssssssssss
-	//    **********
-	// in the above, there are three pairs of conflicting neighbours (><). These pass the simple binary version of hte
-	// incompatibility criterion, in that all for combinations of states are present.
+	//    ©©    ©©©
+	//    ssssssssss
+	//    *********
+	// in the above, there are three pairs of conflicting neighbours (><). 
+	// These pass the simple binary version of the incompatibility criterion,
+	// in that all for combinations of states are present.
+	// The default is to look as well at two-away neighbours (d=2), but in this example
+	// there are no two-away neighbours that conflict.
+	//
 	// Thus, there are 5 conflicted characters (©).
-	// Thus, within the stretch of 12 shown by s, there are 5/12 conflicted characters, thus > 0.4 proportion.
+	// Thus, within the stretch of 10 shown by s, there are 5/10 conflicted characters, thus > 0.5 proportion.
 	// Thus, the stretch within that from first to last of the conflicted characters is selected (*).
 
 
@@ -312,14 +318,6 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 			}
 		}
 
-		/*Quick Filter: for all pairs of states, see if all 4 patterns are present (00, 01, 10, 11). This seems to save a tiny bit of time.
-		for (int i =0; i<NUMSTATES; i++) 
-			for (int k =i+1; k<NUMSTATES;k++) {
-				if (statePairs[i][i] && statePairs[i][k] && statePairs[k][i] && statePairs[k][k]) {
-					return true;
-				}
-			}
-		 */
 
 		//Test of compatibility: Look for cycles in state to state occupancy graph (M. Steel)
 		int stopper = 1000; //merely to prevent infinite loop in case of bug
@@ -413,11 +411,6 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 				selectSpanByProportion(ic, hasConflict, toSelect, proportionIncompat, blockSize);
 			}
 
-	/*		//Second, select by block gappiness if desired
-			if (filterBlockGappiness.getValue() || filterGapIndSite.getValue())
-				markGappy((CategoricalData)data);
-*/
-
 
 			for (int ic=0; ic<data.getNumChars(); ic++) {
 				if (toSelect[ic])
@@ -429,7 +422,7 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Flag Sites by PhyIN";
+		return "PhyIN Criterion";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

@@ -559,6 +559,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		processProject.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 	}
 	String recaptureScript() {
+		if (fileProcessors == null)
+			return "";
 		String s = "";
 		for (int i = 0; i< fileProcessors.size(); i++) {
 			FileProcessor processor = (FileProcessor)fileProcessors.elementAt(i);
