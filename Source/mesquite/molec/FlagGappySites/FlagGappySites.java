@@ -255,6 +255,7 @@ public class FlagGappySites extends SiteFlagger implements ActionListener {
    	 
  	/*======================================================*/
  	double[] siteGappiness;
+ 	boolean[] taxonHasData;
  	boolean isGapBlockBoundary(int k) {
  		for (int i = 0; k+i<siteGappiness.length && i<gappyBoundary; i++)
  			if (gappySite(k+i))
@@ -274,17 +275,30 @@ public class FlagGappySites extends SiteFlagger implements ActionListener {
 			flags.clearAllBits();
 		}
 		int numTaxa = data.getNumTaxa();
- 		int numChars = data.getNumChars();
+		int numChars = data.getNumChars();
+		if (taxonHasData == null || taxonHasData.length!= numTaxa)
+			taxonHasData = new boolean[numTaxa];
+		int numTaxaWithData = 0;
+		for (int it=0; it<numTaxa; it++){
+			taxonHasData[it] = false;
+	 		for (int ic=0; ic<numChars; ic++)
+				if (!data.isInapplicable(ic,it)){
+					taxonHasData[it] = true;
+					break;
+				}
+			if (taxonHasData[it])
+				numTaxaWithData++;
+		}
  		if (siteGappiness == null || siteGappiness.length != numChars) {
  			siteGappiness = new double[numChars];
  		}
  		for (int ic=0; ic<numChars; ic++) {
  			int gapCount = 0;
  			for (int it = 0; it<numTaxa; it++) {
- 				if (data.isInapplicable(ic,it)) //Also filter by taxon having no data?
+ 				if (taxonHasData[it] && data.isInapplicable(ic,it)) //Also filter by taxon having no data?
  					gapCount++;
  			}
- 			siteGappiness[ic] = 1.0*gapCount/numTaxa;
+ 			siteGappiness[ic] = 1.0*gapCount/numTaxaWithData;
  			if (gapCount == numTaxa)//if all gaps, delete regardless
  				flags.setBit(ic, true);
  			else if (filterSiteGappiness.getValue() && gappySite(ic))
