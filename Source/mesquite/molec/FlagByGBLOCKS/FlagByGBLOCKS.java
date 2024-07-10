@@ -241,17 +241,12 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 		return null;
 	}
 	/*.................................................................................................................*/
-	/*.................................................................................................................*/
 		/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return true;
 	}
 	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
-	public boolean requestPrimaryChoice(){
-		return true;  
-	}
-	
+
 
 	Button useDefaultsButton = null;
 	DoubleField ISfield = null;

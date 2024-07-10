@@ -38,7 +38,7 @@ public class SelectGappySites extends SelectSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Select Gappy Sites or Regions";
+		return "Select by Simple Gappiness Filter";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

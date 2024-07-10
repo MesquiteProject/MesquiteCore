@@ -48,6 +48,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		for (int i = 0; i<flaggers.size(); i++) {
 			temp.addLine("addFlaggerViaScript ", (SiteFlagger)flaggers.elementAt(i)); 
 		}
+				temp.addLine("toggleExtremelyDark " + useExtremelyDark.toOffOnString());
 		return temp;
 	}
 
@@ -94,6 +95,11 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			if (data != null && flags != null && AlertDialog.query(containerOfModule(),  "Delete?",  "Are you sure you want to delete the darkened (highlighted) characters?"))
 				data.deletePartsFlagged(flags, true);
 		}
+		else if (checker.compare(this.getClass(), "Show darkened areas as extremely dark", null, commandName, "toggleExtremelyDark")) {
+			useExtremelyDark.toggleValue(parser.getFirstToken(arguments));
+			Debugg.println("gsc " + useExtremelyDark);
+			parametersChanged();
+		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -102,7 +108,9 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	MesquiteMenuItemSpec mmir, mmis, mmis2, mmis3, mmir2;
+	MesquiteMenuItemSpec mmiVE;
 	boolean flaggerInitialized = false;
+	MesquiteBoolean useExtremelyDark = new MesquiteBoolean(true);
 	/*.................................................................................................................*/
 	public boolean setActiveColors(boolean active){
 		boolean wasActive = isActive();
@@ -116,6 +124,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 				flaggers.addElement(flaggerTask);
 			}
 			mmir = addMenuItem("-", null);
+			mmiVE= addCheckMenuItem(null, "Use Extremely Dark", makeCommand("toggleExtremelyDark", this), useExtremelyDark);
 			mmis = addMenuItem("Reset Trimmers to be Highlighted...", makeCommand("resetFlaggers", this));
 			mmis2 = addMenuItem("Add Trimmer to be Highlighted...", makeCommand("addFlagger", this));
 			mmis3 = addMenuItem("Delete Sites Highlighted Dark", makeCommand("deleteDark", this));
@@ -240,15 +249,28 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			DNAData	dData = (DNAData)data;
 			long state = dData.getState(ic, it);
 			if (ic < flags.getSize() && flags.isBitOn(ic)) {
+				if (useExtremelyDark.getValue()) {
 				if (A == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStateVeryDark(0);
+					return DNAData.getDNAColorOfStateExtremelyDark(0);
 				else if (C == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStateVeryDark(1);
+					return DNAData.getDNAColorOfStateExtremelyDark(1);
 				else if (G == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStateVeryDark(2);
+					return DNAData.getDNAColorOfStateExtremelyDark(2);
 				else if (T == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStateVeryDark(3);
-				return Color.black;
+					return DNAData.getDNAColorOfStateExtremelyDark(3);
+				return DNAData.getDNAColorOfStateExtremelyDark(-1);
+				}
+				else {
+					if (A == (state & CategoricalState.statesBitsMask))
+						return DNAData.getDNAColorOfStateVeryDark(0);
+					else if (C == (state & CategoricalState.statesBitsMask))
+						return DNAData.getDNAColorOfStateVeryDark(1);
+					else if (G == (state & CategoricalState.statesBitsMask))
+						return DNAData.getDNAColorOfStateVeryDark(2);
+					else if (T == (state & CategoricalState.statesBitsMask))
+						return DNAData.getDNAColorOfStateVeryDark(3);
+					return DNAData.getDNAColorOfStateVeryDark(-1);
+				}
 			}
 			else {
 				if (A == (state & CategoricalState.statesBitsMask))
