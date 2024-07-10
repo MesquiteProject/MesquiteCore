@@ -35,6 +35,7 @@ public class DNAData extends MolecularData {
 	public static Color dnaRed, dnaGreen, dnaYellow, dnaBlue;
 	public static Color dnaRedPale, dnaGreenPale, dnaYellowPale, dnaBluePale, dnaInapplicable, dnaUnassigned;
 	public static Color dnaRedVeryDark, dnaGreenVeryDark, dnaYellowVeryDark, dnaBlueVeryDark, dnaInapplicableVeryDark, dnaUnassignedVeryDark;
+	public static Color dnaRedExtremelyDark, dnaGreenExtremelyDark, dnaYellowExtremelyDark, dnaBlueExtremelyDark, dnaInapplicableExtremelyDark, dnaUnassignedExtremelyDark;
 
 	CodonPositionsSet codonPositionsSet = null;
 
@@ -55,12 +56,19 @@ public class DNAData extends MolecularData {
 		dnaInapplicable = new Color((float)0.93, (float)0.90, (float)0.87);  //ColorDistribution.inapplicable
 		dnaUnassigned = new Color((float)0.92, (float)0.94, (float)0.98); //ColorDistribution.unassigned;
 
-		dnaRedVeryDark = new Color((float) 0.35, (float) 0.13, (float) 0.13);
-		dnaGreenVeryDark = new Color((float) 0.13, (float) 0.35, (float) 0.13);
-		dnaYellowVeryDark = new Color((float) 0.23, (float) 0.23, (float) 0.13);
-		dnaBlueVeryDark = new Color((float) 0.13, (float) 0.13, (float) 0.35);
-		dnaInapplicableVeryDark = new Color((float)0.1, (float)0.1, (float)0.1);  //ColorDistribution.inapplicable
-		dnaUnassignedVeryDark = new Color((float)0.1, (float)0.1, (float)0.1); //ColorDistribution.unassigned;
+		dnaRedVeryDark = new Color((float) 0.45, (float) 0.19, (float) 0.19);
+		dnaGreenVeryDark = new Color((float) 0.19, (float) 0.45, (float) 0.19);
+		dnaYellowVeryDark = new Color((float) 0.33, (float) 0.33, (float) 0.19);
+		dnaBlueVeryDark = new Color((float) 0.19, (float) 0.19, (float) 0.45);
+		dnaInapplicableVeryDark = new Color((float)0.3, (float)0.3, (float)0.3);  //ColorDistribution.inapplicable
+		dnaUnassignedVeryDark = new Color((float)0.3, (float)0.3, (float)0.3); //ColorDistribution.unassigned;
+
+		dnaRedExtremelyDark= new Color((float) 0.35, (float) 0.13, (float) 0.13);
+		dnaGreenExtremelyDark= new Color((float) 0.13, (float) 0.35, (float) 0.13);
+		dnaYellowExtremelyDark = new Color((float) 0.23, (float) 0.23, (float) 0.13);
+		dnaBlueExtremelyDark= new Color((float) 0.13, (float) 0.13, (float) 0.35);
+		dnaInapplicableExtremelyDark = new Color((float)0.1, (float)0.1, (float)0.1);  //ColorDistribution.inapplicable
+		dnaUnassignedExtremelyDark = new Color((float)0.1, (float)0.1, (float)0.1); //ColorDistribution.unassigned;
 
 		A = "A";
 		C = "C";
@@ -277,6 +285,18 @@ public class DNAData extends MolecularData {
 			return dnaBlueVeryDark;
 		else
 			return dnaUnassignedVeryDark;
+	}
+	public static Color getDNAColorOfStateExtremelyDark(int istate) {
+		if (istate == 0)
+			return dnaRedExtremelyDark;
+		else if (istate == 1)
+			return dnaGreenExtremelyDark;
+		else if (istate == 2)
+			return dnaYellowExtremelyDark;
+		else if (istate == 3)
+			return dnaBlueExtremelyDark;
+		else
+			return dnaUnassignedExtremelyDark;
 	}
 	/** returns the color of character ic; e.g., to indicate codon positions */
 	public Color getDefaultCharacterColor(int ic) {
