@@ -127,6 +127,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	void removeAllProcessors() {
 		if (processorList != null)
 			processorList.removeAll();
+		if (fileProcessors == null)
+			return;
 		for (int i= 0; i< fileProcessors.size(); i++){
 			FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
 			processProject.getCoordinatorModule().fireEmployee(fProcessor);
