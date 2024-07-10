@@ -47,7 +47,7 @@ public class FlagGappySites extends SiteFlagger implements ActionListener {
 	 */
 	/*Gappiness assessment parameters =================================*/
 	static boolean filterSiteGappinessDEFAULT = true;
-	static boolean filterBlockGappinessDEFAULT = false;
+	static boolean filterBlockGappinessDEFAULT = true;
 	static double siteGappinessThresholdDEFAULT = 0.5; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
 	static int gappyBlockSizeDEFAULT = 5; // If in a block of at least this many sites, the first and last site is bad,
 	static double blockGappinessThresholdDEFAULT = 0.5; // and the proportion of bad sites is this high or higher,
@@ -350,7 +350,7 @@ public class FlagGappySites extends SiteFlagger implements ActionListener {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Gappy Sites or Regions";
+		return "Simple Gappiness Filter";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

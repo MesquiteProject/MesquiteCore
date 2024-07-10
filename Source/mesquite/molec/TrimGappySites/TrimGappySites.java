@@ -39,7 +39,7 @@ public class TrimGappySites extends TrimSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Trim Gappy Sites or Regions";
+		return "Trim by Simple Gappiness Filter";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
