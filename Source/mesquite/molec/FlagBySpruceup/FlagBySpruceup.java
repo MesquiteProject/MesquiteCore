@@ -35,6 +35,7 @@ import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
@@ -106,7 +107,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for Spruceup",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		dialog.addLargeOrSmallTextLabel("This is not a fill Spruceup implementation. It uses only the options \"criterion:mean\" and \"distance_method:uncorrected\".");
+		dialog.addLargeOrSmallTextLabel("This is not a full Spruceup implementation. It uses only the options \"criterion:mean\" and \"distance_method:uncorrected\".");
 
 		cutoffField = dialog.addDoubleField("Cutoff (e.g. " + cutoffDEFAULT+ ")", cutoff, 4);
 		wS = dialog.addIntegerField("Window Size (e.g. " + windowSizeDEFAULT + ")", windowSize, 4);
@@ -196,7 +197,8 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			else 
 				flags.reset(data);
 
-
+			MesquiteTimer timer = new MesquiteTimer();
+			timer.start();
 			int numTaxa = data.getNumTaxa();
 			int numChars = data.getNumChars();
 			int windowIncrement = windowSize-overlap;
@@ -205,7 +207,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 				numWindows++;
 			CategoricalState s1 = new CategoricalState();
 			CategoricalState s2 = new CategoricalState();
-
+			
 			double[][] lonelinessInWindow = new double[numWindows][numTaxa];
 			for (int window=0; window<numWindows; window++) {
 				int windowStart = window*windowIncrement;
@@ -240,6 +242,8 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 					if (numTaxaCompared != 0)
 						lonelinessInWindow[window][it1] = lonelinessInWindow[window][it1]/numTaxaCompared; //average distance to all other taxa
 				}
+if (numWindows < 100 || window%10==0)
+	Debugg.println("window " + window + " of " + numWindows);				
 			}
 
 			//now calculate average loneliness over all windows
@@ -272,6 +276,11 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 						flags.addCellFlag(it, windowStart, windowEnd);
 					}
 				}
+			}
+			timer.end();
+			long time = timer.getAccumulatedTime();
+			if (time>5000){
+				logln("Spruceup calculation took " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
 			}
 		}
 		return flags;
