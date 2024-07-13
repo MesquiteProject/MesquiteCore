@@ -41,8 +41,8 @@ import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.molec.lib.MatrixFlags;
-import mesquite.molec.lib.MatrixFlagger;
+import mesquite.lib.characters.MatrixFlags;
+import mesquite.lib.duties.MatrixFlagger;
 
 /* ======================================================================== */
 public class FlagByPhyIN extends MatrixFlagger implements ActionListener {

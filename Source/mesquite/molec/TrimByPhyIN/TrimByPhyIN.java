@@ -20,7 +20,7 @@ import mesquite.categ.lib.RequiresAnyDNAData;
 
 
 import mesquite.lib.CompatibilityTest;
-import mesquite.molec.lib.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlagger;
 import mesquite.molec.lib.TrimSitesByFlagger;
 
 /* ======================================================================== */

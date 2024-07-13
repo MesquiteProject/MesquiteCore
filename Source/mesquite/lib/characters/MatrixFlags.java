@@ -1,9 +1,8 @@
-package mesquite.molec.lib;
+package mesquite.lib.characters;
 
 import java.util.Vector;
 
 import mesquite.lib.Bits;
-import mesquite.lib.characters.CharacterData;
 
 public class MatrixFlags {
 	Bits characterFlags;

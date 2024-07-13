@@ -16,12 +16,12 @@ package mesquite.molec.HighlightTrimming;
 import java.util.*;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
-import mesquite.molec.lib.MatrixFlags;
-import mesquite.molec.lib.MatrixFlagger;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
@@ -93,24 +93,38 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			}
 		}
 		else if (checker.compare(this.getClass(), "Delete sites flagged and darkened", null, commandName, "deleteDark")) {
-			if (data != null && flags != null && AlertDialog.query(containerOfModule(),  "Delete?",  "Are you sure you want to delete the darkened (highlighted) characters?"))
-				data.deletePartsFlagged(flags.getCharacterFlags(), true);
+			if (data != null && flags != null && AlertDialog.query(containerOfModule(),  "Delete?",  "Are you sure you want to delete the darkened (highlighted) parts?")){
+				data.incrementNotifySuppress();
+				Vector v = pauseAllPausables();
+				String report = data.deleteByMatrixFlags(flags);
+				logln(report);
+				unpauseAllPausables(v);
+				data.decrementNotifySuppress();
+
+				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+
+			}
 		}
 		else if (checker.compare(this.getClass(), "Show darkened areas as extremely dark", null, commandName, "toggleExtremelyDark")) {
 			useExtremelyDark.toggleValue(parser.getFirstToken(arguments));
 			parametersChanged();
 		}
 
+		else if (checker.compare(this.getClass(), "Hides highlights", null, commandName, "toggleHide")) {
+			hide.toggleValue(parser.getFirstToken(arguments));
+			parametersChanged();
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
-	MesquiteMenuItemSpec mmir, mmis, mmis2, mmis3, mmir2;
+	MesquiteMenuItemSpec mmir, mmis, mmis2, mmis3, mmir2, mmJ;
 	MesquiteMenuItemSpec mmiVE;
 	boolean flaggerInitialized = false;
 	MesquiteBoolean useExtremelyDark = new MesquiteBoolean(false);
+	MesquiteBoolean hide = new MesquiteBoolean(false);
 	/*.................................................................................................................*/
 	public boolean setActiveColors(boolean active){
 		boolean wasActive = isActive();
@@ -128,9 +142,11 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			}
 			mmir = addMenuItem("-", null);
 			mmiVE= addCheckMenuItem(null, "Use Extremely Dark", makeCommand("toggleExtremelyDark", this), useExtremelyDark);
+			mmJ= addCheckMenuItem(null, "Hide/Show Highlights", makeCommand("toggleHide", this), hide);
+			mmJ.setShortcut(KeyEvent.VK_J);
 			mmis = addMenuItem("Reset Trimmers to be Highlighted...", makeCommand("resetFlaggers", this));
 			mmis2 = addMenuItem("Add Trimmer to be Highlighted...", makeCommand("addFlagger", this));
-			mmis3 = addMenuItem("Delete Sites Highlighted Dark", makeCommand("deleteDark", this));
+			mmis3 = addMenuItem("Delete Parts Highlighted Dark", makeCommand("deleteDark", this));
 			mmir2 = addMenuItem("-", null);
 
 			calculateNums();
@@ -142,6 +158,8 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			deleteMenuItem(mmis);
 			deleteMenuItem(mmis2);
 			deleteMenuItem(mmis3);
+			deleteMenuItem(mmiVE);
+			deleteMenuItem(mmJ);
 			if (!active) {
 				cleanFlaggers();
 				flaggerInitialized = false;
@@ -159,6 +177,8 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		deleteMenuItem(mmis);
 		deleteMenuItem(mmis2);
 		deleteMenuItem(mmis3);
+		deleteMenuItem(mmiVE);
+		deleteMenuItem(mmJ);
 		super.endJob();
 	}
 	public String getColorsExplanation(){
@@ -201,7 +221,6 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			else
 				flags.orFlags(tempFlags);
 		}
-		Debugg.println("flags " + flags);
 
 		table.repaintAll();
 	}
@@ -255,7 +274,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 				return Color.white;
 			DNAData	dData = (DNAData)data;
 			long state = dData.getState(ic, it);
-			if (flags != null && flags.isCellFlaggedAnyWay(ic, it)) {
+			if (!hide.getValue() && flags != null && flags.isCellFlaggedAnyWay(ic, it)) {
 				if (useExtremelyDark.getValue()) {
 					if (A == (state & CategoricalState.statesBitsMask))
 						return DNAData.getDNAColorOfStateExtremelyDark(0);
@@ -323,6 +342,10 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		}
 	}
 
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice() {
+		return true;
+	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {
 		return true;

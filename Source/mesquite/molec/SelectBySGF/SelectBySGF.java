@@ -14,8 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.SelectBySGF;
 /*~~  */
 
+import mesquite.lib.duties.MatrixFlagger;
 import mesquite.molec.lib.SelectSitesByFlagger;
-import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
 public class SelectBySGF extends SelectSitesByFlagger {

@@ -19,6 +19,8 @@ import java.util.Vector;
 import mesquite.lib.*;
 
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MatrixFlags;
+import mesquite.lib.duties.MatrixFlagger;
 
 
 public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
@@ -75,45 +77,7 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 			ic--;
 		}
 		 */
-		boolean anyDeletion = false;
-		String report = "Trimmed:";
-		Bits bits = flags.getCharacterFlags();
-		if (bits.anyBitsOn()){
-			data.deletePartsFlagged(bits, false);
-			data.deleteInLinkedFlagged(bits, false);
-			anyDeletion = true;
-			int numCD = bits.numBitsOn();
-			report += " " + numCD + " character";
-			if (numCD>1)
-				report += "s";
-		}
-		bits = flags.getTaxonFlags();
-		if (bits.anyBitsOn()){
-			data.getTaxa().deleteTaxaFlagged(bits, false);
-			int numT = bits.numBitsOn();
-			if (numT>1)
-				report += " " + numT + " taxa";
-			else
-				report += " " + numT + " taxon";
-			anyDeletion = true;
-		}
-		boolean[][] toMakeGaps = flags.getCellFlags();
-		int numC =0;
-		for (int ic = 0; ic< data.getNumChars() && ic<toMakeGaps.length; ic++)
-			for (int it = 0; it<data.getNumTaxa() && it<toMakeGaps[ic].length; it++)
-				if (toMakeGaps[ic][it]){
-					data.setToInapplicable(ic, it);
-					numC++;
-				}
-		if (numC>0){
-			report += " " + numC + " cell";
-			if (numC>1)
-				report += "s";
-			anyDeletion = true;
-		}
-
-		if (!anyDeletion)
-			report = "Nothing trimmed";
+		String report = data.deleteByMatrixFlags(flags);
 		logln(report);
 
 		if (getProject() != null)

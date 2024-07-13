@@ -991,6 +991,51 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		uncheckThread();
 		return true;
 	}	
+	
+	/*-----------------------------------------------------------*/
+	/* Deletes characters, taxa, or cell state (to inapplicable). Used initially in sequence alignment trimming */
+	public String deleteByMatrixFlags(MatrixFlags flags){
+		boolean anyDeletion = false;
+		String report = "Trimmed:";
+		Bits bits = flags.getCharacterFlags();
+		if (bits.anyBitsOn()){
+			deletePartsFlagged(bits, false);
+			deleteInLinkedFlagged(bits, false);
+			anyDeletion = true;
+			int numCD = bits.numBitsOn();
+			report += " " + numCD + " character";
+			if (numCD>1)
+				report += "s";
+		}
+		bits = flags.getTaxonFlags();
+		if (bits.anyBitsOn()){
+			getTaxa().deleteTaxaFlagged(bits, false);
+			int numT = bits.numBitsOn();
+			if (numT>1)
+				report += " " + numT + " taxa";
+			else
+				report += " " + numT + " taxon";
+			anyDeletion = true;
+		}
+		boolean[][] toMakeGaps = flags.getCellFlags();
+		int numC =0;
+		for (int ic = 0; ic< getNumChars() && ic<toMakeGaps.length; ic++)
+			for (int it = 0; it<getNumTaxa() && it<toMakeGaps[ic].length; it++)
+				if (toMakeGaps[ic][it]){
+					setToInapplicable(ic, it);
+					numC++;
+				}
+		if (numC>0){
+			report += " " + numC + " cell";
+			if (numC>1)
+				report += "s";
+			anyDeletion = true;
+		}
+
+		if (!anyDeletion)
+			report = "Nothing trimmed";
+		return report;
+	}
 	/*-----------------------------------------------------------*/
 	/** Deletes parts By Blocks.
 	 * blocks[i][0] is start of block; blocks[i][1] is end of block

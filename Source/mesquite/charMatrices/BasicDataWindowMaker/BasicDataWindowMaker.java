@@ -37,8 +37,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import mesquite.lib.table.*;
-import mesquite.molec.lib.MatrixFlags;
-import mesquite.molec.lib.MatrixFlagger;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.ContinuousData;
