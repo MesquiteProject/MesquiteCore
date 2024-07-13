@@ -384,6 +384,64 @@ class SpruceupThread extends MesquiteThread {
 		int numChars = data.getNumChars();
 		CategoricalState s1 = new CategoricalState();
 		CategoricalState s2 = new CategoricalState();
+		int[][] numDiffs = new int[numTaxa][numTaxa];
+		int[] numOthersCompared = new int[numTaxa];
+		for (int window=firstWindow; window<=lastWindow; window++) {
+			int windowStart = window*windowIncrement;
+			int windowEnd = windowStart+windowSize;
+			if (windowEnd>= numChars)
+				windowEnd = numChars-1;
+			
+			for (int j=0; j<numTaxa; j++) {
+				numOthersCompared[j] = 0;
+				for (int k=0; k<numTaxa; k++)
+					numDiffs[j][k] = 0;
+			}
+			for (int j = 0; j<numTaxa; j++) {
+				for (int k=j+1; k<numTaxa; k++) { 
+					int numNucleotideComparisons = 0;
+					for (int ic=windowStart; ic<windowEnd; ic++) { //for all characters in the window
+						//get state of both chars
+						if (ic<numChars) {
+							s1 = (CategoricalState)data.getCharacterState(s1, ic, j);
+							s2 = (CategoricalState)data.getCharacterState(s2, ic, k);
+							if (!s1.isInapplicable() && !s2.isInapplicable()) {
+								numNucleotideComparisons++;
+								if (!s1.statesShared(s2)) {
+									numDiffs[j][k]++;
+									numDiffs[k][j]++;
+								}
+							}
+						}
+					}
+					if (numNucleotideComparisons>0) {
+						numOthersCompared[j]++;
+						numOthersCompared[k]++;
+					}
+
+				}
+			}
+			
+			for (int j = 0; j<numTaxa; j++) {
+				lonelinessInWindow[window][j] = 0;
+				for (int k=0; k<numTaxa; k++) 
+					lonelinessInWindow[window][j] += numDiffs[j][k];
+				if (numOthersCompared[j] != 0)
+					lonelinessInWindow[window][j] = lonelinessInWindow[window][j]/numOthersCompared[j]; //average distance to all other taxa
+				else
+					lonelinessInWindow[window][j] = -1;
+			}
+			
+			ownerModule.numWindowsDone++;
+		}
+		done = true;
+	}
+	/*
+public void run() {
+		int numTaxa = data.getTaxa().getNumTaxa();
+		int numChars = data.getNumChars();
+		CategoricalState s1 = new CategoricalState();
+		CategoricalState s2 = new CategoricalState();
 		for (int window=firstWindow; window<=lastWindow; window++) {
 			int windowStart = window*windowIncrement;
 			int windowEnd = windowStart+windowSize;
@@ -391,8 +449,8 @@ class SpruceupThread extends MesquiteThread {
 				windowEnd = numChars-1;
 			for (int it1 = 0; it1<numTaxa; it1++) {
 				lonelinessInWindow[window][it1] = 0;
-				int numTaxaCompared = 0;
-				for (int it2=0; it2<numTaxa; it2++) { //for all taxon pairs. Doing both triangles because would have to cycle twice to average over taxa anyway
+				int numOthersCompared = 0;
+				for (int it2=0; it2<numTaxa; it2++) { //for all taxon pairs. Can make more efficient
 					if (it1!=it2) {
 						int numDiffs = 0;
 						int numNucleotideComparisons = 0;
@@ -410,12 +468,12 @@ class SpruceupThread extends MesquiteThread {
 							}
 						}
 						if (numNucleotideComparisons>0)
-							numTaxaCompared++;
+							numOthersCompared++;
 						lonelinessInWindow[window][it1] += numDiffs;
 					}
 				}
-				if (numTaxaCompared != 0)
-					lonelinessInWindow[window][it1] = lonelinessInWindow[window][it1]/numTaxaCompared; //average distance to all other taxa
+				if (numOthersCompared != 0)
+					lonelinessInWindow[window][it1] = lonelinessInWindow[window][it1]/numOthersCompared; //average distance to all other taxa
 				else
 					lonelinessInWindow[window][it1] = -1;
 			}
@@ -423,5 +481,6 @@ class SpruceupThread extends MesquiteThread {
 		}
 		done = true;
 	}
+	 * */
 }
 

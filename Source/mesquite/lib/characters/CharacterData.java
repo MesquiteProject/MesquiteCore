@@ -997,6 +997,21 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public String deleteByMatrixFlags(MatrixFlags flags){
 		boolean anyDeletion = false;
 		String report = "Trimmed:";
+		//do cells before the character/taxon deletions, which would shift the indices
+		boolean[][] toMakeGaps = flags.getCellFlags();
+		int numC =0;
+		for (int ic = 0; ic< getNumChars() && ic<toMakeGaps.length; ic++)
+			for (int it = 0; it<getNumTaxa() && it<toMakeGaps[ic].length; it++)
+				if (toMakeGaps[ic][it]){
+					setToInapplicable(ic, it);
+					numC++;
+				}
+		if (numC>0){
+			report += " " + numC + " cell";
+			if (numC>1)
+				report += "s";
+			anyDeletion = true;
+		}
 		Bits bits = flags.getCharacterFlags();
 		if (bits.anyBitsOn()){
 			deletePartsFlagged(bits, false);
@@ -1015,20 +1030,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				report += " " + numT + " taxa";
 			else
 				report += " " + numT + " taxon";
-			anyDeletion = true;
-		}
-		boolean[][] toMakeGaps = flags.getCellFlags();
-		int numC =0;
-		for (int ic = 0; ic< getNumChars() && ic<toMakeGaps.length; ic++)
-			for (int it = 0; it<getNumTaxa() && it<toMakeGaps[ic].length; it++)
-				if (toMakeGaps[ic][it]){
-					setToInapplicable(ic, it);
-					numC++;
-				}
-		if (numC>0){
-			report += " " + numC + " cell";
-			if (numC>1)
-				report += "s";
 			anyDeletion = true;
 		}
 
