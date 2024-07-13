@@ -17,17 +17,16 @@ package mesquite.molec.FlagBySpruceup;
 
 
 import java.awt.Button;
+
 import java.awt.Checkbox;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
-import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Debugg;
-import mesquite.lib.DoubleArray;
 import mesquite.lib.DoubleField;
 import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.IntegerField;
@@ -47,21 +46,21 @@ import mesquite.lib.duties.MatrixFlagger;
 public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 
 	/** ToDo:
-	 * Ignore taxa with too little data, or at least warn?
-	 * make dialog more informative, and add citation
-	 * scale by maxNucleotides option
-	 * scale distances by num comparisons in window
+	 * -- scale distances by num comparisons in window
+	 * -- multithread
 	 */
 
 	/* parameters =================================*/
 	static double cutoffDEFAULT = 5.0; 
 	static int windowSizeDEFAULT = 50;
 	static int overlapDEFAULT = 25;
-	static boolean correctForSequenceLengthDEFAULT = false;
+	static int numThreadsDEFAULT = 2;
+	static boolean booleanOptionDEFAULT = false;
 	int windowSize =windowSizeDEFAULT;
 	int overlap = overlapDEFAULT;
+	int numThreads = numThreadsDEFAULT;
 	double cutoff = cutoffDEFAULT;
-	MesquiteBoolean correctForSequenceLength = new MesquiteBoolean(correctForSequenceLengthDEFAULT);
+	//	MesquiteBoolean booleanOption = new MesquiteBoolean(booleanOptionDEFAULT);
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -79,7 +78,8 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		StringUtil.appendXMLTag(buffer, 2, "cutoff", cutoff);  
 		StringUtil.appendXMLTag(buffer, 2, "windowSize", windowSize);  
 		StringUtil.appendXMLTag(buffer, 2, "overlap", overlap);  
-		StringUtil.appendXMLTag(buffer, 2, "correctForSequenceLength", correctForSequenceLength);  
+		StringUtil.appendXMLTag(buffer, 2, "numThreads", numThreads);  
+		//		StringUtil.appendXMLTag(buffer, 2, "booleanOption", booleanOption);  
 		return buffer.toString();
 	}
 	public void processSingleXMLPreference (String tag, String flavor, String content){
@@ -94,8 +94,10 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			windowSize = MesquiteInteger.fromString(content);
 		if ("overlap".equalsIgnoreCase(tag))
 			overlap = MesquiteInteger.fromString(content);
-		if ("correctForSequenceLength".equalsIgnoreCase(tag))
-			correctForSequenceLength.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("numThreads".equalsIgnoreCase(tag))
+			numThreads = MesquiteInteger.fromString(content);
+		//		if ("booleanOption".equalsIgnoreCase(tag))
+		//			booleanOption.setValue(MesquiteBoolean.fromTrueFalseString(content));
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
@@ -103,7 +105,8 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		temp.addLine("cutoff " + cutoff);
 		temp.addLine("windowSize " + windowSize);
 		temp.addLine("overlap " + overlap);
-		temp.addLine("correctForSequenceLength " + correctForSequenceLength.toOffOnString());
+		temp.addLine("numThreads " + numThreads);
+		//		temp.addLine("booleanOption " + booleanOption.toOffOnString());
 		return temp;
 	}
 
@@ -111,7 +114,8 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 	DoubleField cutoffField;
 	IntegerField wS;
 	IntegerField ov;
-	Checkbox cFSL;
+	IntegerField nT;
+	//Checkbox cFSL;
 
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -120,20 +124,21 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		cutoffField = dialog.addDoubleField("Cutoff", cutoff, 4);
 		wS = dialog.addIntegerField("Window Size", windowSize, 4);
 		ov = dialog.addIntegerField("Overlap", overlap, 4);
+		nT = dialog.addIntegerField("Number of processing cores to use", numThreads, 4);
 
 		dialog.addHorizontalLine(1);
-		dialog.addLabel("Mesquite modifications");
-		cFSL = dialog.addCheckBox("Reduce cutoff for shorter sequences", correctForSequenceLength.getValue());
-		
-		dialog.addHorizontalLine(1);
+		//		dialog.addLabel("Mesquite modifications");
+		//		cFSL = dialog.addCheckBox("XXXXXX", booleanOption.getValue());
+
+		//		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
-		
+
 		Button useDefaultsButton = null;
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
 		dialog.addHorizontalLine(1);
-		dialog.addLargeOrSmallTextLabel("If you use this, please cite as the implementation of Spruceup (Boroweic 2018) in Mesquite. See (?) help button for details.");
-		String s = "This is a limited implementation. In a citation, indicate that the settings are "
+		dialog.addLargeOrSmallTextLabel("If you use this, please cite it as the implementation of Spruceup (Boroweic 2018) in Mesquite. See (?) help button for details.");
+		String s = "This is a limited implementation of Spruceup. In a citation, indicate that the settings are "
 				+ "\"criterion:mean\" and \"distance_method:uncorrected\" [plus the settings you have chosen for cutoff, window size, overlap, etc.]."
 				+ "\nFor a more complete implementation, use the original Spruceup."
 				+ "\n\nReference: Boroweic ML (2018) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments."
@@ -147,8 +152,9 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			cutoff = cutoffField.getValue();
 			windowSize = wS.getValue();
 			overlap = ov.getValue();
-			correctForSequenceLength.setValue(cFSL.getState());
-		
+			numThreads = nT.getValue();
+			//			booleanOption.setValue(cFSL.getState());
+
 			storePreferences();
 		}
 		dialog.dispose();
@@ -161,7 +167,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			cutoffField.setValue(cutoffDEFAULT);
 			wS.setValue(windowSizeDEFAULT);
 			ov.setValue(overlapDEFAULT);
-			cFSL.setState(correctForSequenceLengthDEFAULT);
+			//			cFSL.setState(booleanOptionDEFAULT);
 
 		} 
 	}
@@ -177,7 +183,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 				parametersChanged();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets window size.", "", commandName, "windowSize")) {
+		else if (checker.compare(this.getClass(), "Sets window size.", "[integer]", commandName, "windowSize")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				windowSize = s;
@@ -186,12 +192,19 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			}
 
 		}
-		else if (checker.compare(this.getClass(), "Sets overlap.", "", commandName, "overlap")) {
+		else if (checker.compare(this.getClass(), "Sets overlap.", "[integer]", commandName, "overlap")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				overlap = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
+			}
+
+		}
+		else if (checker.compare(this.getClass(), "Sets number of processing cores to tuse.", "[integer]", commandName, "numThreads")) {
+			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(s)){
+				numThreads = s;
 			}
 
 		}
@@ -204,20 +217,23 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to downweight outlier distinction in taxa with less data.", "[on or off]", commandName, "correctForSequenceLength")) {
-			boolean current = correctForSequenceLength.getValue();
-			correctForSequenceLength.toggleValue(parser.getFirstToken(arguments));
-			if (current!=correctForSequenceLength.getValue()) {
+		/*	else if (checker.compare(this.getClass(), "Sets xxxxx.", "[on or off]", commandName, "booleanOption")) {
+			boolean current = booleanOption.getValue();
+			booleanOption.toggleValue(parser.getFirstToken(arguments));
+			if (current!=booleanOption.getValue()) {
 				parametersChanged();
 			}
 		}
+		 */
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 
 	/*======================================================*/
+	SpruceupThread[] threads;
 	/*======================================================*/
+	int numWindowsDone =0;
 	/*======================================================*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
@@ -228,83 +244,61 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 
 			MesquiteTimer timer = new MesquiteTimer();
 			timer.start();
+
+
 			int numTaxa = data.getNumTaxa();
 			int numChars = data.getNumChars();
 			int windowIncrement = windowSize-overlap;
 			int numWindows = (int)(numChars/windowIncrement);
 			if (numChars % windowIncrement !=0)
 				numWindows++;
-			CategoricalState s1 = new CategoricalState();
-			CategoricalState s2 = new CategoricalState();
-
-			int[] numNucleotides = new int[numTaxa];
-			for (int it=0; it<numTaxa; it++){
-				numNucleotides[it] = data.getNumberApplicableInTaxon(it, false);
-			}
+			threads = new SpruceupThread[numThreads];
+			/*-----------------*/
 			double[][] lonelinessInWindow = new double[numWindows][numTaxa];
-			for (int window=0; window<numWindows; window++) {
-				int windowStart = window*windowIncrement;
-				int windowEnd = windowStart+windowSize;
-				if (windowEnd>= numChars)
-					windowEnd = numChars-1;
-				for (int it1 = 0; it1<numTaxa; it1++) {
-					lonelinessInWindow[window][it1] = 0;
-					int numTaxaCompared = 0;
-					for (int it2=0; it2<numTaxa; it2++) { //for all taxon pairs. Doing both triangles because would have to cycle twice to average over taxa anyway
-						if (it1!=it2) {
-							int numDiffs = 0;
-							int numNucleotideComparisons = 0;
-							for (int ic=windowStart; ic<windowEnd; ic++) { //for all characters in the window
-								//get state of both chars
-								if (ic<numChars) {
-									s1 = (CategoricalState)data.getCharacterState(s1, ic, it1);
-									s2 = (CategoricalState)data.getCharacterState(s2, ic, it2);
-									if (!s1.isInapplicable() && !s2.isInapplicable()) {
-										numNucleotideComparisons++;
-										if (!s1.statesShared(s2)) {
-											numDiffs++;
-										}
-									}
-								}
-							}
-							if (numNucleotideComparisons>0)
-								numTaxaCompared++;
-							lonelinessInWindow[window][it1] += numDiffs;
-						}
-					}
-					if (numTaxaCompared != 0)
-						lonelinessInWindow[window][it1] = lonelinessInWindow[window][it1]/numTaxaCompared; //average distance to all other taxa
-				}
-				if (numWindows > 100 || window%10==0)
-					CommandRecord.tick("Spruceup window " + window + " of " + numWindows);				
+			numWindowsDone =0;
+
+			//int firstWindow = 0; //if done all at once
+			//int lastWindow = numWindows-1;//if done all at once
+			int blockSize = numWindows/numThreads;
+			for (int i = 0; i<numThreads; i++) {
+				int firstWindow = i*blockSize;
+				int lastWindow = firstWindow+blockSize-1;
+				threads[i] = new SpruceupThread(this, data, firstWindow, lastWindow, windowSize, windowIncrement, flags, lonelinessInWindow);
+				threads[i] .start();  
 			}
 
-			int maxNucleotides = 0;
-			for (int it=0; it<numTaxa; it++){
-				if (numNucleotides[it]>maxNucleotides)
-					maxNucleotides = numNucleotides[it];
+			/*-----------------*/
+			boolean allDone = false;
+			while (!allDone) {
+				try {
+					Thread.sleep(20);
+					allDone = true;
+					for (int i= 0; i<numThreads;i++) {
+						if (!threads[i].done)
+							allDone = false;
+					}
+					if (numWindowsDone%10==0)
+						CommandRecord.tick("Spruceup window " + numWindowsDone + " of " + lonelinessInWindow.length);				
+				}
+				catch(Exception e) {
+				}
+
 			}
 			//now calculate average loneliness over all windows
 			double[] lonelinessOverall = new double[numTaxa];
 			for (int it = 0; it<numTaxa; it++) {
 				lonelinessOverall[it] = 0;
-				for (int window=0; window<numWindows; window++)
-					lonelinessOverall[it] += lonelinessInWindow[window][it];
-				lonelinessOverall[it] = lonelinessOverall[it]/numWindows;
-			}
-			
-			/*
-				int highlight = 16;
-				Debugg.println("lonelinessOverall " + DoubleArray.toString( lonelinessOverall));
-				Debugg.println("l&&&&&&&&&&&&&&& ");
-				Debugg.println("lonelinessOverall[" +highlight + "] " +  lonelinessOverall[highlight]);
-				Debugg.println("lonelinessInWindow " );
+				int numWindowsCompared = 0;
 				for (int window=0; window<numWindows; window++) {
-					int windowStart = window*windowIncrement;
-					Debugg.println("  " + windowStart + " --- " + lonelinessInWindow[window][highlight]);
+					if (lonelinessInWindow[window][it] >= 0) {
+						lonelinessOverall[it] += lonelinessInWindow[window][it];
+						numWindowsCompared ++;
+					}
 				}
-			*/
-			
+				if (numWindowsCompared>0)
+					lonelinessOverall[it] = lonelinessOverall[it]/numWindowsCompared;
+			}
+
 			//Now look for outliers
 			for (int window=0; window<numWindows; window++) {
 				int windowStart = window*windowIncrement;
@@ -312,17 +306,14 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 				if (windowEnd>= numChars)
 					windowEnd = numChars-1;
 				for (int it = 0; it<numTaxa; it++) {
-					double correction = 1.0;
-					if (correctForSequenceLength.getValue())
-						correction = maxNucleotides/numNucleotides[it];
-					if (lonelinessInWindow[window][it]>cutoff*lonelinessOverall[it]*correction) {
+					if (lonelinessInWindow[window][it]>cutoff*lonelinessOverall[it]) {
 						flags.addCellFlag(it, windowStart, windowEnd);
 					}
 				}
 			}
 			timer.end();
 			long time = timer.getAccumulatedTime();
-			if (time>5000){
+			if (time>1000){
 				logln("Spruceup calculation took " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
 			}
 		}
@@ -364,4 +355,73 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 
 }
 
+
+
+
+class SpruceupThread extends MesquiteThread {
+	FlagBySpruceup ownerModule;
+	CharacterData data;
+	int firstWindow;
+	int lastWindow;
+	int windowIncrement;
+	int windowSize;
+	MatrixFlags flags;
+	double[][] lonelinessInWindow;
+	boolean done = false;
+	public SpruceupThread(FlagBySpruceup ownerModule, CharacterData data, int startWindow, int endWindow, int windowSize, int windowIncrement, MatrixFlags flags, double[][] lonelinessInWindow){
+		this.data = data;
+		this.ownerModule = ownerModule;
+		this.firstWindow = startWindow;
+		this.lastWindow = endWindow;
+		this.windowSize = windowSize;
+		this.windowIncrement = windowIncrement;
+		this.flags = flags;
+		this.lonelinessInWindow = lonelinessInWindow;
+	}
+
+	public void run() {
+		int numTaxa = data.getTaxa().getNumTaxa();
+		int numChars = data.getNumChars();
+		CategoricalState s1 = new CategoricalState();
+		CategoricalState s2 = new CategoricalState();
+		for (int window=firstWindow; window<=lastWindow; window++) {
+			int windowStart = window*windowIncrement;
+			int windowEnd = windowStart+windowSize;
+			if (windowEnd>= numChars)
+				windowEnd = numChars-1;
+			for (int it1 = 0; it1<numTaxa; it1++) {
+				lonelinessInWindow[window][it1] = 0;
+				int numTaxaCompared = 0;
+				for (int it2=0; it2<numTaxa; it2++) { //for all taxon pairs. Doing both triangles because would have to cycle twice to average over taxa anyway
+					if (it1!=it2) {
+						int numDiffs = 0;
+						int numNucleotideComparisons = 0;
+						for (int ic=windowStart; ic<windowEnd; ic++) { //for all characters in the window
+							//get state of both chars
+							if (ic<numChars) {
+								s1 = (CategoricalState)data.getCharacterState(s1, ic, it1);
+								s2 = (CategoricalState)data.getCharacterState(s2, ic, it2);
+								if (!s1.isInapplicable() && !s2.isInapplicable()) {
+									numNucleotideComparisons++;
+									if (!s1.statesShared(s2)) {
+										numDiffs++;
+									}
+								}
+							}
+						}
+						if (numNucleotideComparisons>0)
+							numTaxaCompared++;
+						lonelinessInWindow[window][it1] += numDiffs;
+					}
+				}
+				if (numTaxaCompared != 0)
+					lonelinessInWindow[window][it1] = lonelinessInWindow[window][it1]/numTaxaCompared; //average distance to all other taxa
+				else
+					lonelinessInWindow[window][it1] = -1;
+			}
+			ownerModule.numWindowsDone++;
+		}
+		done = true;
+	}
+}
 
