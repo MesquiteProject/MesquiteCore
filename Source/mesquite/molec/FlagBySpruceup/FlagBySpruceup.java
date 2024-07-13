@@ -385,24 +385,29 @@ class SpruceupThread extends MesquiteThread {
 		CategoricalState s1 = new CategoricalState();
 		CategoricalState s2 = new CategoricalState();
 		int[][] numDiffs = new int[numTaxa][numTaxa];
+		int[][] numSitesCompared = new int[numTaxa][numTaxa];
 		int[] numOthersCompared = new int[numTaxa];
+		
+		//WITHIN A WINDOW
 		for (int window=firstWindow; window<=lastWindow; window++) {
 			int windowStart = window*windowIncrement;
 			int windowEnd = windowStart+windowSize;
 			if (windowEnd>= numChars)
 				windowEnd = numChars-1;
-			
+
 			for (int j=0; j<numTaxa; j++) {
 				numOthersCompared[j] = 0;
-				for (int k=0; k<numTaxa; k++)
+				for (int k=0; k<numTaxa; k++) {
 					numDiffs[j][k] = 0;
+					numSitesCompared[j][k] = 0;
+				}
 			}
+			//Build distance matrix
 			for (int j = 0; j<numTaxa; j++) {
 				for (int k=j+1; k<numTaxa; k++) { 
 					int numNucleotideComparisons = 0;
 					for (int ic=windowStart; ic<windowEnd; ic++) { //for all characters in the window
 						//get state of both chars
-						if (ic<numChars) {
 							s1 = (CategoricalState)data.getCharacterState(s1, ic, j);
 							s2 = (CategoricalState)data.getCharacterState(s2, ic, k);
 							if (!s1.isInapplicable() && !s2.isInapplicable()) {
@@ -411,27 +416,36 @@ class SpruceupThread extends MesquiteThread {
 									numDiffs[j][k]++;
 									numDiffs[k][j]++;
 								}
-							}
 						}
 					}
 					if (numNucleotideComparisons>0) {
+						numSitesCompared[j][k] += numNucleotideComparisons;
+						numSitesCompared[k][j] += numNucleotideComparisons;
 						numOthersCompared[j]++;
 						numOthersCompared[k]++;
 					}
 
 				}
 			}
-			
+
 			for (int j = 0; j<numTaxa; j++) {
 				lonelinessInWindow[window][j] = 0;
-				for (int k=0; k<numTaxa; k++) 
-					lonelinessInWindow[window][j] += numDiffs[j][k];
+				//first get sums of distances to j
+				if (false) {
+					for (int k=0; k<numTaxa; k++) 
+						lonelinessInWindow[window][j] += numDiffs[j][k]*1.0/numSitesCompared[j][k];
+				}
+				else {
+					for (int k=0; k<numTaxa; k++) 
+						lonelinessInWindow[window][j] += numDiffs[j][k];
+				}
+				//then divide by number of comparisons
 				if (numOthersCompared[j] != 0)
 					lonelinessInWindow[window][j] = lonelinessInWindow[window][j]/numOthersCompared[j]; //average distance to all other taxa
 				else
 					lonelinessInWindow[window][j] = -1;
 			}
-			
+
 			ownerModule.numWindowsDone++;
 		}
 		done = true;
