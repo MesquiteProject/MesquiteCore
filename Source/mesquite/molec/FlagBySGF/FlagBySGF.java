@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.FlagGappySites;
+package mesquite.molec.FlagBySGF;
 /*~~  */
 
 
@@ -40,7 +40,7 @@ import mesquite.molec.lib.MatrixFlags;
 import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
-public class FlagGappySites extends MatrixFlagger implements ActionListener {
+public class FlagBySGF extends MatrixFlagger implements ActionListener {
 
 	/** TODO?
 	 * --  call this SGF for simple gappiness filter? Or Gapsi?
@@ -146,7 +146,7 @@ public class FlagGappySites extends MatrixFlagger implements ActionListener {
 	DoubleField pgBField;
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Gappy Sites or Blocks",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Simple Gappiness Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		pgSField = dialog.addDoubleField("Proportion of gaps that marks site as too gappy (\"bad\")", siteGappinessThreshold, 4);
 		fTT = dialog.addCheckBox("Ignore gaps in taxa with no data", forgiveTaxaWithoutData.getValue());

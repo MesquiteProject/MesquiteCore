@@ -121,7 +121,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			ownerModule.addMenuItem( "Add " + owner.getItemTypeNamePlural() + "...", ownerModule.makeCommand("addRows", this));
 		if (owner.rowsShowable())
 			ownerModule.addMenuItem( "Show Selected " + owner.getItemTypeNamePlural(), showCommand = ownerModule.makeCommand("showSelectedRows", this));
-	
+
 		if (owner.rowsDeletable()) {
 			ownerModule.addMenuItem( "Delete Selected " + owner.getItemTypeNamePlural(), deleteCommand = ownerModule.makeCommand("deleteSelectedRows", this));
 			MesquiteWindow.addKeyListener(this, this);
@@ -429,10 +429,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			deselectWandTouched.toggleValue(ParseUtil.getFirstToken(arguments, io));
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to select according to a set target value", null, commandName, "useTargetValue")) {
-				boolean current = useTargetValue.getValue();
-				MesquiteInteger io = new MesquiteInteger(0);
-				useTargetValue.toggleValue(ParseUtil.getFirstToken(arguments, io));
-	}
+			boolean current = useTargetValue.getValue();
+			MesquiteInteger io = new MesquiteInteger(0);
+			useTargetValue.toggleValue(ParseUtil.getFirstToken(arguments, io));
+		}
 		else if (checker.compare(this.getClass(), "Sets the target value", null, commandName, "setTargetValue")) {
 			String target = ParseUtil.getFirstToken(arguments, new MesquiteInteger(0));
 			if (StringUtil.blank(target) && !MesquiteThread.isScripting()){
@@ -442,7 +442,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			}
 			targetValue = target;
 
-	}
+		}
 		else if (checker.compare(this.getClass(), "Applies the magic wand tool to select like values", "[column touched] [row touched]", commandName, "wandTouch")) {
 			doWandTouch(arguments);
 		}
@@ -461,7 +461,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED,assoc);
 			undoInstructions.recordPreviousOrder(assoc);
 			UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);
-			
+
 			if (column>=0 && row >=0) {
 				long[] fullChecksumBefore=null;
 				if (assoc instanceof CharacterData) {
@@ -497,7 +497,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 			}
 			else if (column == -1 && row >=0) { //row names selected; sort by name
-				
+
 				long[] fullChecksumBefore=null;
 				if (assoc instanceof CharacterData) {
 					fullChecksumBefore = ((CharacterData)assoc).getIDOrderedFullChecksum();
@@ -567,8 +567,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			for (int im = 0; im < table.getNumRows(); im++){
 				if (StringArray.indexOf(clipboard, table.getRowNameTextForDisplay(im))>=0){
 					table.selectRow(im);
-				if (table.getRowAssociable() != null)
-					table.getRowAssociable().setSelected(im, true);
+					if (table.getRowAssociable() != null)
+						table.getRowAssociable().setSelected(im, true);
 				}
 			}
 			table.repaintAll();
@@ -600,7 +600,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			if (MesquiteInteger.isCombinable(num)){
 				addRows(num);
 				owner.unpauseAllPausables(v);
-			//					addRowsNotify(first, num);
+				//					addRowsNotify(first, num);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Selects a row", "[number of row]", commandName, "selectRow")) { //TODO: should this use internal or external character numbers???
@@ -986,7 +986,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			Vector v = owner.pauseAllPausables();
 			if (ownerModule != null && ownerModule.getProject() != null)
 				ownerModule.getProject().incrementProjectWindowSuppression();
-			
+
 
 			int count =0;
 			int currentNumRows = owner.getNumberOfRows();
@@ -1010,16 +1010,16 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				row--;
 			}
-			
+
 			row = currentNumRows-1;
 			firstInBlockDeleted = -1;
 			lastInBlockDeleted = -1;
 			((Listened)getCurrentObject()).incrementNotifySuppress();
-			
-	
-				
+
+
+
 			//Note that this method is overridden in CharacterList so as to be able to use the deletePartsFlagged system
-		while(row>=0) {
+			while(row>=0) {
 				if (table.isRowSelected(row) && owner.rowDeletable(row)){  // we've found a selected one
 					lastInBlockDeleted = row;
 					while(row>=0) {  // now let's look for the first non-selected one
@@ -1045,7 +1045,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			if (ownerModule != null && ownerModule.getProject() != null)
 				ownerModule.getProject().decrementProjectWindowSuppression();
 			owner.unpauseAllPausables(v);
-		MenuOwner.decrementMenuResetSuppression();
+			MenuOwner.decrementMenuResetSuppression();
 		}
 		else
 			ownerModule.alert("Rows must be selected before \"delete\" command is given");

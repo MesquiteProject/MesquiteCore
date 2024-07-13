@@ -25,6 +25,7 @@ import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
 import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.DoubleField;
@@ -49,7 +50,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 	 * Ignore taxa with too little data, or at least warn?
 	 * make dialog more informative, and add citation
 	 */
-	
+
 	/* parameters =================================*/
 	static double cutoffDEFAULT = 5.0; 
 	static int windowSizeDEFAULT = 50;
@@ -107,11 +108,10 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for Spruceup",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		dialog.addLargeOrSmallTextLabel("This is not a full Spruceup implementation. It uses only the options \"criterion:mean\" and \"distance_method:uncorrected\".");
 
-		cutoffField = dialog.addDoubleField("Cutoff (e.g. " + cutoffDEFAULT+ ")", cutoff, 4);
-		wS = dialog.addIntegerField("Window Size (e.g. " + windowSizeDEFAULT + ")", windowSize, 4);
-		ov = dialog.addIntegerField("Overlap (e.g. " + overlapDEFAULT+ ")", overlap, 4);
+		cutoffField = dialog.addDoubleField("Cutoff", cutoff, 4);
+		wS = dialog.addIntegerField("Window Size", windowSize, 4);
+		ov = dialog.addIntegerField("Overlap", overlap, 4);
 
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
@@ -119,6 +119,12 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
 		dialog.addHorizontalLine(1);
+		String notification = "If you use this, please cite as the implementation of Spruceup (Boroweic 2018) in Mesquite, using settings "
+				+ "\"criterion:mean\" and \"distance_method:uncorrected\" [plus the settings you have chosen above]."
+				+ "\nFor a more complete implementation, use the original Spruceup."
+				+ "\nReference: Boroweic ML (2018) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments."
+				+ " Journal of Open Source Software 4:1635. https://doi.org/10.21105/joss.01635";
+		dialog.addLargeOrSmallTextLabel(notification);
 		dialog.addBlankLine();
 
 
@@ -207,7 +213,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 				numWindows++;
 			CategoricalState s1 = new CategoricalState();
 			CategoricalState s2 = new CategoricalState();
-			
+
 			double[][] lonelinessInWindow = new double[numWindows][numTaxa];
 			for (int window=0; window<numWindows; window++) {
 				int windowStart = window*windowIncrement;
@@ -242,8 +248,8 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 					if (numTaxaCompared != 0)
 						lonelinessInWindow[window][it1] = lonelinessInWindow[window][it1]/numTaxaCompared; //average distance to all other taxa
 				}
-if (numWindows < 100 || window%10==0)
-	Debugg.println("window " + window + " of " + numWindows);				
+				if (numWindows > 100 || window%10==0)
+					CommandRecord.tick("Spruceup window " + window + " of " + numWindows);				
 			}
 
 			//now calculate average loneliness over all windows

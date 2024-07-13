@@ -864,6 +864,42 @@ public class Taxa extends FileElement {
 	 * An equivalent to deleteParts but with notification added. Final because
 	 * overriding should be done of the Parts method instead
 	 */
+	public final boolean deleteTaxaFlagged(Bits flags, boolean notify) {
+		if (inhibitEdit>0)
+			return false;
+		int count =0;
+
+		//NOTE: this code will likely cause full recalculations for each discontiguity.
+		int row = numTaxa-1;
+		int firstInBlockDeleted = -1;
+		int lastInBlockDeleted = -1;
+		Debugg.printStackTrace("@@@@@@@@@@ deleteTaxaFlag not tested and not efficient @@@@@@@@@@@@@@@@");
+
+		//Note that this method is overridden in CharacterList so as to be able to use the deletePartsFlagged system
+		while(row>=0) {
+			if (flags.isBitOn(row)){  // we've found a selected one
+				lastInBlockDeleted = row;
+				while(row>=0) {  // now let's look for the first non-selected one
+					if (flags.isBitOn(row))
+						firstInBlockDeleted = row;
+					else break;
+					row--;
+				}
+				deleteTaxa(firstInBlockDeleted, lastInBlockDeleted, true);  // needs to notify for sake of linked character data
+				count += lastInBlockDeleted-firstInBlockDeleted+1;
+			}
+			row--;
+		}
+		//if (count>0 && notify)
+		//	notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+		return count>0;
+
+	}
+	/* ................................................................................................................. */
+	/**
+	 * An equivalent to deleteParts but with notification added. Final because
+	 * overriding should be done of the Parts method instead
+	 */
 	public final boolean deleteTaxa(int first, int num, boolean notify) {
 		if (inhibitEdit>0)
 			return false;

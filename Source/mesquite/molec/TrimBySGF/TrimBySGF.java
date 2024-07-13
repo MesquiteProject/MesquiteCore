@@ -11,22 +11,23 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.SelectGappySites;
+package mesquite.molec.TrimBySGF;
 /*~~  */
 
-import mesquite.molec.lib.SelectSitesByFlagger;
+import mesquite.molec.lib.TrimSitesByFlagger;
 import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
-public class SelectGappySites extends SelectSitesByFlagger {
+public class TrimBySGF extends TrimSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagGappySites");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagBySGF");
 		if (flaggerTask == null)
 			return false;
 		return true;
 	}
 
+	
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
 		return true;
@@ -38,12 +39,12 @@ public class SelectGappySites extends SelectSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Select by Simple Gappiness Filter";
+		return "Trim Sites by Simple Gappiness Filter";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Select sites or blocks of sites that are too gappy." ;
+		return "Deletes sites or blocks of sites that are too gappy." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

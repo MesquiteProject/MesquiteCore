@@ -49,7 +49,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		for (int i = 0; i<flaggers.size(); i++) {
 			temp.addLine("addFlaggerViaScript ", (MatrixFlagger)flaggers.elementAt(i)); 
 		}
-				temp.addLine("toggleExtremelyDark " + useExtremelyDark.toOffOnString());
+		temp.addLine("toggleExtremelyDark " + useExtremelyDark.toOffOnString());
 		return temp;
 	}
 
@@ -98,7 +98,6 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		}
 		else if (checker.compare(this.getClass(), "Show darkened areas as extremely dark", null, commandName, "toggleExtremelyDark")) {
 			useExtremelyDark.toggleValue(parser.getFirstToken(arguments));
-			Debugg.println("gsc " + useExtremelyDark);
 			parametersChanged();
 		}
 
@@ -111,7 +110,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	MesquiteMenuItemSpec mmir, mmis, mmis2, mmis3, mmir2;
 	MesquiteMenuItemSpec mmiVE;
 	boolean flaggerInitialized = false;
-	MesquiteBoolean useExtremelyDark = new MesquiteBoolean(true);
+	MesquiteBoolean useExtremelyDark = new MesquiteBoolean(false);
 	/*.................................................................................................................*/
 	public boolean setActiveColors(boolean active){
 		boolean wasActive = isActive();
@@ -119,10 +118,13 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		if (isActive() && !wasActive){
 			if (!flaggerInitialized) {
 				MatrixFlagger flaggerTask = (MatrixFlagger)hireEmployee(MatrixFlagger.class, "Trimming or flagging method to highlight");
-				if (flaggerTask == null)
-					return false;
-				flaggerInitialized = true;
-				flaggers.addElement(flaggerTask);
+				if (flaggerTask == null){
+					discreetAlert("No method chosen to highlight");
+				}
+				else {
+					flaggerInitialized = true;
+					flaggers.addElement(flaggerTask);
+				}
 			}
 			mmir = addMenuItem("-", null);
 			mmiVE= addCheckMenuItem(null, "Use Extremely Dark", makeCommand("toggleExtremelyDark", this), useExtremelyDark);
@@ -130,7 +132,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			mmis2 = addMenuItem("Add Trimmer to be Highlighted...", makeCommand("addFlagger", this));
 			mmis3 = addMenuItem("Delete Sites Highlighted Dark", makeCommand("deleteDark", this));
 			mmir2 = addMenuItem("-", null);
-			
+
 			calculateNums();
 
 		}
@@ -243,7 +245,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	}
 	/*.................................................................................................................*/
 	public Color getCellColor(int ic, int it){
-		if (ic<0 || it<0 || flags == null)
+		if (ic<0 || it<0)
 			return null;
 
 		if (data == null)
@@ -253,17 +255,17 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 				return Color.white;
 			DNAData	dData = (DNAData)data;
 			long state = dData.getState(ic, it);
-			if (flags.isCellFlaggedAnyWay(ic, it)) {
+			if (flags != null && flags.isCellFlaggedAnyWay(ic, it)) {
 				if (useExtremelyDark.getValue()) {
-				if (A == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStateExtremelyDark(0);
-				else if (C == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStateExtremelyDark(1);
-				else if (G == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStateExtremelyDark(2);
-				else if (T == (state & CategoricalState.statesBitsMask))
-					return DNAData.getDNAColorOfStateExtremelyDark(3);
-				return DNAData.getDNAColorOfStateExtremelyDark(-1);
+					if (A == (state & CategoricalState.statesBitsMask))
+						return DNAData.getDNAColorOfStateExtremelyDark(0);
+					else if (C == (state & CategoricalState.statesBitsMask))
+						return DNAData.getDNAColorOfStateExtremelyDark(1);
+					else if (G == (state & CategoricalState.statesBitsMask))
+						return DNAData.getDNAColorOfStateExtremelyDark(2);
+					else if (T == (state & CategoricalState.statesBitsMask))
+						return DNAData.getDNAColorOfStateExtremelyDark(3);
+					return DNAData.getDNAColorOfStateExtremelyDark(-1);
 				}
 				else {
 					if (A == (state & CategoricalState.statesBitsMask))

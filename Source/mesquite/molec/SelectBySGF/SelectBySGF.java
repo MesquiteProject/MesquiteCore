@@ -11,23 +11,22 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.TrimByTerminalRepresentation;
+package mesquite.molec.SelectBySGF;
 /*~~  */
 
-import mesquite.molec.lib.TrimSitesByFlagger;
+import mesquite.molec.lib.SelectSitesByFlagger;
 import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
-public class TrimByTerminalRepresentation extends TrimSitesByFlagger {
+public class SelectBySGF extends SelectSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagTerminalRepresentation");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagBySGF");
 		if (flaggerTask == null)
 			return false;
 		return true;
 	}
 
-	
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
 		return true;
@@ -39,12 +38,12 @@ public class TrimByTerminalRepresentation extends TrimSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Trim Sites by Terminal Representation";
+		return "Select by Simple Gappiness Filter";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Deletes sites that are in poorly represented terminal areas of alignment." ;
+		return "Select sites or blocks of sites that are too gappy." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

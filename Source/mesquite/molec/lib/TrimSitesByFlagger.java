@@ -32,7 +32,7 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 	MatrixFlags flags = null;
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean trimSites(CharacterData data,  UndoReference undoReference){
+	public boolean trimMatrix(CharacterData data,  UndoReference undoReference){
 		if (flaggerTask == null)
 			return false;
 		flags = flaggerTask.flagMatrix( data, flags);
@@ -41,14 +41,14 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 		UndoInstructions undoInstructions = null;
 		if (undoReference!=null)
 			undoInstructions =data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_DELETED});
-		
+
 		data.incrementNotifySuppress();
 		Vector v = pauseAllPausables();
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
-		
-		//WayneEFF
-		/* odlNOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
+
+		/* old
+		 * NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
 		int ic = data.getNumChars()-1;
 		int firstInBlockDeleted = -1;
 		int lastInBlockDeleted = -1;
@@ -74,17 +74,56 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 			}
 			ic--;
 		}
-		*/
-		data.deletePartsFlagged(flags.getCharacterFlags(), false);
-		data.deleteInLinkedFlagged(flags.getCharacterFlags(), false);
+		 */
+		boolean anyDeletion = false;
+		String report = "Trimmed:";
+		Bits bits = flags.getCharacterFlags();
+		if (bits.anyBitsOn()){
+			data.deletePartsFlagged(bits, false);
+			data.deleteInLinkedFlagged(bits, false);
+			anyDeletion = true;
+			int numCD = bits.numBitsOn();
+			report += " " + numCD + " character";
+			if (numCD>1)
+				report += "s";
+		}
+		bits = flags.getTaxonFlags();
+		if (bits.anyBitsOn()){
+			data.getTaxa().deleteTaxaFlagged(bits, false);
+			int numT = bits.numBitsOn();
+			if (numT>1)
+				report += " " + numT + " taxa";
+			else
+				report += " " + numT + " taxon";
+			anyDeletion = true;
+		}
+		boolean[][] toMakeGaps = flags.getCellFlags();
+		int numC =0;
+		for (int ic = 0; ic< data.getNumChars() && ic<toMakeGaps.length; ic++)
+			for (int it = 0; it<data.getNumTaxa() && it<toMakeGaps[ic].length; it++)
+				if (toMakeGaps[ic][it]){
+					data.setToInapplicable(ic, it);
+					numC++;
+				}
+		if (numC>0){
+			report += " " + numC + " cell";
+			if (numC>1)
+				report += "s";
+			anyDeletion = true;
+		}
+
+		if (!anyDeletion)
+			report = "Nothing trimmed";
+		logln(report);
+
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		unpauseAllPausables(v);
 		data.decrementNotifySuppress();
-		
+
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 
-		
+
 		if (undoReference!=null){
 			if (undoInstructions!=null){
 				undoInstructions.setNewData(data);
@@ -94,5 +133,5 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 		}
 		return true;
 	}
-	
+
 }
