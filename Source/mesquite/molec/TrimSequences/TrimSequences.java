@@ -95,7 +95,7 @@ public class TrimSequences extends MolecularDataAlterer implements AltererWholeC
 			getProject().incrementProjectWindowSuppression();
 		
 		if (trimmer!=null) {
-			boolean a = trimmer.trimSites(data, null); //second parameter would be UndoReference!
+			boolean a = trimmer.trimData(data, null); //second parameter would be UndoReference!
 			if (a) {
 				if (table != null)
 					table.repaintAll();

@@ -32,7 +32,7 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 	MatrixFlags flags = null;
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean trimSites(CharacterData data,  UndoReference undoReference){
+	public boolean trimData(CharacterData data,  UndoReference undoReference){
 		if (flaggerTask == null)
 			return false;
 		flags = flaggerTask.flagMatrix( data, flags);
