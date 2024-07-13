@@ -21,6 +21,7 @@ import java.awt.Checkbox;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import mesquite.categ.lib.CategoricalData;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Debugg;
@@ -35,10 +36,11 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.molec.lib.SiteFlagger;
+import mesquite.molec.lib.MatrixFlags;
+import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
-public class FlagGappySites extends SiteFlagger implements ActionListener {
+public class FlagGappySites extends MatrixFlagger implements ActionListener {
 
 	/** TODO?
 	 * --  call this SGF for simple gappiness filter? Or Gapsi?
@@ -229,7 +231,7 @@ public class FlagGappySites extends SiteFlagger implements ActionListener {
 				parametersChanged();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets minimum size of bad gappy block.", "[on or off]", commandName, "setgappyBlockSize")) {
+		else if (checker.compare(this.getClass(), "Sets minimum size of bad gappy block.", "[integer]", commandName, "setgappyBlockSize")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				gappyBlockSize = s;
@@ -238,7 +240,7 @@ public class FlagGappySites extends SiteFlagger implements ActionListener {
 			}
 
 		}
-		else if (checker.compare(this.getClass(), "Sets required size to form a non-gappy boundary.", "[on or off]", commandName, "setgappyBoundary")) {
+		else if (checker.compare(this.getClass(), "Sets required size to form a non-gappy boundary.", "[integer]", commandName, "setgappyBoundary")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				gappyBoundary = s;
@@ -247,7 +249,7 @@ public class FlagGappySites extends SiteFlagger implements ActionListener {
 			}
 
 		}
-		else if (checker.compare(this.getClass(), "Sets proportion of taxa than need to have gaps for site to be gappy.", "[on or off]", commandName, "setSiteGappinessThreshold")) {
+		else if (checker.compare(this.getClass(), "Sets proportion of taxa than need to have gaps for site to be gappy.", "[proportion]", commandName, "setSiteGappinessThreshold")) {
 			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (MesquiteDouble.isCombinable(s)){
 				siteGappinessThreshold = s;
@@ -256,7 +258,7 @@ public class FlagGappySites extends SiteFlagger implements ActionListener {
 
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets proportion of sites in span that are gappy to trigger selection.", "[on or off]", commandName, "setBlockGappinessThreshold")) {
+		else if (checker.compare(this.getClass(), "Sets proportion of sites in span that are gappy to trigger selection.", "[proportion]", commandName, "setBlockGappinessThreshold")) {
 			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (MesquiteDouble.isCombinable(s)){
 				blockGappinessThreshold = s;
@@ -290,117 +292,116 @@ public class FlagGappySites extends SiteFlagger implements ActionListener {
 		return true;
 	}
 	/*======================================================*/
-	public Bits flagSites(CharacterData data, Bits flags) {
-		if (flags == null)
-			flags = new Bits(data.getNumChars());
-		else {
-			if (flags.getSize()< data.getNumChars())
-				flags.resetSize(data.getNumChars());
-			flags.clearAllBits();
-		}
-		int numTaxa = data.getNumTaxa();
-		int numChars = data.getNumChars();
+	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
+		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
+			if (flags == null)
+				flags = new MatrixFlags(data);
+			else 
+				flags.reset(data);
 
-		if (forgiveTaxaWithoutData.getValue()) {
-			numTaxaCounted = 0;
-			if (taxonHasData == null || taxonHasData.length!= numTaxa)
-				taxonHasData = new boolean[numTaxa];
-			for (int it=0; it<numTaxa; it++){
-				taxonHasData[it] = false;
-				for (int ic=0; ic<numChars; ic++)
-					if (!data.isInapplicable(ic,it)){
-						taxonHasData[it] = true;
-						break;
-					}
-				if (taxonHasData[it])
-					numTaxaCounted++;
+
+			Bits charFlags = flags.getCharacterFlags();		
+			int numTaxa = data.getNumTaxa();
+			int numChars = data.getNumChars();
+
+			if (forgiveTaxaWithoutData.getValue()) {
+				numTaxaCounted = 0;
+				if (taxonHasData == null || taxonHasData.length!= numTaxa)
+					taxonHasData = new boolean[numTaxa];
+				for (int it=0; it<numTaxa; it++){
+					taxonHasData[it] = false;
+					for (int ic=0; ic<numChars; ic++)
+						if (!data.isInapplicable(ic,it)){
+							taxonHasData[it] = true;
+							break;
+						}
+					if (taxonHasData[it])
+						numTaxaCounted++;
+				}
 			}
-		}
-		else
-			numTaxaCounted = numTaxa;
-		Debugg.println("numTaxaCounted " + numTaxaCounted);
-		if (siteGappiness == null || siteGappiness.length != numChars) {
-			siteGappiness = new double[numChars];
-		}
-		for (int ic=0; ic<numChars; ic++) {
-			int gapCount = 0;
-			for (int it = 0; it<numTaxa; it++) {
-				if (countTaxon(it) && data.isInapplicable(ic,it)) 
-					gapCount++;
+			else
+				numTaxaCounted = numTaxa;
+			if (siteGappiness == null || siteGappiness.length != numChars) {
+				siteGappiness = new double[numChars];
 			}
-			siteGappiness[ic] = 1.0*gapCount/numTaxaCounted;
-			if (gapCount == numTaxaCounted)//if all gaps, delete regardless
-				flags.setBit(ic, true);
-			else if (filterSiteGappiness.getValue() && gappySite(ic))
-				flags.setBit(ic, true); 				
-		}
+			for (int ic=0; ic<numChars; ic++) {
+				int gapCount = 0;
+				for (int it = 0; it<numTaxa; it++) {
+					if (countTaxon(it) && data.isInapplicable(ic,it)) 
+						gapCount++;
+				}
+				siteGappiness[ic] = 1.0*gapCount/numTaxaCounted;
+				if (gapCount == numTaxaCounted)//if all gaps, delete regardless
+					charFlags.setBit(ic, true);
+				else if (filterSiteGappiness.getValue() && gappySite(ic))
+					charFlags.setBit(ic, true); 				
+			}
 
-		if (filterBlockGappiness.getValue())
-			for (int blockStart=0; blockStart<numChars; blockStart++) { //let's look for gappy blocks
-				if (gappySite(blockStart)) { // possible start of gappy block
+			if (filterBlockGappiness.getValue()) {
+				for (int blockStart=0; blockStart<numChars; blockStart++) { //let's look for gappy blocks
+					if (gappySite(blockStart)) { // possible start of gappy block
 
-					boolean boundaryFound = false;
-					for (int candidateNextBoundary = blockStart+1; candidateNextBoundary<numChars+1 && !boundaryFound; candidateNextBoundary++) {  // go ahead until next boundary reached
-						if (isGapBlockBoundary(candidateNextBoundary) || candidateNextBoundary == numChars-1) {
-							boundaryFound = true;
-							int blockEnd = candidateNextBoundary-1;
+						boolean boundaryFound = false;
+						for (int candidateNextBoundary = blockStart+1; candidateNextBoundary<numChars+1 && !boundaryFound; candidateNextBoundary++) {  // go ahead until next boundary reached
+							if (isGapBlockBoundary(candidateNextBoundary) || candidateNextBoundary == numChars-1) {
+								boundaryFound = true;
+								int blockEnd = candidateNextBoundary-1;
 
-							//blockStart is the potential start of a block; blockEnd is a possible end. If the block is long enough, ask if its blockGappiness is bad
-							if (blockEnd-blockStart+1 >= gappyBlockSize){
-								//block is big enough, but is it bad enough?
-								int badSiteCount = 0;
-								for (int k = blockStart; k <= blockEnd; k++)
-									if (gappySite(k))  // stored as double[] in case criterion shifts, e.g., to average
-										badSiteCount++;
-								double blockGappiness = 1.0*badSiteCount/(blockEnd-blockStart+1);
-								if (blockGappiness >=blockGappinessThreshold)
+								//blockStart is the potential start of a block; blockEnd is a possible end. If the block is long enough, ask if its blockGappiness is bad
+								if (blockEnd-blockStart+1 >= gappyBlockSize){
+									//block is big enough, but is it bad enough?
+									int badSiteCount = 0;
 									for (int k = blockStart; k <= blockEnd; k++)
-										flags.setBit(k, true);
-
+										if (gappySite(k))  // stored as double[] in case criterion shifts, e.g., to average
+											badSiteCount++;
+									double blockGappiness = 1.0*badSiteCount/(blockEnd-blockStart+1);
+									if (blockGappiness >=blockGappinessThreshold)
+										for (int k = blockStart; k <= blockEnd; k++)
+											charFlags.setBit(k, true);
+								}
 
 							}
-
 						}
 					}
 				}
 			}
+		}
+			return flags;
 
-		return flags;
+		}
 
-	}
+		/*.................................................................................................................*/
+		/** returns whether this module is requesting to appear as a primary choice */
+		public boolean requestPrimaryChoice(){
+			return true;  
+		}
+		/*.................................................................................................................*/
+		public boolean isPrerelease() {
+			return true;
+		}
 
-	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
-	public boolean requestPrimaryChoice(){
-		return true;  
-	}
-	/*.................................................................................................................*/
-	public boolean isPrerelease() {
-		return true;
-	}
-
-	/*.................................................................................................................*/
-	public boolean showCitation(){
-		return false;
-	}
-	/*.................................................................................................................*/
-	public String getName() {
-		return "Simple Gappiness Filter";
-	}
-	/*.................................................................................................................*/
-	/** returns an explanation of what the module does.*/
-	public String getExplanation() {
-		return "Flags sites or regions of sites with a certain proportion of gaps." ;
-	}
-	/*.................................................................................................................*/
-	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
-	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
-	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
-	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
-	}
+		/*.................................................................................................................*/
+		public boolean showCitation(){
+			return false;
+		}
+		/*.................................................................................................................*/
+		public String getName() {
+			return "Simple Gappiness Filter";
+		}
+		/*.................................................................................................................*/
+		/** returns an explanation of what the module does.*/
+		public String getExplanation() {
+			return "Flags sites or regions of sites with a certain proportion of gaps." ;
+		}
+		/*.................................................................................................................*/
+		/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+		 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+		 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+		public int getVersionOfFirstRelease(){
+			return NEXTRELEASE;  
+		}
 
 
-}
+	}
 
 

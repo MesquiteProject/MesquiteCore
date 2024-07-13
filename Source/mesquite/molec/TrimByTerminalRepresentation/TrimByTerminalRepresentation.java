@@ -15,13 +15,13 @@ package mesquite.molec.TrimByTerminalRepresentation;
 /*~~  */
 
 import mesquite.molec.lib.TrimSitesByFlagger;
-import mesquite.molec.lib.SiteFlagger;
+import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
 public class TrimByTerminalRepresentation extends TrimSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (SiteFlagger)hireNamedEmployee(SiteFlagger.class, "#FlagTerminalRepresentation");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagTerminalRepresentation");
 		if (flaggerTask == null)
 			return false;
 		return true;

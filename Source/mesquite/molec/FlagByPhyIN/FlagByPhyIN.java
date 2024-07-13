@@ -41,10 +41,11 @@ import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.molec.lib.SiteFlagger;
+import mesquite.molec.lib.MatrixFlags;
+import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
-public class FlagByPhyIN extends SiteFlagger implements ActionListener {
+public class FlagByPhyIN extends MatrixFlagger implements ActionListener {
 
 	//Primary PhyIN parameters =================================
 	static double proportionIncompatDEFAULT = 0.5; //(-p)
@@ -397,14 +398,12 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
-	public Bits flagSites(CharacterData data, Bits flags) {
+	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
 			if (flags == null)
-				flags = new Bits(data.getNumChars());
+				flags = new MatrixFlags(data);
 			else {
-				if (flags.getSize()< data.getNumChars())
-					flags.resetSize(data.getNumChars());
-				flags.clearAllBits();
+				flags.reset(data);
 			}
 			markThoseWithConflict((CategoricalData)data);
 			for (int ic=0; ic<hasConflict.length; ic++) {
@@ -414,7 +413,7 @@ public class FlagByPhyIN extends SiteFlagger implements ActionListener {
 
 			for (int ic=0; ic<data.getNumChars(); ic++) {
 				if (toSelect[ic])
-					flags.setBit(ic, true);
+					flags.setCharacterFlag(ic, true);
 			}
 		}
 		return flags;

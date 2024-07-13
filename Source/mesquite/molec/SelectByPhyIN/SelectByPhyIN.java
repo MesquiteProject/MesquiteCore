@@ -15,13 +15,13 @@ package mesquite.molec.SelectByPhyIN;
 /*~~  */
 
 import mesquite.molec.lib.SelectSitesByFlagger;
-import mesquite.molec.lib.SiteFlagger;
+import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
 public class SelectByPhyIN extends SelectSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (SiteFlagger)hireNamedEmployee(SiteFlagger.class, "#FlagByPhyIN");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagByPhyIN");
 		if (flaggerTask == null)
 			return false;
 		return true;

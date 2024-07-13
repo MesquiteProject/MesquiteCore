@@ -37,7 +37,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import mesquite.lib.table.*;
-import mesquite.molec.lib.SiteFlagger;
+import mesquite.molec.lib.MatrixFlags;
+import mesquite.molec.lib.MatrixFlagger;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.ContinuousData;
@@ -2271,10 +2272,10 @@ public void requestFocus(){
 	}
 
 	void excludeByTrimmingMethod(boolean replace) {
-		SiteFlagger flagger = (SiteFlagger)ownerModule.hireEmployee(SiteFlagger.class, "Trimming method");
+		MatrixFlagger flagger = (MatrixFlagger)ownerModule.hireEmployee(MatrixFlagger.class, "Trimming method");
 		if (flagger ==null)
 			return;
-		Bits flags = flagger.flagSites(data, null); //if input flags is null, make one and return it. Otherwise, adjust the one input.
+		MatrixFlags flags = flagger.flagMatrix(data, null); //if input flags is null, make one and return it. Otherwise, adjust the one input.
 		CharInclusionSet inclusionSet = (CharInclusionSet) data.getCurrentSpecsSet(CharInclusionSet.class);
 		if (inclusionSet == null) {
 			inclusionSet= new CharInclusionSet("Inclusion Set", data.getNumChars(), data);
@@ -2286,7 +2287,7 @@ public void requestFocus(){
 			if (replace)
 				inclusionSet.selectAll();
 			for (int i=0; i<data.getNumChars(); i++) 
-				inclusionSet.setSelected(i, !flags.isBitOn(i));
+				inclusionSet.setSelected(i, !flags.isCharacterFlagOn(i));
 		}
 		contentsChanged();
 		ownerModule.fireEmployee(flagger);

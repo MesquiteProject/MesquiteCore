@@ -27,7 +27,7 @@ public abstract class SelectSitesByFlagger extends CharacterSelector {
  	 	return new String[] {"#SelectByPhyIN", "#SelectGappySites"};
  	 }
 	protected CharacterData data;
-	protected SiteFlagger flaggerTask; // hired by specific subclasses representing those flaggers
+	protected MatrixFlagger flaggerTask; // hired by specific subclasses representing those flaggers
 
 
 	/*.................................................................................................................*/
@@ -41,7 +41,7 @@ public abstract class SelectSitesByFlagger extends CharacterSelector {
 		return true;  
 	}
 
-	Bits flags = null;
+	MatrixFlags flags = null;
 
 	/*.................................................................................................................*/
 	/** Called to select characters*/
@@ -49,13 +49,13 @@ public abstract class SelectSitesByFlagger extends CharacterSelector {
 		if (data!=null && data.getNumChars()>0){
 			if (flaggerTask == null)
 				return;
-			flags = flaggerTask.flagSites( data, flags);
-			if (flags == null || flags.getSize()<data.getNumChars())
+			flags = flaggerTask.flagMatrix( data, flags);
+			if (flags == null || flags.getNumChars()<data.getNumChars())
 				return;
 
 				// ======  now select the characters chosen
 				for (int ic=0; ic<data.getNumChars(); ic++)
-					if (flags.isBitOn(ic))
+					if (flags.isCharacterFlagOn(ic))
 						data.setSelected(ic, true);
 
 

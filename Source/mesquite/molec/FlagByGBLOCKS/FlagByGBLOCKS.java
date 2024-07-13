@@ -46,10 +46,11 @@ import mesquite.lib.RadioButtons;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.molec.lib.SiteFlagger;
+import mesquite.molec.lib.MatrixFlags;
+import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
-public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
+public class FlagByGBLOCKS extends MatrixFlagger implements ActionListener {
 
 	static final double defaultIS = 0.50;   
 	static final double defaultFS = 0.85;  
@@ -530,16 +531,15 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 
 	/*.................................................................................................................*/
 	/** Called to mark characters*/
-	public Bits flagSites(CharacterData data, Bits flags) {
+	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
 			if (flags == null)
-				flags = new Bits(data.getNumChars());
-			else {
-				if (flags.getSize()< data.getNumChars())
-					flags.resetSize(data.getNumChars());
-				flags.clearAllBits();
-			}		
+				flags = new MatrixFlags(data);
+			else 
+				flags.reset(data);
 
+
+			Bits charFlags = flags.getCharacterFlags();
 
 			//preparing array memory
 			if (taxonHasSequence == null || taxonHasSequence.length != data.getNumTaxa()) {
@@ -604,7 +604,6 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 			}
 
 			setCharacterStatus((CategoricalData)data, status, firstBase, lastBase);
-
 			// ======  first look for "stretches of contiguous nonconserved positions"
 			int blockStart=-1;
 			for (int ic=0; ic<data.getNumChars(); ic++) {
@@ -614,12 +613,12 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						if (ic-blockStart+1 > CP)  // block is big enough to be selected
-							setToSelectRange(flags,blockStart,ic);
+							setToSelectRange(charFlags,blockStart,ic);
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
 						if (ic-blockStart > CP)  // block is big enough to be selected
-							setToSelectRange(flags,blockStart,ic-1);
+							setToSelectRange(charFlags,blockStart,ic-1);
 					}	
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
 				}
@@ -629,18 +628,18 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 
 			blockStart=-1;
 
-			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
-				if (!flags.isBitOn(ic)){  // we are in a remaining block
+			for (int ic=0; ic<data.getNumChars() && ic<charFlags.getSize(); ic++){
+				if (!charFlags.isBitOn(ic)){  // we are in a remaining block
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
-						examineRemainingBlock(status, flags,blockStart,ic);
+						examineRemainingBlock(status,charFlags,blockStart,ic);
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
 						if (ic-blockStart > CP)  // block is big enough to be selected
-							examineRemainingBlock(status, flags,blockStart,ic-1);
+							examineRemainingBlock(status, charFlags,blockStart,ic-1);
 					}	
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
 				}
@@ -649,20 +648,20 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 			// ======  checking for small blocks
 			blockStart=-1;
 
-			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
-				if (!flags.isBitOn(ic)){
+			for (int ic=0; ic<data.getNumChars() && ic<charFlags.getSize(); ic++){
+				if (!charFlags.isBitOn(ic)){
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						if (ic-blockStart+1 < BL){  // block is big enough to be selected
-							setToSelectRange(flags,blockStart,ic);
+							setToSelectRange(charFlags,blockStart,ic);
 						}
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
 						if (ic-blockStart < BL){  // block is big enough to be selected
-							setToSelectRange(flags,blockStart,ic-1);
+							setToSelectRange(charFlags,blockStart,ic-1);
 						}
 					}	
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
@@ -672,9 +671,9 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 			// ======  checking for gaps and nearby non-conserved
 
 
-			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
-				if (!flags.isBitOn(ic) && tooManyGaps((CategoricalData)data,ic)){  // let's start at any gap that is not yet excluded
-					examineRegionAroundGap(status, flags,ic);
+			for (int ic=0; ic<data.getNumChars() && ic<charFlags.getSize(); ic++){
+				if (!charFlags.isBitOn(ic) && tooManyGaps((CategoricalData)data,ic)){  // let's start at any gap that is not yet excluded
+					examineRegionAroundGap(status, charFlags,ic);
 
 				}
 			}
@@ -682,20 +681,20 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 			// ======  checking for small blocks
 			blockStart=-1;
 
-			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
-				if (!flags.isBitOn(ic)){
+			for (int ic=0; ic<data.getNumChars() && ic<charFlags.getSize(); ic++){
+				if (!charFlags.isBitOn(ic)){
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						if (ic-blockStart+1 < BL){  // block is big enough to be selected
-							setToSelectRange(flags,blockStart,ic);
+							setToSelectRange(charFlags,blockStart,ic);
 						}
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
 						if (ic-blockStart < BL){  // block is big enough to be selected
-							setToSelectRange(flags,blockStart,ic-1);
+							setToSelectRange(charFlags,blockStart,ic-1);
 						}
 					}	
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
@@ -706,8 +705,8 @@ public class FlagByGBLOCKS extends SiteFlagger implements ActionListener {
 
 			blockStart=-1;
 			StringBuffer blocks = new StringBuffer();
-			for (int ic=0; ic<data.getNumChars() && ic<flags.getSize(); ic++){
-				if (!flags.isBitOn(ic)){
+			for (int ic=0; ic<data.getNumChars() && ic<charFlags.getSize(); ic++){
+				if (!charFlags.isBitOn(ic)){
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
 					}

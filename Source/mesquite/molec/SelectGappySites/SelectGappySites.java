@@ -15,13 +15,13 @@ package mesquite.molec.SelectGappySites;
 /*~~  */
 
 import mesquite.molec.lib.SelectSitesByFlagger;
-import mesquite.molec.lib.SiteFlagger;
+import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
 public class SelectGappySites extends SelectSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (SiteFlagger)hireNamedEmployee(SiteFlagger.class, "#FlagGappySites");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagGappySites");
 		if (flaggerTask == null)
 			return false;
 		return true;

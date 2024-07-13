@@ -32,10 +32,11 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.molec.lib.SiteFlagger;
+import mesquite.molec.lib.MatrixFlags;
+import mesquite.molec.lib.MatrixFlagger;
 
 /* ======================================================================== */
-public class FlagTerminalRepresentation extends SiteFlagger {
+public class FlagTerminalRepresentation extends MatrixFlagger {
 
 	int threshold = MesquiteInteger.unassigned;
 	boolean queried = false;
@@ -118,15 +119,14 @@ public class FlagTerminalRepresentation extends SiteFlagger {
 				return ic;
 		return -1;
 	}
-	/*.................................................................................................................*/
-	public Bits flagSites(CharacterData data, Bits flags) {
-		if (flags == null)
-			flags = new Bits(data.getNumChars());
-		else {
-			if (flags.getSize()< data.getNumChars())
-				flags.resetSize(data.getNumChars());
-			flags.clearAllBits();
-		}
+	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
+			if (flags == null)
+				flags = new MatrixFlags(data);
+			else 
+				flags.reset(data);
+
+
+			Bits charFlags = flags.getCharacterFlags();
 		
 		if (taxonSequenceStart == null || taxonSequenceStart.length != data.getNumTaxa()) {
 			taxonSequenceStart = new int[data.getNumTaxa()];
@@ -148,7 +148,7 @@ public class FlagTerminalRepresentation extends SiteFlagger {
 				}
 			}
 			if (numRepresented<threshold)
-				flags.setBit(ic, true);
+				charFlags.setBit(ic, true);
 			allRepresented = (numRepresented == data.getNumTaxa());
 		}
 		// looking from behind
@@ -162,7 +162,7 @@ public class FlagTerminalRepresentation extends SiteFlagger {
 				}
 			}
 			if (numRepresented<threshold)
-				flags.setBit(ic, true);
+				charFlags.setBit(ic, true);
 			allRepresented = (numRepresented == data.getNumTaxa());
 		}
 		return flags;

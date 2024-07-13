@@ -23,20 +23,20 @@ import mesquite.lib.characters.CharacterData;
 
 public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 	protected CharacterData data;
-	protected SiteFlagger flaggerTask; // hired by specific subclasses representing those flaggers
+	protected MatrixFlagger flaggerTask; // hired by specific subclasses representing those flaggers
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
 
-	Bits flags = null;
+	MatrixFlags flags = null;
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean trimSites(CharacterData data,  UndoReference undoReference){
 		if (flaggerTask == null)
 			return false;
-		flags = flaggerTask.flagSites( data, flags);
-		if (flags == null || flags.getSize()<data.getNumChars())
+		flags = flaggerTask.flagMatrix( data, flags);
+		if (flags == null || flags.getNumChars()<data.getNumChars())
 			return false;
 		UndoInstructions undoInstructions = null;
 		if (undoReference!=null)
@@ -75,8 +75,8 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 			ic--;
 		}
 		*/
-		data.deletePartsFlagged(flags, false);
-		data.deleteInLinkedFlagged(flags, false);
+		data.deletePartsFlagged(flags.getCharacterFlags(), false);
+		data.deleteInLinkedFlagged(flags.getCharacterFlags(), false);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		unpauseAllPausables(v);

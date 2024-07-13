@@ -34,6 +34,7 @@ public class DNAData extends MolecularData {
 
 	public static Color dnaRed, dnaGreen, dnaYellow, dnaBlue;
 	public static Color dnaRedPale, dnaGreenPale, dnaYellowPale, dnaBluePale, dnaInapplicable, dnaUnassigned;
+	public static Color dnaRedDark, dnaGreenDark, dnaYellowDark, dnaBlueDark, dnaInapplicableDark, dnaUnassignedDark;
 	public static Color dnaRedVeryDark, dnaGreenVeryDark, dnaYellowVeryDark, dnaBlueVeryDark, dnaInapplicableVeryDark, dnaUnassignedVeryDark;
 	public static Color dnaRedExtremelyDark, dnaGreenExtremelyDark, dnaYellowExtremelyDark, dnaBlueExtremelyDark, dnaInapplicableExtremelyDark, dnaUnassignedExtremelyDark;
 
@@ -55,6 +56,13 @@ public class DNAData extends MolecularData {
 		dnaBluePale = new Color((float) 0.7, (float) 0.7, (float) 1);
 		dnaInapplicable = new Color((float)0.93, (float)0.90, (float)0.87);  //ColorDistribution.inapplicable
 		dnaUnassigned = new Color((float)0.92, (float)0.94, (float)0.98); //ColorDistribution.unassigned;
+
+		dnaRedDark = new Color((float) 0.65, (float) 0.19, (float) 0.19);
+		dnaGreenDark = new Color((float) 0.19, (float) 0.65, (float) 0.19);
+		dnaYellowDark = new Color((float) 0.53, (float) 0.53, (float) 0.19);
+		dnaBlueDark = new Color((float) 0.19, (float) 0.19, (float) 0.65);
+		dnaInapplicableDark = new Color((float)0.4, (float)0.4, (float)0.4);  //ColorDistribution.inapplicable
+		dnaUnassignedDark = new Color((float)0.4, (float)0.4, (float)0.4); //ColorDistribution.unassigned;
 
 		dnaRedVeryDark = new Color((float) 0.45, (float) 0.19, (float) 0.19);
 		dnaGreenVeryDark = new Color((float) 0.19, (float) 0.45, (float) 0.19);
@@ -273,6 +281,18 @@ public class DNAData extends MolecularData {
 			return dnaBluePale;
 		else
 			return dnaUnassigned;
+	}
+	public static Color getDNAColorOfStateDark(int istate) {
+		if (istate == 0)
+			return dnaRedDark;
+		else if (istate == 1)
+			return dnaGreenDark;
+		else if (istate == 2)
+			return dnaYellowDark;
+		else if (istate == 3)
+			return dnaBlueDark;
+		else
+			return dnaUnassignedDark;
 	}
 	public static Color getDNAColorOfStateVeryDark(int istate) {
 		if (istate == 0)
