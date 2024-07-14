@@ -317,6 +317,33 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 				logln("Spruceup calculation took " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
 			}
 		}
+		/* this reports on flagging*/
+		if (false){
+			boolean[][] cells = flags.getCellFlags();
+			for (int it = 0; it<data.getNumTaxa(); it++){
+				Debugg.println(data.getTaxa().getTaxonName(it));
+				int removed = 0;
+				int startOfStretch = -1;
+				int endOfStretch = -1;
+				for (int ic=0; ic<data.getNumChars(); ic++){
+					if (cells[ic][it]){
+						if (startOfStretch == -1)
+							startOfStretch = ic;
+						endOfStretch = ic;
+						removed++;
+					}
+					else {
+						if (startOfStretch>=0){
+							Debugg.print(" " + startOfStretch + "-" + endOfStretch);
+							startOfStretch = -1;
+							endOfStretch = ic;
+						}
+					}
+				}
+				Debugg.println("\nRemoved " + removed + "\n");
+			}
+		}
+		/* */
 		return flags;
 
 	}
@@ -378,7 +405,7 @@ class SpruceupThread extends MesquiteThread {
 		this.flags = flags;
 		this.lonelinessInWindow = lonelinessInWindow;
 	}
-
+	boolean scaleByNumCompared = false;
 	public void run() {
 		int numTaxa = data.getTaxa().getNumTaxa();
 		int numChars = data.getNumChars();
@@ -387,7 +414,7 @@ class SpruceupThread extends MesquiteThread {
 		int[][] numDiffs = new int[numTaxa][numTaxa];
 		int[][] numSitesCompared = new int[numTaxa][numTaxa];
 		int[] numOthersCompared = new int[numTaxa];
-		
+
 		//WITHIN A WINDOW
 		for (int window=firstWindow; window<=lastWindow; window++) {
 			int windowStart = window*windowIncrement;
@@ -408,14 +435,14 @@ class SpruceupThread extends MesquiteThread {
 					int numNucleotideComparisons = 0;
 					for (int ic=windowStart; ic<windowEnd; ic++) { //for all characters in the window
 						//get state of both chars
-							s1 = (CategoricalState)data.getCharacterState(s1, ic, j);
-							s2 = (CategoricalState)data.getCharacterState(s2, ic, k);
-							if (!s1.isInapplicable() && !s2.isInapplicable()) {
-								numNucleotideComparisons++;
-								if (!s1.statesShared(s2)) {
-									numDiffs[j][k]++;
-									numDiffs[k][j]++;
-								}
+						s1 = (CategoricalState)data.getCharacterState(s1, ic, j);
+						s2 = (CategoricalState)data.getCharacterState(s2, ic, k);
+						if (!s1.isInapplicable() && !s2.isInapplicable()) {
+							numNucleotideComparisons++;
+							if (!s1.statesShared(s2)) {
+								numDiffs[j][k]++;
+								numDiffs[k][j]++;
+							}
 						}
 					}
 					if (numNucleotideComparisons>0) {
@@ -431,9 +458,20 @@ class SpruceupThread extends MesquiteThread {
 			for (int j = 0; j<numTaxa; j++) {
 				lonelinessInWindow[window][j] = 0;
 				//first get sums of distances to j
-				if (false) {
-					for (int k=0; k<numTaxa; k++) 
-						lonelinessInWindow[window][j] += numDiffs[j][k]*1.0/numSitesCompared[j][k];
+				if (scaleByNumCompared) { //this isn't working right
+					/*for (int k=0; k<numTaxa; k++){
+						if (numSitesCompared[j][k]!=0)
+							lonelinessInWindow[window][j] += numDiffs[j][k]*1.0/numSitesCompared[j][k];
+					}*/
+					int sumDiffs =0;
+					int sumSitesCompared =0;
+					for (int k=0; k<numTaxa; k++){
+						sumDiffs += numDiffs[j][k];
+						sumSitesCompared += numSitesCompared[j][k];
+					}
+					if (sumSitesCompared!=0)
+						lonelinessInWindow[window][j] += sumDiffs*1.0/sumSitesCompared;
+
 				}
 				else {
 					for (int k=0; k<numTaxa; k++) 

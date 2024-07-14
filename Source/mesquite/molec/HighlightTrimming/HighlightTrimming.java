@@ -221,7 +221,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			else
 				flags.orFlags(tempFlags);
 		}
-
+ 
 		table.repaintAll();
 	}
 	/*.................................................................................................................*/
