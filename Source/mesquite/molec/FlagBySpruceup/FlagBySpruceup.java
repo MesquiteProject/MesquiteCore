@@ -256,15 +256,23 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			/*-----------------*/
 			double[][] lonelinessInWindow = new double[numWindows][numTaxa];
 			numWindowsDone =0;
+			Debugg.println("numWindows " + numWindows);
 
 			//int firstWindow = 0; //if done all at once
 			//int lastWindow = numWindows-1;//if done all at once
-			int blockSize = numWindows/numThreads;
+			int blockSize = numWindows/numThreads + 1;
+			Debugg.println("blockSize " + blockSize);
+			if (blockSize == 0)
+				blockSize = 1;
 			for (int i = 0; i<numThreads; i++) {
 				int firstWindow = i*blockSize;
 				int lastWindow = firstWindow+blockSize-1;
-				threads[i] = new SpruceupThread(this, data, firstWindow, lastWindow, windowSize, windowIncrement, flags, lonelinessInWindow);
-				threads[i] .start();  
+				if (lastWindow > numWindows-1)
+					lastWindow = numWindows-1;
+				if (firstWindow*windowIncrement<numChars){
+					threads[i] = new SpruceupThread(this, data, firstWindow, lastWindow, windowSize, windowIncrement, flags, lonelinessInWindow);
+					threads[i] .start();  
+				}
 			}
 
 			/*-----------------*/
@@ -274,7 +282,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 					Thread.sleep(20);
 					allDone = true;
 					for (int i= 0; i<numThreads;i++) {
-						if (!threads[i].done)
+						if (threads[i] != null && !threads[i].done)
 							allDone = false;
 					}
 					if (numWindowsDone%10==0)
@@ -298,11 +306,13 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 				if (numWindowsCompared>0)
 					lonelinessOverall[it] = lonelinessOverall[it]/numWindowsCompared;
 			}
+			for (int it = 0; it<numTaxa; it++)
+		//	Debugg.println(" taxon " + it + " In first window " + lonelinessInWindow[0][it]+ " overall " + lonelinessOverall[it]);
 
 			//Now look for outliers
 			for (int window=0; window<numWindows; window++) {
 				int windowStart = window*windowIncrement;
-				int windowEnd = windowStart+windowSize;
+				int windowEnd = windowStart+windowSize-1;
 				if (windowEnd>= numChars)
 					windowEnd = numChars-1;
 				for (int it = 0; it<numTaxa; it++) {
@@ -418,7 +428,7 @@ class SpruceupThread extends MesquiteThread {
 		//WITHIN A WINDOW
 		for (int window=firstWindow; window<=lastWindow; window++) {
 			int windowStart = window*windowIncrement;
-			int windowEnd = windowStart+windowSize;
+			int windowEnd = windowStart+windowSize-1;
 			if (windowEnd>= numChars)
 				windowEnd = numChars-1;
 
