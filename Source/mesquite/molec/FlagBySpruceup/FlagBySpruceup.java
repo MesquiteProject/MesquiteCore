@@ -306,7 +306,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 				if (numWindowsCompared>0)
 					lonelinessOverall[it] = lonelinessOverall[it]/numWindowsCompared;
 			}
-			for (int it = 0; it<numTaxa; it++)
+		//	for (int it = 0; it<numTaxa; it++)
 		//	Debugg.println(" taxon " + it + " In first window " + lonelinessInWindow[0][it]+ " overall " + lonelinessOverall[it]);
 
 			//Now look for outliers
