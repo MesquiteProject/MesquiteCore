@@ -175,8 +175,6 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		if (queryOptions())
 			storePreferences();
 	}
-	
-	//NOTE: Debugg.println: This doesn't recover correct flagging on restoring saved file
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets options for Spruceup criterion", "", commandName, "setOptions")) {
