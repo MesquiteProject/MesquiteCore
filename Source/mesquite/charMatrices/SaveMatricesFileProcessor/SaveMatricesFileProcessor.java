@@ -84,7 +84,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		return temp;
 	}
 	/*.................................................................................................................*/
-	public void queryOptionsOtherThanEmployees() {
+	public void queryLocalOptions() {
 		String current = "";
 		if (directoryPath != null)
 			current = " (current: " + StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator) + ")";

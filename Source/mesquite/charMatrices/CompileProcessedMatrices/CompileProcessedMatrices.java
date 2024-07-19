@@ -77,7 +77,7 @@ public class CompileProcessedMatrices extends FileProcessor {
 		openAfterCompiled = AlertDialog.query(containerOfModule(), "Open when done?", "Open file of compiled matrices when finished?", "Open", "Don't", def);
 	}
 	/*.................................................................................................................*/
-	public void queryOptionsOtherThanEmployees () {
+	public void queryLocalOptions () {
 	 	queryOpenAfter();
 	}
 	/*.................................................................................................................*/

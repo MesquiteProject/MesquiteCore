@@ -95,15 +95,13 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	}
 	/*.................................................................................................................*/
 
-	/** Todo:
-	 * Add button to load script.
-	 * Provoke all employees already hired and scripted to ask for their parameters again? 
-	 * -- Have this as a button in process dialog to reset non-employee parameters. (aligners, trimmers, etc.?)
-	 * 
-	 */
-	/*.................................................................................................................*/
+
+	/*=============================================================================================================*/
+	/* Primarily user interface methods
+	 *    */
+/*.................................................................................................................*/
+	//execute script to load previous processors and their parameters
 	void executeScript(String script) {
-		//Assumes fileProcessorsCleared etc.
 		Puppeteer p = new Puppeteer(this);
 		CommandRecord mr = MesquiteThread.getCurrentCommandRecord();
 
@@ -119,8 +117,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		}
 	
 	}
-	/*=============================================================================================================*/
-	JLabel intro1, intro2;
+	/*.................................................................................................................*/
 	List processorList = null;
 	boolean fromSavedScript = false;
 	
@@ -148,6 +145,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 			
 	}
 	
+	JLabel intro1, intro2;
 	void setIntro(boolean fromSavedScript) {
 		if (fileProcessors.size()==0) {
 			intro1.setText("For each file examined, how do you want to process it?");
@@ -167,7 +165,6 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	}
 	/*.................................................................................................................*/
 	public boolean showProcessDialog() {
-		//DLOG DLOG
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Processing Files",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
@@ -201,16 +198,13 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		dialog.addHorizontalLine(1);
 		dialog.completeAndShowDialog("Process", "Cancel", null, "PROCESS");
 
-
-
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
 
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("Add")) {
-			//You have hit ADD, so let's add to current script. 
+		if (e.getActionCommand().equalsIgnoreCase("Add")) { //You have hit ADD, so let's add to current script. 
 			//Look for and hire the next processor, and capture its script for later use
 			boolean wasUTIS = MesquiteThread.unknownThreadIsScripting;
 			MesquiteThread.unknownThreadIsScripting = false;
@@ -227,14 +221,14 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				fromSavedScript = false;
 			}
 		}
-		else if (e.getActionCommand().equalsIgnoreCase("Clear")) {
+		else if (e.getActionCommand().equalsIgnoreCase("Clear")) { //You have hit ADD, so remove all processors. 
 			removeAllProcessors();
 			fromSavedScript = false;
 			setIntro(fromSavedScript);
 			currentScript = "";
 			preferencesScript = "";
 		} 
-		else if (e.getActionCommand().equalsIgnoreCase("Load")) {
+		else if (e.getActionCommand().equalsIgnoreCase("Load")) {  //You have hit Load, choose and execute stored script
 			MesquiteFile f = MesquiteFile.open(true, (FilenameFilter)null, "Open text file with processing script", null);
 			if (f!= null) {
 				String script = MesquiteFile.getFileContentsAsString(f.getPath());
@@ -250,10 +244,10 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				}
 			}
 		} 
-		else if (e.getActionCommand().equalsIgnoreCase("resetParams")) {
+		else if (e.getActionCommand().equalsIgnoreCase("resetParams")) {//Ask all processors to re-query regarding options
 			for (int i= 0; i< fileProcessors.size(); i++){
 				FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
-				fProcessor.employeesQueryOptionsOtherThanEmployees();
+				fProcessor.employeesQueryLocalOptions();
 			}
 			currentScript = recaptureScript();
 			preferencesScript = currentScript;
@@ -261,21 +255,21 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 
 		}
 	}
-	/*=============================================================================================================*/
+	/*.................................................................................................................*/
+	// set up the processors.
 	protected boolean selectProcessors(){
 		if (!firstFile)
 			return true;
-
+		//If there is a preferences script, start with it.
 		if (preferencesScript != null){
-			//here we hire the processors implied by the preferences script
-			executeScript(preferencesScript);
+			executeScript(preferencesScript); 			
 			fromSavedScript = true;
 		}	
 		currentScript = preferencesScript;
 		if (currentScript == null)
 			currentScript = "";
 
-		//Show Dialog to controc processing
+		//Now show Dialog to allow user to set processing choices
 		if (!showProcessDialog()){
 			removeAllProcessors();
 			return false;
@@ -287,11 +281,25 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 
 		return true;
 	}
+	/*.....................................................................................................*/
 	void recordProcessor(FileProcessor processor){
 		if (fileProcessors == null)
 			fileProcessors = new Vector();
 		if (fileProcessors.indexOf(processor)<0)
 			fileProcessors.addElement(processor);
+	}
+	/*.....................................................................................................*/
+	String recaptureScript() {
+		if (fileProcessors == null)
+			return "";
+		String s = "";
+		for (int i = 0; i< fileProcessors.size(); i++) {
+			FileProcessor processor = (FileProcessor)fileProcessors.elementAt(i);
+			s += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
+			String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
+			s +="\ntell It;\n" + sn + "\nendTell;";
+		}
+		return s;
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -308,21 +316,11 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		return null;
 	}
 
-	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
-	public boolean requestPrimaryChoice(){
-		return true;  
-	}
-	/*.................................................................................................................*/
-	public boolean isPrerelease(){
-		return false;
-	}
-	/*.................................................................................................................*/
-	public boolean isSubstantive(){
-		return false;
-	}
 
+	/*=============================================================================================================*/
+/* File processing methods   */
 	/*.................................................................................................................*/
+	
 	public void writeFile(MesquiteFile nMF){
 		NexusFileInterpreter nfi =(NexusFileInterpreter) fileCoord.findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
 		if (nfi!=null) {
@@ -331,17 +329,10 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	}
 
 
-
-
 	protected boolean firstResultsOverall = true;
 	protected boolean firstResultsOverallFound = false;
 	protected StringBuffer resultsHeading = new StringBuffer();
 
-
-	/*.................................................................................................................*
-	protected String getSavedFilesDirectoryPath(MesquiteFile fileToRead) {
-		return fileToRead.getDirectoryName() + "savedFiles" + MesquiteFile.fileSeparator;
-	}
 	/*.................................................................................................................*/
 	boolean[] warned;
 	protected boolean beforeProcessFiles() {
@@ -374,6 +365,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	/*.................................................................................................................*/
 	protected boolean processFile(MesquiteFile fileToRead, StringBuffer results, MesquiteBoolean requestToSequester) {
 		logln("Processing file " + fileToRead.getName() + " in " + fileToRead.getDirectoryName() + "...");
+		if (fileProcessors == null)
+			fileProcessors = new Vector();
 		incrementMenuResetSuppression();
 		ProgressIndicator progIndicator2 = new ProgressIndicator(null,"Importing File "+ fileToRead.getName(), fileToRead.existingLength());
 		progIndicator2.start();
@@ -560,18 +553,6 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		}
 		processProject.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 	}
-	String recaptureScript() {
-		if (fileProcessors == null)
-			return "";
-		String s = "";
-		for (int i = 0; i< fileProcessors.size(); i++) {
-			FileProcessor processor = (FileProcessor)fileProcessors.elementAt(i);
-			s += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
-			String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
-			s +="\ntell It;\n" + sn + "\nendTell;";
-		}
-		return s;
-	}
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstFile;
 	}
@@ -660,6 +641,19 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation() {
+		return false;
+	}
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public boolean requestPrimaryChoice(){
+		return true;  
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;
+	}
+	/*.................................................................................................................*/
+	public boolean isSubstantive(){
 		return false;
 	}
 

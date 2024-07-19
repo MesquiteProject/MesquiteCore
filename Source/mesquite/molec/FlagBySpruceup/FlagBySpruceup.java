@@ -176,7 +176,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 
 		} 
 	}
-	public void queryOptionsOtherThanEmployees () {
+	public void queryLocalOptions () {
 		if (queryOptions())
 			storePreferences();
 	}

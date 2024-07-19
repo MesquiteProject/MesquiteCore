@@ -93,7 +93,7 @@ public class FlagByPhyIN extends MatrixFlagger implements ActionListener {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public void queryOptionsOtherThanEmployees () {
+	public void queryLocalOptions () {
 	 		if (queryOptions())
 	 			storePreferences();
 	}

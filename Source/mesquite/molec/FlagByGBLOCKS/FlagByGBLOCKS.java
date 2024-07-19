@@ -151,7 +151,7 @@ public class FlagByGBLOCKS extends MatrixFlagger implements ActionListener {
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
-	public void queryOptionsOtherThanEmployees () {
+	public void queryLocalOptions () {
 	 		if (queryOptions())
 	 			storePreferences();
 	}

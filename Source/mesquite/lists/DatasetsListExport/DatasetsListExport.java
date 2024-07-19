@@ -30,7 +30,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class DatasetsListExport extends DatasetsListUtility implements ItemListener {
+public class DatasetsListExport extends DatasetsListProcessorUtility implements ItemListener {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Export Matrices ";

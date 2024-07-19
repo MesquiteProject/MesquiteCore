@@ -25,12 +25,13 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class DatasetsListConcatenate extends DatasetsListUtility {
-	boolean concatExcludedCharacters = false;
-	boolean prefixGroupLabelNames = false;
-	boolean anyExcluded = false;
-	boolean removeConcatenated = false;
+public class DatasetsListConcatenate extends DatasetsListProcessorUtility {
+	boolean anyExcluded = true;  //default true so provokes question if no data matrix
 	boolean preferencesSet=false;
+	MesquiteBoolean removeConcatenated = new MesquiteBoolean(false); //(-e)
+	MesquiteBoolean concatExcludedCharacters = new MesquiteBoolean(false);
+	MesquiteBoolean prefixGroupLabelNames = new MesquiteBoolean(false);
+	boolean alreadyQueried = false;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Concatenate Matrices";
@@ -46,17 +47,21 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
+		if (!MesquiteThread.isScripting()) {
+			if (!queryOptions(false))
+				return false;
+		}
 		return true;
 	}
 	
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference(String tag, String content) {
 		if ("prefixGroupLabelNames".equalsIgnoreCase(tag))
-			prefixGroupLabelNames = MesquiteBoolean.fromTrueFalseString(content);
+			prefixGroupLabelNames.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("concatExcludedCharacters".equalsIgnoreCase(tag))
-			concatExcludedCharacters = MesquiteBoolean.fromTrueFalseString(content);
+			concatExcludedCharacters.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("removeConcatenated".equalsIgnoreCase(tag))
-			removeConcatenated = MesquiteBoolean.fromTrueFalseString(content);
+			removeConcatenated.setValue(MesquiteBoolean.fromTrueFalseString(content));
 
 		preferencesSet = true;
 	}
@@ -71,12 +76,52 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 		preferencesSet = true;
 		return buffer.toString();
 	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("setRemoveConcatenated "+ removeConcatenated.toOffOnString());
+		temp.addLine("setPrefixGroupLabelNames "+ prefixGroupLabelNames.toOffOnString());
+		temp.addLine("setConcatExcludedCharacters "+ concatExcludedCharacters.toOffOnString());
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		 if (checker.compare(this.getClass(), "Sets whether or not to remove concatenated matrices.", "[on or off]", commandName, "setRemoveConcatenated")) {
+			boolean current = removeConcatenated.getValue();
+			removeConcatenated.toggleValue(parser.getFirstToken(arguments));
+			if (current!=removeConcatenated.getValue()) {
+				parametersChanged();
+			}
+		}
+		 else if (checker.compare(this.getClass(), "Sets whether or not to remove concatenated matrices.", "[on or off]", commandName, "setPrefixGroupLabelNames")) {
+			boolean current = prefixGroupLabelNames.getValue();
+			prefixGroupLabelNames.toggleValue(parser.getFirstToken(arguments));
+			if (current!=prefixGroupLabelNames.getValue()) {
+				parametersChanged();
+			}
+		}
+		 else if (checker.compare(this.getClass(), "Sets whether or not to remove concatenated matrices.", "[on or off]", commandName, "setConcatExcludedCharacters")) {
+			boolean current = concatExcludedCharacters.getValue();
+			concatExcludedCharacters.toggleValue(parser.getFirstToken(arguments));
+			if (current!=concatExcludedCharacters.getValue()) {
+				parametersChanged();
+			}
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+	/** Re-query the user about all options and setting OTHER THAN most cases of setting employees.
+	 * For use by ProcessDataFiles and ProcessMatrices. Used to review current parameter setting while leaving (most) employee relationships in place.*/
+	public void queryLocalOptions () {
+		queryOptions(true);
+	}
 
 	/*.................................................................................................................*/
-	public boolean queryOptions() {
-		loadPreferences();
+	public boolean queryOptions(boolean overrideScripting) {
 
-		if (!MesquiteThread.isScripting()){
+		if ((overrideScripting || !MesquiteThread.isScripting()) && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Concatenated matrices")){
+			alreadyQueried = true;
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
 			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 			if (anyExcluded) {
@@ -85,17 +130,17 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 			dialog.appendToHelpString("You may choose to have the original matrices deleted after concatenation. <BR>");
 			dialog.appendToHelpString("Any characters not currently assigned to groups will be assigned to a group whose name is the name of the matrix from which they came. ");
 			dialog.appendToHelpString("Those characters that where previously assigned to a group will still be assigned to that group, or, optionally, to a new group whose name is its existing group name with the matrix name prefixed to it. ");
+			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeConcatenated.getValue());
+			Checkbox prefixGroupLabelNamesBox = dialog.addCheckBox("Prefix existing character group labels with matrix name", prefixGroupLabelNames.getValue());
 			Checkbox deleteExcludedBox=null;
 			if (anyExcluded)
-				deleteExcludedBox = dialog.addCheckBox("Remove excluded characters", !concatExcludedCharacters);
-			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeConcatenated);
-			Checkbox prefixGroupLabelNamesBox = dialog.addCheckBox("Prefix existing character group labels with matrix name", prefixGroupLabelNames);
+				deleteExcludedBox = dialog.addCheckBox("Remove excluded characters", !concatExcludedCharacters.getValue());
 			dialog.completeAndShowDialog(true);
 			if (buttonPressed.getValue()==0)  {
-				removeConcatenated = deleteMatricesBox.getState();
-				prefixGroupLabelNames = prefixGroupLabelNamesBox.getState();
+				removeConcatenated.setValue(deleteMatricesBox.getState());
+				prefixGroupLabelNames.setValue(prefixGroupLabelNamesBox.getState());
 				if (anyExcluded)
-					concatExcludedCharacters = !deleteExcludedBox.getState();
+					concatExcludedCharacters.setValue(!deleteExcludedBox.getState());
 				storePreferences();
 			}
 			dialog.dispose();
@@ -111,13 +156,14 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 	}
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
+		anyExcluded = false;
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (data.numCharsCurrentlyIncluded() < data.getNumChars())
 				anyExcluded = true;
 		}
 		getProject().getCharacterMatrices().incrementNotifySuppress(); 
-		if (!queryOptions())
+		if (!alreadyQueried && getHiredAs() != DatasetsListProcessorUtility.class && !queryOptions(false))
 			return false;
 		int count = 0;
 		int countFailed = 0;
@@ -149,7 +195,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 					}
 
 				}
-				boolean success = chunk.concatenate(data, false, concatExcludedCharacters, true, prefixGroupLabelNames, false, false);
+				boolean success = chunk.concatenate(data, false, concatExcludedCharacters.getValue(), true, prefixGroupLabelNames.getValue(), false, false);
 				if (success){
 					count++;
 					if (count % 100== 0)
@@ -157,7 +203,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 					if (count > 1)
 						name = name + "+";
 					name = name + "(" + data.getName() + ")";
-					if (removeConcatenated){
+					if (removeConcatenated.getValue()){
 							data.deleteMe(false);
 							deleted++;
 					}
@@ -168,7 +214,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 
 			for (int im = 0; im < chunks.size(); im++){
 				CharacterData ch = (CharacterData)chunks.elementAt(im);
-			boolean success = starter.concatenate(ch, false, concatExcludedCharacters, true, false, false, false);
+			boolean success = starter.concatenate(ch, false, concatExcludedCharacters.getValue(), true, false, false, false);
 			ch.deleteMe(false);
 			}
 			
@@ -181,7 +227,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 
 				starter.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
 			}
-			boolean success = starter.concatenate(data, false, concatExcludedCharacters, true, prefixGroupLabelNames, false, false);
+			boolean success = starter.concatenate(data, false, concatExcludedCharacters.getValue(), true, prefixGroupLabelNames.getValue(), false, false);
 			if (success){
 				count++;
 				if (count % 100== 0)
@@ -189,7 +235,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 				if (count > 1)
 					name = name + "+";
 				name = name + "(" + data.getName() + ")";
-				if (removeConcatenated){
+				if (removeConcatenated.getValue()){
 						data.deleteMe(false);
 						deleted++;
 				}
@@ -210,7 +256,8 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 		unpauseAllPausables(v);
 		getProject().getCharacterMatrices().decrementNotifySuppress(); 
 		table.setNumRows(table.getNumRows()-deleted+1);
-		((ListModule)employer).forceRecalculations();
+		if (employer instanceof ListModule)
+			((ListModule)employer).forceRecalculations();
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		resetAllMenuBars();

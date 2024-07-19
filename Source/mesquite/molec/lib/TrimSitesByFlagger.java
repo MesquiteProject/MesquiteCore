@@ -78,7 +78,7 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 		}
 		 */
 		String report = data.deleteByMatrixFlags(flags);
-		logln(report);
+		//logln("(" + flaggerTask.getName() + " on matrix " + data.getName() + ") " + report);
 
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();

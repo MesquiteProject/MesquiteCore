@@ -24,10 +24,10 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class AlterMatrixAsUtility extends DatasetsListUtility {
+public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Alter Matrix As Utility";
+		return "Alter/Transform Matrices";  
 	}
 	public String getNameForMenuItem() {
 		return "Alter/Transform Matrices...";
@@ -36,9 +36,52 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 	public String getExplanation() {
 		return "Alters selected matrices in List of Character Matrices window." ;
 	}
+	DataAlterer alterTask = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		if (arguments !=null) {
+			alterTask = (DataAlterer)hireNamedEmployee(DataAlterer.class, arguments);
+			if (alterTask == null)
+				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
+		}
+		else if (!MesquiteThread.isScripting()) {
+			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer/Transformer of matrices");
+			if (alterTask == null)
+				return sorry(getName() + " couldn't start because no tranformer module obtained.");
+		}
 		return true;
+	}
+ 	public String getNameForProcessorList() {
+ 		if (alterTask != null)
+ 			return getName() + "(" + alterTask.getName() + ")";
+ 		return getName();
+   	}
+	/*.................................................................................................................*/
+ public String getNameAndParameters() {
+	 if (alterTask==null)
+		 return "Alter Matrices";
+	 else
+		 return alterTask.getNameAndParameters();
+ }
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("setDataAlterer ", alterTask);  
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setDataAlterer")) {
+			DataAlterer temp =  (DataAlterer)replaceEmployee(DataAlterer.class, arguments, "Data alterer", alterTask);
+			if (temp!=null) {
+				alterTask = temp;
+				return alterTask;
+			}
+
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
@@ -53,10 +96,7 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 	}
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
-		DataAlterer tda= (DataAlterer)hireEmployee(DataAlterer.class, "How to alter data");
-		if (tda == null)
-			return false;
-		CompatibilityTest test = tda.getCompatibilityTest();
+		CompatibilityTest test = alterTask.getCompatibilityTest();
 		firstTime = true;
 		getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
 		if (getProject() != null)
@@ -69,7 +109,7 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 				if (datas.size()<=50)
 					logln("Altering matrix \"" + data.getName() + "\"");
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
-				boolean a = tda.alterData(data, null, null, alteredDataParameters);
+				boolean a = alterTask.alterData(data, null, null, alteredDataParameters);
 				if (datas.size()>50 && im != 0 && im % 50 == 0)
 					logln("" + (im) +  " matrices altered.");
 				if (a){
