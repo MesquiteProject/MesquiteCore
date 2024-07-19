@@ -249,6 +249,8 @@ public class DatasetsListConcatenate extends DatasetsListProcessorUtility {
 		logln("Total matrices concatenated: " + count);
 		if (starter != null)
 			starter.setName(name);
+		datas.removeAllElements(false);
+		datas.addElement(starter, false);
 		if (! found)
 			discreetAlert("Two more more matrices should be selected first in order to concatenate them");
 		if (countFailed>0)

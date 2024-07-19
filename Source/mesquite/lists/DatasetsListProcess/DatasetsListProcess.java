@@ -299,16 +299,17 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 			preferencesScript = currentScript;
 			storePreferences();
 			Vector v = pauseAllPausables();
+			MesquiteTimer timer = new MesquiteTimer();
+			timer.start();
 			boolean continuePlease = true;
 			boolean[] warned = new boolean[matrixProcessors.size()];
 			for (int i= 0; i< matrixProcessors.size(); i++)
 				warned[i] = false;
-
 			for (int i= 0; i< matrixProcessors.size() && continuePlease; i++){
 				DatasetsListProcessorUtility mProcessor = (DatasetsListProcessorUtility)matrixProcessors.elementAt(i);
 				if (mProcessor!=null) {
 					logln("Processing with " + mProcessor.getNameAndParameters());
-					boolean success = mProcessor.operateOnDatas(datas, table);
+					boolean success = mProcessor.operateOnDatas(datas, table); //This could change how many matrices are in data, e.g. if it concatenates
 					if (!success) { 
 						logln("Sorry,  " + mProcessor.getNameAndParameters() + " did not succeed in processing the matrices ");
 						if (!warned[i]) { 
@@ -320,6 +321,10 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 				}
 
 			}
+			timer.end();
+			long time = timer.getAccumulatedTime();
+			if (time>1000)
+				logln("Matrix processing finished after " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
 			unpauseAllPausables(v);
 		}
 		else {

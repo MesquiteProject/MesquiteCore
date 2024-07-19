@@ -324,6 +324,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			/*-----------------*/
 			//Now look for outliers
 			String output = (",Window Start,A,B,C,D,E,F\n");
+			long count = 0;
 			boolean saveResults = false;
 			for (int window=0; window<numWindows; window++) {
 				int windowStart = window*windowIncrement;
@@ -337,6 +338,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 							output += "," + MesquiteDouble.toStringDigitsSpecified(lonelinessInWindow[window][it], 9);
 						if (lonelinessInWindow[window][it]>cutoff*lonelinessOverall[it]) {
 							flags.addCellFlag(it, windowStart, windowEnd);
+							count++;
 						}
 					}
 					if (saveResults)
@@ -348,8 +350,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			CommandRecord.tick("Spruceup complete. Number of windows done " + numWindowsDone + " of " + numWindows);
 			timer.end();
 			long time = timer.getAccumulatedTime();
-			if (time>100)
-				logln("Spruceup calculation took " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
+			logln("Spruceup found " + count + " cells to trim in matrix " + data.getName() + " (" + numChars + " characters) in " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
 
 		}
 		
