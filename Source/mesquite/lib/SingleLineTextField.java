@@ -47,6 +47,12 @@ public class SingleLineTextField extends TextField  {
 		if (fieldLabel!=null)
 			fieldLabel.setText(s);
 	}
+	
+	public void setEnabled(boolean b){
+		if (fieldLabel!=null)
+			fieldLabel.setEnabled(b);
+		super.setEnabled(b);
+	}
 	/*.................................................................................................................*/
 	public Dimension getPreferredSize() {
 		Dimension d = super.getPreferredSize();

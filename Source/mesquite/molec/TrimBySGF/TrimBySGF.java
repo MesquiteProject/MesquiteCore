@@ -39,7 +39,7 @@ public class TrimBySGF extends TrimSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Trim Sites by Simple Gappiness Filter";
+		return "Trim Sites by SGF (Simple Gappiness Filter)";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

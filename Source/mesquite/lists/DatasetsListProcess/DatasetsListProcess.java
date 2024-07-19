@@ -295,7 +295,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 
 		boolean processesChosen = showProcessDialog();
 		if (processesChosen && matrixProcessors != null){
-			//Process must have been hit. Capture the current script.
+			//"Process" button must have been hit. Remember the current script.
 			preferencesScript = currentScript;
 			storePreferences();
 			Vector v = pauseAllPausables();

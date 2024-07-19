@@ -20,6 +20,8 @@ import java.awt.Button;
 import java.awt.Checkbox;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.lib.Bits;
@@ -33,6 +35,7 @@ import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.RadioButtons;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
@@ -40,7 +43,7 @@ import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 
 /* ======================================================================== */
-public class FlagBySGF extends MatrixFlagger implements ActionListener {
+public class FlagBySGF extends MatrixFlagger implements ActionListener, ItemListener {
 
 	/** TODO?
 	 * --  call this SGF for simple gappiness filter? Or Gapsi?
@@ -50,16 +53,22 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 	/*Gappiness assessment parameters =================================*/
 	static boolean filterSiteGappinessDEFAULT = true;
 	static boolean filterBlockGappinessDEFAULT = true;
-	static boolean forgiveTaxaWithoutDataDEFAULT = true;
+	//static boolean forgiveTaxaWithoutDataDEFAULT = true;
 	static double siteGappinessThresholdDEFAULT = 0.5; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
 	static int gappyBlockSizeDEFAULT = 5; // If in a block of at least this many sites, the first and last site is bad,
 	static double blockGappinessThresholdDEFAULT = 0.5; // and the proportion of bad sites is this high or higher,
 	static int gappyBoundaryDEFAULT = 4; // and there are no stretches of this many good sites in a row,
-
+	static int IGNORE_TAXA_ALL_GAPS = 0;
+	static int COUNT_ALL_CURRENT_TAXA = 1;
+	static int ASSUME_SPECIFIED_NUM_TAXA = 2;
+	static int taxonCountingOptionDEFAULT = IGNORE_TAXA_ALL_GAPS; //0 = "Ignore gaps in taxa with no data", 1 = "Count gaps in taxa in current file", 2 ="Assume specified total number of taxa"
+	
 	MesquiteBoolean filterSiteGappiness = new MesquiteBoolean(filterSiteGappinessDEFAULT);
 	MesquiteBoolean filterBlockGappiness = new MesquiteBoolean(filterBlockGappinessDEFAULT);
-	MesquiteBoolean forgiveTaxaWithoutData = new MesquiteBoolean(forgiveTaxaWithoutDataDEFAULT);
-
+	//MesquiteBoolean forgiveTaxaWithoutData = new MesquiteBoolean(forgiveTaxaWithoutDataDEFAULT);
+	int taxonCountingOption = taxonCountingOptionDEFAULT;
+	int specifiedNumTaxa = MesquiteInteger.unassigned;
+	
 	double siteGappinessThreshold = siteGappinessThresholdDEFAULT; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
 	int gappyBlockSize = gappyBlockSizeDEFAULT; // If in a block of at least this many sites, the first and last site is bad,
 	double blockGappinessThreshold = blockGappinessThresholdDEFAULT; // and the proportion of bad sites is this high or higher,
@@ -96,7 +105,7 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "filterBlockGappiness", filterBlockGappiness);  
 		StringUtil.appendXMLTag(buffer, 2, "filterSiteGappiness", filterSiteGappiness);  
-		StringUtil.appendXMLTag(buffer, 2, "forgiveTaxaWithoutData", forgiveTaxaWithoutData);  
+		StringUtil.appendXMLTag(buffer, 2, "taxonCountingOption", taxonCountingOption);  
 		StringUtil.appendXMLTag(buffer, 2, "siteGappinessThreshold", siteGappinessThreshold);  
 		StringUtil.appendXMLTag(buffer, 2, "gappyBlockSize", gappyBlockSize);  
 		StringUtil.appendXMLTag(buffer, 2, "blockGappinessThreshold", blockGappinessThreshold);  
@@ -121,15 +130,18 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 			filterBlockGappiness.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("filterSiteGappiness".equalsIgnoreCase(tag))
 			filterSiteGappiness.setValue(MesquiteBoolean.fromTrueFalseString(content));
-		if ("forgiveTaxaWithoutData".equalsIgnoreCase(tag))
-			forgiveTaxaWithoutData.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("taxonCountingOption".equalsIgnoreCase(tag))
+			taxonCountingOption= MesquiteInteger.fromString(content);
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setfilterBlockGappiness " + filterBlockGappiness.toOffOnString());
 		temp.addLine("setfilterSiteGappiness " + filterSiteGappiness.toOffOnString());
-		temp.addLine("setforgiveTaxaWithoutData " + forgiveTaxaWithoutData.toOffOnString());
+		temp.addLine("setTaxonCountingOption " + taxonCountingOption);
+		if (taxonCountingOption==2)
+			temp.addLine("setSpecifiedNumTaxa " + MesquiteInteger.toString(specifiedNumTaxa));
+		temp.addLine("setTaxonCountingOption " + taxonCountingOption);
 		temp.addLine("setSiteGappinessThreshold " + siteGappinessThreshold);
 		temp.addLine("setgappyBlockSize " + gappyBlockSize);
 		temp.addLine("setBlockGappinessThreshold " + blockGappinessThreshold);
@@ -140,16 +152,27 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 
 	DoubleField pgSField;
 	Checkbox fIGS;
-	Checkbox fG, fTT;
+	Checkbox fG;
 	IntegerField gBS;
-	IntegerField gB;
+	IntegerField gB, sNT;
 	DoubleField pgBField;
+	RadioButtons numTaxaButtons;
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Simple Gappiness Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		pgSField = dialog.addDoubleField("Proportion of gaps that marks site as too gappy (\"bad\")", siteGappinessThreshold, 4);
-		fTT = dialog.addCheckBox("Ignore gaps in taxa with no data", forgiveTaxaWithoutData.getValue());
+		numTaxaButtons = dialog.addRadioButtons (new String[] {"Ignore gaps in taxa with no data", "Count gaps in all taxa in current file", "Assume specified total number of taxa (see Help button):"}, taxonCountingOption);
+		numTaxaButtons.addItemListener(this);
+		String s = "The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
+		+ " This could result in different countings of the proportion of gaps depending on whether the trimming is done on individual files for each locus (because each file will know only"
+		+" about the number of taxa that have data for that locus) versus in the compiled file (which will know about all of the taxa)."
+		+ "<p>If you are processing separate files for each locus but want the proportion of gaps to be assessed over the final set of all taxa," 
+		+ " choose \"Assume specified total\", and indicate the total number of taxa in the final compilation."
+		+ " <p>Choosing \"Ignore\" or \"Count\" will generally result in a more permissive trimming, and may result in different results when trimmed as a concatenated matrix versus as individual loci.";
+		dialog.appendToHelpString(s);
+		sNT = dialog.addIntegerField("                           Specified total number of taxa", specifiedNumTaxa, 4);
+		sNT.setEnabled(taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA);
 		dialog.addHorizontalLine(1);
 		dialog.addLabel("Selecting individual sites");
 		fIGS = dialog.addCheckBox("Select individual gappy sites (whether or not part of gappy block)", filterSiteGappiness.getValue());
@@ -173,10 +196,12 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 		if (buttonPressed.getValue()==0)  {
 			filterBlockGappiness.setValue(fG.getState());
 			filterSiteGappiness.setValue(fIGS.getState());
-			forgiveTaxaWithoutData.setValue(fTT.getState());
 			siteGappinessThreshold = pgSField.getValue();
 			gappyBlockSize = gBS.getValue();
 			gappyBoundary = gB.getValue();
+			taxonCountingOption = numTaxaButtons.getValue();
+			if (taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA)
+				specifiedNumTaxa = sNT.getValue();
 			blockGappinessThreshold = pgBField.getValue();
 
 			storePreferences();
@@ -185,13 +210,19 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 		return (buttonPressed.getValue()==0);
 	}
 
+	public void itemStateChanged(ItemEvent e) {
+			sNT.setEnabled(numTaxaButtons.getValue() ==ASSUME_SPECIFIED_NUM_TAXA);
+		
+	}
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
 			pgSField.setValue(siteGappinessThresholdDEFAULT);
 			fIGS.setState(filterSiteGappinessDEFAULT);
 			fG.setState(filterBlockGappinessDEFAULT);
-			fTT.setState(forgiveTaxaWithoutDataDEFAULT);
+			numTaxaButtons.setValue(taxonCountingOptionDEFAULT);
+			sNT.setValue(MesquiteInteger.unassigned);
+			sNT.setEnabled(numTaxaButtons.getValue() == ASSUME_SPECIFIED_NUM_TAXA);
 			gBS.setValue(gappyBlockSizeDEFAULT);
 			gB.setValue(gappyBoundaryDEFAULT);
 			pgBField.setValue(blockGappinessThresholdDEFAULT);
@@ -210,11 +241,20 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 				parametersChanged();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to forgive gaps in taxa with no data.", "[on or off]", commandName, "setforgiveTaxaWithoutData")) {
-			boolean current = forgiveTaxaWithoutData.getValue();
-			forgiveTaxaWithoutData.toggleValue(parser.getFirstToken(arguments));
-			if (current!=forgiveTaxaWithoutData.getValue()) {
-				parametersChanged();
+		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data, to count all taxa in current file, or to count as if there were a specified number.", "[0, 1, 2]", commandName, "setTaxonCountingOption")) {
+			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(s)){
+				taxonCountingOption = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets specified number of taxa to count.", "[integer]", commandName, "setSpecifiedNumTaxa")) {
+			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(s)){
+				specifiedNumTaxa = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to filter blocks by gappiness also.", "[on or off]", commandName, "setfilterBlockGappiness")) {
@@ -286,11 +326,16 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 	boolean gappySite(int k) {
 		return siteGappiness[k]>=siteGappinessThreshold;
 	}
+
+	// options IGNORE_TAXA_ALL_GAPS,  COUNT_ALL_CURRENT_TAXA, ASSUME_SPECIFIED_NUM_TAXA
+	// specifiedNumTaxa. If specifiedNumTaxa is unassigned but taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA, treat as COUNT_ALL_CURRENT_TAXA
 	boolean countTaxon(int it) {
-		if (forgiveTaxaWithoutData.getValue())
+		if (taxonCountingOption == IGNORE_TAXA_ALL_GAPS)
 			return taxonHasData[it];
 		return true;
 	}
+	
+	int numNegWarnings = 0;
 	/*======================================================*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
@@ -299,12 +344,11 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 			else 
 				flags.reset(data);
 
-
 			Bits charFlags = flags.getCharacterFlags();		
 			int numTaxa = data.getNumTaxa();
 			int numChars = data.getNumChars();
 
-			if (forgiveTaxaWithoutData.getValue()) {
+			if (taxonCountingOption == IGNORE_TAXA_ALL_GAPS) {  //count how many taxa are all gaps
 				numTaxaCounted = 0;
 				if (taxonHasData == null || taxonHasData.length!= numTaxa)
 					taxonHasData = new boolean[numTaxa];
@@ -319,19 +363,38 @@ public class FlagBySGF extends MatrixFlagger implements ActionListener {
 						numTaxaCounted++;
 				}
 			}
+			else if (taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA){
+				if (specifiedNumTaxa < numTaxa){
+					if (numNegWarnings<10)
+						discreetAlert("ERROR: Specified number of taxa in SGF (" + specifiedNumTaxa + ") is smaller than current number of taxa in the file (" + numTaxa + ")");
+					else if (numNegWarnings<11)
+						logln("No more warnings will be given about ERROR that specified number of taxa in SGF is smaller than current number of taxa in the file");
+					numNegWarnings++;
+				}
+				if (MesquiteInteger.isPositive(specifiedNumTaxa))
+					numTaxaCounted = specifiedNumTaxa;
+				else
+					numTaxaCounted = numTaxa;
+			}
 			else
 				numTaxaCounted = numTaxa;
+				
 			if (siteGappiness == null || siteGappiness.length != numChars) {
 				siteGappiness = new double[numChars];
 			}
 			for (int ic=0; ic<numChars; ic++) {
 				int gapCount = 0;
+				if (taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA && MesquiteInteger.isPositive(specifiedNumTaxa)) {
+					gapCount = specifiedNumTaxa - numTaxa;  //start with a gap count that is number of taxa not included in file!
+					if (gapCount <0)
+						gapCount = 0;
+				}
 				for (int it = 0; it<numTaxa; it++) {
 					if (countTaxon(it) && data.isInapplicable(ic,it)) 
 						gapCount++;
 				}
 				siteGappiness[ic] = 1.0*gapCount/numTaxaCounted;
-				if (gapCount == numTaxaCounted)//if all gaps, delete regardless
+				if (gapCount == numTaxaCounted)//if all gaps, delete regardless 
 					charFlags.setBit(ic, true);
 				else if (filterSiteGappiness.getValue() && gappySite(ic))
 					charFlags.setBit(ic, true); 				

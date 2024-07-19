@@ -146,8 +146,8 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		String s = "This is a limited implementation of Spruceup. In a citation, indicate that the settings are "
 				+ "\"criterion:mean\" and \"distance_method:uncorrected\" [plus the settings you have chosen for cutoff, window size, overlap, etc.]."
 				+ "\nFor a more complete implementation, use the original Spruceup."
-				+ "\n\nReference: Boroweic ML (2018) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments."
-				+ " Journal of Open Source Software 4:1635. https://doi.org/10.21105/joss.01635";
+				+ "<p>Reference: Boroweic ML (2018) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments."
+				+ " Journal of Open Source Software 4:1635. <a href= \"https://doi.org/10.21105/joss.01635\">https://doi.org/10.21105/joss.01635</a>";
 		dialog.appendToHelpString(s);
 		dialog.addBlankLine();
 

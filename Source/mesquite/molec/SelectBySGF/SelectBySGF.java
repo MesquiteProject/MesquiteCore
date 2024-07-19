@@ -38,7 +38,7 @@ public class SelectBySGF extends SelectSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Select by Simple Gappiness Filter";
+		return "Select by SGF (Simple Gappiness Filter)";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
