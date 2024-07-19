@@ -226,6 +226,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
+		//Debugg.println(recalculate only if change to data);
 		calculateNums();
 		if (table !=null)
 			table.repaintAll();
