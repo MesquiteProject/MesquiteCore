@@ -110,7 +110,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		temp.addLine("windowSize " + windowSize);
 		temp.addLine("overlap " + overlap);
 		temp.addLine("numThreads " + numThreads);
-		temp.addLine("resume");
+		temp.addLine("resume");  //Debugg.println( needed also in other flaggers?
 		//		temp.addLine("booleanOption " + booleanOption.toOffOnString());
 		return temp;
 	}
