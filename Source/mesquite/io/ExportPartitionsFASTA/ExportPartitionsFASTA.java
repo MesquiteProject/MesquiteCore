@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.io.xExportPartitionsNEXUS;
+package mesquite.io.ExportPartitionsFASTA;
 /*~~  */
 
 import java.util.*;
@@ -18,6 +18,7 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.assoc.lib.*;
 import mesquite.categ.lib.*;
@@ -25,7 +26,7 @@ import mesquite.cont.lib.*;
 
 
 
-public class xExportPartitionsNEXUS extends FileInterpreterI {
+public class ExportPartitionsFASTA extends FileInterpreterI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;  //make this depend on taxa reader being found?)
@@ -39,12 +40,12 @@ public class xExportPartitionsNEXUS extends FileInterpreterI {
 	}
 	/*.................................................................................................................*/
 	public String preferredDataFileExtension() {
-		return "nex";
+		return "fas";
 	}
 	/*.................................................................................................................*/
 	/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
 	public boolean usesNEXUSflavor(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean canExportEver() {  
@@ -52,12 +53,12 @@ public class xExportPartitionsNEXUS extends FileInterpreterI {
 	}
 	/*.................................................................................................................*/
 	public boolean canExportProject(MesquiteProject project) {  
-		return (project.getNumberCharMatricesVisible(CategoricalState.class) > 0) ;
+		return (project.getNumberCharMatricesVisible(MolecularState.class) > 0) ;
 	}
 
 	/*.................................................................................................................*/
 	public boolean canExportData(Class dataClass) {  
-		return CategoricalData.class.isAssignableFrom(dataClass);
+		return MolecularData.class.isAssignableFrom(dataClass);
 	}
 	/*.................................................................................................................*/
 	public boolean canImport() {  
@@ -71,99 +72,116 @@ public class xExportPartitionsNEXUS extends FileInterpreterI {
 
 	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
-	String fileName = "untitled.nex";
+	String fileName = "untitled.fas";
 	String lineEnding = getLineEnding();
 
 	public CategoricalData findDataToExport(MesquiteFile file, String arguments) { 
-		return (CategoricalData)getProject().chooseData(containerOfModule(), file, null, CategoricalState.class, "Select data to export");
+		return (CategoricalData)getProject().chooseData(containerOfModule(), file, null, MolecularState.class, "Select data to export");
 	}
 
+ 	
 
 	boolean saveFile(CategoricalData data, CharacterPartition partition, CharactersGroup group, String path){
 		Taxa taxa = data.getTaxa();
-		StringBuffer obuffer = new StringBuffer(500);
-		obuffer.append("#NEXUS" + lineEnding + lineEnding + "begin data;" + lineEnding);
-		StringBuffer buffer = new StringBuffer(500);
-		buffer.append("format datatype = ");
-		if (data.getClass() == RNAData.class)
-			buffer.append("rna");
-		else if (data.getClass() == DNAData.class)
-			buffer.append("dna");
-		else if (data.getClass() == ProteinData.class)
-			buffer.append("protein");
-		else if (data.getClass() == CategoricalData.class)
-			buffer.append("standard");
+		int numTaxa = taxa.getNumTaxa();
+		int numChars = data.getNumChars();
+		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		
+		int counter = 1;
+		for (int it = 0; it<numTaxa; it++){
+			if (!data.entirelyInapplicableTaxon(it)){
 
-		int found = 0;
-		buffer.append(" gap = - missing =?;" + lineEnding + "matrix" + lineEnding);
-		StringBuffer forTaxon = new StringBuffer(100);
-		int numTaxa = 0;
-		for (int it=0; it< taxa.getNumTaxa(); it++) {
-			forTaxon.setLength(0);
-			forTaxon.append(StringUtil.tokenize(taxa.getTaxonName(it)));
-			forTaxon.append('\t');
-			found = 0;
-			boolean hasSite = false;
-			for (int ic=0; ic<data.getNumChars(); ic++) {
-				if (partition.getProperty(ic) == group) {
-					if (!hasSite){
-						if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it))
-							hasSite = true;
-					}
-					if (data instanceof MolecularData)
-						data.statesIntoNEXUSStringBuffer(ic, it, forTaxon);
-					else
-						forTaxon.append(CategoricalState.toNEXUSString(data.getState(ic, it)));
-					found++;
+					counter = 1;
+					outputBuffer.append(">");
+					outputBuffer.append(taxa.getTaxonName(it));
+					outputBuffer.append(getLineEnding());
+
+					for (int ic = 0; ic<numChars; ic++) {
+							int currentSize = outputBuffer.length();
+							boolean wroteMoreThanOneSymbol = false;
+							boolean wroteSymbol = false;
+							if (data.isUnassigned(ic, it)){
+								outputBuffer.append("-");
+								counter ++;
+								wroteSymbol = true;
+							}
+							else {
+								data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+								counter ++;
+								wroteSymbol = true;
+							}
+							wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
+							if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
+								outputBuffer.append(getLineEnding());
+							}
+
+							if (wroteMoreThanOneSymbol) {
+								discreetAlert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
+								return false;
+							}
+						}
+					
+					outputBuffer.append(getLineEnding());
 				}
 			}
-			if (found == 0){
-				return false;
-			}
+		
 
-			if (hasSite){
-				numTaxa++;
-				buffer.append(forTaxon);
-				buffer.append(lineEnding);
-			}
-		}
-		buffer.append(lineEnding + ";" + lineEnding + "end;" + lineEnding);
-		obuffer.append("dimensions ntax=" + numTaxa + " nchar=" + found + ";" + lineEnding);
-		obuffer.append(buffer);
 		String name = null;
 		if (group == null)
 			name = "NO_GROUP";
 		else
 			name = group.getName();
 
-		MesquiteFile.putFileContents(path  + MesquiteFile.fileSeparator + name + ".nex", obuffer.toString(), true);
+		MesquiteFile.putFileContents(path  + MesquiteFile.fileSeparator + name + ".fas", outputBuffer.toString(), true);
 		return true;
 
 	}
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
-		Arguments args = new Arguments(new Parser(arguments), true);
 
 		CategoricalData data = findDataToExport(file, arguments);
 		if (data == null)
 			return false;
 		String path = MesquiteFile.chooseDirectory("Directory in which to write files from partitions", getProject().getHomeDirectoryName());
-		Taxa taxa = data.getTaxa();
-		StringBuffer buffer = new StringBuffer(500);
+
 		CharacterPartition partition = (CharacterPartition) data.getCurrentSpecsSet(CharacterPartition.class);
+		ProgressIndicator progIndicator = null;
+		boolean abort = false;
 		boolean found = false;
 		if (partition != null){
 			CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
-			if (groups != null)
+			if (groups != null){
+				progIndicator = new ProgressIndicator(getProject(),"Saving partitions as FASTA files", groups.size());
+				progIndicator.setStopButtonName("Stop");
+				
 				for (int i=0; i< groups.size(); i++){
+					progIndicator.start();
 					CharactersGroup group = (CharactersGroup)groups.elementAt(i);
 					boolean tF = saveFile(data, partition, group, path);
 					found = found || tF;
+					if (progIndicator!=null){
+						progIndicator.setCurrentValue(i);
+						progIndicator.setText("Number of partitions exported: " + (i+1));
+						if (progIndicator.isAborted())
+							abort = true;
+					}
+					if (abort)
+						break;
 				}
+			}
+			if (!abort && progIndicator != null) {
+				progIndicator.spin();
+			}
+			if (!abort){
 			boolean tF = saveFile(data, partition, null, path);
 			found = found || tF;
+			}
+
+
 		}
-		if (!found)
+		if (progIndicator!=null)
+			progIndicator.goAway();
+		if (!found && !abort)
 			discreetAlert("The matrix being exported is not partitioned or has no data in those partitions, and so no files were written");
 
 		return true;
@@ -174,17 +192,17 @@ public class xExportPartitionsNEXUS extends FileInterpreterI {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 273;  
+		return NEXTRELEASE;  
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Export Partitions as Separate NEXUS files";
+		return "Export Partitions as Separate FASTA files";
 	}
 	/*.................................................................................................................*/
 
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Exports character partitions in a matrix as Separate NEXUS files." ;
+		return "Exports character partitions in a matrix as separate FASTA files." ;
 	}
 	/*.................................................................................................................*/
 
