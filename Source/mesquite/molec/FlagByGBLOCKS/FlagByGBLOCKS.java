@@ -48,9 +48,10 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
 
 /* ======================================================================== */
-public class FlagByGBLOCKS extends MatrixFlagger implements ActionListener {
+public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionListener {
 
 	static final double defaultIS = 0.50;   
 	static final double defaultFS = 0.85;  
@@ -761,7 +762,7 @@ public class FlagByGBLOCKS extends MatrixFlagger implements ActionListener {
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public String getName() {
-		return "GBLOCKS Criterion";
+		return "GBLOCKS";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

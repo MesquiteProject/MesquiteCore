@@ -14,17 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.TrimBySpruceup;
 /*~~  */
 
+import mesquite.lib.Debugg;
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.molec.lib.TrimSitesByFlagger;
 
 /* ======================================================================== */
 public class TrimBySpruceup extends TrimSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagBySpruceup");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlaggerForTrimming.class, "#FlagBySpruceup");
 		if (flaggerTask == null)
 			return false;
-		return true;
+		return super.startJob(arguments, condition, hiredByName);  //call after to have superclass do extra things
 	}
 
 	
@@ -38,8 +40,13 @@ public class TrimBySpruceup extends TrimSitesByFlagger {
 		return false;
 	}
 	/*.................................................................................................................*/
+	/*Subclass override and return true if they want to be called iteratively*/
+	protected boolean pleaseIterate(){
+		return ((mesquite.molec.FlagBySpruceup.FlagBySpruceup)flaggerTask).pleaseIterate();
+	}
+	/*.................................................................................................................*/
 	public String getName() {
-		return "Trim by Spruceup Criterion";
+		return "Trim by Spruceup";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

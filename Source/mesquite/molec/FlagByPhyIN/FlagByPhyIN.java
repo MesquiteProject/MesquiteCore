@@ -43,9 +43,10 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
 
 /* ======================================================================== */
-public class FlagByPhyIN extends MatrixFlagger implements ActionListener {
+public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListener {
 
 	//Primary PhyIN parameters =================================
 	static double proportionIncompatDEFAULT = 0.5; //(-p)
@@ -421,7 +422,7 @@ public class FlagByPhyIN extends MatrixFlagger implements ActionListener {
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public String getName() {
-		return "PhyIN Criterion";
+		return "PhyIN";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

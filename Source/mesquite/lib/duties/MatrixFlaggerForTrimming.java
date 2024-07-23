@@ -23,20 +23,15 @@ import mesquite.lib.table.MesquiteTable;
 /* ======================================================================== */
 /**Flags sites in molecular data, e.g. for trimming*/
 
-public abstract class MatrixFlagger extends MesquiteModule  {
+public abstract class MatrixFlaggerForTrimming extends MatrixFlagger  {
 
    	 public Class getDutyClass() {
-   	 	return MatrixFlagger.class;
+   	 	return MatrixFlaggerForTrimming.class;
    	 }
  	public String getDutyName() {
- 		return "Matrix Flagger";
+ 		return "Matrix Flagger for trimming";
    	 }
 
-	public abstract MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags); //if input flags is null, make one and return it. Otherwise, adjust the one input.
-	
-	protected boolean forTrimming(){
-		return getHiredAs() == MatrixFlaggerForTrimming.class;
-	}
 }
 
 

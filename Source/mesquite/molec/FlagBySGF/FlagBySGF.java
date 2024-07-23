@@ -41,14 +41,13 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
 
 /* ======================================================================== */
-public class FlagBySGF extends MatrixFlagger implements ActionListener, ItemListener {
+public class FlagBySGF extends MatrixFlaggerForTrimming implements ActionListener, ItemListener {
 
 	/** TODO?
-	 * --  call this SGF for simple gappiness filter? Or Gapsi?
-	 * --  toggle to ignore terminal gaps?
-	 * --  toggle to ignore taxa without data?
+	 
 	 */
 	/*Gappiness assessment parameters =================================*/
 	static boolean filterSiteGappinessDEFAULT = true;

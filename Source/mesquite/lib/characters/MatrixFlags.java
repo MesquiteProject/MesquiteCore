@@ -42,6 +42,17 @@ public class MatrixFlags {
 		}
 		numStretches = 0;
 	}
+	public boolean anyFlagsSet(){
+		if (characterFlags.anyBitsOn())
+			return true;
+		if (taxonFlags.anyBitsOn())
+			return true;
+		for (int ic = 0; ic<cellFlags.length; ic++)
+		for (int it = 0; it<cellFlags[ic].length; it++)
+			if (cellFlags[ic][it])
+				return true;
+		return false;
+	}
 	public void setCharacterFlag(int ic, boolean value) {
 		characterFlags.setBit(ic, value);
 	}

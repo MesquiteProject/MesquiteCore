@@ -85,18 +85,41 @@ public class FlagByCompareOther extends MatrixFlagger {
 						return flags;
 				}
 			}
+			log("Comparing this matrix " + data.getName() + " with other matrix " + oData.getName()+ ".");
+			boolean diffNumChars = false;
+			if (oData.getNumChars() != data.getNumChars()){
+				log(" — Difference in number of characters: this matrix has " + data.getNumChars() + "; other has " + oData.getNumChars()+ ".");
+				diffNumChars = true;
+			}
 			boolean[][] cellFlags = flags.getCellFlags();
 			CharacterState cs1 = null;
 			CharacterState cs2 = null;
+			long count=0;
 			for (int it = 0; it<data.getNumTaxa() && it<oData.getNumTaxa(); it++){
 				for (int ic = 0; ic<data.getNumChars() && ic<oData.getNumChars(); ic++){
 					cs1 = data.getCharacterState(cs1, ic, it);
 					cs2 = oData.getCharacterState(cs2, ic, it);
 					if (!cs1.equals(cs2, false, true)) {
 						cellFlags[ic][it] = true;
+						count++;
 					}
 				}
 			}
+			if (count == 0){
+				if (diffNumChars)
+					logln(" No differences found among the characters examined.");
+				else
+					logln(" No differences found between matrices.");
+
+			}
+			else {
+				log(" " + count);
+				if (diffNumChars)
+					logln(" cells of matrix found different among the characters examined.");
+				else
+					logln(" cells of matrix found different between matrices.");
+			}
+
 		}
 
 		return flags;
