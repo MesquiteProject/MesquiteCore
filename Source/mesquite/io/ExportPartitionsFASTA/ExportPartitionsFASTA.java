@@ -97,6 +97,7 @@ public class ExportPartitionsFASTA extends FileInterpreterI {
 					outputBuffer.append(getLineEnding());
 
 					for (int ic = 0; ic<numChars; ic++) {
+						if (partition.getProperty(ic) == group) {
 							int currentSize = outputBuffer.length();
 							boolean wroteMoreThanOneSymbol = false;
 							boolean wroteSymbol = false;
@@ -119,6 +120,7 @@ public class ExportPartitionsFASTA extends FileInterpreterI {
 								discreetAlert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 								return false;
 							}
+						}
 						}
 					
 					outputBuffer.append(getLineEnding());

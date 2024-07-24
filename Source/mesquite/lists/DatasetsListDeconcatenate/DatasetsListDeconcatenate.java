@@ -1,0 +1,157 @@
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+ */
+package mesquite.lists.DatasetsListDeconcatenate;
+
+import mesquite.lists.lib.*;
+
+import java.util.*;
+import java.awt.*;
+import mesquite.lib.*;
+import mesquite.lib.characters.*;
+import mesquite.lib.duties.*;
+import mesquite.lib.table.*;
+
+/* ======================================================================== */
+public class DatasetsListDeconcatenate extends DatasetsListUtility {
+	/*.................................................................................................................*/
+	public String getName() {
+		return "Deconcatenate Partitions as Separate Matrices...";
+	}
+
+	public String getExplanation() {
+		return "Splits selected matrices into separate matrices, one for each partition within the matrix." ;
+	}
+	/*.................................................................................................................*/
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** if returns true, then requests to remain on even after operateOnTaxas is called.  Default is false*/
+	public boolean pleaseLeaveMeOn(){
+		return false;
+	}
+	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
+	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
+		if (getProject() != null)
+			getProject().incrementProjectWindowSuppression();
+		Vector v = pauseAllPausables();
+		ProgressIndicator progIndicator = null;
+		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
+		progIndicator = new ProgressIndicator(getProject(),"Deconcatenating partitions", datas.size()*groups.size());
+		progIndicator.setStopButtonName("Stop");
+		int progI = 0;
+		boolean abort = false;
+		for (int im = 0; im < datas.size() && !abort; im++){
+			CharacterData data = (CharacterData)datas.elementAt(im);
+
+			CharacterPartition partition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
+
+			boolean found = false;
+			boolean deleteLast = false;
+			if (partition != null){
+				if (groups != null){
+					//Debugg.println("groups found ");
+					CharacterData partData = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());
+					partData.addCharacters(0, data.getNumChars(), false);  //will trim later
+					partData.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
+					deleteLast = true;
+					progIndicator.start();
+					for (int i=0; i< groups.size(); i++){
+						//Debugg.println("group " + i);
+						CharactersGroup group = (CharactersGroup)groups.elementAt(i);
+						int icPart = 0;
+						for (int icOrig = 0; icOrig<data.getNumChars(); icOrig++) {
+							if (partition.getProperty(icOrig) == group){
+								partData.equalizeCharacter(data, icOrig, icPart++);
+								progI = (i+1)*(im+1);
+							}
+						}
+						if (icPart>0){
+							found = true;
+							String name = group.getName();
+						//	Debugg.println("partition found in matrix " + name);
+							partData.setName(datas.getUniqueName(group.getName()));
+							partData.deleteCharacters(icPart, partData.getNumChars()-icPart, false);
+							partData = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());
+							partData.addCharacters(0, data.getNumChars(), false);  //will trim later						}
+							partData.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
+							deleteLast = true;
+
+							if (progIndicator!=null){
+								progIndicator.setCurrentValue(progI);
+								progIndicator.setText("Partitions deconcatenated: " + name);
+								if (progIndicator.isAborted())
+									abort = true;
+							}
+							if (abort)
+								break;
+						}
+					}
+
+					if (!abort && progIndicator != null) {
+						progIndicator.spin();
+					}
+					if (!abort && found){  //some were found, therefore OK to write leftovers
+						int icPart = 0;
+						for (int icOrig = 0; icOrig<data.getNumChars(); icOrig++) {
+							if (partition.getProperty(icOrig) == null)
+								partData.equalizeCharacter(data, icOrig, icPart++);
+						}
+						if (icPart>0){
+							found = true;
+							partData.setName(datas.getUniqueName("Unassigned"));
+							partData.deleteCharacters(icPart, partData.getNumChars()-icPart, false);
+							deleteLast = false;
+						}
+
+
+					}
+					if (deleteLast)
+						partData.deleteMe(false);  //last one was not used
+					if (progIndicator!=null)
+						progIndicator.goAway();
+					if (!found && !abort)
+						discreetAlert("The matrix being deconcatenated is not partitioned or has no data in those partitions, and so it was not deconcatenated");
+
+				}
+			}
+		}
+		unpauseAllPausables(v);
+		if (getProject() != null)
+			getProject().decrementProjectWindowSuppression();
+		resetAllMenuBars();
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public boolean requestPrimaryChoice(){
+		return false;  
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return NEXTRELEASE;  
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return true;  
+	}
+	public void endJob() {
+		super.endJob();
+	}
+
+}
+
