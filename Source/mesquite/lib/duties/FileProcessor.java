@@ -50,13 +50,13 @@ public abstract class FileProcessor extends MesquiteModule  {
    	}
 	/*.................................................................................................................*/
    	/** Called before processing a series of files.*/
-   	public  boolean beforeProcessingSeriesOfFiles(){
+   	public boolean beforeProcessingSeriesOfFiles(){
    		return true;
    	}
 	/*.................................................................................................................*/
    	/** Called to process file. Override this or the next*/
-   	public  boolean processFile(MesquiteFile file){
-   		return true;
+   	public int processFile(MesquiteFile file){
+   		return 0;
    	}
   	
 	/*.................................................................................................................*/
@@ -76,7 +76,7 @@ public abstract class FileProcessor extends MesquiteModule  {
   	
 	/*.................................................................................................................*/
 	/** Called to process file. */
-	public boolean processFile(MesquiteFile file, MesquiteString notice){
+	public int processFile(MesquiteFile file, MesquiteString notice){
 		return processFile(file);
 	}
 

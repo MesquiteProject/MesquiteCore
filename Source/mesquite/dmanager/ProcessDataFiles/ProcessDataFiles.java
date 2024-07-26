@@ -404,11 +404,11 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 					FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
 					if (fProcessor!=null) {
 						result.setValue((String)null);
-						boolean success = fProcessor.processFile(fileToRead, result);
+						int success = fProcessor.processFile(fileToRead, result);
 
-						if (!success) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
+						if (success!=0) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
 							logln("Sorry,  " + fProcessor.getNameAndParameters() + " did not succeed in processing the file " + fileToRead.getFileName());
-							if (!warned[i]) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
+							if (success ==2 && !warned[i]) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
 								continuePlease = AlertDialog.query(containerOfModule(), "Processing step failed", "Processing of file " + fileToRead.getFileName() + " by " + fProcessor.getNameAndParameters() + " failed. Do you want to continue with this file?", "Continue", "Stop with This File");
 								warned[i] = true;
 							}
@@ -422,7 +422,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 									requestToSequester.setValue(true);
 								fProcessor.setPleaseSequester(false);
 							}
-							logln("" + fProcessor.getNameAndParameters() + " successfully processed the file " + fileToRead.getFileName());
+							if (success == 0)
+								logln("" + fProcessor.getNameAndParameters() + " successfully processed the file " + fileToRead.getFileName());
 							if (result.getValue() != null) {
 								firstResultsOverallFound = true;
 								results.append("\t");
@@ -551,6 +552,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 
 
 		}
+		//Debugg.println see if any other suppressions are on! pauseables?
+		zeroMenuResetSuppression();
 		processProject.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 	}
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){

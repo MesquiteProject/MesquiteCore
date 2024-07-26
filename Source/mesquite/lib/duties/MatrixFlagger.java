@@ -33,7 +33,10 @@ public abstract class MatrixFlagger extends MesquiteModule  {
    	 }
 
 	public abstract MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags); //if input flags is null, make one and return it. Otherwise, adjust the one input.
-
+	
+	protected boolean forTrimming(){
+		return getHiredAs() == MatrixFlaggerForTrimming.class;
+	}
 }
 
 

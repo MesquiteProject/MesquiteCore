@@ -95,10 +95,10 @@ public class DataUtilityFileProcessor extends FileProcessor {
    	}
 	/*.................................................................................................................*/
    	/** Called to alter file. */
-   	public boolean processFile(MesquiteFile file){
+   	public int processFile(MesquiteFile file){
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
-   			return false;
+   			return 2;
    		boolean success = false;
    		CompatibilityTest test = utilityTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
@@ -108,8 +108,9 @@ public class DataUtilityFileProcessor extends FileProcessor {
    				utilityTask.operateOnData(data);  // do not measure success based upon whether data were altered.
    			}
    		}
-   			
-   		return success;
+   		if (success)
+   			return 0;
+   		return 1;
    	}
 	/*.................................................................................................................*/
 	 public String getName() {

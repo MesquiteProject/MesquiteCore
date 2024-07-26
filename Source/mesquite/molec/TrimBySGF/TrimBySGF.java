@@ -15,16 +15,17 @@ package mesquite.molec.TrimBySGF;
 /*~~  */
 
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.molec.lib.TrimSitesByFlagger;
 
 /* ======================================================================== */
 public class TrimBySGF extends TrimSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagBySGF");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlaggerForTrimming.class, "#FlagBySGF");
 		if (flaggerTask == null)
 			return false;
-		return true;
+		return super.startJob(arguments, condition, hiredByName);  //call after to have superclass do extra things
 	}
 
 	

@@ -995,6 +995,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*-----------------------------------------------------------*/
 	/* Deletes characters, taxa, or cell state (to inapplicable). Used initially in sequence alignment trimming */
 	public String deleteByMatrixFlags(MatrixFlags flags){
+		if (getNumChars()==0 || getNumTaxa()==0)
+			return "Nothing trimmed; matrix has no data";
 		boolean anyDeletion = false;
 		String report = "Trimmed:";
 		//do cells before the character/taxon deletions, which would shift the indices

@@ -43,9 +43,10 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
 
 /* ======================================================================== */
-public class FlagByPhyIN extends MatrixFlagger implements ActionListener {
+public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListener {
 
 	//Primary PhyIN parameters =================================
 	static double proportionIncompatDEFAULT = 0.5; //(-p)
@@ -103,6 +104,7 @@ public class FlagByPhyIN extends MatrixFlagger implements ActionListener {
 
 		temp.addLine("setProportionIncompat " + proportionIncompat);
 		temp.addLine("setSpanSize " + blockSize);
+		temp.addLine("setNeighbourDistance " + neighbourDistance);
 		temp.addLine("setTreatGapAsState " + treatGapAsState.toOffOnString());
 		return temp;
 	}
@@ -127,6 +129,15 @@ public class FlagByPhyIN extends MatrixFlagger implements ActionListener {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				blockSize = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+			}
+
+		}
+		else if (checker.compare(this.getClass(), "Sets neighbour distance of PhyIN selection.", "[on or off]", commandName, "setNeighbourDistance")) {
+			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(s)){
+				neighbourDistance = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
 			}
@@ -421,7 +432,7 @@ public class FlagByPhyIN extends MatrixFlagger implements ActionListener {
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public String getName() {
-		return "PhyIN Criterion";
+		return "PhyIN";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

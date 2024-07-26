@@ -32,14 +32,21 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 	}
 
 	MatrixFlags flags = null;
+
+	/*Subclass override and return true if they want to be called iteratively*/
+	protected boolean pleaseIterate(){
+		return false;
+	}
+
+
+	
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean trimMatrix(CharacterData data,  UndoReference undoReference){
 		if (flaggerTask == null)
 			return false;
-		flags = flaggerTask.flagMatrix( data, flags);
-		if (flags == null || flags.getNumChars()<data.getNumChars())
-			return false;
+		if (data.getNumChars()==0)
+		return false;
 		UndoInstructions undoInstructions = null;
 		if (undoReference!=null)
 			undoInstructions =data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_DELETED});
@@ -49,36 +56,23 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
 
-		/* old
-		 * NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
-		int ic = data.getNumChars()-1;
-		int firstInBlockDeleted = -1;
-		int lastInBlockDeleted = -1;
-		int blockCount = 0;
-		while(ic>=0) {
-			if (flags.isBitOn(ic)){  // we've found a selected one
-				lastInBlockDeleted = ic;
-				while(ic>=0) {  // now let's look for the first non-selected one
-					if (flags.isBitOn(ic))
-						firstInBlockDeleted = ic;
-					else break;
-					ic--;
-				}
+		boolean iterate = pleaseIterate();
+		boolean done = false;
 
-				blockCount++;
-				if (blockCount % 50 == 0)
-					logln("Deleting characters, block " + blockCount);
-				//There is a huge time cost here in deleteParts in ObjSpecsSet every loop
-				// better to design new deleteCharacters and asosciated deleteParts that is passed an array of blocks to be deleted (start and end)
-				//Debugg.printlnd
-				data.deleteCharacters(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);  // now prepare contiguous block for deletion
-				data.deleteInLinked(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);
+		while (!done){
+			flags = flaggerTask.flagMatrix( data, flags);
+			if (flags != null && flags.getNumChars()>=data.getNumChars()){
+				if (flags.anyFlagsSet()) {
+					data.deleteByMatrixFlags(flags);
+					if (!iterate)
+						done = true;
+				}
+				else
+					done = true;
 			}
-			ic--;
+			else done = true;
 		}
-		 */
-		String report = data.deleteByMatrixFlags(flags);
-		//logln("(" + flaggerTask.getName() + " on matrix " + data.getName() + ") " + report);
+
 
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
@@ -86,8 +80,6 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 		data.decrementNotifySuppress();
 
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
-
-
 		if (undoReference!=null){
 			if (undoInstructions!=null){
 				undoInstructions.setNewData(data);

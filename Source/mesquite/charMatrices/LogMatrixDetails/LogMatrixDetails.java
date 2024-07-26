@@ -23,7 +23,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class LogMatrixDetails extends DataUtility { 
+public class LogMatrixDetails extends DataUtilityNoAlterer { 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;
@@ -89,6 +89,7 @@ public class LogMatrixDetails extends DataUtility {
 			logln("Number of Cs: " + numC);
 			logln("Number of Gs: " + numG);
 			logln("Number of Ts: " + numT);
+			logln("Proportion of cells with non-gaps: " + (numA+numC+numG+numT)*1.0/(data.getNumChars()*data.getNumTaxa()));
 		}
 		logln("Cell states checksum: " + checksums[CharacterData.CS_CellStates]);
 		logln("Specs sets checksum: " + checksums[CharacterData.CS_SpecsSets]);

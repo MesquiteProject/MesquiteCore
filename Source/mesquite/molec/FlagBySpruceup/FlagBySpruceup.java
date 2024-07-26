@@ -41,15 +41,17 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
 
 /* ======================================================================== */
-public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
+public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionListener {
 
-	/** ToDo:
-	 * -- scale distances by num comparisons in window
-	 * -- multithread
-	 */
+	/* This replicates the calculations of Spruceup v. 2024.07.22 */
 
+	/* suggestions:
+	 * -- Option to remove gaps only characters (default yet)
+	 * -- Option to do it iteratively until nothing left
+	 * */
 	/* parameters =================================*/
 	static double cutoffDEFAULT = 5.0; 
 	static int windowSizeDEFAULT = 50;
@@ -61,7 +63,8 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 	int numThreads = numThreadsDEFAULT;
 	double cutoff = cutoffDEFAULT;
 	boolean suspended = false;
-	//	MesquiteBoolean booleanOption = new MesquiteBoolean(booleanOptionDEFAULT);
+	MesquiteBoolean flagGapsOnly = new MesquiteBoolean(true);
+	MesquiteBoolean iterate = new MesquiteBoolean(false);
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -83,7 +86,8 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		StringUtil.appendXMLTag(buffer, 2, "windowSize", windowSize);  
 		StringUtil.appendXMLTag(buffer, 2, "overlap", overlap);  
 		StringUtil.appendXMLTag(buffer, 2, "numThreads", numThreads);  
-		//		StringUtil.appendXMLTag(buffer, 2, "booleanOption", booleanOption);  
+		StringUtil.appendXMLTag(buffer, 2, "flagGapsOnly", flagGapsOnly);  
+		 StringUtil.appendXMLTag(buffer, 2, "iterate", iterate);  
 		return buffer.toString();
 	}
 	public void processSingleXMLPreference (String tag, String flavor, String content){
@@ -100,8 +104,10 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			overlap = MesquiteInteger.fromString(content);
 		if ("numThreads".equalsIgnoreCase(tag))
 			numThreads = MesquiteInteger.fromString(content);
-		//		if ("booleanOption".equalsIgnoreCase(tag))
-		//			booleanOption.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("flagGapsOnly".equalsIgnoreCase(tag))
+			flagGapsOnly.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("iterate".equalsIgnoreCase(tag))
+			iterate.setValue(MesquiteBoolean.fromTrueFalseString(content));
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
@@ -110,8 +116,9 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		temp.addLine("windowSize " + windowSize);
 		temp.addLine("overlap " + overlap);
 		temp.addLine("numThreads " + numThreads);
-		temp.addLine("resume");  //Debugg.println( needed also in other flaggers?
-		//		temp.addLine("booleanOption " + booleanOption.toOffOnString());
+		temp.addLine("flagGapsOnly " + flagGapsOnly.toOffOnString());
+		temp.addLine("iterate " + iterate.toOffOnString());
+		temp.addLine("resume");
 		return temp;
 	}
 
@@ -120,7 +127,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 	IntegerField wS;
 	IntegerField ov;
 	IntegerField nT;
-	//Checkbox cFSL;
+	Checkbox iter, fGO;
 
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -132,10 +139,16 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		nT = dialog.addIntegerField("Number of processing cores to use", numThreads, 4);
 
 		dialog.addHorizontalLine(1);
-		//		dialog.addLabel("Mesquite modifications");
-		//		cFSL = dialog.addCheckBox("XXXXXX", booleanOption.getValue());
 
-		//		dialog.addHorizontalLine(1);
+		if (forTrimming()){
+			dialog.addLabel("Mesquite modifications");
+			fGO = dialog.addCheckBox("After Spruceup trimming, trim gaps-only characters", flagGapsOnly.getValue()); 
+			iter = dialog.addCheckBox("Iterate until no more to trim", iterate.getValue());  //Show ONLY IF HIRED FOR TRIMMING
+			dialog.addHorizontalLine(1);
+		}
+		/*
+
+		 */
 		dialog.addBlankLine();
 
 		Button useDefaultsButton = null;
@@ -143,7 +156,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 		useDefaultsButton.setActionCommand("setToDefaults");
 		dialog.addHorizontalLine(1);
 		dialog.addLargeOrSmallTextLabel("If you use this, please cite it as the implementation of Spruceup (Boroweic 2018) in Mesquite. See (?) help button for details.");
-		String s = "This is a limited implementation of Spruceup. In a citation, indicate that the settings are "
+		String s = "This is a partial implementation of Spruceup v.2024.07.22. In a citation, indicate that the settings are "
 				+ "\"criterion:mean\" and \"distance_method:uncorrected\" [plus the settings you have chosen for cutoff, window size, overlap, etc.]."
 				+ "\nFor a more complete implementation, use the original Spruceup."
 				+ "<p>Reference: Boroweic ML (2018) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments."
@@ -158,8 +171,10 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			windowSize = wS.getValue();
 			overlap = ov.getValue();
 			numThreads = nT.getValue();
-			//			booleanOption.setValue(cFSL.getState());
-
+			if (fGO != null)
+				flagGapsOnly.setValue(fGO.getState());
+			if (iter != null)
+			iterate.setValue(iter.getState());
 			storePreferences();
 		}
 		dialog.dispose();
@@ -172,13 +187,19 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			cutoffField.setValue(cutoffDEFAULT);
 			wS.setValue(windowSizeDEFAULT);
 			ov.setValue(overlapDEFAULT);
-			//			cFSL.setState(booleanOptionDEFAULT);
-
+			if (fGO != null)
+			fGO.setState(false);
+			if (iter != null)
+			iter.setState(false);
 		} 
 	}
 	public void queryLocalOptions () {
 		if (queryOptions())
 			storePreferences();
+	}
+	/*.................................................................................................................*/
+	public boolean pleaseIterate(){
+		return iterate.getValue();
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -221,19 +242,27 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 
 			}
 		}
+		else if (checker.compare(this.getClass(), "Sets the option to flag gaps-only characters.", "[on or off]", commandName, "flagGapsOnly")) {
+			boolean current = flagGapsOnly.getValue();
+			flagGapsOnly.toggleValue(parser.getFirstToken(arguments));
+			if (current!=flagGapsOnly.getValue()) {
+				parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to iterate.", "[on or off]", commandName, "iterate")) {
+		boolean current = iterate.getValue();
+		iterate.toggleValue(parser.getFirstToken(arguments));
+		if (current!=iterate.getValue()) {
+			parametersChanged();
+		}
+	}
+	
 		else if (checker.compare(this.getClass(), "Indicates calculations can be resumed.", "[]", commandName, "resume")) {
 			suspended = false;
 			parametersChanged(); 
 
 		}
-		/*	else if (checker.compare(this.getClass(), "Sets xxxxx.", "[on or off]", commandName, "booleanOption")) {
-			boolean current = booleanOption.getValue();
-			booleanOption.toggleValue(parser.getFirstToken(arguments));
-			if (current!=booleanOption.getValue()) {
-				parametersChanged();
-			}
-		}
-		 */
+
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -293,7 +322,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 						if (threads[i] != null && !threads[i].done)
 							allDone = false;
 					}
-					
+
 					if (numWindowsDone%10==0)
 						CommandRecord.tick("Spruceup window " + numWindowsDone + " of " + numWindows);				
 				}
@@ -320,42 +349,70 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 					lonelinessOverall[it] = lonelinessOverall[it]/numWindowsCompared;
 			}
 
-			
+
+			boolean saveResults = false;
+			if (saveResults){
+				String output = ("Taxon,Overall");
+				for (int window=0; window<numWindows; window++) {
+					int windowStart = window*windowIncrement;
+					output += "," + windowStart;
+				}
+				output +="\n";
+				MesquiteFile.putFileContents("mesquiteSpruceupLonelinesses.csv", output, true);
+				for (int it = 0; it<numTaxa; it++) {
+					output = data.getTaxa().getTaxonName(it);
+					logln("Writing Spruceup details for " + output);
+					output += "," + MesquiteDouble.toStringDigitsSpecified(lonelinessOverall[it], 9);
+					for (int window=0; window<numWindows; window++)
+						output += "," + MesquiteDouble.toStringDigitsSpecified(lonelinessInWindow[window][it], 9);
+					output += "\n";
+					MesquiteFile.appendFileContents("mesquiteSpruceupLonelinesses.csv", output, true);
+				}
+			}
+
 			/*-----------------*/
 			//Now look for outliers
-			String output = (",Window Start,A,B,C,D,E,F\n");
 			long count = 0;
-			boolean saveResults = false;
 			for (int window=0; window<numWindows; window++) {
 				int windowStart = window*windowIncrement;
 				int windowEnd = windowStart+windowSize-1;
-				if (saveResults)
-					output += "," + windowStart;
 				if (windowEnd < numChars){
-					//windowEnd = numChars-1;
 					for (int it = 0; it<numTaxa; it++) {
-						if (saveResults)
-							output += "," + MesquiteDouble.toStringDigitsSpecified(lonelinessInWindow[window][it], 9);
-						if (lonelinessInWindow[window][it]>cutoff*lonelinessOverall[it]) {
+						if (lonelinessInWindow[window][it] > cutoff * lonelinessOverall[it]) {
 							flags.addCellFlag(it, windowStart, windowEnd);
-							count++;
+							count+= windowSize;
 						}
 					}
-					if (saveResults)
-						output += "\n";
 				}
 			}
-			if (saveResults)
-				MesquiteFile.putFileContents("/Users/wmaddisn/Desktop/mesquiteSU.csv", output, true);
 			CommandRecord.tick("Spruceup complete. Number of windows done " + numWindowsDone + " of " + numWindows);
 			timer.end();
 			long time = timer.getAccumulatedTime();
-			logln("Spruceup found " + count + " cells to trim in matrix " + data.getName() + " (" + numChars + " characters) in " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
-
+			log("Spruceup found to trim " + count + " cells");
+			if (flagGapsOnly.getValue()){
+				int countGO = 0;
+				boolean[][] cellFlags = flags.getCellFlags();
+				for (int ic = 0; ic<data.getNumChars(); ic++){
+					if (willBeGapsOnly(data, ic, cellFlags)){
+						flags.setCharacterFlag(ic, true);
+						countGO++;
+					}
+				}
+				log(" and " + countGO + " characters");
+			}
+			logln(" in " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
 		}
-		
+
 		return flags;
 
+	}
+
+	boolean willBeGapsOnly(CharacterData data, int ic, boolean[][] cellFlags){
+		for (int it = 0; it<data.getNumTaxa(); it++){
+			if (!data.isInapplicable(ic, it) && !cellFlags[ic][it])
+				return false;
+		}
+		return true;
 	}
 
 	/*.................................................................................................................*/
@@ -374,7 +431,7 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Spruceup Criterion";
+		return "Spruceup";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
@@ -486,11 +543,11 @@ class SpruceupThread extends MesquiteThread {
 
 				}
 			}
-			
+
 			//Calculate loneliness of taxon
 			for (int j = 0; j<numTaxa; j++) {
 				lonelinessInWindow[window][j] = 0;
-				
+
 				//first get sums of distances to j
 				for (int k=0; k<numTaxa; k++)
 					if (numSitesCompared[j][k]!=0) 
@@ -502,7 +559,6 @@ class SpruceupThread extends MesquiteThread {
 				else
 					lonelinessInWindow[window][j] = -1;
 
-				//Debugg.println("loneliness in window " + window + " of " + data.getTaxa().getTaxonName(j) + " = " + lonelinessInWindow[window][j] + " num others compared " + numOthersCompared[j]);
 			}
 
 			ownerModule.numWindowsDone++;

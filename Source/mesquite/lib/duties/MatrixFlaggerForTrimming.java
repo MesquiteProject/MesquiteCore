@@ -16,32 +16,22 @@ package mesquite.lib.duties;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 
 
 /* ======================================================================== */
-/**This is superclass of modules to be a utility for a data matrix. If it alters the matrix, subclass DataUtilityAlterer instead.*/
+/**Flags sites in molecular data, e.g. for trimming*/
 
-public abstract class DataUtility extends MesquiteModule  {
+public abstract class MatrixFlaggerForTrimming extends MatrixFlagger  {
 
    	 public Class getDutyClass() {
-   	 	return DataUtility.class;
+   	 	return MatrixFlaggerForTrimming.class;
    	 }
  	public String getDutyName() {
- 		return "Data Utility";
-   	}
-   	
-   	/** if returns true, then requests to remain on even after operateData is called.  Default is false*/
-   	public boolean pleaseLeaveMeOn(){
-   		return false;
-   	}
-   	/** Called to operate on the data in all cells.  Returns true if data altered*/
-   	public abstract boolean operateOnData(mesquite.lib.characters.CharacterData data);
-	/*.................................................................................................................*/
-	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
-	public CompatibilityTest getCompatibilityTest(){
-		return new CharacterStateTest();
-	}
-}
+ 		return "Matrix Flagger for trimming";
+   	 }
 
+}
 
 

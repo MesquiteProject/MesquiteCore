@@ -21,16 +21,17 @@ import mesquite.categ.lib.RequiresAnyDNAData;
 
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.molec.lib.TrimSitesByFlagger;
 
 /* ======================================================================== */
 public class TrimByPhyIN extends TrimSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagByPhyIN");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlaggerForTrimming.class, "#FlagByPhyIN");
 		if (flaggerTask == null)
 			return false;
-		return true;
+		return super.startJob(arguments, condition, hiredByName);  //call after to have superclass do extra things
 	}
 
 

@@ -141,7 +141,7 @@ ListableVector taxonNames = new ListableVector();
 	/*.................................................................................................................*/
 
 	/** Called to alter file. */
-	public boolean processFile(MesquiteFile file){
+	public int processFile(MesquiteFile file){
 
 		if (saveFile == null || okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking for file to save")){ //need to check if can proceed
 			loadPreferences();
@@ -153,7 +153,7 @@ ListableVector taxonNames = new ListableVector();
 			String directory=fdlg.getDirectory();
 			// fdlg.dispose();
 			if (StringUtil.blank(fileName) || StringUtil.blank(directory))
-				return false;
+				return 2;
 			saveFile = MesquiteFile.composePath(directory, fileName);
 			tempFile = MesquiteFile.composePath(directory, MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + fileName)) ;
 		 	if (!OACOptionAlreadySet)
@@ -161,19 +161,19 @@ ListableVector taxonNames = new ListableVector();
 			storePreferences();
 		}
 		if (saveFile == null)
-			return false;
+			return 2;
 		Listable[] matrices = proj.getFileElements(CharacterData.class);	
 		if (matrices == null)
-			return false;
+			return 2;
 		for (int im = 0; im < matrices.length; im++){
 			CharacterData data = (CharacterData)matrices[im];
-			if (data.getFile() == file){
+			if (data.getFile() == file && data.getNumChars()>0){
 				checkTaxonList(data, saveFile);
 				writeMatrixToFile(saveFile, data, file.getFileName());
 				writeMatrixToFile(tempFile, data, file.getFileName());
 			}
 		}
-		return true;
+		return 0;
 
 	}
 	/*.................................................................................................................*/

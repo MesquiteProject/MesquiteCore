@@ -89,12 +89,12 @@ public class NumberForMatricesFP extends FileProcessor {
    	}
 	/*.................................................................................................................*/
    	/** Called to alter file. */
-   	public boolean processFile(MesquiteFile file, MesquiteString notice){
+   	public int processFile(MesquiteFile file, MesquiteString notice){
    		if (notice == null)
-   			return false;
+   			return 2;
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
-   			return false;
+   			return 2;
    		boolean success = false;
    		CompatibilityTest test = numberTask.getCompatibilityTest();
    		MesquiteNumber result = new MesquiteNumber();
@@ -113,7 +113,7 @@ public class NumberForMatricesFP extends FileProcessor {
    			}
    		}
    			
-   		return success;
+   		return 0;
    	}
 	/*.................................................................................................................*/
 	 public String getName() {

@@ -20,7 +20,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class CompareMatrices extends DataUtility { 
+public class CompareMatrices extends DataUtilityNoAlterer { 
 	CharacterData data;
 	TextDisplayer displayer;
 	/*.................................................................................................................*/
