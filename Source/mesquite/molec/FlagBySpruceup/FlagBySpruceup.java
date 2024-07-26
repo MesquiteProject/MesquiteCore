@@ -323,9 +323,9 @@ public class FlagBySpruceup extends MatrixFlagger implements ActionListener {
 			
 			/*-----------------*/
 			//Now look for outliers
-			String output = (",Window Start,Taxa\n");
+			String output = (",Window Start,A,B,C,D,E,F\n");
 			long count = 0;
-			boolean saveResults = true;
+			boolean saveResults = false;
 			for (int window=0; window<numWindows; window++) {
 				int windowStart = window*windowIncrement;
 				int windowEnd = windowStart+windowSize-1;
