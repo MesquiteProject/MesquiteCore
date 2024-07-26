@@ -146,8 +146,11 @@ ListableVector taxonNames = new ListableVector();
 
 		if (saveFile == null || okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking for file to save")){ //need to check if can proceed
 			loadPreferences();
-
-			MesquiteFileDialog fdlg= new MesquiteFileDialog(containerOfModule(), "Output File for Compiled Matrices(s)", FileDialog.SAVE);
+			
+			String message = "Output File for Compiled Matrices(s)";
+			if (!StringUtil.blank(previousProcessorLabel))
+				message = message + " [after " + previousProcessorLabel + "] ";
+			MesquiteFileDialog fdlg= new MesquiteFileDialog(containerOfModule(), message, FileDialog.SAVE);
 			fdlg.setBackground(ColorTheme.getInterfaceBackground());
 			fdlg.setVisible(true);
 			String fileName=fdlg.getFile();

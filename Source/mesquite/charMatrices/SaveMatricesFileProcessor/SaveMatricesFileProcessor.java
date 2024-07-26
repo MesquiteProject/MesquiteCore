@@ -90,8 +90,11 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		String current = "";
 		if (directoryPath != null)
 			current = " (current: " + StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator) + ")";
-
-		String temp = MesquiteFile.chooseDirectory("Where to save files?" + current); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+		if (!StringUtil.blank(previousProcessorLabel))
+			current = " after " + previousProcessorLabel + "? " + current;
+		else
+			current = "?" + current;
+		String temp = MesquiteFile.chooseDirectory("Where to save files" + current); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 		if (!StringUtil.blank(temp)) {
 			directoryPath = temp;
 			if (baseDirectoryPath!= null) {
@@ -100,16 +103,13 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 			}
 		else return;
 		FileCoordinator coord = getFileCoordinator();
-	//	FileInterpreter previousExporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
 		queryOptions();
 		exporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
 		exporterTask.queryLocalOptions();
-	//	if (previousExporterTask!=requestedExporterTask)
 			
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-//set file interpreter not being respected..arguments.
 		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setFileInterpreter")) {
 			exporterString = parser.getFirstToken(arguments);
 			exporterTask = (FileInterpreter)getFileCoordinator().findEmployeeWithName(exporterString);

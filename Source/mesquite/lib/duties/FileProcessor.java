@@ -48,6 +48,11 @@ public abstract class FileProcessor extends MesquiteModule  {
    	/** Called to inform module what is base directory of files.*/
    	public void setBaseDirectory(String path){
    	}
+   	
+   	protected String previousProcessorLabel = null;
+   	public void setPreviousProcessorLabel(String prevLabel) {
+   		previousProcessorLabel = prevLabel;
+   	}
 	/*.................................................................................................................*/
    	/** Called before processing a series of files.*/
    	public boolean beforeProcessingSeriesOfFiles(){

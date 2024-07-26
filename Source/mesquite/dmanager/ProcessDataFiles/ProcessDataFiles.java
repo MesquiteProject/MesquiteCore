@@ -95,7 +95,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	}
 	/*.................................................................................................................*/
 
-
+	
 	/*=============================================================================================================*/
 	/* Primarily user interface methods
 	 *    */
@@ -287,6 +287,11 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 			fileProcessors = new Vector();
 		if (fileProcessors.indexOf(processor)<0)
 			fileProcessors.addElement(processor);
+		int place = fileProcessors.indexOf(processor);
+		if (place >0) {
+			FileProcessor prev = ((FileProcessor)fileProcessors.elementAt(place-1));
+			processor.setPreviousProcessorLabel("(" + (place) + ") " + prev.getNameAndParameters());
+		}
 	}
 	/*.....................................................................................................*/
 	String recaptureScript() {

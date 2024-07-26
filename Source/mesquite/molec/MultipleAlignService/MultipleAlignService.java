@@ -5,6 +5,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.molec.lib.SequenceTrimmer;
 import mesquite.align.lib.*;
 
 
@@ -26,6 +27,10 @@ public class MultipleAlignService extends CategDataAlterer  implements AltererAl
 				return sorry(getName() + " couldn't start because no aligner module obtained.");
 		}
 		return true;
+	}
+	/*
+	public  Class getHireSubchoice(){
+		return MultipleSequenceAligner.class;
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
