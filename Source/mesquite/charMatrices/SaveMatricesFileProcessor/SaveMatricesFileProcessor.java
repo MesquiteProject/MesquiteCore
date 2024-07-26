@@ -39,8 +39,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (!MesquiteThread.isScripting()) {
-			directoryPath = getProject().getHomeDirectoryName();
-			directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+			queryLocalOptions();
 			if (StringUtil.blank(directoryPath))
 				return false;
 		}
@@ -76,6 +75,9 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
+		
+		if (StringUtil.blank(exporterString) && !MesquiteThread.isScripting())
+			queryOptions(); //this peculiar arrangement is for process data files
 		temp.addLine("setFileInterpreter " + ParseUtil.tokenize(exporterString));  
 		if (directoryPath.contains(baseDirectoryPath))
 			temp.addLine("setRelativeDirectoryPath " + ParseUtil.tokenize(MesquiteFile.decomposePath(baseDirectoryPath, directoryPath)));  
@@ -96,11 +98,12 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 				relativeDirectoryPath = MesquiteFile.decomposePath(baseDirectoryPath, directoryPath);
 			}
 			}
+		else return;
 		FileCoordinator coord = getFileCoordinator();
 	//	FileInterpreter previousExporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
 		queryOptions();
 		exporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
-		//exporterTask.queryLocalOptions();
+		exporterTask.queryLocalOptions();
 	//	if (previousExporterTask!=requestedExporterTask)
 			
 	}
@@ -111,13 +114,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 			exporterString = parser.getFirstToken(arguments);
 			exporterTask = (FileInterpreter)getFileCoordinator().findEmployeeWithName(exporterString);
 			return exporterTask;
-			/*FileInterpreter temp =  (FileInterpreter)replaceEmployee(FileInterpreter.class, arguments, "Exporter", exporterTask);
-			if (temp!=null) {
-				exporterTask = temp;
-				exporterString = exporterTask.getName();
-				return exporterTask;
-			}*/
-
+			
 		}
 		else if (checker.compare(this.getClass(), "Sets the directory path", "[path]", commandName, "setDirectoryPath")) {
 			directoryPath = parser.getFirstToken(arguments);
@@ -166,20 +163,26 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 				count++;
 		}
 		String [] exporterNames = new String[count];
+		
 		exporterNames[0] = "NEXUS file";
 		count = 1;
+		int selected = 0;
 		for (int i=0; i<fInterpreters.length; i++)
 			if (((FileInterpreterI)fInterpreters[i]).canExportEver() && ((FileInterpreterI)fInterpreters[i]).requestPrimaryChoice()) {
 				exporterNames[count] = fInterpreters[i].getName();
+				if (exporterNames[count].equals(exporterString))
+					selected = count;
 				count++;
 			}
 		for (int i=0; i<fInterpreters.length; i++)
 			if (((FileInterpreterI)fInterpreters[i]).canExportEver() && !((FileInterpreterI)fInterpreters[i]).requestPrimaryChoice()) {
 				exporterNames[count] = fInterpreters[i].getName();
+				if (exporterNames[count].equals(exporterString))
+					selected = count;
 				count++;
 			}
 
-		Choice exporterChoice = dialog.addPopUpMenu ("File Format", exporterNames, 0);
+		Choice exporterChoice = dialog.addPopUpMenu ("File Format", exporterNames, selected);
 		exporterChoice.select(exporterString);
 		dialog.addBlankLine();
 		dialog.completeAndShowDialog();

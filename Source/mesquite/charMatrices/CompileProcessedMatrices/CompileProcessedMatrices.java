@@ -80,7 +80,7 @@ public class CompileProcessedMatrices extends FileProcessor {
 	public void queryLocalOptions () {
 	 	queryOpenAfter();
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("openAfterCompiled".equalsIgnoreCase(tag)) {
 			openAfterCompiled = MesquiteBoolean.fromOffOnString(content);
@@ -88,12 +88,13 @@ public class CompileProcessedMatrices extends FileProcessor {
 
 	
 }
-/*.................................................................................................................*/
+/*.................................................................................................................*
 public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "openAfterCompiled", MesquiteBoolean.toOffOnString(openAfterCompiled));  
 		return buffer.toString();
 	}	
+*/
 ListableVector taxonNames = new ListableVector();
 	/*.................................................................................................................*/
 	void checkTaxonList(CharacterData data, String saveFile){

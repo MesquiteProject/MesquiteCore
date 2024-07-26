@@ -210,8 +210,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 			MesquiteThread.unknownThreadIsScripting = false;
 			FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
 			MesquiteThread.unknownThreadIsScripting = wasUTIS;
-			processor.setBaseDirectory(directoryPath);
 			if (processor != null) {
+				processor.setBaseDirectory(directoryPath);
 				currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
 				String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
 				currentScript +="\ntell It;\n" + sn + "\nendTell;";
