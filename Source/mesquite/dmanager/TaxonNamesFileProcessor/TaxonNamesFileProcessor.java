@@ -94,10 +94,10 @@ public class TaxonNamesFileProcessor extends FileProcessor {
    	}
 	/*.................................................................................................................*/
    	/** Called to alter file. */
-   	public boolean processFile(MesquiteFile file){
+   	public int processFile(MesquiteFile file){
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
-   			return false;
+   			return 2;
    		boolean success = false;
    		CompatibilityTest test = utilityTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberTaxas(file); im++){
@@ -106,8 +106,9 @@ public class TaxonNamesFileProcessor extends FileProcessor {
    				utilityTask.alterTaxonNames(taxa, null);
    			}
   
-   			
-   		return success;
+   		if (!success)
+   		return 1;
+   		return 0;
    	}
 	/*.................................................................................................................*/
 	 public String getName() {

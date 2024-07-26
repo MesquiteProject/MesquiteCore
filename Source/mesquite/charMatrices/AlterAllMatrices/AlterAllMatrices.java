@@ -100,12 +100,12 @@ public class AlterAllMatrices extends FileProcessor {
    	}
 	/*.................................................................................................................*/
    	/** Called to alter file. */
-   	public boolean processFile(MesquiteFile file){
+   	public int processFile(MesquiteFile file){
    		if (alterTask == null)
-   			return false;
+   			return 2;
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
-   			return false;
+   			return 0;
    		boolean success = false;
    		CompatibilityTest test = alterTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
@@ -116,8 +116,10 @@ public class AlterAllMatrices extends FileProcessor {
    				alterTask.alterData(data, null, null);  // do not measure success based upon whether data were altered.
    			}
    		}
-   			
-   		return success;
+   		if (success)
+   			return 0;
+   		logln("Alter matrix failed: " + data.getName() + " by " + alterTask.getName());
+   		return 1;
    	}
 	/*.................................................................................................................*/
 	 public String getName() {

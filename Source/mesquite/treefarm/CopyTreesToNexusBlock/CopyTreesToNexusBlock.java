@@ -70,16 +70,17 @@ public class CopyTreesToNexusBlock extends FileProcessor {
 
 	/*.................................................................................................................*/
 	/** Called to alter file. */
-	public boolean processFile(MesquiteFile file){
+	public int processFile(MesquiteFile file){
 		
 		if (saveFile == null || okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking for file to save")){ //need to check if can proceed
-			return initFile();
+			if (!initFile())
+				return 2;
 		}
 		if (saveFile == null)
-			return false;
+			return 2;
 		Listable[] treeVectors = proj.getFileElements(TreeVector.class);	
    		if (treeVectors == null)
-   			return false;
+   			return 1;
 		for (int im = 0; im < treeVectors.length; im++){
    			TreeVector trees = (TreeVector)treeVectors[im];
    			if (trees.getFile() == file){
@@ -92,7 +93,7 @@ public class CopyTreesToNexusBlock extends FileProcessor {
   				}
    			}
    		}
-		return true;
+		return 0;
 
 	}
 	/*.................................................................................................................*/

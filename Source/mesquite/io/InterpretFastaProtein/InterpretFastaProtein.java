@@ -68,6 +68,10 @@ public class InterpretFastaProtein extends InterpretFasta {
 		return "X";
 	}
 
+	/*.................................................................................................................*/
+	 public boolean requestPrimaryChoice() {
+	return true;
+	 }
 /*.................................................................................................................*/
     	 public String getName() {
 		return "FASTA (protein)";

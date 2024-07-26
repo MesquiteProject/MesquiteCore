@@ -19,28 +19,21 @@ import mesquite.lib.characters.*;
 
 
 /* ======================================================================== */
-/**This is superclass of modules to be a utility for a data matrix. If it alters the matrix, subclass DataUtilityAlterer instead.*/
+/**This is superclass of modules to be a utility for a data matrix that can alter the matrix.*/
 
-public abstract class DataUtility extends MesquiteModule  {
+public abstract class DataUtilityNoAlterer extends DataUtility  {
 
    	 public Class getDutyClass() {
-   	 	return DataUtility.class;
+   	 	return DataUtilityNoAlterer.class;
    	 }
  	public String getDutyName() {
- 		return "Data Utility";
+ 		return "Data Utility Alterer";
    	}
    	
    	/** if returns true, then requests to remain on even after operateData is called.  Default is false*/
    	public boolean pleaseLeaveMeOn(){
    		return false;
    	}
-   	/** Called to operate on the data in all cells.  Returns true if data altered*/
-   	public abstract boolean operateOnData(mesquite.lib.characters.CharacterData data);
-	/*.................................................................................................................*/
-	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
-	public CompatibilityTest getCompatibilityTest(){
-		return new CharacterStateTest();
-	}
 }
 
 

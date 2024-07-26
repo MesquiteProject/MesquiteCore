@@ -45,6 +45,8 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 	public boolean trimMatrix(CharacterData data,  UndoReference undoReference){
 		if (flaggerTask == null)
 			return false;
+		if (data.getNumChars()==0)
+		return false;
 		UndoInstructions undoInstructions = null;
 		if (undoReference!=null)
 			undoInstructions =data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_DELETED});

@@ -41,6 +41,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		acceptedClasses = new Class[] {ProteinState.class, DNAState.class};
+		loadPreferences();
 		return true;  //make this depend on taxa reader being found?)
 	}
 
@@ -473,8 +474,72 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	protected boolean simplifyTaxonName = false;
 	protected String uniqueSuffix = "";
 	protected boolean convertMultStateToMissing = true;
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "includeGaps", includeGaps);  
+		StringUtil.appendXMLTag(buffer, 2, "simplifyTaxonName", simplifyTaxonName);  
+		StringUtil.appendXMLTag(buffer, 2, "uniqueSuffix", uniqueSuffix);  
+		StringUtil.appendXMLTag(buffer, 2, "convertMultStateToMissing", convertMultStateToMissing);  
+		StringUtil.appendXMLTag(buffer, 2, "writeExcludedCharacters", writeExcludedCharacters);  
+		return buffer.toString();
+	}
+	public void processSingleXMLPreference (String tag, String flavor, String content){
+		processSingleXMLPreference(tag, null, content);
+	}
+	
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("includeGaps".equalsIgnoreCase(tag))
+			includeGaps = MesquiteBoolean.fromTrueFalseString(content);
+		if ("simplifyTaxonName".equalsIgnoreCase(tag))
+			simplifyTaxonName = MesquiteBoolean.fromTrueFalseString(content);
+		if ("convertMultStateToMissing".equalsIgnoreCase(tag))
+			convertMultStateToMissing = MesquiteBoolean.fromTrueFalseString(content);
+		if ("writeExcludedCharacters".equalsIgnoreCase(tag))
+			writeExcludedCharacters = MesquiteBoolean.fromTrueFalseString(content);
+		if ("uniqueSuffix".equalsIgnoreCase(tag))
+			uniqueSuffix = content;
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("includeGaps " + includeGaps);
+		temp.addLine("simplifyTaxonName " + simplifyTaxonName);
+		temp.addLine("convertMultStateToMissing " + convertMultStateToMissing);
+		temp.addLine("writeExcludedCharacters " + writeExcludedCharacters);
+		temp.addLine("uniqueSuffix " + ParseUtil.tokenize(uniqueSuffix));
+		return temp;
+	}
 
 	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets suffix.", "[string]", commandName, "uniqueSuffix")) {
+			String s = parser.getFirstToken(arguments);
+			if (!StringUtil.blank(s))
+				uniqueSuffix =s;
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to include gaps.", "[true or false]", commandName, "includeGaps")) {
+			includeGaps = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to simplify taxon names.", "[true or false]", commandName, "simplifyTaxonName")) {
+			simplifyTaxonName = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to convert multistate to missing.", "[true or false]", commandName, "convertMultStateToMissing")) {
+			convertMultStateToMissing = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to write excluded characters.", "[true or false]", commandName, "writeExcludedCharacters")) {
+			writeExcludedCharacters = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+/*.................................................................................................................*/
+	public void queryLocalOptions () {
+		if (getExportOptions(null, false, false))
+			storePreferences();
+	}
 
 	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -482,11 +547,13 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		exportDialog.appendToHelpString("Choose the options for exporting the matrix as FASTA file.");
 		exportDialog.appendToHelpString(" The Taxon Name Suffix, if present, will be appended to each taxon name.");
 		exportDialog.appendToHelpString(" Some systems (e.g., GenBank) require simple taxon names, and these will be used if you check 'simplify taxon names'");
-		SingleLineTextField uniqueSuffixField = exportDialog.addTextField("Taxon Name Suffix", "", 20);
-		Checkbox simpleTaxonNamesCheckBox = exportDialog.addCheckBox("simplify taxon names", simplifyTaxonName);
-		Checkbox includeGapsCheckBox = exportDialog.addCheckBox("include gaps", includeGaps);  
-		Checkbox writeExcludedCheckBox = exportDialog.addCheckBox("write excluded characters", writeExcludedCharacters);  
+		Checkbox includeGapsCheckBox = exportDialog.addCheckBox("Include gaps", includeGaps);  
+		Checkbox writeExcludedCheckBox = exportDialog.addCheckBox("Write excluded characters", writeExcludedCharacters);  
 		Checkbox converMultiStateToMissingCheckBox = exportDialog.addCheckBox("convert multistate to missing for protein data", convertMultStateToMissing);
+		exportDialog.addHorizontalLine(1);
+		Checkbox simpleTaxonNamesCheckBox = exportDialog.addCheckBox("Simplify taxon names", simplifyTaxonName);
+		SingleLineTextField uniqueSuffixField = exportDialog.addTextField("Taxon Name Suffix", "", 20);
+		exportDialog.addHorizontalLine(1);
 
 		
 		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
@@ -501,7 +568,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		simplifyTaxonName=simpleTaxonNamesCheckBox.getState();
 		convertMultStateToMissing=converMultiStateToMissingCheckBox.getState();
 		writeExcludedCharacters=writeExcludedCheckBox.getState();
-		
+		if (ok)
+			storePreferences();
+
 		exportDialog.dispose();
 		return ok;
 	}	

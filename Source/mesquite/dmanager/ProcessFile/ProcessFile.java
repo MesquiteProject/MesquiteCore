@@ -52,10 +52,9 @@ public class ProcessFile extends FileInit {
 			if (processor == null)
 				return null;
 			getFileCoordinator().setWhomToAskIfOKToInteractWithUser(this);
-			boolean success = true;
 			MesquiteString result = new MesquiteString();
 			result.setValue((String)null);
-			success = processor.processFile(f, result);
+			processor.processFile(f, result);
 			firstTime = true;
 			fireEmployee(processor);
 		}

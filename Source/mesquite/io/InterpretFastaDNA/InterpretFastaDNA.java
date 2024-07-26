@@ -75,6 +75,10 @@ public class InterpretFastaDNA extends InterpretFasta {
 		return "N";
 	}
 					
+	/*.................................................................................................................*/
+	 public boolean requestPrimaryChoice() {
+	return true;
+	 }
 /*.................................................................................................................*/
     	 public String getName() {
 		return "FASTA (DNA/RNA)";

@@ -76,7 +76,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		temp.addLine("setFileInterpreter ", exporterTask);  
+		temp.addLine("setFileInterpreter " + ParseUtil.tokenize(exporterString));  
 		if (directoryPath.contains(baseDirectoryPath))
 			temp.addLine("setRelativeDirectoryPath " + ParseUtil.tokenize(MesquiteFile.decomposePath(baseDirectoryPath, directoryPath)));  
 		else
@@ -96,18 +96,27 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 				relativeDirectoryPath = MesquiteFile.decomposePath(baseDirectoryPath, directoryPath);
 			}
 			}
+		FileCoordinator coord = getFileCoordinator();
+	//	FileInterpreter previousExporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
 		queryOptions();
+		exporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
+		//exporterTask.queryLocalOptions();
+	//	if (previousExporterTask!=requestedExporterTask)
+			
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 //set file interpreter not being respected..arguments.
 		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setFileInterpreter")) {
-			FileInterpreter temp =  (FileInterpreter)replaceEmployee(FileInterpreter.class, arguments, "Exporter", exporterTask);
+			exporterString = parser.getFirstToken(arguments);
+			exporterTask = (FileInterpreter)getFileCoordinator().findEmployeeWithName(exporterString);
+			return exporterTask;
+			/*FileInterpreter temp =  (FileInterpreter)replaceEmployee(FileInterpreter.class, arguments, "Exporter", exporterTask);
 			if (temp!=null) {
 				exporterTask = temp;
 				exporterString = exporterTask.getName();
 				return exporterTask;
-			}
+			}*/
 
 		}
 		else if (checker.compare(this.getClass(), "Sets the directory path", "[path]", commandName, "setDirectoryPath")) {
@@ -160,7 +169,12 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		exporterNames[0] = "NEXUS file";
 		count = 1;
 		for (int i=0; i<fInterpreters.length; i++)
-			if (((FileInterpreterI)fInterpreters[i]).canExportEver()) {
+			if (((FileInterpreterI)fInterpreters[i]).canExportEver() && ((FileInterpreterI)fInterpreters[i]).requestPrimaryChoice()) {
+				exporterNames[count] = fInterpreters[i].getName();
+				count++;
+			}
+		for (int i=0; i<fInterpreters.length; i++)
+			if (((FileInterpreterI)fInterpreters[i]).canExportEver() && !((FileInterpreterI)fInterpreters[i]).requestPrimaryChoice()) {
 				exporterNames[count] = fInterpreters[i].getName();
 				count++;
 			}
@@ -180,11 +194,11 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 	}
 	/*.................................................................................................................*/
 	/** Called to alter file. */
-	public boolean processFile(MesquiteFile file){
+	public int processFile(MesquiteFile file){
 		boolean usePrevious = false;
 		if (exporterString == null && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
 			if (!queryOptions())  
-				return false;
+				return 2;
 
 		}
 		else
@@ -196,10 +210,10 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 
 		exporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
 		if (exporterTask == null)
-			return false;
+			return 2;
 		Taxa taxa;
 		if (proj == null)
-			return false;
+			return 2;
 		getProject().incrementProjectWindowSuppression();
 		incrementMenuResetSuppression();
 		CompatibilityTest test = exporterTask.getCompatibilityTest();
@@ -234,14 +248,14 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 				newTaxa.addToFile(tempDataFile, null, taxaManager);
 
 				tempDataFile.exporting =1;
-				if (data.getNumChars()  == 0){
+				if (data.getNumChars() <= 0){
 					MesquiteMessage.warnUser("Matrix to be written has no characters; it will not be written.  Name: " + data.getName() + " (type: " + data.getDataTypeName() + ")");
-					return false;
+					return 1;
 				}
-				CharacterData			newMatrix = data.cloneData();
+				CharacterData newMatrix = data.cloneData();
 				if (newMatrix == null){
 					MesquiteMessage.warnUser("Matrix NOT successfully cloned for file saving: " + data.getName() + " (type: " + data.getDataTypeName() + "; " + data.getNumChars() + " characters)");
-					return false;
+					return 1;
 				}
 				newMatrix.setName(data.getName());
 
@@ -268,7 +282,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		getProject().decrementProjectWindowSuppression();
 		decrementMenuResetSuppression();
 
-		return true;
+		return 0;
 	}
 	public void saveFile(String exporterName, MesquiteFile file, String fileName, String directoryPath, FileCoordinator coord, boolean usePrevious){
 		if (exporterName.equals("NEXUS file"))

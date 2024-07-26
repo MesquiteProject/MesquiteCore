@@ -104,6 +104,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 
 		temp.addLine("setProportionIncompat " + proportionIncompat);
 		temp.addLine("setSpanSize " + blockSize);
+		temp.addLine("setNeighbourDistance " + neighbourDistance);
 		temp.addLine("setTreatGapAsState " + treatGapAsState.toOffOnString());
 		return temp;
 	}
@@ -128,6 +129,15 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				blockSize = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+			}
+
+		}
+		else if (checker.compare(this.getClass(), "Sets neighbour distance of PhyIN selection.", "[on or off]", commandName, "setNeighbourDistance")) {
+			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(s)){
+				neighbourDistance = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
 			}

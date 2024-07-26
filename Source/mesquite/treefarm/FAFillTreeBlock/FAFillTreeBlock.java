@@ -80,14 +80,13 @@ public class FAFillTreeBlock extends FileProcessor {
 	}
 	/*.................................................................................................................*/
 	/** Called to alter file. */
-	public boolean processFile(MesquiteFile file){
+	public int processFile(MesquiteFile file){
 		MesquiteProject proj = file.getProject();
 		if (proj == null)
-			return false;
-		boolean success = true;
+			return 2;
 		Taxa taxa = proj.getTaxa(0);
 		if (taxa == null)
-			return false;
+			return 2;
 		TreeVector trees = new TreeVector(taxa);
 		int howManyTrees =0;
 		if (treeFillerTask instanceof TreeSource)
@@ -95,7 +94,7 @@ public class FAFillTreeBlock extends FileProcessor {
 		if (!treeFillerTask.hasLimitedTrees(trees.getTaxa())){
 			howManyTrees = MesquiteInteger.fromString(parser.getNextToken());
 			if (!MesquiteInteger.isCombinable(howManyTrees)) {
-				return false;
+				return 1;
 			}
 		}
 
@@ -107,12 +106,12 @@ public class FAFillTreeBlock extends FileProcessor {
 
 		if (trees.size()==before) {
 			logln("Sorry, no trees were returned by " + treeFillerTask.getName());
-			return false;
+			return 1;
 		}
 
 		logln(Integer.toString(trees.size()) + " trees stored in tree block, from " + treeFillerTask.getName());
 		trees.addToFile(file, getProject(), findElementManager(TreeVector.class));
-		return true;
+		return 0;
 
 	}
 	/*.................................................................................................................*/

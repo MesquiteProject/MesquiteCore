@@ -393,6 +393,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimming implements ActionListene
 						gapCount++;
 				}
 				siteGappiness[ic] = 1.0*gapCount/numTaxaCounted;
+
 				if (gapCount == numTaxaCounted)//if all gaps, delete regardless 
 					charFlags.setBit(ic, true);
 				else if (filterSiteGappiness.getValue() && gappySite(ic))

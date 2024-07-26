@@ -355,7 +355,6 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 				String output = ("Taxon,Overall");
 				for (int window=0; window<numWindows; window++) {
 					int windowStart = window*windowIncrement;
-					int windowEnd = windowStart+windowSize-1;
 					output += "," + windowStart;
 				}
 				output +="\n";
@@ -389,7 +388,7 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 			CommandRecord.tick("Spruceup complete. Number of windows done " + numWindowsDone + " of " + numWindows);
 			timer.end();
 			long time = timer.getAccumulatedTime();
-			logln("Spruceup found " + count + " cells to trim in matrix " + data.getName() + " (" + numChars + " characters) in " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
+			log("Spruceup found to trim " + count + " cells");
 			if (flagGapsOnly.getValue()){
 				int countGO = 0;
 				boolean[][] cellFlags = flags.getCellFlags();
@@ -399,8 +398,9 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 						countGO++;
 					}
 				}
-				logln(" and " + countGO + " characters will be deleted because they were gaps-only.");
+				log(" and " + countGO + " characters");
 			}
+			logln(" in " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(time));
 		}
 
 		return flags;
