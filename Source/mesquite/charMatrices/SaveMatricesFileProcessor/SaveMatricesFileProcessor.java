@@ -95,6 +95,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		else
 			current = "?" + current;
 		String temp = MesquiteFile.chooseDirectory("Where to save files" + current); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+		Debugg.println("@@@@@@@@@@@@@@@@SMFP.qLO ");
 		if (!StringUtil.blank(temp)) {
 			directoryPath = temp;
 			if (baseDirectoryPath!= null) {

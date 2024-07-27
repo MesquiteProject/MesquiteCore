@@ -812,18 +812,23 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			// fdlg.dispose();
 		}
 		else	if (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) {  
+			Debugg.println("@@@@@@@@@@@@@@@@MF.cd 1");
 			MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), message, FileDialog.LOAD);
+			Debugg.println("@@@@@@@@@@@@@@@@MF.cd 2");
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
 			fdlg.setResizable(true);
 			if (suggestedDir != null)
 				fdlg.setDirectory(suggestedDir);
+			Debugg.println("@@@@@@@@@@@@@@@@MF.cd 3");
 			fdlg.setBackground(ColorTheme.getInterfaceBackground());
 			fdlg.setVisible(true);
+			Debugg.println("@@@@@@@@@@@@@@@@MF.cd 4");
 			tempFileName=fdlg.getFile();
 			if (tempFileName==null)
 				tempDirectoryName=null;
 			else
 				tempDirectoryName=fdlg.getDirectory();
+			Debugg.println("@@@@@@@@@@@@@@@@MF.cd 5");
 
 			// fdlg.dispose();
 			System.setProperty("apple.awt.fileDialogForDirectories", "false");
