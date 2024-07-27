@@ -194,14 +194,13 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 					num = MesquiteInteger.fromString(numReps.getText());
 				if (!MesquiteInteger.isCombinable(num)) 
 					return bailOut(null, characterSourceTask, null);
+				exporterString = exporterChoice.getSelectedItem();
+				dialog.dispose();
 				boolean useBaseNameForFiles = useBaseName.getValue() == 1;
 				String directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 				if (StringUtil.blank(directoryPath))
 					return bailOut(null, characterSourceTask, null);
 				String basePath = directoryPath + MesquiteFile.fileSeparator ; //+ baseName;
-				exporterString = exporterChoice.getSelectedItem();
-
-				dialog.dispose();
 				useBaseName.removeItemListener(this);
 				dialog = null;
 
