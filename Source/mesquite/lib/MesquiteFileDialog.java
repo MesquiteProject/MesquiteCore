@@ -130,8 +130,10 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			titleWindow.setVisible(vis);
 		}
 
+		Debugg.println("@@@@@@@@@@@@@@@@MFD.sV type " + type);
 		if (type == 3){  //choosing a directory
 			if (vis) {
+				Debugg.println("@@@@@@@@@@@@@@@@MFD.sV 1");
 				System.out.println("Choose Directory Dialog box shown.  Message: " + message);
 				System.out.println("");
 
@@ -149,8 +151,10 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 					}
 					return;
 				}
+				Debugg.println("@@@@@@@@@@@@@@@@MFD.sV 3");
 			}
 			else {
+				Debugg.println("@@@@@@@@@@@@@@@@MFD.sV 2");
 				if (holdsConsoleFocus)
 					ConsoleThread.releaseConsoleObjectCommanded(this, true);
 				holdsConsoleFocus = false;
@@ -217,7 +221,9 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			super.setVisible(false);
 		}
 		else {
+			Debugg.println("@@@@@@@@@@@@@@@@MFD.sV superSV ");
 			super.setVisible(true);
+			Debugg.println("@@@@@@@@@@@@@@@@MFD.sV superSV after ");
 			/*
 			mfdThread.pleaseShow = true;
 			mfdThread.start();
