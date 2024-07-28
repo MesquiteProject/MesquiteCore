@@ -326,8 +326,9 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 		}
 		return false;
 	}
+	boolean anyTaxaSelected = false;
 	boolean includeTaxon(int it, CategoricalData data) {
-		return !examineOnlySelectedTaxa.getValue() || data.getTaxa().getSelected(it);
+		return !anyTaxaSelected || (!examineOnlySelectedTaxa.getValue() || data.getTaxa().getSelected(it));
 	}
 	/*.................................................................................................................*/
 	boolean areIncompatible(CategoricalData data, int ic, int ic2) {
@@ -335,7 +336,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 			return false;
 
 		for (int i =0; i<NUMSTATES; i++) for (int k =0; k<NUMSTATES;k++) statePairs[i][k]= false;
-
+	
 		//first, harvest all patterns between the two columns
 		for (int it = 0; it < data.getNumTaxa(); it++) {
 			// only look at taxa for which ic and ic2 are within their sequence (i.e. not in terminal gap region)
@@ -370,6 +371,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 			taxonSequenceStart = new int[data.getNumTaxa()];
 			taxonSequenceEnd = new int[data.getNumTaxa()];
 		}
+		anyTaxaSelected = data.getTaxa().anySelected();
 		if (hasConflict == null || hasConflict.length != data.getNumChars()) {
 			hasConflict = new boolean[data.getNumChars()];
 			toSelect = new boolean[data.getNumChars()];
