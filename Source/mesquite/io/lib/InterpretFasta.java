@@ -22,12 +22,18 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.ContinuousData;
+import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
 
 
 /* ============  a file interpreter for FASTA files ============*/
 /** This is the class for interpreting FASTA files.  It is subclassed to make interpreters specifically for
 DNA and Protein files. */
 public abstract class InterpretFasta extends FileInterpreterI implements ReadFileFromString {
+
+	final static protected boolean includeGapsDEFAULT = false;
+	final static protected boolean simplifyTaxonNameDEFAULT = false;
+	final static protected boolean convertMultStateToMissingDEFAULT = true;
+
 	StringMatcher nameMatcherTask = null;
 	Class[] acceptedClasses;
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -470,10 +476,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 
 	/* ============================  exporting ============================*/
-	protected boolean includeGaps = false;
-	protected boolean simplifyTaxonName = false;
+	protected boolean includeGaps = includeGapsDEFAULT;
+	protected boolean simplifyTaxonName = simplifyTaxonNameDEFAULT;
+	protected boolean convertMultStateToMissing = convertMultStateToMissingDEFAULT;
 	protected String uniqueSuffix = "";
-	protected boolean convertMultStateToMissing = true;
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
@@ -548,8 +554,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		exportDialog.appendToHelpString(" The Taxon Name Suffix, if present, will be appended to each taxon name.");
 		exportDialog.appendToHelpString(" Some systems (e.g., GenBank) require simple taxon names, and these will be used if you check 'simplify taxon names'");
 		Checkbox includeGapsCheckBox = exportDialog.addCheckBox("Include gaps", includeGaps);  
-		Checkbox writeExcludedCheckBox = exportDialog.addCheckBox("Include characters marked as excluded", writeExcludedCharacters);  
-		Checkbox converMultiStateToMissingCheckBox = exportDialog.addCheckBox("convert multistate to missing for protein data", convertMultStateToMissing);
+		Checkbox writeExcludedCheckBox = exportDialog.addCheckBox("Include any characters marked as excluded", writeExcludedCharacters);  
+		Checkbox converMultiStateToMissingCheckBox = null;
+		if (this instanceof InterpretFastaProtein)
+			converMultiStateToMissingCheckBox = exportDialog.addCheckBox("convert multistate to missing for protein data", convertMultStateToMissing);
 		exportDialog.addHorizontalLine(1);
 		Checkbox simpleTaxonNamesCheckBox = exportDialog.addCheckBox("Simplify taxon names", simplifyTaxonName);
 		SingleLineTextField uniqueSuffixField = exportDialog.addTextField("Taxon Name Suffix", "", 20);
@@ -566,7 +574,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 		includeGaps = includeGapsCheckBox.getState();
 		simplifyTaxonName=simpleTaxonNamesCheckBox.getState();
-		convertMultStateToMissing=converMultiStateToMissingCheckBox.getState();
+		if (converMultiStateToMissingCheckBox != null)
+			convertMultStateToMissing=converMultiStateToMissingCheckBox.getState();
 		writeExcludedCharacters=writeExcludedCheckBox.getState();
 		if (ok)
 			storePreferences();
@@ -628,6 +637,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		int numChars = data.getNumChars();
 		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
 		boolean isProtein = data instanceof ProteinData;
+		if (isProtein && !(this instanceof InterpretFastaProtein))
+			MesquiteMessage.warnProgrammer("ERROR: protein data matrix in file interpreter for DNA");
 		ProteinData pData =null;
 		if (isProtein)
 			pData = (ProteinData)data;

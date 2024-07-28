@@ -33,6 +33,9 @@ public abstract class DataSetsListAssistant extends ListAssistant  {
  		return "Data sets list assistant";
    	 }
 
+	 public String[] getDefaultModule() {
+	 	 	return new String[] {"#NumForCharMatrixList"};
+	 	 }
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
 	}
 	
