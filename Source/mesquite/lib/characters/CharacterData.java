@@ -403,9 +403,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 	}
-	public void setToNewGroup(String name, int icStart, int icEnd, MesquiteModule ownerModule) {
+	public CharactersGroup setToNewGroup(String name, int icStart, int icEnd, MesquiteModule ownerModule) {
 		if (icEnd<icStart)
-			return;
+			return null;
 		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
 		if (partition==null){
 			partition= new CharacterPartition("Partition", getNumChars(), null, this);
@@ -439,6 +439,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 					notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
 			}
 		}
+		return group;
 	}
 	public CharactersGroup createNewGroup(CharactersGroupVector groups, String groupName, MesquiteModule ownerModule){
 		CharactersGroup group = new CharactersGroup();
@@ -3963,18 +3964,25 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);   // partition of this object
 		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
 		CharactersGroup group = null;  //see if one with prefix already exists
+		
+		Color randomColor = new Color(RandomBetween.getIntStatic(100,255),RandomBetween.getIntStatic(100,255),RandomBetween.getIntStatic(100,255));
+
 		if (partition==null && origNumChars-1>=0){ // let's give the original ones a group, as they didn't have any before
 			group = groups.findGroup(getName());  //let's see if there already exists a group with this matrix name
-			if (group==null)
-				setToNewGroup(getName(), 0, origNumChars-1, module);  //set group
+			if (group==null) {
+				CharactersGroup cg = setToNewGroup(getName(), 0, origNumChars-1, module);  //set group
+				cg.setColor(randomColor);
+			}
 			else
 				setCurrentGroup(group,0, origNumChars-1, module);  
 		}
 		CharacterPartition oPartition = (CharacterPartition) oData.getCurrentSpecsSet(CharacterPartition.class);   // partition in incoming. This by default will be used.
 		if (oPartition == null){
 			group = groups.findGroup(oData.getName());  //let's see if there already exists a group with this matrix name
-			if (group==null)
-				setToNewGroup(oData.getName(), origNumChars, getNumChars()-1, module);  //set group
+			if (group==null) {
+				CharactersGroup cg = setToNewGroup(oData.getName(), origNumChars, getNumChars()-1, module);  //set group
+				cg.setColor(randomColor);
+			}
 			else
 				setCurrentGroup(group,origNumChars, getNumChars()-1, module);   //set group
 		}

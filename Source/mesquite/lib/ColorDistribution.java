@@ -382,7 +382,6 @@ public class ColorDistribution {
 				return i;
 		return -1;
 	}
-	
 	public static Color getColorFromArguments(String arguments, MesquiteInteger pos) {
 		int red =  MesquiteInteger.fromString(arguments, pos);
 		int green =  MesquiteInteger.fromString(arguments, pos);

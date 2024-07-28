@@ -548,7 +548,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		exportDialog.appendToHelpString(" The Taxon Name Suffix, if present, will be appended to each taxon name.");
 		exportDialog.appendToHelpString(" Some systems (e.g., GenBank) require simple taxon names, and these will be used if you check 'simplify taxon names'");
 		Checkbox includeGapsCheckBox = exportDialog.addCheckBox("Include gaps", includeGaps);  
-		Checkbox writeExcludedCheckBox = exportDialog.addCheckBox("Write excluded characters", writeExcludedCharacters);  
+		Checkbox writeExcludedCheckBox = exportDialog.addCheckBox("Include characters marked as excluded", writeExcludedCharacters);  
 		Checkbox converMultiStateToMissingCheckBox = exportDialog.addCheckBox("convert multistate to missing for protein data", convertMultStateToMissing);
 		exportDialog.addHorizontalLine(1);
 		Checkbox simpleTaxonNamesCheckBox = exportDialog.addCheckBox("Simplify taxon names", simplifyTaxonName);
