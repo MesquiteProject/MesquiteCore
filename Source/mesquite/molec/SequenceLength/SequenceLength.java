@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.aSequenceLength;
+package mesquite.molec.SequenceLength;
 /*~~  */
 
 import java.util.*;
@@ -23,7 +23,7 @@ import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
-public class aSequenceLength extends NumberForTaxon {
+public class SequenceLength extends NumberForTaxon {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(MatrixSourceCoord.class, getName() + "  needs a source of sequences.",
 		"The source of characters is arranged initially");
