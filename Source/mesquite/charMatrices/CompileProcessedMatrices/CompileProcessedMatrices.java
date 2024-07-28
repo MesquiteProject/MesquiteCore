@@ -74,7 +74,9 @@ public class CompileProcessedMatrices extends FileProcessor {
 		int def = 2;
 		if (openAfterCompiled)
 			def = 1;
+		Debugg.printStackTrace("OACOptionAlreadySet " + OACOptionAlreadySet);
 		openAfterCompiled = AlertDialog.query(containerOfModule(), "Open when done?", "Open file of compiled matrices when finished?", "Open", "Don't", def);
+		OACOptionAlreadySet = true;
 	}
 	/*.................................................................................................................*/
 	public void queryLocalOptions () {

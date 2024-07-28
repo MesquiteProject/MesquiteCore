@@ -53,12 +53,14 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 	static int blockSizeDEFAULT = 10; //(-b)
 	static int neighbourDistanceDEFAULT = 2; //(-d)
 	static boolean treatGapAsStateDEFAULT = true; //(-e)
+	static boolean examineOnlySelectedTaxaDEFAULT = false;
 
 	double proportionIncompat = proportionIncompatDEFAULT; //(-p)
 	int blockSize = blockSizeDEFAULT; //(-b)
 	int neighbourDistance = neighbourDistanceDEFAULT; //(-d)
 	MesquiteBoolean treatGapAsState = new MesquiteBoolean(treatGapAsStateDEFAULT); //(-e)
-	
+	MesquiteBoolean examineOnlySelectedTaxa = new MesquiteBoolean(examineOnlySelectedTaxaDEFAULT); //(no equivalent in python script)
+
 	// Example with parameters b=10, d=1, p = 0.5
 	// AAATAAAAAACCAAAAAAAAAAA
 	// AAATTAAAACCAAAAAAAAAAAA
@@ -95,8 +97,8 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 	}
 	/*.................................................................................................................*/
 	public void queryLocalOptions () {
-	 		if (queryOptions())
-	 			storePreferences();
+		if (queryOptions())
+			storePreferences();
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
@@ -106,6 +108,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 		temp.addLine("setSpanSize " + blockSize);
 		temp.addLine("setNeighbourDistance " + neighbourDistance);
 		temp.addLine("setTreatGapAsState " + treatGapAsState.toOffOnString());
+		temp.addLine("setExamineOnlySelectedTaxa " + examineOnlySelectedTaxa.toOffOnString());
 		return temp;
 	}
 	/*.................................................................................................................*/
@@ -150,7 +153,14 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 				parametersChanged();
 			}
 		}
-	
+		else if (checker.compare(this.getClass(), "Sets whether or not to examine only the selected taxa for conflict.", "[on or off]", commandName, "setExamineOnlySelectedTaxa")) {
+			boolean current = examineOnlySelectedTaxa.getValue();
+			examineOnlySelectedTaxa.toggleValue(parser.getFirstToken(arguments));
+			if (current!=examineOnlySelectedTaxa.getValue()) {
+				parametersChanged();
+			}
+		}
+
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -164,6 +174,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 		StringUtil.appendXMLTag(buffer, 2, "spanSize", blockSize);  
 		StringUtil.appendXMLTag(buffer, 2, "neighbourDistance", neighbourDistance);  
 		StringUtil.appendXMLTag(buffer, 2, "treatGapAsState", treatGapAsState);  
+		StringUtil.appendXMLTag(buffer, 2, "examineOnlySelectedTaxa", examineOnlySelectedTaxa);  
 		return buffer.toString();
 	}
 	public void processSingleXMLPreference (String tag, String flavor, String content){
@@ -180,6 +191,8 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 			neighbourDistance = MesquiteInteger.fromString(content);
 		if ("treatGapAsState".equalsIgnoreCase(tag))
 			treatGapAsState.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("examineOnlySelectedTaxa".equalsIgnoreCase(tag))
+			examineOnlySelectedTaxa.setValue(MesquiteBoolean.fromTrueFalseString(content));
 
 
 	}
@@ -187,7 +200,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 	IntegerField SSField;
 	IntegerField NDField;
 	DoubleField PIField;
-	Checkbox tGAS;
+	Checkbox tGAS, eOST;
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
@@ -199,6 +212,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 		NDField = dialog.addIntegerField("Distance surveyed for conflict among neighbours (-d)", neighbourDistance, 4);
 		PIField = dialog.addDoubleField("Proportion of neighbouring sites in conflict to trigger block selection (-p)", proportionIncompat, 4);
 		tGAS = dialog.addCheckBox("Treat non-terminal gaps as extra state (-e)", treatGapAsState.getValue());
+		eOST = dialog.addCheckBox("Examine conflict only among any selected taxa.", examineOnlySelectedTaxa.getValue());
 
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
@@ -213,6 +227,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 			blockSize = SSField.getValue();
 			neighbourDistance = NDField.getValue();
 			treatGapAsState.setValue(tGAS.getState());
+			examineOnlySelectedTaxa.setValue(eOST.getState());
 
 			storePreferences();
 		}
@@ -226,6 +241,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 			SSField.setValue(blockSizeDEFAULT);
 			NDField.setValue(neighbourDistanceDEFAULT);
 			tGAS.setState(treatGapAsStateDEFAULT);
+			eOST.setState(examineOnlySelectedTaxaDEFAULT);
 
 		} 
 	}
@@ -310,7 +326,9 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 		}
 		return false;
 	}
-
+	boolean includeTaxon(int it, CategoricalData data) {
+		return !examineOnlySelectedTaxa.getValue() || data.getTaxa().getSelected(it);
+	}
 	/*.................................................................................................................*/
 	boolean areIncompatible(CategoricalData data, int ic, int ic2) {
 		if (ic>=data.getNumChars() || ic <0 || ic2>=data.getNumChars() || ic2 <0)
@@ -321,7 +339,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 		//first, harvest all patterns between the two columns
 		for (int it = 0; it < data.getNumTaxa(); it++) {
 			// only look at taxa for which ic and ic2 are within their sequence (i.e. not in terminal gap region)
-			if (taxonSequenceStart[it]>=0 && ic>= taxonSequenceStart[it] && ic <= taxonSequenceEnd[it] && ic2>= taxonSequenceStart[it] && ic2 <= taxonSequenceEnd[it]) {
+			if (includeTaxon(it, data) && taxonSequenceStart[it]>=0 && ic>= taxonSequenceStart[it] && ic <= taxonSequenceEnd[it] && ic2>= taxonSequenceStart[it] && ic2 <= taxonSequenceEnd[it]) {
 				int state1 = getEffectiveState(data.getState(ic, it));
 				int state2 = getEffectiveState(data.getState(ic2, it));
 				if (state1 >=0 && state1<NUMSTATES && state2 >=0 && state2<NUMSTATES) {
@@ -362,10 +380,12 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListe
 		}
 		numTaxaWithSequence = 0;
 		for (int it=0; it<data.getNumTaxa(); it++) {
-			taxonSequenceStart[it] = getFirstInSequence(data, it);
-			taxonSequenceEnd[it] = getLastInSequence(data, it);
-			if (taxonSequenceStart[it]>=0)
-				numTaxaWithSequence++;
+			if (includeTaxon(it, data)){
+				taxonSequenceStart[it] = getFirstInSequence(data, it);
+				taxonSequenceEnd[it] = getLastInSequence(data, it);
+				if (taxonSequenceStart[it]>=0)
+					numTaxaWithSequence++;
+			}
 		}
 
 		NUMSTATES = data.getMaxState()+1; 

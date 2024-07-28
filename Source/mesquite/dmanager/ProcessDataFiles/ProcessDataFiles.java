@@ -26,6 +26,7 @@ import java.util.Vector;
 
 import javax.swing.JLabel;
 
+import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.AlertDialog;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
@@ -47,12 +48,14 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.Taxa;
 import mesquite.lib.TreeVector;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.FileInterpreter;
 import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.duties.FileProcessor;
 import mesquite.lib.duties.GeneralFileMaker;
 import mesquite.lib.duties.NexusFileInterpreter;
+import mesquite.molec.FlagBySpruceup.FlagBySpruceup;
 
 
 /* ======================================================================== */
@@ -199,61 +202,76 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		dialog.completeAndShowDialog("Process", "Cancel", null, "PROCESS");
 
 		dialog.dispose();
+		pauseUntilThreadDone();
 		return (buttonPressed.getValue()==0);
 	}
-
+	PDFThread thread = null;
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("Add")) { //You have hit ADD, so let's add to current script. 
-			//Look for and hire the next processor, and capture its script for later use
-			boolean wasUTIS = MesquiteThread.unknownThreadIsScripting;
-			MesquiteThread.unknownThreadIsScripting = false;
-			FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
-			MesquiteThread.unknownThreadIsScripting = wasUTIS;
-			if (processor != null) {
-				processor.setBaseDirectory(directoryPath);
-				currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
-				String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
-				currentScript +="\ntell It;\n" + sn + "\nendTell;";
-				recordProcessor(processor);
-				setIntro(fromSavedScript);
-				resetProcessorList();
-				fromSavedScript = false;
-			}
-		}
-		else if (e.getActionCommand().equalsIgnoreCase("Clear")) { //You have hit ADD, so remove all processors. 
-			removeAllProcessors();
-			fromSavedScript = false;
+		pauseUntilThreadDone();
+		 thread = new PDFThread(this,  e.getActionCommand());
+		thread.start();
+	}
+	void pauseUntilThreadDone() {
+		try {
+		while(thread != null) {
+			Thread.sleep(20);
+		}			
+	}
+	catch(Exception ex) {
+	}
+	}
+	void doActionButton(String command) {
+		if ("Add".equalsIgnoreCase(command)) { //You have hit ADD, so let's add to current script. 
+		//Look for and hire the next processor, and capture its script for later use
+		boolean wasUTIS = MesquiteThread.unknownThreadIsScripting;
+		MesquiteThread.unknownThreadIsScripting = false;
+		FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
+		MesquiteThread.unknownThreadIsScripting = wasUTIS;
+		if (processor != null) {
+			processor.setBaseDirectory(directoryPath);
+			currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
+			String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
+			currentScript +="\ntell It;\n" + sn + "\nendTell;";
+			recordProcessor(processor);
 			setIntro(fromSavedScript);
-			currentScript = "";
-			preferencesScript = "";
-		} 
-		else if (e.getActionCommand().equalsIgnoreCase("Load")) {  //You have hit Load, choose and execute stored script
-			MesquiteFile f = MesquiteFile.open(true, (FilenameFilter)null, "Open text file with processing script", null);
-			if (f!= null) {
-				String script = MesquiteFile.getFileContentsAsString(f.getPath());
-				if (!StringUtil.blank(script)) {
-					removeAllProcessors();
-					
-					executeScript(script);
-					currentScript = script;
-					preferencesScript = script;
-					resetProcessorList();
-					fromSavedScript = true;
-					setIntro(fromSavedScript);
-				}
-			}
-		} 
-		else if (e.getActionCommand().equalsIgnoreCase("resetParams")) {//Ask all processors to re-query regarding options
-			for (int i= 0; i< fileProcessors.size(); i++){
-				FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
-				fProcessor.employeesQueryLocalOptions();
-			}
-			currentScript = recaptureScript();
-			preferencesScript = currentScript;
 			resetProcessorList();
-
+			fromSavedScript = false;
 		}
+	}
+	else if ("Clear".equalsIgnoreCase(command)) { //You have hit Clear all, so remove all processors. 
+		removeAllProcessors();
+		fromSavedScript = false;
+		setIntro(fromSavedScript);
+		currentScript = "";
+		preferencesScript = "";
+	} 
+	else if ("Load".equalsIgnoreCase(command)) {  //You have hit Load, choose and execute stored script
+		MesquiteFile f = MesquiteFile.open(true, (FilenameFilter)null, "Open text file with processing script", null);
+		if (f!= null) {
+			String script = MesquiteFile.getFileContentsAsString(f.getPath());
+			if (!StringUtil.blank(script)) {
+				removeAllProcessors();
+				
+				executeScript(script);
+				currentScript = script;
+				preferencesScript = script;
+				resetProcessorList();
+				fromSavedScript = true;
+				setIntro(fromSavedScript);
+			}
+		}
+	} 
+	else if ("resetParams".equalsIgnoreCase(command)) {//Ask all processors to re-query regarding options
+		for (int i= 0; i< fileProcessors.size(); i++){
+			FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
+			fProcessor.employeesQueryLocalOptions();
+		}
+		currentScript = recaptureScript();
+		preferencesScript = currentScript;
+		resetProcessorList();
+
+	}
 	}
 	/*.................................................................................................................*/
 	// set up the processors.
@@ -689,6 +707,20 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 
 }
 
+
+class PDFThread extends MesquiteThread {
+	String command = null;
+	ProcessDataFiles ownerModule;
+	public PDFThread(ProcessDataFiles ownerModule, String command){
+		this.ownerModule = ownerModule;
+		this.command = command;
+	}
+	public void run() {
+		ownerModule.doActionButton(command);
+		ownerModule.thread = null;
+	}
+
+}
 
 
 
