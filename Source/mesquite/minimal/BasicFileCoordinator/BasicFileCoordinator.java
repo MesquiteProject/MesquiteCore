@@ -711,11 +711,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 			return null;
 		}
-		/*if (p.autosave){
+		if (p.autosave){
 			saveAllFiles();
 			p.autosave = false;
 		}
-		*/
+	
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
 	}

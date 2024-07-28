@@ -72,7 +72,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public static int totalFinalized = 0;  // to catch memory leaks
 	private int idNumber;
 	public boolean developing = true;
-//	public boolean autosave = false;
+	public boolean autosave = false;
 	public boolean isDoomed = false;
 	public long timePreviouslySavedAsRecorded = 0;
 	public long timePreviouslySavedByFile = 0;
