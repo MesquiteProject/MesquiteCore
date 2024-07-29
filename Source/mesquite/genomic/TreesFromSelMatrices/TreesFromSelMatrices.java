@@ -46,6 +46,8 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		inferenceTask = (TreeSearcher)hireCompatibleEmployee(TreeSearcher.class, "acceptImposedMatrixSource", "Tree inference method");
 		matrixSourceTask = new MyListOfMatrices(this);
+		if (inferenceTask == null || matrixSourceTask == null)
+			return false;
 		inferenceTask.setMatrixSource(matrixSourceTask);
 		return true;
 	}
