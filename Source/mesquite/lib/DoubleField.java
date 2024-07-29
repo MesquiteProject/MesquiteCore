@@ -80,6 +80,11 @@ public class DoubleField  {
 		return textField;
 	}
 	/*.................................................................................................................*/
+	public void setEnabled(boolean s) {
+		if (textField!=null)
+			textField.setEnabled(s);
+	}
+	/*.................................................................................................................*/
 	public double getValue () {
 		String s = textField.getText();
 		double value = MesquiteDouble.fromString(s);

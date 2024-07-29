@@ -16,29 +16,37 @@ package mesquite.molec.FlagTerminalRepresentation;
 
 
 
+import java.awt.Button;
 import java.awt.Checkbox;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Debugg;
 import mesquite.lib.DoubleField;
+import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.RadioButtons;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
 
 /* ======================================================================== */
-public class FlagTerminalRepresentation extends MatrixFlagger {
+public class FlagTerminalRepresentation extends MatrixFlaggerForTrimming implements ItemListener {
 
-	int threshold = MesquiteInteger.unassigned;
+	int absThreshold = MesquiteInteger.unassigned;
+	double propThreshold = MesquiteDouble.unassigned;
+	boolean useProportion = true;
 	boolean queried = false;
 
 	/*.................................................................................................................*/
@@ -54,7 +62,9 @@ public class FlagTerminalRepresentation extends MatrixFlagger {
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "threshold", threshold);  
+		StringUtil.appendXMLTag(buffer, 2, "absThreshold", absThreshold);  
+		StringUtil.appendXMLTag(buffer, 2, "propThreshold", propThreshold);  
+		StringUtil.appendXMLTag(buffer, 2, "useProportion", useProportion);  
 		return buffer.toString();
 	}
 	public void processSingleXMLPreference (String tag, String flavor, String content){
@@ -63,49 +73,90 @@ public class FlagTerminalRepresentation extends MatrixFlagger {
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("threshold".equalsIgnoreCase(tag))
-			threshold = MesquiteInteger.fromString(content);
+		if ("absThreshold".equalsIgnoreCase(tag))
+			absThreshold = MesquiteInteger.fromString(content);
+		if ("propThreshold".equalsIgnoreCase(tag))
+			propThreshold = MesquiteInteger.fromString(content);
+		if ("useProportion".equalsIgnoreCase(tag))
+			useProportion = MesquiteBoolean.fromTrueFalseString(content);
 	}
 	/*.................................................................................................................*/
  	 public Snapshot getSnapshot(MesquiteFile file) { 
   	 	Snapshot temp = new Snapshot();
-	 	temp.addLine("setThreshold " + threshold); 
+	 	temp.addLine("absThreshold " + absThreshold); 
+	 	temp.addLine("propThreshold " + propThreshold); 
+	 	temp.addLine("useProportion " + useProportion); 
  	 	return temp;
  	 }
- 	 private boolean queryOptions() {
-			int offer;
-			if (threshold == MesquiteInteger.unassigned)
-				offer = 5;
-			else
-				offer = threshold;
-			int w = MesquiteInteger.queryInteger(containerOfModule(), "Threshold for terminal representation", "Enter a number to indicate the minimum number of sequences represented by data for sites toward the edges to be considered well-represented", offer);
-			if (MesquiteInteger.isCombinable(w)) {
-				threshold = w;
-	   	 		storePreferences();
-				return true;
-			}
-			else
-				return false;
-			
-	 }
+ 	 
+  	Checkbox usePropCB;
+ 	DoubleField propField;
+ 	Checkbox useAbsCB;
+ 	IntegerField absField;
+
+ 	private boolean queryOptions() {
+ 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+ 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Threshold for Terminal Representation",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+
+ 		usePropCB = dialog.addCheckBox("Use proportion of taxa", useProportion);
+ 		propField = dialog.addDoubleField("    Proportion of taxa defining low representation", propThreshold, 4);
+ 		useAbsCB = dialog.addCheckBox("Use absolute number of taxa", !useProportion);
+ 		absField = dialog.addIntegerField("    Number of taxa defining low representation", absThreshold, 4);
+ 		usePropCB.addItemListener(this);
+		useAbsCB.addItemListener(this);
+		propField.setEnabled(usePropCB.getState());
+		absField.setEnabled(useAbsCB.getState());
+
+ 		dialog.addHorizontalLine(1);
+ 		dialog.addBlankLine();
+
+
+ 		dialog.completeAndShowDialog(true);
+ 		if (buttonPressed.getValue()==0)  {
+ 			useProportion = usePropCB.getState();
+
+ 			propThreshold = propField.getValue();
+ 			absThreshold = absField.getValue();
+
+ 			queried = true;
+			storePreferences();
+ 		}
+ 		dialog.dispose();
+		return (buttonPressed.getValue()==0);
+ 	}
+	public void itemStateChanged(ItemEvent e) {
+		if (e.getItemSelectable() == usePropCB){
+			useAbsCB.setState(!usePropCB.getState());
+			propField.setEnabled(usePropCB.getState());
+			absField.setEnabled(useAbsCB.getState());
+		}				
+		else if (e.getItemSelectable() == useAbsCB){
+			usePropCB.setState(!useAbsCB.getState());
+			propField.setEnabled(usePropCB.getState());
+			absField.setEnabled(useAbsCB.getState());
+		}				
+}
 	/*.................................................................................................................*/
    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-  	 	if (checker.compare(this.getClass(), "Sets threshold for terminal representation", "", commandName, "setThreshold")) {
+  	 	if (checker.compare(this.getClass(), "Sets absolute threshold for terminal representation", "", commandName, "absThreshold")) {
    	 		int w = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteInteger.isCombinable(w))
-				w = MesquiteInteger.queryInteger(containerOfModule(), "Threshold for terminal representation", "Enter a number to indicate the minimum number of sequences represented by data for sites toward the edges to be considered well-represented", threshold);
- 	 		if (w>=0 && w<=1) {
-   	 			threshold = w;
-   	 			storePreferences();
-   	 			queried = true;
-   	 			if (!MesquiteThread.isScripting())
-   	 				parametersChanged();
-   	 		}
+ 	 		if (MesquiteInteger.isCombinable(w) && w>=0)
+   	 			absThreshold = w;
    	 	}
-     	 	else
+  	 	else if (checker.compare(this.getClass(), "Sets proportion threshold for terminal representation", "", commandName, "propThreshold")) {
+   	 		double w = MesquiteDouble.fromString(parser.getFirstToken(arguments));
+ 	 		if (MesquiteDouble.isCombinable(w) && w>=0 && w<=1)
+ 	 			propThreshold = w;
+   	 	}
+  	 	else if (checker.compare(this.getClass(), "Sets whether to use absolute or proportional threshold", "", commandName, "useProportion")) {
+ 	 		useProportion = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+   	 			queried = true;
+   	 	}
+    	 	else
    	 		return  super.doCommand(commandName, arguments, checker);
    	 	return null;
    	 }
+ 	/*.................................................................................................................*/
  	int[] taxonSequenceStart, taxonSequenceEnd;
  	int getFirstInSequence(CharacterData data, int it) {
 		for (int ic=0; ic<data.getNumChars(); ic++)
@@ -127,13 +178,13 @@ public class FlagTerminalRepresentation extends MatrixFlagger {
 
 
 			Bits charFlags = flags.getCharacterFlags();
-		
-		if (taxonSequenceStart == null || taxonSequenceStart.length != data.getNumTaxa()) {
+		int numTaxa = data.getNumTaxa();
+		if (taxonSequenceStart == null || taxonSequenceStart.length != numTaxa) {
 			taxonSequenceStart = new int[data.getNumTaxa()];
 			taxonSequenceEnd = new int[data.getNumTaxa()];
 		}
 		
-		for (int it=0; it<data.getNumTaxa(); it++) {
+		for (int it=0; it<numTaxa; it++) {
 			taxonSequenceStart[it] = getFirstInSequence(data, it);
 			taxonSequenceEnd[it] = getLastInSequence(data, it);
 		}
@@ -141,13 +192,15 @@ public class FlagTerminalRepresentation extends MatrixFlagger {
 		boolean allRepresented = false;
 		for (int ic = 0; ic < data.getNumChars() && !allRepresented; ic++) {
 			int numRepresented = 0;
-			for (int it = 0; it < data.getNumTaxa(); it++) {
+			for (int it = 0; it < numTaxa; it++) {
 				if (taxonSequenceStart[it] >=0) {
 					if (ic>=taxonSequenceStart[it])
 						numRepresented ++;
 				}
 			}
-			if (numRepresented<threshold)
+			if (!useProportion && numRepresented<absThreshold)
+				charFlags.setBit(ic, true);
+			else if (useProportion && numRepresented*1.0/numTaxa<propThreshold)
 				charFlags.setBit(ic, true);
 			allRepresented = (numRepresented == data.getNumTaxa());
 		}
@@ -155,13 +208,15 @@ public class FlagTerminalRepresentation extends MatrixFlagger {
 		allRepresented = false;
 		for (int ic = data.getNumChars()-1; ic >=0; ic--) {
 			int numRepresented = 0;
-			for (int it = 0; it < data.getNumTaxa(); it++) {
+			for (int it = 0; it < numTaxa; it++) {
 				if (taxonSequenceEnd[it] >=0) {
 					if (ic<=taxonSequenceEnd[it])
 						numRepresented ++;
 				}
 			}
-			if (numRepresented<threshold)
+			if (!useProportion && numRepresented<absThreshold)
+				charFlags.setBit(ic, true);
+			else if (useProportion && numRepresented*1.0/numTaxa<propThreshold)
 				charFlags.setBit(ic, true);
 			allRepresented = (numRepresented == data.getNumTaxa());
 		}
@@ -183,7 +238,7 @@ public class FlagTerminalRepresentation extends MatrixFlagger {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Flags sites at alignment edges represented by less than a certain number of sequences." ;
+		return "Flags sites at alignment edges represented by less than a certain number or proportion of sequences." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
