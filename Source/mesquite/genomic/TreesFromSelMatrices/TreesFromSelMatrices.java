@@ -108,10 +108,10 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 				boolean mult = false;
 				if (trees.size()-lastNumTrees>1)
 					mult = true;
-				for (int itr = lastNumTrees; itr<trees.size(); itr++) {
+				for (int itr = lastNumTrees; itr<trees.size(); itr++) { //multiple trees from same matrix; number trees .#1, 2, 3
 					String num = "";
 					if (mult)
-						num = "." + (lastNumTrees - itr + 1);
+						num = ".#" + (itr-lastNumTrees + 1);
 					Tree t = trees.getTree(itr);
 					count++;
 					if (t instanceof MesquiteTree)
