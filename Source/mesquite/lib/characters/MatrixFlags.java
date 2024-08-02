@@ -37,10 +37,39 @@ public class MatrixFlags {
 				cellFlags = new boolean[numChars][numTaxa];
 			else
 				for (int ic = 0; ic<numChars; ic++)
-				for (int it=0; it<numTaxa; it++)
-					cellFlags[ic][it] = false;
+					for (int it=0; it<numTaxa; it++)
+						cellFlags[ic][it] = false;
 		}
-		numStretches = 0;
+	}
+	public void invert() {
+		if (characterFlags == null)
+			return;
+		for (int ic = 0; ic<numChars; ic++)
+			for (int it=0; it<numTaxa; it++)
+				cellFlags[ic][it] = !cellFlags[ic][it];
+		characterFlags.invertAllBits();
+		taxonFlags.invertAllBits();
+
+	}
+	public void invertCharacters() {
+		if (characterFlags == null)
+			return;
+		characterFlags.invertAllBits();
+
+	}
+	public void invertTaxa() {
+		if (taxonFlags == null)
+			return;
+		taxonFlags.invertAllBits();
+
+	}
+	public void invertCells() {
+		if (cellFlags == null)
+			return;
+		for (int ic = 0; ic<numChars; ic++)
+			for (int it=0; it<numTaxa; it++)
+				cellFlags[ic][it] = !cellFlags[ic][it];
+
 	}
 	public boolean anyFlagsSet(){
 		if (characterFlags.anyBitsOn())
@@ -48,9 +77,9 @@ public class MatrixFlags {
 		if (taxonFlags.anyBitsOn())
 			return true;
 		for (int ic = 0; ic<cellFlags.length; ic++)
-		for (int it = 0; it<cellFlags[ic].length; it++)
-			if (cellFlags[ic][it])
-				return true;
+			for (int it = 0; it<cellFlags[ic].length; it++)
+				if (cellFlags[ic][it])
+					return true;
 		return false;
 	}
 	public void setCharacterFlag(int ic, boolean value) {
@@ -62,7 +91,7 @@ public class MatrixFlags {
 		if (taxonFlags.isBitOn(it))
 			return true;
 		if (cellFlags[ic][it])
-		return true;
+			return true;
 		return false;
 	}
 	public boolean isCharacterFlagOn(int ic) {
@@ -74,11 +103,10 @@ public class MatrixFlags {
 	public boolean isTaxonFlagOn(int ic) {
 		return taxonFlags.isBitOn(ic);
 	}
-	int numStretches = 0;
+
 	public void addCellFlag(int it, int icStart, int icEnd) {
 		for (int ic = icStart; ic<=icEnd; ic++)
 			cellFlags[ic][it] = true;
-		numStretches++;
 	}
 	public Bits getCharacterFlags() {
 		return characterFlags;
@@ -96,7 +124,12 @@ public class MatrixFlags {
 		return numTaxa;
 	}
 	public String toString() {
-		String s = "Matrix Flags " + numChars + " (" + characterFlags.numBitsOn() + "on) X " + numTaxa + " (" + taxonFlags.numBitsOn() + "on) plus blocks " + numStretches;
+		int countCells = 0;
+		for (int ic = 0; ic<cellFlags.length; ic++)
+			for (int it = 0; it<cellFlags[ic].length; it++)
+				if (cellFlags[ic][it])
+					countCells++;
+		String s = "Matrix Flags: of " + numChars + " chars, " + characterFlags.numBitsOn() + " on; of " + numTaxa + ", " + taxonFlags.numBitsOn() + " on; cells on: " + countCells;
 		return s;
 	}
 
@@ -105,8 +138,8 @@ public class MatrixFlags {
 		taxonFlags.setBits(flags.getTaxonFlags());
 		boolean[][] other = flags.getCellFlags();
 		for (int ic = 0; ic<numChars; ic++)
-		for (int it=0; it<numTaxa; it++)
-			cellFlags[ic][it] = other[ic][it];
+			for (int it=0; it<numTaxa; it++)
+				cellFlags[ic][it] = other[ic][it];
 
 	}
 	public void orFlags(MatrixFlags flags) {
@@ -114,7 +147,7 @@ public class MatrixFlags {
 		taxonFlags.orBits(flags.getTaxonFlags());
 		boolean[][] other = flags.getCellFlags();
 		for (int ic = 0; ic<numChars; ic++)
-		for (int it=0; it<numTaxa; it++)
-			cellFlags[ic][it] |= other[ic][it];
+			for (int it=0; it<numTaxa; it++)
+				cellFlags[ic][it] |= other[ic][it];
 	}
 }
