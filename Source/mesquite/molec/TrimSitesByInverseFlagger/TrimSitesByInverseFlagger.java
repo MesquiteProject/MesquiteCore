@@ -33,17 +33,11 @@ public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
 		flaggerTask = (MatrixFlagger)hireEmployee(MatrixFlaggerForTrimming.class, "Trimming by the inverse of which method?");
 		if (flaggerTask == null)
 			return false;
-			return true;
+		return true;
 	}
-
-	
 
 	MatrixFlags flags = null;
 
-	/*Subclass override and return true if they want to be called iteratively*/
-	protected boolean pleaseIterate(){
-		return false;
-	}
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
@@ -72,7 +66,7 @@ public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
 		if (flaggerTask == null)
 			return false;
 		if (data.getNumChars()==0)
-		return false;
+			return false;
 		UndoInstructions undoInstructions = null;
 		if (undoReference!=null)
 			undoInstructions =data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_DELETED});
@@ -82,22 +76,14 @@ public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
 
-		boolean iterate = pleaseIterate();
-		boolean done = false;
-
-		while (!done){
-			flags = flaggerTask.flagMatrix( data, flags);
-			if (flags != null && flags.getNumChars()>=data.getNumChars()){
-				flags.invertCharacters();
-				if (flags.anyFlagsSet()) {
-					data.deleteByMatrixFlags(flags);
-					if (!iterate)
-						done = true;
-				}
-				else
-					done = true;
+		flags = flaggerTask.flagMatrix( data, flags);
+		if (flags != null && flags.getNumChars()>=data.getNumChars()){
+			flags.invertCharacters();
+			if (flags.anyFlagsSet()) {
+				data.deleteByMatrixFlags(flags);
+				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+				data.notifyInLinked(new Notification(MesquiteListener.PARTS_DELETED));
 			}
-			else done = true;
 		}
 
 

@@ -18,6 +18,7 @@ package mesquite.molec.FlagByCompareOther;
 
 
 import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.Debugg;
 import mesquite.lib.ListDialog;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteFile;
@@ -58,8 +59,9 @@ public class FlagByCompareOther extends MatrixFlagger {
 				Taxa taxa = data.getTaxa();
 				int numSets = getProject().getNumberCharMatricesVisible(taxa);
 				int numSetsDiff = numSets;
+				Debugg.printStackTrace();
 				for (int i = 0; i<numSets; i++) {
-					CharacterData pData =getProject().getCharacterMatrixVisible(taxa, i);
+				CharacterData pData =getProject().getCharacterMatrixVisible(taxa, i);
 					if (pData== data)
 						numSetsDiff--;
 					else if (pData.getClass() != data.getClass())

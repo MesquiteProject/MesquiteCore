@@ -33,12 +33,14 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	long G = CategoricalState.makeSet(2);
 	long T = CategoricalState.makeSet(3);
 	Vector flaggers = new Vector();
-
+	boolean suspended = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		//	flaggerTask = (SiteFlagger)hireEmployee(SiteFlagger.class, "Trimming or flagging method to highlight");
 		//	if (flaggerTask == null)
 		//		return false;
+		if (MesquiteThread.isScripting())
+			suspended = true;
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -51,6 +53,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		}
 		temp.addLine("toggleExtremelyDark " + useExtremelyDark.toOffOnString());
 		temp.addLine("togglePale " + usePale.toOffOnString());
+		temp.addLine("resume");
 		return temp;
 	}
 
@@ -118,6 +121,12 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		else if (checker.compare(this.getClass(), "Hides highlights", null, commandName, "toggleHide")) {
 			hide.toggleValue(parser.getFirstToken(arguments));
 			parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Resumes calculation", "[]", commandName, "resume")) {
+			suspended = false;
+			parametersChanged(); 
+			calculateNums();
+			outputInvalid();
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -215,6 +224,8 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		if (data == null || !(data instanceof DNAData)) {
 			return;
 		}
+		if (suspended)
+			return;
 		if (flags == null)
 			flags = new MatrixFlags(data);
 		else 
@@ -230,12 +241,10 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			else
 				flags.orFlags(tempFlags);
 		}
- 		Debugg.println(" " + flags);
 		table.repaintAll();
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-		//Debugg.println(recalculate only if change to data);
 		calculateNums();
 		if (table !=null)
 			table.repaintAll();

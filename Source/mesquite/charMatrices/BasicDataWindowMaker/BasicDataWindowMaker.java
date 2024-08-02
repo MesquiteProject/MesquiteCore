@@ -1420,14 +1420,15 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 	public void switchToMatrix(int imNext) {
 		// ask coordinator to show that window
+		
 		MesquiteModule bdwC = ownerModule.getEmployer();
+		CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
+		CommandRecord record = new CommandRecord(true);
+		MesquiteThread.setCurrentCommandRecord(record);
 		Commandable mb = (Commandable)bdwC.doCommand("showExtraDataWindow", Integer.toString(imNext));
 		String cloneCommand =  Snapshot.getSnapshotCommands(ownerModule, null, "");
 		Puppeteer p = new Puppeteer(ownerModule);
 		MesquiteInteger pos = new MesquiteInteger(0);
-		CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
-		CommandRecord record = new CommandRecord(true);
-		MesquiteThread.setCurrentCommandRecord(record);
 		MesquiteModule.incrementMenuResetSuppression();	
 		Object obj = p.sendCommands(mb, cloneCommand, pos, "", false, null,CommandChecker.defaultChecker);
 		MesquiteModule.decrementMenuResetSuppression();	

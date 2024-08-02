@@ -19,14 +19,14 @@ public class MatrixFlags {
 		if (characterFlags == null)
 			characterFlags = new Bits(numChars);
 		else {
-			if (characterFlags.getSize()< numChars)
+			if (characterFlags.getSize()!= numChars)
 				characterFlags.resetSize(numChars);
 			characterFlags.clearAllBits();
 		}
 		if (taxonFlags == null)
 			taxonFlags = new Bits(numTaxa);
 		else {
-			if (taxonFlags.getSize()< numTaxa)
+			if (taxonFlags.getSize()!= numTaxa)
 				taxonFlags.resetSize(numTaxa);
 			taxonFlags.clearAllBits();
 		}
