@@ -30,15 +30,17 @@ public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
 	protected MatrixFlagger flaggerTask; // hired by specific subclasses representing those flaggers
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (MatrixFlagger)hireEmployee(MatrixFlaggerForTrimming.class, "Trimming by the inverse of which method?");
-		if (flaggerTask == null)
-			return false;
+		if (!MesquiteThread.isScripting()) {
+			flaggerTask = (MatrixFlagger)hireEmployee(MatrixFlaggerForTrimming.class, "Trimming by the inverse of which method?");
+			if (flaggerTask == null)
+				return false;
+		}
 		return true;
 	}
 
 	MatrixFlags flags = null;
 
-
+	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
