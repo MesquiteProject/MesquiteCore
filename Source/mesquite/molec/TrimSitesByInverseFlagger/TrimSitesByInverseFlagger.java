@@ -80,9 +80,10 @@ public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
 
 		flags = flaggerTask.flagMatrix( data, flags);
 		if (flags != null && flags.getNumChars()>=data.getNumChars()){
-			flags.invertCharacters();
-			if (flags.anyFlagsSet()) {
-				data.deleteByMatrixFlags(flags);
+			Bits charFlags = flags.getCharacterFlags();
+			charFlags.invertAllBits();
+			if (charFlags.anyBitsOn()) {
+				data.deletePartsFlagged(charFlags, false);  //Note, listens only to sites!!!
 				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 				data.notifyInLinked(new Notification(MesquiteListener.PARTS_DELETED));
 			}
