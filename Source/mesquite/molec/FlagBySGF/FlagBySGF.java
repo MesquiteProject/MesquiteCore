@@ -42,9 +42,10 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
+import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 
 /* ======================================================================== */
-public class FlagBySGF extends MatrixFlaggerForTrimming implements ActionListener, ItemListener {
+public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionListener, ItemListener {
 
 	/** TODO?
 	 

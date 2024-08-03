@@ -49,16 +49,17 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
+import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 
 /* ======================================================================== */
-public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionListener {
+public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements ActionListener {
 
 	static final double defaultIS = 0.50;   
 	static final double defaultFS = 0.85;  
 	static final int defaultCP=8;  
 	static final int defaultBL=10;  
 	static final double defaultGapThreshold = 0.0;
-	static final boolean defaultChooseAmbiguousSites = true;
+	static final boolean defaultchooseBadSites = true;
 	static final boolean defaultCountWithinApplicable = false;
 	//static final double defaultTermGapsPropForgiven = 0.0;
 	static final boolean defaultIgnoreTaxaWithoutSequence = true;
@@ -70,7 +71,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 	double gapThreshold = defaultGapThreshold;   // the proportion of gaps allowed at a site
 
 	boolean removeAllGaps = true;
-	MesquiteBoolean chooseAmbiguousSites = new MesquiteBoolean(defaultChooseAmbiguousSites);
+	MesquiteBoolean chooseBadSites = new MesquiteBoolean(defaultchooseBadSites);
 	MesquiteBoolean countWithinApplicable  = new MesquiteBoolean(defaultCountWithinApplicable);   // count proportion of identical residues only within those taxa without gaps at a site
 	//double termGapsPropForgiven = defaultTermGapsPropForgiven;
 	boolean ignoreTaxaWithoutSequence = defaultIgnoreTaxaWithoutSequence;
@@ -104,7 +105,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 		if (MesquiteInteger.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.BL))
 			BL = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.BL;
 		if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.chooseAmbiguousSitesRead)
-			chooseAmbiguousSites.setValue(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.chooseAmbiguousSites);
+			chooseBadSites.setValue(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.chooseAmbiguousSites);
 		if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.countWithinApplicableRead)
 			countWithinApplicable.setValue(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.countWithinApplicable);
 		mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.instanceOfMe.prefsCaptured();
@@ -126,8 +127,8 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 			BL = MesquiteInteger.fromString(content);
 		if ("gapThreshold".equalsIgnoreCase(tag))
 			gapThreshold = MesquiteDouble.fromString(content);
-		if ("chooseAmbiguousSites".equalsIgnoreCase(tag))
-			chooseAmbiguousSites.setFromTrueFalseString(content);
+		if ("chooseBadSites".equalsIgnoreCase(tag))
+			chooseBadSites.setFromTrueFalseString(content);
 		if ("countWithinApplicable".equalsIgnoreCase(tag))
 			countWithinApplicable.setFromTrueFalseString(content);
 		//if ("termGapsPropForgiven".equalsIgnoreCase(tag))
@@ -144,7 +145,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 		StringUtil.appendXMLTag(buffer, 2, "CP", CP);  
 		StringUtil.appendXMLTag(buffer, 2, "BL", BL);  
 		StringUtil.appendXMLTag(buffer, 2, "gapThreshold", gapThreshold);  
-		StringUtil.appendXMLTag(buffer, 2, "chooseAmbiguousSites", chooseAmbiguousSites);  
+		StringUtil.appendXMLTag(buffer, 2, "chooseBadSites", chooseBadSites);  
 		StringUtil.appendXMLTag(buffer, 2, "countWithinApplicable", countWithinApplicable);  
 		//StringUtil.appendXMLTag(buffer, 2, "termGapsPropForgiven", termGapsPropForgiven);  
 		//	StringUtil.appendXMLTag(buffer, 2, "ignoreTaxaWithoutSequence", ignoreTaxaWithoutSequence);  
@@ -165,7 +166,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 		temp.addLine("setCP " + CP);
 		temp.addLine("setBL " + BL);
 		temp.addLine("setGapThreshold " + gapThreshold);
-		temp.addLine("setChooseAmbiguousSites" + chooseAmbiguousSites.toOffOnString());
+		temp.addLine("setchooseBadSites" + chooseBadSites.toOffOnString());
 		temp.addLine("setCountWithinApplicable " + countWithinApplicable.toOffOnString());
 		return temp;
 	}
@@ -222,10 +223,10 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to treat gaps as an extra state.", "[on or off]", commandName, "setChooseAmbiguousSites")) {
-			boolean current = chooseAmbiguousSites.getValue();
-			chooseAmbiguousSites.toggleValue(parser.getFirstToken(arguments));
-			if (current!=chooseAmbiguousSites.getValue()) {
+		else if (checker.compare(this.getClass(), "Sets whether or not to treat gaps as an extra state.", "[on or off]", commandName, "setchooseBadSites")) {
+			boolean current = chooseBadSites.getValue();
+			chooseBadSites.toggleValue(parser.getFirstToken(arguments));
+			if (current!=chooseBadSites.getValue()) {
 				parametersChanged();
 			}
 		}
@@ -257,7 +258,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 	IntegerField CPfield =null;
 	IntegerField BLfield=null;
 	DoubleField gapThresholdField=null;
-	RadioButtons chooseAmbiguousSitesRadioButtons=null;
+	RadioButtons chooseBadSitesRadioButtons=null;
 	DoubleField termGapsPropForgivenField=null;
 	//Checkbox ignoreTaxaWithoutSequenceCheckbox=null;
 	/*.................................................................................................................*/
@@ -312,11 +313,11 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 		//ignoreTaxaWithoutSequenceCheckbox = dialog.addCheckBox("Ignore taxa without any sequence*", ignoreTaxaWithoutSequence);
 		dialog.addHorizontalLine(1);
 
-	//	chooseAmbiguousSitesCheckbox = dialog.addCheckBox(actionToUse.toLowerCase()+ " sites in ambiguously aligned regions", chooseAmbiguousSites);
+	//	chooseBadSitesCheckbox = dialog.addCheckBox(actionToUse.toLowerCase()+ " sites in ambiguously aligned regions", chooseBadSites);
 		int c = 0;
-		if (!chooseAmbiguousSites.getValue())
+		if (!chooseBadSites.getValue())
 			c = 1;
-		chooseAmbiguousSitesRadioButtons = dialog.addRadioButtons (new String[] {action + " \"bad\" blocks (doubtfully aligned)", action + " \"good\" blocks (reasonably aligned)"}, c);
+		chooseBadSitesRadioButtons = dialog.addRadioButtons (new String[] {action + " \"bad\" blocks (doubtfully aligned)", action + " \"good\" blocks (reasonably aligned)"}, c);
 
 		dialog.addHorizontalLine(1);
 	}
@@ -328,8 +329,8 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 		BL = BLfield.getValue();
 		gapThreshold = gapThresholdField.getValue();
 		countWithinApplicable.setValue(countWithinApplicableCheckbox.getState());
-		int c  = chooseAmbiguousSitesRadioButtons.getValue();
-		chooseAmbiguousSites.setValue(c == 0);
+		int c  = chooseBadSitesRadioButtons.getValue();
+		chooseBadSites.setValue(c == 0);
 		
 		//termGapsPropForgiven = termGapsPropForgivenField.getValue();
 		//ignoreTaxaWithoutSequence = ignoreTaxaWithoutSequenceCheckbox.getState();
@@ -342,10 +343,10 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 		BLfield.setValue(defaultBL);
 		gapThresholdField.setValue(defaultGapThreshold);
 		countWithinApplicableCheckbox.setState(defaultCountWithinApplicable);
-		if (defaultChooseAmbiguousSites)
-			chooseAmbiguousSitesRadioButtons.setValue(0);
+		if (defaultchooseBadSites)
+			chooseBadSitesRadioButtons.setValue(0);
 		else
-			chooseAmbiguousSitesRadioButtons.setValue(1);
+			chooseBadSitesRadioButtons.setValue(1);
 	//	termGapsPropForgivenField.setValue(defaultTermGapsPropForgiven);
 		//ignoreTaxaWithoutSequenceCheckbox.setState(defaultIgnoreTaxaWithoutSequence);
 	}
@@ -701,9 +702,11 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
 				}
 			}
-
+			if (!chooseBadSites.getValue())
+				charFlags.invertAllBits();
 			// ======  Now report the results
-
+			boolean report = false;
+			if (report){
 			blockStart=-1;
 			StringBuffer blocks = new StringBuffer();
 			for (int ic=0; ic<data.getNumChars() && ic<charFlags.getSize(); ic++){
@@ -720,6 +723,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 					}	
 					blockStart=-1;  // reset to make it clear we are no longer in a non-conserved block
 				}
+			}
 			}
 			/*
 			if (results!=null) {
@@ -746,7 +750,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimming implements ActionLis
 				results.append("Flank positions of the blocks chosen by the GBLOCKS algorithm: \n");
 				results.append(blocks.toString());
 
-				if (chooseAmbiguousSites.getValue())
+				if (chooseBadSites.getValue())
 					results.append("\nNote:  selected characters are those that are the least conserved and more ambiguously aligned regions, and would typically be excluded before analysis.\n");
 				else 
 					results.append("\nNote:  selected characters are those that are the more conserved regions, and would typically be included in any analysis.\n");

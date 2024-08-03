@@ -40,9 +40,10 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
+import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 
 /* ======================================================================== */
-public class FlagTerminalRepresentation extends MatrixFlaggerForTrimming implements ItemListener {
+public class FlagTerminalRepresentation extends MatrixFlaggerForTrimmingSites implements ItemListener {
 
 	int absThreshold = MesquiteInteger.unassigned;
 	double propThreshold = MesquiteDouble.unassigned;

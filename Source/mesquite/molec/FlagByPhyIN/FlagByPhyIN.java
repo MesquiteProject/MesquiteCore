@@ -44,9 +44,10 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
+import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 
 /* ======================================================================== */
-public class FlagByPhyIN extends MatrixFlaggerForTrimming implements ActionListener {
+public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements ActionListener {
 
 	//Primary PhyIN parameters =================================
 	static double proportionIncompatDEFAULT = 0.5; //(-p)

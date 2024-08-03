@@ -22,6 +22,7 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
+import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 import mesquite.molec.lib.SequenceTrimmer;
 
 
@@ -31,7 +32,7 @@ public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (!MesquiteThread.isScripting()) {
-			flaggerTask = (MatrixFlagger)hireEmployee(MatrixFlaggerForTrimming.class, "Trimming by the inverse of which method?");
+			flaggerTask = (MatrixFlagger)hireEmployee(MatrixFlaggerForTrimmingSites.class, "Trimming by the inverse of which method?");
 			if (flaggerTask == null)
 				return false;
 		}
@@ -51,7 +52,7 @@ public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets flagger", "[name of module]", commandName, "setFlagger")) {
-			MatrixFlagger temp = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, arguments);
+			MatrixFlagger temp = (MatrixFlagger)hireNamedEmployee(MatrixFlaggerForTrimmingSites.class, arguments);
 			if (temp !=null){
 				flaggerTask = temp;
 				if (!MesquiteThread.isScripting())
