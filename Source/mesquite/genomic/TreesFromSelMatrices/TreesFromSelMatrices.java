@@ -90,13 +90,21 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 		int numFailed =0;
 		String stringFailed = "";
 		boolean stop = false;
+		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Tree inference on matrices", "", datas.size(), true);
+		progIndicator.start();
 		for (int im = 0; im < datas.size() && !stop; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (compatibleMatrix(data)) {
 				currentMatrix = data.getMCharactersDistribution();
 				int lastNumTrees = trees.size();
 				logln("Inferring trees from matrix " +data.getName()); 
+				progIndicator.setText("Inferring trees from matrix " +data.getName());
+				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 				inferenceTask.fillTreeBlock(trees);
+				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
+				progIndicator.increment();
+				if (im == 0)
+					progIndicator.toFront();
 				if (trees.size() == lastNumTrees) {
 					numFailed++;
 					stringFailed += "\t" + data.getName() + "\n";
@@ -121,6 +129,7 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 			else
 				logln("Tree not inferred from matrix " +data.getName() + " because it is of a data type incompatible with the tree inference method"); 
 		}
+		progIndicator.goAway();
 		MesquiteThread.setQuietPlease(false);
 		trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
 		String annot = trees.getAnnotation();

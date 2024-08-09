@@ -41,10 +41,32 @@ public class DatasetsListDeconcatenate extends DatasetsListUtility {
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
+	
+	MesquiteBoolean deleteOriginalMatrices = new MesquiteBoolean(true);
+	/*.................................................................................................................*/
+	public boolean queryOptions() {
+
+		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Deconcatenate matrix")){
+			MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Deconcatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", deleteOriginalMatrices.getValue());
+			dialog.completeAndShowDialog(true);
+			if (buttonPressed.getValue()==0)  {
+				deleteOriginalMatrices.setValue(deleteMatricesBox.getState());
+				storePreferences();
+			}
+			dialog.dispose();
+			return (buttonPressed.getValue()==0);
+
+		}
+		return true;
+	}
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
+		if (!queryOptions())
+			return false;
 		Vector v = pauseAllPausables();
 		ProgressIndicator progIndicator = null;
 		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
@@ -54,10 +76,9 @@ public class DatasetsListDeconcatenate extends DatasetsListUtility {
 		boolean abort = false;
 		for (int im = 0; im < datas.size() && !abort; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
-
 			CharacterPartition partition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
 
-			boolean found = false;
+			boolean partitonFound = false;
 			boolean deleteLast = false;
 			if (partition != null){
 				if (groups != null){
@@ -78,7 +99,7 @@ public class DatasetsListDeconcatenate extends DatasetsListUtility {
 							}
 						}
 						if (icPart>0){
-							found = true;
+							partitonFound = true;
 							String name = group.getName();
 						//	Debugg.println("partition found in matrix " + name);
 							partData.setName(datas.getUniqueName(group.getName()));
@@ -102,14 +123,14 @@ public class DatasetsListDeconcatenate extends DatasetsListUtility {
 					if (!abort && progIndicator != null) {
 						progIndicator.spin();
 					}
-					if (!abort && found){  //some were found, therefore OK to write leftovers
+					if (!abort && partitonFound){  //some were found, therefore OK to write leftovers
 						int icPart = 0;
 						for (int icOrig = 0; icOrig<data.getNumChars(); icOrig++) {
 							if (partition.getProperty(icOrig) == null)
 								partData.equalizeCharacter(data, icOrig, icPart++);
 						}
 						if (icPart>0){
-							found = true;
+							partitonFound = true;
 							partData.setName(datas.getUniqueName("Unassigned"));
 							partData.deleteCharacters(icPart, partData.getNumChars()-icPart, false);
 							deleteLast = false;
@@ -121,11 +142,14 @@ public class DatasetsListDeconcatenate extends DatasetsListUtility {
 						partData.deleteMe(false);  //last one was not used
 					if (progIndicator!=null)
 						progIndicator.goAway();
-					if (!found && !abort)
+					if (!partitonFound && !abort)
 						discreetAlert("The matrix being deconcatenated is not partitioned or has no data in those partitions, and so it was not deconcatenated");
 
 				}
 			}
+			if (partitonFound && deleteOriginalMatrices.getValue())
+				data.deleteMe(false);
+				
 		}
 		unpauseAllPausables(v);
 		if (getProject() != null)

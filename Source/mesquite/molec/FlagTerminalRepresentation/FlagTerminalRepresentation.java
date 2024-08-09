@@ -57,7 +57,7 @@ public class FlagTerminalRepresentation extends MatrixFlaggerForTrimmingSites im
 			if (!queryOptions())
 				return false;
 		}
-		addMenuItem(null, "Set terminal representation threshold...", makeCommand("setThreshold", this));
+		addMenuItem(null, "Set terminal representation options...", makeCommand("setOptions", this));
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -77,7 +77,7 @@ public class FlagTerminalRepresentation extends MatrixFlaggerForTrimmingSites im
 		if ("absThreshold".equalsIgnoreCase(tag))
 			absThreshold = MesquiteInteger.fromString(content);
 		if ("propThreshold".equalsIgnoreCase(tag))
-			propThreshold = MesquiteInteger.fromString(content);
+			propThreshold = MesquiteDouble.fromString(content);
 		if ("useProportion".equalsIgnoreCase(tag))
 			useProportion = MesquiteBoolean.fromTrueFalseString(content);
 	}
@@ -152,6 +152,11 @@ public class FlagTerminalRepresentation extends MatrixFlaggerForTrimmingSites im
   	 	else if (checker.compare(this.getClass(), "Sets whether to use absolute or proportional threshold", "", commandName, "useProportion")) {
  	 		useProportion = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
    	 			queried = true;
+   	 	}
+  	 	else if (checker.compare(this.getClass(), "Sets options", "", commandName, "setOptions")) {
+  	 		if (queryOptions())
+  	 			parametersChanged();
+  	 		
    	 	}
     	 	else
    	 		return  super.doCommand(commandName, arguments, checker);

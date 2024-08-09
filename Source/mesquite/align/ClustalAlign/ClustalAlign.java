@@ -31,7 +31,7 @@ public class ClustalAlign extends ExternalSequenceAligner{
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}	
 	/*.................................................................................................................*/
 	public boolean showCitation() {

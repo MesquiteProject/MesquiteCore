@@ -1646,7 +1646,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					return null;
 				int count = 0;
 				for (int i=0; i<fInterpreters.length; i++){
-					Debugg.println("FI " + fInterpreters[i]);
 					try {
 						if (((FileInterpreterI)fInterpreters[i]).canExportProject(getProject()))
 							count++;
@@ -1673,7 +1672,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 				exporter = (FileInterpreterI)ListDialog.queryList(containerOfModule(), "Export format", "Export part or all of the information as a file of the following format",MesquiteString.helpString, fInterpretersCanExport, 0);
 			}
-			Debugg.println("exporter " + exporter);
 			export(exporter, file, arguments);
 		}
 		else if (checker.compare(this.getClass(), "NOT FUNCTIONING", null, commandName, "saveLinkagesAs")) {
@@ -2027,6 +2025,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile readLinkedFile(String pathName){ //make new/read new linked file//TODO: should say if scripting
+
 		MesquiteFile linkedFile;
 		if (ownerModule == null || ownerModule.getProject() == null)
 			return null;

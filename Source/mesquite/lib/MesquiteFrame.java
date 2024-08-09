@@ -125,6 +125,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 			return;
 		super.setResizable(r);
 	}
+	
 
 	int maxScriptedMainWidth = 0;
 	int maxScriptedPoppedWidth = 0;

@@ -443,7 +443,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		Thread c = Thread.currentThread();
 		if (c instanceof MesquiteThread){
 			MesquiteThread mt = (MesquiteThread)c;
-			return !mt.getSpontaneousIndicator();
+			return mt.suppressAllProgressIndicators || !mt.getSpontaneousIndicator();
 		}
 		return false;
 	}

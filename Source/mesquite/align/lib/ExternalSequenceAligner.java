@@ -119,7 +119,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		}
 		return null;
 	}
-	
+
 	/*.................................................................................................................*/
 	public String getAppVariant(){
 		if (appInfoFile==null) {
@@ -148,7 +148,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		else
 			return programPath;
 	}
-	
+
 	public boolean getHasApp() {
 		return hasApp;
 	}
@@ -164,8 +164,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return AppHarvester.getAppInfoFileForProgram(this);
 	}
 
-	
-	
+
+
 	/*.................................................................................................................*/
 	public String getStdOut() {
 		if (scriptBased){
@@ -194,7 +194,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		}
 		return false;
 	}
-	
+
 
 
 	/*.................................................................................................................*/
@@ -210,7 +210,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public String getProgramPath(){
 		return getExecutablePath();  
 	}
-	
+
 
 	public boolean getDefaultExecutablePathAllowed() {
 		return getHasApp();
@@ -227,12 +227,12 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		preferencesSet = true;
 	}
-	
+
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-	//if (getDefaultExecutablePathAllowed())
-			StringUtil.appendXMLTag(buffer, 2, "defaultExecutablePath", useDefaultExecutablePath);  
+		//if (getDefaultExecutablePathAllowed())
+		StringUtil.appendXMLTag(buffer, 2, "defaultExecutablePath", useDefaultExecutablePath);  
 		StringUtil.appendXMLTag(buffer, 2, "programPath", programPath);  
 		StringUtil.appendXMLTag(buffer, 2, "programOptions", programOptions);  
 
@@ -254,7 +254,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}	
-	
+
 	/*.................................................................................................................*/
 	public String getHelpString(){
 		return "";
@@ -278,8 +278,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	}
 	/*.................................................................................................................*/
 	public void queryLocalOptions () {
-	 		if (queryOptions())
-	 			storePreferences();
+		if (queryOptions())
+			storePreferences();
 	}
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
@@ -301,11 +301,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		programBrowseButton.setActionCommand("programBrowse");
 
 		Checkbox includeGapsCheckBox = dialog.addCheckBox("include gaps", includeGaps);
-		
+
 		queryProgramOptions(dialog);
 
 		SingleLineTextField programOptionsField = dialog.addTextField("Additional " + getProgramName() + " options:", programOptions, 26, true);
-		
+
 
 
 		dialog.completeAndShowDialog(true);
@@ -318,7 +318,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			if (!pp.canExecute()){
 				alert( "Sorry, the file or location specified for " + getProgramName() + " appears to be incorrect, as it appears not to be an executable program.  The attempt to align may fail.  Please make sure that you have specified correctly the location of " + getProgramName());
 			}
-			*/
+			 */
 			programOptions = programOptionsField.getText();
 			includeGaps = includeGapsCheckBox.getState();
 			processQueryProgramOptions(dialog);
@@ -416,8 +416,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		MolecularData data = (MolecularData)matrix.getParentData();
 		boolean isProtein = data instanceof ProteinData;
 		boolean pleaseStorePref = false;
-/*  commented out DRM 27 Dec 2023
- * 		if (!preferencesSet) {
+		/*  commented out DRM 27 Dec 2023
+		 * 		if (!preferencesSet) {
 			programPath = MesquiteFile.openFileDialog("Choose " + getProgramName()+ ": ", null, null);
 			if (StringUtil.blank(programPath)){
 				return null;
@@ -430,7 +430,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (!pp.canExecute()){
 			discreetAlert( "Sorry, the file or location specified for " + getProgramName() + " appears to be incorrect, as it appears not to be an executable program.  The attempt to align may fail.  Please make sure that you have specified correctly the location of " + getProgramName());
 		}
-*/
+		 */
 		getProject().incrementProjectWindowSuppression();
 		if (pleaseStorePref)
 			storePreferences();
@@ -440,16 +440,16 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  //replace this with current directory of file
 		//rootDir = "/test/";
 
-//		StringBuffer fileBuffer = getFileInBuffer(data);
+		//		StringBuffer fileBuffer = getFileInBuffer(data);
 		String fileName = "tempAlign" + MesquiteFile.massageStringToFilePathSafe(unique) + getExportExtension();   //replace this with actual file name?
 		String filePath = rootDir +  fileName;
 
 		boolean success = false;
-		
+
 		logln("Exporting file for " + getProgramName());
 		int numTaxaToAlign=data.getNumTaxa();
 
-		
+
 		if (taxaToAlign!=null){
 			success = saveExportFile(data, rootDir, fileName, taxaToAlign, firstSite, lastSite);
 			int count=0;
@@ -479,14 +479,14 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		String[] outputFilePaths = new String[1];
 		outputFilePaths[0] = outFilePath;
 
-//		MesquiteFile.putFileContents(filePath, fileBuffer.toString(), true);
+		//		MesquiteFile.putFileContents(filePath, fileBuffer.toString(), true);
 
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 		shellScript.append(getProgramCommand());
 		StringBuffer argumentsForLogging = new StringBuffer();
 		if (programOptions == null);
-			programOptions = "";
+		programOptions = "";
 
 		logln("Options: " + programOptions + " " + getQueryProgramOptions());
 		if (programOptionsComeFirst()){
@@ -495,7 +495,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		}
 		appendDefaultOptions(shellScript, fileName,  outFileName,  data);
 		appendDefaultOptions(argumentsForLogging, fileName,  outFileName,  data);
-		
+
 		if (!programOptionsComeFirst()){
 			shellScript.append(" " + programOptions + " "+ getQueryProgramOptions());
 			argumentsForLogging.append(" " + programOptions + " "+ getQueryProgramOptions());
@@ -506,15 +506,17 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		String scriptPath = rootDir + "alignerScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		if (scriptBased)
 			MesquiteFile.putFileContents(scriptPath, shellScript.toString(), false);
-		
+
 		logln("Requesting the operating system to run " + getProgramName());
 		logln("Location of  " + getProgramName()+ ": " + getProgramPath());
 		logln("Arguments given in running alignment program:\r" + argumentsForLogging.toString()); 
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
-
-		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), getProgramName()+" alignment in progress");
-		progressIndicator.start();
+		ProgressIndicator progressIndicator = null;
+		if (!MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+			progressIndicator = new ProgressIndicator(getProject(), getProgramName()+" alignment in progress");
+		if (progressIndicator != null)
+			progressIndicator.start();
 
 		if (scriptBased) {
 			scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, true);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
@@ -535,11 +537,12 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			if (success)
 				success = externalRunner.monitorAndCleanUpShell(progressIndicator);
 		}
-		
-		if (progressIndicator.isAborted()){
-			logln("Alignment aborted by user\n");
+
+		if (progressIndicator != null) {
+			if (progressIndicator.isAborted())
+				logln("Alignment aborted by user\n");
+			progressIndicator.goAway();
 		}
-		progressIndicator.goAway();
 
 		if (success){
 			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
@@ -560,7 +563,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			alignedData.removeTaxaThatAreEntirelyGaps(); 
 			//DAVIDCHECK: Debugg.println: the above will delete the taxa even if they have data in other matrices. Is this OK? 
 			//Also, this is the only call to that method. Perhaps move the code here?
-			
+
 			long[][] aligned = null;
 			Taxa alignedTaxa =  alignedData.getTaxa();
 			Taxa originalTaxa =  data.getTaxa();
@@ -650,14 +653,14 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		CharacterData alignedData = getProject().getCharacterMatrix(tempDataFile,  0);
 		return true;
 	}	
-	
+
 	public void processOutputFile(String[] outputFilePaths, int fileNum) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void processCompletedOutputFiles(String[] outputFilePaths) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public String[] modifyOutputPaths(String[] outputFilePaths) {
 		// TODO Auto-generated method stub
@@ -667,7 +670,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		// TODO Auto-generated method stub
 		return true;
 	}
-	
+
 	public boolean stdErrorsAreFatal(){
 		return false;
 	}
@@ -684,11 +687,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public boolean isSubstantive(){
 		return true;
 	}
-	
+
 	/*.................................................................................................................*/
 	public  void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
-			
+
 			programPath = MesquiteFile.openFileDialog("Choose " + getProgramName()+ ": ", null, null);
 			if (!StringUtil.blank(programPath)) {
 				programPathField.setText(programPath);

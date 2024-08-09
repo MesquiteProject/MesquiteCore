@@ -39,8 +39,9 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		//	flaggerTask = (SiteFlagger)hireEmployee(SiteFlagger.class, "Trimming or flagging method to highlight");
 		//	if (flaggerTask == null)
 		//		return false;
-		if (MesquiteThread.isScripting())
+		if (MesquiteThread.isScripting()) {
 			suspended = true;
+		}
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -53,6 +54,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		}
 		temp.addLine("toggleExtremelyDark " + useExtremelyDark.toOffOnString());
 		temp.addLine("togglePale " + usePale.toOffOnString());
+		temp.addLine("toggleInvert " + invert.toOffOnString());
 		temp.addLine("resume");
 		return temp;
 	}
@@ -117,6 +119,10 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			usePale.toggleValue(parser.getFirstToken(arguments));
 			parametersChanged();
 		}
+		else if (checker.compare(this.getClass(), "Invert highlighting", null, commandName, "toggleInvert")) {
+			invert.toggleValue(parser.getFirstToken(arguments));
+			parametersChanged();
+		}
 
 		else if (checker.compare(this.getClass(), "Hides highlights", null, commandName, "toggleHide")) {
 			hide.toggleValue(parser.getFirstToken(arguments));
@@ -139,6 +145,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	boolean flaggerInitialized = false;
 	MesquiteBoolean useExtremelyDark = new MesquiteBoolean(false);
 	MesquiteBoolean usePale = new MesquiteBoolean(false);
+	MesquiteBoolean invert = new MesquiteBoolean(false);
 	MesquiteBoolean hide = new MesquiteBoolean(false);
 	/*.................................................................................................................*/
 	public boolean setActiveColors(boolean active){
@@ -158,6 +165,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			mmir = addMenuItem("-", null);
 			mmiVE= addCheckMenuItem(null, "Use Extremely Dark Highlights", makeCommand("toggleExtremelyDark", this), useExtremelyDark);
 			mmiVP= addCheckMenuItem(null, "Use Pale for Unhighlighted", makeCommand("togglePale", this), usePale);
+			mmJ= addCheckMenuItem(null, "Invert Highlights", makeCommand("toggleInvert", this), hide);
 			mmJ= addCheckMenuItem(null, "Hide/Show Highlights", makeCommand("toggleHide", this), hide);
 			mmJ.setShortcut(KeyEvent.VK_J);
 			mmis = addMenuItem("Reset Trimmers to be Highlighted...", makeCommand("resetFlaggers", this));
@@ -217,20 +225,26 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	}
 
 	MatrixFlags flags, tempFlags;
-
+	boolean recalcWaiting = false;
 	public void calculateNums(){
 		if (!isActive())
 			return;
+
 		if (data == null || !(data instanceof DNAData)) {
 			return;
 		}
 		if (suspended)
 			return;
+
+		if (!containerOfModule().isVisible()) {
+			recalcWaiting = true;
+			return;
+		}
+		recalcWaiting = false;
 		if (flags == null)
 			flags = new MatrixFlags(data);
 		else 
 			flags.reset(data);
-
 		for (int i = 0; i<flaggers.size(); i++) {
 			MatrixFlagger flaggerTask = (MatrixFlagger)flaggers.elementAt(i);
 			tempFlags = flaggerTask.flagMatrix(data, tempFlags);
@@ -281,6 +295,14 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		return legend;
 		 */
 	}
+
+	boolean cellHighlightable(int ic, int it) {
+		boolean isFlagged = flags.isCellFlaggedAnyWay(ic, it);
+		if (!invert.getValue())
+			return isFlagged;
+		else
+			return !isFlagged;
+	}
 	/*.................................................................................................................*/
 	public Color getCellColor(int ic, int it){
 		if (ic<0 || it<0)
@@ -289,11 +311,13 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		if (data == null)
 			return null;
 		else {
+			if (recalcWaiting)
+				calculateNums();
 			if (!(data instanceof DNAData))
 				return Color.white;
 			DNAData	dData = (DNAData)data;
 			long state = dData.getState(ic, it);
-			if (!hide.getValue() && flags != null && flags.isCellFlaggedAnyWay(ic, it)) {
+			if (!hide.getValue() && flags != null && cellHighlightable(ic, it)) {
 				if (useExtremelyDark.getValue()) {
 					if (A == (state & CategoricalState.statesBitsMask))
 						return DNAData.getDNAColorOfStateExtremelyDark(0);

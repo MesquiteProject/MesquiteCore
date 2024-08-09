@@ -103,13 +103,23 @@ public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
 			getProject().incrementProjectWindowSuppression();
 		Vector v = pauseAllPausables();
 		int count = 0;
+		
+	//	Debugg.println( why is the list indow coming to the fore every time?);
+		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
+		progIndicator.start();
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (test.isCompatible(data, getProject(), this)){
 				if (datas.size()<=50)
 					logln("Altering matrix \"" + data.getName() + "\"");
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
+				progIndicator.setText("Altering matrix " +data.getName());
+				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 				boolean a = alterTask.alterData(data, null, null, alteredDataParameters);
+				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
+				progIndicator.increment();
+				if (im < 2)
+					progIndicator.toFront();
 				if (datas.size()>50 && im != 0 && im % 50 == 0)
 					logln("" + (im) +  " matrices altered.");
 				if (a){
@@ -122,6 +132,7 @@ public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
 				firstTime = false;
 			}
 		}
+		progIndicator.goAway();
 		logln("Altered: " + (count) +  " matrices.");
 		unpauseAllPausables(v);
 		if (getProject() != null)

@@ -74,8 +74,14 @@ public class CompileProcessedMatrices extends FileProcessor {
 		int def = 2;
 		if (openAfterCompiled)
 			def = 1;
-		Debugg.printStackTrace("OACOptionAlreadySet " + OACOptionAlreadySet);
-		openAfterCompiled = AlertDialog.query(containerOfModule(), "Open when done?", "Open file of compiled matrices when finished?", "Open", "Don't", def);
+		String ast = "";
+		String when = "";
+		if (!StringUtil.blank(previousProcessorLabel)) {
+			ast = "*";
+			when = "\n\n* after " + previousProcessorLabel;
+		}
+
+		openAfterCompiled = AlertDialog.query(containerOfModule(), "Open when done?", "Open file of compiled matrices" + ast + " when finished?" + when, "Open", "Don't", def);
 		OACOptionAlreadySet = true;
 	}
 	/*.................................................................................................................*/
@@ -175,12 +181,19 @@ ListableVector taxonNames = new ListableVector();
 			CharacterData data = (CharacterData)matrices[im];
 			if (data.getFile() == file && data.getNumChars()>0){
 				checkTaxonList(data, saveFile);
-				writeMatrixToFile(saveFile, data, file.getFileName());
-				writeMatrixToFile(tempFile, data, file.getFileName());
+				String name = cleanFileName(file.getFileName());
+				
+				writeMatrixToFile(saveFile, data, name);
+				writeMatrixToFile(tempFile, data, name);
 			}
 		}
 		return 0;
 
+	}
+	String cleanFileName(String fName) {
+		if (fName.endsWith(".fas") || fName.endsWith(".nexus") || fName.endsWith(".fasta") || fName.endsWith(".nex") || fName.endsWith(".phy") ||fName.endsWith(".FAS") || fName.endsWith(".NEXUS") || fName.endsWith(".FASTA") || fName.endsWith(".NEX"))
+		 return StringUtil.getAllButLastItem(fName, ".");
+		return fName;
 	}
 	/*.................................................................................................................*/
 	/** Called after processing a series of files.*/

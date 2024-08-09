@@ -51,17 +51,17 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	 
 	 */
 	/*Gappiness assessment parameters =================================*/
-	static boolean filterSiteGappinessDEFAULT = true;
+	static boolean filterSiteGappinessDEFAULT = false;
 	static boolean filterBlockGappinessDEFAULT = true;
 	//static boolean forgiveTaxaWithoutDataDEFAULT = true;
 	static double siteGappinessThresholdDEFAULT = 0.5; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
 	static int gappyBlockSizeDEFAULT = 5; // If in a block of at least this many sites, the first and last site is bad,
 	static double blockGappinessThresholdDEFAULT = 0.5; // and the proportion of bad sites is this high or higher,
 	static int gappyBoundaryDEFAULT = 4; // and there are no stretches of this many good sites in a row,
-	static int IGNORE_TAXA_ALL_GAPS = 0;
-	static int COUNT_ALL_CURRENT_TAXA = 1;
+	static int COUNT_ALL_CURRENT_TAXA = 0;
+	static int IGNORE_TAXA_ALL_GAPS = 1;
 	static int ASSUME_SPECIFIED_NUM_TAXA = 2;
-	static int taxonCountingOptionDEFAULT = IGNORE_TAXA_ALL_GAPS; //0 = "Ignore gaps in taxa with no data", 1 = "Count gaps in taxa in current file", 2 ="Assume specified total number of taxa"
+	static int taxonCountingOptionDEFAULT = COUNT_ALL_CURRENT_TAXA; //0 = "Ignore gaps in taxa with no data", 1 = "Count gaps in taxa in current file", 2 ="Assume specified total number of taxa"
 	
 	MesquiteBoolean filterSiteGappiness = new MesquiteBoolean(filterSiteGappinessDEFAULT);
 	MesquiteBoolean filterBlockGappiness = new MesquiteBoolean(filterBlockGappinessDEFAULT);
@@ -162,7 +162,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Simple Gappiness Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		pgSField = dialog.addDoubleField("Proportion of gaps that marks site as too gappy (\"bad\")", siteGappinessThreshold, 4);
-		numTaxaButtons = dialog.addRadioButtons (new String[] {"Ignore gaps in taxa with no data", "Count gaps in all taxa in current file", "Assume specified total number of taxa (see Help button):"}, taxonCountingOption);
+		numTaxaButtons = dialog.addRadioButtons (new String[] {"Count gaps in all taxa in current file", "Ignore gaps in taxa with no data", "Assume specified total number of taxa (see Help button):"}, taxonCountingOption);
 		numTaxaButtons.addItemListener(this);
 		String s = "The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
 		+ " This could result in different countings of the proportion of gaps depending on whether the trimming is done on individual files for each locus (because each file will know only"

@@ -141,7 +141,8 @@ public class ProgressIndicator implements Abortable {
 		try {
 			if (getOwnerThread() == null && Thread.currentThread() instanceof MesquiteThread)
 				setOwnerThread((MesquiteThread)Thread.currentThread()); //by default the owner thread is the one that requests the window to start
-			t.start();
+			if (!MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+				t.start();
 		}
 		catch(IllegalThreadStateException e){
 		}
@@ -352,8 +353,9 @@ class ProgressWindowThread extends Thread {
 	public void run() {
 		if (!dontStart) {
 			dlog = new ProgressWindow(progressIndicator, title, initialMessage, total, buttonName);
-			if (!dontStart)
+			if (!dontStart) {
 				dlog.setVisible(true); //TODO: if thread doesn't show until after file reading started, and alert appears, could be hidden under this, with STOP being only option
+			}
 			if (dontStart) 
 				dlog.hide();
 			/*if (dlog.isVisible()){
