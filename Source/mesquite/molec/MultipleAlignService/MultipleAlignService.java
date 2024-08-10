@@ -28,7 +28,7 @@ public class MultipleAlignService extends CategDataAlterer  implements AltererAl
 		}
 		return true;
 	}
-	/*
+	/**/
 	public  Class getHireSubchoice(){
 		return MultipleSequenceAligner.class;
 	}

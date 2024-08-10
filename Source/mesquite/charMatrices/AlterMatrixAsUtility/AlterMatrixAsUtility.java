@@ -104,7 +104,6 @@ public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		Vector v = pauseAllPausables();
 		int count = 0;
 		
-	//	Debugg.println( why is the list indow coming to the fore every time?);
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
 		progIndicator.start();
 		for (int im = 0; im < datas.size(); im++){

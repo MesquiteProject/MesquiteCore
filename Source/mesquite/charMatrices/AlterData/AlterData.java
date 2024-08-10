@@ -138,7 +138,7 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 		MesquiteMenuItemSpec mmis = addModuleMenuItems(menu, makeCommand("doAlter",  this), alterInterface);
 		mmis.setQualificationsTest(qualificationsTest);
 		if (alterInterface==AltererAlignShift.class) {
-			mss = addSubmenu(menu, "Align Multiple Sequences", makeCommand("doAlign",  this));
+			mss = addSubmenu(menu, "Align Sequences or Selected Block", makeCommand("doAlign",  this)); //This appears in the Alter menu
 			mss.setList(MultipleSequenceAligner.class);
 		}
 	}

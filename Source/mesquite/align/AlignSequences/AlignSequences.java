@@ -31,7 +31,7 @@ import mesquite.align.lib.*;
 public class AlignSequences extends MolecDataEditorInit implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
-		"The sequence aligner is chosen in the Align Multiple Sequences submenu");
+		"The sequence aligner is chosen in the Align Selected Characters submenu");
 	}
 //	boolean separateThread = AlignMultipleSequencesMachine.separateThread;
 	MolecularData data ;
@@ -48,7 +48,7 @@ public class AlignSequences extends MolecDataEditorInit implements CalculationMo
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		mss = addSubmenu(null, "Align Multiple Sequences", makeCommand("doAlign",  this));
+		mss = addSubmenu(null, "Align Sequences or Selected Block", makeCommand("doAlign",  this));  //This appears in the Matrix menu
 		mss.setList(MultipleSequenceAligner.class);
 		return true;
 	}

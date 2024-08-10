@@ -34,7 +34,7 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
 		return "Multiple Sequence Aligner";
 	}
  	 public String[] getDefaultModule() {
-    	 	return new String[] {"#OpalMultiSeqAligner"};
+    	 	return new String[] {"#MAFFTAlign", "#MuscleAlign", "#OpalMultiSeqAligner"};
     	 }
 
 	public boolean permitSeparateThread(){

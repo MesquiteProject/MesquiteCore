@@ -533,7 +533,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
 			else
 				externalRunner.setStdOutFileName(outFileName);
-			success = externalRunner.executeInShell();
+			success = externalRunner.executeInShell(); //This brings a contained window to the fore, unnecessarily, but if the contents of executeInShell are disabled, it still does.
 			if (success)
 				success = externalRunner.monitorAndCleanUpShell(progressIndicator);
 		}
@@ -543,7 +543,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				logln("Alignment aborted by user\n");
 			progressIndicator.goAway();
 		}
-
 		if (success){
 			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
 			logln("Processing results...");
