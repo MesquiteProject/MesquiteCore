@@ -164,7 +164,7 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 	}
 
 	/**draws the Symbol*/
-	public void drawSymbol(Graphics g, double x, double y, int maxWidth, int maxHeight, boolean fillBlack){
+	public synchronized void drawSymbol(Graphics g, double x, double y, int maxWidth, int maxHeight, boolean fillBlack){
 		int bound = 0;
 		if (maxWidth > 0)
 			bound = maxWidth;
@@ -178,27 +178,23 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 			if (poly!=null){
 				Graphics2D g2 = (Graphics2D)g;
 				AffineTransform polyTransform = new AffineTransform();
+				polyTransform.setToIdentity();
 				polyTransform.translate(x,y);
-				//polyTransform.translate(x/rescaleValue,y/rescaleValue);
-				//g2.setTransform(polyTransform);
-				//polyTransform.translate(-x/rescaleValue,-y/rescaleValue);
 				polyTransform.scale(rescaleValue, rescaleValue);
-				AffineTransform saveTransform = g2.getTransform();
-				g2.setTransform(polyTransform);
+				poly.transform(polyTransform);
 				if (poly!=null) {
 					if (fillBlack) {
 						g.setColor(Color.black);
-						GraphicsUtil.fill(g,poly);
+						GraphicsUtil.fill(g2,poly);
 					}
 					else if (getFill()) {
 						g.setColor(fillColor);
-						GraphicsUtil.fill(g,poly);
+						GraphicsUtil.fill(g2,poly);
 					}
 					g.setColor(edgeColor);
 
-					GraphicsUtil.draw(g,poly, edgeWidth);
+					GraphicsUtil.draw(g2,poly, edgeWidth);
 				}
-				g2.setTransform(saveTransform);
 			}
 		}
 		else
@@ -221,10 +217,8 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 					AffineTransform polyTransform = new AffineTransform();
 					polyTransform.translate(x/rescaleValue,y/rescaleValue);
 					polyTransform.scale(rescaleValue, rescaleValue);
-					AffineTransform saveTransform = g2.getTransform();
-					g2.setTransform(polyTransform);
+					poly.transform(polyTransform);
 			    	 GraphicsUtil.fill(g,poly);
-					g2.setTransform(saveTransform);
 		       } else
 		    	   GraphicsUtil.fill(g,poly);
 			}
