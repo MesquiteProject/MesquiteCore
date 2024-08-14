@@ -143,7 +143,7 @@ public class GraphicsUtil {
 		draw(g,shape,1);
 	}
 	/*_________________________________________________*/
-	public static void draw(Graphics g, Shape shape, int strokeWidth) {
+	public static void draw(Graphics g, Shape shape, float strokeWidth) {
 		if (!(g instanceof Graphics2D))
 			return;
 		Graphics2D g2 = (Graphics2D)g;

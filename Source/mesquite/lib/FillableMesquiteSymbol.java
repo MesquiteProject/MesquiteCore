@@ -193,7 +193,7 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 					}
 					g.setColor(edgeColor);
 
-					GraphicsUtil.draw(g2,poly, edgeWidth);
+					GraphicsUtil.draw(g2,poly, (float)rescaleValue*(float)edgeWidth);
 				}
 			}
 		}
