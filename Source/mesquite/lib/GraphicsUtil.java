@@ -536,6 +536,21 @@ public class GraphicsUtil {
 		}
 	}
 	/* -------------------------------------------------*/
+	public static void drawOval(Graphics g, double x, double y, int w, int h, float strokeWidth){
+		try {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			g2.setStroke(new BasicStroke(strokeWidth));
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			Ellipse2D oval = new Ellipse2D.Double(x,y,w,h);
+			g2.draw(oval); 
+			g2.setStroke(st);
+		}
+		catch(NullPointerException e){
+			MesquiteMessage.warnProgrammer("npe in draw oval x " + x + " y " + y + " w " + w + " h " + h);
+		}
+	}
+	/* -------------------------------------------------*/
 	public static void drawOval(Graphics g, double x, double y, int w, int h){
 		try {
 			Graphics2D g2 = (Graphics2D)g;

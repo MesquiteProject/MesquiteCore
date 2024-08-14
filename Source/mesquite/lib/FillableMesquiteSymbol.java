@@ -29,7 +29,7 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 	Color edgeColor = Color.white;
 	protected boolean edgeWhite=true;
 	IntegerField edgeWidthField = null;
-	private int edgeWidth = 1;
+	protected int edgeWidth = 1;
 	
 	/**sets whether to fill the symbol or not*/
 	public void setFill(boolean fill){
@@ -192,7 +192,6 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 						GraphicsUtil.fill(g2,poly);
 					}
 					g.setColor(edgeColor);
-
 					GraphicsUtil.draw(g2,poly, (float)rescaleValue*(float)edgeWidth);
 				}
 			}

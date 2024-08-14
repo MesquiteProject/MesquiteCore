@@ -101,7 +101,7 @@ public class CircleSymbol extends FillableMesquiteSymbol  {
 			GraphicsUtil.fillOval(g,x-symSize,y-symSize, symSize+symSize,symSize+symSize);
 		}
 		g.setColor(edgeColor);
-		GraphicsUtil.drawOval(g,x-symSize,y-symSize, symSize+symSize,symSize+symSize);
+		GraphicsUtil.drawOval(g,x-symSize,y-symSize, symSize+symSize,symSize+symSize, (float)rescaleValue*(float)edgeWidth);
 	}
 	/*.................................................................................................................*/
 	public static void drawBlackCircle(Graphics g, double x, double y, int size){
