@@ -137,6 +137,17 @@ public class StringArray implements StringLister, Listable {
 		return -1;
 	}
 	/*...........................................................*/
+	public static int indexOfTabbedToken(String[]s, String match, int whichToken){
+		if (match == null || s==null)
+			return -1;
+		for (int i=0; i<s.length; i++) {
+			String firstCol = StringUtil.getTabbedToken(s[i], whichToken);
+			if (match.equals(firstCol))
+				return i;
+		}
+		return -1;
+	}
+	/*...........................................................*/
 	public static int indexOfIgnoreCase(java.util.Vector v, String match){
 		if (match == null)
 			return -1;
