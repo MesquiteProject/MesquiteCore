@@ -21,6 +21,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.parsimony.lib.ParsimonyModelSet;
 
 /* ======================================================================== */
 /** A subclass of CharacterData for data stored as Categorical sets (e.g, "{0, 2}").  Associated with the CharacterState subclass CategoricalState.*/
@@ -728,7 +729,7 @@ public class CategoricalData extends CharacterData {
 	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
 	 * Assumes that these blocks are in sequence!!!*
 	protected boolean deletePartsBy Blocks(int[][] blocks){
-		
+
 		incrementStatesVersion();
 		if (!usingShortMatrix())
 			matrix = Long2DArray.deleteColumnsBy Blocks(matrix, blocks);
@@ -738,7 +739,7 @@ public class CategoricalData extends CharacterData {
 		stateNames = StringArray.deleteColumnsBy Blocks(stateNames, blocks);
 		stateNotes = StringArray.deleteColumnsBy Blocks(stateNotes, blocks);
 		stateAnnotations = Object2DArray.deleteColumnsBy Blocks(stateAnnotations, blocks);
-		
+
 		//numChars = newNumChars; don't do this since super.deleteCharacters needs to remember old number
 		return super.deletePartsBy Blocks(blocks);
 	}
@@ -2068,7 +2069,7 @@ public class CategoricalData extends CharacterData {
 			return Integer.toString(state);
 	}
 	/*..........................................CategoricalData................*/
-	/** returns a long containing all of the states of a character.*/
+	/** returns a long containing all of the states of a character.*
 	public long getAllStates(int ic, boolean selectedOnly){
 		CategoricalState state=null;
 		long allstates =0L;
@@ -2078,6 +2079,17 @@ public class CategoricalData extends CharacterData {
 				if (!CategoricalState.isUnassigned(state.getValue()) && !CategoricalState.isInapplicable(state.getValue()))
 					allstates |= state.getValue();
 			}
+		return allstates;
+	}
+	/*..........................................CategoricalData................*/
+	/** returns a long containing all of the states of a character.*/
+	public long getAllStates(int ic, boolean selectedOnly){
+		long allstates =0L;
+		for (int it=0; it<numTaxa; it++) 
+			if (!selectedOnly || getTaxa().getSelected(it)) {
+				allstates |= getStateRaw(ic, it);
+			}
+		allstates = allstates & CategoricalState.statesBitsMask;
 		return allstates;
 	}
 	/*..........................................CategoricalData................*/
@@ -2198,6 +2210,43 @@ public class CategoricalData extends CharacterData {
 			first = false;
 		}
 		return sb.toString();
+	}
+
+	/*This is quick and approximate for non-unordered characters.
+	 * 0 = uninformative
+	 * 1 = informative
+	 * 2 = uncertain, because parsimony model not investigated.
+	 */
+	public boolean charIsUnorderedInformative(int ic) {
+		long allstates =0L;
+		int maxState = CategoricalState.maxCategoricalState;
+		if (usingShortMatrix())
+			maxState = 10;
+		boolean[] duplicated = new boolean[maxState+1];
+		for (int it=0; it<numTaxa; it++) { 
+			long statesRaw = getStateRaw(ic, it);
+			if (!CategoricalState.isUncertain(statesRaw)) {
+				long states = statesRaw & CategoricalState.statesBitsMask;
+				if (states != 0L){//there's a state there
+					long intersectionWithPrevious = states & allstates;
+					if (intersectionWithPrevious != 0L) { //one seen before
+						int numDup = 0;
+						for (int e=0; e<= maxState; e++) {
+							if (((1L<<e)&intersectionWithPrevious)!=0L)  //test bit
+								duplicated[e] = true;
+							if (duplicated[e])
+								numDup++;
+						}
+						if (numDup>1)
+							return true;
+
+					}
+					allstates |= states;
+				}
+			}
+		}
+
+		return false;
 	}
 	/*..........................................CategoricalData................*/
 	public static DefaultReference findDefaultReference(NameReference paradigm){

@@ -174,14 +174,14 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 		sNT = dialog.addIntegerField("                           Specified total number of taxa", specifiedNumTaxa, 4);
 		sNT.setEnabled(taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA);
 		dialog.addHorizontalLine(1);
-		dialog.addLabel("Selecting individual sites");
-		fIGS = dialog.addCheckBox("Select individual gappy sites (whether or not part of gappy block)", filterSiteGappiness.getValue());
-		dialog.addHorizontalLine(1);
 		dialog.addLabel("Selecting blocks");
 		fG = dialog.addCheckBox("Select gappy blocks", filterBlockGappiness.getValue());
 		gBS = dialog.addIntegerField("Minimum length of bad block", gappyBlockSize, 4);
 		gB = dialog.addIntegerField("Stretch of good that resets block", gappyBoundary, 4);
 		pgBField = dialog.addDoubleField("Proportion of bad sites for block to be bad", blockGappinessThreshold, 4);
+		dialog.addHorizontalLine(1);
+		dialog.addLabel("Selecting individual sites");
+		fIGS = dialog.addCheckBox("Select individual gappy sites (whether or not part of gappy block)", filterSiteGappiness.getValue());
 
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
