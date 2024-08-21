@@ -28,7 +28,10 @@ public abstract class MatrixFlaggerForTrimming extends MatrixFlagger  {
    	 public Class getDutyClass() {
    	 	return MatrixFlaggerForTrimming.class;
    	 }
- 	public String getDutyName() {
+  	 public String[] getDefaultModule() {
+ 	 	return new String[] {"#TrimByPhyIN", "#TrimGappySites", "#TrimByTrimAl"};
+ 	 }
+	public String getDutyName() {
  		return "Matrix Flagger for trimming";
    	 }
 

@@ -32,7 +32,7 @@ public abstract class SequenceTrimmer extends MesquiteModule  {
  		return "Sequence Trimmer";
    	 }
   	 public String[] getDefaultModule() {
-    	 	return new String[] {"#TrimByPhyIN", "#TrimGappySites"};
+    	 	return new String[] {"#TrimByPhyIN", "#TrimBySGF", "#TrimByTrimAl"};
     	 }
 
 	public abstract boolean trimMatrix(CharacterData data, UndoReference undoReference);
