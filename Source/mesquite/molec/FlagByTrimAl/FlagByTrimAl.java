@@ -215,7 +215,9 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ShellScrip
 			boolean success = saveExportFile(data, rootDir, "input.fas");
 			String unique = MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt());
 			String scriptPath = rootDir + "trimAlScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
-			String script = "cd \"" + rootDir + "\"\n";
+			
+			
+			String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
 			script += trimAlPath + "  -in input.fas -out output.fas -" + autoOptionNames[autoOption] + " -colnumbering > columns.txt";
 			MesquiteFile.putFileContents(scriptPath, script, false);
 			success = ShellScriptUtil.executeAndWaitForShell( scriptPath,  null, null, false, "trimAl", null, null, this, false);
