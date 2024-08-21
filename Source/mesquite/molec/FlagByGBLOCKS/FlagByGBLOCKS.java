@@ -27,8 +27,10 @@ import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.ProteinState;
+import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
 import mesquite.lib.DoubleField;
 import mesquite.lib.ExtensibleDialog;
@@ -91,6 +93,9 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements Acti
 		return true;
 	}
 	
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyMolecularData();
+	}
 	/*.................................................................................................................*/
 	//A service for those with older installations. Grabs prefs from old version, which has been converted into a MesquiteInit merely to capture the preferences.
 	public void transferPrefsFromOldGBLOCKSSelector() {
@@ -172,7 +177,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements Acti
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Presents options dialog box.", "[on or off]", commandName, "setOptions")) {
+		if (checker.compare(this.getClass(), "Presents options dialog box.", "", commandName, "setOptions")) {
 			boolean q = queryOptions();
 			if (q)
 				parametersChanged();

@@ -2212,10 +2212,7 @@ public class CategoricalData extends CharacterData {
 		return sb.toString();
 	}
 
-	/*This is quick and approximate for non-unordered characters.
-	 * 0 = uninformative
-	 * 1 = informative
-	 * 2 = uncertain, because parsimony model not investigated.
+	/*This calculates using unordered parsimony model regardless of model assigned
 	 */
 	public boolean charIsUnorderedInformative(int ic) {
 		long allstates =0L;

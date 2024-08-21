@@ -27,10 +27,10 @@ import mesquite.parsimony.lib.*;
 /* ======================================================================== */
 public class NumCharsHomoplasious extends NumberForMatrixAndTree {
 	public String getName() {
-		return "Number of Homoplasious Characters";
+		return "Num. Characters with Homoplasy on Tree";
 	}
 	public String getVeryShortName() {
-		return "# Homoplasious Characters";
+		return "# Chars. w/Homoplasy on Tree";
 	}
 	public String getExplanation() {
 		return "Calculates how many characters in a matrix are homoplasious for a given tree.";
@@ -118,10 +118,17 @@ public class NumCharsHomoplasious extends NumberForMatrixAndTree {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return false;
-	}
-	public boolean showCitation(){
 		return true;
 	}
+	public boolean showCitation(){
+		return false;
+	}
+ 	/*.................................................................................................................*/
+ 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+ 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+ 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+ 	public int getVersionOfFirstRelease(){
+ 		return NEXTRELEASE;  
+ 	}
 }
 
