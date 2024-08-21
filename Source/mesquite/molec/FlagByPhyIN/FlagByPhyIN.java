@@ -23,8 +23,11 @@ import java.awt.event.ActionListener;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
 import mesquite.lib.DoubleField;
 import mesquite.lib.ExtensibleDialog;
@@ -95,6 +98,9 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		}
 		addMenuItem("PhyIN Options...",  makeCommand("setOptions",  this));
 		return true;
+	}
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyDNAData();
 	}
 	/*.................................................................................................................*/
 	public void queryLocalOptions () {

@@ -24,8 +24,11 @@ import java.awt.event.ActionListener;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresAnyCategoricalData;
+import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
 import mesquite.lib.DoubleField;
 import mesquite.lib.ExtensibleDialog;
@@ -444,6 +447,9 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
 		return NEXTRELEASE;  
+	}
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyCategoricalData();
 	}
 
 

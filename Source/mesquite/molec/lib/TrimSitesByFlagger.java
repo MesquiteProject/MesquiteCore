@@ -63,7 +63,9 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 			flags = flaggerTask.flagMatrix( data, flags);
 			if (flags != null && flags.getNumChars()>=data.getNumChars()){
 				if (flags.anyFlagsSet()) {
+					int numSitesToDelete = flags.getCharacterFlags().numBitsOn();
 					data.deleteByMatrixFlags(flags);
+					logln(" " + numSitesToDelete + " character(s) deleted.");
 					if (!iterate)
 						done = true;
 				}

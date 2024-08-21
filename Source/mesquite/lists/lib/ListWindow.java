@@ -735,7 +735,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				e.printStackTrace();
 			}
 			for (int im = 0; im < table.getNumRows(); im++){
-				if (StringArray.indexOf(clipboard, table.getRowNameTextForDisplay(im))>=0){
+				if (StringArray.indexOf(clipboard, table.getRowNameTextForDisplay(im))>=0 || StringArray.indexOfTabbedToken(clipboard, table.getRowNameTextForDisplay(im), 0)>=0){
 					table.selectRow(im);
 					if (table.getRowAssociable() != null)
 						table.getRowAssociable().setSelected(im, true);
