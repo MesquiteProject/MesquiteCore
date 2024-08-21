@@ -121,7 +121,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		}
 		if (appInfoFile!=null) {
 			StringBuffer sb = new StringBuffer(0);
-			sb.append("\nVersion " + appInfoFile.getVersion());
+			sb.append("\nmakeblastdb version " + appInfoFile.getVersion());
 			return sb.toString();
 		}
 		return null;

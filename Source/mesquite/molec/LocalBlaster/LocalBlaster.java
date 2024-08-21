@@ -126,7 +126,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 		}
 		if (appInfoFile!=null) {
 			StringBuffer sb = new StringBuffer(0);
-			sb.append("\nVersion " + appInfoFile.getVersion());
+			sb.append("\nBLAST executable version " + appInfoFile.getVersion());
 			return sb.toString();
 		}
 		return null;

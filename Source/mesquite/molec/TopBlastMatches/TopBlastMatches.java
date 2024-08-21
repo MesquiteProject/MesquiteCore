@@ -212,6 +212,14 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	public void unsuccessfulSearchMessage(){
 		logln("BLAST database returned no sequences in response to query.");
 	}
+	
+	/*.................................................................................................................*/
+	/** message once search has been fully invoked.  */
+	public void searchInvokedMessage(){
+		logln("Search completed.");
+
+	}
+
 	/*.................................................................................................................*/
 	public boolean isNucleotides(CharacterData data){
 		return data instanceof DNAData;
