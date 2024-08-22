@@ -50,7 +50,7 @@ import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionListener, ItemListener {
 
 	/** TODO?
-	 
+
 	 */
 	/*Gappiness assessment parameters =================================*/
 	static boolean filterSiteGappinessDEFAULT = false;
@@ -64,13 +64,13 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	static int IGNORE_TAXA_ALL_GAPS = 1;
 	static int ASSUME_SPECIFIED_NUM_TAXA = 2;
 	static int taxonCountingOptionDEFAULT = COUNT_ALL_CURRENT_TAXA; //0 = "Ignore gaps in taxa with no data", 1 = "Count gaps in taxa in current file", 2 ="Assume specified total number of taxa"
-	
+
 	MesquiteBoolean filterSiteGappiness = new MesquiteBoolean(filterSiteGappinessDEFAULT);
 	MesquiteBoolean filterBlockGappiness = new MesquiteBoolean(filterBlockGappinessDEFAULT);
 	//MesquiteBoolean forgiveTaxaWithoutData = new MesquiteBoolean(forgiveTaxaWithoutDataDEFAULT);
 	int taxonCountingOption = taxonCountingOptionDEFAULT;
 	int specifiedNumTaxa = MesquiteInteger.unassigned;
-	
+
 	double siteGappinessThreshold = siteGappinessThresholdDEFAULT; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
 	int gappyBlockSize = gappyBlockSizeDEFAULT; // If in a block of at least this many sites, the first and last site is bad,
 	double blockGappinessThreshold = blockGappinessThresholdDEFAULT; // and the proportion of bad sites is this high or higher,
@@ -167,14 +167,19 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Simple Gappiness Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		pgSField = dialog.addDoubleField("Proportion of gaps that marks site as too gappy (\"bad\")", siteGappinessThreshold, 4);
-		numTaxaButtons = dialog.addRadioButtons (new String[] {"Count gaps in all taxa in current file", "Ignore gaps in taxa with no data", "Assume specified total number of taxa (see Help button):"}, taxonCountingOption);
+		numTaxaButtons = dialog.addRadioButtons (new String[] {"Count gaps in all taxa in current file", "Ignore gaps in taxa with no data in matrix", "Assume specified total number of taxa (see Help button):"}, taxonCountingOption);
 		numTaxaButtons.addItemListener(this);
-		String s = "The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
-		+ " This could result in different countings of the proportion of gaps depending on whether the trimming is done on individual files for each locus (because each file will know only"
-		+" about the number of taxa that have data for that locus) versus in the compiled file (which will know about all of the taxa)."
-		+ "<p>If you are processing separate files for each locus but want the proportion of gaps to be assessed over the final set of all taxa," 
-		+ " choose \"Assume specified total\", and indicate the total number of taxa in the final compilation."
-		+ " <p>Choosing \"Ignore\" or \"Count\" will generally result in a more permissive trimming, and may result in different results when trimmed as a concatenated matrix versus as individual loci.";
+		String s = "SGF (Simple Gappiness Filter) selects regions of an alignment with high levels of gaps."
+				+ " It is not intended to identify regions that are unreliable or poorly aligned; it is intended simply to find regions"
+				+ " where the amount of available data is too sparse to justify inclusion, just as one filters loci for occupancy."
+				+ "<p><b>Reference for SGF</b>: Maddison W (submitted).<hr>" //Debugg.println
+				+"<p>The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
+				+ " This could result in different countings of the proportion of gaps depending on whether the trimming is done on individual files for each locus (because each file will know only"
+				+" about the number of taxa that have data for that locus) versus in the compiled file (which will know about all of the taxa)."
+				+ "<p>If you are processing separate files for each locus but want the proportion of gaps to be assessed over the final set of all taxa," 
+				+ " choose \"Assume specified total\", and indicate the total number of taxa in the final compilation."
+				+ " <p>Choosing \"Ignore\" or \"Count\" will generally result in a more permissive trimming, and may result in different results when trimmed as a concatenated matrix versus as individual loci.";
+		dialog.appendToHelpString(s);
 		dialog.appendToHelpString(s);
 		sNT = dialog.addIntegerField("                           Specified total number of taxa", specifiedNumTaxa, 4);
 		sNT.setEnabled(taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA);
@@ -216,8 +221,8 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	}
 
 	public void itemStateChanged(ItemEvent e) {
-			sNT.setEnabled(numTaxaButtons.getValue() ==ASSUME_SPECIFIED_NUM_TAXA);
-		
+		sNT.setEnabled(numTaxaButtons.getValue() ==ASSUME_SPECIFIED_NUM_TAXA);
+
 	}
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
@@ -339,7 +344,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			return taxonHasData[it];
 		return true;
 	}
-	
+
 	int numNegWarnings = 0;
 	/*======================================================*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
@@ -383,7 +388,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			}
 			else
 				numTaxaCounted = numTaxa;
-				
+
 			if (siteGappiness == null || siteGappiness.length != numChars) {
 				siteGappiness = new double[numChars];
 			}
@@ -435,42 +440,42 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 				}
 			}
 		}
-			return flags;
-
-		}
-
-		/*.................................................................................................................*/
-		/** returns whether this module is requesting to appear as a primary choice */
-		public boolean requestPrimaryChoice(){
-			return true;  
-		}
-		/*.................................................................................................................*/
-		public boolean isPrerelease() {
-			return true;
-		}
-
-		/*.................................................................................................................*/
-		public boolean showCitation(){
-			return false;
-		}
-		/*.................................................................................................................*/
-		public String getName() {
-			return "Simple Gappiness Filter";
-		}
-		/*.................................................................................................................*/
-		/** returns an explanation of what the module does.*/
-		public String getExplanation() {
-			return "Flags sites or regions of sites with a certain proportion of gaps." ;
-		}
-		/*.................................................................................................................*/
-		/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
-		 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
-		 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
-		public int getVersionOfFirstRelease(){
-			return NEXTRELEASE;  
-		}
-
+		return flags;
 
 	}
+
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public boolean requestPrimaryChoice(){
+		return true;  
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease() {
+		return true;
+	}
+
+	/*.................................................................................................................*/
+	public boolean showCitation(){
+		return false;
+	}
+	/*.................................................................................................................*/
+	public String getName() {
+		return "SGF (Simple Gappiness Filter)";
+	}
+	/*.................................................................................................................*/
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Flags sites or regions of sites with a certain proportion of gaps." ;
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return NEXTRELEASE;  
+	}
+
+
+}
 
 

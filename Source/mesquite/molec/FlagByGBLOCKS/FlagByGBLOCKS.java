@@ -89,7 +89,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements Acti
 			if (!queryOptions())
 				return false;
 		}
-		addMenuItem("GBLOCK Selection Options...",  makeCommand("setOptions",  this));
+		addMenuItem("Gblocks Selection Options...",  makeCommand("setOptions",  this));
 		return true;
 	}
 	
@@ -275,14 +275,20 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements Acti
 			return true;
 
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for GBLOCKS Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		String helpString = "This feature will choose characters using the GBLOCKS algorithm, as described in Castresana (2000).";
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Gblocks Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		String helpString = "This feature will choose characters using a modified version of the Gblocks algorithm (Castresana 2000). "
+				+ "Mesquite's modifications are to allow the user to specify the proportion of gaps permitted, and "
+				+ "to choose whether nucleotide frequencies are counted only among non-gaps (i.e., judgement of conservativeness ignores gaps)."
+				+ "Mesquite does not count gaps in taxa with no data whatsoever; those taxa are treated as absent."
+				+ "<p>If you use this in a publication, please cite it as Gblocks (Castresana 2000) as implemented and modified in Mesquite."
+				+ "<p><b>Reference for the original Gblocks</b>; Castresana J. 2000. Selection of conserved blocks from multiple alignments for their use in phylogenetic analysis. Molecular Biology and Evolution 17: 540–552"
+				+ " <a href = \"http://doi.org/10.1093/oxfordjournals.molbev.a026334\">doi:10.1093/oxfordjournals.molbev.a026334</a>";
 
 		dialog.appendToHelpString(helpString);
 
-		dialog.addLabel("Extended GBLOCKS Algorithm");
+		dialog.addLabel("Extended Gblocks Algorithm");
 
-		addToQueryOptions(dialog, "GBLOCKS");
+		addToQueryOptions(dialog, "Gblocks");
 
 		dialog.addNewDialogPanel();
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
@@ -771,12 +777,12 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements Acti
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public String getName() {
-		return "GBLOCKS";
+		return "Gblocks";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Flags sites according to an extended version of GBLOCKS criteria (Castresana, 2000)." ;
+		return "Flags sites according to an extended version of Gblocks criteria (Castresana, 2000)." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

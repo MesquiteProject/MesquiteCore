@@ -162,7 +162,7 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 		String s = "This is a partial implementation of Spruceup v.2024.07.22. In a citation, indicate that the settings are "
 				+ "\"criterion:mean\" and \"distance_method:uncorrected\" [plus the settings you have chosen for cutoff, window size, overlap, etc.]."
 				+ "\nFor a more complete implementation, use the original Spruceup."
-				+ "<p>Reference: Boroweic ML (2018) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments."
+				+ "<p><b>Reference for Spruceup</b>: Boroweic ML (2018) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments."
 				+ " Journal of Open Source Software 4:1635. <a href= \"https://doi.org/10.21105/joss.01635\">https://doi.org/10.21105/joss.01635</a>";
 		dialog.appendToHelpString(s);
 		dialog.addBlankLine();

@@ -213,6 +213,10 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for PhyIN",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		String s = "PhyIN (Phylogenetic Incompatibility among Neighbors)is a method for identifying regions of an alignment with "
+				+"high levels of local phylogenetic conflict.";
+		s += "<p><b>Reference for PhyIN</b>: Maddison W (submitted)"; //Debugg.println
+		dialog.appendToHelpString(s);
 
 		dialog.addLabel("PhyIN criteria for incompatible sites:");
 		SSField = dialog.addIntegerField("Length of blocks (-b)", blockSize, 4);

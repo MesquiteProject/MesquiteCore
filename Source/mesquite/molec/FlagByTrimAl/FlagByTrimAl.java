@@ -57,7 +57,7 @@ import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.TaxaManager;
 
 /* ======================================================================== */
-public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ShellScriptWatcher, ActionListener {
+public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionListener { //ShellScriptWatcher, 
 
 	static final String[] autoOptionNames = new String[]{"gappyout", "strict", "strictplus", "automated1"};
 	static final int autoOptionDEFAULT = 3; //automated1
@@ -134,8 +134,8 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ShellScrip
 		dialog.addBlankLine();
 		dialog.addHorizontalLine(1);
 		dialog.addLargeOrSmallTextLabel("If you use this in a publication, please cite the version of trimAl you used. See (?) help button for details.");
-		String s = "The webpage of trimAl is here: <a href=\"https://trimal.readthedocs.io\">https://trimal.readthedocs.io</a>";
-		s += "<p>The citation for trimAl is: Capella-Gutiérrez, S., Silla-Martínez, J. M., & Gabaldón, T. (2009). trimAl: a tool for automated alignment trimming in large-scale phylogenetic analyses. Bioinformatics (Oxford, England), 25(15), 1972–1973."
+		String s = "This function in Mesquite requires that you have already installed trimAl. The webpage of trimAl is here: <a href=\"https://trimal.readthedocs.io\">https://trimal.readthedocs.io</a>";
+		s += "<p><b>Reference for trimAl</b>: Capella-Gutiérrez, S., Silla-Martínez, J. M., & Gabaldón, T. (2009). trimAl: a tool for automated alignment trimming in large-scale phylogenetic analyses. Bioinformatics (Oxford, England), 25(15), 1972–1973."
 				+ "<a href = \"https://doi.org/10.1093/bioinformatics/btp348\">https://doi.org/10.1093/bioinformatics/btp348</a>";
 		dialog.appendToHelpString(s);
 		dialog.completeAndShowDialog(true);
@@ -156,7 +156,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ShellScrip
 			}
 		}
 	}
-
+/*
 	public boolean continueShellProcess(Process proc){
 		return proc.isAlive();
 	}
@@ -169,6 +169,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ShellScrip
 		return false;
 
 	}
+	*/
 	String[] columns;
 
 	/*.................................................................................................................*/
@@ -220,7 +221,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ShellScrip
 			String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
 			script += trimAlPath + "  -in input.fas -out output.fas -" + autoOptionNames[autoOption] + " -colnumbering > columns.txt";
 			MesquiteFile.putFileContents(scriptPath, script, false);
-			success = ShellScriptUtil.executeAndWaitForShell( scriptPath,  null, null, false, "trimAl", null, null, this, false);
+			success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 
 			if (success){
 				String columnsText = MesquiteFile.getFileContentsAsString(rootDir + "columns.txt");

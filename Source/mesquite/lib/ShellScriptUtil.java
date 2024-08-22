@@ -364,7 +364,10 @@ public class ShellScriptUtil  {
 						MesquiteMessage.notifyProgrammer("InterruptedException in shell script executed by " + name);
 						return false;
 					}
-					stillGoing = watcher == null || watcher.continueShellProcess(proc);
+					// continue if there is a watcher and it says to continue
+					stillGoing = (watcher != null && watcher.continueShellProcess(proc));
+					// or, if there is neither a watcher nor is a runningFile being used, then if the process is still alive.
+					stillGoing = stillGoing || (watcher == null && !ShellScriptUtil.useRunningFile &&  proc.isAlive());
 				}
 		}
 		catch (IOException e){
@@ -397,6 +400,10 @@ public class ShellScriptUtil  {
 		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name);
 	}
 
+	/*.................................................................................................................*/
+	public static boolean executeAndWaitForShell(String scriptPath){
+		return executeAndWaitForShell( scriptPath,  null, null, false, "anon", null, null, null, false);
+	}
 
 	/*.................................................................................................................*/
 	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher){
