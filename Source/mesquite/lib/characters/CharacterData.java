@@ -3981,7 +3981,8 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 			group = groups.findGroup(oData.getName());  //let's see if there already exists a group with this matrix name
 			if (group==null) {
 				CharactersGroup cg = setToNewGroup(oData.getName(), origNumChars, getNumChars()-1, module);  //set group
-				cg.setColor(randomColor);
+				if (cg != null)
+					cg.setColor(randomColor);
 			}
 			else
 				setCurrentGroup(group,origNumChars, getNumChars()-1, module);   //set group

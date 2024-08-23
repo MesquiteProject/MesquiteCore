@@ -42,12 +42,12 @@ public class SelectByGBLOCKS extends SelectSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Select by GBLOCKS";
+		return "Select by Gblocks";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Select sites by Mesquite's version of the GBLOCKS criteria." ;
+		return "Select sites by Mesquite's version of the Gblocks criteria." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
