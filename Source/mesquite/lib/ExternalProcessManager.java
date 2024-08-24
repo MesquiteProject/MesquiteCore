@@ -30,7 +30,7 @@ import mesquite.lib.duties.*;
 public class ExternalProcessManager implements Commandable  {
 	static int sleepTime = 50;
 	Process proc;
-	String directoryPath;
+	String directoryPath;  // this is directory path for folder containing working files
 	String[] programCommands;
 	//String programCommand;
 	//String programOptions;
@@ -52,6 +52,7 @@ public class ExternalProcessManager implements Commandable  {
 	boolean removeQuotesStart = true;
 	boolean removeQuotes = true;
 	boolean setNoQuoteChar = false;
+	boolean exitCodeMatters = true;
 
 	
 	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
@@ -202,16 +203,22 @@ public class ExternalProcessManager implements Commandable  {
 		this.textListener= textListener;
 	}
 
-	
+	public boolean getExitCodeMatters() {
+		return exitCodeMatters;
+	}
+	public void setExitCodeMatters(boolean exitCodeMatters) {
+		this.exitCodeMatters = exitCodeMatters;
+	}
+
 	/*.................................................................................................................*/
 	public static String executeAndGetStandardOut(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, boolean removeQuotesStart, boolean removeQuotes, boolean setNoQuoteChar) {
 		boolean success = false;
-		ExternalProcessManager externalRunner = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, removeQuotesStart, removeQuotes, setNoQuoteChar);
-		externalRunner.emptyStdOut();
-		success = externalRunner.executeInShell();
+		ExternalProcessManager externalProcessManager = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, removeQuotesStart, removeQuotes, setNoQuoteChar);
+		externalProcessManager.emptyStdOut();
+		success = externalProcessManager.executeInShell();
 		if (success) {
-			success = externalRunner.monitorAndCleanUpShell(null);
-			return externalRunner.getStdOut();
+			success = externalProcessManager.monitorAndCleanUpShell(null);
+			return externalProcessManager.getStdOut();
 		}
 		return "";
 	}	
@@ -374,14 +381,20 @@ public class ExternalProcessManager implements Commandable  {
 	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
-	public boolean executeInShell(){
+	public boolean executeInShell(String envVariableName, String envVariableValue){
 		proc = null;
 //		if (programCommands==null && (programCommand!=null))
 //			setProgramCommands();  // to be removed
 		externalProcess = new MesquiteExternalProcess();
-		externalProcess.start(directoryPath, stdOutFilePath, stdErrFilePath, programCommands);
+		externalProcess.start(directoryPath, stdOutFilePath, stdErrFilePath,  envVariableName,  envVariableValue, programCommands);
 		proc = externalProcess.getProcess();
 		return proc!=null;
+	}
+	/*.................................................................................................................*/
+	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
+	 * serve as a flag to Mesquite that the script is running.   */
+	public boolean executeInShell(){
+		return executeInShell(null, null);
 	}
 	/*.................................................................................................................*/
 	public boolean processRunning() {
@@ -390,8 +403,12 @@ public class ExternalProcessManager implements Commandable  {
 		}
 		return true;
 	}
+	
+	
 	/*.................................................................................................................*/
 	public boolean goodExitValue(int exitValue, boolean warnIfBad) {
+		if (!exitCodeMatters)
+			return true;
 		if (exitValue!=0) {
 			ownerModule.logln("Process exit value: " +exitValue);
 		}

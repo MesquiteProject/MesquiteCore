@@ -23,7 +23,12 @@ public class ProcessUtil {
 	}
 
 	/*.................................................................................................................*/
-	public static Process startProcess(MesquiteInteger errorCode, String workingDirectoryPath, String outputFilePath, String errorFilePath, String...command){
+	public static void addEnvironmentVariableToProcessBuilder(ProcessBuilder processBuilder, String variable, String value) {
+		processBuilder.environment().put(variable, value);
+	}
+
+	/*.................................................................................................................*/
+	public static Process startProcess(MesquiteInteger errorCode, String workingDirectoryPath, String outputFilePath, String errorFilePath, String envVariableName, String envVariableValue, String...command){
 		try {
 			
 			if (command==null || command.length==0 || StringUtil.blank(command[0])) {
@@ -32,6 +37,8 @@ public class ProcessUtil {
 				return null;
 			}
 			ProcessBuilder pb = new ProcessBuilder(command);
+			if (StringUtil.notEmpty(envVariableName) && StringUtil.notEmpty(envVariableValue))
+				addEnvironmentVariableToProcessBuilder(pb, envVariableName,envVariableValue);
 			
 		   if (StringUtil.notEmpty(workingDirectoryPath)) {
 				pb.directory(new File(workingDirectoryPath));
@@ -69,6 +76,11 @@ public class ProcessUtil {
 			MesquiteMessage.discreetNotifyUser(message);
 		}
 		return null;
+	}
+
+	/*.................................................................................................................*/
+	public static Process startProcess(MesquiteInteger errorCode, String workingDirectoryPath, String outputFilePath, String errorFilePath, String...command){
+		return startProcess(errorCode,  workingDirectoryPath,  outputFilePath,  errorFilePath, null, null, command);
 	}
 
 }

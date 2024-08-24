@@ -71,13 +71,19 @@ public class MesquiteExternalProcess  {
 	}
 	/*.................................................................................................................*/
 
-	public void start(String directoryPath, String outputFilePath, String errorFilePath, String...command) {
+	public void start(String directoryPath, String outputFilePath, String errorFilePath, String envVariableName, String envVariableValue, String...command) {
 		this.directoryPath = directoryPath;
 		this.outputFilePath = outputFilePath;
 		this.errorFilePath = errorFilePath;
 		errorCode = new MesquiteInteger(ProcessUtil.NOERROR);
-		this.proc = ProcessUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, command);
+		this.proc = ProcessUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, envVariableName,  envVariableValue, command);
 		this.procH = proc.toHandle();
+
+	}
+	/*.................................................................................................................*/
+
+	public void start(String directoryPath, String outputFilePath, String errorFilePath, String...command) {
+		start(directoryPath,  outputFilePath,  errorFilePath, null, null, command);
 
 	}
 	public boolean diesOnClosing() {
