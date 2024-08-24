@@ -77,7 +77,8 @@ public class MesquiteExternalProcess  {
 		this.errorFilePath = errorFilePath;
 		errorCode = new MesquiteInteger(ProcessUtil.NOERROR);
 		this.proc = ProcessUtil.startProcess(errorCode, directoryPath,  outputFilePath,  errorFilePath, envVariableName,  envVariableValue, command);
-		this.procH = proc.toHandle();
+		if (this.proc!=null)
+			this.procH = proc.toHandle();
 
 	}
 	/*.................................................................................................................*/

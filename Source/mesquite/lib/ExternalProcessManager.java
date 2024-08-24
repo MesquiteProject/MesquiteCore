@@ -379,8 +379,7 @@ public class ExternalProcessManager implements Commandable  {
 		this.programCommands = programCommands;
 	}
 	/*.................................................................................................................*/
-	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
-	 * serve as a flag to Mesquite that the script is running.   */
+	/** executes program commands stored in programCommands; working directory is directoryPath.   */
 	public boolean executeInShell(String envVariableName, String envVariableValue){
 		proc = null;
 //		if (programCommands==null && (programCommand!=null))
@@ -391,8 +390,7 @@ public class ExternalProcessManager implements Commandable  {
 		return proc!=null;
 	}
 	/*.................................................................................................................*/
-	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
-	 * serve as a flag to Mesquite that the script is running.   */
+	/** executes program commands stored in programCommands; working directory is directoryPath.   */
 	public boolean executeInShell(){
 		return executeInShell(null, null);
 	}
