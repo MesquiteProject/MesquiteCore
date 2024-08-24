@@ -118,14 +118,16 @@ public class ExternalProcessManager implements Commandable  {
 	}
 	public void setStdOutFileName(String stdOutFileName) {
 		this.stdOutFileName = stdOutFileName;
-		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdOutFileName;
+		stdOutFilePath = directoryPath + MesquiteFile.fileSeparator + stdOutFileName;// corrected 24 Aug 2024 DRM
+	//	stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdOutFileName;
 	}
 	public String getStdErrFilePath() {
 		return stdErrFilePath;
 	}
 	public void setStdErrFileName(String stdErrFileName) {
 		this.stdErrFileName = stdErrFileName;
-		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdErrFileName;
+		stdErrFilePath = directoryPath + MesquiteFile.fileSeparator + stdErrFileName;// corrected 24 Aug 2024 DRM
+//		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdErrFileName;
 	}
 
 
