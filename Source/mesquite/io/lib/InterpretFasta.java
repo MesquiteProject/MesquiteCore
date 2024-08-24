@@ -549,7 +549,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		Debugg.printStackTrace();
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export FASTA Options", buttonPressed);
 		exportDialog.appendToHelpString("Choose the options for exporting the matrix as FASTA file.");
 		exportDialog.appendToHelpString(" The Taxon Name Suffix, if present, will be appended to each taxon name.");

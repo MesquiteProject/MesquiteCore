@@ -71,7 +71,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	int taxonCountingOption = taxonCountingOptionDEFAULT;
 	int specifiedNumTaxa = MesquiteInteger.unassigned;
 
-	double siteGappinessThreshold = siteGappinessThresholdDEFAULT; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
+	double siteGappinessThreshold = siteGappinessThresholdDEFAULT; // A site is considered good (for gappiness) if it is less or as gappy than this (term or non-term).
 	int gappyBlockSize = gappyBlockSizeDEFAULT; // If in a block of at least this many sites, the first and last site is bad,
 	double blockGappinessThreshold = blockGappinessThresholdDEFAULT; // and the proportion of bad sites is this high or higher,
 	int gappyBoundary = gappyBoundaryDEFAULT; // and there are no stretches of this many good sites in a row,
@@ -166,7 +166,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Simple Gappiness Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
-		pgSField = dialog.addDoubleField("Proportion of gaps that marks site as too gappy (\"bad\")", siteGappinessThreshold, 4);
+		pgSField = dialog.addDoubleField("Maximum permitted proportion of gaps (above which site is considered too gappy)", siteGappinessThreshold, 4);
 		numTaxaButtons = dialog.addRadioButtons (new String[] {"Count gaps in all taxa in current file", "Ignore gaps in taxa with no data in matrix", "Assume specified total number of taxa (see Help button):"}, taxonCountingOption);
 		numTaxaButtons.addItemListener(this);
 		String s = "SGF (Simple Gappiness Filter) selects regions of an alignment with high levels of gaps."
@@ -299,7 +299,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			}
 
 		}
-		else if (checker.compare(this.getClass(), "Sets proportion of taxa than need to have gaps for site to be gappy.", "[proportion]", commandName, "setSiteGappinessThreshold")) {
+		else if (checker.compare(this.getClass(), "Sets proportion of taxa with gaps above which site is considered gappy.", "[proportion]", commandName, "setSiteGappinessThreshold")) {
 			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (MesquiteDouble.isCombinable(s)){
 				siteGappinessThreshold = s;
@@ -334,7 +334,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 		return true;
 	}
 	boolean gappySite(int k) {
-		return siteGappiness[k]>=siteGappinessThreshold;
+		return siteGappiness[k]>siteGappinessThreshold;
 	}
 
 	// options IGNORE_TAXA_ALL_GAPS,  COUNT_ALL_CURRENT_TAXA, ASSUME_SPECIFIED_NUM_TAXA
@@ -465,7 +465,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Flags sites or regions of sites with a certain proportion of gaps." ;
+		return "Flags sites or regions of sites whose proportion of gaps is above a threshold." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

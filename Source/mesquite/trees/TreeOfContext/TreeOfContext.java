@@ -170,7 +170,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
   					s+= context.getName();
   				if (StringUtil.notEmpty(explanationForUser))
   					s+="\n "+explanationForUser;
-				alert(s);
+				logln(s); //changed from alert so as not to be annoying
   			}
   			return context;
   			

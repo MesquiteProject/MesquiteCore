@@ -46,12 +46,12 @@ public class DeleteCharsByGBLOCKS extends DeleteCharsBySelector  {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Delete Sites by GBLOCKS";
+		return "Delete Sites by Gblocks";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Deletes characters according to GBLOCKS criteria." ;
+		return "Deletes characters according to Gblocks criteria." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
