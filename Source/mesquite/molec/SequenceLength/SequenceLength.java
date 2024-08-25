@@ -32,12 +32,14 @@ public class SequenceLength extends NumberForTaxon {
 	Taxa currentTaxa = null;
 	MCharactersDistribution observedStates =null;
 	MesquiteBoolean countExcluded = new MesquiteBoolean(false);
+	MesquiteBoolean countMissing = new MesquiteBoolean(true);    // have this as true so that it matches previous values
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, MolecularState.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		addCheckMenuItem(null, "Count Excluded Characters", makeCommand("toggleCountExcluded",  this), countExcluded);
+		addCheckMenuItem(null, "Count Missing Data", makeCommand("toggleCountMissing",  this), countMissing);
 		return true;
 	}
 
@@ -45,6 +47,7 @@ public class SequenceLength extends NumberForTaxon {
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("toggleCountExcluded " + countExcluded.toOffOnString());
+		temp.addLine("toggleCountMissing " + countMissing.toOffOnString());
 		return temp;
 	}
 
@@ -65,6 +68,14 @@ public class SequenceLength extends NumberForTaxon {
 			boolean current = countExcluded.getValue();
 			countExcluded.toggleValue(parser.getFirstToken(arguments));
 			if (current!=countExcluded.getValue()) {
+				outputInvalid();
+				parametersChanged();
+			}
+		} else
+		 if (checker.compare(this.getClass(), "Sets whether or not missing data are considered in the calculation", "[on or off]", commandName, "toggleCountMissing")) {
+			boolean current = countMissing.getValue();
+			countMissing.toggleValue(parser.getFirstToken(arguments));
+			if (current!=countMissing.getValue()) {
 				outputInvalid();
 				parametersChanged();
 			}
@@ -112,8 +123,13 @@ public class SequenceLength extends NumberForTaxon {
 			for (int ic=0; ic<numChars; ic++) {
 				if (countExcluded.getValue() || (incl == null || incl.isBitOn(ic)) && observedStates!=null){  // adjusted 2. 01 to consider inclusion  // added control in 3.0
 					cs = observedStates.getCharacterState(cs, ic, it);
-					if (!cs.isInapplicable())
-						seqLen++;
+					if (countMissing.getValue()) {
+						if (!cs.isInapplicable())
+							seqLen++;
+					} else
+						if (!cs.isInapplicable() && !cs.isUnassigned())
+							seqLen++;
+
 				}
 			}
 			result.setValue(seqLen);
@@ -150,6 +166,10 @@ public class SequenceLength extends NumberForTaxon {
 			s = "Excluded characters are counted.";
 		else
 			s="Excluded characters not counted.";
+		if (countMissing.getValue())
+			s = "Missing data are counted.";
+		else
+			s="Missing data are not counted.";
 		return "Sequence Length in matrix from: " + matrixSourceTask.getParameters() + ". " + s;
 	}
 	/*.................................................................................................................*/
