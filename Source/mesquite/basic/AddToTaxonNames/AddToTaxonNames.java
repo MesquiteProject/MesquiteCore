@@ -22,8 +22,10 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class AddToTaxonNames extends TaxonNameAlterer {
-	String textToAdd="";
-	MesquiteBoolean addToEnd = new MesquiteBoolean(true);
+	String prefixToAdd="";
+	String suffixToAdd="";
+	//String textToAdd="";
+	//MesquiteBoolean addToEnd = new MesquiteBoolean(true);
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
@@ -34,17 +36,17 @@ public class AddToTaxonNames extends TaxonNameAlterer {
    		if (MesquiteThread.isScripting())
    			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Add to Taxon Names",  buttonPressed);
+		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Prefix/Suffix Taxon Names",  buttonPressed);
 		queryDialog.addLabel("Add Prefix or Suffix Taxon Names", Label.CENTER);
-		SingleLineTextField prefixField = queryDialog.addTextField("Text:", textToAdd, 12);
-		Checkbox addToEndBox = queryDialog.addCheckBox("add to end of names", addToEnd.getValue());
+		SingleLineTextField prefixField = queryDialog.addTextField("Prefix:", prefixToAdd, 12);
+		SingleLineTextField suffixField = queryDialog.addTextField("Suffix:", suffixToAdd, 12);
 		queryDialog.completeAndShowDialog(true);
 			
 		boolean ok = (queryDialog.query()==0);
 		
 		if (ok) {
-			textToAdd = prefixField.getText();
-			addToEnd.setValue(addToEndBox.getState());
+			prefixToAdd = prefixField.getText();
+			suffixToAdd = suffixField.getText();
 		}
 		
 		queryDialog.dispose();
@@ -59,10 +61,7 @@ public class AddToTaxonNames extends TaxonNameAlterer {
 		String name = taxa.getTaxonName(it);
 		if (name!=null){
 			String s;
-			if (addToEnd.getValue())
-				s =  name + textToAdd;
-			else
-				s =  textToAdd + name;
+			s =  prefixToAdd + name + suffixToAdd;
 			taxa.setTaxonName(it, s, false);
 			nameChanged = true;
 		}
@@ -70,20 +69,26 @@ public class AddToTaxonNames extends TaxonNameAlterer {
    	}
 	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	if (checker.compare(this.getClass(), "Adds text to taxon names", "[text]", commandName, "addText")) {
+     	 	if (checker.compare(this.getClass(), "Adds prefix/suffix to taxon names", "[text]", commandName, "addText")) {
 	   	 		if (taxa !=null){
-	   	 			 textToAdd = parser.getFirstToken(arguments);
-    	 				addToEnd.toggleValue(parser.getNextToken());
+	   	 			String textToAdd = parser.getFirstToken(arguments);
+    	 			boolean toEnd = MesquiteBoolean.fromOffOnString(parser.getNextToken());
+    	 			prefixToAdd="";
+    	 			suffixToAdd="";
+	   	 			if (toEnd)
+	   	 				suffixToAdd=textToAdd;
+	   	 			else
+	   	 				prefixToAdd = textToAdd;
 	   	 			alterTaxonNames(taxa,table);
 	   	 		}
-    	 	}
+     	 	}
     	 	else
     	 		return  super.doCommand(commandName, arguments, checker);
 		return null;
    	 }
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Add (Prefix/Suffix) to Names...";
+		return "Add Prefix/Suffix to Names...";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
