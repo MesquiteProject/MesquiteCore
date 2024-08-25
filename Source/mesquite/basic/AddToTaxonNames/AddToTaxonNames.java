@@ -35,7 +35,7 @@ public class AddToTaxonNames extends TaxonNameAlterer {
    			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Add to Taxon Names",  buttonPressed);
-		queryDialog.addLabel("Add to Taxon Names", Label.CENTER);
+		queryDialog.addLabel("Add Prefix or Suffix Taxon Names", Label.CENTER);
 		SingleLineTextField prefixField = queryDialog.addTextField("Text:", textToAdd, 12);
 		Checkbox addToEndBox = queryDialog.addCheckBox("add to end of names", addToEnd.getValue());
 		queryDialog.completeAndShowDialog(true);
@@ -83,7 +83,7 @@ public class AddToTaxonNames extends TaxonNameAlterer {
    	 }
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Add to Names...";
+		return "Add (Prefix/Suffix) to Names...";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
@@ -92,7 +92,7 @@ public class AddToTaxonNames extends TaxonNameAlterer {
    	 
 	/*.................................................................................................................*/
   	 public String getExplanation() {
-		return "Adds text to taxon names.";
+		return "Adds prefix or suffix to taxon names.";
    	 }
 }
 
