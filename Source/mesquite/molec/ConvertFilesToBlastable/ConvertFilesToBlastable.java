@@ -30,7 +30,7 @@ import mesquite.molec.lib.*;
 /* ======================================================================== */
 public class ConvertFilesToBlastable extends UtilitiesAssistant implements ActionListener,  AppUser, ShellScriptWatcher, OutputFileProcessor { 
 	boolean preferencesSet = false;
-	ExternalProcessManager externalRunner;
+	ExternalProcessManager externalProcessManager;
 	boolean scriptBased = false;
 	boolean databasesInDefaultLocation = true;
 	String blastDatabaseFolderPath = "";
@@ -251,12 +251,12 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 
 		String arguments = blastArguments;
 		arguments=StringUtil.stripBoundingWhitespace(arguments);
-		externalRunner = new ExternalProcessManager(this, directoryPath, programPath, arguments, getName(), outputFilePaths, this, this, true);
-		externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+		externalProcessManager = new ExternalProcessManager(this, directoryPath, programPath, arguments, getName(), outputFilePaths, this, this, true);
+		externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
 
-		success = externalRunner.executeInShell();
+		success = externalProcessManager.executeInShell();
 		if (success)
-			success = externalRunner.monitorAndCleanUpShell(null);
+			success = externalProcessManager.monitorAndCleanUpShell(null);
 
 		if (getProject()!=null)
 			getProject().decrementProjectWindowSuppression();

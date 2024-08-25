@@ -237,12 +237,12 @@ public class ExternalProcessManager implements Commandable  {
 	/*.................................................................................................................*/
 	public static String executeAndGetStandardErr(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, boolean removeQuotesStart, boolean removeQuotes, boolean setNoQuoteChar) {
 		boolean success = false;
-		ExternalProcessManager externalRunner = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, removeQuotesStart, removeQuotes, setNoQuoteChar);
-		externalRunner.emptyStdErr();
-		success = externalRunner.executeInShell();
+		ExternalProcessManager externalProcessManager = new ExternalProcessManager(ownerModule, directoryPath, programCommand, programOptions, ownerModule.getName(), null, null, null, false, removeQuotesStart, removeQuotes, setNoQuoteChar);
+		externalProcessManager.emptyStdErr();
+		success = externalProcessManager.executeInShell();
 		if (success) {
-			success = externalRunner.monitorAndCleanUpShell(null);
-			return externalRunner.getStdErr();
+			success = externalProcessManager.monitorAndCleanUpShell(null);
+			return externalProcessManager.getStdErr();
 		}
 		return "";
 	}	

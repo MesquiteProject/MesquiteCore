@@ -38,7 +38,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 	boolean useIDInDefinition = false;
 	String[] databaseArray = null;
 	int numDatabases = 0;
-	ExternalProcessManager externalRunner;
+	ExternalProcessManager externalProcessManager;
 	static final  boolean scriptBased = false;
 	boolean databasesInDefaultLocation = true;
 	String blastDatabaseFolderPath = "";
@@ -191,8 +191,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 	}
 	/*.................................................................................................................*/
 	public String getStdErr() {
-		 if (externalRunner!=null)
-			return externalRunner.getStdErr();
+		 if (externalProcessManager!=null)
+			return externalProcessManager.getStdErr();
 		return "";
 	}
 	/*.................................................................................................................*/
@@ -201,14 +201,14 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 	}
 	/*.................................................................................................................*/
 	public String getStdOut() {
-		if (externalRunner!=null)
-			return externalRunner.getStdOut();
+		if (externalProcessManager!=null)
+			return externalProcessManager.getStdOut();
 		return "";
 	}
 	
 	public boolean stopExecution(){
-		if (externalRunner!=null) {
-			externalRunner.stopExecution();
+		if (externalProcessManager!=null) {
+			externalProcessManager.stopExecution();
 		}
 		return false;
 	}
@@ -482,14 +482,14 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 		else {
 			String arguments = blastArguments;
 			arguments=StringUtil.stripBoundingWhitespace(arguments);
-			externalRunner = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true);
+			externalProcessManager = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true);
 			if (useDefaultStdOutFileName())
-				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+				externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
 			else
-				externalRunner.setStdOutFileName(outFileName);
-			success = externalRunner.executeInShell();
+				externalProcessManager.setStdOutFileName(outFileName);
+			success = externalProcessManager.executeInShell();
 			if (success)
-				success = externalRunner.monitorAndCleanUpShell(null);
+				success = externalProcessManager.monitorAndCleanUpShell(null);
 		}
 
 		
@@ -565,15 +565,15 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 		else {
 			String arguments = blastArguments;
 			arguments=StringUtil.stripBoundingWhitespace(arguments);
-			externalRunner = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true, false, true, true);
+			externalProcessManager = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true, false, true, true);
 			if (useDefaultStdOutFileName())
-				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+				externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
 			else
-				externalRunner.setStdOutFileName(outFileName);
-			externalRunner.setRemoveQuotes(true);
-			success = externalRunner.executeInShell();
+				externalProcessManager.setStdOutFileName(outFileName);
+			externalProcessManager.setRemoveQuotes(true);
+			success = externalProcessManager.executeInShell();
 			if (success)
-				success = externalRunner.monitorAndCleanUpShell(null);
+				success = externalProcessManager.monitorAndCleanUpShell(null);
 		}
 
 		

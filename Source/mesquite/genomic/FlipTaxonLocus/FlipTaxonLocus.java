@@ -23,7 +23,7 @@ import mesquite.lib.duties.GeneralFileMaker;
 /* ======================================================================== */
 public class FlipTaxonLocus extends GeneralFileMaker {
 
-	ExternalProcessManager externalRunner;
+	ExternalProcessManager externalProcessManager;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
@@ -48,11 +48,11 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 			pythonOptions = StringUtil.protectFilePathForCommandLine(getPath()+"flipTaxonLocustoLocusTaxon2.py");
 		}
 		
-		externalRunner = new ExternalProcessManager(this, directoryPath, pythonCommand, pythonOptions, getName(), null, null, null, true, true, true, false);
-		externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
-		success = externalRunner.executeInShell();
+		externalProcessManager = new ExternalProcessManager(this, directoryPath, pythonCommand, pythonOptions, getName(), null, null, null, true, true, true, false);
+		externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
+		success = externalProcessManager.executeInShell();
 		if (success)
-			success = externalRunner.monitorAndCleanUpShell(progressIndicator);
+			success = externalProcessManager.monitorAndCleanUpShell(progressIndicator);
 		if (progressIndicator.isAborted())
 			logln("Aborted by user\n");
 		progressIndicator.goAway();

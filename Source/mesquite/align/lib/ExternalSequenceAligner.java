@@ -42,7 +42,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	protected boolean scriptBased = false;
 	public static int runs = 0;
 	ShellScriptRunner scriptRunner;
-	ExternalProcessManager externalRunner;
+	ExternalProcessManager externalProcessManager;
 	boolean useDefaultExecutablePath=true;
 	protected AppInformationFile appInfoFile;
 	boolean hasApp=false;
@@ -73,8 +73,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			if (scriptRunner!=null)
 				return scriptRunner.getStdErr();
 		}
-		else if (externalRunner!=null)
-			return externalRunner.getStdErr();
+		else if (externalProcessManager!=null)
+			return externalProcessManager.getStdErr();
 		return "";
 	}
 	/*.................................................................................................................*/
@@ -172,8 +172,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			if (scriptRunner!=null)
 				return scriptRunner.getStdOut();
 		}
-		else if (externalRunner!=null)
-			return externalRunner.getStdOut();
+		else if (externalProcessManager!=null)
+			return externalProcessManager.getStdOut();
 		return "";
 	}
 
@@ -189,8 +189,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			if (scriptRunner!=null)
 				scriptRunner.stopExecution();
 		}
-		else if (externalRunner!=null) {
-			externalRunner.stopExecution();
+		else if (externalProcessManager!=null) {
+			externalProcessManager.stopExecution();
 		}
 		return false;
 	}
@@ -527,15 +527,15 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			String arguments = argumentsForLogging.toString();
 
 			arguments=StringUtil.stripBoundingWhitespace(arguments);
-			externalRunner = new ExternalProcessManager(this, rootDir, getProgramPath(), arguments,getName(), outputFilePaths, this, this, true);
+			externalProcessManager = new ExternalProcessManager(this, rootDir, getProgramPath(), arguments,getName(), outputFilePaths, this, this, true);
 			//ShellScriptUtil.changeDirectory(rootDir, rootDir);
 			if (useDefaultStdOutFileName())
-				externalRunner.setStdOutFileName(ShellScriptRunner.stOutFileName);
+				externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
 			else
-				externalRunner.setStdOutFileName(outFileName);
-			success = externalRunner.executeInShell(); //This brings a contained window to the fore, unnecessarily, but if the contents of executeInShell are disabled, it still does.
+				externalProcessManager.setStdOutFileName(outFileName);
+			success = externalProcessManager.executeInShell(); //This brings a contained window to the fore, unnecessarily, but if the contents of executeInShell are disabled, it still does.
 			if (success)
-				success = externalRunner.monitorAndCleanUpShell(progressIndicator);
+				success = externalProcessManager.monitorAndCleanUpShell(progressIndicator);
 		}
 
 		if (progressIndicator != null) {
