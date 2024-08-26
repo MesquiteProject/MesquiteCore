@@ -28,7 +28,7 @@ import mesquite.externalCommunication.lib.*;
 /*  Initiator: DRM
  * */
 
-public class LocalBlaster extends Blaster implements ActionListener,  AppUser, ShellScriptWatcher, OutputFileProcessor {
+public class LocalBlaster extends Blaster implements ActionListener,  AppUser, ProcessWatcher, OutputFileProcessor {
 	boolean preferencesSet = false;
 	String programOptions = "" ;
 	String databaseString = "*" ;
@@ -498,6 +498,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 			if (!success && pathWithSpaces) {
 				setBlastErrorMessage("Path to BLAST databases contains at least one blank; BLAST functions likely failed for this reason. Change folder or database file names so that they have no spaces.");
 			}
+			if (!success)
+				setWarnErrorMessage(false);
 		}
 
 		
@@ -662,11 +664,14 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 		return "BLASTs a database on the same computer as Mesquite.";
 	}
 
-	public boolean continueShellProcess(Process proc) {
+	public boolean continueProcess(Process proc) {
 		return true;
 	}
 	public boolean fatalErrorDetected() {
 		return false;
+	}
+	public boolean warnIfError() {
+		return getWarnErrorMessage();
 	}
 
 

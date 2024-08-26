@@ -31,7 +31,14 @@ public abstract class Blaster extends MesquiteModule   {
 	protected boolean blastx = false;
 	protected int blastType = BLAST;
 	String blastErrorMessage = "";
+	boolean warnErrorMessage = true;
 
+	public boolean getWarnErrorMessage() {
+		return warnErrorMessage;
+	}
+	public void setWarnErrorMessage(boolean warnErrorMessage) {
+		this.warnErrorMessage = warnErrorMessage;
+	}
 	public String getBlastErrorMessage() {
 		return blastErrorMessage;
 	}
