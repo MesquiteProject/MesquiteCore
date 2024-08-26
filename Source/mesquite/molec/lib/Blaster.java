@@ -30,7 +30,14 @@ public abstract class Blaster extends MesquiteModule   {
 	static final String[] blastTypeNames = new String[] {"BLAST", "BLASTX", "TBLASTX"};
 	protected boolean blastx = false;
 	protected int blastType = BLAST;
+	String blastErrorMessage = "";
 
+	public String getBlastErrorMessage() {
+		return blastErrorMessage;
+	}
+	public void setBlastErrorMessage(String blastErrorMessage) {
+		this.blastErrorMessage = blastErrorMessage;
+	}
 	public Class getDutyClass() {
 		return Blaster.class;
 	}

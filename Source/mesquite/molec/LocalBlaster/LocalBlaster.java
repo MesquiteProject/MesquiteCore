@@ -42,7 +42,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 	static final  boolean scriptBased = false;
 	boolean databasesInDefaultLocation = true;
 	String blastDatabaseFolderPath = "";
-	
+	boolean pathWithSpaces = false;
+
 	
 	boolean hasApp=false;
 	boolean useDefaultExecutablePath = true;  //newApp
@@ -400,6 +401,10 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 				return false;
 			}
 			blastDatabaseFolderPath = tempPath;
+			if (StringUtil.containsBlanks(blastDatabaseFolderPath)) {
+				MesquiteMessage.discreetNotifyUser("Path to BLAST databases contains at least one blank; BLAST functions may fail.");
+				pathWithSpaces = true;
+			}
 			processDatabases(databaseString);
 			storePreferences();
 		}
@@ -446,7 +451,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), rootDir));
 		String blastArguments =  "  -query " + fileName;
 		blastArguments+= " -db "+database;
-//		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(database);
+		//blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(database);
 		blastArguments+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
 
 		if (eValueCutoff>=0.0)
@@ -490,6 +495,9 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 			success = externalProcessManager.executeInShell();
 			if (success)
 				success = externalProcessManager.monitorAndCleanUpShell(null);
+			if (!success && pathWithSpaces) {
+				setBlastErrorMessage("Path to BLAST databases contains at least one blank; BLAST functions likely failed for this reason. Change folder or database file names so that they have no spaces.");
+			}
 		}
 
 		
@@ -547,7 +555,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, S
 
 		String blastArguments = "  -entry "+queryString + " -outfmt %f";
 		blastArguments+= " -db "+databaseArray[databaseNumber];
-	//	blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(databaseArray[databaseNumber]);
+		//blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(databaseArray[databaseNumber]);
 		blastArguments+=" -out " + outFileName;		
 
 		String blastCommand = "blastdbcmd" + blastArguments;

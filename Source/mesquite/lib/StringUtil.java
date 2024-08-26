@@ -1901,6 +1901,10 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 		return indexOfIgnoreCase(a,b)>=0;
 	}
 	/*.................................................................................................................*/
+	public static boolean containsBlanks(String a) {
+		return indexOfIgnoreCase(a," ")>=0;
+	}
+	/*.................................................................................................................*/
 	public static boolean stringsEqual(String a, String b) {
 		if (a ==b)
 			return true;

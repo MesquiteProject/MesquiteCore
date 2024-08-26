@@ -358,6 +358,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		boolean someHits = false;
 		passNumberOfIDs= new int[0];
 		ID=new String[0];
+		String errorMessage = "";
 
 
 		for (int iDatabase = 0; iDatabase<numDatabases; iDatabase++) {
@@ -369,6 +370,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 				blasterTask.blastForMatches(database, "blastp", sequenceName, sequence.toString(), true, maxHits, maxTime, eValueCutoff,wordSize, response, true);
 			else {	
 				blasterTask.basicDNABlastForMatches(database, blastType, sequenceName, sequence.toString(), maxHits, maxTime, eValueCutoff, wordSize, response, true);
+				String singleErrorMessage = blasterTask.getBlastErrorMessage();
+				if (StringUtil.notEmpty(singleErrorMessage))
+					errorMessage = singleErrorMessage;
 			}
 
 			BLASTResults blastResults = new BLASTResults(maxHits);
@@ -418,6 +422,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			results.append("-----------\n");
 
 		}
+
+		if (StringUtil.notEmpty(errorMessage))
+			MesquiteMessage.discreetNotifyUser(errorMessage);
 
 		//accessionNumbers = blastResults.getAccessions();
 		return someHits;
