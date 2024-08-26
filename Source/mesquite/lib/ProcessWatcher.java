@@ -13,12 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-public interface ShellScriptWatcher {
+public interface ProcessWatcher {
 
-	public boolean continueShellProcess(Process proc);
+	public boolean continueProcess(Process proc);
 	
 	public boolean userAborted();
 	
 	public boolean fatalErrorDetected();
+	
+	public boolean warnIfError();
+
 
 }

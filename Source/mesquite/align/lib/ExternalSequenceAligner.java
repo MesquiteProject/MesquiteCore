@@ -32,7 +32,7 @@ import mesquite.lib.table.*;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
-public abstract class ExternalSequenceAligner extends MultipleSequenceAligner implements ActionListener, OutputFileProcessor, ShellScriptWatcher, AppUser{
+public abstract class ExternalSequenceAligner extends MultipleSequenceAligner implements ActionListener, OutputFileProcessor, ProcessWatcher, AppUser{
 	String programPath;
 	SingleLineTextField programPathField =  null;
 	boolean preferencesSet = false;
@@ -665,7 +665,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		// TODO Auto-generated method stub
 		return outputFilePaths;
 	}
-	public boolean continueShellProcess(Process proc) {
+	public boolean continueProcess(Process proc) {
 		// TODO Auto-generated method stub
 		return true;
 	}
@@ -679,6 +679,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (stdErrorsAreFatal() && StringUtil.notEmpty(stdErr))
 			return false;
 		return false;
+	}
+	public boolean warnIfError() {
+		return true;
 	}
 
 

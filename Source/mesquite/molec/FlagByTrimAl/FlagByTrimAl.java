@@ -40,7 +40,7 @@ import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.OutputFileProcessor;
 import mesquite.lib.ShellScriptRunner;
 import mesquite.lib.ShellScriptUtil;
-import mesquite.lib.ShellScriptWatcher;
+import mesquite.lib.ProcessWatcher;
 import mesquite.lib.SingleLineTextField;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;

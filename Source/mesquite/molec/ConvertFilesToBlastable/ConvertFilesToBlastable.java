@@ -28,7 +28,7 @@ import mesquite.molec.lib.*;
 
 
 /* ======================================================================== */
-public class ConvertFilesToBlastable extends UtilitiesAssistant implements ActionListener,  AppUser, ShellScriptWatcher, OutputFileProcessor { 
+public class ConvertFilesToBlastable extends UtilitiesAssistant implements ActionListener,  AppUser, ProcessWatcher, OutputFileProcessor { 
 	boolean preferencesSet = false;
 	ExternalProcessManager externalProcessManager;
 	boolean scriptBased = false;
@@ -354,7 +354,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		
 	}
 	@Override
-	public boolean continueShellProcess(Process proc) {
+	public boolean continueProcess(Process proc) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -368,6 +368,10 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		// TODO Auto-generated method stub
 		return false;
 	}
+	public boolean warnIfError() {
+		return true;
+	}
+
 }
 
 

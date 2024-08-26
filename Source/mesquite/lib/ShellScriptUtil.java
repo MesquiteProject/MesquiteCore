@@ -329,7 +329,7 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
-	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
+	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher, boolean visibleTerminal){
 		Process proc = null;
 		long[] lastModified=null;
 		boolean stillGoing = true;
@@ -365,7 +365,7 @@ public class ShellScriptUtil  {
 						return false;
 					}
 					// continue if there is a watcher and it says to continue
-					stillGoing = (watcher != null && watcher.continueShellProcess(proc));
+					stillGoing = (watcher != null && watcher.continueProcess(proc));
 					// or, if there is neither a watcher nor is a runningFile being used, then if the process is still alive.
 					stillGoing = stillGoing || (watcher == null && !ShellScriptUtil.useRunningFile &&  proc.isAlive());
 				}
@@ -406,7 +406,7 @@ public class ShellScriptUtil  {
 	}
 
 	/*.................................................................................................................*/
-	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher){
+	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher){
 		String runningFilePath = null;
 		if (!StringUtil.blank(scriptPath))
 			runningFilePath=getDefaultRunningFilePath();

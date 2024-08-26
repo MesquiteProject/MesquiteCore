@@ -41,7 +41,7 @@ public class ShellScriptRunner implements Commandable  {
 	public static String stOutFileName = "StandardOutputFile";
 	public static String stErrorFileName = "StandardErrorFile";
 	OutputFileProcessor outputFileProcessor; //reconnect
-	ShellScriptWatcher watcher; //reconnect
+	ProcessWatcher watcher; //reconnect
 	boolean visibleTerminal;
 	long[] lastModified;
 	MesquiteExternalProcess externalProcessManager;
@@ -51,7 +51,7 @@ public class ShellScriptRunner implements Commandable  {
 	boolean dontKill = false;
 
 	
-	public ShellScriptRunner(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
+	public ShellScriptRunner(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher, boolean visibleTerminal){
 		this.scriptPath=scriptPath;
 		this.runningFilePath=runningFilePath;
 		if (runningFilePath == null && !StringUtil.blank(scriptPath))
@@ -72,7 +72,7 @@ public class ShellScriptRunner implements Commandable  {
 	public void setOutputProcessor(OutputFileProcessor outputFileProcessor){
 		this.outputFileProcessor = outputFileProcessor;
 	}
-	public void setWatcher(ShellScriptWatcher watcher){
+	public void setWatcher(ProcessWatcher watcher){
 		this.watcher = watcher;
 	}
 	public void setOutErrFilePaths(){
@@ -331,7 +331,7 @@ public class ShellScriptRunner implements Commandable  {
 				MesquiteMessage.notifyProgrammer("InterruptedException in shell script executed by " + name);
 				return false;
 			}
-			stillGoing = watcher == null || watcher.continueShellProcess(proc);
+			stillGoing = watcher == null || watcher.continueProcess(proc);
 			if (progressIndicator!=null){
 				progressIndicator.spin();
 				if (progressIndicator.isAborted()){
