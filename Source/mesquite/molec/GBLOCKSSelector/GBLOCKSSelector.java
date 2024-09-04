@@ -24,6 +24,7 @@ public class GBLOCKSSelector extends MesquiteInit {
 
 /*This module has been replaced by a new system. However, this remains merely to transfer the old preferences to  FlagByGLBOCKS */
 
+	public static boolean prefsTransferred = false;   
 	public static boolean prefsRead = false;   
 	public static double IS = MesquiteDouble.inapplicable;   // fraction of identical residues that is upper boundary for non-conserved sequences
 	public static double FS = MesquiteDouble.inapplicable;  // fraction of identical residues that is upper boundary for conserved sequences
@@ -50,6 +51,8 @@ public class GBLOCKSSelector extends MesquiteInit {
 		/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		prefsRead = true;
+		if ("PrefsCapturedByNewerVersion".equalsIgnoreCase(tag)) 
+			prefsTransferred = true;
 		if ("IS".equalsIgnoreCase(tag)) 
 			IS = MesquiteDouble.fromString(content);
 		if ("FS".equalsIgnoreCase(tag)) 

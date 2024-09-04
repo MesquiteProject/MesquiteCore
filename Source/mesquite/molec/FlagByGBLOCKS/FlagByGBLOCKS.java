@@ -99,6 +99,8 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements Acti
 	/*.................................................................................................................*/
 	//A service for those with older installations. Grabs prefs from old version, which has been converted into a MesquiteInit merely to capture the preferences.
 	public void transferPrefsFromOldGBLOCKSSelector() {
+		if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.prefsTransferred)
+			return;
 		if (MesquiteDouble.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.IS))
 			IS = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.IS;
 		if (MesquiteDouble.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.FS))
