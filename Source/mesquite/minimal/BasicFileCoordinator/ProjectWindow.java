@@ -1311,7 +1311,7 @@ class AbundanceMPanel extends ElementPanel {
 		int n = project.getNumberCharMatricesVisible(taxa);
 		if (n>1)
 			return Integer.toString(n) + " Character Matrices";
-		return "Character Matrix";
+		return "1 Character Matrix";
 
 	}
 }

@@ -69,8 +69,10 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 					if (!iterate)
 						done = true;
 				}
-				else
+				else {
+					logln(" 0 characters deleted.");
 					done = true;
+				}
 			}
 			else done = true;
 		}

@@ -60,15 +60,17 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	static int gappyBlockSizeDEFAULT = 5; // If in a block of at least this many sites, the first and last site is bad,
 	static double blockGappinessThresholdDEFAULT = 0.5; // and the proportion of bad sites is this high or higher,
 	static int gappyBoundaryDEFAULT = 4; // and there are no stretches of this many good sites in a row,
-	static int COUNT_ALL_CURRENT_TAXA = 0;
-	static int IGNORE_TAXA_ALL_GAPS = 1;
-	static int ASSUME_SPECIFIED_NUM_TAXA = 2;
-	static int taxonCountingOptionDEFAULT = COUNT_ALL_CURRENT_TAXA; //0 = "Ignore gaps in taxa with no data", 1 = "Count gaps in taxa in current file", 2 ="Assume specified total number of taxa"
+	//static int COUNT_ALL_CURRENT_TAXA = 0;
+	//static int IGNORE_TAXA_ALL_GAPS = 1;
+	//static int ASSUME_SPECIFIED_NUM_TAXA = 2;
+	static boolean ignoreDatalessDEFAULT = false;
+	static boolean assumeSpecifiedNumberDEFAULT = false; 
 
 	MesquiteBoolean filterSiteGappiness = new MesquiteBoolean(filterSiteGappinessDEFAULT);
 	MesquiteBoolean filterBlockGappiness = new MesquiteBoolean(filterBlockGappinessDEFAULT);
 	//MesquiteBoolean forgiveTaxaWithoutData = new MesquiteBoolean(forgiveTaxaWithoutDataDEFAULT);
-	int taxonCountingOption = taxonCountingOptionDEFAULT;
+	boolean ignoreDataless = ignoreDatalessDEFAULT;
+	boolean assumeSpecifiedNumber = assumeSpecifiedNumberDEFAULT;
 	int specifiedNumTaxa = MesquiteInteger.unassigned;
 
 	double siteGappinessThreshold = siteGappinessThresholdDEFAULT; // A site is considered good (for gappiness) if it is less or as gappy than this (term or non-term).
@@ -110,11 +112,12 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "filterBlockGappiness", filterBlockGappiness);  
 		StringUtil.appendXMLTag(buffer, 2, "filterSiteGappiness", filterSiteGappiness);  
-		StringUtil.appendXMLTag(buffer, 2, "taxonCountingOption", taxonCountingOption);  
+		StringUtil.appendXMLTag(buffer, 2, "ignoreDataless", ignoreDataless);  
 		StringUtil.appendXMLTag(buffer, 2, "siteGappinessThreshold", siteGappinessThreshold);  
 		StringUtil.appendXMLTag(buffer, 2, "gappyBlockSize", gappyBlockSize);  
 		StringUtil.appendXMLTag(buffer, 2, "blockGappinessThreshold", blockGappinessThreshold);  
 		StringUtil.appendXMLTag(buffer, 2, "gappyBoundary", gappyBoundary);  
+		StringUtil.appendXMLTag(buffer, 2, "assumeSpecifiedNumber", assumeSpecifiedNumber);  
 		return buffer.toString();
 	}
 	public void processSingleXMLPreference (String tag, String flavor, String content){
@@ -135,18 +138,23 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			filterBlockGappiness.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("filterSiteGappiness".equalsIgnoreCase(tag))
 			filterSiteGappiness.setValue(MesquiteBoolean.fromTrueFalseString(content));
-		if ("taxonCountingOption".equalsIgnoreCase(tag))
-			taxonCountingOption= MesquiteInteger.fromString(content);
+		if ("ignoreDataless".equalsIgnoreCase(tag))
+			ignoreDataless=  MesquiteBoolean.fromTrueFalseString(content);
+		if ("assumeSpecifiedNumber".equalsIgnoreCase(tag))
+			assumeSpecifiedNumber= MesquiteBoolean.fromTrueFalseString(content);
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setfilterBlockGappiness " + filterBlockGappiness.toOffOnString());
 		temp.addLine("setfilterSiteGappiness " + filterSiteGappiness.toOffOnString());
-		temp.addLine("setTaxonCountingOption " + taxonCountingOption);
-		if (taxonCountingOption==2)
-			temp.addLine("setSpecifiedNumTaxa " + MesquiteInteger.toString(specifiedNumTaxa));
-		temp.addLine("setTaxonCountingOption " + taxonCountingOption);
+		if (getProject().isProcessDataFilesProject){
+			temp.addLine("setAssumeSpecifiedNumber " + assumeSpecifiedNumber);
+			if (assumeSpecifiedNumber)
+				temp.addLine("setSpecifiedNumTaxa " + MesquiteInteger.toString(specifiedNumTaxa));
+		}
+		else
+			temp.addLine("ignoreDataless " + ignoreDataless);
 		temp.addLine("setSiteGappinessThreshold " + siteGappinessThreshold);
 		temp.addLine("setgappyBlockSize " + gappyBlockSize);
 		temp.addLine("setBlockGappinessThreshold " + blockGappinessThreshold);
@@ -161,38 +169,50 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	IntegerField gBS;
 	IntegerField gB, sNT;
 	DoubleField pgBField;
-	RadioButtons numTaxaButtons;
+	Checkbox specifNumCB, ignoreDatalessCB;
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Simple Gappiness Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		pgSField = dialog.addDoubleField("Maximum permitted proportion of gaps (above which site is considered too gappy)", siteGappinessThreshold, 4);
-		numTaxaButtons = dialog.addRadioButtons (new String[] {"Count gaps in all taxa in current file", "Ignore gaps in taxa with no data in matrix", "Assume specified total number of taxa (see Help button):"}, taxonCountingOption);
-		numTaxaButtons.addItemListener(this);
-		String s = "SGF (Simple Gappiness Filter) selects regions of an alignment with high levels of gaps."
+		String s = "<b>SGF (Simple Gappiness Filter)</b> selects regions of an alignment with high levels of gaps."
 				+ " It is not intended to identify regions that are unreliable or poorly aligned; it is intended simply to find regions"
-				+ " where the amount of available data is too sparse to justify inclusion, just as one filters loci for occupancy."
-				+ "<p><b>Reference for SGF</b>: Maddison W (submitted).<hr>" //Debugg.println
-				+"<p>The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
+				+ " where the amount of available data is too sparse to justify inclusion, just as one filters loci for occupancy.<hr>" 
+				+"The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
 				+ " This could result in different countings of the proportion of gaps depending on whether the trimming is done on individual files for each locus (because each file will know only"
-				+" about the number of taxa that have data for that locus) versus in the compiled file (which will know about all of the taxa)."
-				+ "<p>If you are processing separate files for each locus but want the proportion of gaps to be assessed over the final set of all taxa," 
-				+ " choose \"Assume specified total\", and indicate the total number of taxa in the final compilation."
-				+ " <p>Choosing \"Ignore\" or \"Count\" will generally result in a more permissive trimming, and may result in different results when trimmed as a concatenated matrix versus as individual loci.";
+				+" about the number of taxa that have data for that locus) versus in the compiled file (which will know about all of the taxa).";
+
+		if (getProject().isProcessDataFilesProject){
+			specifNumCB = dialog.addCheckBox("Assume specified total number of taxa (see Help button)", assumeSpecifiedNumber);
+			specifNumCB.addItemListener(this);
+			sNT = dialog.addIntegerField("                           Specified total number of taxa", specifiedNumTaxa, 4);
+			sNT.setEnabled(assumeSpecifiedNumber);
+			s += "<p>When processing separate files for each locus, if you want the proportion of gaps to be assessed over the final set of all taxa," 
+					+ " choose \"Assume specified total\", and indicate the total number of taxa in the final compilation."
+					+ " Doing so will generally result in a harsher trimming, and can mimic trimming done later in a file of all loci compiled."
+					+ "<p><b>Recommendation</b>: if you want to treat this trimming as a site-level occupancy criterion (just like filtering loci for occupancy) then DO select \"Assume specified\" and indicate the total number, OR "
+					+ "delay the gappiness trimming until after the loci are compiled into a single file.";
+		}
+		else {
+			ignoreDatalessCB = dialog.addCheckBox("Ignore gaps in taxa with no data in matrix", ignoreDataless);
+			s += "<p>To mimic the results you would obtain were you to process the loci individually in separate files (e.g. in a scripted pipeline), choose \"Ignore gaps in taxa with no data in matrix\"." 
+					+ " This will result in a more permissive trimming."
+					+ "<p><b>Recommendation</b>: if you want to treat this trimming as a site-level occupancy criterion (just like filtering loci for occupancy) then DON'T select \"Ignore\".";
+		}
 		dialog.appendToHelpString(s);
-		dialog.appendToHelpString(s);
-		sNT = dialog.addIntegerField("                           Specified total number of taxa", specifiedNumTaxa, 4);
-		sNT.setEnabled(taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA);
+		dialog.addHorizontalLine(1);
+
+
+
+		dialog.addLabel("Selecting individual sites");
+		fIGS = dialog.addCheckBox("Select individual gappy sites (whether or not part of gappy block)", filterSiteGappiness.getValue());
+
 		dialog.addHorizontalLine(1);
 		dialog.addLabel("Selecting blocks");
 		fG = dialog.addCheckBox("Select gappy blocks", filterBlockGappiness.getValue());
 		gBS = dialog.addIntegerField("Minimum length of bad block", gappyBlockSize, 4);
 		gB = dialog.addIntegerField("Stretch of good that resets block", gappyBoundary, 4);
 		pgBField = dialog.addDoubleField("Proportion of bad sites for block to be bad", blockGappinessThreshold, 4);
-		dialog.addHorizontalLine(1);
-		dialog.addLabel("Selecting individual sites");
-		fIGS = dialog.addCheckBox("Select individual gappy sites (whether or not part of gappy block)", filterSiteGappiness.getValue());
-
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
 		Button useDefaultsButton = null;
@@ -209,8 +229,13 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			siteGappinessThreshold = pgSField.getValue();
 			gappyBlockSize = gBS.getValue();
 			gappyBoundary = gB.getValue();
-			taxonCountingOption = numTaxaButtons.getValue();
-			if (taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA)
+			if (ignoreDatalessCB!=null){
+				ignoreDataless = ignoreDatalessCB.getState();
+			}
+			if (specifNumCB!=null){
+				assumeSpecifiedNumber = specifNumCB.getState();
+			}
+			if (assumeSpecifiedNumber && sNT != null)
 				specifiedNumTaxa = sNT.getValue();
 			blockGappinessThreshold = pgBField.getValue();
 
@@ -221,7 +246,8 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	}
 
 	public void itemStateChanged(ItemEvent e) {
-		sNT.setEnabled(numTaxaButtons.getValue() ==ASSUME_SPECIFIED_NUM_TAXA);
+		if (sNT != null)
+			sNT.setEnabled(specifNumCB.getState());
 
 	}
 	/*.................................................................................................................*/
@@ -230,9 +256,14 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			pgSField.setValue(siteGappinessThresholdDEFAULT);
 			fIGS.setState(filterSiteGappinessDEFAULT);
 			fG.setState(filterBlockGappinessDEFAULT);
-			numTaxaButtons.setValue(taxonCountingOptionDEFAULT);
-			sNT.setValue(MesquiteInteger.unassigned);
-			sNT.setEnabled(numTaxaButtons.getValue() == ASSUME_SPECIFIED_NUM_TAXA);
+			if (ignoreDatalessCB!=null){
+				ignoreDatalessCB.setState(ignoreDatalessDEFAULT);
+			}
+			if (sNT != null){
+				specifNumCB.setState(assumeSpecifiedNumberDEFAULT);
+				sNT.setValue(MesquiteInteger.unassigned);
+				sNT.setEnabled(assumeSpecifiedNumberDEFAULT);
+			}
 			gBS.setValue(gappyBlockSizeDEFAULT);
 			gB.setValue(gappyBoundaryDEFAULT);
 			pgBField.setValue(blockGappinessThresholdDEFAULT);
@@ -252,12 +283,11 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data, to count all taxa in current file, or to count as if there were a specified number.", "[0, 1, 2]", commandName, "setTaxonCountingOption")) {
-			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (MesquiteInteger.isCombinable(s)){
-				taxonCountingOption = s;
+			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+				ignoreDataless = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
-			}
+			
 		}
 		else if (checker.compare(this.getClass(), "Sets specified number of taxa to count.", "[integer]", commandName, "setSpecifiedNumTaxa")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
@@ -336,11 +366,16 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	boolean gappySite(int k) {
 		return siteGappiness[k]>siteGappinessThreshold;
 	}
+	
+	boolean ignoreDatalessTaxa(){
+		return ignoreDataless && !getProject().isProcessDataFilesProject; //this option available only for stable project open to user
+	}
+	boolean assumeSpecifiedNumberOfTaxa(){
+		return assumeSpecifiedNumber && getProject().isProcessDataFilesProject; //this option available only for stable project open to user
+	}
 
-	// options IGNORE_TAXA_ALL_GAPS,  COUNT_ALL_CURRENT_TAXA, ASSUME_SPECIFIED_NUM_TAXA
-	// specifiedNumTaxa. If specifiedNumTaxa is unassigned but taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA, treat as COUNT_ALL_CURRENT_TAXA
 	boolean countTaxon(int it) {
-		if (taxonCountingOption == IGNORE_TAXA_ALL_GAPS)
+		if (ignoreDatalessTaxa())
 			return taxonHasData[it];
 		return true;
 	}
@@ -358,7 +393,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			int numTaxa = data.getNumTaxa();
 			int numChars = data.getNumChars();
 
-			if (taxonCountingOption == IGNORE_TAXA_ALL_GAPS) {  //count how many taxa are all gaps
+			if (ignoreDatalessTaxa()) {  //count how many taxa are all gaps
 				numTaxaCounted = 0;
 				if (taxonHasData == null || taxonHasData.length!= numTaxa)
 					taxonHasData = new boolean[numTaxa];
@@ -373,7 +408,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 						numTaxaCounted++;
 				}
 			}
-			else if (taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA){
+			else if (assumeSpecifiedNumberOfTaxa()){
 				if (specifiedNumTaxa < numTaxa){
 					if (numNegWarnings<10)
 						discreetAlert("ERROR: Specified number of taxa in SGF (" + specifiedNumTaxa + ") is smaller than current number of taxa in the file (" + numTaxa + ")");
@@ -394,7 +429,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			}
 			for (int ic=0; ic<numChars; ic++) {
 				int gapCount = 0;
-				if (taxonCountingOption == ASSUME_SPECIFIED_NUM_TAXA && MesquiteInteger.isPositive(specifiedNumTaxa)) {
+				if (assumeSpecifiedNumberOfTaxa() && MesquiteInteger.isPositive(specifiedNumTaxa)) {
 					gapCount = specifiedNumTaxa - numTaxa;  //start with a gap count that is number of taxa not included in file!
 					if (gapCount <0)
 						gapCount = 0;

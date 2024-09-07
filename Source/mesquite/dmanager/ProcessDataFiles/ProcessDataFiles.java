@@ -639,6 +639,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		if (StringUtil.blank(importerString))
 			return null;
 		processProject = fileCoord.initiateProject(writingFile.getFileName(), writingFile);
+		processProject.isProcessDataFilesProject = true;
 		importer = (FileInterpreter)fileCoord.findEmployeeWithName(importerString);
 
 
@@ -652,8 +653,10 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		//and inside that, //DLOG asks abotu processors
 		if (success){
 			//project.autosave = true;
+			processProject.isProcessDataFilesProject = false;
 			return processProject;
 		}
+		processProject.isProcessDataFilesProject = false;
 		processProject.developing = false;
 		return null;
 	}
