@@ -277,7 +277,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 			return true;
 
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for GblocksM Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Mesquite's GblocksM Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		String helpString = "This feature will choose characters using a modified version of the Gblocks algorithm (Castresana 2000). "
 				+ "Mesquite's modifications are to allow the user to specify the proportion of gaps permitted, and "
 				+ "to choose whether nucleotide frequencies are counted only among non-gaps (i.e., judgement of conservativeness ignores gaps)."
@@ -313,15 +313,15 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 
 	/*.................................................................................................................*/
 	public void addToQueryOptions(ExtensibleDialog dialog, String action) {
-		ISfield = dialog.addDoubleField("Minimum fraction of identical residues for conserved positions (b1)", IS, 4);
-		FSfield = dialog.addDoubleField("Minimum fraction of identical residues for highly-conserved positions (b2)", FS, 4);
+		ISfield = dialog.addDoubleField("Minimum proportion of identical residues for conserved positions (b1)", IS, 4);
+		FSfield = dialog.addDoubleField("Minimum proportion of identical residues for highly-conserved positions (b2)", FS, 4);
 		CPfield = dialog.addIntegerField("Maximum length of non-conserved blocks (b3)", CP, 4);
 		BLfield = dialog.addIntegerField("Minimum length of a block (b4)", BL, 4);
 		dialog.addHorizontalLine(1);
 		dialog.addLabel("Mesquite-specific extensions:");
-		countWithinApplicableCheckbox = dialog.addCheckBox("Count fractions only within taxa with non-gaps at that position", countWithinApplicable.getValue());
+		countWithinApplicableCheckbox = dialog.addCheckBox("Count proportion only within taxa with non-gaps at that position", countWithinApplicable.getValue());
 
-		gapThresholdField = dialog.addDoubleField("Fraction of gaps allowed in a character", gapThreshold, 4);
+		gapThresholdField = dialog.addDoubleField("Proportion of gaps allowed in a character", gapThreshold, 4);
 		//termGapsPropForgivenField = dialog.addDoubleField("Prop. terminal gaps forgiven", termGapsPropForgiven, 4);
 		//ignoreTaxaWithoutSequenceCheckbox = dialog.addCheckBox("Ignore taxa without any sequence*", ignoreTaxaWithoutSequence);
 		dialog.addHorizontalLine(1);
