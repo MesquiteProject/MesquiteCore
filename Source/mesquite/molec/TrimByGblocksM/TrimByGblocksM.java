@@ -11,43 +11,54 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.SelectByGBLOCKS;
+package mesquite.molec.TrimByGblocksM;
 /*~~  */
 
+
+
+import mesquite.categ.lib.RequiresAnyDNAData;
+
+
+import mesquite.lib.CompatibilityTest;
 import mesquite.lib.duties.MatrixFlagger;
-import mesquite.molec.lib.SelectSitesByFlagger;
+import mesquite.lib.duties.MatrixFlaggerForTrimming;
+import mesquite.molec.lib.TrimSitesByFlagger;
 
 /* ======================================================================== */
-public class SelectByGBLOCKS extends SelectSitesByFlagger {
+public class TrimByGblocksM extends TrimSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagByGBLOCKS");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlaggerForTrimming.class, "#FlagByGblocksM");
 		if (flaggerTask == null)
 			return false;
-		return true;
+		return super.startJob(arguments, condition, hiredByName);  //call after to have superclass do extra things
 	}
 
+
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyDNAData();
+	}
+	
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
 		return true;
 	}
-
-	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice() {
 		return false;
 	}
+
 	/*.................................................................................................................*/
 	public boolean showCitation(){
 		return false;
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Select by Gblocks";
+		return "Trim Sites by GblocksM";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Select sites by Mesquite's version of the Gblocks criteria." ;
+		return "Deletes characters according to GblocksM criteria, a modified version of Gblocks." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

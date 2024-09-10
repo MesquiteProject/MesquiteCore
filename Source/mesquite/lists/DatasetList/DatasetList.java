@@ -66,8 +66,10 @@ public class DatasetList extends ListLVModule {
 		datas.addListener(this);
 		makeMenu("List");
 
-		MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
-		mss2.setList(DatasetsListUtility.class);
+		MesquiteMenuSpec mss2 = addAuxiliaryMenu("Utilities");
+		addModuleMenuItems(mss2, makeCommand("doUtility", this), DatasetsListUtility.class);
+		//MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
+		//mss2.setList(DatasetsListUtility.class);
 
 		if (!MesquiteThread.isScripting()){
 			DataSetsListAssistant assistant = (DataSetsListAssistant)hireNamedEmployee(DataSetsListAssistant.class, StringUtil.tokenize("Taxa of data matrix"));

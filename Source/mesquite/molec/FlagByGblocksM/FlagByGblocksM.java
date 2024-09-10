@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.FlagByGBLOCKS;
+package mesquite.molec.FlagByGblocksM;
 /*~~  */
 
 
@@ -54,7 +54,7 @@ import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 
 /* ======================================================================== */
-public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements ActionListener {
+public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements ActionListener {
 
 	static final double defaultIS = 0.50;   
 	static final double defaultFS = 0.85;  
@@ -277,12 +277,12 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements Acti
 			return true;
 
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Gblocks Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for GblocksM Algorithm",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		String helpString = "This feature will choose characters using a modified version of the Gblocks algorithm (Castresana 2000). "
 				+ "Mesquite's modifications are to allow the user to specify the proportion of gaps permitted, and "
 				+ "to choose whether nucleotide frequencies are counted only among non-gaps (i.e., judgement of conservativeness ignores gaps)."
 				+ "Mesquite does not count gaps in taxa with no data whatsoever; those taxa are treated as absent."
-				+ "<p>If you use this in a publication, please cite it as Gblocks (Castresana 2000) as implemented and modified in Mesquite."
+				+ "<p>If you use this in a publication, please cite it as GblocksM, a modified version of Gblocks (Castresana 2000) as implemented and modified in Mesquite."
 				+ "<p><b>Reference for the original Gblocks</b>; Castresana J. 2000. Selection of conserved blocks from multiple alignments for their use in phylogenetic analysis. Molecular Biology and Evolution 17: 540–552"
 				+ " <a href = \"http://doi.org/10.1093/oxfordjournals.molbev.a026334\">doi:10.1093/oxfordjournals.molbev.a026334</a>";
 
@@ -290,7 +290,7 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements Acti
 
 		dialog.addLabel("Extended Gblocks Algorithm");
 
-		addToQueryOptions(dialog, "Gblocks");
+		addToQueryOptions(dialog, "GblocksM");
 
 		dialog.addNewDialogPanel();
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
@@ -779,12 +779,12 @@ public class FlagByGBLOCKS extends MatrixFlaggerForTrimmingSites implements Acti
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Gblocks";
+		return "GblocksM";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Flags sites according to an extended version of Gblocks criteria (Castresana, 2000)." ;
+		return "Flags sites according to GblocksM, an extended version of Gblocks criteria (Castresana, 2000)." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

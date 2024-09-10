@@ -225,6 +225,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 
 			if (success){
 				String columnsText = MesquiteFile.getFileContentsAsString(rootDir + "columns.txt");
+				if (columnsText != null) {
 				columns = columnsText.split(", ");
 				columns[0] = columns[0].substring(12, columns[0].length());
 				Bits charFlags = flags.getCharacterFlags();
@@ -247,6 +248,9 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 					if (!wasSet)
 						count++;
 				}
+				}
+				else
+					Debugg.println("oops, columns.txt is empty");
 				
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}

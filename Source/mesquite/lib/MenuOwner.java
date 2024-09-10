@@ -2371,7 +2371,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			copy.setShortcut(copyShortcut);
 
 			if (whichWindow.getCopySpecialCommand()!=null){
-				newMenu.add(new MesquiteMenuItem(whichWindow.getCopySpecialName(), MesquiteModule.mesquiteTrunk, whichWindow.getCopySpecialCommand()));		
+				MesquiteMenuItem mps = new MesquiteMenuItem(whichWindow.getCopySpecialName(), MesquiteModule.mesquiteTrunk, whichWindow.getCopySpecialCommand());
+				mps.setShortcut(new MenuShortcut(KeyEvent.VK_C, true));
+				newMenu.add(mps);		
 			}
 
 			paste = new MesquiteMenuItem("Paste", MesquiteModule.mesquiteTrunk, MesquiteModule.makeCommand("paste", whichWindow)); //whichWindow.getPasteCommand());
@@ -2380,7 +2382,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				paste.setShortcut(pasteShortcut);	
 			paste.setEnabled(whichWindow.getPasteCommand()!=null); //window must return a copy command if command-based copying is to be enabled; otherwise allows automatic system
 			if (whichWindow.getPasteSpecialCommand()!=null){
-				newMenu.add(new MesquiteMenuItem(whichWindow.getPasteSpecialName(), MesquiteModule.mesquiteTrunk, whichWindow.getPasteSpecialCommand()));		
+				MesquiteMenuItem mps = new MesquiteMenuItem(whichWindow.getPasteSpecialName(), MesquiteModule.mesquiteTrunk, whichWindow.getPasteSpecialCommand());
+				mps.setShortcut(new MenuShortcut(KeyEvent.VK_V, true));
+				newMenu.add(mps);		
 			}
 
 			clear =new MesquiteMenuItem("Clear", MesquiteModule.mesquiteTrunk, MesquiteModule.makeCommand("clear", whichWindow));//whichWindow.getClearCommand());
