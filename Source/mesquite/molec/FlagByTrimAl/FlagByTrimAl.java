@@ -174,7 +174,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 
 	/*.................................................................................................................*/
 
-	boolean saveExportFile(CharacterData data, String path, String fileName){
+	protected boolean saveExportFile(CharacterData data, String path, String fileName){
 		getProject().incrementProjectWindowSuppression();
 		FileCoordinator coord = getFileCoordinator();
 		MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(fileName+".nex"), CommandChecker.defaultChecker); //TODO: never scripting???
