@@ -40,6 +40,42 @@ public abstract class MatrixFlagger extends MesquiteModule  {
 	protected boolean forTrimming(){
 		return getHiredAs() == MatrixFlaggerForTrimming.class;
 	}
+	
+	/* As a service to flaggers that call programs to run of fasta files*/
+	FileInterpreterI exporter;	
+	protected boolean saveFastaFile(CharacterData data, String path, String fileName){
+		getProject().incrementProjectWindowSuppression();
+		FileCoordinator coord = getFileCoordinator();
+		MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(fileName+".nex"), CommandChecker.defaultChecker); //TODO: never scripting???
+		TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
+		CharacterData newMatrix=null;
+		Taxa newTaxa =data.getTaxa().cloneTaxa(); 
+		newTaxa.addToFile(tempDataFile, null, taxaManager);
+		CharactersManager manageCharacters = (CharactersManager)findElementManager(CharacterData.class);
+		MCharactersDistribution matrix = data.getMCharactersDistribution();
+		CharMatrixManager manager = manageCharacters.getMatrixManager(matrix.getCharacterDataClass());
+		newMatrix = matrix.makeCharacterData(manager, newTaxa);
+		newMatrix.setName(data.getName());
+
+		newMatrix.addToFile(tempDataFile, getProject(), null);
+
+		if (exporter == null)
+			exporter = (FileInterpreterI)hireNamedEmployee(FileInterpreterI.class, "#InterpretFastaDNA");
+		exporter.doCommand("includeGaps","true", CommandChecker.defaultChecker);
+		exporter.doCommand("simplifyTaxonName","true", CommandChecker.defaultChecker);
+		exporter.doCommand("writeExcludedCharacters","false", CommandChecker.defaultChecker);
+
+		if (exporter!=null) {
+			String ext = exporter.preferredDataFileExtension();
+			String s = "file = " + StringUtil.tokenize(fileName) + " directory = " + StringUtil.tokenize(path) + " usePrevious ";
+			coord.export(exporter, tempDataFile, s);
+		}
+		newMatrix.deleteMe(false);
+		newTaxa.deleteMe(false);
+		coord.closeFile(tempDataFile, true);
+		getProject().decrementProjectWindowSuppression();
+		return true;
+	}
 }
 
 

@@ -231,6 +231,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			token = subParser.getRemaining();  //taxon Name
 			if (removePhyluceUCEfixes){
 				if (token.indexOf("_")>=0 && token.indexOf("|")>=0){
+					token = token.substring(token.indexOf("uce-")+1, token.length()-1);
 					token = token.substring(token.indexOf("_")+1, token.indexOf("|")-1);
 				}
 			}

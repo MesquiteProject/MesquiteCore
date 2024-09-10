@@ -140,7 +140,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
-	MesquiteMenuItemSpec mmir, mmis, mmis2, mmis3, mmir2, mmJ;
+	MesquiteMenuItemSpec mmir, mmis, mmis2, mmis3, mmir2, mmJ, mmJJ;
 	MesquiteMenuItemSpec mmiVE, mmiVP;
 	boolean flaggerInitialized = false;
 	MesquiteBoolean useExtremelyDark = new MesquiteBoolean(false);
@@ -165,7 +165,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			mmir = addMenuItem("-", null);
 			mmiVE= addCheckMenuItem(null, "Use Extremely Dark Highlights", makeCommand("toggleExtremelyDark", this), useExtremelyDark);
 			mmiVP= addCheckMenuItem(null, "Use Pale for Unhighlighted", makeCommand("togglePale", this), usePale);
-			mmJ= addCheckMenuItem(null, "Invert Highlights", makeCommand("toggleInvert", this), hide);
+			mmJJ= addCheckMenuItem(null, "Invert Highlights", makeCommand("toggleInvert", this), hide);
 			mmJ= addCheckMenuItem(null, "Hide/Show Highlights", makeCommand("toggleHide", this), hide);
 			mmJ.setShortcut(KeyEvent.VK_J);
 			mmis = addMenuItem("Reset Trimmers to be Highlighted...", makeCommand("resetFlaggers", this));
@@ -185,6 +185,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			deleteMenuItem(mmiVE);
 			deleteMenuItem(mmiVP);
 			deleteMenuItem(mmJ);
+			deleteMenuItem(mmJJ);
 			if (!active) {
 				cleanFlaggers();
 				flaggerInitialized = false;
@@ -205,6 +206,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		deleteMenuItem(mmiVE);
 		deleteMenuItem(mmiVP);
 		deleteMenuItem(mmJ);
+		deleteMenuItem(mmJJ);
 		super.endJob();
 	}
 	public String getColorsExplanation(){
