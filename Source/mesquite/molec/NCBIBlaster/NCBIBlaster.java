@@ -47,7 +47,7 @@ public class NCBIBlaster extends Blaster {
 		logln("BLAST completed in " +timer.timeSinceLastInSeconds()+" seconds");
 	}
 
-	public String getFastaFromIDs(String[] idList, boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber) {
+	public String getFastaFromIDs(String queryTaxonName, String[] idList, boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber) {
 		return NCBIUtil.fetchGenBankSequencesFromIDs(idList,  isNucleotides, null, false,  fastaBlastResults,  null);
 	}
 	

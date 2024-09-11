@@ -53,6 +53,7 @@ public class ExternalProcessManager implements Commandable  {
 	boolean removeQuotes = true;
 	boolean setNoQuoteChar = false;
 	boolean exitCodeMatters = true;
+	String basicProcessInformation="";
 
 	
 	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher, boolean visibleTerminal){
@@ -211,6 +212,14 @@ public class ExternalProcessManager implements Commandable  {
 	public void setExitCodeMatters(boolean exitCodeMatters) {
 		this.exitCodeMatters = exitCodeMatters;
 	}
+	
+	public String getBasicProcessInformation() {
+		return basicProcessInformation;
+	}
+	public void setBasicProcessInformation(String basicProcessInformation) {
+		this.basicProcessInformation = basicProcessInformation;
+	}
+
 
 	/*.................................................................................................................*/
 	public static String executeAndGetStandardOut(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, boolean removeQuotesStart, boolean removeQuotes, boolean setNoQuoteChar) {
@@ -463,13 +472,14 @@ public class ExternalProcessManager implements Commandable  {
 				stillGoing=false;
 				boolean goodValue = goodExitValue(proc.exitValue(), true);
 				if (!goodValue && !ownerModule.isDoomed() && (watcher==null || !watcher.userAborted()) && (watcher==null || watcher.warnIfError())) {
-					String message = name + " quit, possibly because of an error ("+proc.exitValue()+"). Please examine StandardOutputFile and StandardErrorFile in the analysis directory for information.";
+					String message = name + " quit, possibly because of an error ("+proc.exitValue()+"). Please examine StandardOutputFile and StandardErrorFile in the analysis directory for information." +getBasicProcessInformation();
 					if (ownerModule.okToInteractWithUser(MesquiteModule.CAN_PROCEED_ANYWAY, "Error in execution")){
 						AlertWithLinkToDirectory alert = new AlertWithLinkToDirectory(ownerModule.containerOfModule(),"Error in executing "+name, message, directoryPath);
 					}
 					else {
 						MesquiteMessage.warnUser(message);
 					}
+					ownerModule.log(message);
 				}
 				badExitCode = !goodValue;
 				return goodValue;

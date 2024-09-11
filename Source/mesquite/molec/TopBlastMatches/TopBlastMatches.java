@@ -39,13 +39,13 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 
 	int blastType = Blaster.BLAST;
 
-	boolean importTopMatches = false;
-	boolean saveResultsToFile = true;
-	int maxHits = 1;
+	boolean importTopMatches = true;
+	boolean saveResultsToFile = false;
+	int maxHits = 5;
 	double  minimumBitScore = 0.0;
 	boolean preferencesSet = false;
 	boolean fetchTaxonomy = false;
-	boolean interleaveResults = false;
+	boolean interleaveResults = true;
 	boolean adjustSequences = false;
 	boolean addInternalGaps = false;
 	boolean appendQueryName = false;
@@ -53,7 +53,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	int maxTime = 300;
 	//	static int upperMaxHits = 30;
 
-	double eValueCutoff = 10.0;
+	double eValueCutoff = 0.0000001;
 	int wordSize  = 11;
 
 
@@ -311,7 +311,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
 
 			StringBuffer blastResponse = new StringBuffer();
-			String newSequencesAsFasta = blasterTask.getFastaFromIDs(localID,  data instanceof DNAData, blastResponse, passNumber);
+			String newSequencesAsFasta = blasterTask.getFastaFromIDs(data.getTaxa().getTaxonName(it), localID,  data instanceof DNAData, blastResponse, passNumber);
 
 			String appendToTaxonName = "";
 			if (appendQueryName)

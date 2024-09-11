@@ -517,7 +517,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	}	
 
 	/*.................................................................................................................*/
-	public String getFastaFromIDs(String[] idList, boolean isNucleotides, StringBuffer blastResponse, int databaseNumber) {
+	public String getFastaFromIDs(String queryTaxonName, String[] idList, boolean isNucleotides, StringBuffer blastResponse, int databaseNumber) {
 		int count = 0;
 		for (int i=0; i<idList.length; i++) 
 			if (StringUtil.notEmpty(idList[i]))
@@ -576,6 +576,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 			String arguments = blastArguments;
 			arguments=StringUtil.stripBoundingWhitespace(arguments);
 			externalProcessManager = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true, false, true, true);
+			externalProcessManager.setBasicProcessInformation("\nQuery sequence: "+ queryTaxonName+"\nBLAST database "+databaseArray[databaseNumber]);
 			if (useDefaultStdOutFileName())
 				externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
 			else

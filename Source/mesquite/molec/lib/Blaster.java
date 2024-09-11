@@ -61,7 +61,7 @@ public abstract class Blaster extends MesquiteModule   {
 
 	public abstract void blastForMatches(String database, String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, int wordSize, StringBuffer blastResponse, boolean writeTime);
 
-	public abstract String getFastaFromIDs(String[] idList,  boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber);
+	public abstract String getFastaFromIDs(String queryTaxonName, String[] idList,  boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber);
 
 	public abstract String getTaxonomyFromID(String id, boolean isNucleotides, boolean writeLog, StringBuffer report);
 

@@ -39,7 +39,7 @@ public class AlertWithLinkToDirectory extends ExtensibleDialog implements Action
 		super(parent,title);
 		this.directoryPath = directoryPath;
 		
-		addTextArea(message, 5);
+		addTextArea(message, 8);
 		
 		//nullifyAddPanel();
 		if (MesquiteFile.canShowDirectory())
