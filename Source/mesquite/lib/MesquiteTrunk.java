@@ -105,7 +105,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static String appsDirectory = null;
 	public static String pythonDirectory = null;
 	public static String encapsulatedPathOfExecutable = null;
-
+	public int pausableLevel = 0;
 	public ApplicationHandler9 applicationHandler9 = null;
 			
 	/** Time of startup.*/

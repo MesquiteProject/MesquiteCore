@@ -102,27 +102,32 @@ public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
 		progIndicator.start();
-		for (int im = 0; im < datas.size(); im++){
+		boolean abort = false;
+		for (int im = 0; im < datas.size() && !abort; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
-			if (test.isCompatible(data, getProject(), this)){
+			if (progIndicator.isAborted())
+				abort=true;
+			if (!abort && test.isCompatible(data, getProject(), this)){
 				if (datas.size()<=50)
 					logln("Altering matrix \"" + data.getName() + "\"");
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 				progIndicator.setText("Altering matrix " +data.getName());
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
-				boolean a = alterTask.alterData(data, null, null, alteredDataParameters);
+				boolean success = alterTask.alterData(data, null, null, alteredDataParameters);
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 				progIndicator.increment();
 				if (im < 2)
 					progIndicator.toFront();
 				if (datas.size()>50 && im != 0 && im % 50 == 0)
 					logln("" + (im) +  " matrices altered.");
-				if (a){
+				if (success){
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 					if (alteredDataParameters.getSubcodes()!=null)
 						notification.setSubcodes(alteredDataParameters.getSubcodes());
 					data.notifyListeners(this, notification);
 					count++;
+				} else {
+					abort = true;
 				}
 				firstTime = false;
 			}

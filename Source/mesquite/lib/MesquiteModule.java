@@ -86,7 +86,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 991;  
+		return 992;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -628,7 +628,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/* This is the system to pause and restart calculations to avoid too many calculations with repeated notifications, e.g. in list windows */
+	
+	
 	public Vector pauseAllPausables() {
+		mesquiteTrunk.pausableLevel++;	 //  if already paused, then don't pause or unpause again, so have increment
+		if (mesquiteTrunk.pausableLevel>1)
+			return null;
 		Vector v = new Vector();
 
 		MesquiteTrunk.mesquiteTrunk.harvestPausables(v);
@@ -661,7 +666,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 
 	public void unpauseAllPausables(Vector v) {
-
+		mesquiteTrunk.pausableLevel--;
+		if (mesquiteTrunk.pausableLevel>0 || v == null)
+			return;
 		int num = v.size();
 		for (int i=0; i<num; i++) {
 			Object obj = v.elementAt(i);
