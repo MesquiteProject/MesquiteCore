@@ -585,7 +585,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Re-query the user about all options and setting OTHER THAN most cases of setting employees.
 	 * For use by ProcessDataFiles and ProcessMatrices. Used to review current parameter setting while leaving (most) employee relationships in place.*/
 	public void queryLocalOptions () {
-			
+
 	}
 
 	/*.................................................................................................................*/
@@ -630,7 +630,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/* This is the system to pause and restart calculations to avoid too many calculations with repeated notifications, e.g. in list windows */
 	public Vector pauseAllPausables() {
 		Vector v = new Vector();
-		
+
 		MesquiteTrunk.mesquiteTrunk.harvestPausables(v);
 		int num = v.size();
 		for (int i=0; i<num; i++) {
@@ -641,25 +641,27 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			}
 		}
 		return v;
-		
+
 	}
 	public void harvestPausables(Vector pausables) {
-			if (module.getEmployeeVector()==null)
-				return ;
-			int num = module.getEmployeeVector().size();
-			for (int i=0; i<num; i++) {
-				Object obj = module.getEmployeeVector().elementAt(i);
+		if (module.getEmployeeVector()==null)
+			return ;
+		addPausables(pausables);
+		int num = module.getEmployeeVector().size();
+		for (int i=0; i<num; i++) {
+			Object obj = module.getEmployeeVector().elementAt(i);
+			if (obj != null){
 				MesquiteModule mb = (MesquiteModule)obj;
-				addPausables(pausables);
-				mb.harvestPausables(pausables);
+				mb.harvestPausables(pausables);  
 			}
+		}
 	}
-	
+
 	public void addPausables(Vector pausables) {
 	}
 
 	public void unpauseAllPausables(Vector v) {
-		
+
 		int num = v.size();
 		for (int i=0; i<num; i++) {
 			Object obj = v.elementAt(i);
@@ -2080,7 +2082,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	 * If overriding getObjectComment, we suggest this to recover from descendent employees as well
 	public String getObjectComment(Object object){
 		String q = "this is my comment";
-		
+
 		String accumulated = super.getObjectComment(object);
 		if (!StringUtil.blank(accumulated))
 			return q + "\n" + accumulated;

@@ -1,0 +1,303 @@
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
+
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+ */
+package mesquite.charMatrices.AlterMatrixAsUtilityParallel;
+
+import mesquite.lists.lib.*;
+import mesquite.molec.FlagBySpruceup.FlagBySpruceup;
+
+import java.util.Vector;
+
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.*;
+import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.*;
+import mesquite.lib.table.*;
+
+/* ======================================================================== */
+public class AlterMatrixAsUtilityParallel extends DatasetsListProcessorUtility {
+	static int numThreads = 2;
+	/*.................................................................................................................*/
+	public String getName() {
+		return "Parallelized Alter/Transform Matrices";  
+	}
+	public String getNameForMenuItem() {
+		return "Parallel Alter/Transform Matrices...";
+	}
+
+	public String getExplanation() {
+		return "Alters selected matrices in List of Character Matrices window, with the option of using parallel processing (multithreading) to speed the completion." ;
+	}
+	DataAlterer firstAlterTask = null;
+	/*.................................................................................................................*/
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		loadPreferences();
+		if (arguments !=null) {
+			firstAlterTask = (DataAlterer)hireNamedEmployee(DataAlterer.class, arguments);
+			if (firstAlterTask == null)
+				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
+		}
+		else if (!MesquiteThread.isScripting()) {
+			firstAlterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer/Transformer of matrices");
+			if (firstAlterTask == null)
+				return sorry(getName() + " couldn't start because no tranformer module obtained.");
+		}
+		return true;
+	}
+	public String getNameForProcessorList() {
+		if (firstAlterTask != null)
+			return getName() + "(" + firstAlterTask.getName() + ")";
+		return getName();
+	}
+	/*.................................................................................................................*/
+	public String getNameAndParameters() {
+		if (firstAlterTask==null)
+			return "Alter Matrices";
+		else
+			return firstAlterTask.getNameAndParameters();
+	}
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "numThreads", numThreads);  
+		return buffer.toString();
+	}
+	public void processSingleXMLPreference (String tag, String flavor, String content){
+		processSingleXMLPreference(tag, null, content);
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("numThreads".equalsIgnoreCase(tag))
+			numThreads = MesquiteInteger.fromString(content);
+	}
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("setDataAlterer ", firstAlterTask);  
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setDataAlterer")) {
+			DataAlterer temp =  (DataAlterer)replaceEmployee(DataAlterer.class, arguments, "Data alterer", firstAlterTask);
+			if (temp!=null) {
+				firstAlterTask = temp;
+				return firstAlterTask;
+			}
+
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+	/*.................................................................................................................*/
+
+	boolean firstTime = true;
+
+	/** if returns true, then requests to remain on even after operateOnTaxas is called.  Default is false*/
+	public boolean pleaseLeaveMeOn(){
+		return false;
+	}
+
+	Bits matricesDone;
+	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
+	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
+
+		CompatibilityTest test = firstAlterTask.getCompatibilityTest();
+		if (getProject() != null){
+			getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
+			getProject().incrementProjectWindowSuppression();
+		}
+		Vector v = pauseAllPausables();
+		matricesDone = new Bits(datas.size());
+		//Do the first matrix separately to set up the parameters of the alteration
+		boolean doneFirstMatrix = false;
+		boolean successFirstMatrix = false;
+		for (int im = 0; im < datas.size() && !doneFirstMatrix; im++){
+			CharacterData data = (CharacterData)datas.elementAt(im);
+			if (test.isCompatible(data, getProject(), this)){
+				if (datas.size()>1)
+					logln("Altering first matrix \"" + data.getName() + "\"");
+				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
+				successFirstMatrix = firstAlterTask.alterData(data, null, null, alteredDataParameters);
+				doneFirstMatrix = true;
+				if (successFirstMatrix){
+					matricesDone.setBit(im);
+					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
+					if (alteredDataParameters.getSubcodes()!=null)
+						notification.setSubcodes(alteredDataParameters.getSubcodes());
+					data.notifyListeners(this, notification);
+				}
+				if (datas.size()>50 && im != 0 && im % 50 == 0)
+					logln("" + matricesDone.numBitsOn() +  " matrices altered.");
+			}
+		}
+		//Debugg.println("AFTER FIRST ==========PWS " + getProject().refreshSuppression);
+
+		if (!successFirstMatrix){
+			unpauseAllPausables(v);
+			if (getProject() != null)
+				getProject().decrementProjectWindowSuppression();
+			return false;
+		}
+
+		if (firstTime){
+			int temp = MesquiteInteger.queryInteger(containerOfModule(), "Number of threads", "How many matrices should be altered in parallel (i.e. number of threads to be used)?", numThreads);
+			if (MesquiteInteger.isCombinable(temp) && temp >0){
+				numThreads = temp;
+				storePreferences();
+			}
+		}
+		firstTime = false;
+
+
+		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
+		progIndicator.start();
+		// making threads and getting them started
+		int numMatrices =datas.size(); 
+		AlterThread[] threads = new AlterThread[numThreads];
+		int blockSize = (numMatrices-1)/numThreads + 1; //first one already done
+		if (blockSize == 0)
+			blockSize = 1;
+		for (int i = 0; i<numThreads; i++) {
+			int firstMatrix = i*blockSize + 1; //shifted over 1 to account for matrix already done
+			int lastMatrix = firstMatrix+blockSize-1; //shifted over 1 to account for matrix already done
+			if (lastMatrix > numMatrices-1)
+				lastMatrix = numMatrices-1;
+			threads[i] = new AlterThread(this, datas, firstMatrix, lastMatrix, test);
+		}
+		for (int i = 0; i<numThreads; i++)
+			threads[i].start();  
+		
+
+		// checking on all of the threads
+		boolean allDone = false;
+		while (!allDone) {
+			try {
+				Thread.sleep(20);
+				allDone = true;
+				for (int i= 0; i<numThreads;i++) {
+					if (threads[i] != null && !threads[i].done)
+						allDone = false;
+				}
+				progIndicator.setText("Number of matrices altered " + matricesDone.numBitsOn());
+				progIndicator.setCurrentValue(matricesDone.numBitsOn());
+
+				if (matricesDone.numBitsOn()%10==0)
+					CommandRecord.tick("Finished altering " + matricesDone.numBitsOn() + " of " + numMatrices + " matrices");				
+			}
+			catch(Exception e) {
+			}
+
+		}
+
+		progIndicator.goAway();
+		logln("Altered: " + (matricesDone.numBitsOn()) +  " matrices.");
+		unpauseAllPausables(v);
+		if (getProject() != null){
+			getProject().zeroProjectWindowSuppression();
+			getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
+		}
+		zeroMenuResetSuppression(); //set menu and project suppression to zero, just in case of threading issues?
+		resetAllMenuBars();
+
+		return true;
+	}
+	public boolean okToInteractWithUser(int howImportant, String messageToUser){
+		return firstTime;
+	}
+
+	DataAlterer cloneFirstAlterTask(){
+		String snapshot = Snapshot.getSnapshotCommands(firstAlterTask, null, "");
+		MesquiteInteger pos = new MesquiteInteger(0);
+		CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
+		CommandRecord record = new CommandRecord(true);
+		MesquiteThread.setCurrentCommandRecord(record);
+		MesquiteModule.incrementMenuResetSuppression();	
+		DataAlterer alterer = (DataAlterer)hireNamedEmployee(DataAlterer.class, "#" + getShortClassName(firstAlterTask.getClass()));
+		if (alterer != null){
+			Puppeteer p = new Puppeteer(this);
+			Object obj = p.sendCommands(alterer, snapshot, pos, "", false, null,CommandChecker.defaultChecker);
+		}
+		MesquiteModule.decrementMenuResetSuppression();	
+		MesquiteThread.setCurrentCommandRecord(previous);
+		return alterer;
+	}
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public boolean requestPrimaryChoice(){
+		return false;  
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return NEXTRELEASE;  
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return true;  
+	}
+
+}
+
+
+
+class AlterThread extends MesquiteThread {
+	AlterMatrixAsUtilityParallel ownerModule;
+	ListableVector datas;
+	int firstMatrix;
+	int lastMatrix;
+	boolean done = false;
+	CompatibilityTest test;
+	DataAlterer alterTask;
+	public AlterThread(AlterMatrixAsUtilityParallel ownerModule, ListableVector datas, int startWindow, int endWindow, CompatibilityTest test){
+		this.datas = datas;
+		this.ownerModule = ownerModule;
+		this.firstMatrix = startWindow;
+		this.lastMatrix = endWindow;
+		this.test = test;
+		alterTask = ownerModule.cloneFirstAlterTask();
+	}
+	public void run() {
+		if(alterTask != null){
+			for (int im = firstMatrix; im <=lastMatrix; im++){
+				CharacterData data = (CharacterData)datas.elementAt(im);
+				if (test.isCompatible(data, ownerModule.getProject(), ownerModule)){
+					AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
+					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
+					if (ownerModule.matricesDone.isBitOn(im))
+						MesquiteMessage.printStackTrace("ERROR: doing matrix " + im);
+					boolean a = alterTask.alterData(data, null, null, alteredDataParameters);
+					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
+					if (a){
+						Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
+						if (alteredDataParameters.getSubcodes()!=null)
+							notification.setSubcodes(alteredDataParameters.getSubcodes());
+						data.notifyListeners(this, notification);
+						ownerModule.matricesDone.setBit(im);
+					}
+				}
+			}
+			ownerModule.fireEmployee(alterTask);
+		}
+		done = true;
+	}
+
+}
+
+

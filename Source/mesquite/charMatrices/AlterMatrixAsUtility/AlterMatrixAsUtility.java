@@ -84,11 +84,7 @@ public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public boolean queryOptions() {
-		if (!MesquiteThread.isScripting()){
-		}
-		return true;
-	}
+	
 	boolean firstTime = true;
 	/** if returns true, then requests to remain on even after operateOnTaxas is called.  Default is false*/
 	public boolean pleaseLeaveMeOn(){
