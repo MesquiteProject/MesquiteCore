@@ -628,7 +628,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/* This is the system to pause and restart calculations to avoid too many calculations with repeated notifications, e.g. in list windows */
+	
+	
 	public Vector pauseAllPausables() {
+		mesquiteTrunk.pausableLevel++;	 //  if already paused, then don't pause or unpause again, so have increment
+		if (mesquiteTrunk.pausableLevel>1)
+			return null;
 		Vector v = new Vector();
 		
 		MesquiteTrunk.mesquiteTrunk.harvestPausables(v);
@@ -659,6 +664,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 
 	public void unpauseAllPausables(Vector v) {
+		mesquiteTrunk.pausableLevel--;
+		if (mesquiteTrunk.pausableLevel>0 || v == null)
+			return;
 		
 		int num = v.size();
 		for (int i=0; i<num; i++) {
