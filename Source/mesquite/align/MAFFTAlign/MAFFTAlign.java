@@ -216,7 +216,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	}
 /*.................................................................................................................*/
 	public void queryProgramOptions(ExtensibleDialog dialog) {
-		useMaxThreadsCheckBox = dialog.addCheckBox("use maximum number of computer cores", useMaxCores);
+		useMaxThreadsCheckBox = dialog.addCheckBox("let MAFFT choose number of computer cores to use", useMaxCores);
 		
 		alignmentMethodChoice = dialog.addPopUpMenu("Suggested Methods", new String[] {"Default",  "L-INS-i", "G-INSI-i", "E-INS-i", "FFT-NS-i 2", "FFT-NS-i 1000", "FFT-NS-2", "FFT-NS-1", "NW-NS-i", "NW-NS-2", "NW-NS-PartTree-1"}, alignmentMethod);
 		alignmentTextField = dialog.addTextField("Basic alignment method", alignmentMethodText, 40);
