@@ -245,8 +245,12 @@ public class ListableVector extends FileElement implements StringLister, Command
 	}
 	public Listable[] getListables(){
 		Listable[] temp = new Listable[size()];
+		try {
 		for (int i=0; i<size(); i++)
 			temp[i]= (Listable)elementAt(i);
+		}
+		catch (Exception e){
+		}
 		return temp;
 	}
 	public String[] getStrings(){
@@ -356,8 +360,10 @@ public class ListableVector extends FileElement implements StringLister, Command
 			deleteParts(vec.indexOf(obj), 1);
 		vec.removeElement(obj);
 		numElements = vec.size();
-		if (vec.indexOf(obj)>=0)
+		if (vec.indexOf(obj)>=0){
+		Debugg.printStackTrace();
 			MesquiteMessage.warnProgrammer("object removed from listableVector but other copy remains " + this.getClass().toString() + "  " + obj);
+		}
 		if (notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 	}

@@ -132,7 +132,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 			storePreferences();
 	}
 	public Snapshot getSnapshot(MesquiteFile file) { 
-		Snapshot temp = new Snapshot();
+			Snapshot temp = super.getSnapshot(file);
 		temp.addLine("b1 " + b1);
 		temp.addLine("b2 " + b2);
 		temp.addLine("b3 " + b3);

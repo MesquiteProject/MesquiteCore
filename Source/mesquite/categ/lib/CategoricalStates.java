@@ -252,13 +252,13 @@ public abstract class CategoricalStates extends CharacterStates {
    		NameReference p = NameReference.getNameReference(paradigm);
    		DefaultReference dR = CategoricalData.findDefaultReference(p);
    		if (dR==null) {
-   			MesquiteMessage.println("Default model not found :" + paradigm);
+   			//MesquiteMessage.println("Default model not found :" + paradigm);
    			return null;
    		}
    		else {
    			CharacterModel cm = file.getCharacterModel(dR.getDefault());
-   			if (cm==null) 
-   				MesquiteMessage.println("Default model not found / " + dR.getDefault());
+   		//	if (cm==null) 
+   			//	MesquiteMessage.println("Default model not found / " + dR.getDefault());
    			return cm;
    		}
    	}

@@ -358,9 +358,8 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public void saveExportedFileToFilePath(String output, String arguments, String filePath) {
 
 		if (filePath!=null) {
-			logln("Exporting file to " + filePath);
 			MesquiteFile.putFileContents(filePath, output, true);
-			logln("Export complete.");
+			//logln("File exported to " + filePath);  Debugg.println is this needed?
 		}
 	}
 	/*.................................................................................................................*/
@@ -368,9 +367,8 @@ public abstract class FileInterpreter extends MesquiteModule  {
 
 		filePath = getPathForExport(arguments, suggestedFileName, null, null);
 		if (filePath!=null) {
-			logln("Exporting file to " + filePath);
 			MesquiteFile.putFileContents(filePath, output, true);
-			logln("Export complete.");
+			//logln("File exported to " + filePath);
 		}
 	}
 	/** Returns the Character data as a StringBuffer in the Interperter's format.  This method should be overridden for those Interpreters that can provide this service. */

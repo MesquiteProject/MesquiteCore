@@ -514,7 +514,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		if (thisFile!=null) {
 			getProject().addFile(thisFile);
 			thisFile.setProject(getProject());
-			broadcastFileRead(this, thisFile);
+				broadcastFileRead(this, thisFile);
 		}
 		resetAllMenuBars();
 		decrementMenuResetSuppression();
@@ -735,7 +735,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		if (MesquiteThread.isScripting()) {
 			ObjectContainer f = new ObjectContainer();
 			FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 0, f, fileDescriptionText);
-
 			pt.run();
 			MesquiteFile mf = (MesquiteFile)f.getObject();
 			f.setObject(null);
@@ -751,6 +750,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			return null;
 		}
 	}
+	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public void includeFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
 		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null, fileDescriptionText);
@@ -2110,7 +2110,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 				}
 				CommandRecord.setScriptingFileS(sf);
 				linkedFile.fileReadingArguments = null;
-				ownerModule.broadcastFileRead(ownerModule, linkedFile);
+					ownerModule.broadcastFileRead(ownerModule, linkedFile);
 
 			}
 			else {

@@ -84,6 +84,7 @@ public abstract class AssociableWithSpecs extends Associable {
 	}
 	public void dispose(){
   		if (specsVectors!=null){ //update size of specification sets
+  			try {
 	  		for (int i=0; i<specsVectors.size(); i++) {
 	  			SpecsSetVector sv = (SpecsSetVector)specsVectors.elementAt(i);
 	  			SpecsSet s = sv.getCurrentSpecsSet();
@@ -93,6 +94,9 @@ public abstract class AssociableWithSpecs extends Associable {
 	  		}
 	  		if (specsVectors!=null)
 	  			specsVectors.removeAllElements();
+  			}
+  			catch (Exception e){
+  			}
   		}
   		specsVectors = null;
  		super.dispose();

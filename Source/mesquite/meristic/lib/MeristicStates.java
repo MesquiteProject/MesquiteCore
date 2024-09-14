@@ -62,8 +62,8 @@ public abstract class MeristicStates  extends CharacterStates implements ItemCon
    			return null;
    		else {
    			CharacterModel cm = file.getCharacterModel(dR.getDefault());
-   			if (cm==null) 
-   				MesquiteMessage.println("Default model not found / " + dR.getDefault());
+   			//if (cm==null) 
+   			//	MesquiteMessage.println("Default model not found / " + dR.getDefault());
    			return cm;
    		}
    	}

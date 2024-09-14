@@ -12,7 +12,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.charMatrices.AlterMatrixAsUtilityParallel;
+package mesquite.charMatrices.ParallelAlterMatrixAsUtility;
 
 import mesquite.lists.lib.*;
 import mesquite.molec.FlagBySpruceup.FlagBySpruceup;
@@ -27,7 +27,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class AlterMatrixAsUtilityParallel extends DatasetsListProcessorUtility {
+public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	static int numThreads = 2;
 	/*.................................................................................................................*/
 	public String getName() {
@@ -35,6 +35,10 @@ public class AlterMatrixAsUtilityParallel extends DatasetsListProcessorUtility {
 	}
 	public String getNameForMenuItem() {
 		return "Parallel Alter/Transform Matrices...";
+	}
+	
+	public boolean loadModule(){
+	return true;
 	}
 
 	public String getExplanation() {
@@ -145,7 +149,6 @@ public class AlterMatrixAsUtilityParallel extends DatasetsListProcessorUtility {
 					logln("" + matricesDone.numBitsOn() +  " matrices altered.");
 			}
 		}
-		//Debugg.println("AFTER FIRST ==========PWS " + getProject().refreshSuppression);
 
 		if (!successFirstMatrix){
 			unpauseAllPausables(v);
@@ -166,6 +169,7 @@ public class AlterMatrixAsUtilityParallel extends DatasetsListProcessorUtility {
 
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
 		progIndicator.start();
+		progIndicator.setText("Setting up threads");
 		// making threads and getting them started
 		int numMatrices =datas.size(); 
 		AlterThread[] threads = new AlterThread[numThreads];
@@ -179,22 +183,27 @@ public class AlterMatrixAsUtilityParallel extends DatasetsListProcessorUtility {
 				lastMatrix = numMatrices-1;
 			threads[i] = new AlterThread(this, datas, firstMatrix, lastMatrix, test);
 		}
+		progIndicator.setText("Starting threads");
+		logln("About to start " + numThreads + " threads to alter the matrices");
 		for (int i = 0; i<numThreads; i++)
 			threads[i].start();  
 		
-
+		aborted = false;
 		// checking on all of the threads
 		boolean allDone = false;
-		while (!allDone) {
+		while (!allDone && !aborted) {
 			try {
-				Thread.sleep(20);
+				Thread.sleep(40);
 				allDone = true;
 				for (int i= 0; i<numThreads;i++) {
 					if (threads[i] != null && !threads[i].done)
 						allDone = false;
 				}
+				//Debugg.println("thread " + 0 + "  " + threads[0].report() +  " thread " + 3 + "  " + threads[3].report());
 				progIndicator.setText("Number of matrices altered " + matricesDone.numBitsOn());
 				progIndicator.setCurrentValue(matricesDone.numBitsOn());
+				if (progIndicator.isAborted())
+					aborted = true;
 
 				if (matricesDone.numBitsOn()%10==0)
 					CommandRecord.tick("Finished altering " + matricesDone.numBitsOn() + " of " + numMatrices + " matrices");				
@@ -204,6 +213,10 @@ public class AlterMatrixAsUtilityParallel extends DatasetsListProcessorUtility {
 
 		}
 
+		for (int i = 0; i<numThreads; i++){
+		threads[i].fileCoordinator.fireEmployee(threads[i].alterTask);
+		fireEmployee(threads[i].fileCoordinator);
+		}
 		progIndicator.goAway();
 		logln("Altered: " + (matricesDone.numBitsOn()) +  " matrices.");
 		unpauseAllPausables(v);
@@ -216,20 +229,25 @@ public class AlterMatrixAsUtilityParallel extends DatasetsListProcessorUtility {
 
 		return true;
 	}
+	boolean aborted;
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstTime;
 	}
 
-	DataAlterer cloneFirstAlterTask(){
+	DataAlterer cloneFirstAlterTask(AlterThread thread){
 		String snapshot = Snapshot.getSnapshotCommands(firstAlterTask, null, "");
 		MesquiteInteger pos = new MesquiteInteger(0);
 		CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
 		CommandRecord record = new CommandRecord(true);
 		MesquiteThread.setCurrentCommandRecord(record);
 		MesquiteModule.incrementMenuResetSuppression();	
-		DataAlterer alterer = (DataAlterer)hireNamedEmployee(DataAlterer.class, "#" + getShortClassName(firstAlterTask.getClass()));
+		thread.fileCoordinator = (FileCoordinator)hireNamedEmployee(FileCoordinator.class, "#BasicFileCoordinator");
+		MesquiteFile home = thread.fileCoordinator.createBlankProject();
+		if (home != null)	
+			thread.fileCoordinator.setProject(home.getProject());
+		DataAlterer alterer = (DataAlterer)thread.fileCoordinator.hireNamedEmployee(DataAlterer.class, "#" + getShortClassName(firstAlterTask.getClass()));
 		if (alterer != null){
-			Puppeteer p = new Puppeteer(this);
+			Puppeteer p = new Puppeteer(thread.fileCoordinator);
 			Object obj = p.sendCommands(alterer, snapshot, pos, "", false, null,CommandChecker.defaultChecker);
 		}
 		MesquiteModule.decrementMenuResetSuppression();	
@@ -258,31 +276,42 @@ public class AlterMatrixAsUtilityParallel extends DatasetsListProcessorUtility {
 
 
 class AlterThread extends MesquiteThread {
-	AlterMatrixAsUtilityParallel ownerModule;
+	ParallelAlterMatrixAsUtility ownerModule;
 	ListableVector datas;
 	int firstMatrix;
 	int lastMatrix;
 	boolean done = false;
 	CompatibilityTest test;
 	DataAlterer alterTask;
-	public AlterThread(AlterMatrixAsUtilityParallel ownerModule, ListableVector datas, int startWindow, int endWindow, CompatibilityTest test){
+	FileCoordinator fileCoordinator;
+	public AlterThread(ParallelAlterMatrixAsUtility ownerModule, ListableVector datas, int startWindow, int endWindow, CompatibilityTest test){
 		this.datas = datas;
 		this.ownerModule = ownerModule;
 		this.firstMatrix = startWindow;
 		this.lastMatrix = endWindow;
 		this.test = test;
-		alterTask = ownerModule.cloneFirstAlterTask();
+		alterTask = ownerModule.cloneFirstAlterTask(this);
 	}
+	
+	String report(){
+		if (done)
+			return "done";
+		return "On matrix " + im;
+	}
+	
+	int im;
 	public void run() {
 		if(alterTask != null){
-			for (int im = firstMatrix; im <=lastMatrix; im++){
+			for (im = firstMatrix; im <=lastMatrix && !ownerModule.aborted; im++){
 				CharacterData data = (CharacterData)datas.elementAt(im);
 				if (test.isCompatible(data, ownerModule.getProject(), ownerModule)){
 					AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 					if (ownerModule.matricesDone.isBitOn(im))
 						MesquiteMessage.printStackTrace("ERROR: doing matrix " + im);
+					//Debugg.println("" + im+ " <<<<<<<<");
 					boolean a = alterTask.alterData(data, null, null, alteredDataParameters);
+					//Debugg.println("" + im+ " >>>>>>>>");
 					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 					if (a){
 						Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
@@ -293,7 +322,6 @@ class AlterThread extends MesquiteThread {
 					}
 				}
 			}
-			ownerModule.fireEmployee(alterTask);
 		}
 		done = true;
 	}

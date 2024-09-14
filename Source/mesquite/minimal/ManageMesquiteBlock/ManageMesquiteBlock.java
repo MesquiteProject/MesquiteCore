@@ -252,7 +252,7 @@ public class ManageMesquiteBlock extends ScriptingManager {
 
 	/*.................................................................................................................*/
 	public String getAutoBlock(MesquiteFile file){
-		if (file!= getProject().getHomeFile())
+		if (getProject() == null || file!= getProject().getHomeFile())
 			return "";
 		if (file.useConservativeNexus || file.useSimplifiedNexus)
 			return "";

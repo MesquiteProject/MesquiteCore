@@ -103,7 +103,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
-		Snapshot temp = new Snapshot();
+		Snapshot temp = super.getSnapshot(file);
 		temp.addLine("autoOption " + autoOption);
 		return temp;
 	}
@@ -182,8 +182,8 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 			boolean success = saveFastaFile(data, rootDir, "input.fas");
 			String unique = MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt());
 			String scriptPath = rootDir + "trimAlScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
-			
-			
+
+
 			String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
 			script += trimAlPath + "  -in input.fas -out output.fas -" + autoOptionNames[autoOption] + " -colnumbering > columns.txt";
 			MesquiteFile.putFileContents(scriptPath, script, false);
@@ -192,32 +192,37 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 			if (success){
 				String columnsText = MesquiteFile.getFileContentsAsString(rootDir + "columns.txt");
 				if (columnsText != null) {
-				columns = columnsText.split(", ");
-				columns[0] = columns[0].substring(12, columns[0].length());
-				Bits charFlags = flags.getCharacterFlags();
-				int lastKeep = -1;
-				int count = 0;
-				for (int k = 0; k<columns.length; k++) {
-					int keep = MesquiteInteger.fromString(StringUtil.stripWhitespace(columns[k]));
-					if (keep < data.getNumChars())
-						for (int d = lastKeep+1; d<keep; d++) {
+					columns = columnsText.split(", ");
+					if (columns.length < 1 || columns[0].length()<12){
+						Debugg.println("  No trimming results for matrix " + data.getName());
+					}
+					else {
+						columns[0] = columns[0].substring(12, columns[0].length());
+						Bits charFlags = flags.getCharacterFlags();
+						int lastKeep = -1;
+						int count = 0;
+						for (int k = 0; k<columns.length; k++) {
+							int keep = MesquiteInteger.fromString(StringUtil.stripWhitespace(columns[k]));
+							if (keep < data.getNumChars())
+								for (int d = lastKeep+1; d<keep; d++) {
+									boolean wasSet = charFlags.isBitOn(d);
+									charFlags.setBit(d);
+									if (!wasSet)
+										count++;
+								}
+							lastKeep = keep;
+						}
+						for (int d = lastKeep+1; d<data.getNumChars(); d++) {
 							boolean wasSet = charFlags.isBitOn(d);
 							charFlags.setBit(d);
 							if (!wasSet)
 								count++;
 						}
-					lastKeep = keep;
-				}
-				for (int d = lastKeep+1; d<data.getNumChars(); d++) {
-					boolean wasSet = charFlags.isBitOn(d);
-					charFlags.setBit(d);
-					if (!wasSet)
-						count++;
-				}
+					}
 				}
 				else
-					Debugg.println("oops, columns.txt is empty");
-				
+					Debugg.println(" No trimming results file for matrix " + data.getName());
+
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
 

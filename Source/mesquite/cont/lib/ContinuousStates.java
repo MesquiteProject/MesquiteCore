@@ -61,8 +61,8 @@ public abstract class ContinuousStates  extends CharacterStates implements ItemC
    			return null;
    		else {
    			CharacterModel cm = file.getCharacterModel(dR.getDefault());
-   			if (cm==null) 
-   				MesquiteMessage.println("Default model not found / " + dR.getDefault());
+   			//if (cm==null) 
+   			//	MesquiteMessage.println("Default model not found / " + dR.getDefault());
    			return cm;
    		}
    	}

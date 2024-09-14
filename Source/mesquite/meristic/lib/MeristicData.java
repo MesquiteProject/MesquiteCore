@@ -1182,8 +1182,8 @@ public class MeristicData extends CharacterData implements ItemContainer {
 			return null;
 		else {
 			CharacterModel cm = getProject().getCharacterModel(dR.getDefault());
-			if (cm==null) 
-				MesquiteMessage.println("Default model not found / " + dR.getDefault());
+			//if (cm==null) 
+			//	MesquiteMessage.println("Default model not found / " + dR.getDefault());
 			return cm;
 		}
 	}

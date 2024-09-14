@@ -40,6 +40,23 @@ public abstract class MatrixFlagger extends MesquiteModule  {
 	protected boolean forTrimming(){
 		return getHiredAs() == MatrixFlaggerForTrimming.class;
 	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		if (exporter != null)
+			temp.addLine("getInterpreter", exporter);
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the option.", "[integer]", commandName, "getInterpreter")) {
+			if (exporter == null)
+				exporter = (FileInterpreterI)hireNamedEmployee(FileInterpreterI.class, "#InterpretFastaDNA");
+			return exporter;
+		}
+		else
+			return super.doCommand(commandName, arguments, checker);
+	}
 	
 	/* As a service to flaggers that call programs to run of fasta files*/
 	FileInterpreterI exporter;	

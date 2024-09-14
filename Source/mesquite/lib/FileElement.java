@@ -350,7 +350,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		project.incrementProjectWindowSuppression();
 		project.addFileElement(this);
 		file.addFileElement(this);
-		if (elementManager!=null)
+		if (elementManager!=null) // && !(f!=null && f.temporaryUseOnly)) ////not currently used. For reentrancy issues, but may have other means to bypass.
 			nexusBlock = elementManager.elementAdded(this);
 		broadCastElementAdded(project.getCoordinatorModule(), elementManager);
 		project.refreshProjectWindow();

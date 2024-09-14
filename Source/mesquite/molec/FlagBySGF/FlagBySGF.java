@@ -282,7 +282,7 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 				parametersChanged();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data, to count all taxa in current file, or to count as if there were a specified number.", "[0, 1, 2]", commandName, "setTaxonCountingOption")) {
+		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data, to count all taxa in current file, or to count as if there were a specified number.", "[0, 1, 2]", commandName, "ignoreDataless")) {
 			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
 				ignoreDataless = s;
 				if (!MesquiteThread.isScripting())

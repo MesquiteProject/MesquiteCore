@@ -1171,7 +1171,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 						newCOD[i][j] = changedSinceSave[i][j];
 					}
 					for (int i=starting+num; i<changedSinceSave.length; i++) {
-						newCOD[i -num][j] = changedSinceSave[i][j];  
+						newCOD[i -num][j] = changedSinceSave[i][j];  //parallelizzed crash
 					}
 				}
 			changedSinceSave = newCOD;
