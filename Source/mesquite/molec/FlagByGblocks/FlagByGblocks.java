@@ -310,9 +310,9 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 			else 
 				flags.reset(data);
 			String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
-			boolean success = saveFastaFile(data, rootDir, "alignment.fas");
-			String unique = MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt());
-			String scriptPath = rootDir + "GblocksScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
+			String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
+			boolean success = saveFastaFile(data, rootDir, unique + "alignment.fas");
+			String scriptPath = rootDir + "GblocksScript" + unique + ".bat";
 
 
 			String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
@@ -327,12 +327,12 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				gapsOption = "h";
 			else if (b5 == 2)
 				gapsOption = "a";
-			script += gblocksPath + "  alignment.fas -b1=" + b1Count + " -b2=" + b2Count + " -b3=" + b3 + " -b4=" + b4 + " -b5=" + gapsOption + " -s=n -p=s";
+			script += gblocksPath + "  " + unique + "alignment.fas -b1=" + b1Count + " -b2=" + b2Count + " -b3=" + b3 + " -b4=" + b4 + " -b5=" + gapsOption + " -s=n -p=s";
 			MesquiteFile.putFileContents(scriptPath, script, false);
 			success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 	
 			if (success){
-				String[] resultText = MesquiteFile.getFileContentsAsStrings(rootDir + "alignment.fas-gb.txts");
+				String[] resultText = MesquiteFile.getFileContentsAsStrings(rootDir + unique + "alignment.fas-gb.txts");
 				if (resultText != null) {
 				boolean done = false;
 				Parser parser = new Parser();

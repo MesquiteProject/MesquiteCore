@@ -38,7 +38,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	}
 	
 	public boolean loadModule(){
-	return true;
+	return false;  // too flaky
 	}
 
 	public String getExplanation() {
@@ -191,15 +191,28 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		aborted = false;
 		// checking on all of the threads
 		boolean allDone = false;
+		long lastReportTime = System.currentTimeMillis();
 		while (!allDone && !aborted) {
 			try {
-				Thread.sleep(40);
+				Thread.sleep(50);
 				allDone = true;
+				boolean waiting = false;
 				for (int i= 0; i<numThreads;i++) {
 					if (threads[i] != null && !threads[i].done)
 						allDone = false;
+					waiting = waiting || threads[i].longWait();
 				}
-				//Debugg.println("thread " + 0 + "  " + threads[0].report() +  " thread " + 3 + "  " + threads[3].report());
+			
+				if (waiting && System.currentTimeMillis()-lastReportTime > 10000){
+					String report = "... still waiting on threads (matrix number)";
+					for (int i= 0; i<numThreads;i++) {
+						if (threads[i].longWait())
+							report += " " + (i+1) + " (" + (threads[i].im+1) + ")";
+					}
+					logln(report);
+					lastReportTime = System.currentTimeMillis();
+				}
+				
 				progIndicator.setText("Number of matrices altered " + matricesDone.numBitsOn());
 				progIndicator.setCurrentValue(matricesDone.numBitsOn());
 				if (progIndicator.isAborted())
@@ -284,6 +297,8 @@ class AlterThread extends MesquiteThread {
 	CompatibilityTest test;
 	DataAlterer alterTask;
 	FileCoordinator fileCoordinator;
+	int imPreviousReportedAsSlow = 0;
+	long lastTimeChanged = -1;
 	public AlterThread(ParallelAlterMatrixAsUtility ownerModule, ListableVector datas, int startWindow, int endWindow, CompatibilityTest test){
 		this.datas = datas;
 		this.ownerModule = ownerModule;
@@ -299,10 +314,26 @@ class AlterThread extends MesquiteThread {
 		return "On matrix " + im;
 	}
 	
+	boolean longWait(){
+		return !done && (System.currentTimeMillis()- lastTimeChanged > 10000); //Yes, it's a long wait
+	}
+	/*String longWait(){
+		boolean wait = !done && (System.currentTimeMillis()- lastTimeChanged > 10000); //Yes, it's a long wait
+
+		boolean longSinceReported = System.currentTimeMillis() - lastTimeReported > 10000;
+		if (wait && longSinceReported)  {
+			lastTimeReported = System.currentTimeMillis()/1000*1000;
+			return " " + (im+1);  //returning what matrices are waiting
+		}
+		return "";
+	}
+	*/
+
 	int im;
 	public void run() {
-		if(alterTask != null){
+		if (alterTask != null){
 			for (im = firstMatrix; im <=lastMatrix && !ownerModule.aborted; im++){
+				lastTimeChanged = System.currentTimeMillis()/1000*1000;
 				CharacterData data = (CharacterData)datas.elementAt(im);
 				if (test.isCompatible(data, ownerModule.getProject(), ownerModule)){
 					AlteredDataParameters alteredDataParameters = new AlteredDataParameters();

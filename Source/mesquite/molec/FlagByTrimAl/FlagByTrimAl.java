@@ -179,22 +179,23 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 			else 
 				flags.reset(data);
 			String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
-			boolean success = saveFastaFile(data, rootDir, "input.fas");
-			String unique = MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt());
-			String scriptPath = rootDir + "trimAlScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
+			String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
+			boolean success = saveFastaFile(data, rootDir, unique + "input.fas");
+			String scriptPath = rootDir + "trimAlScript" + unique + ".bat";
 
 
 			String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
-			script += trimAlPath + "  -in input.fas -out output.fas -" + autoOptionNames[autoOption] + " -colnumbering > columns.txt";
+			script += trimAlPath + "  -in " + unique + "input.fas -out " + unique + "output.fas -" + autoOptionNames[autoOption] + " -colnumbering > " + unique + "columns.txt";
 			MesquiteFile.putFileContents(scriptPath, script, false);
 			success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 
 			if (success){
-				String columnsText = MesquiteFile.getFileContentsAsString(rootDir + "columns.txt");
+				
+				String columnsText = MesquiteFile.getFileContentsAsString(rootDir + unique + "columns.txt");
 				if (columnsText != null) {
 					columns = columnsText.split(", ");
 					if (columns.length < 1 || columns[0].length()<12){
-						Debugg.println("  No trimming results for matrix " + data.getName());
+						Debugg.println("  No trimming results for matrix " + data.getName() + " file: " + unique + "columns.txt; contents: " + columnsText);
 					}
 					else {
 						columns[0] = columns[0].substring(12, columns[0].length());
