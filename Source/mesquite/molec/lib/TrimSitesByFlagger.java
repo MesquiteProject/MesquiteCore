@@ -26,6 +26,9 @@ import mesquite.lib.duties.MatrixFlagger;
 public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 	protected CharacterData data;
 	protected MatrixFlagger flaggerTask; // hired by specific subclasses representing those flaggers
+	 public String[] getDefaultModule() {
+	 	 	return new String[] {"#TrimByPhyIN", "#TrimLowOccupancySites", "#TrimByTrimAl"};
+	 	 }
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.FlagBySGF;
+package mesquite.molec.FlagLowOccupancySites;
 /*~~  */
 
 
@@ -47,52 +47,23 @@ import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 
 /* ======================================================================== */
-public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionListener, ItemListener {
+public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites implements ItemListener {
 
 	/** TODO?
 
 	 */
 	/*Gappiness assessment parameters =================================*/
-	static boolean filterSiteGappinessDEFAULT = false;
-	static boolean filterBlockGappinessDEFAULT = true;
-	//static boolean forgiveTaxaWithoutDataDEFAULT = true;
-	static double siteGappinessThresholdDEFAULT = 0.5; // A site is considered good (for gappiness) if it is less gappy than this (term or non-term).
-	static int gappyBlockSizeDEFAULT = 5; // If in a block of at least this many sites, the first and last site is bad,
-	static double blockGappinessThresholdDEFAULT = 0.5; // and the proportion of bad sites is this high or higher,
-	static int gappyBoundaryDEFAULT = 4; // and there are no stretches of this many good sites in a row,
-	//static int COUNT_ALL_CURRENT_TAXA = 0;
-	//static int IGNORE_TAXA_ALL_GAPS = 1;
-	//static int ASSUME_SPECIFIED_NUM_TAXA = 2;
+	static double siteOccupancyThresholdDEFAULT = 0.5; // A site is considered good (for gappiness) if it has at least this many non-gaps
 	static boolean ignoreDatalessDEFAULT = false;
 	static boolean assumeSpecifiedNumberDEFAULT = false; 
 
-	MesquiteBoolean filterSiteGappiness = new MesquiteBoolean(filterSiteGappinessDEFAULT);
-	MesquiteBoolean filterBlockGappiness = new MesquiteBoolean(filterBlockGappinessDEFAULT);
-	//MesquiteBoolean forgiveTaxaWithoutData = new MesquiteBoolean(forgiveTaxaWithoutDataDEFAULT);
 	boolean ignoreDataless = ignoreDatalessDEFAULT;
 	boolean assumeSpecifiedNumber = assumeSpecifiedNumberDEFAULT;
 	int specifiedNumTaxa = MesquiteInteger.unassigned;
 
-	double siteGappinessThreshold = siteGappinessThresholdDEFAULT; // A site is considered good (for gappiness) if it is less or as gappy than this (term or non-term).
-	int gappyBlockSize = gappyBlockSizeDEFAULT; // If in a block of at least this many sites, the first and last site is bad,
-	double blockGappinessThreshold = blockGappinessThresholdDEFAULT; // and the proportion of bad sites is this high or higher,
-	int gappyBoundary = gappyBoundaryDEFAULT; // and there are no stretches of this many good sites in a row,
-	// then select the block.
-
-	// CCCCAA--A--A------TTTT--AACCCC
-	// CCCCAAG-A--A------TTTT--AACCCC
-	// CCCCAAG-A--A------TTTT--AACCCC
-	// CCCCAAG----A------------AACCCC
-	//        ***********
-	//
-	// in the above, the column after the Gs is the first bad site, 
-	// and the two following As columns are too narrow to stop the block. However, the Ts
-	// columns are 4 in a row, so they stop the block
-	/**/
+	double siteOccupancyThreshold = siteOccupancyThresholdDEFAULT; // A site is considered good (for gappiness) if it is less or as gappy than this (term or non-term).
 
 
-
-	boolean queried = false;
 
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();
@@ -104,19 +75,14 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			if (!queryOptions())
 				return false;
 		}
-		addMenuItem(null, "Set Simple Gappiness Filter options...", makeCommand("setOptions", this));
+		addMenuItem(null, "Set Site Gappiness (Low Site Occupancy) options...", makeCommand("setOptions", this));
 		return true;
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "filterBlockGappiness", filterBlockGappiness);  
-		StringUtil.appendXMLTag(buffer, 2, "filterSiteGappiness", filterSiteGappiness);  
 		StringUtil.appendXMLTag(buffer, 2, "ignoreDataless", ignoreDataless);  
-		StringUtil.appendXMLTag(buffer, 2, "siteGappinessThreshold", siteGappinessThreshold);  
-		StringUtil.appendXMLTag(buffer, 2, "gappyBlockSize", gappyBlockSize);  
-		StringUtil.appendXMLTag(buffer, 2, "blockGappinessThreshold", blockGappinessThreshold);  
-		StringUtil.appendXMLTag(buffer, 2, "gappyBoundary", gappyBoundary);  
+		StringUtil.appendXMLTag(buffer, 2, "siteOccupancyThreshold", siteOccupancyThreshold);  
 		StringUtil.appendXMLTag(buffer, 2, "assumeSpecifiedNumber", assumeSpecifiedNumber);  
 		return buffer.toString();
 	}
@@ -126,18 +92,8 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("blockGappinessThreshold".equalsIgnoreCase(tag))
-			blockGappinessThreshold = MesquiteDouble.fromString(content);
-		if ("siteGappinessThreshold".equalsIgnoreCase(tag))
-			siteGappinessThreshold = MesquiteDouble.fromString(content);
-		if ("gappyBlockSize".equalsIgnoreCase(tag))
-			gappyBlockSize = MesquiteInteger.fromString(content);
-		if ("gappyBoundary".equalsIgnoreCase(tag))
-			gappyBoundary = MesquiteInteger.fromString(content);
-		if ("filterBlockGappiness".equalsIgnoreCase(tag))
-			filterBlockGappiness.setValue(MesquiteBoolean.fromTrueFalseString(content));
-		if ("filterSiteGappiness".equalsIgnoreCase(tag))
-			filterSiteGappiness.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("siteOccupancyThreshold".equalsIgnoreCase(tag))
+			siteOccupancyThreshold = MesquiteDouble.fromString(content);
 		if ("ignoreDataless".equalsIgnoreCase(tag))
 			ignoreDataless=  MesquiteBoolean.fromTrueFalseString(content);
 		if ("assumeSpecifiedNumber".equalsIgnoreCase(tag))
@@ -146,8 +102,6 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		temp.addLine("setfilterBlockGappiness " + filterBlockGappiness.toOffOnString());
-		temp.addLine("setfilterSiteGappiness " + filterSiteGappiness.toOffOnString());
 		if (getProject().isProcessDataFilesProject){
 			temp.addLine("setAssumeSpecifiedNumber " + assumeSpecifiedNumber);
 			if (assumeSpecifiedNumber)
@@ -155,28 +109,23 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 		}
 		else
 			temp.addLine("ignoreDataless " + ignoreDataless);
-		temp.addLine("setSiteGappinessThreshold " + siteGappinessThreshold);
-		temp.addLine("setgappyBlockSize " + gappyBlockSize);
-		temp.addLine("setBlockGappinessThreshold " + blockGappinessThreshold);
-		temp.addLine("setgappyBoundary " + gappyBoundary);
+		temp.addLine("siteOccupancyThreshold " + siteOccupancyThreshold);
 		return temp;
 	}
 
 
 	DoubleField pgSField;
-	Checkbox fIGS;
-	Checkbox fG;
-	IntegerField gBS;
-	IntegerField gB, sNT;
-	DoubleField pgBField;
+	IntegerField sNT;
 	Checkbox specifNumCB, ignoreDatalessCB;
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Simple Gappiness Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Site Gappiness (Low Site Occupancy)",buttonPressed);  
 
-		pgSField = dialog.addDoubleField("Maximum permitted proportion of gaps (above which site is considered too gappy)", siteGappinessThreshold, 4);
-		String s = "<b>SGF (Simple Gappiness Filter)</b> selects regions of an alignment with high levels of gaps."
-				+ " It is not intended to identify regions that are unreliable or poorly aligned; it is intended simply to find regions"
+		dialog.addLabel("Minimum proportion of observed states (non-gaps):");
+		pgSField = dialog.addDoubleField("(Sites with fewer observed states (non-gaps) than this are considered too gappy.)", siteOccupancyThreshold, 4);
+		dialog.addHorizontalLine(1);
+		String s = "<b>Low site occupancy filter</b> selects sites with high levels of gaps."
+				+ " It is not intended to identify sites that are unreliable or poorly aligned; it is intended simply to find sites"
 				+ " where the amount of available data is too sparse to justify inclusion, just as one filters loci for occupancy.<hr>" 
 				+"The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
 				+ " This could result in different countings of the proportion of gaps depending on whether the trimming is done on individual files for each locus (because each file will know only"
@@ -200,35 +149,12 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 					+ "<p><b>Recommendation</b>: if you want to treat this trimming as a site-level occupancy criterion (just like filtering loci for occupancy) then DON'T select \"Ignore\".";
 		}
 		dialog.appendToHelpString(s);
-		dialog.addHorizontalLine(1);
-
-
-
-		dialog.addLabel("Selecting individual sites");
-		fIGS = dialog.addCheckBox("Select individual gappy sites (whether or not part of gappy block)", filterSiteGappiness.getValue());
-
-		dialog.addHorizontalLine(1);
-		dialog.addLabel("Selecting blocks");
-		fG = dialog.addCheckBox("Select gappy blocks", filterBlockGappiness.getValue());
-		gBS = dialog.addIntegerField("Minimum length of bad block", gappyBlockSize, 4);
-		gB = dialog.addIntegerField("Stretch of good that resets block", gappyBoundary, 4);
-		pgBField = dialog.addDoubleField("Proportion of bad sites for block to be bad", blockGappinessThreshold, 4);
-		dialog.addHorizontalLine(1);
-		dialog.addBlankLine();
-		Button useDefaultsButton = null;
-		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
-		useDefaultsButton.setActionCommand("setToDefaults");
-		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
 
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
-			filterBlockGappiness.setValue(fG.getState());
-			filterSiteGappiness.setValue(fIGS.getState());
-			siteGappinessThreshold = pgSField.getValue();
-			gappyBlockSize = gBS.getValue();
-			gappyBoundary = gB.getValue();
+			siteOccupancyThreshold = pgSField.getValue();
 			if (ignoreDatalessCB!=null){
 				ignoreDataless = ignoreDatalessCB.getState();
 			}
@@ -237,7 +163,6 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			}
 			if (assumeSpecifiedNumber && sNT != null)
 				specifiedNumTaxa = sNT.getValue();
-			blockGappinessThreshold = pgBField.getValue();
 
 			storePreferences();
 		}
@@ -249,26 +174,6 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 		if (sNT != null)
 			sNT.setEnabled(specifNumCB.getState());
 
-	}
-	/*.................................................................................................................*/
-	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
-			pgSField.setValue(siteGappinessThresholdDEFAULT);
-			fIGS.setState(filterSiteGappinessDEFAULT);
-			fG.setState(filterBlockGappinessDEFAULT);
-			if (ignoreDatalessCB!=null){
-				ignoreDatalessCB.setState(ignoreDatalessDEFAULT);
-			}
-			if (sNT != null){
-				specifNumCB.setState(assumeSpecifiedNumberDEFAULT);
-				sNT.setValue(MesquiteInteger.unassigned);
-				sNT.setEnabled(assumeSpecifiedNumberDEFAULT);
-			}
-			gBS.setValue(gappyBlockSizeDEFAULT);
-			gB.setValue(gappyBoundaryDEFAULT);
-			pgBField.setValue(blockGappinessThresholdDEFAULT);
-
-		} 
 	}
 	public void queryLocalOptions () {
 		if (queryOptions())
@@ -297,51 +202,10 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 					parametersChanged(); 
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to filter blocks by gappiness also.", "[on or off]", commandName, "setfilterBlockGappiness")) {
-			boolean current = filterBlockGappiness.getValue();
-			filterBlockGappiness.toggleValue(parser.getFirstToken(arguments));
-			if (current!=filterBlockGappiness.getValue()) {
-				parametersChanged();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to filter individual sites by gappiness also.", "[on or off]", commandName, "setfilterSiteGappiness")) {
-			boolean current = filterSiteGappiness.getValue();
-			filterSiteGappiness.toggleValue(parser.getFirstToken(arguments));
-			if (current!=filterSiteGappiness.getValue()) {
-				parametersChanged();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Sets minimum size of bad gappy block.", "[integer]", commandName, "setgappyBlockSize")) {
-			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (MesquiteInteger.isCombinable(s)){
-				gappyBlockSize = s;
-				if (!MesquiteThread.isScripting())
-					parametersChanged(); 
-			}
-
-		}
-		else if (checker.compare(this.getClass(), "Sets required size to form a non-gappy boundary.", "[integer]", commandName, "setgappyBoundary")) {
-			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (MesquiteInteger.isCombinable(s)){
-				gappyBoundary = s;
-				if (!MesquiteThread.isScripting())
-					parametersChanged(); 
-			}
-
-		}
-		else if (checker.compare(this.getClass(), "Sets proportion of taxa with gaps above which site is considered gappy.", "[proportion]", commandName, "setSiteGappinessThreshold")) {
+		else if (checker.compare(this.getClass(), "Sets proportion of taxa with gaps above which site is considered gappy.", "[proportion]", commandName, "siteOccupancyThreshold")) {
 			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (MesquiteDouble.isCombinable(s)){
-				siteGappinessThreshold = s;
-				if (!MesquiteThread.isScripting())
-					parametersChanged(); 
-
-			}
-		}
-		else if (checker.compare(this.getClass(), "Sets proportion of sites in span that are gappy to trigger selection.", "[proportion]", commandName, "setBlockGappinessThreshold")) {
-			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (MesquiteDouble.isCombinable(s)){
-				blockGappinessThreshold = s;
+				siteOccupancyThreshold = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
 
@@ -357,14 +221,10 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	boolean[] taxonHasData;
 	int numTaxaCounted = 0;
 	/*======================================================*/
-	boolean isGapBlockBoundary(int k) {
-		for (int i = 0; k+i<siteGappiness.length && i<gappyBoundary; i++)
-			if (gappySite(k+i))
-				return false;
-		return true;
-	}
+
+
 	boolean gappySite(int k) {
-		return siteGappiness[k]>siteGappinessThreshold;
+		return siteGappiness[k]> (1-siteOccupancyThreshold);
 	}
 	
 	boolean ignoreDatalessTaxa(){
@@ -411,9 +271,9 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 			else if (assumeSpecifiedNumberOfTaxa()){
 				if (specifiedNumTaxa < numTaxa){
 					if (numNegWarnings<10)
-						discreetAlert("ERROR: Specified number of taxa in SGF (" + specifiedNumTaxa + ") is smaller than current number of taxa in the file (" + numTaxa + ")");
+						discreetAlert("ERROR: Specified number of taxa in site occupancy filter (" + specifiedNumTaxa + ") is smaller than current number of taxa in the file (" + numTaxa + ")");
 					else if (numNegWarnings<11)
-						logln("No more warnings will be given about ERROR that specified number of taxa in SGF is smaller than current number of taxa in the file");
+						logln("No more warnings will be given about ERROR that specified number of taxa in site occupancy filter is smaller than current number of taxa in the file");
 					numNegWarnings++;
 				}
 				if (MesquiteInteger.isPositive(specifiedNumTaxa))
@@ -442,38 +302,10 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 
 				if (gapCount == numTaxaCounted)//if all gaps, delete regardless 
 					charFlags.setBit(ic, true);
-				else if (filterSiteGappiness.getValue() && gappySite(ic))
+				else if (gappySite(ic))
 					charFlags.setBit(ic, true); 				
 			}
 
-			if (filterBlockGappiness.getValue()) {
-				for (int blockStart=0; blockStart<numChars; blockStart++) { //let's look for gappy blocks
-					if (gappySite(blockStart)) { // possible start of gappy block
-
-						boolean boundaryFound = false;
-						for (int candidateNextBoundary = blockStart+1; candidateNextBoundary<numChars+1 && !boundaryFound; candidateNextBoundary++) {  // go ahead until next boundary reached
-							if (isGapBlockBoundary(candidateNextBoundary) || candidateNextBoundary == numChars-1) {
-								boundaryFound = true;
-								int blockEnd = candidateNextBoundary-1;
-
-								//blockStart is the potential start of a block; blockEnd is a possible end. If the block is long enough, ask if its blockGappiness is bad
-								if (blockEnd-blockStart+1 >= gappyBlockSize){
-									//block is big enough, but is it bad enough?
-									int badSiteCount = 0;
-									for (int k = blockStart; k <= blockEnd; k++)
-										if (gappySite(k))  // stored as double[] in case criterion shifts, e.g., to average
-											badSiteCount++;
-									double blockGappiness = 1.0*badSiteCount/(blockEnd-blockStart+1);
-									if (blockGappiness >=blockGappinessThreshold)
-										for (int k = blockStart; k <= blockEnd; k++)
-											charFlags.setBit(k, true);
-								}
-
-							}
-						}
-					}
-				}
-			}
 		}
 		return flags;
 
@@ -495,12 +327,12 @@ public class FlagBySGF extends MatrixFlaggerForTrimmingSites implements ActionLi
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "SGF (Simple Gappiness Filter)";
+		return "Gappy Sites (Low Site Occupancy)";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Flags sites or regions of sites whose proportion of gaps is above a threshold." ;
+		return "Flags sites whose proportion of gaps is above a threshold, i.e. sites with low occupancy." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

@@ -11,17 +11,17 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.SelectBySGF;
+package mesquite.molec.SelectLowOccupancySites;
 /*~~  */
 
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.molec.lib.SelectSitesByFlagger;
 
 /* ======================================================================== */
-public class SelectBySGF extends SelectSitesByFlagger {
+public class SelectLowOccupancySites extends SelectSitesByFlagger {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagBySGF");
+		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlagger.class, "#FlagLowOccupancySites");
 		if (flaggerTask == null)
 			return false;
 		return true;
@@ -38,12 +38,12 @@ public class SelectBySGF extends SelectSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Select by SGF (Simple Gappiness Filter)";
+		return "Select Gappy Sites (Low Site Occupancy)";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Select sites or blocks of sites that are too gappy." ;
+		return "Select sites that are too gappy (i.e., have low occupancy)." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

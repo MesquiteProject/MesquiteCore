@@ -24,7 +24,7 @@ import mesquite.molec.lib.*;
 public abstract class SelectSitesByFlagger extends CharacterSelector {
 
  	 public String[] getDefaultModule() {
- 	 	return new String[] {"#SelectByPhyIN", "#SelectGappySites"};
+ 	 	return new String[] {"#SelectByPhyIN", "#SelectLowOccupancySites"};
  	 }
 	protected CharacterData data;
 	protected MatrixFlagger flaggerTask; // hired by specific subclasses representing those flaggers

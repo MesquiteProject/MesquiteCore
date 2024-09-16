@@ -32,7 +32,7 @@ public abstract class MatrixFlagger extends MesquiteModule  {
  		return "Matrix Flagger";
    	 }
  	 public String[] getDefaultModule() {
- 	 	return new String[] {"#TrimByPhyIN", "#TrimGappySites", "#TrimBySpruceup", "#TrimByTrimAl"};
+ 	 	return new String[] {"#FlagByPhyIN", "#FlagLowOccupancySites", "#FlagBySpruceup", "#FlagByTrimAl"};
  	 }
 
 	public abstract MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags); //if input flags is null, make one and return it. Otherwise, adjust the one input.
