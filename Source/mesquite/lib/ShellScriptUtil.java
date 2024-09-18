@@ -355,8 +355,9 @@ public class ShellScriptUtil  {
 				MesquiteMessage.notifyProgrammer("Process is null in shell script executed by " + name);
 				return false;
 			}
-			else 
-				while ((StringUtil.notEmpty(runningFilePath) && MesquiteFile.fileExists(runningFilePath)) || stillGoing){
+			else {
+				stillGoing = StringUtil.blank(runningFilePath) || MesquiteFile.fileExists(runningFilePath);
+				while (stillGoing){
 					processOutputFiles (outputFileProcessor, outputFilePaths, lastModified);
 					try {
 						Thread.sleep(sleepTime);
@@ -369,7 +370,9 @@ public class ShellScriptUtil  {
 					stillGoing = (watcher != null && watcher.continueProcess(proc));
 					// or, if there is neither a watcher nor is a runningFile being used, then if the process is still alive.
 					stillGoing = stillGoing || (watcher == null &&  proc.isAlive());
+					stillGoing = stillGoing && (StringUtil.blank(runningFilePath) || MesquiteFile.fileExists(runningFilePath));
 				}
+			}
 		}
 		catch (IOException e){
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);
