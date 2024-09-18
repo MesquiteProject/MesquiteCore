@@ -113,7 +113,7 @@ public class TaxaSelCoordinator extends TaxaSelectCoordinator {
 			deleteMenuItem(mss);
 		if (mssc!=null)
 			deleteMenuItem(mssc);
-		mss = addSubmenu(null, "Taxa Set", makeCommand("selectSet",  this), taxa.getSpecSetsVector(TaxaSelectionSet.class));
+		mss = addSubmenu(null, "Select Taxa in Taxa Set", makeCommand("selectSet",  this), taxa.getSpecSetsVector(TaxaSelectionSet.class));
 		mssc = addSubmenu(null, "Select Taxa", MesquiteModule.makeCommand("doSelectTaxa",  this));
 		mssc.setList(TaxonSelector.class);
 	}

@@ -134,7 +134,7 @@ public class CharSelCoordinator extends CharSelectCoordinator {
 	public void resetMenus(){
 		if (mss!=null)
 			deleteMenuItem(mss);
-		mss = addSubmenu(null, "Character Set", makeCommand("selectSet",  this), data.getSpecSetsVector(CharSelectionSet.class));
+		mss = addSubmenu(null, "Select Characters in Character Set", makeCommand("selectSet",  this), data.getSpecSetsVector(CharSelectionSet.class));
 		if (mssc!=null)
 			deleteMenuItem(mssc);
 		mssc = addSubmenu(null, "Select Characters", MesquiteModule.makeCommand("doSelectChars",  this));
