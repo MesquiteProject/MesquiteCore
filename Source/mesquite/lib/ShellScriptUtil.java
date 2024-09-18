@@ -355,8 +355,8 @@ public class ShellScriptUtil  {
 				MesquiteMessage.notifyProgrammer("Process is null in shell script executed by " + name);
 				return false;
 			}
-			else if (StringUtil.notEmpty(runningFilePath))   // is file at runningFilePath; watch for its disappearance
-				while (MesquiteFile.fileExists(runningFilePath) && stillGoing){
+			else 
+				while ((StringUtil.notEmpty(runningFilePath) && MesquiteFile.fileExists(runningFilePath)) || stillGoing){
 					processOutputFiles (outputFileProcessor, outputFilePaths, lastModified);
 					try {
 						Thread.sleep(sleepTime);
