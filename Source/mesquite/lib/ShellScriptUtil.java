@@ -370,6 +370,8 @@ public class ShellScriptUtil  {
 					stillGoing = (watcher != null && watcher.continueProcess(proc));
 					// or, if there is neither a watcher nor is a runningFile being used, then if the process is still alive.
 					stillGoing = stillGoing || (watcher == null &&  proc.isAlive());
+					if (!stillGoing && (StringUtil.notEmpty(runningFilePath) && MesquiteFile.fileExists(runningFilePath)))
+						MesquiteMessage.notifyProgrammer("stillGoing false but running file still exists");
 					stillGoing = stillGoing && (StringUtil.blank(runningFilePath) || MesquiteFile.fileExists(runningFilePath));
 				}
 			}
