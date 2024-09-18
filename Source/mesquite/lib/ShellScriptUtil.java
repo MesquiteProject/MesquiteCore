@@ -30,7 +30,7 @@ public class ShellScriptUtil  {
 	static int sleepTime = 50;
 	public static int recoveryDelay = 0;
 	public static final String runningFileName = "running";
-	public static boolean useRunningFile = false;
+	//public static boolean useRunningFile = false;   // this is always false; no code changes it.
 
 
 	/*.................................................................................................................*/
@@ -229,7 +229,7 @@ public class ShellScriptUtil  {
 	
 	/*.................................................................................................................*/
 	public static Process executeScript(String scriptPath, boolean visibleTerminal){ 
-		//TODO: retool this to use ProcessBuilder
+		//TODO: retool this to use ProcessBuilder?
 		Process proc;
 		try {
 			String[] pathArray = null;
@@ -339,7 +339,7 @@ public class ShellScriptUtil  {
 		}
 		try{
 			ShellScriptUtil.setScriptFileToBeExecutable(scriptPath);
-			if (ShellScriptUtil.useRunningFile && !StringUtil.blank(runningFilePath)) {
+/*			if (ShellScriptUtil.useRunningFile && !StringUtil.blank(runningFilePath)) {
 				if (StringUtil.blank(runningFileMessage))
 					MesquiteFile.putFileContents(runningFilePath, "Script running...", true);
 				else
@@ -348,14 +348,15 @@ public class ShellScriptUtil  {
 					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
 				//+StringUtil.lineEnding()+ShellScriptUtil.getExitCommand()
 			}
+*/
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);
 
 			if (proc==null) {
 				MesquiteMessage.notifyProgrammer("Process is null in shell script executed by " + name);
 				return false;
 			}
-			else if (!StringUtil.blank(runningFilePath) || !ShellScriptUtil.useRunningFile )   // is file at runningFilePath; watch for its disappearance
-				while ((!ShellScriptUtil.useRunningFile || MesquiteFile.fileExists(runningFilePath)) && stillGoing){
+			else if (StringUtil.notEmpty(runningFilePath))   // is file at runningFilePath; watch for its disappearance
+				while (MesquiteFile.fileExists(runningFilePath) && stillGoing){
 					processOutputFiles (outputFileProcessor, outputFilePaths, lastModified);
 					try {
 						Thread.sleep(sleepTime);
@@ -367,7 +368,7 @@ public class ShellScriptUtil  {
 					// continue if there is a watcher and it says to continue
 					stillGoing = (watcher != null && watcher.continueProcess(proc));
 					// or, if there is neither a watcher nor is a runningFile being used, then if the process is still alive.
-					stillGoing = stillGoing || (watcher == null && !ShellScriptUtil.useRunningFile &&  proc.isAlive());
+					stillGoing = stillGoing || (watcher == null &&  proc.isAlive());
 				}
 		}
 		catch (IOException e){

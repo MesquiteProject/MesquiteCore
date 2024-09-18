@@ -102,7 +102,7 @@ public class ShellScriptRunner implements Commandable  {
 					externalProcessManager.setDiesOnClosing(false);//at this point set run to not be killed automatically on closing. 
 			}
 		}
-		if (ShellScriptUtil.useRunningFile)
+		if (StringUtil.notEmpty(runningFilePath))
 			temp.addLine("setRunningFilePath " + ParseUtil.tokenize(runningFilePath));
 		if (outputFilePaths != null){
 			String files = " ";
@@ -246,7 +246,7 @@ public class ShellScriptRunner implements Commandable  {
 		proc = null;
 		try{
 			ShellScriptUtil.setScriptFileToBeExecutable(scriptPath);
-			if (ShellScriptUtil.useRunningFile && !StringUtil.blank(runningFilePath)) {
+			if (StringUtil.notEmpty(runningFilePath)) {
 				if (StringUtil.blank(runningFileMessage))
 					MesquiteFile.putFileContents(runningFilePath, "Script running...", true);
 				else
@@ -292,7 +292,7 @@ public class ShellScriptRunner implements Commandable  {
 	public boolean processRunning() {
 		if (!externalProcessManager.processRunning())
 			return false;
-		if (ShellScriptUtil.useRunningFile)
+		if (StringUtil.notEmpty(runningFilePath))
 			return (StringUtil.notEmpty(runningFilePath) && MesquiteFile.fileExists(runningFilePath));
 		return true;
 	}
