@@ -68,7 +68,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "15 September 2024";
+		return "18 September 2024";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -86,7 +86,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 993;  
+		return 994;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -769,7 +769,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	public String supportDirectoryPath (){
-		return getTempDirectoryPath()  + MesquiteFile.fileSeparator +  getShortClassName(this.getClass());
+		return getTempDirectoryPath()  + MesquiteFile.fileSeparator +  getShortClassName(this.getClass()) + getID();
 	}
 	/*.................................................................................................................*/
 	public static String getTempDirectoryPath (){
@@ -1391,6 +1391,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			discreetAlert("Sorry, Mesquite was unable to connect to the server to send the report.");
 
 
+	}
+	/*.................................................................................................................*/
+	/** Reports status of module. To be used during debugging however useful for context.*/
+	public String reportStatus( ){
+		return null;
 	}
 	/*.................................................................................................................*/
 	/** If scripting, puts alert in log; otherwise puts up alert dialog.*/

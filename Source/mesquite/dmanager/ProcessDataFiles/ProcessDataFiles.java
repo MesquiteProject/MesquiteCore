@@ -521,6 +521,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", header, true);
 				beforeProcessFiles();
 				MesquiteThread.setQuietPlease(true);
+				int filesFound = 0;
 				for (int i=0; i<files.length; i++) {
 					progIndicator.setCurrentValue(i);
 					requestToSequester.setValue(false);
@@ -540,6 +541,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 							//	getProject().setHomeFile(file);
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
 								results.setLength(0);
+								filesFound++;
 								boolean processFileRequestCancelled = !processFile( file, results, requestToSequester);  
 								if (processFileRequestCancelled) 
 									return;
@@ -562,6 +564,13 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 							processProject.getCoordinatorModule().closeFile(file, true);
 						}
 					}
+				}
+				if (filesFound == 0){
+					if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "No files found"))  
+						alert("No appropriate files with extension " + fileExtension + " were found in folder.");
+					else
+						discreetAlert("No appropriate files with extension " + fileExtension + " were found in folder.");
+
 				}
 				MesquiteThread.setQuietPlease(false);
 				afterProcessFiles();
@@ -647,6 +656,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		// filter by extension?
 		// save script
 		//
+		Debugg.println("establish " + directoryPath);
 
 		writingFile.setPath(directoryPath+MesquiteFile.fileSeparator+"temp.nex");
 		processDirectory(directoryPath);  //DLOG: here asks for file extension filter and whether to save as NEXUS

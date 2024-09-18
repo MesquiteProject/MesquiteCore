@@ -31,7 +31,7 @@ import mesquite.lib.table.*;
 public class AlterData extends DataWindowAssistantI implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(DataAlterer.class, getName() + " needs a particular method to alter data in the Character Matrix Editor.",
-				"These options are available in the Alter/Transform submenu of the Matrix menu of the Character Matrix Editor");
+				"These options are available in the Alter submenu of the Matrix menu of the Character Matrix Editor");
 		e2.setPriority(2);
 	}
 	MesquiteTable table;

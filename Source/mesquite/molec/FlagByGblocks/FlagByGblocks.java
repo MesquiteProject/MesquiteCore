@@ -399,6 +399,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
+			deleteSupportDirectory();
 
 		}
 

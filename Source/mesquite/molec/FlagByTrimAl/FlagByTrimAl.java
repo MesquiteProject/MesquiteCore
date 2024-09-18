@@ -34,6 +34,7 @@ import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
@@ -169,8 +170,9 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 	String[] columns;
 
 	/*.................................................................................................................*/
-
-
+	public String reportStatus(){
+		return "@" + status;
+	}
 	/*======================================================*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 		if (data!=null && data.getNumChars()>0 && data instanceof MolecularData){
@@ -180,14 +182,20 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 				flags.reset(data);
 			String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 			String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
+			status = "savingFasta";
 			boolean success = saveFastaFile(data, rootDir, unique + "input.fas");
+			status = "fastaSaved";
 			String scriptPath = rootDir + "trimAlScript" + unique + ".bat";
 
 
 			String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
 			script += trimAlPath + "  -in " + unique + "input.fas -out " + unique + "output.fas -" + autoOptionNames[autoOption] + " -colnumbering > " + unique + "columns.txt";
+			status = "savingScript";
 			MesquiteFile.putFileContents(scriptPath, script, false);
+			status = "scriptSaved";
+			status = "executing";
 			success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
+			status = "done";
 
 			if (success){
 				
@@ -195,7 +203,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 				if (columnsText != null) {
 					columns = columnsText.split(", ");
 					if (columns.length < 1 || columns[0].length()<12){
-						Debugg.println("  No trimming results for matrix " + data.getName() + " file: " + unique + "columns.txt; contents: " + columnsText);
+						MesquiteMessage.warnUser("  WARNING: No trimming results for matrix " + data.getName() + " file: " + unique + "columns.txt; contents: " + columnsText);
 					}
 					else {
 						columns[0] = columns[0].substring(12, columns[0].length());
@@ -222,10 +230,11 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 					}
 				}
 				else
-					Debugg.println(" No trimming results file for matrix " + data.getName());
+					MesquiteMessage.warnUser(" No trimming results file for matrix " + data.getName());
 
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
+			deleteSupportDirectory();
 
 		}
 

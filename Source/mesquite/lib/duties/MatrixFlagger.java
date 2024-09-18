@@ -58,24 +58,31 @@ public abstract class MatrixFlagger extends MesquiteModule  {
 			return super.doCommand(commandName, arguments, checker);
 	}
 	
+	protected String status = "?";
 	/* As a service to flaggers that call programs to run of fasta files*/
 	FileInterpreterI exporter;	
 	protected boolean saveFastaFile(CharacterData data, String path, String fileName){
 		getProject().incrementProjectWindowSuppression();
+		incrementMenuResetSuppression();
 		FileCoordinator coord = getFileCoordinator();
+		status = "newLinkedFile";
 		MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(fileName+".nex"), CommandChecker.defaultChecker); //TODO: never scripting???
 		TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
 		CharacterData newMatrix=null;
+		status = "cloneTaxa";
 		Taxa newTaxa =data.getTaxa().cloneTaxa(); 
 		newTaxa.addToFile(tempDataFile, null, taxaManager);
 		CharactersManager manageCharacters = (CharactersManager)findElementManager(CharacterData.class);
 		MCharactersDistribution matrix = data.getMCharactersDistribution();
 		CharMatrixManager manager = manageCharacters.getMatrixManager(matrix.getCharacterDataClass());
+		status = "makeCharacterData";
 		newMatrix = matrix.makeCharacterData(manager, newTaxa);
 		newMatrix.setName(data.getName());
 
+		status = "addToFile";
 		newMatrix.addToFile(tempDataFile, getProject(), null);
 
+		status = "doneAddToFile";
 		if (exporter == null)
 			exporter = (FileInterpreterI)hireNamedEmployee(FileInterpreterI.class, "#InterpretFastaDNA");
 		exporter.doCommand("includeGaps","true", CommandChecker.defaultChecker);
@@ -85,12 +92,17 @@ public abstract class MatrixFlagger extends MesquiteModule  {
 		if (exporter!=null) {
 			String ext = exporter.preferredDataFileExtension();
 			String s = "file = " + StringUtil.tokenize(fileName) + " directory = " + StringUtil.tokenize(path) + " usePrevious ";
+			status = "exportFile";
 			coord.export(exporter, tempDataFile, s);
 		}
+		status = "deleteMe";
 		newMatrix.deleteMe(false);
 		newTaxa.deleteMe(false);
+		status = "closeFile";
 		coord.closeFile(tempDataFile, true);
-		getProject().decrementProjectWindowSuppression();
+		status = "fileClosed";
+		decrementMenuResetSuppression();
+	getProject().decrementProjectWindowSuppression();
 		return true;
 	}
 }

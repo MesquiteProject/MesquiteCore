@@ -770,8 +770,12 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			return;
 		}
 
-		if (code != MesquiteListener.SELECTION_CHANGED)
-			notifyListeners(this, new Notification(MesquiteListener.ELEMENT_CHANGED));
+		if (code != MesquiteListener.SELECTION_CHANGED){
+			if (Notification.appearsCosmetic(notification))
+				notifyListeners(this, new Notification(code));
+			else
+				notifyListeners(this, new Notification(MesquiteListener.ELEMENT_CHANGED));
+		}
 	}
 	/** passes which object was disposed*/
 	public void disposing(Object obj){

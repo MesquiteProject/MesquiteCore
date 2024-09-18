@@ -59,6 +59,12 @@ public class TrimSequences extends MolecularDataAlterer implements AltererWholeC
 		return true;  
 	}
 	/*.................................................................................................................*/
+	public String reportStatus(){
+		if (trimmer == null)
+			return "no trimmer";
+			return trimmer.reportStatus();
+	}
+	/*.................................................................................................................*/
 	public boolean isSubstantive(){
 		return true;
 	}

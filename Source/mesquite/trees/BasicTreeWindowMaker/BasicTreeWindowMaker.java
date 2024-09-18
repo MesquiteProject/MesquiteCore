@@ -72,10 +72,10 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		EmployeeNeed e8 = registerEmployeeNeed(TreeWindowAssistantI.class, "A Tree Window uses various assistants.", "This is activated automatically.");
 		EmployeeNeed e9 = registerEmployeeNeed(DrawTreeCoordinator.class, "A Tree Window displays a tree drawn in various possible styles.", "This is activated automatically.");
 		e9.setPriority(2);
-		EmployeeNeed e10 = registerEmployeeNeed(TreeAlterer.class, "Trees can be altered within the Tree Window.", "Tree altering methods are available in the Alter/Transform Tree submenu of the Tree menu of the Tree Window.<br>");
+		EmployeeNeed e10 = registerEmployeeNeed(TreeAlterer.class, "Trees can be altered within the Tree Window.", "Tree altering methods are available in the Alter Tree submenu of the Tree menu of the Tree Window.<br>");
 		e10.setAsEntryPoint("alterTree");
 		e10.setPriority(3);
-		EmployeeNeed e11 = registerEmployeeNeed(BranchLengthsAlterer.class, "The branch lengths of trees can be altered within the Tree Window.", "Methods to alter branch lengths are available in the Alter/Transform Branch Lengths submenu of the Tree menu of the Tree Window.<br>");
+		EmployeeNeed e11 = registerEmployeeNeed(BranchLengthsAlterer.class, "The branch lengths of trees can be altered within the Tree Window.", "Methods to alter branch lengths are available in the Alter Branch Lengths submenu of the Tree menu of the Tree Window.<br>");
 		e11.setAsEntryPoint("alterBranchLengths");
 		e11.setPriority(3);
 
@@ -1067,7 +1067,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		mm.setShortcut(KeyEvent.VK_DOWN); // right
 		ownerModule.addMenuItem("Step Through Trees...", ownerModule.makeCommand("stepThroughTrees", this));
 		ownerModule.addMenuSeparator();
-		ownerModule.addSubmenu(null, "Alter/Transform Tree", ownerModule.makeCommand("alterTree", this), TreeAlterer.class);
+		ownerModule.addSubmenu(null, "Alter Tree", ownerModule.makeCommand("alterTree", this), TreeAlterer.class);
 		ownerModule.addSubmenu(null, "Alter/Transform Branch Lengths", ownerModule.makeCommand("alterBranchLengths", this), BranchLengthsAlterer.class);
 		ownerModule.addMenuItem("Cut Selected Taxa", ownerModule.makeCommand("cutSelectedTaxa", this));
 		ownerModule.addMenuSeparator();
