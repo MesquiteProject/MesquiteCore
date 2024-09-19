@@ -111,18 +111,21 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	public boolean isReconnectable(){
    		return false;
    	}
-	
-	 public boolean canGiveIntermediateResults(){
-   		 return false;
-   	 }
- 	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
-   		 if (score != null)
-   			 score.setToUnassigned();
-   		 return null;
-   	 }
-	 protected void newResultsAvailable(TaxaSelectionSet outgroupTaxSet){
- 		 if (getEmployer() instanceof TreeInferer){
- 			 ((TreeInferer)getEmployer()).newResultsAvailable(outgroupTaxSet);
+
+   	public boolean canGiveIntermediateResults(){
+   		return false;
+   	}
+   	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
+   		if (score != null)
+   			score.setToUnassigned();
+   		return null;
+   	}
+   	public TreeVector getCurrentMultipleTrees(Taxa taxa, MesquiteString titleForWindow){
+   		return null;
+   	}
+   	protected void newResultsAvailable(TaxaSelectionSet outgroupTaxSet){
+   		if (getEmployer() instanceof TreeInferer){
+   			((TreeInferer)getEmployer()).newResultsAvailable(outgroupTaxSet);
  		 }
  	 }
 	 //Override in subclasses

@@ -110,6 +110,15 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		Tree latestTree = getLatestTree(null, null, null);
 		return latestTree!=null;
 	}
+	public TreeVector getCurrentMultipleTrees(Taxa taxa, MesquiteString titleForWindow){
+		return null;
+	}
+	public boolean canStoreMultipleCurrentTrees(){
+		TreeVector currentTrees = getCurrentMultipleTrees(null, null);
+		if (currentTrees==null)
+			return false;
+		return currentTrees.size()>0;
+	}
 	
 	public String getTreeBlockName(boolean completedRun){
 		return null;

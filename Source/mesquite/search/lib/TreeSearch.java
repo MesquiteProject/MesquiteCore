@@ -151,6 +151,13 @@ public void processUserClickingOnTextCommandLink(String command) {
  	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
    		return searchTask.getLatestTree(taxa, score, titleForWindow);
    	 }
+ 	
+ 	
+	public TreeVector getCurrentMultipleTrees(Taxa taxa, MesquiteString titleForWindow){
+   		return searchTask.getCurrentMultipleTrees(taxa, titleForWindow);
+   	 }
+
+
 
 	/*.................................................................................................................*/
 	public void setCurrent(long i){  //SHOULD NOT notify (e.g., parametersChanged)
