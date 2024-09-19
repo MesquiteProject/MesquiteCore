@@ -31,14 +31,14 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	static int numThreads = 2;
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Parallelized Alter/Transform Matrices";  
+		return "Parallelized Alter Matrices";  
 	}
 	public String getNameForMenuItem() {
-		return "Parallel Alter/Transform Matrices...";
+		return "Parallel Alter Matrices...";
 	}
 	
 	public boolean loadModule(){
-	return false;  // too flaky
+	return true;  // too flaky
 	}
 
 	public String getExplanation() {
@@ -54,9 +54,9 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
 		}
 		else if (!MesquiteThread.isScripting()) {
-			firstAlterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer/Transformer of matrices");
+			firstAlterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer of matrices");
 			if (firstAlterTask == null)
-				return sorry(getName() + " couldn't start because no tranformer module obtained.");
+				return sorry(getName() + " couldn't start because no matrix alterer module obtained.");
 		}
 		return true;
 	}
@@ -120,6 +120,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 
+		incrementMenuResetSuppression(numThreads+1);
 		CompatibilityTest test = firstAlterTask.getCompatibilityTest();
 		if (getProject() != null){
 			getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
@@ -154,11 +155,12 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 			unpauseAllPausables(v);
 			if (getProject() != null)
 				getProject().decrementProjectWindowSuppression();
+			decrementMenuResetSuppression(numThreads+1);
 			return false;
 		}
 
 		if (firstTime){
-			int temp = MesquiteInteger.queryInteger(containerOfModule(), "Number of threads", "How many matrices should be altered in parallel (i.e. number of threads to be used)?", numThreads);
+			int temp = MesquiteInteger.queryInteger(containerOfModule(), "Number of threads", "How many matrices should be altered in parallel (i.e. number of threads to be used)?", numThreads, 1, 256, true);
 			if (MesquiteInteger.isCombinable(temp) && temp >0){
 				numThreads = temp;
 				storePreferences();
@@ -207,7 +209,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 					String report = "... still waiting on threads (matrix number)";
 					for (int i= 0; i<numThreads;i++) {
 						if (threads[i].longWait())
-							report += " " + (i+1) + " (" + (threads[i].im+1) + ")";
+							report += " " + (i+1) + " (im: " + (threads[i].im+1) + " status: " + threads[i].alterTask.reportStatus() + ")";
 					}
 					logln(report);
 					lastReportTime = System.currentTimeMillis();
@@ -238,6 +240,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 			getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 		}
 		zeroMenuResetSuppression(); //set menu and project suppression to zero, just in case of threading issues?
+		//MainThread.zeroSuppressWaitWindow();
 		resetAllMenuBars();
 
 		return true;

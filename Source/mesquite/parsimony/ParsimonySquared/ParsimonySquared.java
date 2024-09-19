@@ -86,7 +86,7 @@ public class ParsimonySquared extends ParsAncStatesForModel {
 		if (tree == null || observedStates == null)
 			return false;
 		if (tree.hasSoftPolytomies(tree.getRoot())) {
-			String message = "Trees with soft polytomies not allowed in squared-change parsimony calculations.  Calculations for one or more trees were not completed.  To change polytomies to hard, change the default setting in the Tree Defaults submenu of the Defaults submenu of the File menu, or use the Tree window's Alter/Transform Tree submenu";
+			String message = "Trees with soft polytomies not allowed in squared-change parsimony calculations.  Calculations for one or more trees were not completed.  To change polytomies to hard, change the default setting in the Tree Defaults submenu of the Defaults submenu of the File menu, or use the Tree window's Alter Tree submenu";
 			if (!warnedSoftPoly){
 				discreetAlert( message);
 				warnedSoftPoly = true;

@@ -35,8 +35,10 @@ public class NumMatricesWithDataForTaxon extends NumberForTaxon {
 	/* ---------------------------------------------------------*/
 	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
 	public void changed(Object caller, Object obj, Notification notification){
+		if (!Notification.appearsCosmetic(notification)){
 		outputInvalid();
 		parametersChanged();
+		}
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */

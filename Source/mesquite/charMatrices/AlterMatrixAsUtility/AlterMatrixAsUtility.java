@@ -27,10 +27,10 @@ import mesquite.lib.table.*;
 public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Alter/Transform Matrices";  
+		return "Alter Matrices";  
 	}
 	public String getNameForMenuItem() {
-		return "Alter/Transform Matrices...";
+		return "Alter Matrices...";
 	}
 
 	public String getExplanation() {
@@ -45,9 +45,9 @@ public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
 				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
 		}
 		else if (!MesquiteThread.isScripting()) {
-			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer/Transformer of matrices");
+			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer of matrices");
 			if (alterTask == null)
-				return sorry(getName() + " couldn't start because no tranformer module obtained.");
+				return sorry(getName() + " couldn't start because no matrix alterer module obtained.");
 		}
 		return true;
 	}

@@ -494,7 +494,7 @@ public class zMargLikeCateg extends MargLikeAncStCLForModel implements MesquiteL
 			return true;
 		}
 		if (hasZeroOrNegLengthBranches(tree, tree.getRoot(), ROOT_IGNOREPRIOR != rootMode && ROOT_USEPRIOR != rootMode) ) {
-			String message = "Trees with zero or negative length branches are not allowed by Categorical data likelihood calculations.  You can collapse these to polytomies using the Collapse zero-length branches in the Alter/Transform tree submenu.  Calculations for one or more trees were not completed.";
+			String message = "Trees with zero or negative length branches are not allowed by Categorical data likelihood calculations.  You can collapse these to polytomies using the Collapse zero-length branches in the Alter Tree submenu.  Calculations for one or more trees were not completed.";
 			message += " TREE: " + tree.writeTree();
 
 			if (!warnedZeroLength){

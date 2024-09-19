@@ -420,10 +420,13 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	}
 	public static void decrementSuppressWaitWindow(){
 		suppressWaitWindow--;
-		if (suppressWaitWindow < 0){
-			MesquiteMessage.printStackTrace("Oops - negative suppressWaitWindow ");
-			suppressWaitWindow = 0;
-		}
+		//if (suppressWaitWindow < 0){
+		//	//MesquiteMessage.printStackTrace("Oops - negative suppressWaitWindow ");
+		//	suppressWaitWindow = 0;
+		//}
+	}
+	public static void zeroSuppressWaitWindow(){
+		suppressWaitWindow =0;
 	}
 
 	public static boolean getShowWaitWindow(){

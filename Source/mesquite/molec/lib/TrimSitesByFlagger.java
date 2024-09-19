@@ -40,7 +40,11 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 	protected boolean pleaseIterate(){
 		return false;
 	}
-
+	public String reportStatus(){
+		if (flaggerTask == null)
+			return "no flagger";
+			return flaggerTask.reportStatus();
+	}
 
 	
 	/*.................................................................................................................*/

@@ -42,9 +42,9 @@ public class AlterAllMatrices extends FileProcessor {
 				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
 		}
 		else if (!MesquiteThread.isScripting()) {
-			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer/Transformer of matrices");
+			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer of matrices");
 			if (alterTask == null)
-				return sorry(getName() + " couldn't start because no tranformer module obtained.");
+				return sorry(getName() + " couldn't start because no matrix alterer module obtained.");
 		}
 		return true;
 	}
@@ -123,7 +123,7 @@ public class AlterAllMatrices extends FileProcessor {
    	}
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Alter Matrices";
+	return "Alter Matrices ";
 	 }
 		/*.................................................................................................................*/
 	 public String getNameAndParameters() {
