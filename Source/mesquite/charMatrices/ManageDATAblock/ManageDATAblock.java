@@ -56,7 +56,7 @@ public class ManageDATAblock extends MesquiteModule {
 		CharacterData data=null;
 		Parser commandParser = new Parser();
 		commandParser.setString(block.toString());
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		String dataTitle=getProject().getCharacterMatrices().getUniqueName("Character Matrix");
 		String taxaTitle=getProject().getCharacterMatrices().getUniqueName("Taxa");
 		int firstTaxon = 0;
@@ -66,7 +66,7 @@ public class ManageDATAblock extends MesquiteModule {
 		Taxa taxa= null;
 		int numChars=0;
 		NexusBlock b = null;
-		int previousPos = 0;
+		long previousPos = 0;
 		while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandName(startCharC))) {
 			if (commandName.equalsIgnoreCase("DIMENSIONS")) { 
 				parser.setString(commandParser.getNextCommand(startCharC)); 

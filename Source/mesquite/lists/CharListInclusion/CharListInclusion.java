@@ -79,6 +79,7 @@ public class CharListInclusion extends CharListAssistant {
 			parametersChanged();
 		}
 	}
+	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the selected characters to included", null, commandName, "include")) {
@@ -128,7 +129,7 @@ public class CharListInclusion extends CharListAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Loads the stored inclusion set to be the current one", "[number of inclusion set to load]", commandName, "loadToCurrent")) {
 			if (data !=null) {
-				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
+				int which = MesquiteInteger.fromFirstToken(arguments, pos);
 				if (MesquiteInteger.isCombinable(which)){
 					SpecsSetVector ssv = data.getSpecSetsVector(CharInclusionSet.class);
 					if (ssv!=null) {

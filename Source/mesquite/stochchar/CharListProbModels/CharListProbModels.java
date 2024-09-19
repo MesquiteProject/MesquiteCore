@@ -128,7 +128,7 @@ public class CharListProbModels extends CharListAssistant implements MesquiteLis
     	 	}
     	 	else if (checker.compare(this.getClass(), "Loads the stored probability model set to be the current one", "[number of probability set to load]", commandName, "loadToCurrent")) {
  			if (data !=null) {
- 				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
+ 				int which = MesquiteInteger.fromFirstToken(arguments, pos);
  				if (MesquiteInteger.isCombinable(which)){
 		 			SpecsSetVector ssv = data.getSpecSetsVector(ProbabilityModelSet.class);
 					if (ssv!=null) {

@@ -21,6 +21,7 @@ import mesquite.lib.ExporterDialog;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.NameReference;
 import mesquite.lib.ParseUtil;
@@ -106,7 +107,7 @@ public class ExportDescriptions extends FileInterpreterI {
 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
 
 		for (int it = 0; it<numTaxa; it++){
 			if (!writeOnlySelectedTaxa || (taxa.getSelected(it))){

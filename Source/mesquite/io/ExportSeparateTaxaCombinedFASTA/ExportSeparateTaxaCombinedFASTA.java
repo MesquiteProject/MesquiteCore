@@ -119,7 +119,7 @@ public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
 				for (int iM = 0; iM < numMatrices; iM++){
 					CharacterData data = getProject().getCharacterMatrixVisible(taxa, iM, MolecularState.class);
 					if (data != null) {
-						StringBuffer taxMatrixFastaBuffer = ((MolecularData)data).getSequenceAsFasta(false,false,it, data.getName());
+						MesquiteStringBuffer taxMatrixFastaBuffer = ((MolecularData)data).getSequenceAsFasta(false,false,it, data.getName());
 						String taxMatrixFasta = taxMatrixFastaBuffer.toString();
 						if (StringUtil.notEmpty(taxMatrixFasta)){
 							buffer.append(taxMatrixFasta);

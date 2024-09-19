@@ -54,7 +54,7 @@ public class ExportPartitionFinderProtein extends ExportPartitionFinder {
 	}
 
 	/*.................................................................................................................*
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 	}
 /*.................................................................................................................*/

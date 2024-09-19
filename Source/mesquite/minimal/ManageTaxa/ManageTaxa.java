@@ -579,7 +579,7 @@ public class ManageTaxa extends TaxaManager {
 					return false;
 			}
 			else if (commandName.equalsIgnoreCase("TEXT")) {
-				stringPos.setValue(parser.getPosition());
+				stringPos.setValue((int)parser.getPosition());
 				String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
 				if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
 					return false;
@@ -642,7 +642,7 @@ public class ManageTaxa extends TaxaManager {
 
 			}
 			else if (commandName.equalsIgnoreCase("INTEGER") || commandName.equalsIgnoreCase("SUPPLEMENTAL")  || commandName.equalsIgnoreCase("SUT")) {
-				stringPos.setValue(parser.getPosition());
+				stringPos.setValue((int)parser.getPosition());
 				String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
 				if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
 					return false;
@@ -776,7 +776,7 @@ public class ManageTaxa extends TaxaManager {
 		Parser commandParser = new Parser();
 
 		commandParser.setString(block.toString());
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		Taxa newTaxa=null;
 		String title=getProject().getTaxas().getUniqueName("Taxa");
 

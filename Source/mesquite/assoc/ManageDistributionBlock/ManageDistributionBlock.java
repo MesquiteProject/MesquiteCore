@@ -67,7 +67,7 @@ public class ManageDistributionBlock extends MesquiteModule {
 		TaxaAssociation association=null;
 		Parser commandParser = new Parser();
 		commandParser.setString(block.toString());
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		String title= "Association from DISTRIBUTION";
 		String commandString;
 		Taxa hostTaxa= getProject().getTaxa(file, 0); //get last read TAXA as base
@@ -145,7 +145,7 @@ public class ManageDistributionBlock extends MesquiteModule {
 						if (treeName.equals("*"))
 							treeName=parser.getNextToken();
 						parser.getNextToken(); //eat up "equals"
-						treeDescription=commandString.substring(parser.getPosition(), commandString.length());
+						treeDescription=commandString.substring((int)parser.getPosition(), commandString.length());
 						MesquiteTree thisTree =new MesquiteTree(associateTaxa);
 						/*
 						String commentString = comment.getValue();

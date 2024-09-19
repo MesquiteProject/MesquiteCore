@@ -96,7 +96,7 @@ public class ExportPartitionsNEXUS extends FileInterpreterI {
 
 		int found = 0;
 		buffer.append(" gap = - missing =?;" + lineEnding + "matrix" + lineEnding);
-		StringBuffer forTaxon = new StringBuffer(100);
+		MesquiteStringBuffer forTaxon = new MesquiteStringBuffer(100);
 		int numTaxa = 0;
 		for (int it=0; it< taxa.getNumTaxa(); it++) {
 			forTaxon.setLength(0);

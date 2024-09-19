@@ -1987,6 +1987,21 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 		}
 	}
 	/*.................................................................................................................*/
+	public static boolean blank(MesquiteStringBuffer line) {
+		if (line==null)
+			return true;
+		else if (line.length()==0)
+			return true;
+		else {
+			for (int i=0; i<line.length(); i++) {
+				char c = line.charAt(i);
+				if (c > 0 && !whitespace(c, null))
+					return false;
+			}
+			return true;
+		}
+	}
+	/*.................................................................................................................*/
 	public static boolean notEmpty(String line) {
 		return !blank(line);
 	}
@@ -2045,6 +2060,13 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 			return line.isEmpty();
 	}
 
+	/*.................................................................................................................*/
+	public static void append(MesquiteStringBuffer recipient, StringBuffer donor) {
+		if (recipient==null || donor == null || donor.length() == 0)
+			return;
+		for (int i=0; i<donor.length(); i++)
+			recipient.append(donor.charAt(i));
+	}
 	/*.................................................................................................................*/
 	public static void append(StringBuffer recipient, StringBuffer donor) {
 		if (recipient==null || donor == null || donor.length() == 0)

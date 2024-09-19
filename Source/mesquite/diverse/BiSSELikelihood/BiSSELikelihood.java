@@ -134,7 +134,7 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 	}
 	boolean setParam(MesquiteParameter p, MesquiteParameter[] params, Parser parser){
 		double newValue = MesquiteDouble.fromString(parser);
-		int loc = parser.getPosition();
+		long loc = parser.getPosition();
 		String token = parser.getNextToken();
 		if (token != null && "=".equals(token)){
 			int con = MesquiteInteger.fromString(parser);

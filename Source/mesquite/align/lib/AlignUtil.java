@@ -29,7 +29,7 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class AlignUtil {
-	StringBuffer sb = new StringBuffer();
+	MesquiteStringBuffer sb = new MesquiteStringBuffer();
 	private boolean checksumValid = false;
 	CRC32 checksum = new CRC32();
 	

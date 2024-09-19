@@ -67,7 +67,7 @@ public class Arguments {
 		return s;
 	}
 	private String handleNegativeNumber(Parser parser){
-		pos.setValue(parser.getPosition());
+		pos.setValue((int)parser.getPosition());
 		String s = parser.getString();
 		double i  = MesquiteDouble.fromString(s, pos);
 		parser.setPosition(pos.getValue());

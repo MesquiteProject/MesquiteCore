@@ -680,7 +680,7 @@ public class NCBIUtil {
 		if (data==null)
 			return null;
 		Taxa taxa = data.getTaxa();
-		StringBuffer sb = new StringBuffer();
+		MesquiteStringBuffer sb = new MesquiteStringBuffer();
 		sb.append(">"+ taxa.getTaxonName(it) + StringUtil.lineEnding());
 		int counter=0;
 		for (int ic=icStart; ic<=icEnd; ic++) {

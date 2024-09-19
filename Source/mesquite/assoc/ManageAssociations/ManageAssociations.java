@@ -646,7 +646,7 @@ public class ManageAssociations extends AssociationsManager {
 	public NexusBlock processText(MesquiteFile file, String name, String blockAsString, FileBlock block, NexusBlock current, StringBuffer blockComments){
 		Parser commandParser = new Parser();
 		commandParser.setString(blockAsString);
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		TaxaAssociation association=null;
 		Taxa taxaA=null;
 		Taxa taxaB=null;

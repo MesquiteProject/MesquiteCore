@@ -111,6 +111,7 @@ public class CharSrcCoordIndep extends CharSourceCoord {
 		return temp;
 	}
 	/*.................................................................................................................*/
+	MesquiteInteger pos = new MesquiteInteger(0);
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "returns module supplying characters", null, commandName, "getCharacterSource")) {
 			return characterSourceTask;
@@ -124,7 +125,7 @@ public class CharSrcCoordIndep extends CharSourceCoord {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use", "[character number]", commandName, "setCharacter")) {
-			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
+			int icNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			int ic = CharacterStates.toInternal(icNum);

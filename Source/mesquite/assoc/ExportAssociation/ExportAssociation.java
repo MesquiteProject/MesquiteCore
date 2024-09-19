@@ -170,7 +170,7 @@ public class ExportAssociation extends FileInterpreterI {
 		TaxaAssociation association = associationTask.getCurrentAssociation(taxa);
 		if (association==null)
 			return false;
-		StringBuffer outputBuffer = new StringBuffer(100);
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(100);
 
 
 		for (int it=0; it<taxa.getNumTaxa(); it++) {

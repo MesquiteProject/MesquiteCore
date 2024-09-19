@@ -345,7 +345,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			return false;
 		String sequenceName = data.getTaxa().getTaxonName(it);
 		results.append("\n   BLASTing "+ sequenceName+ " (matrix: "+ data.getName() + ")\n");
-		StringBuffer sequence = new StringBuffer(data.getNumChars());
+		MesquiteStringBuffer sequence = new MesquiteStringBuffer(data.getNumChars());
 		for (int ic = icStart; ic<=icEnd; ic++) {  // let's get the querySequence
 			data.statesIntoStringBuffer(ic, it, sequence, false, false, false);
 		}

@@ -1760,7 +1760,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 						if (treeName.equals("*"))
 							treeName=parser.getNextToken();
 						parser.getNextToken(); //eat up "equals"
-						treeDescription=s.substring(parser.getPosition(), s.length());
+						treeDescription=s.substring((int)parser.getPosition(), s.length());
 
 						MesquiteTree thisTree =new MesquiteTree(taxa);
 						thisTree.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlargement);

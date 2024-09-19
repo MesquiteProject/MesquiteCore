@@ -538,7 +538,6 @@ public class Puppeteer  {
 		String previousCommandName = "";
 		String rememberedArguments = null;
 		while (!StringUtil.blank(s=commandParser.getNextCommand(stringPos)) && !s.equalsIgnoreCase(endString)) {
-
 			if (debugging) {
 				if (mb == null)
 					stamp("<NULL OBJECT>" + s);
@@ -1292,7 +1291,7 @@ public class Puppeteer  {
 				else if (StringUtil.blank(s) || parser.getPosition()>= s.length()) 
 					commandArguments = null;
 				else {
-					commandArguments = s.substring(parser.getPosition(), s.length()-1);
+					commandArguments = s.substring((int)parser.getPosition(), s.length()-1);
 					commandArguments = argumentToString(commandArguments, result);
 				}
 				previousArguments = commandArguments;

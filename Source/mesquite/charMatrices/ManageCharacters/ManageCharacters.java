@@ -553,7 +553,7 @@ public class ManageCharacters extends CharactersManager {
 					long id = MesquiteLong.fromString(parser.getNextToken());
 					if (MesquiteLong.isCombinable(id))
 						taxa = getProject().getTaxaByID(id);
-					arguments = arguments.substring(parser.getPosition(), arguments.length());
+					arguments = arguments.substring((int)parser.getPosition(), arguments.length());
 				}
 				if (taxa == null)
 					taxa = getProject().chooseTaxa(containerOfModule(), "For which block of taxa do you want to create a new character matrix?");
@@ -1702,7 +1702,7 @@ public class ManageCharacters extends CharactersManager {
 				 String string = null;
 				 Vector strings = new Vector(); //to store string array
 				 String name = null;
-				 stringPos.setValue(parser.getPosition());
+				 stringPos.setValue((int)parser.getPosition());
 				 String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
 				 if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
 					 return false;
@@ -1966,8 +1966,8 @@ public class ManageCharacters extends CharactersManager {
 	 public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		 CharacterData data=null;
 		 Parser commandParser = new Parser();
-		 commandParser.setString(block.toString());
-		 MesquiteInteger startCharC = new MesquiteInteger(0);
+		 commandParser.setBuffer(block.toMesquiteStringBuffer());
+		 MesquiteLong startCharC = new MesquiteLong(0);
 		 String title=null;
 		 //String commandString;
 		 Taxa taxa= null;
@@ -1986,7 +1986,7 @@ public class ManageCharacters extends CharactersManager {
 		 /*Problem: for most parts of block lineends are white, even if interleaved.  But Matrix must be pulled in
 		with lineends as dark if interleave.  How to do this?  Best to remember previous stringpos, and once matrix
 		pulled in, if interleave go back and set stringpos and reread with lineends dark*/
-		 int previousPos = startCharC.getValue();
+		 long previousPos = startCharC.getValue();
 		 boolean taxaLinkFound = false;
 		 boolean newTaxaFlag = false;
 
@@ -2083,7 +2083,7 @@ public class ManageCharacters extends CharactersManager {
 					 alert("Error in NEXUS file:  CHARLABELS before FORMAT statement");
 				 }
 				 else {
-					 MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
+					 MesquiteLong stc = new MesquiteLong(startCharC.getValue());
 					 parser.setString(commandParser.getNextCommand(stc)); 
 					 parser.getNextToken();
 					 String cN = parser.getNextToken();
@@ -2120,7 +2120,7 @@ public class ManageCharacters extends CharactersManager {
 			 }
 			 else if (commandName.equalsIgnoreCase("IDS")) {
 				 //			parser.setString(commandParser.getNextCommand(startCharC)); 
-				 MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
+				 MesquiteLong stc = new MesquiteLong(startCharC.getValue());
 				 parser.setString(commandParser.getNextCommand(stc)); 
 				 parser.getNextToken();
 				 String cN = parser.getNextToken();
@@ -2135,7 +2135,7 @@ public class ManageCharacters extends CharactersManager {
 				 commandParser.getNextCommand(startCharC); //eating up the full command
 			 }
 			 else if (commandName.equalsIgnoreCase("BLOCKID")) {
-				 MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
+				 MesquiteLong stc = new MesquiteLong(startCharC.getValue());
 				 parser.setString(commandParser.getNextCommand(stc)); 
 				 //				parser.setString(commandParser.getNextCommand(startCharC)); 
 				 parser.getNextToken();

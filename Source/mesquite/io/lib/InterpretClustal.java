@@ -51,7 +51,7 @@ public abstract class InterpretClustal extends FileInterpreterI {
 	/*.................................................................................................................*/
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 	/*.................................................................................................................*/
-	StringBuffer sb = new StringBuffer(1000);
+	MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 	public String skipBlankLines(MesquiteFile file, Parser parser, String line){
 		while ((line!=null) && StringUtil.blank(line,"*.:")) {
 			if (!file.readLine(sb))
@@ -92,7 +92,7 @@ public abstract class InterpretClustal extends FileInterpreterI {
 			int block = 1;
 			int ic = 0;
 			String line = null;
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);   // reads first line
 			file.readLine(sb);   // reads first line of data
 			line = sb.toString();

@@ -315,7 +315,7 @@ public class StateConsistencyStrip extends DataColumnNamesAssistant {
 					 */
 					g.setColor(Color.black);
 			 }
-			 StringBuffer sb = new StringBuffer();
+			 MesquiteStringBuffer sb = new MesquiteStringBuffer();
 			 ((CategoricalData)data).statesIntoStringBufferCore(ic,  s,  sb, true,false, false);
 			 FontMetrics fm = g.getFontMetrics(g.getFont());
 			 int svp = StringUtil.getStringVertPosition(fm, y, h, null);

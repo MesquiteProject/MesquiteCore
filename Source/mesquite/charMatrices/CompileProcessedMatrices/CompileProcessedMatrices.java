@@ -139,7 +139,7 @@ ListableVector taxonNames = new ListableVector();
 			MesquiteFile.appendFileContents(file, "\tFORMAT DATATYPE = DNA GAP = - MISSING = ?;" + StringUtil.lineEnding() + "\tMATRIX" + StringUtil.lineEnding() , true);
 		for (int it = 0; it < data.getNumTaxa(); it++){
 			MesquiteFile.appendFileContents(file, "\t" + ParseUtil.tokenize(data.getTaxa().getTaxonName(it)) + "\t" , true);
-			StringBuffer description = new StringBuffer();
+			MesquiteStringBuffer description = new MesquiteStringBuffer();
 			for (int ic =0; ic<data.getNumChars(); ic++){
 				data.statesIntoNEXUSStringBuffer(ic, it, description);
 			}

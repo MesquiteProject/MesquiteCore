@@ -352,7 +352,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 	/*.................................................................................................................*/
 	public void writeCharactersBlock(CharacterData data, CharactersBlock cB, MesquiteFile file, ProgressIndicator progIndicator){
 		String endLine =";" + StringUtil.lineEnding();
-		StringBuffer line = new StringBuffer(2*data.getNumChars());
+		MesquiteStringBuffer line = new MesquiteStringBuffer(2L*data.getNumChars());
 		if (file == null)
 			file = data.getFile();
 		if (file == null)
@@ -498,7 +498,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			if  (commandName.equalsIgnoreCase("TEXT")){
 				int integer = MesquiteInteger.unassigned;
 				String name = null;
-				stringPos.setValue(parser.getPosition());
+				stringPos.setValue((int)parser.getPosition());  // could overflow
 				String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
 				if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
 					return false;
@@ -564,7 +564,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			else if  (commandName.equalsIgnoreCase("ANS")){
 				int integer = MesquiteInteger.unassigned;
 				String name = null;
-				stringPos.setValue(parser.getPosition());
+				stringPos.setValue((int)parser.getPosition());
 				String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
 				if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
 					return false;

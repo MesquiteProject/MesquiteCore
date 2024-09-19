@@ -318,12 +318,12 @@ public class ProteinData extends MolecularData {
 
 	/*..........................................  ProteinData  ..................................................*/
    	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay){
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay){
 		statesIntoStringBufferCore(ic,s,sb,forDisplay, true, true);
 	}
 	/*..........................................  ProteinData  ..................................................*/
    	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		if ((CategoricalState.cardinality(s) == 2) && CategoricalState.isUncertain(s)) {
 			if (CategoricalState.isElement(s,2)&&CategoricalState.isElement(s,11))
 				sb.append("B");
@@ -336,13 +336,13 @@ public class ProteinData extends MolecularData {
 			super.statesIntoStringBufferCore(ic,s, sb, forDisplay,includeInapplicable, includeUnassigned);
 	}
 	/*................................................................................................*/
-	private void appendStateSymbol(int e, StringBuffer sb){
+	private void appendStateSymbol(int e, MesquiteStringBuffer sb){
 			if (e>=0 && e<= ProteinState.maxProteinState)
 				sb.append(symbols[e]);
 	}
 	
 	/*................................................................................................*/
-	public void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb){
+	public void statesIntoNEXUSStringBuffer(int ic, int it, MesquiteStringBuffer sb){
 		boolean first=true;
 		long s = getStateRaw(ic, it);
 		if (s == 0L || s == CategoricalState.impossible)
@@ -353,7 +353,7 @@ public class ProteinData extends MolecularData {
 			sb.append(getUnassignedSymbol());
 		else {
 			int card =0;
-			int current = sb.length();
+			long current = sb.length();
 			for (int e=0; e<=ProteinState.maxProteinState; e++) {
 				if (CategoricalState.isElement(s, e)) {
 					card++;

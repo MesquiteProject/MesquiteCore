@@ -119,7 +119,7 @@ public class CharListWeights extends CharListAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Loads the stored weight set to be the current one", "[number of weight set to load]", commandName, "loadToCurrent")) {
 			if (data !=null) {
-				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
+				int which = MesquiteInteger.fromFirstToken(arguments, pos);
 				if (MesquiteInteger.isCombinable(which)){
 					SpecsSetVector ssv = data.getSpecSetsVector(CharWeightSet.class);
 					if (ssv!=null) {

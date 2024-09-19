@@ -57,7 +57,7 @@ public class BLASTSearch extends CategDataSearcher {
    			firstLine ="%3E" + StringUtil.encodeForURL(firstLine) + "%0D%0A";  //to make it a FASTA format
    		else
    			firstLine ="%3Etaxon " + it + "%0D%0A";  //to make it a FASTA format
-   		StringBuffer searchBuffer = new StringBuffer(data.getNumChars());
+   		MesquiteStringBuffer searchBuffer = new MesquiteStringBuffer(data.getNumChars());
    		for (int ic = icStart; ic<=icEnd; ic++) {
    			data.statesIntoStringBuffer(ic, it, searchBuffer, false, false, false);
    		}

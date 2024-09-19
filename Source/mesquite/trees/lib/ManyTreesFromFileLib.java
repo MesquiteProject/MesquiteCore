@@ -852,7 +852,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		boolean treeDescriptionBad = (currentTreeName == null);
 		parser.getNextToken(); //eat up "equals"
 		if (processTree)
-			treeDescription=treeCommand.substring(parser.getPosition(), treeCommand.length());
+			treeDescription=treeCommand.substring((int)parser.getPosition(), treeCommand.length());
 		if (treeDescription== null || treeDescription.length()<=2)
 			return null;
 		MesquiteTree thisTree =t; //t is supplied mostly for skipping trees

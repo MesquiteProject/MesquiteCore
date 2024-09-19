@@ -4257,7 +4257,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	}
 
-	StringBuffer sb = new StringBuffer(50);
+	MesquiteStringBuffer sb = new MesquiteStringBuffer(50);
 
 	/* ............................................................................................................... */
 	public synchronized String getMatrixText(int column, int row) {
@@ -4411,7 +4411,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	StringBuffer esb = new StringBuffer(100);
+	MesquiteStringBuffer esb = new MesquiteStringBuffer(100);
 
 	String getCellExplanation(int column, int row) {
 		if (data == null)

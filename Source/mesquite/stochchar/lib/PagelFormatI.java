@@ -75,7 +75,7 @@ public abstract class PagelFormatI extends FileInterpreterI {
 			TreeVector trees = new TreeVector(taxa);
 			trees.setName("Trees imported from Pagel file");
 			int numChars = 1;
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);
 			String line = sb.toString();
 			Vector nodes = new Vector();

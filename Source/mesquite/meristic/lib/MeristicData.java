@@ -664,15 +664,15 @@ public class MeristicData extends CharacterData implements ItemContainer {
 	}
 
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay){
 		statesIntoStringBuffer(ic,it,sb,forDisplay,true,true);
 	}
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		sb.append(statesToString(ic, it, forDisplay)); //TODO: use buffer
 	}
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb){
+	public void statesIntoNEXUSStringBuffer(int ic, int it, MesquiteStringBuffer sb){
 		sb.append(statesToString(ic, it, false));  //TODO: use buffer
 	}
 	float[] hsb = new float[3];
@@ -868,7 +868,7 @@ public class MeristicData extends CharacterData implements ItemContainer {
 				result.setValue("String blank in setState");
 			return ERROR;
 		}
-		StringBuffer s = parser.getBuffer();
+		MesquiteStringBuffer s = parser.getBuffer();
 		boolean dirt = false;
 		if (s.length() == 1){
 			char c= s.charAt(0);
@@ -916,7 +916,7 @@ public class MeristicData extends CharacterData implements ItemContainer {
 		boolean done = false;
 		int item = 0;
 		String t = null;
-		int prev = parser.getPosition();
+		long prev = parser.getPosition();
 		//MesquiteInteger pos = new MesquiteInteger(parser.getPosition()); //how to avoid this instantiation but be reentrant safe?
 		while (!done){
 			parser.setPosition(prev);
@@ -1100,7 +1100,7 @@ public class MeristicData extends CharacterData implements ItemContainer {
 	/*..........................................MeristicData................*/
 	/** dump the matrix to the log*/
 	public void logMatrix(){
-		StringBuffer matrixString= new StringBuffer();
+		MesquiteStringBuffer matrixString= new MesquiteStringBuffer();
 		for (int it=0; it<numTaxa; it++) {
 			matrixString.append(getTaxa().getTaxon(it).getName() + "  ");
 			for (int ic=0; ic<numChars; ic++)

@@ -36,7 +36,7 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 		return CategoricalData.class;
 	}
 	/*.................................................................................................................*/
-	private int writeCharactersBlockPart(CharacterData data, CharactersBlock cB, StringBuffer blocks, int startChar, int endChar, int tot, int numTotal, MesquiteFile file, ProgressIndicator progIndicator) {
+	private long writeCharactersBlockPart(CharacterData data, CharactersBlock cB, MesquiteStringBuffer blocks, int startChar, int endChar, long tot, long numTotal, MesquiteFile file, ProgressIndicator progIndicator) {
 		if (startChar >= data.getNumChars()) {
 			file.writeLine(blocks.toString());
 			blocks.setLength(0);
@@ -98,7 +98,7 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 					//		blocks.append(StringUtil.lineEnding());//this is here because of current problem (at least on mrj 2.2) of long line slow writing
 					}
 				}
-				file.writeLine(blocks.toString());
+				file.writeLine(blocks);
 				blocks.setLength(0);
 			}
 		}
@@ -110,7 +110,7 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 				alert(s);
 			warnedInvalid = true;
 		}
-		file.writeLine(blocks.toString());
+		file.writeLine(blocks);
 		blocks.setLength(0);
 		return tot;
 	}
@@ -119,29 +119,29 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 	public void writeNexusMatrix(CharacterData data, CharactersBlock cB, StringBuffer blocks, MesquiteFile file, ProgressIndicator progIndicator){
 		warnedInvalid = false;
 		blocks.append("\tMATRIX" + StringUtil.lineEnding());
-		int numCharsToWrite;
+		MesquiteStringBuffer mBlocks = new MesquiteStringBuffer(blocks.toString());
+		blocks.setLength(0);
+		long numCharsToWrite;
 		if (file.writeExcludedCharacters)
 			numCharsToWrite = data.getNumChars();
 		else
 			numCharsToWrite = data.getNumCharsIncluded();
-		int numTotal = data.getNumTaxa() * numCharsToWrite;
+		long numTotal = data.getNumTaxa() * numCharsToWrite;
 		//MesquiteModule.mesquiteTrunk.mesquiteMessage("Composing DNA matrix ", numTotal, 0);
 		if (data.interleaved && data.interleavedLength>0 && file.interleaveAllowed) {
 			int numBlocks = (int) (data.getNumChars() / data.interleavedLength);
-			int tot = 0;
+			long tot = 0;
 			for (int ib = 0; ib<=numBlocks; ib++) {
 				if (ib>0)
-					blocks.append(StringUtil.lineEnding());
-				tot = writeCharactersBlockPart(data, cB, blocks, ib*data.interleavedLength,(ib+1)*data.interleavedLength, tot, numTotal, file, progIndicator);
+					mBlocks.append(StringUtil.lineEnding());
+				tot = writeCharactersBlockPart(data, cB, mBlocks, ib*data.interleavedLength,(ib+1)*data.interleavedLength, tot, numTotal, file, progIndicator);
 			}
 		}
 		else
-			writeCharactersBlockPart(data, cB, blocks, 0,data.getNumChars(), 0, numTotal, file, progIndicator);
+			writeCharactersBlockPart(data, cB, mBlocks, 0,data.getNumChars(), 0, numTotal, file, progIndicator);
 		if (progIndicator !=null)
 			progIndicator.setText("Finished writing matrix");
-		blocks.append(";" + StringUtil.lineEnding());
-		file.writeLine(blocks.toString());
-		blocks.setLength(0);
+		file.writeLine(";" + StringUtil.lineEnding());
 	}
 	
 }

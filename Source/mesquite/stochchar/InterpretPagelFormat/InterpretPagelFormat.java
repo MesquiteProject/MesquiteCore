@@ -36,7 +36,7 @@ public class InterpretPagelFormat extends PagelFormatI {
 
 		String token;
 		int nt = 0;
-			StringBuffer sb = new StringBuffer(1000);
+		MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 		while (line !=null && !abort) {  //first pull in all the nodes
 			if (!StringUtil.blank(line)){
 				parser.setString(line);

@@ -85,7 +85,7 @@ public class ExportPartitionsFASTA extends FileInterpreterI {
 		Taxa taxa = data.getTaxa();
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20 + numChars));
 		
 		int counter = 1;
 		for (int it = 0; it<numTaxa; it++){
@@ -98,7 +98,7 @@ public class ExportPartitionsFASTA extends FileInterpreterI {
 
 					for (int ic = 0; ic<numChars; ic++) {
 						if (partition.getProperty(ic) == group) {
-							int currentSize = outputBuffer.length();
+							long currentSize = outputBuffer.length();
 							boolean wroteMoreThanOneSymbol = false;
 							boolean wroteSymbol = false;
 							if (data.isUnassigned(ic, it)){

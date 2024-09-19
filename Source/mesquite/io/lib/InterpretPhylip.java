@@ -188,7 +188,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			int numTaxa = 0;
 			int numChars = 0;
 
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);
 			String line = sb.toString();
 			parser.setString(line); 
@@ -346,9 +346,9 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		return treeVector;
 	}
 	/*.................................................................................................................*/
-	public abstract void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer) ;
+	public abstract void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer) ;
 	/*.................................................................................................................*/
-	protected void exportTrees(Taxa taxa, TreeVector treeVector, StringBuffer outputBuffer) { 
+	protected void exportTrees(Taxa taxa, TreeVector treeVector, MesquiteStringBuffer outputBuffer) { 
 		Tree tree;
 		if (treeVector !=null && treeVector.size()>0) {
 			outputBuffer.append(""+treeVector.size() + getLineEnding());
@@ -362,7 +362,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 	}
 	int charWritten = 0;
 	/*.................................................................................................................*/
-	public void exportBlock(Taxa taxa, CharacterData data, StringBuffer outputBuffer, int startChar, int blockSize, boolean writeTaxonNames) { 
+	public void exportBlock(Taxa taxa, CharacterData data, MesquiteStringBuffer outputBuffer, int startChar, int blockSize, boolean writeTaxonNames) { 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
 		int counter;
@@ -391,7 +391,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 					counter = 1;
 					for (int ic = startChar; ic<numChars; ic++) {
 						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
-							int currentSize = outputBuffer.length();
+							long currentSize = outputBuffer.length();
 							appendPhylipStateToBuffer(data, ic, it, outputBuffer);
 							if (it==0)
 								charWritten++;
@@ -409,7 +409,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		}
 	}
 	/*.................................................................................................................*/
-	public  StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
+	public  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		if (data==null)
 			return null;
 		Taxa taxa = data.getTaxa();
@@ -428,7 +428,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 				if (fractionApplicable==1.0 || data.getFractionApplicableInTaxon(it, writeExcludedCharacters)>=fractionApplicable) 
 					countTaxa++;
 		numTaxa = countTaxa;
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
 
 		outputBuffer.append(Integer.toString(numTaxa)+" ");
 
@@ -501,7 +501,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			logln("WARNING: No suitable data or trees available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
 			return false;
 		}
-		StringBuffer outputBuffer = new StringBuffer(100);
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(100);
 		int numCharWrite=0;
 		boolean firstTimeThrough = true;
 		initializeExport(taxa);

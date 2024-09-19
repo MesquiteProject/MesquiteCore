@@ -2296,7 +2296,7 @@ public class CategoricalData extends CharacterData {
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) specified in the long array s.  The first element in s is presumed (for the sake of state symbols
 	 * and state names) to correspond to character ic. */
-	public void statesIntoStringBufferCore(int ic, long[] s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+	public void statesIntoStringBufferCore(int ic, long[] s, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		for (int i=0; i<s.length; i++) {
 			statesIntoStringBufferCore(ic+i, s[i],  sb, forDisplay, includeInapplicable, includeUnassigned);
 		}
@@ -2304,12 +2304,12 @@ public class CategoricalData extends CharacterData {
 
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it. �*/
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay){
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay){
 		statesIntoStringBufferCore(ic,s,sb,forDisplay, true, true);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it. �*/
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		if (s==CategoricalState.inapplicable) {
 			if (includeInapplicable)
 				sb.append(getInapplicableSymbol());
@@ -2342,7 +2342,7 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it.�*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		if (notInStorage(ic, it)) //illegal check
 			return;
 		long s = getStateRaw(ic, it);
@@ -2350,12 +2350,12 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it.�*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay){
 		statesIntoStringBuffer(ic,it,sb, forDisplay, true, true);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it.�*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, String separatorForMultistate, String bracketForMultistateStart, String bracketForMultistateEnd){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, String separatorForMultistate, String bracketForMultistateStart, String bracketForMultistateEnd){
 		if (notInStorage(ic, it)) //illegal check
 			return;
 		long s = getStateRaw(ic, it);
@@ -2385,6 +2385,52 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it. �*/
+	public void statesIntoNEXUSStringBuffer(int ic, int it, MesquiteStringBuffer sb){
+		if (notInStorage(ic, it)) //illegal check
+			return;
+		boolean first=true;
+		long s = getStateRaw(ic, it);
+		if (s == 0L || s == CategoricalState.impossible)
+			sb.append('!');
+		else if (s==CategoricalState.inapplicable)
+			sb.append(getInapplicableSymbol());
+		else if (s==CategoricalState.unassigned)
+			sb.append(getUnassignedSymbol());
+		else {
+			int card =0;
+			long current = sb.length();
+			for (int e=0; e<=CategoricalState.maxCategoricalState; e++) {
+				if (CategoricalState.isElement(s, e)) {
+					card++;
+					if (!first) {
+						sb.append(' ');
+					}
+					sb.append(getStateSymbol(ic, e));
+					first=false;
+				}
+			}
+			if (card>1) {
+				if (CategoricalState.isUncertain(s)) {
+					sb.insert(current,'{');
+					sb.append('}');
+				}
+				else {
+					sb.insert(current,'(');
+					sb.append(')');
+				}
+			}
+			if (first){ //nothing written!  Write illegal character so that change will not go unnoticed
+				sb.append('!');
+				if (ic == 0 && it == 0)
+					ecount = 0;
+				if (ecount++<100)
+					MesquiteMessage.warnProgrammer("ERROR: nothing written for character " + (ic+1) + " taxon " + (it+1) + " state as long: " + s + "  (matrix " + getName() + ")");
+			}
+		}
+	}
+	int ecount = 0;
+	/*..........................................  CategoricalData  ..................................................*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it. �*
 	public void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb){
 		if (notInStorage(ic, it)) //illegal check
 			return;
@@ -2428,7 +2474,6 @@ public class CategoricalData extends CharacterData {
 			}
 		}
 	}
-	int ecount = 0;
 
 	/*..........................................  CategoricalData  ..................................................*/
 	CategoricalState tempState = (CategoricalState)makeCharacterState(); //a utility CategoricalState for the fromChar method, which isn't static
@@ -2514,9 +2559,9 @@ public class CategoricalData extends CharacterData {
 
 		else { //String is not from editor; assume it's from matrix in NEXUS file.  Thus, assume symbols, not names
 			boolean done = false;
-			int loc = parser.getPosition();
+			long loc = parser.getPosition();
 			parser.setPunctuationString(null);
-			StringBuffer s = parser.getBuffer(); 
+			MesquiteStringBuffer s = parser.getBuffer(); 
 			while (loc<s.length() && !done) {
 				char c = s.charAt(loc++); //get next dark character
 				boolean wasWhitespace = false;
@@ -2586,9 +2631,9 @@ public class CategoricalData extends CharacterData {
 		long stateSet = 0;
 		int multi = 0;
 		boolean done = false;
-		int loc = parser.getPosition();
+		long loc = parser.getPosition();
 		parser.setPunctuationString(null);
-		StringBuffer s = parser.getBuffer(); 
+		MesquiteStringBuffer s = parser.getBuffer(); 
 		while (loc<s.length() && !done) {
 			char c = s.charAt(loc++); //get next dark character
 			long obviousState = obviousFromChar(c);

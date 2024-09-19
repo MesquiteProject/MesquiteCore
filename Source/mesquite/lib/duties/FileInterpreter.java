@@ -266,7 +266,8 @@ public abstract class FileInterpreter extends MesquiteModule  {
 
 	}
 	/*.................................................................................................................*/
-	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suffix, String suggestedFileEnding, String filePath) {
+	// Debugg.println don't use toSTring XYXYXY
+	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String suffix, String suggestedFileEnding, String filePath) {
 		if (outputBuffer == null)
 			return;
 		String output = outputBuffer.toString();
@@ -279,7 +280,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 			saveExportedFileToFilePath(output, arguments, filePath);
 	}
 	/*.................................................................................................................*/
-	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
+	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
 		saveExportedFileWithExtension(outputBuffer,arguments, null, suggestedFileEnding, null);
 	}
 	/*.................................................................................................................*/
@@ -373,7 +374,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	}
 	/** Returns the Character data as a StringBuffer in the Interperter's format.  This method should be overridden for those Interpreters that can provide this service. */
 	/*.................................................................................................................*/
-	public  StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
+	public  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		return null;
 	}
 	public int getTotalFilesToImport() {

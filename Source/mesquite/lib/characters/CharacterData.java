@@ -2167,11 +2167,17 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public abstract void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned);
+//	public abstract void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned);
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public abstract void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay);
+	public abstract void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned);
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public abstract void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb);
+//	public abstract void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay);
+	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
+	public abstract void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay);
+	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
+	///public abstract void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb);
+	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
+	public abstract void statesIntoNEXUSStringBuffer(int ic, int it, MesquiteStringBuffer sb);
 	/**Set the state at character ic and taxon it from the string in the parser, beginning at current parser position in the string. 
 	Updates current position in string.  If fromEditor is true, should assume whole string is state. Returns a result code (OK, ERROR, EOL, COMMENT).
 	EOL is returned if data are interleaved and end of line found.  If there is an error or a comment, an error message or the comment,
@@ -3220,7 +3226,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 
 	/*.................................................................................................................*/
 
-	public void copyDataFromRowIntoBuffer(int row, StringBuffer sb) {
+	public void copyDataFromRowIntoBuffer(int row, MesquiteStringBuffer sb) {
 		if (sb ==null)
 			return;
 		String t = null;
@@ -3238,7 +3244,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 	/*.................................................................................................................*/
 
 	public void copyDataFromRow(int row) {
-		StringBuffer sb = new StringBuffer();
+		MesquiteStringBuffer sb = new MesquiteStringBuffer();
 		copyDataFromRowIntoBuffer(row, sb);
 
 		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -3266,7 +3272,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 			if (saveChangeHistory){ //|| MesquiteTrunk.currentAuthor == null
 				ChangeHistory history = (ChangeHistory)getCellObject(historyRef, ic, it);
 				ChangeEvent ce = null;
-				StringBuffer sb = new StringBuffer();
+				MesquiteStringBuffer sb = new MesquiteStringBuffer();
 				statesIntoStringBuffer(ic, it, sb, false);
 				long baseTime = MesquiteTrunk.startupTime;
 				if (getProject() != null)
@@ -3444,7 +3450,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 			components[i].reset();
 		}
 		//CRC32 checksum = components[CS_Overall];
-		StringBuffer sb = new StringBuffer(20);
+		MesquiteStringBuffer sb = new MesquiteStringBuffer(20);
 		//checksum.reset();
 		//updateChecksum(checksum, getName());   //MName  Cosmetic
 		updateChecksum(components[CS_MName], getName());   //MName  Cosmetic
@@ -4139,7 +4145,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 
 	public String[] toStringsContig(boolean includeInapplicable){
 		String[] s = new String[getNumTaxa()];
-		StringBuffer sb = new StringBuffer(getNumChars());
+		MesquiteStringBuffer sb = new MesquiteStringBuffer(getNumChars());
 		for (int it= 0; it<getNumTaxa(); it++){
 			for (int ic = 0; ic<getNumChars(); ic++){
 				statesIntoStringBuffer(ic, it,  sb, true, includeInapplicable, true);

@@ -53,7 +53,7 @@ public class InterpretPhylipCat extends InterpretPhylip {
 		 return charTask.newCharacterData(taxa, 0, CategoricalData.DATATYPENAME);  //
 	}
 /*.................................................................................................................*/
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		outputBuffer.append(statesToStringPolyChar((CategoricalData)data, ic, it,'P'));
 	}
 	/*..........................................  CategoricalData  ..................................................*/

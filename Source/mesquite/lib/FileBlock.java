@@ -164,10 +164,23 @@ public class FileBlock {
 			return MesquiteInteger.unassigned;
 		return commands.size();
 	}
+	public MesquiteStringBuffer toMesquiteStringBuffer(){
+		if (readOnce && directFromFile)
+			MesquiteMessage.warnUser("FileBlock toString() used even though directFromFile and already read: " + blockName);
+		MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
+		MesquiteString comment = new MesquiteString();
+		reset();
+		String command = null;
+		while ((command = getNextFileCommand(comment)) != null){
+			sb.append(command + StringUtil.lineEnding());
+		}
+		readOnce = true;
+		return sb;
+	}
 	public String toString(){
 		if (readOnce && directFromFile)
 			MesquiteMessage.warnUser("FileBlock toString() used even though directFromFile and already read: " + blockName);
-		StringBuffer sb = new StringBuffer(1000);
+		MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 		MesquiteString comment = new MesquiteString();
 		reset();
 		String command = null;

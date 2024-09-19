@@ -598,16 +598,16 @@ public class MolecularData extends CategoricalData {
 		}
 	}
 
-	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
+	public  MesquiteStringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
 		return getSequenceAsFasta(includeGaps, convertMultStateToMissing, it, getTaxa().getTaxonName(it));
 	}
 
-	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it, String sequenceName) {
+	public  MesquiteStringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it, String sequenceName) {
 		Taxa taxa = getTaxa();
 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20 + numChars));
 		boolean isProtein = this instanceof ProteinData;
 
 		int counter = 1;
@@ -617,7 +617,7 @@ public class MolecularData extends CategoricalData {
 			outputBuffer.append(sequenceName);
 			outputBuffer.append(StringUtil.lineEnding());
 			for (int ic = 0; ic<numChars; ic++) {
-				int currentSize = outputBuffer.length();
+				long currentSize = outputBuffer.length();
 				boolean wroteMoreThanOneSymbol = false;
 				if (isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && isMultistateOrUncertainty(ic, it)))
 					outputBuffer.append(getUnassignedSymbol());

@@ -65,7 +65,7 @@ public class InterpretTabbedCat extends FileInterpreterI {
 			data.addToFile(file, getProject(), null);
 
 			int numTaxa = 0;
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);
 			String line = sb.toString();
 

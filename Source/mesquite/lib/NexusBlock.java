@@ -166,7 +166,7 @@ public abstract class NexusBlock implements Listable, Identifiable, Disposable {
 
 	public void processLinkCTCommand(String s, MesquiteProject project, Parser parser){
 		MesquiteInteger stringPos = new MesquiteInteger();
-		stringPos.setValue(parser.getPosition());
+		stringPos.setValue((int)parser.getPosition()); //dangerous; could overflow
 		String[][] subcommands  = ParseUtil.getSubcommands(s, stringPos);
 		if (!(subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)){
 			String ttoken = null;

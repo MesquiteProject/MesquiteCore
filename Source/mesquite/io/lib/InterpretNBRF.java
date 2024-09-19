@@ -87,7 +87,7 @@ public abstract class InterpretNBRF extends FileInterpreterI implements ReadFile
 			data.saveChangeHistory = false;
 			Parser subParser = new Parser();
 
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			if (file!=null)
 				file.readLine(sb);
 			else
@@ -251,14 +251,14 @@ public abstract class InterpretNBRF extends FileInterpreterI implements ReadFile
 	/*.................................................................................................................*/
 	public abstract CharacterData findDataToExport(MesquiteFile file, String arguments);
 	/*.................................................................................................................*/
-	public StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
+	public MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		if (data==null)
 			return null;
 		Taxa taxa = data.getTaxa();
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
 
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
 		boolean wroteMoreThanOneSymbol = false;
 		
 		int counter = 1;
@@ -271,7 +271,7 @@ public abstract class InterpretNBRF extends FileInterpreterI implements ReadFile
 				outputBuffer.append(ParseUtil.tokenize(taxa.getTaxonName(it)) + getLineEnding());
 				for (int ic = 0; ic<numChars; ic++) {
 					if (!writeOnlySelectedData || (data.getSelected(ic))){
-						int currentSize = outputBuffer.length();
+						long currentSize = outputBuffer.length();
 
 						wroteMoreThanOneSymbol = false;
 						if (includeGaps || (!data.isInapplicable(ic,it))) {
@@ -327,7 +327,7 @@ public abstract class InterpretNBRF extends FileInterpreterI implements ReadFile
 		if (args.parameterExists("includeGaps"))
 			includeGaps = true;
 
-		StringBuffer outputBuffer = getDataAsFileText(file, data);
+		MesquiteStringBuffer outputBuffer = getDataAsFileText(file, data);
 		includeGaps = oldIncludeGaps;
 		
 		if (outputBuffer==null) {

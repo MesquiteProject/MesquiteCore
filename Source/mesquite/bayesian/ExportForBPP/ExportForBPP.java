@@ -154,11 +154,11 @@ public class ExportForBPP extends FileInterpreterI {
 		return StringUtil.tokenize(name);
 	}
 	/*.................................................................................................................*/
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 	}
 	/*.................................................................................................................*/
-	public void exportBlock(Taxa taxa, CharacterData data, StringBuffer outputBuffer, boolean writeTaxonNames) { 
+	public void exportBlock(Taxa taxa, CharacterData data, MesquiteStringBuffer outputBuffer, boolean writeTaxonNames) { 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
 		int taxonNameLength=taxa.getLongestTaxonNameLength()+2;
@@ -181,7 +181,7 @@ public class ExportForBPP extends FileInterpreterI {
 			//outputBuffer.append(" ");
 			for (int ic = 0; ic<numChars; ic++) {
 				if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
-					int currentSize = outputBuffer.length();
+					long currentSize = outputBuffer.length();
 					appendPhylipStateToBuffer(data, ic, it, outputBuffer);
 					if (outputBuffer.length()-currentSize>1) {
 						alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
@@ -234,7 +234,7 @@ public class ExportForBPP extends FileInterpreterI {
 		
 		
 		Taxa otherTaxa = association.getOtherTaxa(taxa);
-		StringBuffer matrixBuffer = new StringBuffer(100);
+		MesquiteStringBuffer matrixBuffer = new MesquiteStringBuffer(100);
 		int numMatrices = getProject().getNumberCharMatrices(null, otherTaxa, MolecularState.class, true);
 		if (numMatrices<1)
 			return false;
@@ -249,7 +249,7 @@ public class ExportForBPP extends FileInterpreterI {
 		}
 			
 			
-		StringBuffer controlFileBuffer = new StringBuffer(100);
+		MesquiteStringBuffer controlFileBuffer = new MesquiteStringBuffer(100);
 		Random random = new Random(System.currentTimeMillis());
 		controlFileBuffer.append("seed = "+ random.nextInt()+"\n\n");
 		
@@ -288,7 +288,7 @@ public class ExportForBPP extends FileInterpreterI {
 		controlFileBuffer.append(endOfControlFile);
 
 
-		StringBuffer imapFileBuffer = new StringBuffer(100);
+		MesquiteStringBuffer imapFileBuffer = new MesquiteStringBuffer(100);
 		for (int it=0; it<taxa.getNumTaxa(); it++) {
 			Taxon taxon = taxa.getTaxon(it);
 			Taxon[] associatedTaxa = association.getAssociates(taxon);

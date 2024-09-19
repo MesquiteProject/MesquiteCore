@@ -374,7 +374,7 @@ public abstract class CategoricalStates extends CharacterStates {
 				return s;
 			}
 			else if (ic>=0 && !(this instanceof CategoricalHistory)){  // treat as if terminal, not history
-				StringBuffer sb = new StringBuffer();
+				MesquiteStringBuffer sb = new MesquiteStringBuffer();
 				data.statesIntoStringBufferCore(ic, getState(node), sb, true);
 				return sb.toString();
 			}

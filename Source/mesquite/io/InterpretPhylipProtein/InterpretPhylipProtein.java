@@ -57,7 +57,7 @@ public class InterpretPhylipProtein extends InterpretPhylip {
 		 return charTask.newCharacterData(taxa, 0, ProteinData.DATATYPENAME);  //
 	}
 /*.................................................................................................................*/
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 	}
 /*.................................................................................................................*/

@@ -118,7 +118,7 @@ public class ExportCharStateInfo extends FileInterpreterI {
 
 
 		int numChars = data.getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(20* numChars);
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(20* numChars);
 		String allChars = "";
 		for (int ic = 0; ic<numChars; ic++) {
 			if (!writeOnlySelectedData || (data.getSelected(ic))){

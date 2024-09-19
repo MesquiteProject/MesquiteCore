@@ -39,7 +39,7 @@ public class InterpretPagelFormatM extends PagelFormatI {
 		numChars = MesquiteInteger.fromString(parser.getNextToken()); //taxa
 		if (!MesquiteInteger.isCombinable(numChars) || numChars == 0)
 			return false;
-		StringBuffer sb = new StringBuffer(1000);
+		MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 		file.readLine(sb);
 		line = sb.toString();
 		

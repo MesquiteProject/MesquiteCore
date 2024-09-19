@@ -51,7 +51,7 @@ public class ManageLabelsBlock extends FileInit {
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		Parser commandParser = new Parser();
 		commandParser.setString(block.toString());
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		String s;
  		NexusBlock[] bs = getProject().getNexusBlocks(LabelsBlock.class, file); //added Sept 2011
  		LabelsBlock sB ;

@@ -165,7 +165,7 @@ public class ExportTiledBaits extends FileInterpreterI {
 		int numChars = data.getNumChars();
 		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
 		outputBuffer.append(">"+ getSequenceName(data,taxa, it) + " " + siteNumber + "-");
-		StringBuffer dataBuffer = new StringBuffer(120);
+		MesquiteStringBuffer dataBuffer = new MesquiteStringBuffer(120);
 		int count = 0;
 		int ic =0;
 		boolean nextStartSet = false;
@@ -238,7 +238,7 @@ public class ExportTiledBaits extends FileInterpreterI {
 			if (!getExportOptions(false, true))
 				return false;
 		 
-		StringBuffer buffer = new StringBuffer(500);
+		MesquiteStringBuffer buffer = new MesquiteStringBuffer(500);
 
 		boolean hasAmbiguities = false;
 		for (int taxaNumber=0; taxaNumber<getProject().getNumberTaxas(file) && !hasAmbiguities; taxaNumber++) {

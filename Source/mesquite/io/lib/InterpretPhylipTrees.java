@@ -50,7 +50,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 		 return null;  //
 	}
 /*.................................................................................................................*/
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		//
 	}
 /*.................................................................................................................*/

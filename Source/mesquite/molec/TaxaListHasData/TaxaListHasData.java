@@ -215,7 +215,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return null;
 			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(it)) {
-				StringBuffer sb = new StringBuffer();
+				MesquiteStringBuffer sb = new MesquiteStringBuffer();
 				data.copyDataFromRowIntoBuffer(it, sb);
 				if (StringUtil.notEmpty(sb.toString())) {
 					localCopyDataClipboard = sb.toString();

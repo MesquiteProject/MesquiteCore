@@ -230,7 +230,7 @@ public class CharListPartition extends CharListAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Loads the stored character partition to be the current one", "[number of partition to load]", commandName, "loadToCurrent")) {
 			if (data !=null) {
-				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
+				int which = MesquiteInteger.fromFirstToken(arguments, pos);
 				if (MesquiteInteger.isCombinable(which)){
 					SpecsSetVector ssv = data.getSpecSetsVector(CharacterPartition.class);
 					if (ssv!=null) {

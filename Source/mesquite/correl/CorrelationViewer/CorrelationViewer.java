@@ -257,7 +257,7 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use for X", "[character number]", commandName, "setX")) {
-			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
+			int icNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			askedForXY = true;
@@ -283,7 +283,7 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 				doCounts();
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use for X", "[character number]", commandName, "setY")) {
-			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
+			int icNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			int ic = CharacterStates.toInternal(icNum);

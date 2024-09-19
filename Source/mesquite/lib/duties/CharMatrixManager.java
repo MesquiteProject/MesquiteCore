@@ -141,7 +141,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				}
 				else if (nameTaxa && it<taxa.getNumTaxa())  
 					taxa.setTaxonName(it,taxonName);
-
 				int whichTaxon = lastTaxonNumber+1;
 				if (!taxonName.equalsIgnoreCase(taxa.getTaxonName(whichTaxon)))
 					whichTaxon = taxa.whichTaxonNumberRev(taxonName, false);  //use reverse order lookup in case newly added taxa with identical names as previous
@@ -165,7 +164,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						data.deassign(icc, extraTaxon);
 					CharacterState csTEST = null;
 					while (ice<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
-						int prevPos = parser.getPosition();
+						long prevPos = parser.getPosition();
 						readTime.start();
 						response = data.setStateQuickNexusReading(ice, extraTaxon, parser);
 						readTime.end();
@@ -174,7 +173,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1);
-							int curPos = parser.getPosition();
+							long curPos = parser.getPosition();
 							parser.setPosition(prevPos);
 							String chunk = parser.getPieceOfLine(10);
 							parser.setPosition(curPos);
@@ -223,14 +222,14 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				}   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  FUSE
 				else {
 					while (whichTaxon<currentCharacter.length && currentCharacter[whichTaxon]<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
-						int prevPos = parser.getPosition();
+						long prevPos = parser.getPosition();
 						int ic = currentCharacter[whichTaxon];
 						readTime.start();
 						response = data.setStateQuickNexusReading(ic, whichTaxon, parser);
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic + 1);
-							int curPos = parser.getPosition();
+							long curPos = parser.getPosition();
 							parser.setPosition(prevPos);
 							String chunk = parser.getPieceOfLine(10);
 							parser.setPosition(curPos);
@@ -336,13 +335,13 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						data.deassign(icc, extraTaxon);
 
 					while (ic<numChars) {
-						int prevPos = parser.getPosition();
+						long prevPos = parser.getPosition();
 						readTime.start();
 						int response = data.setStateQuickNexusReading(ic++, extraTaxon, parser);
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);
-							int curPos = parser.getPosition();
+							long curPos = parser.getPosition();
 							parser.setPosition(prevPos);
 							String chunk = parser.getPieceOfLine(10);
 							parser.setPosition(curPos);
@@ -392,13 +391,13 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				} // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  FUSE
 				else {
 					while (ic<numChars) {
-						int prevPos = parser.getPosition();
+						long prevPos = parser.getPosition();
 						readTime.start();
 						int response = data.setStateQuickNexusReading(ic++, whichTaxon, parser);
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);
-							int curPos = parser.getPosition();
+							long curPos = parser.getPosition();
 							parser.setPosition(prevPos);
 							String chunk = parser.getPieceOfLine(10);
 							parser.setPosition(curPos);

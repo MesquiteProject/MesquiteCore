@@ -174,7 +174,7 @@ public class CharListCodonPos extends CharListAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Loads the stored codon positions to be the current one", "[number of codon position set to load]", commandName, "loadToCurrent")) {
 			if (data !=null) {
-				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
+				int which = MesquiteInteger.fromFirstToken(arguments, pos);
 				if (MesquiteInteger.isCombinable(which)){
 					SpecsSetVector ssv = data.getSpecSetsVector(CodonPositionsSet.class);
 					if (ssv!=null) {

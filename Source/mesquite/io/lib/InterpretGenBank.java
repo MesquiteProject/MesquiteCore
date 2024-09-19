@@ -95,7 +95,7 @@ public abstract class InterpretGenBank extends FileInterpreterI implements ReadF
 			data.saveChangeHistory = false;
 			Parser subParser = new Parser();
 
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			if (file!=null)
 				file.readLine(sb);
 			else

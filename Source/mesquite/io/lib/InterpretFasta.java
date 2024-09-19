@@ -638,12 +638,12 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	}
 	protected boolean includeOnlyTaxaWithData = true;// TO DO: also have the option of only writing taxa with data in them
 
-	public  StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
+	public  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		Taxa taxa = data.getTaxa();
 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
 		boolean isProtein = data instanceof ProteinData;
 		if (isProtein && !(this instanceof InterpretFastaProtein))
 			MesquiteMessage.warnProgrammer("ERROR: protein data matrix in file interpreter for DNA");
@@ -666,7 +666,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 					for (int ic = 0; ic<numChars; ic++) {
 						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
-							int currentSize = outputBuffer.length();
+							long currentSize = outputBuffer.length();
 							boolean wroteMoreThanOneSymbol = false;
 							boolean wroteSymbol = false;
 							if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
@@ -688,6 +688,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 								alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 								return null;
 							}
+							if (1L*ic*it % 1000001 == 0)
+								logln("Composing Fasta file; on taxon " + (it+1));
 						}
 					}
 					outputBuffer.append(getLineEnding());
@@ -718,7 +720,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			if (!getExportOptions(data, data.anySelected(), taxa.anySelected()))
 				return false;
 
-		StringBuffer outputBuffer = getDataAsFileText(file, data);
+		MesquiteStringBuffer outputBuffer = getDataAsFileText(file, data);
 
 		if (outputBuffer!=null) {
 			saveExportedFileWithExtension(outputBuffer, arguments, preferredDataFileExtension());

@@ -54,7 +54,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static int totalFinalized = 0;
 	private boolean beingSaved = false;
 	private boolean closed = false;
-	private StringBuffer sB = new StringBuffer(100);
+	private MesquiteStringBuffer sB = new MesquiteStringBuffer(100);
 	private boolean writeProtected = false;
 	private String comment = null;
 	boolean dirtiedByCommand = false;
@@ -1057,6 +1057,26 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 	/*-------------------------------------------------------*/
 	/** Write string to file and add newline character. */
+	public void writeLine(MesquiteStringBuffer s)
+	{	
+		if (outStream!=null){
+			try {
+				for (int i= 0; i<s.getNumStrings(); i++){
+					byte[] sBytes = s.getBytes("ISO-8859-1", i);
+
+					outStream.write(sBytes); 
+				}
+				outStream.write(lineEndingBytes); //was '\n'
+
+				outStream.flush();
+			}
+			catch (IOException ioe){}
+		}
+		else
+			MesquiteMessage.printStackTrace("ERROR: attempt to write to null stream");
+	}
+	/*-------------------------------------------------------*/
+	/** Write string to file and add newline character. */
 	public void writeLine(String s)
 	{	
 		if (outStream!=null){
@@ -1459,7 +1479,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	int readyToAppend = 0;
 
 	/** read next line from file, return as String. */
-	public boolean readLine(StringBuffer buffer) {	
+	public boolean readLine(MesquiteStringBuffer buffer) {	
 		buffer.setLength(0);
 		if (inStream==null) {
 			return false;
@@ -1509,7 +1529,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					else if (c!= -1) {
 						toAppend[readyToAppend++] = (char)c;
 						if (readyToAppend>= totalWaitingAppend) {
-							buffer.append(toAppend, 0, (readyToAppend));
+							buffer.append(toAppend, (readyToAppend));
 							readyToAppend = 0;
 						}
 					}
@@ -1520,7 +1540,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				}
 				readLineTimer.end();
 				if (readyToAppend>0){
-					buffer.append(toAppend, 0, (readyToAppend));
+					buffer.append(toAppend, (readyToAppend));
 					readyToAppend = 0;
 				}
 				if (done && StringUtil.blank(buffer)) {
@@ -1597,7 +1617,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					else if (c!= -1) {
 						toAppend[readyToAppend++] = (char)c;
 						if (readyToAppend>= totalWaitingAppend) {
-							sB.append(toAppend, 0, (readyToAppend));
+							sB.append(toAppend, (readyToAppend));
 							readyToAppend = 0;
 						}
 					}
@@ -1608,7 +1628,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				}
 				readLineTimer.end();
 				if (readyToAppend>0){
-					sB.append(toAppend, 0, (readyToAppend));
+					sB.append(toAppend, (readyToAppend));
 					readyToAppend = 0;
 				}
 				if (done && StringUtil.blank(sB)) {
@@ -2278,7 +2298,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		return s;
 	}	
-	
+
 	/*.................................................................................................................*/
 	/** Checks to see if can write to a file*/
 	public static boolean canWrite(String path) {
@@ -2530,34 +2550,34 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		String[] s = null;
 		StringBuffer sBb= new StringBuffer(100);
 		MesquiteInteger remnant = new MesquiteInteger(-1);
-			try {
-				stream = new DataInputStream(new FileInputStream(relativePath));
-				String newS = " ";
-				while (newS != null) {
-					newS =readLine(stream, sBb, remnant);
-					if (newS != null)
-						v.addElement(newS);
-				}
-				if (v.size()!=0) {
-					s = new String[v.size()];
-					int count = 0;
-					Enumeration e = v.elements();
-					while (e.hasMoreElements()) {
-						Object obj = e.nextElement();
-						s[count]= (String)obj;
-						count++;
-					}
+		try {
+			stream = new DataInputStream(new FileInputStream(relativePath));
+			String newS = " ";
+			while (newS != null) {
+				newS =readLine(stream, sBb, remnant);
+				if (newS != null)
+					v.addElement(newS);
+			}
+			if (v.size()!=0) {
+				s = new String[v.size()];
+				int count = 0;
+				Enumeration e = v.elements();
+				while (e.hasMoreElements()) {
+					Object obj = e.nextElement();
+					s[count]= (String)obj;
+					count++;
 				}
 			}
-			catch( FileNotFoundException e ) {
-				System.out.println("File Busy or Not Found (r5) : " + relativePath);
-				return null;
-			} 
-			catch( IOException e ) {
-				System.out.println("IO Exception found (r5): " + relativePath + "   " + e.getMessage());
-				return null;
-			}
-			return s;
+		}
+		catch( FileNotFoundException e ) {
+			System.out.println("File Busy or Not Found (r5) : " + relativePath);
+			return null;
+		} 
+		catch( IOException e ) {
+			System.out.println("IO Exception found (r5): " + relativePath + "   " + e.getMessage());
+			return null;
+		}
+		return s;
 	}
 	/*.................................................................................................................*/
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
@@ -2693,8 +2713,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Returns the contents of the file, local or remote.  The parameter "maxCharacters"
 	sets an upper limit on how many characters are read (if <0, then all characters read in)*/
 	public String getFileContentsAsString(int maxCharacters) {
-		StringBuffer sb = new StringBuffer(100);
-		StringBuffer line = new StringBuffer(100);
+		MesquiteStringBuffer sb = new MesquiteStringBuffer(100);
+		MesquiteStringBuffer line = new MesquiteStringBuffer(100);
 		openReading();
 		while (readLine(line) && (maxCharacters<0 ||  sb.length() <maxCharacters)){
 			sb.append(line.toString());
@@ -3090,6 +3110,51 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			} 
 			catch( IOException e ) {
 				MesquiteMessage.warnProgrammer( "IO exception put file contents  (0) " + e.getMessage());
+				//MesquiteMessage.printStackTrace();
+			}
+		}
+		else {
+			//files cannot be written with applets
+		}
+		w = false;
+	}
+	/*.................................................................................................................*/
+	/** Places to a file the contents.  Path is relative to the root of the package heirarchy; i.e. for file in
+	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
+	public synchronized static void putFileContents(String relativePath, MesquiteStringBuffer contents, boolean ascii) {
+		if (contents==null)
+			return;
+		if (w)
+			MesquiteMessage.warnProgrammer("writing simultaneously ");
+
+		w = true;
+		if (fileExists(relativePath) && !canWrite(relativePath)) {
+			MesquiteModule.mesquiteTrunk.discreetAlert( MesquiteThread.isScripting(),"File cannot be written.  It may be locked or open in another application. (3; Path: " + relativePath + ")"); 
+			return;
+		}
+		Writer stream;
+		if (!MesquiteTrunk.isApplet()) {
+			try {
+				if (ascii && System.getProperty("os.name").startsWith("Mac"))
+					stream = new OutputStreamWriter(new FileOutputStream(relativePath), "ASCII");
+				else
+					stream = new OutputStreamWriter(new FileOutputStream(relativePath));
+				for (int i=0; i< contents.getNumStrings(); i++) {
+					if (contents.getStringBuffer(i)!=null) {
+						stream.write(contents.getStringBuffer(i).toString() + StringUtil.lineEnding());
+						stream.flush();
+					}
+				}
+				stream.close();
+				try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+				catch (Throwable t){}
+			}
+			catch( FileNotFoundException e ) {
+				MesquiteMessage.warnProgrammer( "File Busy or Not Found: put file contents  (1) [" + relativePath + "]");
+				//MesquiteMessage.printStackTrace();
+			} 
+			catch( IOException e ) {
+				MesquiteMessage.warnProgrammer( "IO exception put file contents  (1)  [" + relativePath + "] " + e.getMessage());
 				//MesquiteMessage.printStackTrace();
 			}
 		}
