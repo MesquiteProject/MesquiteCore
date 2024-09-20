@@ -1420,13 +1420,13 @@ public class DNAData extends MolecularData {
 
 	/* .......................................... DNAData .................................................. */
 	/** appends to buffer string describing the state(s) of character ic in taxon it. */
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay) {
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay) {
 		statesIntoStringBufferCore(ic, s, sb, forDisplay, true, true);
 	}
 
 	/* .......................................... DNAData .................................................. */
 	/** appends to buffer string describing the state(s) of character ic in taxon it. */
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned) {
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned) {
 		if (CategoricalState.cardinality(s) > 1 && CategoricalState.isUncertain(s))
 			sb.append(getIUPACSymbol(s));
 		else {
@@ -1481,7 +1481,7 @@ public class DNAData extends MolecularData {
 
 	/* .......................................... DNAData .................................................. */
 	/* Appends to buffer state symbol for state e � */
-	protected void appendStateSymbol(int e, boolean lowerCase, StringBuffer sb) {
+	protected void appendStateSymbol(int e, boolean lowerCase, MesquiteStringBuffer sb) {
 		if (lowerCase) {
 			if (e == 0)
 				sb.append('a');
@@ -1514,7 +1514,7 @@ public class DNAData extends MolecularData {
 
 	/* .......................................... DNAData .................................................. */
 	/* Fills buffer with string version of state in char ic and taxon it � */
-	public void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb) {
+	public void statesIntoNEXUSStringBuffer(int ic, int it, MesquiteStringBuffer sb) {
 		boolean first = true;
 		long s = getStateRaw(ic, it);
 		if (s == 0L || s == CategoricalState.impossible)
@@ -1527,7 +1527,7 @@ public class DNAData extends MolecularData {
 			sb.append(getIUPACSymbol(s));
 		else {
 			int card = 0;
-			int current = sb.length();
+			long current = sb.length();
 			for (int e = 0; e <= DNAState.maxDNAState; e++) {
 				if (CategoricalState.isElement(s, e)) {
 					card++;
