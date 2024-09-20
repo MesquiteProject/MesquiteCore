@@ -45,6 +45,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		return "";
 	}
 	
+	
+	
 	/*.................................................................................................................*/
 	public String getTitleOfTextCommandLink() {
 		return "";
@@ -100,6 +102,9 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	
 	public boolean canGiveIntermediateResults(){
 		return false;
+	}
+	public String getInferenceDetails() {
+		return "";
 	}
 	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
 		if (score != null)

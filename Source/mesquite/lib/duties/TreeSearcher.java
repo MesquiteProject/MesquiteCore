@@ -36,6 +36,9 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	public String getMessageIfUserAbortRequested () {
 		return null;
 	}
+	public String getInferenceDetails() {
+		return "";
+	}
 
 
 	public  void setOutputTextListener(OutputTextListener textListener){

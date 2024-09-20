@@ -41,6 +41,11 @@ public String getMessageIfUserAbortRequested () {
 		return searchTask.getMessageIfUserAbortRequested();
 	return null;
 }
+public String getInferenceDetails() {
+	if (searchTask==null)
+		return "";
+	return searchTask.getInferenceDetails();
+}
 
 /*.................................................................................................................*/
 public String getTitleOfTextCommandLink() {
