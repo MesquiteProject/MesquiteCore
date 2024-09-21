@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 
@@ -26,17 +26,14 @@ public class FileParser {
 		parser.setBuffer(block.toMesquiteStringBuffer());
 	}
 
-	public String getNextCommand(MesquiteLong pos) {
-		return parser.getNextCommand(pos);
+	public String getNextToken() {
+		return parser.getNextToken();
 	}
 	public String getNextCommand() {
 		return parser.getNextCommand();
 	}
-	public String getNextCommandName(MesquiteLong pos) {
-		return parser.getNextCommandName(pos);
-	}
-	public String getNextCommandName() {
-		return parser.getNextCommandName();
+	public String getNextCommandNameWithoutConsuming() {
+		return parser.getNextCommandNameWithoutConsuming();
 	}
 	public String getPieceOfLine(int len) {
 		return parser.getPieceOfLine(len);
@@ -44,26 +41,22 @@ public class FileParser {
 	public boolean blankByCurrentWhitespace(String s) {
 		return parser.blankByCurrentWhitespace(s);
 	}
-	
+
 	/* gets the local parser and ensures that it has at least len characters or until the end of the command */
 	public Parser getLocalParser(int len) {
 		return parser;
 	}
-	
+
 	public void setLineEndingsDark(boolean b) {
 		parser.setLineEndingsDark(b);
 	}
-	 public String getNextToken() {
-			return parser.getNextToken();
-		}
-	
-		public void setPosition(long p) {
-			parser.setPosition(p);
-		}
 
-	 public long getPosition() {
-		 return parser.getPosition();
-	 }
+	public void eatNextIfSemicolon() {
+		long currentPos = parser.getPosition();
+		String token = parser.getNextCommand();
+		if (token == null || !token.equals(";"))
+			parser.setPosition(currentPos);
+	}
 }
 
 

@@ -36,7 +36,16 @@ public class MesquiteStringBuffer {
 		currentBuffer = new StringBuffer(0);
 		buffers.addElement(currentBuffer);
 	}
-
+/*	public boolean equals(String s){
+		if (getNumStrings() != 1)
+			return false;
+		String sHere = getString(0);
+		if (sHere == null)
+			return s == null;
+		else
+			return sHere.equals(s);
+	}
+*/
 	public MesquiteStringBuffer(long allocate) { 
 		buffers = new Vector();
 		if (allocate > ALMOST_INT_OVERFLOW)

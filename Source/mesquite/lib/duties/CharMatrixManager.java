@@ -66,6 +66,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 	public void setLogVerbose(boolean logVerbose) {	
 		this.logVerbose = logVerbose;
 	}
+	
 	/*.................................................................................................................*/
 	/** Process the matrix, placing data into passed CharacterData object */
 	public void processMatrix(Taxa taxa, mesquite.lib.characters.CharacterData data, FileParser parser, int numChars, boolean nameTaxa, int firstTaxon, boolean makeNewTaxaIfNeeded, boolean fuse, MesquiteFile fileBeingRead) {
@@ -164,7 +165,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						data.deassign(icc, extraTaxon);
 					CharacterState csTEST = null;
 					while (ice<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
-						long prevPos = parser.getPosition();
 						readTime.start();
 						response = data.setStateQuickNexusReading(ice, extraTaxon, parser.getLocalParser(256));
 						readTime.end();
@@ -172,12 +172,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						ice++;
 
 						if (response == CharacterData.ERROR){
-							problem = " taxon " + (whichTaxon +1);
-							long curPos = parser.getPosition();
-							parser.setPosition(prevPos);
-							String chunk = parser.getPieceOfLine(10);
-							parser.setPosition(curPos);
-							problem += " (section of matrix as stored: \"" + chunk + "\")";
+							problem = " taxon " + (whichTaxon +1) + " character " + (ice+1);
 							data.problemReading = problem;
 						}
 					}
@@ -222,18 +217,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				}   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  FUSE
 				else {
 					while (whichTaxon<currentCharacter.length && currentCharacter[whichTaxon]<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
-						long prevPos = parser.getPosition();
 						int ic = currentCharacter[whichTaxon];
 						readTime.start();
 						response = data.setStateQuickNexusReading(ic, whichTaxon, parser.getLocalParser(256));
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic + 1);
-							long curPos = parser.getPosition();
-							parser.setPosition(prevPos);
-							String chunk = parser.getPieceOfLine(10);
-							parser.setPosition(curPos);
-							problem += " (section of matrix as stored: \"" + chunk + "\")";
 							data.problemReading = problem;
 						}
 						if (response !=mesquite.lib.characters.CharacterData.EOL)
@@ -335,17 +324,11 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						data.deassign(icc, extraTaxon);
 
 					while (ic<numChars) {
-						long prevPos = parser.getPosition();
 						readTime.start();
 						int response = data.setStateQuickNexusReading(ic++, extraTaxon, parser.getLocalParser(256));
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);
-							long curPos = parser.getPosition();
-							parser.setPosition(prevPos);
-							String chunk = parser.getPieceOfLine(10);
-							parser.setPosition(curPos);
-							problem += " (section of matrix as stored: \"" + chunk + "\")";
 							data.problemReading = problem;
 						}
 					}
@@ -391,17 +374,11 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				} // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  FUSE
 				else {
 					while (ic<numChars) {
-						long prevPos = parser.getPosition();
 						readTime.start();
 						int response = data.setStateQuickNexusReading(ic++, whichTaxon, parser.getLocalParser(256));
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);
-							long curPos = parser.getPosition();
-							parser.setPosition(prevPos);
-							String chunk = parser.getPieceOfLine(10);
-							parser.setPosition(curPos);
-							problem += " (section of matrix as stored: \"" + chunk + "\")";
 							data.problemReading = problem;
 						}
 					}

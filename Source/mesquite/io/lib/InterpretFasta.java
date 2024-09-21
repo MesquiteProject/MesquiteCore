@@ -689,13 +689,15 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 								return null;
 							}
 							if (1L*ic*it % 1000001 == 0)
-								logln("Composing Fasta file; on taxon " + (it+1));
+								logln("Composing Fasta file; on taxon " + (it+1) + " character " +(ic+1));
 						}
 					}
 					outputBuffer.append(getLineEnding());
 				}
 			}
 		}
+		if (numChars * numTaxa > 2000000)
+			logln("Fasta file composed.");
 		return outputBuffer;
 	}
 	/*.................................................................................................................*/

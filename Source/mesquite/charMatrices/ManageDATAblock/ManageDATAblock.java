@@ -57,7 +57,7 @@ public class ManageDATAblock extends MesquiteModule {
 		FileParser commandParser = new FileParser();
 		//commandParser.setString(block.toString());
 		commandParser.setFileBlock(block);
-		MesquiteLong startCharC = new MesquiteLong(0);
+
 		String dataTitle=getProject().getCharacterMatrices().getUniqueName("Character Matrix");
 		String taxaTitle=getProject().getCharacterMatrices().getUniqueName("Taxa");
 		int firstTaxon = 0;
@@ -67,10 +67,9 @@ public class ManageDATAblock extends MesquiteModule {
 		Taxa taxa= null;
 		int numChars=0;
 		NexusBlock b = null;
-		long previousPos = 0;
-		while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandName(startCharC))) {
+		while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
 			if (commandName.equalsIgnoreCase("DIMENSIONS")) { 
-				parser.setString(commandParser.getNextCommand(startCharC)); 
+				parser.setString(commandParser.getNextCommand()); 
 				int numTaxa = MesquiteInteger.fromString(parser.getTokenNumber(4));
 				numChars = MesquiteInteger.fromString(parser.getTokenNumber(7));
 				logln("   " + MesquiteInteger.toString(numTaxa) + " taxa, " + MesquiteInteger.toString(numChars) + " characters.");
@@ -94,12 +93,12 @@ public class ManageDATAblock extends MesquiteModule {
 					taxa = taxaTask.makeNewTaxa(taxaTitle, numTaxa, false);
 			}
 			else if (commandName.equalsIgnoreCase("TITLE")) {
-				parser.setString(commandParser.getNextCommand(startCharC)); 
+				parser.setString(commandParser.getNextCommand()); 
 				dataTitle = parser.getTokenNumber(2);
 				logln("Reading CHARACTERS block " + dataTitle);
 			}
 			else if (commandName.equalsIgnoreCase("FORMAT")) {
-				data = processFormat(file, taxa, commandParser.getNextCommand(startCharC), numChars, dataTitle, fileReadingArguments);
+				data = processFormat(file, taxa, commandParser.getNextCommand(), numChars, dataTitle, fileReadingArguments);
 				if (data==null) {
 					alert("Sorry, the DATA block could not be read, possibly because it is of an unrecognized format.  You may need to activate or install other modules that would allow you to read the data block");
 					return null;
@@ -116,10 +115,7 @@ public class ManageDATAblock extends MesquiteModule {
 				}
 				else if (data.getMatrixManager()!=null) {
 					if (data.interleaved) {
-						startCharC.setValue(previousPos);
 						commandParser.setLineEndingsDark(true);
-						commandParser.setPosition(previousPos);
-						commandParser.getNextToken();
 					}
 					boolean wassave = data.saveChangeHistory;
 					data.saveChangeHistory = false;
@@ -129,10 +125,7 @@ public class ManageDATAblock extends MesquiteModule {
 					data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, true, firstTaxon, false, fuse, file); 
 					if (data.interleaved) 
 						commandParser.setLineEndingsDark(false);
-					startCharC.setValue(commandParser.getPosition());
-					String token = commandParser.getNextCommand();
-					if (token == null || !token.equals(";"))
-						commandParser.setPosition(startCharC.getValue());
+					 commandParser.eatNextIfSemicolon();
 					data.saveChangeHistory = wassave;
 				}
 				else {
@@ -140,7 +133,7 @@ public class ManageDATAblock extends MesquiteModule {
 				}
 			}
 			else if (commandName.equalsIgnoreCase("CHARLABELS")) {
-				parser.setString(commandParser.getNextCommand(startCharC)); 
+				parser.setString(commandParser.getNextCommand()); 
 				parser.getNextToken();
 				String cN = parser.getNextToken();
 				int charNumber = 0;
@@ -151,15 +144,14 @@ public class ManageDATAblock extends MesquiteModule {
 			}
 			else if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) {
 				boolean success = false;
-				String commandString = commandParser.getNextCommand(startCharC);
+				String commandString = commandParser.getNextCommand();
 				if (data !=null && data.getMatrixManager()!=null)
 					success = data.getMatrixManager().processCommand(data, commandName, commandString);
 				if (!success && b != null) 
 					readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
 			}
 			else
-				commandParser.getNextCommand(startCharC); //eating up the full command
-			previousPos = startCharC.getValue();
+				commandParser.getNextCommand(); //eating up the full command
 		}
 		if (!fuse && StringUtil.blank(dataTitle))
 			data.setName(getProject().getCharacterMatrices().getUniqueName("Untitled (" + data.getDataTypeName() + ")"));

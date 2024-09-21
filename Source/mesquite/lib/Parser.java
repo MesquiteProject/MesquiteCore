@@ -306,7 +306,7 @@ public class Parser extends StringUtil {
 		return line == null;
 	}
 	private boolean storageZeroLength() {
-		return line != null && line.equals("");
+		return line != null && (line.equals(""));  //Debugg.println this equals should have a special method; it will always return false here
 	}
 	private String getQuoted() {
 		if (storageNull())
@@ -1552,7 +1552,7 @@ public class Parser extends StringUtil {
 	}
 	/*.................................................................................................................*/
 	/** Returns the name of the next command in the string passed starting at the given character.  Resets pos afterward to start of command name. */
-	public String getNextCommandName(MesquiteLong p) {
+	public String getNextCommandNameWithoutConsuming(MesquiteLong p) {
 		if (p!=null)
 			pos.setValue(p.getValue());
 		String token = getUnalteredToken(false);
@@ -1560,11 +1560,11 @@ public class Parser extends StringUtil {
 			pos.setValue(p.getValue());
 		return token;
 	}
-	/** Returns the name of the next command in the string.  Resets pos afterward to start of command name. */
-	public String getNextCommandName() {
+	/** Returns the name of the next command in the string.  Resets pos afterward to start of command name. DOES NOT EAT UP commandName.*/
+	public String getNextCommandNameWithoutConsuming() {
 		long currentPos = pos.getValue();
 		String token = getUnalteredToken(false);
-			pos.setValue(currentPos);
+		pos.setValue(currentPos);
 		return token;
 	}
 	/*.................................................................................................................*/

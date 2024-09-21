@@ -1968,7 +1968,7 @@ public class ManageCharacters extends CharactersManager {
 		 FileParser commandParser = new FileParser();
 		// commandParser.setBuffer(block.toMesquiteStringBuffer());
 		commandParser.setFileBlock(block);
-		 MesquiteLong startCharC = new MesquiteLong(0);
+		// MesquiteLong startCharC = new MesquiteLong(0);
 		 String title=null;
 		 //String commandString;
 		 Taxa taxa= null;
@@ -1984,18 +1984,15 @@ public class ManageCharacters extends CharactersManager {
 			 title = getProject().getCharacterMatrices().getUniqueName("Matrix in file \"" + file.getName() + "\"");
 		 boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
 
-		 /*Problem: for most parts of block lineends are white, even if interleaved.  But Matrix must be pulled in
-		with lineends as dark if interleave.  How to do this?  Best to remember previous stringpos, and once matrix
-		pulled in, if interleave go back and set stringpos and reread with lineends dark*/
-		 long previousPos = 0;
+
 		 boolean taxaLinkFound = false;
 		 boolean newTaxaFlag = false;
 
 		 String commandName = null;
-		 while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandName(startCharC))) {
+		 while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
 			 CommandRecord.tick("Reading " + commandName);
-			 if (commandName.equalsIgnoreCase("DIMENSIONS")) {
-				 String com = commandParser.getNextCommand(startCharC);
+		if (commandName.equalsIgnoreCase("DIMENSIONS")) {
+				 String com = commandParser.getNextCommand();
 				 if (StringUtil.indexOfIgnoreCase(com, "newtaxa")>=0)
 					 newTaxaFlag = true;
 				 parser.setString(com); 
@@ -2016,13 +2013,13 @@ public class ManageCharacters extends CharactersManager {
 				 //numChars = MesquiteInteger.fromString(parser.getTokenNumber(4));
 			 }
 			 else if (commandName.equalsIgnoreCase("TITLE")) {
-				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 parser.setString(commandParser.getNextCommand()); 
 				 title = parser.getTokenNumber(2);
 				 logln("Reading CHARACTERS block " + title);
 
 			 }
 			 else if (commandName.equalsIgnoreCase("LINK")) {
-				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 parser.setString(commandParser.getNextCommand()); 
 				 if ("TAXA".equalsIgnoreCase(parser.getTokenNumber(2))) {
 					 taxaLinkFound = true;
 					 String taxaTitle = parser.getTokenNumber(4);
@@ -2050,7 +2047,7 @@ public class ManageCharacters extends CharactersManager {
 				 }
 
 				 logln(" for taxa block " + taxa.getName());
-				 data = processFormat(file, taxa, commandParser.getNextCommand(startCharC), numChars, title, fileReadingArguments);
+				 data = processFormat(file, taxa, commandParser.getNextCommand(), numChars, title, fileReadingArguments);
 				 if (data==null) {
 					 alert("Sorry, the CHARACTERS block could not be read, possibly because it is of an unrecognized format.  You may need to activate or install other modules that would allow you to read the data block");
 					 return null;
@@ -2066,7 +2063,7 @@ public class ManageCharacters extends CharactersManager {
 			 }
 			 else if (commandName.equalsIgnoreCase("OPTIONS")) {
 				 stringPos.setValue(0);
-				 String commandString = commandParser.getNextCommand(startCharC);
+				 String commandString = commandParser.getNextCommand();
 				 String subCommand = ParseUtil.getToken(commandString, stringPos);
 				 while ((subCommand = ParseUtil.getToken(commandString, stringPos)) !=null){
 					 if ("LINKCHARACTERS".equalsIgnoreCase(subCommand)){
@@ -2089,7 +2086,7 @@ public class ManageCharacters extends CharactersManager {
 					 parser.setString(commandParser.getNextCommand(stc)); 
 					 //				parser.setString(commandParser.getNextCommand(startCharC)); 
 					  * */
-					 parser.setString(commandParser.getNextCommand(startCharC)); 
+					 parser.setString(commandParser.getNextCommand()); 
 					 
 					 parser.getNextToken();
 					 String cN = parser.getNextToken();
@@ -2107,20 +2104,15 @@ public class ManageCharacters extends CharactersManager {
 				 }
 				 else if (data.getMatrixManager()!=null) {
 					 if (data.interleaved) {    
-						 startCharC.setValue(previousPos);
+						 //startCharC.setValue(previousPos);
 						 commandParser.setLineEndingsDark(true);
-						 commandParser.setPosition(previousPos);
-						 commandParser.getNextToken();
 					 }
 					 boolean wassave = data.saveChangeHistory;
 					 data.saveChangeHistory = false;
 					 data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, false, 0, newTaxaFlag, fuse, file);
 					 if (data.interleaved) 
 						 commandParser.setLineEndingsDark(false);
-					 startCharC.setValue(commandParser.getPosition());
-					 String token = commandParser.getNextCommand();
-					 if (token == null || !token.equals(";"))
-						 commandParser.setPosition(startCharC.getValue());
+					 commandParser.eatNextIfSemicolon();
 					 data.saveChangeHistory = wassave;
 				 }
 			 }
@@ -2130,7 +2122,7 @@ public class ManageCharacters extends CharactersManager {
 				 parser.setString(commandParser.getNextCommand(stc)); 
 				 //				parser.setString(commandParser.getNextCommand(startCharC)); 
 				  * */
-				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 parser.setString(commandParser.getNextCommand()); 
 				 
 				 parser.getNextToken();
 				 String cN = parser.getNextToken();
@@ -2150,7 +2142,7 @@ public class ManageCharacters extends CharactersManager {
 				 parser.setString(commandParser.getNextCommand(stc)); 
 				 //				parser.setString(commandParser.getNextCommand(startCharC)); 
 				  * */
-				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 parser.setString(commandParser.getNextCommand()); 
 				 
 				 parser.getNextToken();
 				 String cN = parser.getNextToken();
@@ -2163,15 +2155,14 @@ public class ManageCharacters extends CharactersManager {
 			 }
 			 else if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) {
 				 boolean success = false;
-				 String commandString = commandParser.getNextCommand(startCharC);
+				 String commandString = commandParser.getNextCommand();
 				 if (data !=null && data.getMatrixManager()!=null)
 					 success = data.getMatrixManager().processCommand(data, commandName, commandString);
 				 if (!success && b != null) 
 					 readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
 			 }
 			 else
-				 commandParser.getNextCommand(startCharC); //eating up the full command
-			 previousPos = startCharC.getValue();
+				 commandParser.getNextCommand(); //eating up the full command
 		 }
 		 if (!fuse && StringUtil.blank(title))
 			 data.setName(getProject().getCharacterMatrices().getUniqueName("Untitled (" + data.getDataTypeName() + ")"));
