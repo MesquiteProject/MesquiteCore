@@ -172,6 +172,7 @@ public class FileBlock {
 		reset();
 		String command = null;
 		while ((command = getNextFileCommand(comment)) != null){
+			//Debugg.println("@@@@@@@" + directFromFile);
 			sb.append(command + StringUtil.lineEnding());
 		}
 		readOnce = true;

@@ -1965,8 +1965,9 @@ public class ManageCharacters extends CharactersManager {
 	 /*.................................................................................................................*/
 	 public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		 CharacterData data=null;
-		 Parser commandParser = new Parser();
-		 commandParser.setBuffer(block.toMesquiteStringBuffer());
+		 FileParser commandParser = new FileParser();
+		// commandParser.setBuffer(block.toMesquiteStringBuffer());
+		commandParser.setFileBlock(block);
 		 MesquiteLong startCharC = new MesquiteLong(0);
 		 String title=null;
 		 //String commandString;
@@ -1986,7 +1987,7 @@ public class ManageCharacters extends CharactersManager {
 		 /*Problem: for most parts of block lineends are white, even if interleaved.  But Matrix must be pulled in
 		with lineends as dark if interleave.  How to do this?  Best to remember previous stringpos, and once matrix
 		pulled in, if interleave go back and set stringpos and reread with lineends dark*/
-		 long previousPos = startCharC.getValue();
+		 long previousPos = 0;
 		 boolean taxaLinkFound = false;
 		 boolean newTaxaFlag = false;
 
@@ -2083,8 +2084,13 @@ public class ManageCharacters extends CharactersManager {
 					 alert("Error in NEXUS file:  CHARLABELS before FORMAT statement");
 				 }
 				 else {
+					 /*
 					 MesquiteLong stc = new MesquiteLong(startCharC.getValue());
 					 parser.setString(commandParser.getNextCommand(stc)); 
+					 //				parser.setString(commandParser.getNextCommand(startCharC)); 
+					  * */
+					 parser.setString(commandParser.getNextCommand(startCharC)); 
+					 
 					 parser.getNextToken();
 					 String cN = parser.getNextToken();
 					 int charNumber = 0;
@@ -2092,7 +2098,7 @@ public class ManageCharacters extends CharactersManager {
 						 data.setCharacterName(charNumber++, cN);
 						 cN = parser.getNextToken();
 					 }
-					 commandParser.getNextCommand(startCharC); //eating up the full command
+					 //commandParser.getNextCommand(startCharC); //eating up the full command
 				 }
 			 }
 			 else if (commandName.equalsIgnoreCase("MATRIX")) {
@@ -2119,9 +2125,13 @@ public class ManageCharacters extends CharactersManager {
 				 }
 			 }
 			 else if (commandName.equalsIgnoreCase("IDS")) {
-				 //			parser.setString(commandParser.getNextCommand(startCharC)); 
+				 /*
 				 MesquiteLong stc = new MesquiteLong(startCharC.getValue());
 				 parser.setString(commandParser.getNextCommand(stc)); 
+				 //				parser.setString(commandParser.getNextCommand(startCharC)); 
+				  * */
+				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 
 				 parser.getNextToken();
 				 String cN = parser.getNextToken();
 				 int charNumber = 0;
@@ -2132,12 +2142,16 @@ public class ManageCharacters extends CharactersManager {
 					 cN = parser.getNextToken();
 				 }
 
-				 commandParser.getNextCommand(startCharC); //eating up the full command
+				// commandParser.getNextCommand(startCharC); //eating up the full command
 			 }
 			 else if (commandName.equalsIgnoreCase("BLOCKID")) {
+				 /*
 				 MesquiteLong stc = new MesquiteLong(startCharC.getValue());
 				 parser.setString(commandParser.getNextCommand(stc)); 
 				 //				parser.setString(commandParser.getNextCommand(startCharC)); 
+				  * */
+				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 
 				 parser.getNextToken();
 				 String cN = parser.getNextToken();
 				 if (cN != null && !cN.equals(";")){
@@ -2145,7 +2159,7 @@ public class ManageCharacters extends CharactersManager {
 						 data.setUniqueID(cN);
 					 cN = parser.getNextToken();
 				 }
-				 commandParser.getNextCommand(startCharC); //eating up the full command
+				// commandParser.getNextCommand(startCharC); //eating up the full command
 			 }
 			 else if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) {
 				 boolean success = false;

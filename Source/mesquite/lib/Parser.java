@@ -102,32 +102,32 @@ public class Parser extends StringUtil {
 		this.convertUnderscoresToBlanks = convertUnderscoresToBlanks;
 	}
 
-	char lineCharAt(String line, int pos){
-		if (line == null)
+	char lineCharAt(String s, int pos){
+		if (s == null)
 			return 0;
-		if (pos>=line.length()) 
+		if (pos>=s.length()) 
 			return 0;
-		char c = line.charAt(pos); 
+		char c = s.charAt(pos); 
 		if (anyTranslations)
 			return getTranslation(c);
 		return c;
 	}
-	char lineCharAt(StringBuffer line, int pos){
-		if (line == null)
+	char lineCharAt(StringBuffer s, int pos){
+		if (s == null)
 			return 0;
-		if (pos>=line.length()) 
+		if (pos>=s.length()) 
 			return 0;
-		char c = line.charAt(pos); 
+		char c = s.charAt(pos); 
 		if (anyTranslations)
 			return getTranslation(c);
 		return c;
 	}
-	char lineCharAt(MesquiteStringBuffer line, long pos){
-		if (line == null)
+	char lineCharAt(MesquiteStringBuffer s, long pos){
+		if (s == null)
 			return 0;
-		if (pos>=line.length()) 
+		if (pos>=s.length()) 
 			return 0;
-		char c = line.charAt(pos); 
+		char c = s.charAt(pos); 
 		if (anyTranslations)
 			return getTranslation(c);
 		return c;
@@ -301,8 +301,15 @@ public class Parser extends StringUtil {
 	public String getPunctuationString (){
 		return punctuationString;
 	}
+	
+	private boolean storageNull() {
+		return line == null;
+	}
+	private boolean storageZeroLength() {
+		return line != null && line.equals("");
+	}
 	private String getQuoted() {
-		if (line==null)
+		if (storageNull())
 			return null;
 		buffer2.setLength(0);
 		char c;
@@ -360,7 +367,7 @@ public class Parser extends StringUtil {
 	/*.........................................................................................................*/
 	/*  doesn't replace '' by ' */
 	private StringBuffer getQuotedUnaltered(StringBuffer buf) {
-		if (line==null)
+		if (storageNull())
 			return null;
 		buf.setLength(0);
 		char c;
@@ -451,7 +458,7 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns first index of occurence of target token; useful to find if token is in string*/
 	public int tokenIndexOfIgnoreCase(String line, String target) {
-		if (target == null || line == null)
+		if (target == null || storageNull())
 			return -1;
 		setString(line);
 		pos.setValue(0);
@@ -467,7 +474,7 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns first index of occurence of target token; useful to find if token is in string*/
 	public int tokenIndex(String line, String target) {
-		if (target == null || line == null)
+		if (target == null || storageNull())
 			return -1;
 		setString(line);
 		pos.setValue(0);
@@ -488,9 +495,9 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns characters from pos to first instance of c*/
 	public String getRemainingUntilChar(char stopChar, boolean skipPast) {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -509,9 +516,9 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns characters from pos to first instance of any character in stopChars */
 	public String getRemainingUntilChars(String stopChars, boolean skipPast) {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -534,9 +541,9 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns characters from pos to first instance of \r or \n*/
 	public String getRawNextLine() {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -558,9 +565,9 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns n characters from pos */
 	public String getPiece(int n) {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -577,10 +584,11 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns n characters from pos */
 	public String getPieceOfLine(int n) {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
+
 		if (pos.getValue() >= line.length())
 			return null;
 		char c=getNextChar();
@@ -646,9 +654,9 @@ public class Parser extends StringUtil {
 	/** returns token from line starting at pos; excluding square bracket comments*/
 	public String getNextToken() {
 		startOfToken = MesquiteLong.unassigned;
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -722,9 +730,9 @@ public class Parser extends StringUtil {
 	/** returns token from line starting at pos; excluding square bracket comments*/
 	public String getUnalteredToken(boolean includeWhitespace) {
 		startOfToken = MesquiteLong.unassigned;
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -797,9 +805,9 @@ public class Parser extends StringUtil {
 	/** returns token from line starting at pos; keeps track of pending square bracket closure, etc.*/
 	public String getUnalteredToken(boolean includeWhitespace, MesquiteInteger pendingBrackets, StringBuffer comment, MesquiteBoolean suppressComment) {
 		startOfToken = MesquiteLong.unassigned;
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -953,9 +961,9 @@ public class Parser extends StringUtil {
 	/** returns token from line starting at pos; keeps track of pending square bracket closure, etc.*/
 	public String getToken(MesquiteInteger pendingBrackets, StringBuffer comment, MesquiteBoolean suppressComment) {
 		startOfToken = MesquiteLong.unassigned;
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -1031,9 +1039,9 @@ public class Parser extends StringUtil {
 	/** returns next XML starttag element name.  Returns attributes in MesquiteString attributes.  If it is an empty element (ending in /) or a processing instruction (bounded by ?) that too is returned in the arguments.*/
 	//TODO: does this deal with escaped characters?
 	public String getNextXMLTag(MesquiteLong startPos, MesquiteString attributes, MesquiteBoolean isEmptyElement, MesquiteBoolean isProcessingInstruction, MesquiteBoolean isEndTag) {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		String s2 = line.toString();
 		if (pos.getValue() >= line.length())
@@ -1550,6 +1558,13 @@ public class Parser extends StringUtil {
 		String token = getUnalteredToken(false);
 		if (p!=null)
 			pos.setValue(p.getValue());
+		return token;
+	}
+	/** Returns the name of the next command in the string.  Resets pos afterward to start of command name. */
+	public String getNextCommandName() {
+		long currentPos = pos.getValue();
+		String token = getUnalteredToken(false);
+			pos.setValue(currentPos);
 		return token;
 	}
 	/*.................................................................................................................*/
