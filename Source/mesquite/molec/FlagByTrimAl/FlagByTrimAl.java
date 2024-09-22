@@ -201,12 +201,15 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 				
 				String columnsText = MesquiteFile.getFileContentsAsString(rootDir + unique + "columns.txt");
 				if (columnsText != null) {
+					columnsText = StringUtil.stripLeadingWhitespace(columnsText);
 					columns = columnsText.split(", ");
-					if (columns.length < 1 || columns[0].length()<12){
+					
+					if (columns.length < 1 || (columns[0].length()<12 && !MesquiteInteger.isCombinable(MesquiteInteger.fromString(StringUtil.stripWhitespace(columns[0]))))){
 						MesquiteMessage.warnUser("  WARNING: No trimming results for matrix " + data.getName() + " file: " + unique + "columns.txt; contents: " + columnsText);
 					}
 					else {
-						columns[0] = columns[0].substring(12, columns[0].length());
+						if (!MesquiteInteger.isCombinable(MesquiteInteger.fromString(StringUtil.stripWhitespace(columns[0]))))
+							columns[0] = columns[0].substring(12, columns[0].length());
 						Bits charFlags = flags.getCharacterFlags();
 						int lastKeep = -1;
 						int count = 0;
@@ -234,7 +237,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
-			deleteSupportDirectory();
+		deleteSupportDirectory();  //Debugg.println need to keep this
 
 		}
 
