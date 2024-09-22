@@ -2699,7 +2699,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					saveAllItem.setShortcut(saveShortcut);
 					saveSubmenu.add("-");
 					addFilesToSubmenu(saveSubmenu, proj, true, proj.getSaveCommand());
-					MesquiteSubmenu saveAsSubmenu = MesquiteSubmenu.getSubmenu("Save As", newMenu, module); // make
+					MesquiteSubmenu saveAsSubmenu = MesquiteSubmenu.getSubmenu("Save As...", newMenu, module); // make
 																											// submenu
 					newMenu.add(saveAsSubmenu);
 					addFilesToSubmenu(saveAsSubmenu, proj, true, proj.getSaveAsCommand());

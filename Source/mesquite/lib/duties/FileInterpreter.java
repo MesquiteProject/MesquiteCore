@@ -270,14 +270,13 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String suffix, String suggestedFileEnding, String filePath) {
 		if (outputBuffer == null)
 			return;
-		String output = outputBuffer.toString();
 
 		if (StringUtil.blank(filePath)) {
 			String name = suggestedFileName(suffix, suggestedFileEnding, filePath);
-			saveExportedFile(output, arguments, name);
+			saveExportedFile(outputBuffer, arguments, name);
 		}
 		else
-			saveExportedFileToFilePath(output, arguments, filePath);
+			saveExportedFileToFilePath(outputBuffer, arguments, filePath);
 	}
 	/*.................................................................................................................*/
 	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
@@ -356,11 +355,20 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public void saveExportedFileToFilePath(String output, String arguments, String filePath) {
+	public void saveExportedFileToFilePath(MesquiteStringBuffer output, String arguments, String filePath) {
 
 		if (filePath!=null) {
 			MesquiteFile.putFileContents(filePath, output, true);
 			//logln("File exported to " + filePath);  Debugg.println is this needed?
+		}
+	}
+	/*.................................................................................................................*/
+	public void saveExportedFile(MesquiteStringBuffer output, String arguments, String suggestedFileName) {
+
+		filePath = getPathForExport(arguments, suggestedFileName, null, null);
+		if (filePath!=null) {
+			MesquiteFile.putFileContents(filePath, output, true);
+			//logln("File exported to " + filePath);
 		}
 	}
 	/*.................................................................................................................*/

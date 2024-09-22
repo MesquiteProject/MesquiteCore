@@ -48,8 +48,6 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
-		if (!queryOptions())
-			return false;
 		if (arguments !=null) {
 			firstAlterTask = (DataAlterer)hireNamedEmployee(DataAlterer.class, arguments);
 			if (firstAlterTask == null)
@@ -59,6 +57,10 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 			firstAlterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer of matrices");
 			if (firstAlterTask == null)
 				return sorry(getName() + " couldn't start because no matrix alterer module obtained.");
+		}
+		if (!queryOptions()) {
+			fireEmployee(firstAlterTask);
+			return false;
 		}
 		return true;
 	}
@@ -129,14 +131,20 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		//Debugg.println don't ask again (reset by ...?)
 		boolean OK = buttonPressed.getValue()==0;
 		if (OK) {
-			int temp = integerField.getValue();
-			if (MesquiteInteger.isCombinable(temp) && temp >0 && temp < 256){
+			if (!integerField.isValidInteger()) {
+				alert("The number of threads must be a valid integer.");
+				OK = false;
+		}
+			else {
+				int temp = integerField.getValue();
+				if (MesquiteInteger.isCombinable(temp) && temp >0 && temp < 256){
 				numThreads = temp;
 				storePreferences();
 			}
 			else {
-				alert("The number of threads must be between 1 and 255");
+				alert("The number of threads must be between 1 and 255.");
 				OK = false;
+			}
 			}
 		}
 		queryDialog.dispose();
