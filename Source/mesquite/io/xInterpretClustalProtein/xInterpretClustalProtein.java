@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.io.InterpretClustalDNA;
+package mesquite.io.xInterpretClustalProtein;
 /*~~  */
 
 import java.util.*;
@@ -21,14 +21,13 @@ import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.io.lib.*;
 
+/* ============  a file interpreter for Protein  Clustal files ============*/
 
-/* ============  a file interpreter for DNA/RNA  Clustal files ============*/
-
-public class InterpretClustalDNA extends InterpretClustal {
+public class xInterpretClustalProtein extends InterpretClustal {
 /*.................................................................................................................*/
-	public boolean canExportEver() {  
-		return false;
-		// return getProject().getNumberCharMatrices(DNAState.class) > 0;  //
+	public boolean canExporEvert() {  
+		 return false;
+		 // return getProject().getNumberCharMatrices(ProteinState.class) > 0;  //
 	}
 /*.................................................................................................................*/
 	public boolean canExportData(Class dataClass) {  
@@ -36,21 +35,20 @@ public class InterpretClustalDNA extends InterpretClustal {
 	}
 	/*.................................................................................................................*/
 	public boolean canImport(Class dataClass){
-		if (dataClass==null) return false;
-		return ((DNAState.class).isAssignableFrom(dataClass)); 
+		return (dataClass==ProteinState.class);
 	}
 /*.................................................................................................................*/
 	public CharacterData createData(CharactersManager charTask, Taxa taxa) {  
-		 return charTask.newCharacterData(taxa, 0, DNAData.DATATYPENAME);  //
+		 return charTask.newCharacterData(taxa, 0, ProteinData.DATATYPENAME);  //
 	}
 /*.................................................................................................................*/
     	 public String getName() {
-		return "Clustal (DNA/RNA)";
+		return "Clustal (protein)";
    	 }
 /*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Imports Clustal files that consist of DNA or RNA sequence data." ;
+ 		return "Imports Clustal files that consist of amino acid sequence data." ;
    	 }
    	 
 }
