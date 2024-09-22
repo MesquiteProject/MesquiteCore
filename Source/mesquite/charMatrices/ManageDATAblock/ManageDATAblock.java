@@ -125,7 +125,7 @@ public class ManageDATAblock extends MesquiteModule {
 					data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, true, firstTaxon, false, fuse, file); 
 					if (data.interleaved) 
 						commandParser.setLineEndingsDark(false);
-					 commandParser.eatNextIfSemicolon();
+					 commandParser.consumeNextIfSemicolon();
 					data.saveChangeHistory = wassave;
 				}
 				else {

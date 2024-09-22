@@ -48,6 +48,8 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
+		if (!queryOptions())
+			return false;
 		if (arguments !=null) {
 			firstAlterTask = (DataAlterer)hireNamedEmployee(DataAlterer.class, arguments);
 			if (firstAlterTask == null)
@@ -108,6 +110,39 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		return null;
 	}
 	/*.................................................................................................................*/
+	public boolean queryOptions() {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Number of Parallel Calculations",buttonPressed);
+		queryDialog.addLargeOrSmallTextLabel("The calculations will be performed in parallel, on several threads. Choose the number of parallel threads according to your computer's multiprocessing capabilities.");
+	/*	if (StringUtil.blank(help) && queryDialog.isInWizard())
+			help = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a whole number (integer).  <p>The initial value is " + value;
+		queryDialog.appendToHelpString(help);
+		*/
+		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20);
+		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.");
+		
+		queryDialog.setDefaultTextComponent(integerField.getTextField());
+		queryDialog.setDefaultComponent(integerField.getTextField());
+
+		queryDialog.completeAndShowDialog(true);
+		
+		//Debugg.println don't ask again (reset by ...?)
+		boolean OK = buttonPressed.getValue()==0;
+		if (OK) {
+			int temp = integerField.getValue();
+			if (MesquiteInteger.isCombinable(temp) && temp >0 && temp < 256){
+				numThreads = temp;
+				storePreferences();
+			}
+			else {
+				alert("The number of threads must be between 1 and 255");
+				OK = false;
+			}
+		}
+		queryDialog.dispose();
+		return (OK);
+	}
+	/*.................................................................................................................*/
 
 	boolean firstTime = true;
 
@@ -159,13 +194,6 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 			return false;
 		}
 
-		if (firstTime){
-			int temp = MesquiteInteger.queryInteger(containerOfModule(), "Number of threads", "How many matrices should be altered in parallel (i.e. number of threads to be used)?", numThreads, 1, 256, true);
-			if (MesquiteInteger.isCombinable(temp) && temp >0){
-				numThreads = temp;
-				storePreferences();
-			}
-		}
 		firstTime = false;
 
 

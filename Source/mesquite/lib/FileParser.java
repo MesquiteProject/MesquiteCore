@@ -51,7 +51,7 @@ public class FileParser {
 		parser.setLineEndingsDark(b);
 	}
 
-	public void eatNextIfSemicolon() {
+	public void consumeNextIfSemicolon() {
 		long currentPos = parser.getPosition();
 		String token = parser.getNextCommand();
 		if (token == null || !token.equals(";"))

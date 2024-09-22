@@ -2112,7 +2112,7 @@ public class ManageCharacters extends CharactersManager {
 					 data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, false, 0, newTaxaFlag, fuse, file);
 					 if (data.interleaved) 
 						 commandParser.setLineEndingsDark(false);
-					 commandParser.eatNextIfSemicolon();
+					 commandParser.consumeNextIfSemicolon();
 					 data.saveChangeHistory = wassave;
 				 }
 			 }
