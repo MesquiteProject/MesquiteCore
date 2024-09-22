@@ -688,7 +688,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 								alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 								return null;
 							}
-							if (1L*ic*it % 1000001 == 0)
+							if (1L*ic*it > 0 && 1L*ic*it % 1000001 == 0)
 								logln("Composing Fasta file; on taxon " + (it+1) + " character " +(ic+1));
 						}
 					}
