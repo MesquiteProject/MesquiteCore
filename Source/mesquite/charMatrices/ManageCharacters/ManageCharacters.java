@@ -1965,6 +1965,8 @@ public class ManageCharacters extends CharactersManager {
 	 /*.................................................................................................................*/
 	 public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		 CharacterData data=null;
+			boolean verbose = false;  //Debugg.println
+		 if (verbose) Debugg.println("####### Read Nexus Block");
 		 FileParser commandParser = new FileParser();
 		// commandParser.setBuffer(block.toMesquiteStringBuffer());
 		commandParser.setFileBlock(block);
@@ -1989,7 +1991,11 @@ public class ManageCharacters extends CharactersManager {
 		 boolean newTaxaFlag = false;
 
 		 String commandName = null;
-		 while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
+		 boolean lookForEnd = FileParser.READ_MATRIX_DIRECT_FROM_FILE;
+		 boolean endReached = false; 
+		 if (verbose) Debugg.println("####### Read Nexus Block2");
+		 while (!(lookForEnd && endReached) && !commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
+			 if (verbose) Debugg.println("####### commandName " + commandName);
 			 CommandRecord.tick("Reading " + commandName);
 		if (commandName.equalsIgnoreCase("DIMENSIONS")) {
 				 String com = commandParser.getNextCommand();
@@ -2099,6 +2105,7 @@ public class ManageCharacters extends CharactersManager {
 				 }
 			 }
 			 else if (commandName.equalsIgnoreCase("MATRIX")) {
+				 if (verbose)  Debugg.println("@@@@@@@@  MATRIX");
 				 if (data==null) {
 					 alert("Error in NEXUS file:  Matrix without FORMAT statement");
 				 }
@@ -2109,7 +2116,9 @@ public class ManageCharacters extends CharactersManager {
 					 }
 					 boolean wassave = data.saveChangeHistory;
 					 data.saveChangeHistory = false;
+					 if (verbose) Debugg.println("  [[[[[[[[[[[[ processMatrix");
 					 data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, false, 0, newTaxaFlag, fuse, file);
+					 if (verbose)  Debugg.println("  ]]]]]]]]]]]] processMatrix");
 					 if (data.interleaved) 
 						 commandParser.setLineEndingsDark(false);
 					 commandParser.consumeNextIfSemicolon();
@@ -2161,8 +2170,11 @@ public class ManageCharacters extends CharactersManager {
 				 if (!success && b != null) 
 					 readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
 			 }
-			 else
+			 else {
 				 commandParser.getNextCommand(); //eating up the full command
+				 if (lookForEnd)
+					 endReached = commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK");
+			 }
 		 }
 		 if (!fuse && StringUtil.blank(title))
 			 data.setName(getProject().getCharacterMatrices().getUniqueName("Untitled (" + data.getDataTypeName() + ")"));

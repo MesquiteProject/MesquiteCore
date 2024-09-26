@@ -105,6 +105,41 @@ public class FileBlock {
 		return currentCommand;
 		
 	}
+	
+	/*========= methods for direct matrix reading '24 ==========*/
+	public String getNextToken() {	//NOTE: Note safe for comment preservation
+		if (!StringUtil.blank(unconsumed)){
+			unconsumed = "";
+			return unconsumed;
+		}
+		return file.nextToken(null);
+	}
+	
+	private boolean emptyToken(String token) {
+		return token == null || token.length() ==0;
+	}
+	String unconsumed = "";
+	public String getNextCommandNameWithoutConsuming(){
+		unconsumed = file.nextToken(null);
+		while (!emptyToken(unconsumed) && !unconsumed.equals(";")) 
+			unconsumed = file.nextToken(null);
+
+		Debugg.println("======GNCNWC-FB -[" + unconsumed + "]");
+		return unconsumed;
+	}
+	
+	public long getFilePosition() {
+		return file.getFilePosition();
+	}
+	/*.................................................................................................................*/
+	public boolean atEOF(){
+		return file.atEOF();
+	}
+	public void getNextLine(MesquiteStringBuffer buffer) {
+		file.readLine(buffer);
+	}
+	
+	
 	public String getNextFileCommand(MesquiteString comment){
 		if (!directFromFile)
 			return getNextFileCommandStored(comment);
@@ -119,6 +154,10 @@ public class FileBlock {
 		betweenCommandComments.setLength(0);
 		//##########################
 		String command = file.getNextCommand(status, withinCommandComments, true);
+		if (!StringUtil.blank(unconsumed)){
+			command = unconsumed + " " + command;
+			unconsumed = "";
+		}
 
 		if (betweenCommandComments.length()>0 && fileComments!=null) {
 			String bcc = betweenCommandComments.toString();

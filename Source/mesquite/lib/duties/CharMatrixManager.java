@@ -75,6 +75,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		if (taxa == null)
 			taxa = data.getTaxa();
 
+		boolean verbose = false;  //Debugg.println
 		String taxonName;
 		parser.setLineEndingsDark(false);
 		String d = parser.getNextToken(); //eating MATRIX
@@ -166,7 +167,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					CharacterState csTEST = null;
 					while (ice<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
 						readTime.start();
-						response = data.setStateQuickNexusReading(ice, extraTaxon, parser.getLocalParser(256));
+						response = data.setStateQuickNexusReading(ice, extraTaxon, parser.getParserAtCurrentPosition());
 						readTime.end();
 						csTEST = data.getCharacterState(csTEST, ice, extraTaxon);
 						ice++;
@@ -219,7 +220,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					while (whichTaxon<currentCharacter.length && currentCharacter[whichTaxon]<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
 						int ic = currentCharacter[whichTaxon];
 						readTime.start();
-						response = data.setStateQuickNexusReading(ic, whichTaxon, parser.getLocalParser(256));
+						response = data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic + 1);
@@ -270,7 +271,8 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			String problem = null;
 			int lastTaxonNumber = -1;
 
-			for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken()); it++) {
+			if (verbose) Debugg.println("@@@@@@@@  CMM ");
+			 for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken()); it++) {
 
 				boolean preserveNewTaxon = false;
 				int whichTaxon = -1;
@@ -315,6 +317,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					}
 				}
 				CommandRecord.tick("Reading character states for " + taxa.getTaxonName(whichTaxon));
+				if (verbose)  Debugg.println("@@@@@@@@  CMM1");
 				int ic=0;
 				lastTaxonNumber = whichTaxon;
 				if (fuse){ //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    FUSE
@@ -325,7 +328,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 
 					while (ic<numChars) {
 						readTime.start();
-						int response = data.setStateQuickNexusReading(ic++, extraTaxon, parser.getLocalParser(256));
+						int response = data.setStateQuickNexusReading(ic++, extraTaxon, parser.getParserAtCurrentPosition());
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);
@@ -375,7 +378,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				else {
 					while (ic<numChars) {
 						readTime.start();
-						int response = data.setStateQuickNexusReading(ic++, whichTaxon, parser.getLocalParser(256));
+						int response = data.setStateQuickNexusReading(ic++, whichTaxon, parser.getParserAtCurrentPosition());
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);

@@ -59,7 +59,12 @@ public abstract class FileProcessor extends MesquiteModule  {
    		return true;
    	}
 	/*.................................................................................................................*/
-   	/** Called to process file. Override this or the next*/
+   	/** Called to process file. Override this or the next
+	Return 
+	0 if succeeded; 
+	1 if failed but in a way not worth stopping the run (e.g. something is unavailable for that one file); 
+	2 if failed in a way worthy of asking the user if they want to stop
+   	 * */
    	public int processFile(MesquiteFile file){
    		return 0;
    	}

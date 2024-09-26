@@ -204,6 +204,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 					columnsText = StringUtil.stripLeadingWhitespace(columnsText);
 					columns = columnsText.split(", ");
 					
+					// the columns.txt file seems to have two versions, one with a word in front, the other with just column numbers.
 					if (columns.length < 1 || (columns[0].length()<12 && !MesquiteInteger.isCombinable(MesquiteInteger.fromString(StringUtil.stripWhitespace(columns[0]))))){
 						MesquiteMessage.warnUser("  WARNING: No trimming results for matrix " + data.getName() + " file: " + unique + "columns.txt; contents: " + columnsText);
 					}
