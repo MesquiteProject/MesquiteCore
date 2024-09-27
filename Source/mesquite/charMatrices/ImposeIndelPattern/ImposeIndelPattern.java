@@ -46,14 +46,14 @@ public class ImposeIndelPattern extends DataAlterer implements AltererAlignShift
   	 }
 
 	/*.................................................................................................................*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference) {
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference) {
 		if (data==null)
-			return false;
+			return -10;
 		Taxa taxa = data.getTaxa();
 
 		MCharactersDistribution indelMatrix =  characterSourceTask.getCurrentMatrix(taxa);
 		if (indelMatrix == null)
-			return false;
+			return -11;
 		CharacterState cs = indelMatrix.getCharacterState(null, 0, 0);
 		
 		for (int it = 0; it<data.getNumTaxa() && it<indelMatrix.getNumTaxa(); it++) 
@@ -64,7 +64,7 @@ public class ImposeIndelPattern extends DataAlterer implements AltererAlignShift
 				}
 	 	 	}
 
-		return true;
+		return SUCCEEDED;
 	}
 
 	/*.................................................................................................................*/

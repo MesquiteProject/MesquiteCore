@@ -47,14 +47,24 @@ public abstract class DataAlterer extends MesquiteModule  {
    		return false;
    	}
 	/*.................................................................................................................*/
-   	/** Called to alter data in those cells selected in table.  Returns true if data altered.  For those DataAlterers that supply AlteredDataParameters, this method should be overridden. */
-   	public  boolean alterData(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference, AlteredDataParameters alteredDataParameters){
+	public final static int OBJECT_LOCKED = -2;
+	public final static int USER_STOPPED = -1;
+	public final static int SUCCEEDED = 0;
+	public final static int INCOMPATIBLE_DATA = 1;
+	public final static int MEH = 2;
+   	/** Called to alter data in those cells selected in table.  
+   	 * Returns 
+   	 * 0 if data altered; 
+   	 * a positive number if not altered but no errors happened; 
+   	 * a negative number if serious errors.
+	For those DataAlterers that supply AlteredDataParameters, this method should be overridden. */
+   	public int alterData(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference, AlteredDataParameters alteredDataParameters){
    		return alterData(data,table,undoReference);
    	}
    	
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table.  Returns true if data altered*/
-   	public abstract boolean alterData(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference);
+   	public abstract int alterData(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference);
    	
 	/*.................................................................................................................*/
    	/** Called to alter the data in a single cell.  If you use the alterContentOfCells method of this class, 
@@ -66,10 +76,10 @@ public abstract class DataAlterer extends MesquiteModule  {
    	/** Called to alter data in cells in table. This is used if the altering procedure can be done on one cell
    	at a time, independent of all other cells.  If the altering procedure involves dependencies between cells,
    	then a different method must be built.  */
-   	public boolean alterContentOfCells(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference){
+   	public int alterContentOfCells(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference){
    		if (data.isEditInhibited()){
 			discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
-   			return false;
+   			return OBJECT_LOCKED;
    		}
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
    		numCellsAltered =MesquiteLong.unassigned;
@@ -79,7 +89,7 @@ public abstract class DataAlterer extends MesquiteModule  {
 				for (int j=0; j<data.getNumTaxa(); j++) {
 						alterCell(data,i,j);
 				}
-			return true;
+			return 0;
  		}
  		else if (table!=null && data !=null){
    	 		boolean[][] done = new boolean[table.getNumColumns()][table.getNumRows()];
@@ -122,7 +132,7 @@ public abstract class DataAlterer extends MesquiteModule  {
 							if (!done[i][j])
 								alterCell(data,i,j);
 					}
-				return true;
+				return 0;
 			}
 		}
  		if (undoInstructions!=null) {
@@ -134,7 +144,9 @@ public abstract class DataAlterer extends MesquiteModule  {
  		}
 		if (MesquiteLong.isCombinable(numCellsAltered))
 			logln("Number of data cells altered: " + numCellsAltered);
-		return did;
+		if ( did)
+		return SUCCEEDED;
+		return MEH;
    	}
 	/*.................................................................................................................*/
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */

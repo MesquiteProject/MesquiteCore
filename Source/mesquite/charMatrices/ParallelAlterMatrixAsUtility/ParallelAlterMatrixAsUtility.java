@@ -173,7 +173,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		matricesDone = new Bits(datas.size());
 		//Do the first matrix separately to set up the parameters of the alteration
 		boolean doneFirstMatrix = false;
-		boolean successFirstMatrix = false;
+		int successFirstMatrix = -1;
 		for (int im = 0; im < datas.size() && !doneFirstMatrix; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (test.isCompatible(data, getProject(), this)){
@@ -182,7 +182,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 				successFirstMatrix = firstAlterTask.alterData(data, null, null, alteredDataParameters);
 				doneFirstMatrix = true;
-				if (successFirstMatrix){
+				if (successFirstMatrix == 0){
 					matricesDone.setBit(im);
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 					if (alteredDataParameters.getSubcodes()!=null)
@@ -194,7 +194,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 			}
 		}
 
-		if (!successFirstMatrix){
+		if (successFirstMatrix<0){
 			unpauseAllPausables(v);
 			if (getProject() != null)
 				getProject().decrementProjectWindowSuppression();
@@ -380,10 +380,10 @@ class AlterThread extends MesquiteThread {
 					if (ownerModule.matricesDone.isBitOn(im))
 						MesquiteMessage.printStackTrace("ERROR: doing matrix " + im);
 					//Debugg.println("" + im+ " <<<<<<<<");
-					boolean a = alterTask.alterData(data, null, null, alteredDataParameters);
+					int a = alterTask.alterData(data, null, null, alteredDataParameters);
 					//Debugg.println("" + im+ " >>>>>>>>");
 					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
-					if (a){
+					if (a == DataAlterer.SUCCEEDED){
 						Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 						if (alteredDataParameters.getSubcodes()!=null)
 							notification.setSubcodes(alteredDataParameters.getSubcodes());

@@ -34,10 +34,10 @@ public class PolymToAmbiguity extends CategDataAlterer implements AltererConvert
 
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!(data instanceof CategoricalData)){
 			MesquiteMessage.warnProgrammer("Attempt to convert polymorphisms to uncertainties (ambiguities) in non-categorical data");
-			return false;
+			return INCOMPATIBLE_DATA;
 		}
 		return alterContentOfCells(data,table,undoReference);
 	}

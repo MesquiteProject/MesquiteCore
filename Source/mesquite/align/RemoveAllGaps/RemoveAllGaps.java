@@ -39,9 +39,9 @@ public class RemoveAllGaps extends MolecularDataAlterer implements AltererWholeC
    	
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
 		if (!(cData instanceof MolecularData))
-			return false;
+			return INCOMPATIBLE_DATA;
 		MolecularData data = (MolecularData)cData;
 		int oldNumChars = data.getNumChars();
 		data.removeCharactersThatAreEntirelyGaps(false);
@@ -52,7 +52,9 @@ public class RemoveAllGaps extends MolecularDataAlterer implements AltererWholeC
 			return true;
 		}
 */
-		return oldNumChars!=data.getNumChars();
+		if ( oldNumChars!=data.getNumChars())
+		return SUCCEEDED;
+		return MEH;
 
    	}
 	/*.................................................................................................................*/

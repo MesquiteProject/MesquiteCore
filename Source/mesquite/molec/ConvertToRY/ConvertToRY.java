@@ -31,11 +31,11 @@ public class ConvertToRY extends DNADataAlterer implements AltererDNACell {
 
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		this.table = table;
 		if (!(data instanceof DNAData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on nucleotide data");
-			return false;
+			return INCOMPATIBLE_DATA;
 		}
 		return alterContentOfCells(data,table, undoReference);
 	}

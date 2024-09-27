@@ -106,7 +106,7 @@ public class SelSummaryStrip extends DataWindowAssistantID {
 		}
 
 		if (table.anyCellSelectedAnyWay()){
-			int numCells = table.numCellsSelectedAnyWay();
+			long numCells = table.numCellsSelectedAnyWay();
 			if (numCells == 1)
 				result += "1 Cells selected.  ";
 			else

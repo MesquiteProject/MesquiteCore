@@ -165,7 +165,7 @@ ListableVector taxonNames = new ListableVector();
 			String directory=fdlg.getDirectory();
 			// fdlg.dispose();
 			if (StringUtil.blank(fileName) || StringUtil.blank(directory))
-				return 2;
+				return -1;
 			saveFile = MesquiteFile.composePath(directory, fileName);
 			tempFile = MesquiteFile.composePath(directory, MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + fileName)) ;
 		 	if (!OACOptionAlreadySet)
@@ -173,10 +173,10 @@ ListableVector taxonNames = new ListableVector();
 			storePreferences();
 		}
 		if (saveFile == null)
-			return 2;
+			return -1;
 		Listable[] matrices = proj.getFileElements(CharacterData.class);	
 		if (matrices == null)
-			return 2;
+			return -1;
 		for (int im = 0; im < matrices.length; im++){
 			CharacterData data = (CharacterData)matrices[im];
 			if (data.getFile() == file && data.getNumChars()>0){

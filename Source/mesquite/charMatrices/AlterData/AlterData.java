@@ -194,11 +194,11 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 					AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 					if (MesquiteTrunk.debugMode)
 						logln("Memory available before data alterer invoked: " + MesquiteTrunk.getMaxAvailableMemory());
-					boolean a = tda.alterData(data, table, undoReference, alteredDataParameters);
+					int a = tda.alterData(data, table, undoReference, alteredDataParameters);
 					if (MesquiteTrunk.debugMode)
 						logln("Memory available after data alterer invoked: " + MesquiteTrunk.getMaxAvailableMemory());
 
-					if (a) {
+					if (a== DataAlterer.SUCCEEDED) {
 						table.repaintAll();
 						Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), undoReference);
 						if (alteredDataParameters.getSubcodes()!=null)

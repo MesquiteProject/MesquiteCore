@@ -44,13 +44,15 @@ public class CollapseEdges extends MolecularDataAlterer implements AltererWholeC
    	
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
 		if (!(cData instanceof MolecularData))
-			return false;
+			return INCOMPATIBLE_DATA;
 		MolecularData data = (MolecularData)cData;
-		data.stripRightTerminalGaps(false);
-		data.stripLeftTerminalGaps(false);
-		return true;
+		boolean changed = data.stripRightTerminalGaps(false);
+		changed = changed||data.stripLeftTerminalGaps(false);
+		if (changed)
+			return SUCCEEDED;
+			return MEH;
    	}
 	/*.................................................................................................................*/
   	 public boolean showCitation() {
