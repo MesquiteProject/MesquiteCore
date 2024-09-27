@@ -201,7 +201,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 		boolean usePrevious = false;
 		if (exporterString == null && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
 			if (!queryOptions())  
-				return 2;
+				return -1;
 
 		}
 		else
@@ -213,10 +213,10 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 
 		exporterTask = (FileInterpreter)coord.findEmployeeWithName(exporterString);
 		if (exporterTask == null)
-			return 2;
+			return -1;
 		Taxa taxa;
 		if (proj == null)
-			return 2;
+			return -1;
 		getProject().incrementProjectWindowSuppression();
 		incrementMenuResetSuppression();
 		CompatibilityTest test = exporterTask.getCompatibilityTest();

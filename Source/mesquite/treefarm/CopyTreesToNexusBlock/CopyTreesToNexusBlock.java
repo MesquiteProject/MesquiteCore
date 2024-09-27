@@ -74,10 +74,10 @@ public class CopyTreesToNexusBlock extends FileProcessor {
 		
 		if (saveFile == null || okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking for file to save")){ //need to check if can proceed
 			if (!initFile())
-				return 2;
+				return -1;
 		}
 		if (saveFile == null)
-			return 2;
+			return -1;
 		Listable[] treeVectors = proj.getFileElements(TreeVector.class);	
    		if (treeVectors == null)
    			return 1;

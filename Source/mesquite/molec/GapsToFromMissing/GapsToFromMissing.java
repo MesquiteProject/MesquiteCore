@@ -104,16 +104,16 @@ public String preparePreferencesForXML () {
 
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public synchronized boolean alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
+	public synchronized int alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
 		this.table = table;
 		if (!(dData instanceof CategoricalData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on categorical data");
-			return false;
+			return 1;
 		}
 		CategoricalData data = (CategoricalData)dData;
 		if (!MesquiteThread.isScripting()){
 			if (!queryOptions(data))
-				return false;
+				return -1;
 		}
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean noRowsSelected =  table == null || !table.anyRowSelected() ;
@@ -179,7 +179,7 @@ public String preparePreferencesForXML () {
 				undoReference.setResponsibleModule(this);
 			}
 		}
-		return true;
+		return 0;
 	}
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData ddata, int ic, int it){

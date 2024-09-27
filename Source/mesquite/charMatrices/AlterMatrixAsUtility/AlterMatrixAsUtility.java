@@ -113,20 +113,20 @@ public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 				progIndicator.setText("Altering matrix " +data.getName());
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
-				boolean success = alterTask.alterData(data, null, null, alteredDataParameters);
+				int returnCode = alterTask.alterData(data, null, null, alteredDataParameters);
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 				progIndicator.increment();
 				if (im < 2)
 					progIndicator.toFront();
 				if (datas.size()>50 && im != 0 && im % 50 == 0)
 					logln("" + (im) +  " matrices altered.");
-				if (success){
+				if (returnCode == 0){
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 					if (alteredDataParameters.getSubcodes()!=null)
 						notification.setSubcodes(alteredDataParameters.getSubcodes());
 					data.notifyListeners(this, notification);
 					count++;
-				} else {
+				} else if (returnCode < 0) {
 					abort = true;
 				}
 				firstTime = false;

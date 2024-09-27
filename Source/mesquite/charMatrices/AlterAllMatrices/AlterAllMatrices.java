@@ -102,7 +102,7 @@ public class AlterAllMatrices extends FileProcessor {
    	/** Called to alter file. */
    	public int processFile(MesquiteFile file){
    		if (alterTask == null)
-   			return 2;
+   			return -1;
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
    			return 0;

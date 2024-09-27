@@ -34,12 +34,12 @@ public class NucleotideComplement extends DNADataAlterer  implements AltererDNAC
 		
  	/*.................................................................................................................*/
   	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
  			if (data == null)
- 				return false;
+ 				return -10;
  			if (!(data instanceof DNAData)){
 				MesquiteMessage.warnProgrammer("Attempt to complement non-DNA data");
-				return false;
+				return INCOMPATIBLE_DATA;
 			}
 			return alterContentOfCells(data,table, undoReference);
    	}

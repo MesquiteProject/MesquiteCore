@@ -97,7 +97,7 @@ public class TaxonNamesFileProcessor extends FileProcessor {
    	public int processFile(MesquiteFile file){
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
-   			return 2;
+   			return -1;
    		boolean success = false;
    		CompatibilityTest test = utilityTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberTaxas(file); im++){

@@ -83,10 +83,10 @@ public class FAFillTreeBlock extends FileProcessor {
 	public int processFile(MesquiteFile file){
 		MesquiteProject proj = file.getProject();
 		if (proj == null)
-			return 2;
+			return -1;
 		Taxa taxa = proj.getTaxa(0);
 		if (taxa == null)
-			return 2;
+			return -1;
 		TreeVector trees = new TreeVector(taxa);
 		int howManyTrees =0;
 		if (treeFillerTask instanceof TreeSource)

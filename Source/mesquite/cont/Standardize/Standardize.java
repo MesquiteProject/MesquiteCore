@@ -36,10 +36,10 @@ public class Standardize extends ContDataAlterer  implements AltererContinuousTr
    	}
 
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
    		boolean did=false;
    		if (!(data instanceof ContinuousData))
-   			return false;
+   			return INCOMPATIBLE_DATA;
    		ContinuousData cData = (ContinuousData)data;
    		if (data !=null){
    			UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
@@ -104,7 +104,9 @@ public class Standardize extends ContDataAlterer  implements AltererContinuousTr
    				}
    			}
   		}
-   		return did;
+   		if (did)
+   			return SUCCEEDED;
+   		return MEH;
    	}
 
    	boolean shouldIDoIt(int ic, int it, MesquiteTable table){

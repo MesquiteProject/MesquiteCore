@@ -91,18 +91,16 @@ public class NumberForMatricesFP extends FileProcessor {
    	/** Called to alter file. */
    	public int processFile(MesquiteFile file, MesquiteString notice){
    		if (notice == null)
-   			return 2;
+   			return -1;
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
-   			return 2;
-   		boolean success = false;
+   			return -1;
    		CompatibilityTest test = numberTask.getCompatibilityTest();
    		MesquiteNumber result = new MesquiteNumber();
    		boolean first = true;
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
    			CharacterData data = proj.getCharacterMatrix(file, im);
    			if (test == null || test.isCompatible(data.getStateClass(), getProject(), this)) {
-   				success = true;
    				result.setToUnassigned();
   				numberTask.calculateNumber(data.getMCharactersDistribution(), result, null); 
   				if (!first)

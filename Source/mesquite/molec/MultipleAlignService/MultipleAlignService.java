@@ -63,18 +63,20 @@ public class MultipleAlignService extends CategDataAlterer  implements AltererAl
    	}
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		if (data==null)
-			return false;
+			return -10;
 		
 		if (!(data instanceof DNAData))
-			return false;
+			return INCOMPATIBLE_DATA;
 		long[][] m  = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), null, 0, data.getNumChars()-1, 0, data.getNumTaxa()-1);
 		
 		if (m==null)
-			return false;
+			return -1;
 		boolean success = AlignUtil.integrateAlignment(m, (MolecularData)data,  0, data.getNumChars()-1, 0, data.getNumTaxa()-1);
-		return success;
+		if (success)
+		return SUCCEEDED;
+		return MEH;
    	}
    	
 	/*.................................................................................................................*/

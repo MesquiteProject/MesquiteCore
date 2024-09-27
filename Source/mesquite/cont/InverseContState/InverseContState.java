@@ -36,9 +36,9 @@ public class InverseContState extends ContDataAlterer  implements AltererContinu
    		return false;  
    	}
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 			if (!(data instanceof ContinuousData))
-				return false;
+				return INCOMPATIBLE_DATA;
 			return alterContentOfCells(data,table, undoReference);
    	}
 

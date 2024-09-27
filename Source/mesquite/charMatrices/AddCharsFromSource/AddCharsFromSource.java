@@ -70,7 +70,7 @@ public class AddCharsFromSource extends CategDataAlterer implements AltererWhole
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		
 		characterSourceTask.initialize(data.getTaxa());
 		int maxNum = characterSourceTask.getNumberOfCharacters(data.getTaxa());
@@ -81,13 +81,13 @@ public class AddCharsFromSource extends CategDataAlterer implements AltererWhole
 			s = " (" + maxNum + " available)";
 		int numChars = MesquiteInteger.queryInteger(containerOfModule(), "Number of characters", "Number of characters to add from " + characterSourceTask.getName() + s, 1, 1, maxNum);
 		if (!MesquiteInteger.isCombinable(numChars))
-			return false;
+			return USER_STOPPED;
 		CharacterState cs = null;
 		for (int i = 0; i<numChars; i++){
 			CharacterDistribution dist = characterSourceTask.getCharacter(data.getTaxa(), i);
 			if (data.getStateClass() != dist.getStateClass()){
 				discreetAlert("Sorry, the source is supplying characters of a different type, and so can't be used");
-				return false;
+				return -20;
 			}
 			data.addCharacters(data.getNumChars(), 1, false);
 			int ic = data.getNumChars()-1;
@@ -96,7 +96,7 @@ public class AddCharsFromSource extends CategDataAlterer implements AltererWhole
 				data.setState(ic, it, cs);
 			}
 		}
-		return true;
+		return SUCCEEDED;
 	}
 
 	//	Double d = new Double(value);

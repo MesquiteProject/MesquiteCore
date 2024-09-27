@@ -40,18 +40,18 @@ public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlig
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		return alterData(data,table,undoReference,null);
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference, AlteredDataParameters alteredDataParameters){
+	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference, AlteredDataParameters alteredDataParameters){
 		if (data==null || table==null || !(data instanceof DNAData))
-			return false;
+			return -10;
 
 		DNAData dnaData = (DNAData)data;
 		if (!dnaData.someCoding()) 
-			return false;
+			return 11;
 		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_ADDED_TO_END});
 
 		MesquiteBoolean dataChanged = new MesquiteBoolean();
@@ -113,7 +113,9 @@ public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlig
 			}
 		}
 
-		return dataChanged.getValue();
+		if ( dataChanged.getValue())
+		return SUCCEEDED;
+		return MEH;
 
 	}
 

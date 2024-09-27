@@ -39,15 +39,15 @@ public class RandomFillCont extends ContDataAlterer implements AltererRandomizat
 		return true;
 	}
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 			
    			boolean did=false;
 			if (!(data instanceof ContinuousData))
-				return false;
+				return INCOMPATIBLE_DATA;
 			MesquiteBoolean answer = new MesquiteBoolean(true);
 			MesquiteDouble.queryTwoDoubles(containerOfModule(), "Random fill", "Mean of filled states", "Variance of filled states", answer, mean, variance);
 			if (!answer.getValue() && variance.getValue()>=0 && (variance.isCombinable()))
-				return false;
+				return USER_STOPPED;
 			standardDeviation = Math.sqrt(variance.getValue());
 			ContinuousData cData = (ContinuousData)data;
 			return alterContentOfCells(data,table, undoReference);

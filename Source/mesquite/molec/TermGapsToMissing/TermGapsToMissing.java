@@ -31,11 +31,11 @@ public class TermGapsToMissing extends CategDataAlterer implements AltererConver
 
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
+	public int alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
 		this.table = table;
 		if (!(dData instanceof CategoricalData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on categorical data");
-			return false;
+			return INCOMPATIBLE_DATA;
 		}
 		CategoricalData data = (CategoricalData)dData;
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
@@ -75,7 +75,9 @@ public class TermGapsToMissing extends CategDataAlterer implements AltererConver
 				undoReference.setResponsibleModule(this);
 			}
 		}
-		return true;
+		if (numCellsAltered > 0)
+			return SUCCEEDED;
+			return MEH;
 	}
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData ddata, int ic, int it){

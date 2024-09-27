@@ -82,9 +82,9 @@ public class RandomFillCateg extends CategDataAlterer implements AltererRandomiz
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!(data instanceof CategoricalData))
-			return false;
+			return INCOMPATIBLE_DATA;
 		boolean queryState=false;
 		if (data instanceof DNAData)
 			maxState = 3;
@@ -96,7 +96,7 @@ public class RandomFillCateg extends CategDataAlterer implements AltererRandomiz
 		}
 		if (!MesquiteThread.isScripting())
 			if (!queryOptions(queryState))
-				return false;
+				return USER_STOPPED;
 		/*		else {
 				maxState = MesquiteInteger.queryInteger(containerOfModule(), "Maximum State", "Each state is chosen equiprobably when filling the matrix randomly.  What should be the maximum state value?", 1, 1, 50, true);
 				if (!MesquiteInteger.isCombinable(maxState))

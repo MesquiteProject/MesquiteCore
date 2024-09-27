@@ -128,23 +128,23 @@ public String preparePreferencesForXML () {
 	}
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		if (data==null)
-			return false;
+			return -10;
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
    			if (!queryOptions(data.getNumTaxa()))
-   				return false;
+   				return USER_STOPPED;
 		}
 
 		if (!(data instanceof DNAData))
-			return false;
+			return INCOMPATIBLE_DATA;
 	//	try{
 		processData((DNAData)data,data.getTaxa());
 //		}
 //		catch (ArrayIndexOutOfBoundsException e){
 //			return false;
 //		}
-		return true;
+		return SUCCEEDED;
    	}
    	
 	/*.................................................................................................................*/

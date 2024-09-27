@@ -48,15 +48,15 @@ public class TrimTerminalByLength extends DataAlterer implements AltererSimpleCe
 
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
+	public int alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
 		if (dData==null)
-			return false;
+			return -10;
 		if (!(dData instanceof CategoricalData))
-			return false;
+			return INCOMPATIBLE_DATA;
 		CategoricalData data= (CategoricalData)dData;
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
 			if (!queryOptions())
-				return false;
+				return USER_STOPPED;
 		}
 
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
@@ -96,7 +96,9 @@ public class TrimTerminalByLength extends DataAlterer implements AltererSimpleCe
 				undoReference.setResponsibleModule(this);
 			}
 		}
-		return changed;
+		if ( changed)
+		return SUCCEEDED;
+		return MEH;
 	}	/*.................................................................................................................*/
 	public boolean isPrerelease() {
 		return true;

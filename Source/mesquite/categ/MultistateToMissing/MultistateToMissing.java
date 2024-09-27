@@ -34,10 +34,10 @@ public class MultistateToMissing extends CategDataAlterer implements AltererConv
 
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!(data instanceof CategoricalData)){
 			MesquiteMessage.warnProgrammer("Attempt to convert multistate characters to missing in non-categorical data");
-			return false;
+			return INCOMPATIBLE_DATA;
 		}
 		return alterContentOfCells(data,table,undoReference);
 	}

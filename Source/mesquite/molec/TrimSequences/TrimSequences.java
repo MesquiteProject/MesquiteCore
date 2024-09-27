@@ -89,7 +89,7 @@ public class TrimSequences extends MolecularDataAlterer implements AltererWholeC
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		
 		UndoInstructions undoInstructions = null;
 		if (undoReference!=null)
@@ -126,7 +126,7 @@ public class TrimSequences extends MolecularDataAlterer implements AltererWholeC
 				undoReference.setResponsibleModule(this);
 			}
 		}
-		return true;
+		return SUCCEEDED;
 	}
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData ddata, int ic, int it){

@@ -39,7 +39,7 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 	
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		data.deselectAll();
 		selectorTask.selectCharacters( data);
 		
@@ -100,7 +100,7 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 				undoReference.setResponsibleModule(this);
 			}
 		}
-		return true;
+		return SUCCEEDED;
 	}
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData ddata, int ic, int it){

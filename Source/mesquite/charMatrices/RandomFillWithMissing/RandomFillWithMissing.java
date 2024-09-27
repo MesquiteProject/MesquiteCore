@@ -68,10 +68,10 @@ public class RandomFillWithMissing extends CategDataAlterer implements AltererRa
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!MesquiteThread.isScripting())
 			if (!queryOptions())
-				return false;
+				return USER_STOPPED;
 		return alterContentOfCells(data,table, undoReference);
 	}
 

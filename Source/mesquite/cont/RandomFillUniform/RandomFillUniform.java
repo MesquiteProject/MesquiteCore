@@ -39,15 +39,15 @@ public class RandomFillUniform extends ContDataAlterer implements AltererRandomi
 		return true;
 	}
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 
 		boolean did=false;
 		if (!(data instanceof ContinuousData))
-			return false;
+			return INCOMPATIBLE_DATA;
 		MesquiteBoolean answer = new MesquiteBoolean(true);
 		MesquiteDouble.queryTwoDoubles(containerOfModule(), "Random fill (Uniform)", "Minimum of filled states", "Maximum of filled states", answer, min, max);
 		if (!answer.getValue() && min.isCombinable() && (max.isCombinable()) && max.getValue()>=min.getValue())
-			return false;
+			return USER_STOPPED;
 		ContinuousData cData = (ContinuousData)data;
 		return alterContentOfCells(data,table, undoReference);
 	}

@@ -57,11 +57,11 @@ public class CopyTreesToSimpleFile extends FileProcessor {
 			String fileName=fdlg.getFile();
 			String directory=fdlg.getDirectory();
 			if (StringUtil.blank(fileName) || StringUtil.blank(directory))
-				return 2;
+				return -1;
 			saveFile = MesquiteFile.composePath(directory, fileName);
 		}
 		if (saveFile == null)
-			return 2;
+			return -1;
 		Listable[] treeVectors = proj.getFileElements(TreeVector.class);	
    		if (treeVectors == null)
    			return 1;

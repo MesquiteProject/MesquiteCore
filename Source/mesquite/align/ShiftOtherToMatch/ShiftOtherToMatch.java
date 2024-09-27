@@ -129,15 +129,15 @@ public boolean queryOptions(int it, int max) {
 
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		if (data==null || table==null)
-			return false;
+			return -10;
 		MesquiteInteger row = new MesquiteInteger();
 		MesquiteInteger firstColumn = new MesquiteInteger();  // this is the first column selected in the block
 		MesquiteInteger lastColumn = new MesquiteInteger();  // this is the last column selected
 		if (table.onlySingleRowBlockSelected(row,firstColumn, lastColumn)) {
 			if (!queryOptions(row.getValue(), data.getNumTaxa()-1))
-					return false;
+					return USER_STOPPED;
 			MesquiteBoolean dataChanged = new MesquiteBoolean (false);
 			MesquiteInteger charAdded = new MesquiteInteger(0);
 
@@ -187,11 +187,13 @@ public boolean queryOptions(int it, int max) {
 					table.selectBlock(firstColumn.getValue(), row.getValue(), lastColumn.getValue(), row.getValue());  //Wayne: why doesn't this select a block in the matrix?
 				}
 			}
-			return dataChanged.getValue();
+			if ( dataChanged.getValue())
+			return SUCCEEDED;
+			return MEH;
 		}
 		else {
    			discreetAlert( "A portion of only one sequence can be selected.");
-			return false;
+			return -13;
    		}
    	}
    	
