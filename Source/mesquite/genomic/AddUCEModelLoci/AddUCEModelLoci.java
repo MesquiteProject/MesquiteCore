@@ -31,14 +31,6 @@ import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
 DNA and Protein files. */
 public class AddUCEModelLoci extends DatasetsListUtility {
 
-
-	Class[] acceptedClasses;
-
-	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
-	public boolean requestPrimaryChoice(){
-		return false;  
-	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		acceptedClasses = new Class[] {ProteinState.class, DNAState.class};
@@ -46,6 +38,18 @@ public class AddUCEModelLoci extends DatasetsListUtility {
 		return true;  //make this depend on taxa reader being found?)
 	}
 
+
+	Class[] acceptedClasses;
+
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return true;  
+	}
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public boolean requestPrimaryChoice(){
+		return false;  
+	}
 	boolean badImportWarningGiven = false;
 
 	/*.................................................................................................................*/
