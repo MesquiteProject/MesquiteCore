@@ -69,7 +69,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 	
 	/*.................................................................................................................*/
 	/** Process the matrix, placing data into passed CharacterData object */
-	public void processMatrix(Taxa taxa, mesquite.lib.characters.CharacterData data, FileParser parser, int numChars, boolean nameTaxa, int firstTaxon, boolean makeNewTaxaIfNeeded, boolean fuse, MesquiteFile fileBeingRead) {
+	public void processMatrix(Taxa taxa, mesquite.lib.characters.CharacterData data, MatrixFileParser parser, int numChars, boolean nameTaxa, int firstTaxon, boolean makeNewTaxaIfNeeded, boolean fuse, MesquiteFile fileBeingRead) {
 		if (data == null)
 			return;
 		if (taxa == null)
@@ -102,8 +102,8 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		if (data.interleaved) {  //vvvvvvvv  INTERLEAVED #################################################################
 			boolean warned = false;
 			
-			if (FileParser.READ_MATRIX_DIRECT_FROM_FILE)  //Debugg.println
-				alert("Reading of interleaved files is currently broken. Please change FileParser.READ_MATRIX_DIRECT_FROM_FILE to false and try again");
+		//	if (FileParser.READ_MATRIX_DIRECT_FROM_FILE)  //Debugg.println
+		//		alert("Reading of interleaved files is currently broken. Please change FileParser.READ_MATRIX_DIRECT_FROM_FILE to false and try again");
 			int[] currentCharacter = new int[taxa.getNumTaxa()];
 			for (int i=firstTaxon; i<taxa.getNumTaxa(); i++) currentCharacter[i] =0;
 			boolean done = false;
@@ -121,7 +121,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 
 			while (!done && !(isEndLine(taxonName=parser.getNextToken()))) {
 				parser.setLineEndingsDark(true);
-
 				if (nameTaxa && it<taxa.getNumTaxa() && taxa.whichTaxonNumber(taxonName,false,false)>=0){ // this name already exists in taxon block
 					if (fuse){
 						if (toDelete || AlertDialog.query(containerOfModule(), "Duplicated taxa", "Some taxon names in the file being read are the same as some already in the project for the taxa block \"" + taxa.getName() + "\". Do you want to merge these taxa? (example of duplicated name: " + taxonName + ").  WARNING: if these taxa have data in matrices that you are fusing to existing matrices, then the taxon will take on the newly fused values. (cmm1)")){
@@ -273,7 +272,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			String problem = null;
 			int lastTaxonNumber = -1;
 
-			if (FileParser.verbose) Debugg.println("@@@@@@@@  CMM ");
+			if (MatrixFileParser.verbose) Debugg.println("@@@@@@@@  CMM ");
 			 for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken()); it++) {
 
 				boolean preserveNewTaxon = false;
@@ -319,7 +318,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					}
 				}
 				CommandRecord.tick("Reading character states for " + taxa.getTaxonName(whichTaxon));
-				if (FileParser.verbose)  Debugg.println("@@@@@@@@  CMM1");
+				if (MatrixFileParser.verbose)  Debugg.println("@@@@@@@@  CMM1");
 				int ic=0;
 				lastTaxonNumber = whichTaxon;
 				if (fuse){ //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    FUSE

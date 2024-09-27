@@ -54,9 +54,7 @@ public class ManageDATAblock extends MesquiteModule {
 		if (block == null || file == null)
 			return null;
 		CharacterData data=null;
-		FileParser commandParser = new FileParser();
-		//commandParser.setString(block.toString());
-		commandParser.setFileBlock(block);
+		MatrixFileParser commandParser = new MatrixFileParser(block);
 
 		String dataTitle=getProject().getCharacterMatrices().getUniqueName("Character Matrix");
 		String taxaTitle=getProject().getCharacterMatrices().getUniqueName("Taxa");
