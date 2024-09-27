@@ -106,6 +106,7 @@ public class AddUCEModelLoci extends DatasetsListUtility {
 			Taxa originalTaxa = null;
 			boolean taxonAdded = false;
 			Taxon t = null;
+			boolean charAdded = false;
 
 			while (!StringUtil.blank(line) && !abort) {
 
@@ -131,7 +132,7 @@ public class AddUCEModelLoci extends DatasetsListUtility {
 					}
 
 					if (data!=null) {
-					//	int numFilledChars = data.getNumChars();
+						//	int numFilledChars = data.getNumChars();
 						boolean wassave = data.saveChangeHistory;
 						data.saveChangeHistory = false;
 
@@ -150,8 +151,8 @@ public class AddUCEModelLoci extends DatasetsListUtility {
 								}
 								setFastaState(data,ic, taxonNumber, c);    // setting state to that specified by character c
 							}
-				//			if (numFilledChars<ic) //DAVIDCHECK This had been after the ic += 1 which led to a blank site at end for some matrices
-				//				numFilledChars=ic;  //Debugg.println
+							//			if (numFilledChars<ic) //DAVIDCHECK This had been after the ic += 1 which led to a blank site at end for some matrices
+							//				numFilledChars=ic;  //Debugg.println
 							ic += 1;
 
 						}
@@ -169,17 +170,16 @@ public class AddUCEModelLoci extends DatasetsListUtility {
 					subParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 
 				}
+				if (charAdded) {
+					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED));
+				}
 			}
 		}
 
 
 
-		/*		
-		 		if (charAdded>0) {
-					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
-					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED));
-				}
-		 */
+
 
 
 
