@@ -215,11 +215,11 @@ public class AddUCEModelLoci extends DatasetsListUtility {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "UCE Loci in FASTA file";
+		return "Add UCE Loci from FASTA file";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "UCE Loci in FASTA file...";
+		return "Add UCE Loci from FASTA file...";
 	}
 	/*.................................................................................................................*/
 
