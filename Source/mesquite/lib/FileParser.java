@@ -20,7 +20,7 @@ public class FileParser {
 	long currentPosInBlock = 0;
 	long currentPosLocal = 0;
 	FileBlock block;
-	public static final boolean READ_MATRIX_DIRECT_FROM_FILE = true;
+	public static final boolean READ_MATRIX_DIRECT_FROM_FILE = false;
 	public static boolean verbose = false;
 	public FileParser(){
 		parser = new Parser();
