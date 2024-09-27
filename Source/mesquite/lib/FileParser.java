@@ -19,7 +19,7 @@ public class FileParser {
 	Parser parser;
 	MesquiteStringBuffer tempBuffer;
 	FileBlock block;
-	public static final boolean READ_MATRIX_DIRECT_FROM_FILE = true;
+	public static final boolean READ_MATRIX_DIRECT_FROM_FILE = false;
 	public static boolean verbose = false;
 	public FileParser(){
 		parser = new Parser();
@@ -59,12 +59,16 @@ public class FileParser {
 		return block.atEOF();
 	}
 	public String getNextToken() {
-		checkAndRefreshParser();
+		if (!READ_MATRIX_DIRECT_FROM_FILE)
+			return parser.getNextToken();
+	checkAndRefreshParser();
 		String s = parser.getNextToken();
 		if (verbose) Debugg.println("~~~gNT [" + s + "]");
 		return s;
 	}
 	public String getNextCommand() {
+		if (!READ_MATRIX_DIRECT_FROM_FILE)
+			return parser.getNextCommand();
 		String c = "";
 		boolean commandDone = false;
 		while (!commandDone) {
@@ -101,6 +105,8 @@ public class FileParser {
 		return null;
 	}
 	public String getPieceOfLine(int len) {
+		if (!READ_MATRIX_DIRECT_FROM_FILE)
+			return parser.getPieceOfLine(len);
 		checkAndRefreshParser();
 		String s = parser.getPieceOfLine(len);
 		if (verbose) Debugg.println("~~~gPOL [" + s + "]");
@@ -112,6 +118,8 @@ public class FileParser {
 
 	/* gets the local parser, including at least current in the file, at current position */
 	public Parser getParserAtCurrentPosition() {
+		if (!READ_MATRIX_DIRECT_FROM_FILE)
+			return parser;
 		checkAndRefreshParser();
 		return parser;
 	}

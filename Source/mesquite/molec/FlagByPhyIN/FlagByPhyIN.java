@@ -1,4 +1,4 @@
-/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+/* Mesquite source code.  Copyright 2024 and onward, W. Maddison and D. Maddison. 
 
 
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
@@ -59,11 +59,6 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	static boolean treatGapAsStateDEFAULT = true; //(-e)
 	static boolean examineOnlySelectedTaxaDEFAULT = false;
 
-	double proportionIncompat = proportionIncompatDEFAULT; //(-p)
-	int blockSize = blockSizeDEFAULT; //(-b)
-	int neighbourDistance = neighbourDistanceDEFAULT; //(-d)
-	MesquiteBoolean treatGapAsState = new MesquiteBoolean(treatGapAsStateDEFAULT); //(-e)
-	MesquiteBoolean examineOnlySelectedTaxa = new MesquiteBoolean(examineOnlySelectedTaxaDEFAULT); //(no equivalent in python script)
 
 	// Example with parameters b=10, d=1, p = 0.5
 	// AAATAAAAAACCAAAAAAAAAAA
@@ -266,12 +261,18 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	public boolean requestPrimaryChoice(){
 		return true;  
 	}
+	/*.................................................................................................................*/
+	double proportionIncompat = proportionIncompatDEFAULT; //(-p)
+	int blockSize = blockSizeDEFAULT; //(-b)
+	int neighbourDistance = neighbourDistanceDEFAULT; //(-d)
+	MesquiteBoolean treatGapAsState = new MesquiteBoolean(treatGapAsStateDEFAULT); //(-e)
+	MesquiteBoolean examineOnlySelectedTaxa = new MesquiteBoolean(examineOnlySelectedTaxaDEFAULT); //(no equivalent in python script)
+	
 	boolean[] hasConflict;
 	boolean[] toSelect;
 	int[] taxonSequenceStart, taxonSequenceEnd;
 	int NUMSTATES = 4;
 	int numTaxaWithSequence = 0;
-
 	boolean[][] statePairs;
 
 	/*.................................................................................................................*/
@@ -337,6 +338,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		}
 		return false;
 	}
+	/*.................................................................................................................*/
 	boolean anyTaxaSelected = false;
 	boolean includeTaxon(int it, CategoricalData data) {
 		return !anyTaxaSelected || (!examineOnlySelectedTaxa.getValue() || data.getTaxa().getSelected(it));
@@ -360,7 +362,6 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			}
 		}
 
-
 		//Test of compatibility: Look for cycles in state to state occupancy graph (M. Steel)
 		int stopper = 1000; //merely to prevent infinite loop in case of bug
 		while (trimSingleConnects() && (stopper--) > 0) {
@@ -370,7 +371,6 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		// if anything is left of the graph, then it's incompatible
 		if (anyOfGraphLeft()) 
 			return true;
-
 
 		return false;
 	}
@@ -436,11 +436,6 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 
 	}
 
-
-	/*.................................................................................................................*/
-
-
-	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
@@ -453,7 +448,6 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			for (int ic=0; ic<hasConflict.length; ic++) {
 				selectSpanByProportion(ic, hasConflict, toSelect, proportionIncompat, blockSize);
 			}
-
 
 			for (int ic=0; ic<data.getNumChars(); ic++) {
 				if (toSelect[ic])

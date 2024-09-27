@@ -58,7 +58,7 @@ import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.TaxaManager;
 
 /* ======================================================================== */
-public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionListener { //ShellScriptWatcher, 
+public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionListener { 
 
 	static final String[] autoOptionNames = new String[]{"gappyout", "strict", "strictplus", "automated1"};
 	static final int autoOptionDEFAULT = 3; //automated1
