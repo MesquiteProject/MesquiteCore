@@ -101,6 +101,9 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		totalTime.start();
 		if (data.interleaved) {  //vvvvvvvv  INTERLEAVED #################################################################
 			boolean warned = false;
+			
+			if (FileParser.READ_MATRIX_DIRECT_FROM_FILE)  //Debugg.println
+				alert("Reading of interleaved files is currently broken. Please change FileParser.READ_MATRIX_DIRECT_FROM_FILE to false and try again");
 			int[] currentCharacter = new int[taxa.getNumTaxa()];
 			for (int i=firstTaxon; i<taxa.getNumTaxa(); i++) currentCharacter[i] =0;
 			boolean done = false;

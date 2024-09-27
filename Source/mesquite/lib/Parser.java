@@ -289,6 +289,8 @@ public class Parser extends StringUtil {
 			}
 		}
 	}
+	/*.................................................................................................................*/
+	
 	public void setPunctuationStringRaw(String s){
 		if (s==null){
 			punctuationStringSet = null;

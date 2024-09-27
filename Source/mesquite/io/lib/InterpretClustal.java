@@ -53,7 +53,7 @@ public abstract class InterpretClustal extends FileInterpreterI {
 	/*.................................................................................................................*/
 	MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 	public String skipBlankLines(MesquiteFile file, Parser parser, String line){
-		while ((line!=null) && StringUtil.blank(line,"*.:")) {
+		while ((line!=null) && StringUtil.blankWithExtraWhitespaceChars(line,"*.:")) {
 			if (!file.readLine(sb))
 				break; 
 			line = sb.toString();
@@ -150,7 +150,7 @@ public abstract class InterpretClustal extends FileInterpreterI {
 				file.readLine(sb);
 				line = sb.toString();		
 
-				if (StringUtil.blank(line,"*.:")) {  // at end of block
+				if (StringUtil.blankWithExtraWhitespaceChars(line,"*.:")) {  // at end of block
 					line = skipBlankLines(file, parser,line);
 					parser.setString(line);
 					firstBlock=false;

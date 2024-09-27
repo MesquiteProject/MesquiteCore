@@ -1105,13 +1105,17 @@ public class StringUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
-	public static String stripLeadingWhitespace(String token) { //added 22 Dec 01
+	public static String stripLeadingWhitespace(String token) { 
+		return stripLeadingWhitespace(token, defaultWhitespace);
+	}
+	/*.................................................................................................................*/
+	public static String stripLeadingWhitespace(String token, String whitespace) { //added 22 Dec 01
 		if (token == null)
 			return "";
 		int firstDark = -1;
 		for (int i=0; i<token.length(); i++) {
 			char c = token.charAt(i);
-			if (defaultWhitespace.indexOf(c)<0){
+			if (whitespace.indexOf(c)<0){
 				firstDark = i;
 				break;
 			}
@@ -1123,12 +1127,16 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String stripTrailingWhitespace(String token) {
+		return stripTrailingWhitespace(token, defaultWhitespace);
+	}
+	/*.................................................................................................................*/
+	public static String stripTrailingWhitespace(String token, String whitespace) {
 		if (token == null)
 			return "";
 		int firstDark = -1;
 		for (int i=token.length()-1;  i>=0; i--) {
 			char c = token.charAt(i);
-			if (defaultWhitespace.indexOf(c)<0){
+			if (whitespace.indexOf(c)<0){
 				firstDark = i;
 				break;
 			}
@@ -1987,6 +1995,21 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 		}
 	}
 	/*.................................................................................................................*/
+	public static boolean blank(String line, String whitesp) {
+		if (line==null)
+			return true;
+		else if (line.length()==0)
+			return true;
+		else {
+			for (int i=0; i<line.length(); i++) {
+				char c = line.charAt(i);
+				if (c > 0 && !whitespace(c, whitesp))
+					return false;
+			}
+			return true;
+		}
+	}
+	/*.................................................................................................................*/
 	public static boolean blank(MesquiteStringBuffer line) {
 		if (line==null)
 			return true;
@@ -2021,8 +2044,8 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 		}
 	}
 	/*.................................................................................................................*/
-	public static boolean blank(String line, String temporaryWhiteSpace) {
-		if (temporaryWhiteSpace == null)
+	public static boolean blankWithExtraWhitespaceChars(String line, String additionalWhiteSpace) {
+		if (additionalWhiteSpace == null)
 			return blank(line);
 		if (line==null)
 			return true;
@@ -2030,7 +2053,7 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 			return true;
 		else {
 			for (int i=0; i<line.length(); i++) {
-				if ((!whitespace(line.charAt(i), null)) && (!(temporaryWhiteSpace.indexOf(line.charAt(i))>=0))) {
+				if ((!whitespace(line.charAt(i), null)) && (!(additionalWhiteSpace.indexOf(line.charAt(i))>=0))) {
 					return false;
 				}
 			}

@@ -587,11 +587,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			MesquiteInteger io = new MesquiteInteger(0);
 			deselectWandTouched.toggleValue(ParseUtil.getFirstToken(arguments, io));
 		}
-	/*	else if (checker.compare(this.getClass(), "Sets whether to select according to a set target value", null, commandName, "useTargetValue")) {
-			boolean current = useTargetValue.getValue();
-			MesquiteInteger io = new MesquiteInteger(0);
-			useTargetValue.toggleValue(ParseUtil.getFirstToken(arguments, io));
-		}*/
+		else if (checker.compare(this.getClass(), "Sets whether to select according to a set target value", null, commandName, "useTargetValue")) {
+			//ignored in v.4
+		}
 		else if (checker.compare(this.getClass(), "Sets the wand column last used", "[number]", commandName, "setWandColumn")) {
 			MesquiteInteger io = new MesquiteInteger(0);
 			int s = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, io));
