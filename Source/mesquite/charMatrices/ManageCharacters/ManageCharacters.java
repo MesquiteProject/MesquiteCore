@@ -2172,8 +2172,10 @@ public class ManageCharacters extends CharactersManager {
 					 Debugg.println("@@@@@@ (next is  " + commandParser.getNextCommandNameWithoutConsuming() + " ");
 				 if (data !=null && data.getMatrixManager()!=null)
 					 success = data.getMatrixManager().processCommand(data, commandName, commandString);
-				 if (!success && b != null) 
+				 if (!success && b != null) {
+					 Debugg.println("filePOS%%%%%%%% parser[" + commandParser.getParserAtCurrentPosition().getBuffer() + "] pos " + commandParser.getParserAtCurrentPosition().getPosition() + " filePos " + block.getFilePosition());
 					 readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
+				 }
 			 }
 			 else {
 				 commandParser.getNextCommand(); //eating up the full command

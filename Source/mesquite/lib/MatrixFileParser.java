@@ -101,8 +101,14 @@ public class MatrixFileParser {
 	}
 
 	/*  -------------------------------------------------------------  */
-	/* Get the next command up to and including ;*/
+	/* Get the next command up to and including :;"*/
 	public String getNextCommand() {
+		return getNextCommand(null);
+		}
+	
+	public String getNextCommand(MesquiteLong posJustBeforeCommand) {
+		if (posJustBeforeCommand != null)
+			posJustBeforeCommand.setValue(parser.getPosition());
 		if (!READ_MATRIX_DIRECT_FROM_FILE) {
 			String s= parser.getNextCommand();
 			if (verbose) Debugg.println("~~~gNC [" + s + "]");
@@ -112,6 +118,8 @@ public class MatrixFileParser {
 		boolean commandDone = false;
 		while (!commandDone && !atEOF()) {
 			checkAndRefreshParser();
+			if (posJustBeforeCommand != null)
+				posJustBeforeCommand.setValue(parser.getPosition());
 			String s = parser.getNextCommand();  //Need to know if command is finished!!!!
 			if (s!= null) {
 				c += " " + s;
@@ -164,11 +172,16 @@ public class MatrixFileParser {
 	}
 
 	/*  -------------------------------------------------------------  */
+	MesquiteLong posBefore = new MesquiteLong();
 	public void consumeNextIfSemicolon() {
 		long currentPos = parser.getPosition();
-		String token = getNextCommand();
+		if (verbose) Debugg.println("~~~CNISstart " + currentPos + " buffer [" + parser.getBuffer() + "]");
+		String token = getNextCommand(posBefore);
+		if (verbose) Debugg.println("~~~CNISmid " +  parser.getPosition() + " buffer [" + parser.getBuffer() + "]");
+		token = StringUtil.stripTrailingWhitespace(token);  //not sure if needed, but let's be clean
+		token = StringUtil.stripLeadingWhitespace(token);
 		if (token == null || !token.equals(";"))
-			parser.setPosition(currentPos);
+			parser.setPosition(posBefore.getValue());
 		if (verbose) Debugg.println("~~~CNIS [" + token + "]");
 	}
 	
