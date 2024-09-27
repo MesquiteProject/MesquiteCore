@@ -2773,7 +2773,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 					return false;
 				}
 			} 
-			matchEnd.setValue(ic);
+			matchEnd.setValue(checkChar+ic);
 		}
 		return true;
 
@@ -3741,6 +3741,16 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		int count = 0;
 		for (int i = icStart; i<=icEnd; i++) {
 			if (!isInapplicable(i,it))
+				if (!isUnassigned(i, it) || countMissing)
+					count++;
+		}
+		return count;
+	}
+	/*.................................................................................................................*/
+	public int getNumberInapplicableInTaxon(int it, int icStart, int icEnd, boolean countMissing){
+		int count = 0;
+		for (int i = icStart; i<=icEnd; i++) {
+			if (isInapplicable(i,it))
 				if (!isUnassigned(i, it) || countMissing)
 					count++;
 		}

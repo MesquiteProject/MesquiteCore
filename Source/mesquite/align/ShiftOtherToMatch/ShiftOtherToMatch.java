@@ -37,6 +37,7 @@ public class ShiftOtherToMatch extends CategDataAlterer  implements AltererAlign
 	int it2= MesquiteInteger.unassigned;
 	boolean preferencesSet = false;
 	boolean reverseComplementIfNecessary = true;
+	boolean shiftOneBlockOnly = false;
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -155,17 +156,27 @@ public boolean queryOptions(int it, int max) {
 						match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);  // added 31 October 2015
 					}
 					if (match) {
-						int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
-						if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
-							((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
-//							((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
-						}
-						if (added!=0)
-							someAdded=true;
-						if (added<0) {
-							totalAddedToStart -=added;
-							firstColumn.add(-added);
-							lastColumn.add(-added);
+						if (shiftOneBlockOnly) {
+							Debugg.println("\n\nfirstColumn: " + firstColumn.getValue());
+							Debugg.println("lastColumn: " + lastColumn.getValue());
+							Debugg.println("matchStart: " + matchStart.getValue());
+							Debugg.println("matchEnd: " + matchEnd.getValue());
+							if (data.getNumberInapplicableInTaxon(it, matchStart.getValue(), matchEnd.getValue(), true)==0) {  //no gaps
+								
+							}
+						} else {
+							int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
+							if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
+								((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
+								//							((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
+							}
+							if (added!=0)
+								someAdded=true;
+							if (added<0) {
+								totalAddedToStart -=added;
+								firstColumn.add(-added);
+								lastColumn.add(-added);
+							}
 						}
 					}
 				}
