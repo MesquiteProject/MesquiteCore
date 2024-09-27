@@ -17,37 +17,44 @@ package mesquite.lib;
 /* Like Parser, but based on a file, for direct reading. Temporarily merely an intermediary to Parser */
 public class FileParser {
 	Parser parser;
-	long currentPosInBlock = 0;
-	long currentPosLocal = 0;
+	MesquiteStringBuffer tempBuffer;
 	FileBlock block;
-	public static final boolean READ_MATRIX_DIRECT_FROM_FILE = false;
+	public static final boolean READ_MATRIX_DIRECT_FROM_FILE = true;
 	public static boolean verbose = false;
 	public FileParser(){
 		parser = new Parser();
 	}
 	public void setFileBlock(FileBlock block) {
 		this.block = block;
+		tempBuffer = new MesquiteStringBuffer();
 		if (!READ_MATRIX_DIRECT_FROM_FILE)
 			parser.setBuffer(block.toMesquiteStringBuffer());
 	}
 
 	private void checkAndRefreshParser() {
-	/*	if (parser.atEnd()) {
-			block.getNextLine(parser.getBuffer());
-			Debugg.println("~.......[" + parser.getBuffer() + "] " + block.getFilePosition());
-			parser.setPosition(0L);
-		}*/
 		long prevFilePos = block.getFilePosition();
 		boolean needToGetMore = parser.atEnd();
+
 		while (needToGetMore) {  //Debugg.println: have backup in case file ends!!!
-			block.getNextLine(parser.getBuffer());
-			parser.setPosition(0L);
+				block.getNextLine(parser.getBuffer());
+				parser.setPosition(0L);
 			if (verbose) Debugg.println("~.......[" + parser.getBuffer() + "] " + parser.atEnd() + " prev " + prevFilePos + " current " + block.getFilePosition());
-			needToGetMore = parser.atEnd() && !block.atEOF();
+			needToGetMore = (parser.blank() || parser.atEnd()) && !block.atEOF();
 			prevFilePos = block.getFilePosition();
 		}
 	}
-	
+	private void appendNextLineToParser() {
+
+				block.getNextLine(tempBuffer);
+				String s = tempBuffer.toString();
+				s = StringUtil.stripLeadingWhitespace(s);
+				s = StringUtil.stripTrailingWhitespace(s);
+				parser.getBuffer().append(" " + s);
+
+	}
+	public long getFilePosition() {
+		return block.getFilePosition();
+	}
 	public boolean atEOF() {
 		return block.atEOF();
 	}
@@ -55,7 +62,7 @@ public class FileParser {
 		checkAndRefreshParser();
 		String s = parser.getNextToken();
 		if (verbose) Debugg.println("~~~gNT [" + s + "]");
-		
+
 		return s;
 	}
 	public String getNextCommand() {
@@ -75,11 +82,27 @@ public class FileParser {
 		if (verbose) Debugg.println("~~~gNC [" + c + "]");
 		return c;
 	}
-	public String getNextCommandNameWithoutConsuming() {
-		checkAndRefreshParser();
+	public String getNextCommandNameWithoutConsuming() { 
+		/**
+		checkAndRefreshParser(true);
 		String s = parser.getNextCommandNameWithoutConsuming();
-		if (verbose) Debugg.println("~~~gNCNWC [" + s + "]");
 		return s;
+		/**/
+		checkAndRefreshParser();
+		String c = "";
+		while (!atEOF()) {
+			String s = parser.getNextCommandNameWithoutConsuming();
+			s = StringUtil.stripTrailingWhitespace(s);
+			s = StringUtil.stripLeadingWhitespace(s);
+			if (StringUtil.blank(s))
+				appendNextLineToParser();
+			else {
+				if (verbose) Debugg.println("~~~gNCNameWC [" + c + "]");
+				return s;
+			}
+			
+		}
+		return null;
 	}
 	public String getPieceOfLine(int len) {
 		checkAndRefreshParser();
@@ -146,7 +169,7 @@ public class FileParser {
 			return block.getNextCommandNameWithoutConsuming();
 		return name;
 	}
-	
+
 	public boolean blankByCurrentWhitespace(String s) {
 		return localBufferParser.blankByCurrentWhitespace(s);
 	}
@@ -176,7 +199,7 @@ public class FileParser {
 	}
 }
 
-*/
+ */
 
 
 

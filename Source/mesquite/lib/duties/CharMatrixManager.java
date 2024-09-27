@@ -75,7 +75,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		if (taxa == null)
 			taxa = data.getTaxa();
 
-		boolean verbose = false;  //Debugg.println
 		String taxonName;
 		parser.setLineEndingsDark(false);
 		String d = parser.getNextToken(); //eating MATRIX
@@ -271,7 +270,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			String problem = null;
 			int lastTaxonNumber = -1;
 
-			if (verbose) Debugg.println("@@@@@@@@  CMM ");
+			if (FileParser.verbose) Debugg.println("@@@@@@@@  CMM ");
 			 for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken()); it++) {
 
 				boolean preserveNewTaxon = false;
@@ -317,7 +316,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					}
 				}
 				CommandRecord.tick("Reading character states for " + taxa.getTaxonName(whichTaxon));
-				if (verbose)  Debugg.println("@@@@@@@@  CMM1");
+				if (FileParser.verbose)  Debugg.println("@@@@@@@@  CMM1");
 				int ic=0;
 				lastTaxonNumber = whichTaxon;
 				if (fuse){ //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    FUSE
