@@ -637,6 +637,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		return false;
 	}
 	protected boolean includeOnlyTaxaWithData = true;// TO DO: also have the option of only writing taxa with data in them
+	//Debugg.println how is this different from !writeTaxaWithAllMissing?
 
 	/*	public  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		Taxa taxa = data.getTaxa();
@@ -716,8 +717,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		timer.start();
 		MesquiteFile.putFileContents(path, "", true); //starting the file
 		int counter = 1;
-		if (numTaxa*1L*numChars > 10000000)
+		long totalCells = numTaxa*1L*numChars;
+		if (totalCells > 10000000)
 			log("Writing Fasta file ");
+		double lastChunkReported = 0;
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || (taxa.getSelected(it))) && (!includeOnlyTaxaWithData || taxonHasData(data, it))){
 
@@ -754,7 +757,12 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 							return false;
 						}
 						if (timer.timeCurrentBout()>1000) {
-							log(".");
+							double proportion = 1.0*it*ic/totalCells;
+							if (proportion > lastChunkReported + 0.1){
+								log("" + (int)(100.0*proportion) + "% ");
+								lastChunkReported = proportion;
+							}
+							else log(".");
 							timer.end();
 							timer.start();
 						}
@@ -766,9 +774,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			MesquiteFile.appendFileContents(path, outputBuffer.toString(), true); //continuing with the file
 			outputBuffer.setLength(0);
 		}
-		if (numTaxa*1L*numChars > 10000000)
+		if (totalCells > 10000000)
 			logln("");
-		logln("Fasta file written " + timer.timeSinceVeryStartInSeconds());
+		if (timer.timeSinceVeryStartInSeconds()>5)
+			logln("Fasta file written " + timer.timeSinceVeryStartInSeconds());
 		return true;
 	}
 	/*.................................................................................................................*/
