@@ -638,7 +638,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	}
 	protected boolean includeOnlyTaxaWithData = true;// TO DO: also have the option of only writing taxa with data in them
 
-	public  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
+	/*	public  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		Taxa taxa = data.getTaxa();
 
 		int numTaxa = taxa.getNumTaxa();
@@ -654,7 +654,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		int counter = 1;
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || (taxa.getSelected(it))) && (!includeOnlyTaxaWithData || taxonHasData(data, it))){
-				if (fractionApplicable==1.0 || data.getFractionApplicableInTaxon(it, writeExcludedCharacters)>=fractionApplicable) {//TODO: deal with writeCharactersWithNoData
 
 					counter = 1;
 					outputBuffer.append(">");
@@ -693,12 +692,84 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						}
 					}
 					outputBuffer.append(getLineEnding());
-				}
 			}
 		}
 		if (numChars * numTaxa > 2000000)
 			logln("Fasta file composed.");
 		return outputBuffer;
+	}
+	 */
+	/*------------------*/
+	public  boolean writeMatrixToFile(CharacterData data, String path) { // eventually: FileWritingHints hints) {
+		Taxa taxa = data.getTaxa();
+
+		int numTaxa = taxa.getNumTaxa();
+		int numChars = data.getNumChars();
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(20L + numChars);
+		boolean isProtein = data instanceof ProteinData;
+		if (isProtein && !(this instanceof InterpretFastaProtein))
+			MesquiteMessage.warnProgrammer("ERROR: protein data matrix in file interpreter for DNA");
+		ProteinData pData =null;
+		if (isProtein)
+			pData = (ProteinData)data;
+		MesquiteTimer timer = new MesquiteTimer();
+		timer.start();
+		MesquiteFile.putFileContents(path, "", true); //starting the file
+		int counter = 1;
+		if (numTaxa*1L*numChars > 10000000)
+			log("Writing Fasta file ");
+		for (int it = 0; it<numTaxa; it++){
+			if ((!writeOnlySelectedTaxa || (taxa.getSelected(it))) && (!includeOnlyTaxaWithData || taxonHasData(data, it))){
+
+				counter = 1;
+				outputBuffer.append(">");
+				outputBuffer.append(getTaxonName(taxa,it, data));
+				String sup = getSupplementForTaxon(taxa, it);
+				if (StringUtil.notEmpty(sup))
+					outputBuffer.append(sup);
+				outputBuffer.append(getLineEnding());
+
+				for (int ic = 0; ic<numChars; ic++) {
+					if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
+						long currentSize = outputBuffer.length();
+						boolean wroteMoreThanOneSymbol = false;
+						boolean wroteSymbol = false;
+						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
+							outputBuffer.append(getUnassignedSymbol());
+							counter ++;
+							wroteSymbol = true;
+						}
+						else if (includeGaps || (!data.isInapplicable(ic,it))) {
+							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+							counter ++;
+							wroteSymbol = true;
+						}
+						wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
+						if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
+							outputBuffer.append(getLineEnding());
+						}
+
+						if (wroteMoreThanOneSymbol) {
+							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
+							return false;
+						}
+						if (timer.timeCurrentBout()>1000) {
+							log(".");
+							timer.end();
+							timer.start();
+						}
+					}
+				}
+				outputBuffer.append(getLineEnding());
+			}
+			//WRITE LINE TO FILE
+			MesquiteFile.appendFileContents(path, outputBuffer.toString(), true); //continuing with the file
+			outputBuffer.setLength(0);
+		}
+		if (numTaxa*1L*numChars > 10000000)
+			logln("");
+		logln("Fasta file written " + timer.timeSinceVeryStartInSeconds());
+		return true;
 	}
 	/*.................................................................................................................*/
 	public String preferredDataFileExtension() {  
@@ -722,14 +793,23 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			if (!getExportOptions(data, data.anySelected(), taxa.anySelected()))
 				return false;
 
-		MesquiteStringBuffer outputBuffer = getDataAsFileText(file, data);
+
+
+		//new style
+		String name = suggestedFileName(null, preferredDataFileExtension());
+		String filePath = getPathForExport(arguments, name, null, null);
+		boolean success = writeMatrixToFile(data, filePath ); 
+
+		/*
+		MesquiteStringBuffer outputBuffer = getDataAsFileText(file, data); //The file is passed only for the flags. Better some other way?
 
 		if (outputBuffer!=null) {
 			saveExportedFileWithExtension(outputBuffer, arguments, preferredDataFileExtension());
 			saveExtraFiles(data);  
 			return true;
 		}
-		return false;
+		 */
+		return success;
 	}
 
 	/*.................................................................................................................*/

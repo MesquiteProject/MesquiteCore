@@ -406,7 +406,6 @@ public class Puppeteer  {
 			return "A script has failed to execute properly, possibly because it expected certain modules not available in the current configuration of Mesquite.  Details: A command (\" getEmployee\") did not result in the return of an object as expected.  The script's results may not be as expected.\nMore details are written into Mesquite's log file."; 
 		if (defunctModule(moduleName))
 			return null;
-		Debugg.printStackTrace();
 		String message = "A script has failed to execute properly, as it refers to a module \"" + StringUtil.getLastItem(moduleName, ".") + "\", that either did not start or was unavailable because the module is not installed or activated.";
 		boolean compoundClassName = (moduleName.charAt(0) == '#' && moduleName.indexOf(".")>=0);
 		if (moduleName.charAt(0) == '#' && moduleName.indexOf(".")>=0) { //compound class name

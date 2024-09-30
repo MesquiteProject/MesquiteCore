@@ -65,6 +65,10 @@ public class MesquiteTimer {
 		lastCheckedTime = System.currentTimeMillis();
 		return  (1.0*t)/1000.0;
 	}
+	public long timeCurrentBout() {
+		long t =System.currentTimeMillis() -currentBout;
+		return  t;
+	}
 	public long timeSinceVeryStart() {
 		long t =System.currentTimeMillis() -veryStart;
 		return  t;

@@ -462,7 +462,6 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
-			fractionApplicable = file.fractionApplicable;
 			writeCharLabels = file.writeCharLabelInfo;
 		}
 
@@ -1461,7 +1460,6 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		int countTaxa = 0;
 		for (int it = 0; it<numTaxa; it++)
 			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
-				if (fileInterpreter.fractionApplicable==1.0 || charData.getFractionApplicableInTaxon(it, fileInterpreter.writeExcludedCharacters)>=fileInterpreter.fractionApplicable) 
 					countTaxa++;
 		int numTaxaWrite = countTaxa;
 
@@ -1469,8 +1467,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		outputBuffer.append(Integer.toString(numTaxaWrite)+fileInterpreter.getLineEnding());
 
 		for (int it = 0; it<numTaxa; it++){
-			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
-				if (fileInterpreter.fractionApplicable==1.0 || charData.getFractionApplicableInTaxon(it, fileInterpreter.writeExcludedCharacters)>=fileInterpreter.fractionApplicable) {
+			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters))) {
 					incrementAndUpdateProgIndicator(progIndicator,"Exporting data matrix");
 					String name = null;
 					if (ownerModule.taxonNamer!=null)

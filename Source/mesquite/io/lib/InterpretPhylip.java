@@ -372,7 +372,6 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters)))
-				if (fractionApplicable==1.0 || data.getFractionApplicableInTaxon(it, writeExcludedCharacters)>=fractionApplicable) {
 					if (writeTaxonNames) {   // first block
 						String name = "";
 						if (taxonNamer!=null)
@@ -405,7 +404,6 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 						}
 					}
 					outputBuffer.append(getLineEnding());
-				}
 		}
 	}
 	/*.................................................................................................................*/
@@ -419,13 +417,11 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
-			fractionApplicable = file.fractionApplicable;
 			writeCharactersWithNoData = file.writeCharactersWithNoData;
 		}
 		int countTaxa = 0;
 		for (int it = 0; it<numTaxa; it++)
 			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters)))
-				if (fractionApplicable==1.0 || data.getFractionApplicableInTaxon(it, writeExcludedCharacters)>=fractionApplicable) 
 					countTaxa++;
 		numTaxa = countTaxa;
 		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
@@ -534,7 +530,6 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			int countTaxa = 0;
 			for (int it = 0; it<numTaxa; it++)
 				if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || (data!=null && data.hasDataForTaxon(it))))
-					if (fractionApplicable==1.0 || data.getFractionApplicableInTaxon(it, writeExcludedCharacters)>=fractionApplicable) 
 						countTaxa++;
 			numTaxaWrite = countTaxa;
 

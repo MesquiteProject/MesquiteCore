@@ -32,15 +32,15 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public static final int WINDOWSDELIMITER=2;
 	public static final int UNIXDELIMITER=3;
 	public int lineDelimiter = CURRENTDELIMITER;
-	public boolean writeCharLabels = true;
+	
+	//Debugg.println: why are these both here and in MesquiteFile?
 	public boolean writeOnlySelectedData = false;
-	public boolean writeOnlyIncludedData = true;
 	public boolean writeOnlySelectedTaxa = false;
 	public boolean writeTaxaWithAllMissing = true;  //default changed to true as true  after 2. 75
 	public boolean writeExcludedCharacters = true;
 	public boolean writeCharactersWithNoData = true;
-	public double fractionApplicable = 1.0;
-	
+	public boolean writeCharLabels = true;
+
 	protected String filePath=null;
 
 	
@@ -249,7 +249,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		 */
 	}
 	/*.................................................................................................................*/
-	public String suggestedFileName( String suffix, String suggestedFileEnding, String filePath) {
+	public String suggestedFileName( String suffix, String suggestedFileEnding) {
 			String name = getProject().getHomeFileName();
 			if (suffix==null)
 				suffix="";
@@ -264,23 +264,6 @@ public abstract class FileInterpreter extends MesquiteModule  {
 			name += suggestedFileEnding;
 			return name;
 
-	}
-	/*.................................................................................................................*/
-	// Debugg.println don't use toSTring XYXYXY
-	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String suffix, String suggestedFileEnding, String filePath) {
-		if (outputBuffer == null)
-			return;
-
-		if (StringUtil.blank(filePath)) {
-			String name = suggestedFileName(suffix, suggestedFileEnding, filePath);
-			saveExportedFile(outputBuffer, arguments, name);
-		}
-		else
-			saveExportedFileToFilePath(outputBuffer, arguments, filePath);
-	}
-	/*.................................................................................................................*/
-	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
-		saveExportedFileWithExtension(outputBuffer,arguments, null, suggestedFileEnding, null);
 	}
 	/*.................................................................................................................*/
 	public String getPathForExport(String arguments, String suggestedFileName, MesquiteString dir, MesquiteString fn) {
@@ -354,15 +337,9 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		}
 		return null;
 	}
+	
 	/*.................................................................................................................*/
-	public void saveExportedFileToFilePath(MesquiteStringBuffer output, String arguments, String filePath) {
 
-		if (filePath!=null) {
-			MesquiteFile.putFileContents(filePath, output, true);
-			//logln("File exported to " + filePath);  Debugg.println is this needed?
-		}
-	}
-	/*.................................................................................................................*/
 	public void saveExportedFile(MesquiteStringBuffer output, String arguments, String suggestedFileName) {
 
 		filePath = getPathForExport(arguments, suggestedFileName, null, null);
@@ -372,19 +349,46 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		}
 	}
 	/*.................................................................................................................*/
-	public void saveExportedFile(String output, String arguments, String suggestedFileName) {
+	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String suffix, String extension, String filePath) {
+		if (outputBuffer == null)
+			return;
 
-		filePath = getPathForExport(arguments, suggestedFileName, null, null);
-		if (filePath!=null) {
-			MesquiteFile.putFileContents(filePath, output, true);
-			//logln("File exported to " + filePath);
+		if (StringUtil.blank(filePath)) {
+			String name = suggestedFileName(suffix, extension);
+			saveExportedFile(outputBuffer, arguments, name);
+		}
+		else {
+				MesquiteFile.putFileContents(filePath, outputBuffer, true);
 		}
 	}
-	/** Returns the Character data as a StringBuffer in the Interperter's format.  This method should be overridden for those Interpreters that can provide this service. */
 	/*.................................................................................................................*/
-	public  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
+	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String extension) {
+		if (outputBuffer == null)
+			return;
+			String name = suggestedFileName(null, extension);
+			filePath = getPathForExport(arguments, name, null, null);
+			if (filePath!=null) 
+				MesquiteFile.putFileContents(filePath, outputBuffer, true);
+	}
+	/*.................................................................................................................*/
+	/** Returns the Character data as a StringBuffer in the Interperter's format.  
+	 * SHOULD BE AVOIDED in general, for memory reasons.
+	 * Called only by writeMatrixToFile, which should be overridden to write line by line instead for memory reasons. */
+	protected  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		return null;
 	}
+	/*.................................................................................................................*/
+	public boolean writeMatrixToFile(CharacterData data, String path) {
+		//The file should contain the path to be written
+		MesquiteStringBuffer msb = getDataAsFileText(data.getFile(), data);
+		if (msb!=null) {
+			MesquiteFile.putFileContents(path, msb, true);
+			return true;
+		}
+		return false;
+	}
+	/*.................................................................................................................*/
+	
 	public int getTotalFilesToImport() {
 		return totalFilesToImport;
 	}

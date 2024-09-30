@@ -253,10 +253,10 @@ public class ExportForBPP extends FileInterpreterI {
 		Random random = new Random(System.currentTimeMillis());
 		controlFileBuffer.append("seed = "+ random.nextInt()+"\n\n");
 		
-		controlFileBuffer.append("seqfile = " + suggestedFileName(null, "chars.txt", null)+"\n");
-		controlFileBuffer.append("imapfile = " + suggestedFileName(null, "imap.txt", null)+"\n");
-		controlFileBuffer.append("outfile = " + suggestedFileName(null, "out.txt", null)+"\n");
-		controlFileBuffer.append("mcmcfile = " + suggestedFileName(null, "mcmc.txt", null)+"\n\n");
+		controlFileBuffer.append("seqfile = " + suggestedFileName(null, "chars.txt")+"\n");
+		controlFileBuffer.append("imapfile = " + suggestedFileName(null, "imap.txt")+"\n");
+		controlFileBuffer.append("outfile = " + suggestedFileName(null, "out.txt")+"\n");
+		controlFileBuffer.append("mcmcfile = " + suggestedFileName(null, "mcmc.txt")+"\n\n");
 
 
 		controlFileBuffer.append(startOfControlFile);

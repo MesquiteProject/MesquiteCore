@@ -174,7 +174,7 @@ public class InterpretPagelFormatM extends PagelFormatI {
 		}
 		
 		int numTaxa = tree.numberOfTerminalsInClade(tree.getRoot());
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*12);
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*12);
 		outputBuffer.append(Integer.toString(numTaxa) + " " + numCharacters + "\r\n");
 
 		outputBuffer.append("#Translated to Pagel format for Multistate from project with home file " + getProject().getHomeFileName());
@@ -198,7 +198,7 @@ public class InterpretPagelFormatM extends PagelFormatI {
 					outputBuffer.append('t'); //t for taxon
 					outputBuffer.append(Integer.toString(it+1)); //taxon number
 					outputBuffer.append(','); 
-					outputBuffer.append(numbers[tree.motherOfNode(node)]);  //ancestor node
+					outputBuffer.append(Integer.toString(numbers[tree.motherOfNode(node)]));  //ancestor node
 					outputBuffer.append(','); 
 					outputBuffer.append(MesquiteDouble.toStringNoNegExponential(tree.getBranchLength(node, 1.0)));
 					outputBuffer.append(','); 
@@ -232,14 +232,13 @@ public class InterpretPagelFormatM extends PagelFormatI {
 		outputBuffer.append("\r\n");
 		outputBuffer.append("\r\n");
 		outputBuffer.append(equivalenceBuffer.toString());
-		String output = outputBuffer.toString();
 		
 		String name = getProject().getHomeFileName();
 		if (name==null)
 			name = "untitled.ppy";
 		else 
 			name = stripNex(name) + ".ppy";
-		saveExportedFile(output, arguments, name);
+		saveExportedFile(outputBuffer, arguments, name);
 		fireEmployee(treeTask);
 		return true;
 	}

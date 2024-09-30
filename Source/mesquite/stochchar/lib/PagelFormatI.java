@@ -225,7 +225,7 @@ public abstract class PagelFormatI extends FileInterpreterI {
 		}
 	}
 	/** Outputs internal nodes.*/
-	protected void outputInternals(Tree tree, int node, int[] numbers, StringBuffer buffer, StringBuffer equivalenceBuffer) {
+	protected void outputInternals(Tree tree, int node, int[] numbers, MesquiteStringBuffer buffer, StringBuffer equivalenceBuffer) {
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			 outputInternals(tree, d, numbers, buffer, equivalenceBuffer);
 		if (tree.nodeIsInternal(node)) {

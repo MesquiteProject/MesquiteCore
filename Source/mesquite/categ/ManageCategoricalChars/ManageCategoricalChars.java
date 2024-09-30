@@ -380,7 +380,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		if (file.useDataBlocks) {
 			int numTaxaToWrite = data.getNumTaxa();
 			if (!file.writeTaxaWithAllMissing)
-				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, file.fractionApplicable);
+				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, 1.0);
 			else if (file.writeOnlySelectedTaxa)
 				numTaxaToWrite = data.numSelectedTaxa();
 			file.write(" NTAX=" + numTaxaToWrite);
