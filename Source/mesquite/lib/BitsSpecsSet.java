@@ -36,6 +36,9 @@ public abstract class BitsSpecsSet extends SpecsSet  {
 		else
 			return "false";
 	}
+	public boolean allDefault(){
+		return !myBits.anyBitsOn();
+	}
  	/*.................................................................................................................*/
  	/** Sets the value for part "part" to be the same as that at part "otherPart" in the incoming specsSet*/
 	public void equalizeSpecs(SpecsSet other, int otherPart, int part){

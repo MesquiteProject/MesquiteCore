@@ -60,6 +60,14 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		return properties;
 	}
 	/*.................................................................................................................*/
+	public boolean allDefault(){
+		for (int i=0; i<getNumberOfParts(); i++) {
+			if (getProperty(i) != getDefaultProperty(i))
+				return false;
+		}
+		return true;
+	}
+	/*.................................................................................................................*/
 	/** returns property for specified character*/
 	public Object getProperty(int index) {
 		if (index>= 0 && index< properties.length)

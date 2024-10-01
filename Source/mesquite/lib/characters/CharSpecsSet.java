@@ -33,6 +33,7 @@ public interface CharSpecsSet extends Listable, Identifiable {
 	/** Move num characters starting at first, to just after character justAfter  */
 	public boolean moveParts(int first, int num, int justAfter);
 	/*.................................................................................................................*/
+	public abstract boolean allDefault();
 	/*.................................................................................................................*/
 	public boolean swapParts(int first, int second, boolean notify);
 	

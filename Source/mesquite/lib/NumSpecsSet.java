@@ -152,6 +152,16 @@ public abstract class NumSpecsSet extends SpecsSet  {
   		defaultValue = def;
   	}
 	/*.................................................................................................................*/
+	public boolean allDefault(){
+		if (defaultValue == null)
+			return false;
+		for (int i=0; i<getNumberOfParts(); i++) {
+			if (nums.equals(i, defaultValue))
+				return false;
+		}
+		return true;
+	}
+	/*.................................................................................................................*/
 	/** Delete num parts from and including "starting"  */
 	public boolean deleteParts(int starting, int num){ 
 		setDirty(true);

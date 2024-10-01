@@ -174,15 +174,18 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 					if (ssv!=null){
 						SpecsSet ms = (SpecsSet)data.getCurrentSpecsSet(getElementClass());
 						if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
-							ms.setNexusBlockStored(blockName);
+							if (!ms.allDefault()) {
+								ms.setNexusBlockStored(blockName);
 							ms.setName("UNTITLED");
 							s += nexusStringForSpecsSet( (CharSpecsSet)ms, data, file, true);
+							}
 						}
 
 
 						for (int ims = 0; ims<numSets; ims++) {
 							CharSpecsSet cs = (CharSpecsSet)data.getSpecsSet(ims, getElementClass());
-							s += nexusStringForSpecsSet(cs, data, file, false);
+							if (!cs.allDefault())
+								s += nexusStringForSpecsSet(cs, data, file, false);
 						}
 					}
 				}

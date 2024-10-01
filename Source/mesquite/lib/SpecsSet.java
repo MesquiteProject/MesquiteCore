@@ -63,6 +63,7 @@ public abstract class SpecsSet extends FileElement {
 	public void setChangedFromCloned(boolean ch){
  		setDirty(true);
 	}
+	public abstract boolean allDefault();
 	/*.................................................................................................................*/
 	public int getNumberOfParts(){
 		return numParts;
