@@ -805,8 +805,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 
 		//new style
-		String name = suggestedFileName(null, preferredDataFileExtension());
-		String filePath = getPathForExport(arguments, name, null, null);
+		String fileName = suggestedFileName(null, preferredDataFileExtension());
+		String filePath = getPathForExport(arguments, fileName, null, null);
 		boolean success = writeMatrixToFile(data, filePath ); 
 
 		/*

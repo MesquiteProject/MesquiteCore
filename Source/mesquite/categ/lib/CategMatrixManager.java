@@ -50,6 +50,12 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 		int maxNameLength = data.getTaxa().getLongestTaxonNameLength();
 		int invalidIC = -1;
 		int invalidIT = -1;
+		MesquiteTimer timer = new MesquiteTimer();
+		timer.start();
+		long totalCells = data.getNumTaxa()*1L*data.getNumChars();
+		if (totalCells > 100000000)
+			log("      Writing Matrix ");
+		double lastChunkReported = 0;
 		for (int it=0; it<data.getTaxa().getNumTaxa(); it++) {
 			if ((file.writeTaxaWithAllMissing || data.someApplicableInTaxon(it, false)) && (!file.writeOnlySelectedTaxa || data.getTaxa().getSelected(it))&& file.filterTaxon(data, it)){
 				taxonName = data.getTaxa().getTaxon(it).getName();
@@ -69,7 +75,7 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 				}
 				if (progIndicator != null)
 					progIndicator.setText("Writing data for taxon " + taxonName);
-				int totInTax = 0;
+				//int totInTax = 0;
 
 				//USE SYMBOLS
 				for (int ic=startChar;  ic<endChar; ic++) {
@@ -79,29 +85,29 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 							invalidIT = it;
 						}
 						data.statesIntoNEXUSStringBuffer(ic, it, blocks);
-						tot++;
-						totInTax++;
-						if (numTotal>100000000) {
-							if (tot % 10000000 == 0  && isLogVerbose())
-								logln("\nComposing matrix: " + tot + " of " + numTotal);
-							else if (tot % 10000 == 0  && isLogVerbose())
-								log(".");
-						}
-						else if (numTotal>10000000) {
-							if (tot % 1000000 == 0  && isLogVerbose())
-								logln("Composing matrix: " + tot + " of " + numTotal);
-						} else if (tot % 100000 == 0  && isLogVerbose())
-							logln("Composing matrix: " + tot + " of " + numTotal);
+						
 					//	27 July 08:  DRM commented out the following two lines.  These cannot be included, as NEXUS files are sensitive to line breaks within the MATRIX command.
 					
 						// if (totInTax % 2000 == 0)
 					//		blocks.append(StringUtil.lineEnding());//this is here because of current problem (at least on mrj 2.2) of long line slow writing
+					}
+					if (timer.timeCurrentBout()>10000) {
+						double proportion = 1.0*it*ic/totalCells;
+						if (proportion > lastChunkReported + 0.1){
+							log("" + (int)(100.0*proportion) + "% ");
+							lastChunkReported = proportion;
+						}
+						else log(".");
+						timer.end();
+						timer.start();
 					}
 				}
 				file.writeLine(blocks);
 				blocks.setLength(0);
 			}
 		}
+		if (totalCells > 100000000)
+			logln("100% ");
 		if (invalidIC >=0){
 			String s = "The matrix " + data.getName() + " has invalid characters states (e.g., character " + (invalidIC +1) + " in taxon " + (invalidIT + 1) + ")";
 			if (warnedInvalid)

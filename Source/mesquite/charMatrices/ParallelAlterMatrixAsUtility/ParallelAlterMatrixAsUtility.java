@@ -15,11 +15,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ParallelAlterMatrixAsUtility;
 
 import mesquite.lists.lib.*;
-import mesquite.molec.FlagBySpruceup.FlagBySpruceup;
 
 import java.util.Vector;
 
 import mesquite.categ.lib.CategoricalState;
+import mesquite.genomic.FlagBySpruceup.FlagBySpruceup;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;

@@ -21,6 +21,7 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 
@@ -181,6 +182,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			Taxa taxa = taxaTask.makeNewTaxa("Taxa", 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CategoricalData data = (CategoricalData)createData(charTask,taxa);
+
 			data.addToFile(file, getProject(), null);
 
 			String token;
@@ -362,7 +364,8 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 	}
 	int charWritten = 0;
 	/*.................................................................................................................*/
-	public void exportBlock(Taxa taxa, CharacterData data, MesquiteStringBuffer outputBuffer, int startChar, int blockSize, boolean writeTaxonNames) { 
+	//This should be deleted in favour of writeBlockToFile
+	private void exportBlock(Taxa taxa, CharacterData data, MesquiteStringBuffer outputBuffer, int startChar, int blockSize, boolean writeTaxonNames) { 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
 		int counter;
@@ -406,7 +409,89 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 					outputBuffer.append(getLineEnding());
 		}
 	}
+	
+
 	/*.................................................................................................................*/
+	private void writeBlockToFile(Taxa taxa, CharacterData data, String filePath, int startChar, int blockSize, boolean writeTaxonNames) { 
+		int numTaxa = taxa.getNumTaxa();
+		int numChars = data.getNumChars();
+		int counter;
+		String pad = "          ";
+		while (pad.length() < taxonNameLength)
+			pad += "  ";
+	//.	Debugg.println("WBTF ===========");
+		log(".");
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(1000);
+		for (int it = 0; it<numTaxa; it++){
+			log(".");
+			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters)))
+					if (writeTaxonNames) {   // first block
+						String name = "";
+						if (taxonNamer!=null)
+							name = taxonNamer.getNameToUse(taxa,it)+pad;
+						else
+							name = (taxa.getTaxonName(it)+ pad);
+						name = name.substring(0,taxonNameLength);
+						name = StringUtil.blanksToUnderline(StringUtil.stripTrailingWhitespace(name));
+
+						outputBuffer.append(name);
+						//	if (taxonNameLength>name.length())
+						for (int i=0;i<taxonNameLength-name.length()+1; i++)
+							outputBuffer.append(" ");
+					}
+					//outputBuffer.append(" ");
+					counter = 1;
+					for (int ic = startChar; ic<numChars; ic++) {
+						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
+							long currentSize = outputBuffer.length();
+							appendPhylipStateToBuffer(data, ic, it, outputBuffer);
+							if (it==0)
+								charWritten++;
+							if (outputBuffer.length()-currentSize>1) {
+								alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
+								return;
+							}
+							if (counter>=blockSize)
+								break;
+							counter++;
+						}
+					}
+					outputBuffer.append(getLineEnding());
+					MesquiteFile.appendFileContents(filePath, outputBuffer.toString(), true); //continuing with the file
+					outputBuffer.setLength(0);
+					
+		}
+		log("MATRIX WRITTEN.");
+		
+	}
+	/*.................................................................................................................*/
+	public  boolean writeMatrixToFile(CharacterData data, String path) { // file writing hints need already to be set up!
+		if (data==null)
+			return false;
+		Taxa taxa = data.getTaxa();
+		initializeExport(taxa);
+		int numTaxa = taxa.getNumTaxa();
+		int numChars = data.getNumChars();
+	
+		int countTaxa = 0;
+		for (int it = 0; it<numTaxa; it++)
+			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters)))
+					countTaxa++;
+		numTaxa = countTaxa;
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
+
+		outputBuffer.append(Integer.toString(numTaxa)+" ");
+
+//		if (!writeExcludedCharacters)
+			outputBuffer.append(Integer.toString(data.getNumCharacters(writeExcludedCharacters, writeCharactersWithNoData))+this.getLineEnding());		
+//		else
+//			outputBuffer.append(Integer.toString(numChars)+this.getLineEnding());		
+		MesquiteFile.putFileContents(path, outputBuffer.toString(), true); //continuing with the file
+		
+		writeBlockToFile(taxa, data, path, 0, numChars, true);
+		return true;
+	}
+	/*.................................................................................................................*
 	public  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		if (data==null)
 			return null;
@@ -497,6 +582,13 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			logln("WARNING: No suitable data or trees available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
 			return false;
 		}
+		
+		// NEW STYLE ====
+		String fileName = suggestedFileName(null, preferredDataFileExtension());
+		String filePath = getPathForExport(arguments, fileName, null, null);
+		MesquiteFile.putFileContents(filePath, "", true); //starting the file
+		// ========
+		
 		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(100);
 		int numCharWrite=0;
 		boolean firstTimeThrough = true;
@@ -518,6 +610,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		charWritten=0;
 
 		for (int im = 0; im<numMatrices; im++) {
+			Debugg.println("MATRIX " + im);
 			if (exportMultipleMatrices()) {
 				data = getProject().getCharacterMatrixVisible(t, im, CategoricalState.class);
 				if (data==null) continue;
@@ -542,7 +635,14 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 					outputBuffer.append(Integer.toString(numTaxaWrite)+" ");
 					outputBuffer.append(Integer.toString(numCharWrite)+this.getLineEnding());
 				}
+				// ========
+				MesquiteFile.appendFileContents(filePath, outputBuffer.toString(), true); 
+				outputBuffer.setLength(0);
+				// ========
+
 				int blockSize=50;
+				
+
 
 				if (exportInterleaved || exportMultipleMatrices()){
 					int ic = 0;
@@ -555,7 +655,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 								count++;
 								if (count==blockSize || ic2==numChars-1){
 									endChar = ic2;
-									exportBlock(taxa, data, outputBuffer, ic, blockSize, firstTimeThrough);
+									writeBlockToFile(taxa, data, filePath, ic, blockSize, firstTimeThrough);
 									outputBuffer.append(getLineEnding());
 									ic=endChar+1;
 									blockWritten=true;
@@ -565,7 +665,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 								if (ic2==numChars-1 && !blockWritten){  //at end
 									endChar = ic2;
 									if (count>0){  //only write if there is something to write
-										exportBlock(taxa, data, outputBuffer, ic, blockSize, firstTimeThrough);
+										writeBlockToFile(taxa, data, filePath, ic, blockSize, firstTimeThrough);
 										outputBuffer.append(getLineEnding());
 										firstTimeThrough = false;
 									}
@@ -577,9 +677,11 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 					}
 				}
 				else
-					exportBlock(taxa, data, outputBuffer, 0, numChars, true);
+					writeBlockToFile(taxa, data, filePath, 0, numChars, true);
 			}
-		}
+			Debugg.println("x " + im);
+	}
+		Debugg.println("DONE1");
 		if (charWritten!=numCharWrite)
 			MesquiteMessage.warnProgrammer("Warning: the number of characters written does not match expectation.");
 
@@ -587,9 +689,14 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 
 		if (trees!=null)
 			exportTrees(taxa, trees, outputBuffer);
+		Debugg.println("DONE2");
+		MesquiteFile.appendFileContents(filePath, outputBuffer.toString(), true); 
+		outputBuffer.setLength(0);
+		Debugg.println("DONE3");
 
-		saveExportedFileWithExtension(outputBuffer, arguments, "phy");
+	//	saveExportedFileWithExtension(outputBuffer, arguments, "phy");
 		writeExtraFiles(taxa);
+		Debugg.println("DONE4");
 		return true;
 	}
 

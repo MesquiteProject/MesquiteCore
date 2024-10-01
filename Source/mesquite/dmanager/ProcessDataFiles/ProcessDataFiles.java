@@ -27,6 +27,7 @@ import java.util.Vector;
 import javax.swing.JLabel;
 
 import mesquite.categ.lib.CategoricalState;
+import mesquite.genomic.FlagBySpruceup.FlagBySpruceup;
 import mesquite.lib.AlertDialog;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
@@ -55,7 +56,6 @@ import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.duties.FileProcessor;
 import mesquite.lib.duties.GeneralFileMaker;
 import mesquite.lib.duties.NexusFileInterpreter;
-import mesquite.molec.FlagBySpruceup.FlagBySpruceup;
 
 
 /* ======================================================================== */
