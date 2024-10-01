@@ -238,7 +238,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
-	//	deleteSupportDirectory();  //Debugg.println need to keep this
+		deleteSupportDirectory();  //Debugg.println need to keep this
 
 		}
 

@@ -363,7 +363,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		}
 	}
 	int charWritten = 0;
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	//This should be deleted in favour of writeBlockToFile
 	private void exportBlock(Taxa taxa, CharacterData data, MesquiteStringBuffer outputBuffer, int startChar, int blockSize, boolean writeTaxonNames) { 
 		int numTaxa = taxa.getNumTaxa();
@@ -417,14 +417,12 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		int numChars = data.getNumChars();
 		int counter;
 		String pad = "          ";
+		log("writeTaxaWithAllMissing " + writeTaxaWithAllMissing);
 		while (pad.length() < taxonNameLength)
 			pad += "  ";
-	//.	Debugg.println("WBTF ===========");
-		log(".");
 		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(1000);
 		for (int it = 0; it<numTaxa; it++){
-			log(".");
-			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters)))
+			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters))){
 					if (writeTaxonNames) {   // first block
 						String name = "";
 						if (taxonNamer!=null)
@@ -459,9 +457,9 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 					outputBuffer.append(getLineEnding());
 					MesquiteFile.appendFileContents(filePath, outputBuffer.toString(), true); //continuing with the file
 					outputBuffer.setLength(0);
+			}
 					
 		}
-		log("MATRIX WRITTEN.");
 		
 	}
 	/*.................................................................................................................*/
