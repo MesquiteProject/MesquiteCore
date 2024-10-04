@@ -119,12 +119,12 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 	Checkbox specifNumCB, ignoreDatalessCB;
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Site Gappiness (Low Site Occupancy)",buttonPressed);  
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Site Gappiness (Low Occupancy Sites)",buttonPressed);  
 
 		dialog.addLabel("Minimum proportion of observed states (non-gaps):");
 		pgSField = dialog.addDoubleField("(Sites with fewer observed states (non-gaps) than this are considered too gappy.)", siteOccupancyThreshold, 4);
 		dialog.addHorizontalLine(1);
-		String s = "<b>Low site occupancy filter</b> selects sites with high levels of gaps."
+		String s = "<b>Filter of low occupancy sites</b> selects sites with high levels of gaps."
 				+ " It is not intended to identify sites that are unreliable or poorly aligned; it is intended simply to find sites"
 				+ " where the amount of available data is too sparse to justify inclusion, just as one filters loci for occupancy.<hr>" 
 				+"The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
@@ -327,7 +327,7 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Gappy Sites (Low Site Occupancy)";
+		return "Gappy Sites (Low Occupancy Sites)";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
