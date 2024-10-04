@@ -121,7 +121,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		queryDialog.appendToHelpString(help);
 		*/
 		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20);
-		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.");
+		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
 		
 		queryDialog.setDefaultTextComponent(integerField.getTextField());
 		queryDialog.setDefaultComponent(integerField.getTextField());
