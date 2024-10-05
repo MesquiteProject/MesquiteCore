@@ -1,0 +1,411 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/MesquiteTemplate.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Managing Phylogenomic Data</title>
+<!-- InstanceEndEditable -->
+
+<![endif]--><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.thrColFixHdr #sidebar2, .thrColFixHdr #sidebar1 { padding-top: 30px; }
+.thrColFixHdr #mainContent { zoom: 1; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<style type="text/css">
+<!--
+-->
+</style>
+<link href="CSS/mesquitePackage.css" rel="stylesheet" type="text/css" />
+<link href="SpryAssets/SpryCollapsiblePanel.css" rel="stylesheet" type="text/css" />
+
+<script src="SpryAssets/SpryCollapsiblePanel.js" type="text/javascript"></script>
+<script type="text/javascript" src="SpryAssets/SpryURLUtils.js"></script>
+<script type="text/javascript" src="javascript/mesquite.js"></script>
+
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+</head>
+
+<body bgcolor="#ffffff" class="thrColFixHdr" >
+
+<div id="container">
+  <div id="header">
+    <table width="100%" border="0" cellpadding="4">
+  <tr>
+    <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
+    <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Working with Phylogenomic Data<!-- InstanceEndEditable --></div></td>
+    <td width="2%">&nbsp;</td>
+    <td width="14%">Version 3.9Dev<br />
+      October 2024<br /></td>
+  </tr>
+</table>
+
+</div>
+  
+  
+<div id="sidebar1">
+  
+  
+  
+  
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('http://www.mesquiteproject.org')">Mesquite Website Home</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('home.html')">Introduction</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Installation.html')">Download & Installation</a>
+  </div>
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('History%20of%20New%20Features.html')">Recent Changes</a>
+  </div>
+
+  <div id="OverviewOfMesquitePanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Overview of Mesquite ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('What%20Mesquite%20does.html');">What Mesquite Does</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Mesquites%20Features.html');">List of Features</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Development%20Team.html');">Development Team</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Contact%20Us.html');">Contact Us</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingStartedPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Started ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Installation.html');">Download and Installation</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Additional%20Mesquite%20Packages.html');">Additional Packages</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Beginning%20Mesquite.html');">Beginning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Example%20Files.html');">Example Files</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="BasicMesquiteOperationPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Basic  Operations ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Files.html');">Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Menus.html');">Menus</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Windows.html');">Windows</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Charts.html');">Charts</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Selection.html');">Selection</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Modules.html');">Modules</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TaxaTreesCharactersPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Taxa, Trees, Characters ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Characters%20&%20Matrices.html');">Characters &amp; Matrices</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Taxa.html');">Taxa</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Trees.html');">Trees</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="AnalysesPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Analyses ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Align.html');">Sequence Alignment</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
+    			<tr><td><a href="javascript:pageLink('Managing%20Genomic%20Data.html');">Phylogenomic Data</a></td></tr>
+ 			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Studies%20of%20Tree%20Topology.html');">Studies of Tree Topology</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="WorkflowsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Workflows ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
+   			<tr><td><a href="javascript:pageLink('Managing%20Genomic%20Data.html');">Managing Phylogenomic Data</a></td></tr>
+ 			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="GettingHelpPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Getting Help ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Learning%20how%20to%20use%20Mesquite.html');">Learning Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Simplifying%20the%20Interface.html');">Simplifying Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Bugs%20and%20Troubleshooting.html');">Bugs &amp; Troubleshooting</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Getting%20Help.html');">Getting Help</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Suggesting%20New%20Features.html');">Your Suggestions</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Glossary.html');">Glossary</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('FAQ.html');">FAQ</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="TechnicalDetailsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Technical Details ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('How%20Mesquite%20Works.html');">How Mesquite Works</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('MesquiteLogSupport.html');">Log & Support Files</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Scripts%20&%20Macros.html');">Scripts &amp; Macros</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Source%20Code.html');">Source Code</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Developers%20Documentation.html');">Developer's Documentation</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="HistoryPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">History ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('History%20of%20Mesquite.html');">History of Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('whyMesquite.html');">Why Mesquite?</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('History%20of%20New%20Features.html');">New Features & Bug List</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Release%20Dates.html');">Release Dates</a></td></tr>
+		</table>
+    </div>
+  </div>
+  <div id="PublishingResultsPanel" class="CollapsiblePanel">
+    <div class="CollapsiblePanelTab" tabindex="0">Publishing Results ˇ</div>
+    <div class="CollapsiblePanelContent" style="display: block">
+  		<table width="100%" border="0" cellpadding="1">
+  			<tr><td><a href="javascript:pageLink('Documenting%20Your%20Work.html');">Documenting your work</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('How%20to%20Cite%20Mesquite.html');">Citing Mesquite</a></td></tr>
+  			<tr><td><a href="javascript:pageLink('Publishing%20Results.html');">Publishing results</a></td></tr>
+		</table>
+    </div>
+  </div>
+
+  <div id="NonCollapsiblePanel">
+    <a href="javascript:pageLink('Acknowledgements.html')">Acknowledgments</a>
+  </div>
+
+<h3>&nbsp;</h3>
+  <!-- end #sidebar1 --></div>
+
+  <div id="mainContent">
+    
+<!-- InstanceBeginEditable name="content" -->
+    
+    
+<h1 id="toc0"><a name="Managing Genomic Data"></a>Working with Phylogenomic Data</h1>
+ <p> Mesquite now has various features for processing phylogenomic data, including basic utilities for reading and writing, but also for building pipelines that align, trim alignments, infer gene trees, and concatenate genes. Compared to version 3.x, Mesquite 4 had much improved memory management, and is able to handle matrices.</p>
+
+ <p>Although many phylogenomicists have their own script-based automated pipelines, we find that using Mesquite has the advantage of encouraging you to look at your data frequently. As important as it is to have "objective" methods, human judgement is also important.
+ </p>
+	  <p>An introduction to Mesquite's phylogenomic features can be found in this video:</p>
+	  <iframe width="800" height = "450" src="https://www.youtube.com/embed/9WBq36YeOts" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><p>&nbsp;</p>
+
+<h3 id="toc1"><a name="Contents"></a>Contents</h3>
+ <ul>
+	 <li><a href="#basics">Basic functions for molecular sequence data</a></li>
+	 
+	 <li><a  href="#processdatafiles">Process Data Files: Importing many loci</a>
+		 <ul>
+		 <li><a href="#viewing">Viewing individual matrices</a>
+		 </li></ul>
+	 </li>
+	 <li><a  href="#utilities">Utilities for processing many matrices</a></li>
+	 <li><a  href="#processingonimport">Processing on import: Building pipelines</a>		 <ul>
+		 <li><a href="#memory">Memory of past pipelines</a>
+		 </li><li><a href="#importOrList">Process during import or in List of Characters window?</a>
+		 </li></ul>
+	 </li>
+	 <li><a  href="#trimming">Alignment trimming</a>		 <ul>
+		 <li><a href="#beforeOrAfter">Trimming before or after concatenation</a>
+		 </li><li><a href="#deconcatenation">Deconcatenation</a>
+		 </li></ul>
+	 </li>
+	 <li><a  href="#geneTrees">Gene trees</a>
+	 </li>
+
+</ul>
+<div style="text-align: center"></div><br />
+<hr />
+<h2 id="toc2"><a name="basics"></a>Basic functions for molecular sequence data</h2>
+ <p> This page is about special features for phylogenomic data. For the basics of how to handle sequence data of all kinds in Mesquite, see the pages on <a href="Managing%Molecular%Data.html">managing molecular data</a> and <a href="Analyzing%20Molecular%20Data.html">analyzing molecular data</a>. There you will find instructions of data file formats, examining the matrix, alignment, and so on.&nbsp; &nbsp;&nbsp;</p>
+
+ <p>You may find yourself often wanting to see a compressed overview of the matrix. Hit the bird's eye  <img src="files/birdsEye.gif" width="16" height="12" alt=""/> (lower left of the matrix editor window) to see a Bird's Eye View of the matrix.</p>
+ <p>You will likely spend a lot of time in the List of Character Matrices window. This is available via Characters&gt;List of Character Matrices, or by the project panel, by right clicking on the line that says how many character matrices there are.</p>
+
+ 
+	  
+ <hr />
+ <h2 id="toc6"><a name="processdatafiles"></a>Process Data Files: Importing many loci</h2>
+ <p>Mesquite does not handle cleaning and assembly of reads into contigs, nor does it handle homology recognition. Let's assume that you have done all that, and that you have a series of files, one per locus. If all of the loci (as alignments) were in a single file, you could read them directly using File&gt;Open File in Mesquite. To open efficiently hundreds or thousands of files representing loci, use instead <strong>File&gt;Open Other&gt;Process Data Files.</strong></p>
+ <p>In the <strong>File Format</strong> dialog that appears (figure 1, below), indicate the type of files, and the extension used (e.g., .fas or .fasta for FASTA files, .nex or .nexus for NEXUS files). Indicating the extension is helpful to avoid Mesquite's trying to read a file that might accidentally show up in the directory. (Note: Mesquite will write additional files into the directory.) </p><p>Next, Mesquite will give you the <strong>Processing File</strong> dialog box (2, below). This dialog is a pipeline builder that will allow you to manipulate each of the data files as Mesquite reads it. However, before trying such manipulations, let's just take the matrix in each of the files and add to a single file that compiles all of the matrices. To do that, hit the button Add Step, and in the dialog box that appears, choose <strong>Compile Matrices into Single File&nbsp;</strong>(3, below). Afterward, you will see that the Processing File dialog box now lists the one step (4, below). Next, hit Process. Mesquite will attempt to read all of the files, and compile the matrices. You will be asked to choose a name and a place for the compiled file.</p>	  <div style="text-align: center"><img src="files/PDF-A.jpg" width="100%"  alt=""/></div>
+
+ 
+
+ 
+	  
+	  <p>
+	  After all files are read, Mesquite will show you the resulting compiled file. If you choose View List (figure 5, below ) by clicking on # Character Matrices on the project panel at left, where # is the number of matrices, then you will see the list of all of the matrices imported (figure 6, below):</p>
+	  <div style="text-align: center"><img src="files/PDF-B.jpg" width="80%"  alt=""/></div>
+	  <p>&nbsp; </p>
+
+	  	   <h3><a name="viewing"></a>Viewing the individual loci (matrices)</h3>
+	  	  	   <p>When you import phylogenomic data as above, Mesquite will show you the first locus (matrix) automatically. You might want to see the alignment at a glance more compactly by touching the <strong>bird's head</strong> in lower left of the matrix (or select the menu item <strong>Display&gt;Bird's Eye View</strong>). You can scroll to the next matrix by selecting <strong>Matrix&gt;Next Matrix</strong> (or hitting the right arrow key as you hold down control or command).</p><p>Alternatively, to show any matrix, go to the <strong>List of Character Matrices</strong>,  use the arrow cursor, and right click on the name of a matrix. A drop down menu will appear, and in it you can select "Show".</p>
+
+
+    <hr />
+    <h2 id="toc4"><a name="utilities"></a>Utilities for processing many matrices</h2>
+<p> Once you have all of the matrices in the file, you will likely want to process them in various ways. In that List of Character Matrices you can do many things, including (1) align, trim, or otherwise modify the alignments, (2) infer gene trees for the matrices, and (3) concatenate the matrices. These options are in the <strong>Utilities</strong> menu.</p><p>When you choose an item from the Utilities menu, it will operate on all of the matrices if none are selected. If  some are selected, it will operate on those.</p>
+<p>
+  Select <strong>Utilities&gt;Alter Matrices</strong> to align, trim, or otherwise modify all of the matrices. A dialog box will appear that includes options of how to modify the matrix. For instructions on alignment, see HERE. For instructions on trimming, see below. </p>
+<p>There is also a menu item <strong>Utilities&gt;Parallel Alter Matrices</strong>, which does the same things as Alter Matrices, but which can split its calculations across different processors or cores of your computer. This may increase the speed of the calculations, if your computer has enough cores. You will have to indicate how many separate threads (cores) to assign. It may take some experimentation to discover what number of threads optimizes speed. Beware: if the calculation for a single matrix uses multiple cores, which might happen especially with external programs like aligners, then asking for multiple threads of multiple cores might be too taxing.</p>
+	  <p>The menu item <strong>Utilities&gt;Concatenate Matrices</strong> will concatenate any selected matrices, or all of them if none are selected. In the dialog box that appears, you will be asked whether to delete the original matrices after concatenation. Typically for phylogenomic data it's best to do the concatenation on a copy of the original file, and to delete the original matrices, so as to save memory.</p>
+	  <p>The <strong>Deconcatenate</strong> menu item will usually be applied to reverse a previous concatenation, which can be useful if you want to later work on loci separately again. It can only be done if Mesquite knows which sites (characters, columns) apply to which original locus. If you used Mesquite originally to concatenate the matrices, Mesquite will store with the concatenated matrix a partition that records the original loci for the different sites. To see this partition, go to the List of Characters window for that matrix. You'll see a column titled "Group" that indicates the original locus from which each character came.&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
+	  <p>The <strong>Trees from Matrices</strong> menu item is described below under Gene Trees.</p>
+    <hr />
+    <h2 id="toc10">Processing on import: Building pipelines<a name="processingonimport"></a></h2>
+ <p>In the instructions for <strong>Process Data Files</strong> above, we did only a single action: to compile the loci into a single data file. The “<strong>Add Step</strong>” button allows you to choosing other actions as well. In fact, you can align, trim, and generate gene trees, much as you can in the Utilities Menu of the List of Characters window.</p>
+ <p> As you keep adding steps, you can build a pipeline of modifications. <strong>For example</strong>, you might build a pipeline with these steps:</p>
+ <ol>
+   <li><strong>Compile</strong> Processed Matrices into One File [this will serve as a record of the raw matrices as first read, but in a single file]</li>
+   <li><strong>Align</strong> Sequences in Matrix (MAFFT Align) [obtained by choosing Alter Matrices when adding a step]</li>
+   <li><strong>Compile</strong> Processed Matrices into One File [this will save the matrices after alignment but before trimming]</li>
+   <li><strong>Trim</strong> Sequences (Trim Sites by Gblocks) [obtained by choosing Alter Matrices when adding a step]</li>
+   <li><strong>Compile</strong> Processed Matrices into One File [this will save the matrices after alignment but before trimming]</li></ol>
+   <p>Notice that matrices are compiled (and saved to a single file) between each step, in order to save a copy of the data as it existed in intermediate steps. This is always recommended!</p>
+ 
+ <p>You can then hit <strong>Process</strong>, and Mesquite will read in each file, process it, and continue until all files are processed.</p>
+ <p>After it is done, you will find a ProcessingScript.txt file in the directory with the locus files. That is a record of this pipeline. You may want to save it.</p>
+	  <h3><a name="memory"></a>Memory of past pipelines</h3>
+ <p>The next time you attempt to process a series of data files, you will see that Mesquite will have remembered the last pipeline built. You can also recover a specific pipeline you built in the past, if you saved the ProcessingScript.txt file that had generated and saved in the folder with the loci, by choosing Load Script.</p><p>Before hitting “Process”, however, we suggest that you hit the Review Settings button. That will take you through the steps one by one to make sure the settings are as you wish.</p>
+	  <h3><a name="importOrList"></a>Process during import or in List of Characters window?</h3><p>Thus, you have a choice:</p>
+ <ul>
+   <li><strong>Manipulate the matrices while importing?</strong> — This has several advantages (though we often prefer the other choice). First, it may save memory, because the loci can be trimmed of excess gappy areas before they are compiled into a single big file. Second, re-using saved pipeline scripts allows you to have a consistent protocol (for instance, for lab members). Third, there are a few situations where manipulation needs to happen before compilation. For example, some assembly and processing software leaves the taxon names variable from locus file to locus file (e.g., in the file for UCE locus 1637, the name for the taxon DmelanogasterAW7 might be listed as "uce-1637_DmelanogasterAW7". If you left it like that, Mesquite wouldn't realize that it applies to the same taxon as uce-2569_DmelanogasterAW7 in the file for locus 2569. Thus, as you import, you should trim the uce name from the taxon name using the Alter Taxon Names options when adding steps.</li>
+   <li><strong>Manipulate the matrices later, in the List of Characters Window?</strong> — With this approach you are more likely to examine the matrices after each step, and therefore notice if there are problems with the data, or alignment, or trimming.</li>
+ </ul><p>We often prefer the second "Hand curated" approach over the first "automatic pipeline" approach precisely because with the former we are able to make choices as we examing the matrices as we proceed.</p>
+ <p>A video demonstration of building pipelines with Process Data Files is available here:</p>
+	  	  <iframe width="800" height = "450" src="https://www.youtube.com/embed/I6DfLm676Ws" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><p>&nbsp;</p>
+
+	  
+	  <hr />
+ <h2 id="toc10"><a name="trimming"></a>Alignment trimming</h2>
+ <p>Phylogenomic alignments often have messy stretches where the alignments seem poor or the data seem to have no phylogenetic signal. Automated trimming routines like Gblocks and trimAl have been built to save time and to avoid subjective choices in trimming. Mesquite has several trimming methods available:</p>
+ <ul>
+   <li><strong>Gblocks</strong> (Castresiana 2000) — This method judges sites to be conservative or not depending on its nucleotide frequencies and proportion of gaps, and deletes blocks of sites that are not conservative enough. To use this you will need to install Gblocks on your computer, and make sure it runs from the Terminal or Command Prompt. Although the Gblocks documentation uses absolute numbers of taxa for the conserved and flank criteria, Mesquite presents these parameters as proportions, which it then translates to absolute numbers for running Gblocks.</li>
+   <li><strong>GblocksM</strong> — This is Mesquite's extended version of Gblocks, allowing more flexibility as to how gaps are treated.&nbsp;&nbsp;</li>
+   <li><strong>trimAl</strong> (Capella-Gutiérrez et al. 2009) — This  deletes sites that are discordant with overall similarity patterns of the other sites.&nbsp; To use this you will need to install trimAl on your computer, and make sure it runs from the Terminal or Command Prompt.</li>
+   <li><strong>PhyIN</strong> (W. Maddison 2025) — This identifies unequivocal phylogenetic conflict among neighbouring sites, and deletes blocks of sites in which many neighbouring sites conflict. It appears particularly good with UCE data, and is more efficient and trimming noisy areas than trimAl when done on single loci. Its efficiency with single loci give it an advantage  in analyses of gene trees. It does not in general delete gappy areas, and so should be used in combination with a method that trims for gappiness, e.g. Gappy Sites or Gappy Regions.</li>
+   <li><strong>Gappy Sites (low occupancy sites) </strong>— A simple trimmer that deletes sites if they have greater than a certain proportion of gaps, i.e. if their occupancy of nucleotide observations is less than a certain proportion. This is parallel to the often-used criterion to delete loci with less than 50% occupancy, but it is applied   site by site. In practice, this results in trimming quite similar to the Gappy Regions trimming, but is conceptually simpler.&nbsp;</li>
+   <li><strong>Gappy Regions </strong>— A slightly more complex trimmer that deletes blocks if they contain a long-enough uninterrupted stretch of sites that are too gappy, and such that the stretch is not interrupted by a sequence of higher occupancy sites.&nbsp;</li>
+   <li><strong>Spruceup</strong> (Borowiec 2019) — A partial implementation of Spruceup v.2024.07.22, restricted to "criterion:mean" and "distance_method:uncorrected".</li>
+   <li><strong>Sparse Ends</strong> — Deletes terminal regions (ends) of alignment if too many of the sequences are in the regions of terminal gaps. (That is, beyond the last observed nucleotide.) "Too many" can be defined either in terms of proportions or absolute numbers of taxa.&nbsp;</li>
+ </ul>
+ 	  <h3 id="toc10">Trimming before or after concatenation<a name="beforeOrAfter"></a></h3>
+<p>A major choice you face is <strong>whether to trim before or after concatenation of loci</strong>. Some methods like trimAl and Spruceup trim more effectively with the concatenated data, because then they have more information from which to judge expected patterns of similarity (see Maddison 2025). However, trimming after concatenation has the potential disadvantage of obscuring discordances among loci due to incomplete lineage sorting or hybridization (Maddison, 2025). PhyIN and Gblocks are about equally efficient before or after concatenation.</p><p>Trimming that counts gaps can have different effects when done at different stages. For example, trimAl and Gblocks will generally result in harsher trimming if done after concatenation because of incomplete locus occupancy. If a taxon has no data for a locus, its gaps are not counted against the sites in that locus when the locus is trimmed individually. Gblocks and trimAl are only given the data for those taxa that actually do have sequence data for the locus. But, in a concatenation, those taxa are shown as all gaps in those loci. Those gaps count against the sites because trimAl and Gblocks do not know that they represent the locus being missing in a few taxa. PhyIN can also show different trimming, because in a concatenation, PhyIN is no longer able to distinguish internal and terminal gaps. Trimming results can also differ depending on whether they are done on individual data files (e.g. during importing by Process Data Files) or on the matrices after they all part of the same file. When part of the same file, Mesquite knows about the existence of all of the taxa, even if some have no sequence for some of the matrices. Thus,  Gappy Sites (Low Occupancy Sites) has a choice as to how to count taxa. If you want to treat this filter as a site-level occupancy criterion, then do NOT select "Ignore gaps in taxa with no data in matrix". If you want to mimic the results you would obtain were you to process the loci individually in separate files (e.g. in a scripted pipeline), choose "Ignore". </p>
+ <p>Here are our recommendations:</p>
+  <ul>
+    <li>If you want to use <strong>PhyIN</strong>, use it on individual loci before concatenation, so that it respects discordance among loci. Use PhyIN first, after alignment but before any other trimming, so that it can distinguish between terminal and internal gaps. Then, follow it up by a gappiness filter such as Gappy Sites (Low Occupancy Sites).</li>
+    <li>If you want to use <strong>Gblocks</strong>, use it on individual loci before concatenation, so that it matches the common procedure of counting gaps only in taxa that have some data for the locus.</li>
+    <li>If you want to use <strong>trimAl</strong>, use it after concatenation, so that it has enough data to obtain an overall expectation of similarities.</li>
+    <li>If you want to use <strong>Spruceup</strong>, use it after concatenation, so that it has enough data to obtain an overall expectation of similarities.</li>
+  </ul>
+<p>We find PhyIN, followed by Gappy Sites, followed by Spruceup to be an effective trimming process.</p>
+	  <h3 id="toc10">Deconcatenation<a name="deconcatenation"></a></h3>
+ <p>If you have concatenated the matrices in Mesquite, you can later deconcatenate them using Utilities>Deconcatenate Partitions as Separate Matrices, even if you have trimmed or altered that matrix after concatenation. Mesquite is able to do this because, on concatenation, it saved a character partition recording the original loci from which parts of the concatenation came. This is one advantage of doing trimming within the Mesquite context, if you would like to go back to working on separate loci (e.g., for gene trees) after work on the concatenated matrix.</p>
+<p>A video demonstration of alignment trimming is available here:</p>
+	  	  <iframe width="800" height = "450" src="https://www.youtube.com/embed/ndWfwyAJilU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><p>&nbsp;</p>
+ <hr />
+ <h2 id="toc10">Gene trees<a name="geneTrees"></a></h2>
+ <p>Mesquite can reconstruct gene trees for all of the individual matrices in a file using the Utilities>Trees from Matrices... menu item in the List of Characters Window. [MORE TO COME HERE]</p>
+	  <p>paralogy test (including reroot all)</p>
+	  <p>using with ASTRAL</p>
+	  <p>concordance factors?</p>
+
+
+<!-- InstanceEndEditable -->
+
+    
+    
+    </div>
+	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+  <div id="footer">
+    <p> ©2024 Wayne P. Maddison &amp;  David R. Maddison </p>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<script type="text/javascript">
+<!--
+
+
+var OverviewOfMesquitePanel = null;
+var GettingStartedPanel = null;
+var BasicMesquiteOperationPanel = null;
+var TaxaTreesCharactersPanel = null;
+var AnalysesPanel = null;
+var WorkflowsPanel = null;
+var GettingHelpPanel = null;
+var TechnicalDetailsPanel = null;
+var HistoryPanel = null;
+var PublishingResultsPanel = null;
+
+if (qsParm['BasicMesquiteOperationPanel']=='open')
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: true});
+else
+ 	BasicMesquiteOperationPanel = new Spry.Widget.CollapsiblePanel("BasicMesquiteOperationPanel", {contentIsOpen: false});
+	
+if (qsParm['OverviewOfMesquitePanel']=='open')
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: true});
+else
+ 	OverviewOfMesquitePanel = new Spry.Widget.CollapsiblePanel("OverviewOfMesquitePanel", {contentIsOpen: false});
+	
+if (qsParm['GettingStartedPanel']=='open')
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: true});
+else
+ 	GettingStartedPanel = new Spry.Widget.CollapsiblePanel("GettingStartedPanel", {contentIsOpen: false});
+
+if (qsParm['TaxaTreesCharactersPanel']=='open')
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: true});
+else
+ 	TaxaTreesCharactersPanel = new Spry.Widget.CollapsiblePanel("TaxaTreesCharactersPanel", {contentIsOpen: false});
+
+if (qsParm['AnalysesPanel']=='open')
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: true});
+else
+ 	AnalysesPanel = new Spry.Widget.CollapsiblePanel("AnalysesPanel", {contentIsOpen: false});
+
+if (qsParm['WorkflowsPanel']=='open')
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: true});
+else
+ 	WorkflowsPanel = new Spry.Widget.CollapsiblePanel("WorkflowsPanel", {contentIsOpen: false});
+
+if (qsParm['GettingHelpPanel']=='open')
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: true});
+else
+ 	GettingHelpPanel = new Spry.Widget.CollapsiblePanel("GettingHelpPanel", {contentIsOpen: false});
+    
+if (qsParm['TechnicalDetailsPanel']=='open')
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: true});
+else
+ 	TechnicalDetailsPanel = new Spry.Widget.CollapsiblePanel("TechnicalDetailsPanel", {contentIsOpen: false});
+
+if (qsParm['HistoryPanel']=='open')
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: true});
+else
+ 	HistoryPanel = new Spry.Widget.CollapsiblePanel("HistoryPanel", {contentIsOpen: false});
+if (qsParm['PublishingResultsPanel']=='open')
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: true});
+else
+ 	PublishingResultsPanel = new Spry.Widget.CollapsiblePanel("PublishingResultsPanel", {contentIsOpen: false});
+
+
+//-->
+</script>
+</body>
+<!-- InstanceEnd --></html>
