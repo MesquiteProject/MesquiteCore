@@ -40,7 +40,7 @@ public class TrimLowOccupancySites extends TrimSitesByFlagger {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Trim Gappy Sites (Low Site Occupancy)";
+		return "Trim Gappy Sites (Low Occupancy)";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

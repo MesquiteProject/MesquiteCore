@@ -60,6 +60,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	static boolean examineOnlySelectedTaxaDEFAULT = false;
 
 
+
 	// Example with parameters b=10, d=1, p = 0.5
 	// AAATAAAAAACCAAAAAAAAAAA
 	// AAATTAAAACCAAAAAAAAAAAA
@@ -81,6 +82,10 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	// Thus, within the stretch of 10 shown by s, there are 5/10 conflicted characters, thus > 0.5 proportion.
 	// Thus, the stretch within that from first to last of the conflicted characters is selected (*).
 
+
+	// Optional site occupancy filter. Not formally part of PhyIN, but provided here as a service, given that original paper used it; Does not appear/not used if in ProcessDataFiles
+	static boolean filterSiteOccupancyDEFAULT = false;
+	static double siteOccupancyThresholdDEFAULT = 0.5; // A site is considered good (for gappiness) if it has at least this many non-gaps
 
 
 
@@ -110,7 +115,10 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		temp.addLine("setSpanSize " + blockSize);
 		temp.addLine("setNeighbourDistance " + neighbourDistance);
 		temp.addLine("setTreatGapAsState " + treatGapAsState.toOffOnString());
-		temp.addLine("setExamineOnlySelectedTaxa " + examineOnlySelectedTaxa.toOffOnString());
+		if (!getProject().isProcessDataFilesProject){
+			temp.addLine("filterSiteOccupancy " + filterSiteOccupancy);
+			temp.addLine("siteOccupancyThreshold " + siteOccupancyThreshold);
+		}
 		return temp;
 	}
 	/*.................................................................................................................*/
@@ -162,6 +170,22 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 				parametersChanged();
 			}
 		}
+		else if (checker.compare(this.getClass(), "Sets proportion of observations (non-gaps) needed to pass site occupancy threshold.", "[proportion]", commandName, "siteOccupancyThreshold")) {
+			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
+			if (MesquiteDouble.isCombinable(s)){
+				siteOccupancyThreshold = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to treat filter by site occupancy.", "[true or false]", commandName, "filterSiteOccupancy")) {
+			boolean temp = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			if (temp!=filterSiteOccupancy) {
+				filterSiteOccupancy = temp;
+				parametersChanged();
+			}
+		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -177,6 +201,10 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		StringUtil.appendXMLTag(buffer, 2, "neighbourDistance", neighbourDistance);  
 		StringUtil.appendXMLTag(buffer, 2, "treatGapAsState", treatGapAsState);  
 		StringUtil.appendXMLTag(buffer, 2, "examineOnlySelectedTaxa", examineOnlySelectedTaxa);  
+		if (!getProject().isProcessDataFilesProject){
+			StringUtil.appendXMLTag(buffer, 2, "siteOccupancyThreshold", siteOccupancyThreshold);  
+			StringUtil.appendXMLTag(buffer, 2, "filterSiteOccupancy", filterSiteOccupancy);  
+		}
 		return buffer.toString();
 	}
 	public void processSingleXMLPreference (String tag, String flavor, String content){
@@ -195,14 +223,19 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			treatGapAsState.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("examineOnlySelectedTaxa".equalsIgnoreCase(tag))
 			examineOnlySelectedTaxa.setValue(MesquiteBoolean.fromTrueFalseString(content));
-
+		if (!getProject().isProcessDataFilesProject){
+			if ("siteOccupancyThreshold".equalsIgnoreCase(tag))
+				siteOccupancyThreshold = MesquiteDouble.fromString(content);
+			if ("filterSiteOccupancy".equalsIgnoreCase(tag))
+				filterSiteOccupancy = MesquiteBoolean.fromTrueFalseString(content);
+		}
 
 	}
 
 	IntegerField SSField;
 	IntegerField NDField;
-	DoubleField PIField;
-	Checkbox tGAS, eOST;
+	DoubleField PIField, pgSField;
+	Checkbox tGAS, eOST, fSO;
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
@@ -222,6 +255,14 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
+		if (!getProject().isProcessDataFilesProject){
+			dialog.addLabel("Optional filter for low occupancy (gappy) sites");
+			fSO = dialog.addCheckBox("Filter gappy sites (i.e. keep only those    with high enough occupancy).", filterSiteOccupancy);
+			pgSField = dialog.addDoubleField("Minimum occupancy (proportion of non-gaps, i.e. observed states):", siteOccupancyThreshold, 4);
+			dialog.addLabelSmallText("(Sites with fewer observed states than this are considered too gappy.)");
+			dialog.addHorizontalLine(1);
+			dialog.addBlankLine();
+		}
 		Button useDefaultsButton = null;
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
@@ -234,7 +275,10 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			neighbourDistance = NDField.getValue();
 			treatGapAsState.setValue(tGAS.getState());
 			examineOnlySelectedTaxa.setValue(eOST.getState());
-
+			if (!getProject().isProcessDataFilesProject){
+				filterSiteOccupancy = fSO.getState();
+				siteOccupancyThreshold = pgSField.getValue();
+			}
 			storePreferences();
 		}
 		dialog.dispose();
@@ -248,6 +292,10 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			NDField.setValue(neighbourDistanceDEFAULT);
 			tGAS.setState(treatGapAsStateDEFAULT);
 			eOST.setState(examineOnlySelectedTaxaDEFAULT);
+			if (!getProject().isProcessDataFilesProject){
+				fSO.setState(filterSiteOccupancyDEFAULT);
+				pgSField.setValue(siteOccupancyThresholdDEFAULT);
+			}
 
 		} 
 	}
@@ -262,12 +310,18 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		return true;  
 	}
 	/*.................................................................................................................*/
+	//PhyIN parameters
 	double proportionIncompat = proportionIncompatDEFAULT; //(-p)
 	int blockSize = blockSizeDEFAULT; //(-b)
 	int neighbourDistance = neighbourDistanceDEFAULT; //(-d)
 	MesquiteBoolean treatGapAsState = new MesquiteBoolean(treatGapAsStateDEFAULT); //(-e)
 	MesquiteBoolean examineOnlySelectedTaxa = new MesquiteBoolean(examineOnlySelectedTaxaDEFAULT); //(no equivalent in python script)
-	
+
+	// Optional site occupancy filter. Not formally part of PhyIN, but provided here as a service, given that original paper used it; Does not appear/not used if in ProcessDataFiles
+	boolean filterSiteOccupancy = filterSiteOccupancyDEFAULT;
+	double siteOccupancyThreshold = siteOccupancyThresholdDEFAULT; // A site is considered good (for gappiness) if it is less or as gappy than this (term or non-term).
+
+
 	boolean[] hasConflict;
 	boolean[] toSelect;
 	int[] taxonSequenceStart, taxonSequenceEnd;
@@ -349,7 +403,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			return false;
 
 		for (int i =0; i<NUMSTATES; i++) for (int k =0; k<NUMSTATES;k++) statePairs[i][k]= false;
-	
+
 		//first, harvest all patterns between the two columns
 		for (int it = 0; it < data.getNumTaxa(); it++) {
 			// only look at taxa for which ic and ic2 are within their sequence (i.e. not in terminal gap region)
@@ -453,6 +507,21 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 				if (toSelect[ic])
 					flags.setCharacterFlag(ic, true);
 			}
+			
+			//Optional site occupancy filter
+			if (!getProject().isProcessDataFilesProject && filterSiteOccupancy){
+				int numTaxa = data.getNumTaxa();
+				for (int ic=0; ic<data.getNumChars(); ic++) {
+					int gapCount = 0;
+					for (int it = 0; it<numTaxa; it++) {
+						if (data.isInapplicable(ic,it)) 
+							gapCount++;
+					}
+					if (1.0-1.0*gapCount/numTaxa< siteOccupancyThreshold)  // too few observations
+						flags.setCharacterFlag(ic, true);
+				}
+			}
+
 		}
 		return flags;
 	}

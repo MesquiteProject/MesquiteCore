@@ -121,8 +121,8 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Site Gappiness (Low Occupancy Sites)",buttonPressed);  
 
-		dialog.addLabel("Minimum proportion of observed states (non-gaps):");
-		pgSField = dialog.addDoubleField("(Sites with fewer observed states (non-gaps) than this are considered too gappy.)", siteOccupancyThreshold, 4);
+		pgSField = dialog.addDoubleField("Minimum occupancy (proportion of non-gaps, i.e. observed states):", siteOccupancyThreshold, 4);
+		dialog.addLabelSmallText("(Sites with fewer observed states (non-gaps) than this are considered too gappy.)");
 		dialog.addHorizontalLine(1);
 		String s = "<b>Filter of low occupancy sites</b> selects sites with high levels of gaps."
 				+ " It is not intended to identify sites that are unreliable or poorly aligned; it is intended simply to find sites"
@@ -187,9 +187,16 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 				parametersChanged();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data, to count all taxa in current file, or to count as if there were a specified number.", "[0, 1, 2]", commandName, "ignoreDataless")) {
+		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data.", "[true or false]", commandName, "ignoreDataless")) {
 			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
 				ignoreDataless = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+			
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to count taxa as if there were a specified number.", "[true or false]", commandName, "setAssumeSpecifiedNumber")) {
+			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			assumeSpecifiedNumber = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
 			

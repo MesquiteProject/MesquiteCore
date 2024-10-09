@@ -81,7 +81,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.prefsRead) 
+		if (!mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.prefsRead) 
 			transferPrefsFromOldGBLOCKSSelector();
 		else
 			loadPreferences();
@@ -101,6 +101,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 	public void transferPrefsFromOldGBLOCKSSelector() {
 		if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.prefsTransferred)
 			return;
+		logln("Preferences from old Mesquite-GBlocks transferred.");
 		if (MesquiteDouble.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.IS))
 			IS = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.IS;
 		if (MesquiteDouble.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.FS))
