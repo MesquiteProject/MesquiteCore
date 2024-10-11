@@ -18,14 +18,23 @@ package mesquite.genomic.FlagByPhyIN;
 
 import java.awt.Button;
 import java.awt.Checkbox;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
+
+import javax.swing.JLabel;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.RequiresAnyDNAData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.Bits;
+import mesquite.lib.ColorDistribution;
+import mesquite.lib.ColorTheme;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
@@ -41,6 +50,7 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
+import mesquite.lib.SingleLineTextField;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
@@ -50,7 +60,7 @@ import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 
 /* ======================================================================== */
-public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements ActionListener {
+public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements ActionListener, ItemListener, TextListener {
 
 	//Primary PhyIN parameters =================================
 	static double proportionIncompatDEFAULT = 0.5; //(-p)
@@ -231,11 +241,22 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		}
 
 	}
+	/*.................................................................................................................*/
+	boolean askAboutSelectedOnly() {  //used to know whether worthwhile to put choice in dialog box
+		if (getProject().isProcessDataFilesProject)
+			return false;
+		if (getProject().getNumberTaxas()==1)
+			return getProject().getTaxa(0).anySelected();
+		return true;  //if unclear, ask
+	}
+	/*.................................................................................................................*/
+
 
 	IntegerField SSField;
 	IntegerField NDField;
 	DoubleField PIField, pgSField;
 	Checkbox tGAS, eOST, fSO;
+	SingleLineTextField paramsInfo;
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
@@ -244,6 +265,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		String s = "PhyIN (Phylogenetic Incompatibility among Neighbors)is a method for identifying regions of an alignment with "
 				+"high levels of local phylogenetic conflict.";
 		s += "<p><b>Reference for PhyIN</b>: Maddison W (submitted)"; //Debugg.println
+		s += "<p>The additional filter for low occupancy sites is not formally part of PhyIN, but is offered here as a convenience, because PhyIN should be combined with a filter that removes highly gappy sites."; 
 		dialog.appendToHelpString(s);
 
 		dialog.addLabel("PhyIN criteria for incompatible sites:");
@@ -251,18 +273,32 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		NDField = dialog.addIntegerField("Distance surveyed for conflict among neighbours (-d)", neighbourDistance, 4);
 		PIField = dialog.addDoubleField("Proportion of neighbouring sites in conflict to trigger block selection (-p)", proportionIncompat, 4);
 		tGAS = dialog.addCheckBox("Treat non-terminal gaps as extra state (-e)", treatGapAsState.getValue());
-		eOST = dialog.addCheckBox("Examine conflict only among any selected taxa.", examineOnlySelectedTaxa.getValue());
+		if (askAboutSelectedOnly())
+			eOST = dialog.addCheckBox("Examine conflict only among any selected taxa.", examineOnlySelectedTaxa.getValue());
+		SSField.getTextField().addTextListener(this);
+		PIField.getTextField().addTextListener(this);
+		NDField.getTextField().addTextListener(this);
+		tGAS.addItemListener(this);
 
 		dialog.addHorizontalLine(1);
-		dialog.addBlankLine();
+	//	dialog.addBlankLine();
 		if (!getProject().isProcessDataFilesProject){
-			dialog.addLabel("Optional filter for low occupancy (gappy) sites");
-			fSO = dialog.addCheckBox("Filter gappy sites (i.e. keep only those    with high enough occupancy).", filterSiteOccupancy);
-			pgSField = dialog.addDoubleField("Minimum occupancy (proportion of non-gaps, i.e. observed states):", siteOccupancyThreshold, 4);
-			dialog.addLabelSmallText("(Sites with fewer observed states than this are considered too gappy.)");
-			dialog.addHorizontalLine(1);
+			dialog.addLabel("Additional filter for low occupancy (gappy) sites");
+			fSO = dialog.addCheckBox("Filter gappy sites (i.e. keep only those with high enough occupancy).", filterSiteOccupancy);
+			pgSField = dialog.addDoubleField("Minimum occupancy (proportion of non-gaps, i.e. observed states) (-sot):", siteOccupancyThreshold, 4);
+			fSO.addItemListener(this);
+			pgSField.getTextField().addTextListener(this);
+			dialog.addLabelSmallText("Sites with fewer observed states than this are considered too gappy.");
 			dialog.addBlankLine();
+			dialog.addHorizontalLine(1);
 		}
+		paramsInfo = dialog.addTextField("Report parameters as:", "", 30);
+		paramsInfo.setEditable(false);
+		paramsInfo.setBackground(ColorTheme.getInterfaceBackgroundPale());
+		dialog.setDefaultComponent(PIField.getTextField());
+		resetParamsInfo();
+		dialog.addHorizontalLine(1);
+		dialog.addBlankLine();
 		Button useDefaultsButton = null;
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
@@ -274,11 +310,13 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			blockSize = SSField.getValue();
 			neighbourDistance = NDField.getValue();
 			treatGapAsState.setValue(tGAS.getState());
-			examineOnlySelectedTaxa.setValue(eOST.getState());
+			if (eOST!= null)
+				examineOnlySelectedTaxa.setValue(eOST.getState());
 			if (!getProject().isProcessDataFilesProject){
 				filterSiteOccupancy = fSO.getState();
 				siteOccupancyThreshold = pgSField.getValue();
 			}
+			resetParamsInfo();
 			storePreferences();
 		}
 		dialog.dispose();
@@ -291,15 +329,28 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			SSField.setValue(blockSizeDEFAULT);
 			NDField.setValue(neighbourDistanceDEFAULT);
 			tGAS.setState(treatGapAsStateDEFAULT);
-			eOST.setState(examineOnlySelectedTaxaDEFAULT);
+			if (eOST!= null)
+				eOST.setState(examineOnlySelectedTaxaDEFAULT);
 			if (!getProject().isProcessDataFilesProject){
 				fSO.setState(filterSiteOccupancyDEFAULT);
 				pgSField.setValue(siteOccupancyThresholdDEFAULT);
 			}
 
 		} 
+		resetParamsInfo();
 	}
-
+	public void itemStateChanged(ItemEvent e) {
+		resetParamsInfo();
+	}
+	public void textValueChanged(TextEvent e) {
+		resetParamsInfo();
+	}
+	void resetParamsInfo(){
+		String info = "b=" + SSField.getValue() + " d=" + NDField.getValue() + " p=" + PIField.getValue() + " e=" + tGAS.getState();
+		if (!getProject().isProcessDataFilesProject && fSO.getState())
+			info += " sot=" + pgSField.getValue();
+		paramsInfo.setText(info);
+	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return true;
@@ -507,7 +558,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 				if (toSelect[ic])
 					flags.setCharacterFlag(ic, true);
 			}
-			
+
 			//Optional site occupancy filter
 			if (!getProject().isProcessDataFilesProject && filterSiteOccupancy){
 				int numTaxa = data.getNumTaxa();

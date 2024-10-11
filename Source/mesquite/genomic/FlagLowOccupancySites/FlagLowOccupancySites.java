@@ -119,10 +119,10 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 	Checkbox specifNumCB, ignoreDatalessCB;
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Site Gappiness (Low Occupancy Sites)",buttonPressed);  
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Site Occupancy Filter (Gappy Sites)",buttonPressed);  
 
 		pgSField = dialog.addDoubleField("Minimum occupancy (proportion of non-gaps, i.e. observed states):", siteOccupancyThreshold, 4);
-		dialog.addLabelSmallText("(Sites with fewer observed states (non-gaps) than this are considered too gappy.)");
+		dialog.addLabelSmallText("Sites with fewer observed states (non-gaps) than this are considered too gappy.");
 		dialog.addHorizontalLine(1);
 		String s = "<b>Filter of low occupancy sites</b> selects sites with high levels of gaps."
 				+ " It is not intended to identify sites that are unreliable or poorly aligned; it is intended simply to find sites"
