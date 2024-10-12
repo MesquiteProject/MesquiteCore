@@ -16,6 +16,7 @@ package mesquite.charMatrices.ParallelAlterMatrixAsUtility;
 
 import mesquite.lists.lib.*;
 
+import java.util.Date;
 import java.util.Vector;
 
 import mesquite.categ.lib.CategoricalState;
@@ -36,9 +37,9 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	public String getNameForMenuItem() {
 		return "Parallel Alter Matrices...";
 	}
-	
+
 	public boolean loadModule(){
-	return true;  // too flaky
+		return true;  // too flaky
 	}
 
 	public String getExplanation() {
@@ -116,35 +117,35 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Number of Parallel Calculations",buttonPressed);
 		queryDialog.addLargeOrSmallTextLabel("The calculations will be performed in parallel, on several threads. Choose the number of parallel threads according to your computer's multiprocessing capabilities.");
-	/*	if (StringUtil.blank(help) && queryDialog.isInWizard())
+		/*	if (StringUtil.blank(help) && queryDialog.isInWizard())
 			help = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a whole number (integer).  <p>The initial value is " + value;
 		queryDialog.appendToHelpString(help);
-		*/
+		 */
 		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
-		
+
 		queryDialog.setDefaultTextComponent(integerField.getTextField());
 		queryDialog.setDefaultComponent(integerField.getTextField());
 
 		queryDialog.completeAndShowDialog(true);
-		
+
 		//Debugg.println don't ask again (reset by ...?)
 		boolean OK = buttonPressed.getValue()==0;
 		if (OK) {
 			if (!integerField.isValidInteger()) {
 				alert("The number of threads must be a valid integer.");
 				OK = false;
-		}
+			}
 			else {
 				int temp = integerField.getValue();
 				if (MesquiteInteger.isCombinable(temp) && temp >0 && temp < 256){
-				numThreads = temp;
-				storePreferences();
-			}
-			else {
-				alert("The number of threads must be between 1 and 255.");
-				OK = false;
-			}
+					numThreads = temp;
+					storePreferences();
+				}
+				else {
+					alert("The number of threads must be between 1 and 255.");
+					OK = false;
+				}
 			}
 		}
 		queryDialog.dispose();
@@ -159,6 +160,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		return false;
 	}
 
+	static int PATIENCE = 3; //How much longer than first matrix is subsequent matrix considered stalled
 	Bits matricesDone;
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
@@ -174,6 +176,8 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		//Do the first matrix separately to set up the parameters of the alteration
 		boolean doneFirstMatrix = false;
 		int successFirstMatrix = -1;
+		long startTime = System.currentTimeMillis();
+		logln("Parallel Alter Matrices started at " + StringUtil.getDateTime(new Date(startTime)));
 		for (int im = 0; im < datas.size() && !doneFirstMatrix; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (test.isCompatible(data, getProject(), this)){
@@ -188,9 +192,9 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 					if (alteredDataParameters.getSubcodes()!=null)
 						notification.setSubcodes(alteredDataParameters.getSubcodes());
 					data.notifyListeners(this, notification);
+					if (datas.size()>1)
+						logln("First matrix altered. About to alter others in parallel.");
 				}
-				if (datas.size()>50 && im != 0 && im % 50 == 0)
-					logln("" + matricesDone.numBitsOn() +  " matrices altered.");
 			}
 		}
 
@@ -204,7 +208,8 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 
 		firstTime = false;
 
-
+		long startParallel = System.currentTimeMillis();
+		long longWait = (startParallel - startTime)*PATIENCE;
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
 		progIndicator.start();
 		progIndicator.setText("Setting up threads");
@@ -219,13 +224,14 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 			int lastMatrix = firstMatrix+blockSize-1; //shifted over 1 to account for matrix already done
 			if (lastMatrix > numMatrices-1)
 				lastMatrix = numMatrices-1;
-			threads[i] = new AlterThread(this, datas, firstMatrix, lastMatrix, test);
+			threads[i] = new AlterThread(this, datas, firstMatrix, lastMatrix, test, longWait);
 		}
 		progIndicator.setText("Starting threads");
 		logln("About to start " + numThreads + " threads to alter the matrices");
 		for (int i = 0; i<numThreads; i++)
 			threads[i].start();  
-		
+
+			int reportAtMatrix = -1;
 		aborted = false;
 		// checking on all of the threads
 		boolean allDone = false;
@@ -240,24 +246,41 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 						allDone = false;
 					waiting = waiting || threads[i].longWait();
 				}
-			
+
 				if (waiting && System.currentTimeMillis()-lastReportTime > 10000){
-					String report = "... still waiting on threads (matrix number)";
+					String report = "\n... still waiting on threads (matrix number)";
 					for (int i= 0; i<numThreads;i++) {
-						if (threads[i].longWait())
-							report += " " + (i+1) + " (im: " + (threads[i].im+1) + " status: " + threads[i].alterTask.reportStatus() + ")";
+						if (threads[i].longWait()) {
+							report += " " + (i+1) + " (im: " + (threads[i].im+1);
+							String sta = threads[i].alterTask.reportStatus();
+							if (sta != null)
+								report += " status: " + sta;
+							report += ")";
+						}
 					}
+					int numDone = matricesDone.numBitsOn();
+					double parallelTimePerMatrix = (1.0*System.currentTimeMillis() - startParallel)/numDone;
+					long timeAtCompletion = System.currentTimeMillis() + (long)(parallelTimePerMatrix*(numMatrices-numDone));
+					report += ".  Matrices completed: " + numDone + " of " + numMatrices + ". Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion));
 					logln(report);
 					lastReportTime = System.currentTimeMillis();
 				}
-				
+
 				progIndicator.setText("Number of matrices altered " + matricesDone.numBitsOn());
 				progIndicator.setCurrentValue(matricesDone.numBitsOn());
 				if (progIndicator.isAborted())
 					aborted = true;
+				int numDone = matricesDone.numBitsOn();
+				if ((numMatrices <= 1000 && numDone%10==0) || (numMatrices>1000 && numDone%(numMatrices/100)==0)) {  //do every 1% of matrices
+					CommandRecord.tick("Finished altering " + numDone + " of " + numMatrices + " matrices.");	
+					if (numDone> reportAtMatrix && ( System.currentTimeMillis() - startParallel > 100000)) { // run has been longer than 100 seconds; worth reporting every so often what timing will be
+						reportAtMatrix = numDone;
+						double parallelTimePerMatrix = (1.0*System.currentTimeMillis() - startParallel)/numDone;
+						long timeAtCompletion = System.currentTimeMillis() + (long)(parallelTimePerMatrix*(numMatrices-numDone));
+						logln("\nFinished altering " + numDone + " of " + numMatrices + " matrices. Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion)));	
+					}
+				}
 
-				if (matricesDone.numBitsOn()%10==0)
-					CommandRecord.tick("Finished altering " + matricesDone.numBitsOn() + " of " + numMatrices + " matrices");				
 			}
 			catch(Exception e) {
 			}
@@ -265,11 +288,11 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		}
 
 		for (int i = 0; i<numThreads; i++){
-		threads[i].fileCoordinator.fireEmployee(threads[i].alterTask);
-		fireEmployee(threads[i].fileCoordinator);
+			threads[i].fileCoordinator.fireEmployee(threads[i].alterTask);
+			fireEmployee(threads[i].fileCoordinator);
 		}
 		progIndicator.goAway();
-		logln("Altered: " + (matricesDone.numBitsOn()) +  " matrices.");
+		logln("Altered: " + (matricesDone.numBitsOn()) +  " matrices. (Finished " + StringUtil.getDateTime(new Date(System.currentTimeMillis())) + ")");	
 		unpauseAllPausables(v);
 		if (getProject() != null){
 			getProject().zeroProjectWindowSuppression();
@@ -338,23 +361,25 @@ class AlterThread extends MesquiteThread {
 	FileCoordinator fileCoordinator;
 	int imPreviousReportedAsSlow = 0;
 	long lastTimeChanged = -1;
-	public AlterThread(ParallelAlterMatrixAsUtility ownerModule, ListableVector datas, int startWindow, int endWindow, CompatibilityTest test){
+	long longWait = 10000;
+	public AlterThread(ParallelAlterMatrixAsUtility ownerModule, ListableVector datas, int startWindow, int endWindow, CompatibilityTest test, long longWait){
 		this.datas = datas;
 		this.ownerModule = ownerModule;
 		this.firstMatrix = startWindow;
 		this.lastMatrix = endWindow;
 		this.test = test;
 		alterTask = ownerModule.cloneFirstAlterTask(this);
+		this.longWait = longWait;
 	}
-	
+
 	String report(){
 		if (done)
 			return "done";
 		return "On matrix " + im;
 	}
-	
+
 	boolean longWait(){
-		return !done && (System.currentTimeMillis()- lastTimeChanged > 10000); //Yes, it's a long wait
+		return !done && (System.currentTimeMillis()- lastTimeChanged > longWait); //Yes, it's a long wait
 	}
 	/*String longWait(){
 		boolean wait = !done && (System.currentTimeMillis()- lastTimeChanged > 10000); //Yes, it's a long wait
@@ -366,13 +391,13 @@ class AlterThread extends MesquiteThread {
 		}
 		return "";
 	}
-	*/
+	 */
 
 	int im;
 	public void run() {
 		if (alterTask != null){
 			for (im = firstMatrix; im <=lastMatrix && !ownerModule.aborted; im++){
-				lastTimeChanged = System.currentTimeMillis()/1000*1000;
+				lastTimeChanged = System.currentTimeMillis()/1000*1000; //truncating it to the second
 				CharacterData data = (CharacterData)datas.elementAt(im);
 				if (test.isCompatible(data, ownerModule.getProject(), ownerModule)){
 					AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
