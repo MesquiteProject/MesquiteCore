@@ -392,6 +392,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					extraTaxon++;
 
 			}
+	//		MatrixFileParser.verbose = true; //Debugg.println delete
 			if (fuse){
 				taxa.deleteTaxa(extraTaxon, 1, false); 
 				data.deleteTaxa(extraTaxon, 1);

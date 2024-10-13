@@ -182,9 +182,9 @@ public class MatrixFileParser {
 	MesquiteLong posBefore = new MesquiteLong();
 	public void consumeNextIfSemicolon() {
 		long currentPos = parser.getPosition();
-		if (verbose) Debugg.println("~~~CNISstart " + currentPos + " buffer [" + parser.getBuffer() + "]");
+		if (verbose) Debugg.println("~~~CNISstart " + currentPos); // + " buffer [" + parser.getBuffer() + "]");
 		String token = getNextCommand(posBefore);
-		if (verbose) Debugg.println("~~~CNISmid " +  parser.getPosition() + " buffer [" + parser.getBuffer() + "]");
+		if (verbose) Debugg.println("~~~CNISmid " +  parser.getPosition()); // + " buffer [" + parser.getBuffer() + "]");
 		token = StringUtil.stripTrailingWhitespace(token);  //not sure if needed, but let's be clean
 		token = StringUtil.stripLeadingWhitespace(token);
 		if (token == null || !token.equals(";"))

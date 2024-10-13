@@ -65,7 +65,10 @@ public class ManageDATAblock extends MesquiteModule {
 		Taxa taxa= null;
 		int numChars=0;
 		NexusBlock b = null;
-		while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
+		 boolean lookForEnd = MatrixFileParser.READ_MATRIX_DIRECT_FROM_FILE;
+		 boolean endReached = false; 
+		while (!(lookForEnd && endReached) && !commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
+			 if (MatrixFileParser.verbose) Debugg.println("####DATA### commandName " + commandName);
 			if (commandName.equalsIgnoreCase("DIMENSIONS")) { 
 				parser.setString(commandParser.getNextCommand()); 
 				int numTaxa = MesquiteInteger.fromString(parser.getTokenNumber(4));
@@ -124,7 +127,7 @@ public class ManageDATAblock extends MesquiteModule {
 					if (data.interleaved) 
 						commandParser.setLineEndingsDark(false);
 					 commandParser.consumeNextIfSemicolon();
-					data.saveChangeHistory = wassave;
+					 data.saveChangeHistory = wassave;
 				}
 				else {
 					return null;
@@ -148,8 +151,11 @@ public class ManageDATAblock extends MesquiteModule {
 				if (!success && b != null) 
 					readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
 			}
-			else
+			else {
 				commandParser.getNextCommand(); //eating up the full command
+				 if (lookForEnd)
+					 endReached = commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK");
+			}
 		}
 		if (!fuse && StringUtil.blank(dataTitle))
 			data.setName(getProject().getCharacterMatrices().getUniqueName("Untitled (" + data.getDataTypeName() + ")"));
