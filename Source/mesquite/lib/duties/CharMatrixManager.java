@@ -66,7 +66,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 	public void setLogVerbose(boolean logVerbose) {	
 		this.logVerbose = logVerbose;
 	}
-	
+
 	/*.................................................................................................................*/
 	/** Process the matrix, placing data into passed CharacterData object */
 	public void processMatrix(Taxa taxa, mesquite.lib.characters.CharacterData data, MatrixFileParser parser, int numChars, boolean nameTaxa, int firstTaxon, boolean makeNewTaxaIfNeeded, boolean fuse, MesquiteFile fileBeingRead) {
@@ -101,9 +101,9 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		totalTime.start();
 		if (data.interleaved) {  //vvvvvvvv  INTERLEAVED #################################################################
 			boolean warned = false;
-			
-		//	if (FileParser.READ_MATRIX_DIRECT_FROM_FILE)  //Debugg.println
-		//		alert("Reading of interleaved files is currently broken. Please change FileParser.READ_MATRIX_DIRECT_FROM_FILE to false and try again");
+
+			//	if (FileParser.READ_MATRIX_DIRECT_FROM_FILE)  //Debugg.println
+			//		alert("Reading of interleaved files is currently broken. Please change FileParser.READ_MATRIX_DIRECT_FROM_FILE to false and try again");
 			int[] currentCharacter = new int[taxa.getNumTaxa()];
 			for (int i=firstTaxon; i<taxa.getNumTaxa(); i++) currentCharacter[i] =0;
 			boolean done = false;
@@ -119,7 +119,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			int OVERWRITE = 2;
 			int warnChimera = -1;
 
-			while (!done && !(isEndLine(taxonName=parser.getNextToken()))) {
+			while (!done && !(isEndLine(taxonName=parser.getNextToken(false)))) {
 				parser.setLineEndingsDark(true);
 				if (nameTaxa && it<taxa.getNumTaxa() && taxa.whichTaxonNumber(taxonName,false,false)>=0){ // this name already exists in taxon block
 					if (fuse){
@@ -149,9 +149,9 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					whichTaxon = taxa.whichTaxonNumberRev(taxonName, false);  //use reverse order lookup in case newly added taxa with identical names as previous
 				if (whichTaxon == -1) {
 					if (!warned) {
-						MesquiteMessage.warnUser("Unrecognized taxon name: " + taxonName + " in matrix ");
+						MesquiteMessage.warnUser("Unrecognized taxon name: \"" + taxonName + "\" in matrix " + data.getName());
 						if (problem == null)
-							problem = "Unrecognized taxon name: " + taxonName + " in matrix ";
+							problem = "Unrecognized taxon name: \"" + taxonName + "\" in matrix " + data.getName();
 						MesquiteModule.showLogWindow(true);
 					}
 					whichTaxon = it % taxa.getNumTaxa();
@@ -273,7 +273,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			int lastTaxonNumber = -1;
 
 			if (MatrixFileParser.verbose) Debugg.println("@@@@@@@@  CMM ");
-			 for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken()); it++) {
+			for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken(false)); it++) {
 
 				boolean preserveNewTaxon = false;
 				int whichTaxon = -1;
@@ -312,7 +312,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						taxon.setName(taxonName);
 					}
 					else {
-						MesquiteMessage.warnUser("Unrecognized taxon name: " + taxonName + " in matrix ");
+						MesquiteMessage.warnUser("Unrecognized taxon name: \"" + taxonName + "\" in matrix " + data.getName());
 						MesquiteModule.showLogWindow(true);
 						whichTaxon = it;
 					}
@@ -389,12 +389,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				}
 
 				if (fuse && preserveNewTaxon)
-						extraTaxon++;
-						
+					extraTaxon++;
+
 			}
 			if (fuse){
-					taxa.deleteTaxa(extraTaxon, 1, false); 
-					data.deleteTaxa(extraTaxon, 1);
+				taxa.deleteTaxa(extraTaxon, 1, false); 
+				data.deleteTaxa(extraTaxon, 1);
 			}
 			if (problem != null){
 				discreetAlert("There was a problem reading the character matrix " + data.getName() + ".  It appears that the file is corrupt (" + problem + ").");
@@ -414,7 +414,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 
 		totalTime.end();
 	}
-	
+
 	NameReference orRef = NameReference.getNameReference("Overwritten");
 	private void markAsOverwritten(CharacterData data, int whichTaxon, MesquiteFile fileBeingRead){
 		Associable tInfo = data.getTaxaInfo(true);

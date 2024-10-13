@@ -76,6 +76,11 @@ public class MatrixFileParser {
 	/*  -------------------------------------------------------------  */
 	/* Get the next (darkspace) token*/
 	public String getNextToken() {
+		return getNextToken(true);
+	}
+	/*  -------------------------------------------------------------  */
+	/* Get the next (darkspace) token*/
+	public String getNextToken(boolean forceStripWhite) {
 		if (!READ_MATRIX_DIRECT_FROM_FILE) {
 			String s = parser.getNextToken();
 			if (verbose) Debugg.println("~~~gNT [" + s + "]");
@@ -86,8 +91,10 @@ public class MatrixFileParser {
 		while (!tokenDone && !atEOF()) {
 			checkAndRefreshParser();  //make sure the parser isn't at its end
 			s = parser.getNextToken(); //this could fail if the parser hits its end, so we need to see if we actually got something
-			s = StringUtil.stripTrailingWhitespace(s, parser.getWhitespaceString());
-			s = StringUtil.stripLeadingWhitespace(s, parser.getWhitespaceString());
+			if (forceStripWhite) {
+				s = StringUtil.stripTrailingWhitespace(s, parser.getWhitespaceString());
+				s = StringUtil.stripLeadingWhitespace(s, parser.getWhitespaceString());
+			}
 			if (StringUtil.blank(s, parser.getWhitespaceString())) {
 				s = getNextLineFromFile(); //get more from the file in hopes it's what we need, and go back and try more
 				parser.getBuffer().append(" " + s);
@@ -104,8 +111,8 @@ public class MatrixFileParser {
 	/* Get the next command up to and including :;"*/
 	public String getNextCommand() {
 		return getNextCommand(null);
-		}
-	
+	}
+
 	public String getNextCommand(MesquiteLong posJustBeforeCommand) {
 		if (posJustBeforeCommand != null)
 			posJustBeforeCommand.setValue(parser.getPosition());
@@ -184,7 +191,7 @@ public class MatrixFileParser {
 			parser.setPosition(posBefore.getValue());
 		if (verbose) Debugg.println("~~~CNIS [" + token + "]");
 	}
-	
+
 	/*  -------------------------------------------------------------  */
 	public boolean blankByCurrentWhitespace(String s) {
 		return parser.blankByCurrentWhitespace(s);

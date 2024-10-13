@@ -511,9 +511,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				String[] files = directory.list();
 				progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", files.length);
 				progIndicator.start();
-				String sequesteredFileDirectoryPath = directoryPath + MesquiteFile.fileSeparator + "sequesteredFiles";
-				MesquiteFile.createDirectory(sequesteredFileDirectoryPath);
-				MesquiteFile.createDirectory(directoryPath + MesquiteFile.fileSeparator + "savedFiles");
+				boolean sFDMade = false;
+			//	MesquiteFile.createDirectory(directoryPath + MesquiteFile.fileSeparator + "savedFiles");
 				String header = "Processing of files in " + directoryPath + StringUtil.lineEnding();
 				Date dnow = new Date(System.currentTimeMillis());
 				logln(StringUtil.getDateTime(dnow));
@@ -556,6 +555,9 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 								}
 								logln(" ");
 								if (requestToSequester.getValue()) {
+									String sequesteredFileDirectoryPath = directoryPath + MesquiteFile.fileSeparator + "sequesteredFiles";
+									if (!sFDMade)
+										MesquiteFile.createDirectory(sequesteredFileDirectoryPath);
 									File newFile = new File(sequesteredFileDirectoryPath+MesquiteFile.fileSeparator+MesquiteFile.getFileNameFromFilePath(path));
 									cFile.renameTo(newFile); 
 								}
