@@ -1870,8 +1870,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			}
 			MesquiteInteger io = new MesquiteInteger(0);
 			int justAfter = MesquiteInteger.fromString(arguments, io);
+			int howFar = table.getNumColumns() * 10;
+			if (howFar < 10001)
+				howFar = 10000;
 			if (!MesquiteInteger.isCombinable(justAfter))
-				justAfter = MesquiteInteger.queryInteger(this, "Move characters", "After which column should the selected characters be moved (enter 0 to move to first place)?", 0, 0, table.getNumColumns() * 10);
+				justAfter = MesquiteInteger.queryInteger(this, "Move characters", "After which column should the selected characters be moved (enter 0 to move to first place)?", 0, 0, howFar);
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedColumnsDropped(justAfter - 1); // -1 to convert to internal representation
 		}
@@ -1882,8 +1885,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			}
 			MesquiteInteger io = new MesquiteInteger(0);
 			int justAfter = MesquiteInteger.fromString(arguments, io);
+			int howFar = table.getNumRows() * 10;
+			if (howFar < 10001)
+				howFar = 10000;
 			if (!MesquiteInteger.isCombinable(justAfter))
-				justAfter = MesquiteInteger.queryInteger(this, "Move taxa", "After which row should the selected taxa be moved (enter 0 to move to first place)?", 0, 0, table.getNumRows() * 10);
+				justAfter = MesquiteInteger.queryInteger(this, "Move taxa", "After which row should the selected taxa be moved (enter 0 to move to first place)?", 0, 0, howFar);
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedRowsDropped(justAfter - 1); // -1 to convert to internal representation
 		}
@@ -2555,6 +2561,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				table.offAllEditsDontRecord();// 1. 12
 				table.setNumRows(taxa.getNumTaxa());
 				table.synchronizeRowSelection(taxa);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer(undoReference);
 			}
@@ -2562,6 +2569,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				table.offAllEditsDontRecord();// 1. 12
 				table.setNumRows(taxa.getNumTaxa());
 				table.synchronizeRowSelection(taxa);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer();
 			}
@@ -2569,6 +2577,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				table.offAllEditsDontRecord();// 1. 12
 				table.setNumRows(taxa.getNumTaxa());
 				table.synchronizeRowSelection(taxa);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer(undoReference);
 			}
@@ -2614,6 +2623,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				if (table.getNumRows() != data.getTaxa().getNumTaxa())
 					table.setNumRows(data.getTaxa().getNumTaxa());
 				table.synchronizeColumnSelection(data);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer();
 			}
@@ -2632,6 +2642,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				if (table.getNumRows() != data.getTaxa().getNumTaxa())
 					table.setNumRows(data.getTaxa().getNumTaxa());
 				table.synchronizeColumnSelection(data);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer(undoReference);
 			}
@@ -2648,7 +2659,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				}
 				if (table.getNumRows() != data.getTaxa().getNumTaxa())
 					table.setNumRows(data.getTaxa().getNumTaxa());
+				table.setNumColumns(data.getNumChars());
 				table.synchronizeColumnSelection(data);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer(undoReference);
 			}
@@ -2678,6 +2691,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 					table.setNumColumns(data.getNumChars());
 				}
 				table.synchronizeColumnSelection(data);
+				table.resetComponentSizes();
 				table.repaintAll();
 			}
 		}
@@ -4988,13 +5002,15 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public void selectedColumnsDropped(int after) {
 		if (after < -1)
 			return;
-		if (after > getNumColumns())
-			after = getNumColumns();
+		if (after >= getNumColumns())
+			after = getNumColumns()-1;
 		int i = 0;
 		Bits sel = getColumnsSelected();
 		if (sel.numBitsOn() == 1 && sel.firstBitOn() == after) {
 			return;
 		}
+		int first = getFirstColumnVisible();
+		int last = getLastColumnVisible();
 		boolean asked = false;
 		long[] fullChecksumBefore = data.getIDOrderedFullChecksum();
 		UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED, data);
@@ -5026,11 +5042,15 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		window.getOwnerModule().unpauseAllPausables(v);
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 		data.notifyInLinked(new Notification(MesquiteListener.PARTS_MOVED));
-		//	Debugg.println("scd " + getLastColumnVisible() why is last column disappearing when moved?);
+		
+		setNumRows(data.getNumTaxa());
+		setNumColumns(data.getNumChars());
+		setFirstColumnVisible(first);
+		setLastColumnVisible(last);
 		resetNumColumnsVisible();
-		//	Debugg.println("  " + getLastColumnVisible());
-		repaint();
 		editorModule.getModuleWindow().contentsChanged();
+		resetComponentSizes();
+		repaintAll();
 	}
 
 	/* ............................................................................................................... */
