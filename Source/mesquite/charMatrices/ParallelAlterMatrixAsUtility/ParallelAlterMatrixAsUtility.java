@@ -171,7 +171,8 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	}
 
 	static int PATIENCE = 3; // How much longer than first matrix is subsequent matrix considered stalled
-
+	static int SLEEPTIME = 50; // How much sleep between each check of threads
+	static long REPORTDELAY = 10000; // If there is a stalled calculation (determined by PATIENCE), how often to report (in milliseconds)
 	Bits matricesDone;
 
 	/** Called to operate on the CharacterData blocks. Returns true if taxa altered */
@@ -250,7 +251,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		long lastReportTime = System.currentTimeMillis();
 		while (!allDone && !aborted) {
 			try {
-				Thread.sleep(50);
+				Thread.sleep(SLEEPTIME);
 				allDone = true;
 				boolean waiting = false;
 				for (int i = 0; i < numThreads; i++) {
@@ -259,7 +260,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 					waiting = waiting || threads[i].longWait();
 				}
 
-				if (waiting && System.currentTimeMillis() - lastReportTime > 10000) {
+				if (waiting && System.currentTimeMillis() - lastReportTime > REPORTDELAY) {
 					String report = "\n... still waiting on threads (matrix number)";
 					for (int i = 0; i < numThreads; i++) {
 						if (threads[i].longWait()) {
