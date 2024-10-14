@@ -35,6 +35,9 @@ public abstract class DatasetsListProcessorUtility extends DatasetsListUtility  
  	public String getNameForProcessorList() {
  		return getName();
    	}
+   	public String[] getDefaultModule() {
+   		return new String[] { "#AlterMatrixAsUtility", "#ParallelAlterMatrixAsUtility", "#DatasetsListConcatenate", "#DatasetsListDeoncatenate", "#DatasetsListDuplicate", "#DatasetsListExport"};
+   	}
 
 }
 

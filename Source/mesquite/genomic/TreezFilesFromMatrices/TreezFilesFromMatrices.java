@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.TreesFromSelMatrices;
+package mesquite.genomic.TreezFilesFromMatrices;
 /* created May 02 */
 
 import mesquite.lists.lib.*;
@@ -26,19 +26,19 @@ import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class TreesFromSelMatrices extends DatasetsListUtility {
-
+public class TreezFilesFromMatrices extends DatasetsListUtility {
+	//Name with z to make it sort after TreesFromSelMatrices
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Infer Trees from Matrices";
+		return "Infer Trees and Save to Files";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Trees from Matrices...";
+		return "Tree Files from Matrices...";
 	}
 
 	public String getExplanation() {
-		return "Infers trees for each of the selected matrices, and compiles them into a single tree block." ;
+		return "Infers trees for each of the selected matrices, and puts the trees from each matrix into a separate tree file." ;
 	}
 	TreeSearcher inferenceTask;
 	MatrixSourceCoord matrixSourceTask;
@@ -83,23 +83,28 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 				}
 			}
 		}
+		String directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+		if (StringUtil.blank(directoryPath))
+			return false;
+		String basePath = directoryPath + MesquiteFile.fileSeparator ; //+ baseName;
+		String treeFileListPath = StringUtil.getAllButLastItem(directoryPath, MesquiteFile.fileSeparator) + MesquiteFile.fileSeparator + "ListOfTreeFiles.txt";
 		inferenceTask.initialize(taxa);
-		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();
 		int count = 0;
 		int numFailed =0;
 		String stringFailed = "";
 		boolean stop = false;
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Tree inference on matrices", "", datas.size(), true);
-		//Debugg.println("need to listen to abort");
 		progIndicator.start();
+
+		MesquiteFile.putFileContents(treeFileListPath, "", false); //path, contents, ascii
 		for (int im = 0; im < datas.size() && !stop; im++){
 			if (progIndicator.isAborted())
 				stop = true;
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (compatibleMatrix(data)) {
+				TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 				currentMatrix = data.getMCharactersDistribution();
-				int lastNumTrees = trees.size();
 				logln("Inferring trees from matrix " +data.getName()); 
 				progIndicator.setText("Inferring trees from matrix " +data.getName());
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
@@ -108,25 +113,23 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 				progIndicator.increment();
 				if (im == 0)
 					progIndicator.toFront();
-				if (trees.size() == lastNumTrees) {
+				if (trees.size() == 0) {
 					numFailed++;
 					stringFailed += "\t" + data.getName() + "\n";
-					if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
+					if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Tree inference failed for matrix " + data.getName() + " Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
 						stop = true;
 					}
 					MesquiteThread.setQuietPlease(true);
 				}
-				boolean mult = false;
-				if (trees.size()-lastNumTrees>1)
-					mult = true;
-				for (int itr = lastNumTrees; itr<trees.size(); itr++) { //multiple trees from same matrix; number trees .#1, 2, 3
-					String num = "";
-					if (mult)
-						num = ".#" + (itr-lastNumTrees + 1);
-					Tree t = trees.getTree(itr);
+				else {
 					count++;
-					if (t instanceof MesquiteTree)
-						((MesquiteTree)trees.getTree(itr)).setName(data.getName() + num);
+					//SAVE TREE FILE HERE
+					String fileName = data.getName() + ".trees";
+					MesquiteFile.putFileContents(basePath+fileName, "", false); //path, contents, ascii
+					for (int i = 0; i<trees.size(); i++){
+						MesquiteFile.appendFileContents(basePath+fileName, trees.getTree(i).writeTree() + "\n", false); //path, contents, ascii
+					}
+					MesquiteFile.appendFileContents(treeFileListPath, basePath+fileName + "\n", false); //path, contents, ascii
 				}
 			}
 			else
@@ -134,10 +137,6 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 		}
 		progIndicator.goAway();
 		MesquiteThread.setQuietPlease(false);
-		trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
-		String annot = trees.getAnnotation();
-		trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
-		trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
 		logln("Total matrices analyzed: " + count);
 		if (numFailed > 0) {
 			discreetAlert("Trees were not obtained for " + numFailed + " of the matrices. See log for details");
@@ -173,9 +172,9 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 }
 
 class MyListOfMatrices extends MatrixSourceCoord  {
-	TreesFromSelMatrices owner;
+	TreezFilesFromMatrices owner;
 	Taxa taxa = null;
-	public MyListOfMatrices(TreesFromSelMatrices owner) {
+	public MyListOfMatrices(TreezFilesFromMatrices owner) {
 		this.owner = owner;
 	}
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from

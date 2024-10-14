@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.AddUCEModelLoci;
+package mesquite.genomic.zAddUCEModelLoci;
 /*~~  */
 
 import java.util.*;
@@ -29,7 +29,7 @@ import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
 /* ============  a file interpreter for FASTA files ============*/
 /** This is the class for interpreting FASTA files.  It is subclassed to make interpreters specifically for
 DNA and Protein files. */
-public class AddUCEModelLoci extends DatasetsListUtility {
+public class zAddUCEModelLoci extends DatasetsListUtility {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

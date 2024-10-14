@@ -347,7 +347,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 	/* ................................................................................................................. */
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice() {
-		return false;
+		return true;
 	}
 
 	/* ................................................................................................................. */
