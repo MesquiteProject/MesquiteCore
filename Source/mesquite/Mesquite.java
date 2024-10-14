@@ -529,7 +529,7 @@ public class Mesquite extends MesquiteTrunk
 
 		/*----*/
 
-		suggestedDirectory = mesquiteDirectoryPath + "examples";
+		setSuggestedDirectory(mesquiteDirectoryPath + "examples");
 		appsDirectory = mesquiteDirectoryPath + "apps";
 		pythonDirectory = mesquiteDirectoryPath + "python";
 		if (mesquiteDirectory!=null)
@@ -1059,11 +1059,17 @@ public class Mesquite extends MesquiteTrunk
 				ColorTheme.THEME_FOR_NEXT_STARTUP = iq;
 			}
 		}
+		else if ("suggestedDirectory".equalsIgnoreCase(tag)){
+			MesquiteTrunk.setSuggestedDirectory(StringUtil.cleanXMLEscapeCharacters(content));
+		}
+
 		/* EMBEDDED disable if embedded */
 		setMesquiteDirectoryPath();
 		/**/
 
 	}
+
+	/*.................................................................................................................*/
 	String previousMesquiteHeadlessPath = "";//hackathon
 	String previousMesquitePath = "";
 	public String preparePreferencesForXML () {
@@ -1092,6 +1098,7 @@ public class Mesquite extends MesquiteTrunk
 		StringUtil.appendXMLTag(buffer, 2, "lastVersionNoticed", lastVersionNoticed);  
 		StringUtil.appendXMLTag(buffer, 2, "lastNotice", lastNotice);  
 		StringUtil.appendXMLTag(buffer, 2, "lastNoticeForMyVersion", lastNoticeForMyVersion);  
+		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.getSuggestedDirectory());  
 
 		if (MesquiteWindow.headless) { //hackathon
 			StringUtil.appendXMLTag(buffer, 2, "mesquiteHeadlessPath", stripPath(mesquiteDirectoryPath));  

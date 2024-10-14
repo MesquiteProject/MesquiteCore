@@ -206,7 +206,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 						notification.setSubcodes(alteredDataParameters.getSubcodes());
 					data.notifyListeners(this, notification);
 					if (datas.size() > 1)
-						logln("First matrix altered. About to alter others in parallel.");
+						logln("First matrix altered. About to alter others in parallel on " + numThreads + " threads.");
 				}
 			}
 		}
@@ -225,7 +225,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		long longWait = (startParallel - startTime) * PATIENCE;
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(), "Altering matrices", "", datas.size(), true);
 		progIndicator.start();
-		progIndicator.setText("Setting up threads");
+		progIndicator.setText("Setting up " + numThreads + " threads");
 		// making threads and getting them started
 		int numMatrices = datas.size();
 		AlterThread[] threads = new AlterThread[numThreads];
@@ -412,6 +412,7 @@ class AlterThread extends MesquiteThread {
 
 	public void run() {
 		if (alterTask != null) {
+			Debugg.println("THREAD STARTED " + firstMatrix);
 			for (im = firstMatrix; im <= lastMatrix && !ownerModule.aborted; im++) {
 				lastTimeChanged = System.currentTimeMillis() / 1000 * 1000; // truncating it to the second
 				CharacterData data = (CharacterData) datas.elementAt(im);

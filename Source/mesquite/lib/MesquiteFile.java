@@ -465,11 +465,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static MesquiteFile open(String directoryName, String fileName) {
 		if (!fileExists(directoryName+ fileName))  {
 			if (StringUtil.blank(directoryName))
-				directoryName = MesquiteTrunk.suggestedDirectory;
+				directoryName = MesquiteTrunk.getSuggestedDirectory();
 			else if (directoryName.endsWith(fileSeparator) || directoryName.endsWith("/"))
-				directoryName = MesquiteTrunk.suggestedDirectory + directoryName;
+				directoryName = MesquiteTrunk.getSuggestedDirectory() + directoryName;
 			else
-				directoryName = MesquiteTrunk.suggestedDirectory + directoryName + fileSeparator;  //Dec 2013 this was backwards!
+				directoryName = MesquiteTrunk.getSuggestedDirectory() + directoryName + fileSeparator;  //Dec 2013 this was backwards!
 
 
 
@@ -2207,7 +2207,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (fileExists(directoryName+ fileName))  
 			return true;
 		else if (StringUtil.blank(directoryName))
-			return fileExists(MesquiteTrunk.suggestedDirectory +fileName);
+			return fileExists(MesquiteTrunk.getSuggestedDirectory() +fileName);
 		else if (!(directoryName.endsWith(fileSeparator) || directoryName.endsWith("/"))) 
 			return fileExists(directoryName + fileSeparator +fileName);
 

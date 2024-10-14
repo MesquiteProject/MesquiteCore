@@ -65,6 +65,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	MesquiteProject processProject = null;
 	FileCoordinator fileCoord = null;
 	String directoryPath=null;
+	String lastDirectoryUsed=null;
 	ProgressIndicator progIndicator = null;
 	FileInterpreter importer = null;
 	MesquiteFile writingFile;
@@ -87,6 +88,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 			importerString = StringUtil.cleanXMLEscapeCharacters(content);
 		else if ("fileExtension".equalsIgnoreCase(tag))
 			fileExtension = StringUtil.cleanXMLEscapeCharacters(content);
+		else if ("lastDirectoryUsed".equalsIgnoreCase(tag))
+			lastDirectoryUsed = StringUtil.cleanXMLEscapeCharacters(content);
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
@@ -94,6 +97,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		StringUtil.appendXMLTag(buffer, 2, "script", preferencesScript);  
 		StringUtil.appendXMLTag(buffer, 2, "importerString", importerString);  
 		StringUtil.appendXMLTag(buffer, 2, "fileExtension", fileExtension);  
+		StringUtil.appendXMLTag(buffer, 2, "lastDirectoryUsed", lastDirectoryUsed);  
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
@@ -638,7 +642,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
 		boolean success= false;
-		directoryPath = MesquiteFile.chooseDirectory("Choose directory containing data files:", null); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+		directoryPath = MesquiteFile.chooseDirectory("Choose directory containing data files:", lastDirectoryUsed); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 		if (StringUtil.blank(directoryPath))
 			return null;
 		fileCoord = getFileCoordinator();
@@ -658,11 +662,11 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		// filter by extension?
 		// save script
 		//
-		Debugg.println("establish " + directoryPath);
-
+		lastDirectoryUsed = directoryPath;
 		writingFile.setPath(directoryPath+MesquiteFile.fileSeparator+"temp.nex");
 		processDirectory(directoryPath);  //DLOG: here asks for file extension filter and whether to save as NEXUS
-		//and inside that, //DLOG asks abotu processors
+	//and inside that, //DLOG asks abotu processors
+		storePreferences(); //Do this regardless of success
 		if (success){
 			//project.autosave = true;
 			processProject.isProcessDataFilesProject = false;

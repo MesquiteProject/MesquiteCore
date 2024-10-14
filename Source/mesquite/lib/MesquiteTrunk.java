@@ -101,7 +101,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	//hackathon
 	public static boolean suppressSystemOutPrintln = false;
 	/** Default directory used in Open file dialogs and for consoles' current directory.  Adjusted by minimal.BasicFileCoordinator */
-	public static String suggestedDirectory = null;
+	private static String suggestedDirectory = null;
 	public static String appsDirectory = null;
 	public static String pythonDirectory = null;
 	public static String encapsulatedPathOfExecutable = null;
@@ -402,6 +402,14 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/*.................................................................................................................*/
 	public void setConfiguration(String s){
 		configuration = s;
+	}
+	/*.................................................................................................................*/
+	public static void setSuggestedDirectory(String s){
+		suggestedDirectory = s;
+	}
+	/*.................................................................................................................*/
+	public static String getSuggestedDirectory(){
+		return suggestedDirectory;
 	}
 	/*.................................................................................................................*/
 	public abstract void substantivePrereleasesFound();

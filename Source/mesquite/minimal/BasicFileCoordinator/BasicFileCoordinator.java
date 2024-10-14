@@ -85,24 +85,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		return true;
 	}
 
-	/*.................................................................................................................*/
-	public String preparePreferencesForXML () {
-		StringBuffer buffer = new StringBuffer();
-		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.suggestedDirectory);  
-		return buffer.toString();
-	}
-
-	/*.................................................................................................................*/
-	public void processSingleXMLPreference (String tag, String content) {
-		if ("suggestedDirectory".equalsIgnoreCase(tag)){
-			MesquiteTrunk.suggestedDirectory = StringUtil.cleanXMLEscapeCharacters(content);
-		}
-	}
 
 	/*.................................................................................................................*/
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>0) {
-			MesquiteTrunk.suggestedDirectory = prefs[0];
+			MesquiteTrunk.setSuggestedDirectory(prefs[0]);
 		}
 	}
 	/*.................................................................................................................*/
@@ -538,14 +525,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else
 			message = "Open URL as independent project:";
 
-		MesquiteFile thisFile =MesquiteFile.open(local, pathName, message, MesquiteTrunk.suggestedDirectory);
+		MesquiteFile thisFile =MesquiteFile.open(local, pathName, message, MesquiteTrunk.getSuggestedDirectory());
 		if (thisFile!=null && (thisFile.isLocal() && thisFile.existingLength()<=0)) { 
 			alert("Error: File is empty.");
 			return null;
 		}
 
 		if (thisFile!=null){
-			MesquiteTrunk.suggestedDirectory = thisFile.getDirectoryName();
+			MesquiteTrunk.setSuggestedDirectory(thisFile.getDirectoryName());
 			storePreferences();
 		}
 
@@ -1190,6 +1177,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (fi.changeLocation("Save file")) {
 				fi.setWriteProtected(false);
 				writeFile(fi);
+				MesquiteTrunk.setSuggestedDirectory(fi.getDirectoryName());
 			}
 		}
 		//TODO: change titles of windows and menu items!!!
@@ -1221,6 +1209,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			boolean success = nMF.changeLocation("Save file");
 			if (!success)
 				return;
+			else
+				MesquiteTrunk.setSuggestedDirectory(nMF.getDirectoryName());
+
 		}
 		broadcastFileAboutToBeSaved(this, nMF);
 		Runtime rt = Runtime.getRuntime();

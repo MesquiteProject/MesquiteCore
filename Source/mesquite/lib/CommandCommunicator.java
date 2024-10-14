@@ -44,8 +44,8 @@ public class CommandCommunicator {
 		setObjectCommanded(initCommanded, MesquiteWindow.GUIavailable && !MesquiteWindow.suppressAllWindows, false);
 
 		this.echoToSystemOut = echoToSystemOut;
-		if (MesquiteTrunk.suggestedDirectory!=null)
-			currentDirectory = new File(MesquiteTrunk.suggestedDirectory);
+		if (MesquiteTrunk.getSuggestedDirectory()!=null)
+			currentDirectory = new File(MesquiteTrunk.getSuggestedDirectory());
 	}
 	public void setObjectCommanded(Object obj, boolean useQueue, boolean showPrompt){
 		if (obj == null)
@@ -243,13 +243,13 @@ public class CommandCommunicator {
 				output += ("The se command can be given only to modules");
 		}
 		else if ("cd".equalsIgnoreCase(command)) {
-			if (MesquiteTrunk.suggestedDirectory!=null)
-				currentDirectory = new File(MesquiteTrunk.suggestedDirectory);
+			if (MesquiteTrunk.getSuggestedDirectory()!=null)
+				currentDirectory = new File(MesquiteTrunk.getSuggestedDirectory());
 
 			if ("..".equals(arguments)) {
 				if (currentDirectory !=null) {
 					currentDirectory = new File(currentDirectory.getParent());
-					MesquiteTrunk.suggestedDirectory = currentDirectory.toString();
+					MesquiteTrunk.setSuggestedDirectory(currentDirectory.toString());
 				}
 			}
 			else if (!StringUtil.blank(arguments)){
@@ -261,7 +261,7 @@ public class CommandCommunicator {
 					if (cd.exists() && cd.isDirectory())
 						currentDirectory = cd;
 				}
-				MesquiteTrunk.suggestedDirectory = currentDirectory.toString();
+				MesquiteTrunk.setSuggestedDirectory(currentDirectory.toString());
 			}
 
 			output += ("Current directory: " + currentDirectory);
@@ -269,8 +269,8 @@ public class CommandCommunicator {
 				MesquiteFileDialog.currentFileDialog.setDirectory(currentDirectory.toString());
 		}
 		else if ("ls".equalsIgnoreCase(command)) {
-			if (MesquiteTrunk.suggestedDirectory!=null && currentDirectory == null)
-				currentDirectory = new File(MesquiteTrunk.suggestedDirectory);
+			if (MesquiteTrunk.getSuggestedDirectory()!=null && currentDirectory == null)
+				currentDirectory = new File(MesquiteTrunk.getSuggestedDirectory());
 			if (currentDirectory !=null && currentDirectory.exists() && currentDirectory.isDirectory()){
 				String[] list = currentDirectory.list();
 				for (int i=0; i<list.length; i++) {
