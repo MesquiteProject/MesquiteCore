@@ -2020,7 +2020,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	void resetForTreeSource(boolean setToZero, boolean firstTimeTreeSource, boolean retainEditedRegardless, int notificationCode) {
 		if (disposing)
 			return;
-		windowModule.editMode = false;   //if you get here, you can't be in editMode.  
+		if (windowModule.editMode) { //shouldn't get here with edit mode
+			treeSourceTask.doCommand("laxOff", null, CommandChecker.defaultChecker);
+			windowModule.editMode = false;
+			editedByHand = false;
+		}
 		resetTitle();
 		if (firstTimeTreeSource)
 			warningGivenForTreeSource = false;

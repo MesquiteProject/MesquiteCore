@@ -504,11 +504,10 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	}
 	boolean warned = false;
  	public String getNotesAboutTrees(Taxa taxa){
+		if (laxMode)
+			return "Tree being edited by hand.";
 		int code = checkTreeBlock(taxa, false);
 		if (code <0 || currentTreeBlock == null) {
-			if (laxMode)
-				return "Tree being edited by hand.";
-			else
 				return null;
 		}
 		String s = "Tree block: " + currentTreeBlock.getName();
@@ -520,11 +519,10 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	/*.................................................................................................................*/
 	public Tree getCurrentTree(Taxa taxa) {
 		try {
+			if (laxMode)
+				return getDefaultTree(taxa);
 			int code = checkTreeBlock(taxa, false);
 			if (code <0) {
-				if (laxMode)
-					return getDefaultTree(taxa);
-				else
 					return null;
 			}
 			if (currentTreeBlock != null && currentTreeBlock.size()>0) {

@@ -16,6 +16,7 @@ package mesquite.pairwise.PairwiseComparison;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -89,7 +90,8 @@ public class PairwiseComparison extends TreeDisplayAssistantMA {
 		addMenuItem( "Next Character (Dep.)", makeCommand("nextCharacterB",  this));
 		addMenuItem( "Previous Character (Dep.)", makeCommand("previousCharacterB",  this));
 		addMenuSeparator();
-		addMenuItem( "Next Pairing", makeCommand("nextPairing",  this));
+		MesquiteMenuItemSpec mNP = addMenuItem( "Next Pairing", makeCommand("nextPairing",  this));
+		mNP.setShortcut(KeyEvent.VK_RIGHT); //right
 		addCheckMenuItem(null, "Show states", MesquiteModule.makeCommand("showStates",  this), showStates);
 		addMenuItem( "Close Pairwise Comparison", makeCommand("closeShowPairs",  this));
 		addMenuSeparator();
@@ -663,9 +665,9 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			else if (category == NEGATIVE)
 				g.setColor(Color.red);
 			else if (category == NEUTRAL)
-				g.setColor(ColorDistribution.lightBlue);
+				g.setColor(Color.orange);
 			else
-				g.setColor(Color.blue);
+				g.setColor(ColorDistribution.lightOrange);
 			//g.setColor(new Color(Color.HSBtoRGB((float)(i * 1.0 /numTaxa),(float)1.0,(float)1.0)));
 			int thisNode = t1;
 			while (tree.nodeExists(thisNode) && thisNode!= path.getBase() && thisNode!=drawnRoot) {
