@@ -1934,7 +1934,7 @@ public class Mesquite extends MesquiteTrunk
 				displayer.showFile(getRootPath()  + "lesser.txt", 100000, true); 
 			return displayer;
 		}
-		else if (checker.compare(this.getClass(), "Shows the currently executing command and offers to stop it.", null, commandName, "currentCommand")) {
+	/*	else if (checker.compare(this.getClass(), "Shows the currently executing command and offers to stop it.", null, commandName, "currentCommand")) {
 			if (MainThread.getCurrentlyExecuting()!=null) {
 				MainThread.mainThread.suspend();
 				if (!AlertDialog.query(containerOfModule(), "Current Command", "The current command is\n" + MainThread.getCurrentlyExecuting().getListName(), "Continue", "STOP COMMAND")) {
@@ -1951,6 +1951,7 @@ public class Mesquite extends MesquiteTrunk
 			else
 				alert("There is no command currently executing");
 		}
+		*/
 		else if (checker.compare(this.getClass(), "Shows the list of pending commands and offers some to be suspended.", null, commandName, "pendingCommands")) {
 			if (MesquiteCommand.anyQueuedCommands(true)) {
 				String message = "This is a list of pending commands.  If you want to suspend any commands, select them and hit STOP COMMAND.  Otherwise, hit CANCEL.  The currently executing command is NOT listed.";
@@ -2437,8 +2438,8 @@ public class Mesquite extends MesquiteTrunk
 		mesquiteTrunk.newFileCommand = makeCommand("newProject",  mesquiteTrunk);
 		mesquiteTrunk.openFileCommand = makeCommand("openFile",  mesquiteTrunk);
 		mesquiteTrunk.openURLCommand = makeCommand("openURL",  mesquiteTrunk);
-		mesquiteTrunk.currentCommandCommand = makeCommand("currentCommand",  mesquiteTrunk);
-		mesquiteTrunk.currentCommandCommand.setQueueBypass(true);
+		//mesquiteTrunk.currentCommandCommand = makeCommand("currentCommand",  mesquiteTrunk);
+		//mesquiteTrunk.currentCommandCommand.setQueueBypass(true);
 		mesquiteTrunk.pendingCommandsCommand = makeCommand("pendingCommands",  mesquiteTrunk);
 		mesquiteTrunk.pendingCommandsCommand.setQueueBypass(true);
 		mesquiteTrunk.resetMenusCommand = makeCommand("resetMenus",  mesquiteTrunk);
