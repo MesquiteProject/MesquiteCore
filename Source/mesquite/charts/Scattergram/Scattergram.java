@@ -1250,7 +1250,7 @@ class ScattergramCharter extends Charter {
 				if (!chart.getSelected().anyBitsOn()|| chart.getSelected().isBitOn(i))
 					return (Color.blue);
 				else
-					return (ColorDistribution.lightBlue);
+					return (ColorDistribution.veryLightBlue);
 			}
 			else{
 				if (!chart.getSelected().anyBitsOn()|| chart.getSelected().isBitOn(i))
@@ -1265,7 +1265,7 @@ class ScattergramCharter extends Charter {
 		if (!chart.getSelected().anyBitsOn() || chart.getSelected().isBitOn(i))
 			return (Color.black);
 		else
-			return (Color.gray);
+			return (Color.lightGray);
 
 	}
 	// redraws data point i.  Used currently only for march selection (to avoid entire redraw)

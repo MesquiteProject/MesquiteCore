@@ -485,6 +485,8 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 	}
 	public void windowResized(){
 		sizeDisplays();
+		if (treeDisplay != null)
+			treeDisplay.pleaseUpdate(true);
 	}
 	/*.................................................................................................................*/
 	public void paintContents(Graphics g) {
