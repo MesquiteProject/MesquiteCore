@@ -18,11 +18,13 @@ package mesquite.molec.FlagByCompareOther;
 
 
 import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.Bits;
 import mesquite.lib.Debugg;
 import mesquite.lib.ListDialog;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.Taxa;
 import mesquite.lib.characters.CharacterData;
@@ -32,11 +34,10 @@ import mesquite.lib.duties.MatrixFlagger;
 
 /* ======================================================================== */
 public class FlagByCompareOther extends MatrixFlagger {
-/* to do: have menu item to choose other matrix, and remember in snapshot*/
+	/* to do: have menu item to choose other matrix, and remember in snapshot*/
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -45,6 +46,16 @@ public class FlagByCompareOther extends MatrixFlagger {
 		return temp;
 	}
 
+	public void endJob(){
+		if (oData != null)
+			oData.removeListener(this);
+		super.endJob();
+	}
+	/*.................................................................................................................*/
+	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface)*/
+	public void changed(Object caller, Object obj, Notification notification){
+		parametersChanged();
+	}
 	CharacterData oData = null;
 
 	/*======================================================*/
@@ -59,9 +70,8 @@ public class FlagByCompareOther extends MatrixFlagger {
 				Taxa taxa = data.getTaxa();
 				int numSets = getProject().getNumberCharMatricesVisible(taxa);
 				int numSetsDiff = numSets;
-				Debugg.printStackTrace();
 				for (int i = 0; i<numSets; i++) {
-				CharacterData pData =getProject().getCharacterMatrixVisible(taxa, i);
+					CharacterData pData =getProject().getCharacterMatrixVisible(taxa, i);
 					if (pData== data)
 						numSetsDiff--;
 					else if (pData.getClass() != data.getClass())
@@ -85,6 +95,7 @@ public class FlagByCompareOther extends MatrixFlagger {
 					oData = (CharacterData)ListDialog.queryList(containerOfModule(), "Compare with", "Compare data matrix with:", MesquiteString.helpString,matrices, 0);
 					if (oData==null)
 						return flags;
+					oData.addListener(this);
 				}
 			}
 			log("Comparing this matrix " + data.getName() + " with other matrix " + oData.getName()+ ".");
@@ -107,19 +118,35 @@ public class FlagByCompareOther extends MatrixFlagger {
 					}
 				}
 			}
+			int moreInThis = data.getNumChars()-oData.getNumChars();
+
+			if (moreInThis>0){
+				//flag parts of this matrix that other doesn't have
+				Bits charFlags = flags.getCharacterFlags();
+				for (int ic = oData.getNumChars(); ic<data.getNumChars(); ic++)
+					charFlags.setBit(ic, true);
+			}
+
 			if (count == 0){
-				if (diffNumChars)
-					logln(" No differences found among the characters examined.");
+				if (diffNumChars){
+					if (moreInThis>0)
+						logln(" No differences found among the cells examined, but this matrix has " + moreInThis + "more characters than the other.");
+					else
+						logln(" No differences found among the cells examined, but the other matrix has " + (-moreInThis) + "more characters than this.");
+				}
 				else
 					logln(" No differences found between matrices.");
 
 			}
 			else {
 				log(" " + count);
-				if (diffNumChars)
-					logln(" cells of matrix found different among the characters examined.");
-				else
 					logln(" cells of matrix found different between matrices.");
+				if (diffNumChars){
+					if (moreInThis>0)
+					logln(" In addition, this matrix has " + moreInThis + " more characters than the other.");
+				else
+					logln(" In addition, the other matrix has " + (-moreInThis) + "more characters than this.");
+				}
 			}
 
 		}

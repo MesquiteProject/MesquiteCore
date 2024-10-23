@@ -295,8 +295,8 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		paramsInfo = dialog.addTextField("Report parameters as:", "", 30);
 		paramsInfo.setEditable(false);
 		paramsInfo.setBackground(ColorTheme.getInterfaceBackgroundPale());
-		dialog.setDefaultComponent(PIField.getTextField());
 		resetParamsInfo();
+		dialog.setDefaultComponent(PIField.getTextField());
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
 		Button useDefaultsButton = null;
@@ -346,7 +346,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		resetParamsInfo();
 	}
 	void resetParamsInfo(){
-		String info = "b=" + SSField.getValue() + " d=" + NDField.getValue() + " p=" + PIField.getValue() + " e=" + tGAS.getState();
+		String info = "b=" + SSField.getValueAsString() + " d=" + NDField.getValueAsString() + " p=" + PIField.getValueAsString() + " e=" + tGAS.getState();
 		if (!getProject().isProcessDataFilesProject && fSO.getState())
 			info += " sot=" + pgSField.getValue();
 		paramsInfo.setText(info);

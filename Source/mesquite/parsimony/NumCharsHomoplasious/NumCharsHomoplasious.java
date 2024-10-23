@@ -92,7 +92,6 @@ public class NumCharsHomoplasious extends NumberForMatrixAndTree {
 					charStepsTask.calculateNumber(tree, charStates, cNum, null);
 					bNum.setToUnassigned();
 					charStepsTask.calculateNumber(bush, charStates, bNum, null);
-					//Debugg.println(" ic " + ic + " steps " + cNum + " min " + bNum);
 					if (cNum.isCombinable()){
 						if (cNum.isMoreThan(bNum))
 							numHomoplasious.add(1);

@@ -22,6 +22,8 @@ import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.util.Random;
@@ -29,6 +31,7 @@ import java.util.Random;
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.Bits;
+import mesquite.lib.ColorTheme;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
@@ -39,6 +42,7 @@ import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
@@ -63,7 +67,7 @@ import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.TaxaManager;
 
 /* ======================================================================== */
-public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionListener, TextListener {
+public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionListener, TextListener, ItemListener {
 
 	static final double b1DEFAULT = 0.5; //Minimum Number Of Sequences For A Conserved Position (50% of the number of sequences + 1)
 	static final double b2DEFAULT = 0.85; //Minimum Number Of Sequences For A Flank Position (85% of the number of sequences)
@@ -189,13 +193,29 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		return null;
 	}
 	/*.................................................................................................................*/
+	public void itemStateChanged(ItemEvent e) {
+		resetParamsInfo();
+	}
+
+	void resetParamsInfo(){
+		String info = "b1=" + b1F.getValueAsString() + " b2=" + b2F.getValueAsString() + " b3=" + b3F.getValueAsString() + " b4=" + b4F.getValueAsString();
+		if (b5F.getSelectedIndex()==0)
+			info += " b5=n";
+		else if (b5F.getSelectedIndex()==1)
+			info += " b5=h";
+		else
+			info += " b5=a";
+			
+		paramsInfo.setText(info);
+	}
+	/*.................................................................................................................*/
 	SingleLineTextField programPathField =  null;
 
 	DoubleField b1F, b2F;
 	IntegerField b3F, b4F;
 	Choice b5F;
 	double b1Prev, b2Prev;
-
+	SingleLineTextField paramsInfo;
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
@@ -223,14 +243,23 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		b4F = dialog.addIntegerField("Minimum length of a block (at least 2)", b4, 4, 2, MesquiteInteger.infinite);
 		b2F.getTextField().addTextListener(this); // to check b2 is >= b1
 		b5F = dialog.addPopUpMenu("Allowed Gap Positions (b5)", new String[]{"None", "With Half", "All"}, b5);
+		b1F.getTextField().addTextListener(this);
+		b2F.getTextField().addTextListener(this);
+		b3F.getTextField().addTextListener(this);
+		b4F.getTextField().addTextListener(this);
+		b5F.addItemListener(this);
 
 		dialog.addBlankLine();
+		dialog.addHorizontalLine(1);
+		paramsInfo = dialog.addTextField("Report parameters as:", "", 30);
+		paramsInfo.setEditable(false);
+		paramsInfo.setBackground(ColorTheme.getInterfaceBackgroundPale());
+		resetParamsInfo();
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
 		Button useDefaultsButton = null;
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
-		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
 		dialog.addLargeOrSmallTextLabel("If you use this in a publication, please cite the version of Gblocks you used. See (?) help button for details.");
 
@@ -296,6 +325,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 			b1Prev = b1F.getValue();
 			b2Prev = b2F.getValue();
 		}
+		resetParamsInfo();
 	}
 
 	String[] columns;
@@ -395,7 +425,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 					}
 				}
 				else
-					Debugg.println("oops, no results found");
+					MesquiteMessage.warnProgrammer("No results from Gblocks found!");
 
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}

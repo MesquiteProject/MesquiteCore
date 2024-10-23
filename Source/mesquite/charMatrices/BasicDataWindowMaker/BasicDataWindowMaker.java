@@ -5705,7 +5705,7 @@ class CellInfoPanel extends MatrixInfoExtraPanel {
 				}
 				Associable tInfo = data.getTaxaInfo(false);
 				if (tInfo != null) {
-					attachmentsMessage += tInfo.toString(it) + "\n";
+					attachmentsMessage += tInfo.toString(it) + ".\n";
 				}
 			}
 			else {

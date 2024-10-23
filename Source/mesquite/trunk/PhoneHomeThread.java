@@ -75,8 +75,10 @@ public class PhoneHomeThread extends Thread {
 						AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", r, 600, 400, null);
 					}
 				}
-				else if (MesquiteTrunk.debugMode)
+				else { 
+					if (MesquiteTrunk.debugMode)
 					MesquiteMessage.warnProgrammer("no response or incorrect response from server on startup");
+				}
 			}
 		}
 		catch (Throwable t){
