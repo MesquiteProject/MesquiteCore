@@ -33,7 +33,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public static final int UNIXDELIMITER=3;
 	public int lineDelimiter = CURRENTDELIMITER;
 	
-	//Debugg.println: why are these both here and in MesquiteFile?
+	//For them moment we'll leave these, but why should these be both here and in MesquiteFile?
 	public boolean writeOnlySelectedData = false;
 	public boolean writeOnlySelectedTaxa = false;
 	public boolean writeTaxaWithAllMissing = true;  //default changed to true as true  after 2. 75

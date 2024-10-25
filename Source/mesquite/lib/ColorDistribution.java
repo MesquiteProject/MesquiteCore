@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -26,7 +26,7 @@ public class ColorDistribution {
 	double[] weights;
 	boolean sequential = false;
 	static final int MAXCOLORS = 64;
-	
+
 	public static int numberOfRed = 5;
 	public static int numberOfGreen = 11;
 	public static int numberOfBlue = 14;
@@ -36,10 +36,10 @@ public class ColorDistribution {
 	public static Color uneditable;
 	public static Color unassigned;
 	public static Color inapplicable;
-	
+
 	public static Color [] codPosMedium, codPosDark;
 	public static Color spinDark, spinLight;
-//	public static Color[] projectLight, projectDark; //pale, light, medium, dark, project, 
+	//	public static Color[] projectLight, projectDark; //pale, light, medium, dark, project, 
 	public final static int numColorSchemes = 4;
 	public static Color burlyWood, navajoWhite, bisque, sienna, paleGoldenRod, veryPaleGoldenRod;
 	public static NameReference colorNameReference;
@@ -58,7 +58,7 @@ public class ColorDistribution {
 
 		//unassigned = new Color(230, 230, 230);
 		unassigned = new Color((float)0.92, (float)0.94, (float)0.98); //ColorDistribution.unassigned;
-		
+
 		veryVeryVeryLightGray = new Color((float)0.98, (float)0.98, (float)0.98);
 		darkRed = new Color((float)0.5, (float)0.2, (float)0.1);
 		lightRed = new Color((float)0.9, (float)0.48, (float)0.35);
@@ -84,7 +84,7 @@ public class ColorDistribution {
 		straw = new Color((float)0.85, (float)0.80, (float)0.38);
 		lightYellow = new Color((float)0.95, (float)0.95, (float)0.64);
 		veryLightYellow = new Color((float)0.99, (float)0.99, (float)0.78);
-		
+
 		burlyWood = new Color((float)0.87, (float)0.7216, (float)0.5294); //222, 184, 135  DEB887; medium  SHOULD BE 0.87, (float)0.7216, (float)0.5294
 		navajoWhite =  new Color((float)1.0, (float)0.87, (float)0.6784); //FFDEAD; light
 		bisque =  new Color((float)1.0, (float)0.894, (float)0.7686); // FFE4C4; pale
@@ -97,12 +97,12 @@ public class ColorDistribution {
 		mesquiteBrown = new Color(108, 98, 82);
 		darkMesquiteBrown = new Color(92, 82, 70);
 		veryDarkMesquiteBrown = new Color(78, 68, 55);
-		
+
 		lightBlueGray = new Color((float)0.7, (float)0.7, (float)0.8);
 
 		//spinLight = new Color((float)0.6, (float)0.9, (float)0.6);
 		//spinDark = new Color((float)0.05, (float)0.5, (float)0.05);
-//		darkMesquiteBrown = new Color(82, 72, 60);
+		//		darkMesquiteBrown = new Color(82, 72, 60);
 		//mesquiteBrown = new Color(88, 78, 62);
 		//mesquiteBrown = new Color(77, 65, 47);
 
@@ -191,11 +191,90 @@ public class ColorDistribution {
 		colors = new Color[MAXCOLORS];
 		colorsDimmed = new Color[MAXCOLORS];
 		weights = new double[MAXCOLORS];
-		
+
 	}
+	/*--------------------------------------------------------------*/
+	/* Random colors originally made for auto-coloring of character groups during matrix concatenation*/
 
-
+	static int enhancement = 20;
+	private static int enhance(int v){
+		v = v*enhancement/10;
+		if (v>255)
+			v = 255;
+		return v;
+	}
+	private static int dehance(int v){
+		if (RandomBetween.getIntStatic(0,100)>50)
+			v = v*10/enhancement*10/enhancement;
+		return v;
+	}
 	
+	private static boolean tooClose(int red, int green, int blue, Color previous){
+		if (previous == null)
+			return false;
+		//red is biggest in both
+		if (red > green && red > blue && previous.getRed()>previous.getGreen() && previous.getRed()>previous.getBlue())
+			return true;
+		//green is biggest in both
+		if (green > red && green > blue && previous.getGreen()>previous.getRed() && previous.getGreen()>previous.getBlue())
+			return true;
+		//blue is biggest in both
+		if (blue > red && blue > green && previous.getBlue()>previous.getRed() && previous.getBlue()>previous.getGreen())
+			return true;
+		return false;
+		//return (Math.abs(previous.getRed()-red) + Math.abs(previous.getGreen()-green) + Math.abs(previous.getBlue()-blue)<300);
+	}
+	public static Color getRandomColor(Color previous){
+		int red, green, blue = 0;
+		do {
+			red = RandomBetween.getIntStatic(100,255);
+			green = RandomBetween.getIntStatic(100,255);
+			blue = RandomBetween.getIntStatic(100,255);
+		} 
+		while (tooClose(red, green, blue, previous));
+
+		if (red>green){
+			if (red>blue){ //red is biggest
+				red = enhance(red);
+				blue = dehance(blue);
+				if (RandomBetween.getIntStatic(0,100)>75){//give it a chance to shift yellow
+					green = enhance(green);
+					blue = dehance(blue);
+				}
+				else {
+					green = dehance(green);
+				}
+			}
+			else { //blue is biggest
+				if (RandomBetween.getIntStatic(0,100)>10) //usually shift down red and green
+					red = dehance(red);
+				if (RandomBetween.getIntStatic(0,100)>10)
+					green = dehance(green);
+				blue = enhance(blue);
+			}
+		}
+		else if (blue>green){ //blue is biggest
+			if (RandomBetween.getIntStatic(0,100)>10) //usually shift down red and green
+				red = dehance(red);
+			if (RandomBetween.getIntStatic(0,100)>10)
+				green = dehance(green);
+			blue = enhance(blue);
+		}
+		else { //green is biggest
+			if (RandomBetween.getIntStatic(0,100)>75){ //give it a chance to shift yellow
+				red = enhance(red);
+				blue = dehance(blue);  //extra dehance here
+			}
+			else
+				red = dehance(red);
+			green = enhance(green);
+			blue = dehance(blue);
+		}
+
+		return new Color(red, green, blue);
+	}
+	/*--------------------------------------------------------------*/
+
 	private static float brighten(int v, double percent){
 		float b = (float)((255-(255-v)*percent)/255);
 		if (b<0)
@@ -204,14 +283,14 @@ public class ColorDistribution {
 			b=1;
 		return b;
 	}
-	
+
 	public static Composite getComposite(Graphics g) {
 		if (g!=null && (g instanceof Graphics2D)) {
 			return ((Graphics2D)g).getComposite(); 
 		}
 		return null;
 	}
-	
+
 	public static void setComposite(Graphics g, Composite composite) {
 		if (g!=null && composite!=null && (g instanceof Graphics2D)) {
 			((Graphics2D)g).setComposite(composite); 
@@ -219,13 +298,13 @@ public class ColorDistribution {
 	}
 
 
-	
+
 	public static void setTransparentGraphics(Graphics g, float f) {
 		if (g!=null && (g instanceof Graphics2D)) {
 			if (f>0.0f && f<1.0f)
 				((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, f)); 
-//			else if (f==0.0f)
-//				((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.00001f)); 
+			//			else if (f==0.0f)
+			//				((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.00001f)); 
 		}
 	}
 	public static void setTransparentGraphics(Graphics g) {
@@ -251,7 +330,7 @@ public class ColorDistribution {
 			b=1;
 		return b;
 	}
-	
+
 	public static Color darker(Color c, double percent){
 		if (c==null)
 			return null;
@@ -388,7 +467,7 @@ public class ColorDistribution {
 		int blue =  MesquiteInteger.fromString(arguments, pos);
 		return new Color(red,green,blue);
 	}
-	
+
 	public static String getColorStringForSnapshot(Color color) {
 		return color.getRed() + " " + color.getGreen() + " " + color.getBlue();
 	}

@@ -3925,6 +3925,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		return concatenate(oData, addTaxaIfNew, true, false, false, explainIfProblem,notify);
 	}
 
+	Color randomColor = null;
 	/** Concatenates the CharacterData oData to this object. */
 	public boolean concatenate(CharacterData oData, boolean addTaxaIfNew, boolean concatExcludedCharacters, boolean adjustGroupLabels, boolean prefixGroupNamesIfAlreadyAssigned, boolean explainIfProblem, boolean notify){
 		if (oData==null)
@@ -3981,27 +3982,34 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
 		CharactersGroup group = null;  //see if one with prefix already exists
 		
-		Color randomColor = new Color(RandomBetween.getIntStatic(100,255),RandomBetween.getIntStatic(100,255),RandomBetween.getIntStatic(100,255));
-
+		
+		randomColor = ColorDistribution.getRandomColor(randomColor);
 		if (partition==null && origNumChars-1>=0){ // let's give the original ones a group, as they didn't have any before
 			group = groups.findGroup(getName());  //let's see if there already exists a group with this matrix name
 			if (group==null) {
 				CharactersGroup cg = setToNewGroup(getName(), 0, origNumChars-1, module);  //set group
 				cg.setColor(randomColor);
 			}
-			else
+			else {
+				if (group.getColor() == null)
+					group.setColor(randomColor);
 				setCurrentGroup(group,0, origNumChars-1, module);  
+			}
 		}
 		CharacterPartition oPartition = (CharacterPartition) oData.getCurrentSpecsSet(CharacterPartition.class);   // partition in incoming. This by default will be used.
 		if (oPartition == null){
 			group = groups.findGroup(oData.getName());  //let's see if there already exists a group with this matrix name
 			if (group==null) {
 				CharactersGroup cg = setToNewGroup(oData.getName(), origNumChars, getNumChars()-1, module);  //set group
-				if (cg != null)
+				if (cg != null) {
 					cg.setColor(randomColor);
+				}
 			}
-			else
+			else {
+				if (group.getColor() == null)
+					group.setColor(randomColor);
 				setCurrentGroup(group,origNumChars, getNumChars()-1, module);   //set group
+			}
 		}
 
 		addInLinked(getNumChars()+1, oData.getNumChars(), true);

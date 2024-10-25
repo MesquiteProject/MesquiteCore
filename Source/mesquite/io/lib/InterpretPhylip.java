@@ -608,7 +608,6 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		charWritten=0;
 
 		for (int im = 0; im<numMatrices; im++) {
-			Debugg.println("MATRIX " + im);
 			if (exportMultipleMatrices()) {
 				data = getProject().getCharacterMatrixVisible(t, im, CategoricalState.class);
 				if (data==null) continue;
@@ -677,9 +676,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 				else
 					writeBlockToFile(taxa, data, filePath, 0, numChars, true);
 			}
-			Debugg.println("x " + im);
 	}
-		Debugg.println("DONE1");
 		if (charWritten!=numCharWrite)
 			MesquiteMessage.warnProgrammer("Warning: the number of characters written does not match expectation.");
 
@@ -687,14 +684,11 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 
 		if (trees!=null)
 			exportTrees(taxa, trees, outputBuffer);
-		Debugg.println("DONE2");
 		MesquiteFile.appendFileContents(filePath, outputBuffer.toString(), true); 
 		outputBuffer.setLength(0);
-		Debugg.println("DONE3");
 
 	//	saveExportedFileWithExtension(outputBuffer, arguments, "phy");
 		writeExtraFiles(taxa);
-		Debugg.println("DONE4");
 		return true;
 	}
 

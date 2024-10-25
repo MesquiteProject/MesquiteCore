@@ -516,7 +516,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", files.length);
 				progIndicator.start();
 				boolean sFDMade = false;
-			//	MesquiteFile.createDirectory(directoryPath + MesquiteFile.fileSeparator + "savedFiles");
+
 				String header = "Processing of files in " + directoryPath + StringUtil.lineEnding();
 				Date dnow = new Date(System.currentTimeMillis());
 				logln(StringUtil.getDateTime(dnow));
@@ -541,7 +541,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 							file.setPath(path);
 							getProject().addFile(file);
 							file.setProject(getProject());
-							//	getProject().setHomeFile(file);
+
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
 								results.setLength(0);
 								filesFound++;

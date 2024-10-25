@@ -91,7 +91,7 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 		String stringFailed = "";
 		boolean stop = false;
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Tree inference on matrices", "", datas.size(), true);
-		//Debugg.println("need to listen to abort");
+
 		progIndicator.start();
 		for (int im = 0; im < datas.size() && !stop; im++){
 			if (progIndicator.isAborted())
