@@ -102,6 +102,8 @@ public class MatrixFileParser {
 			else
 				tokenDone = true;
 		}
+		if (s != null && s.equals("") && atEOF())
+			s = null;
 		if (verbose) Debugg.println("~~~gNT [" + s + "] [" + parser.getBuffer() + "]");
 
 		return s;
@@ -135,6 +137,8 @@ public class MatrixFileParser {
 					commandDone = true;
 			}
 		}
+		if (c != null && c.equals("") && atEOF())
+			c = null;
 		if (verbose) Debugg.println("~~~gNC [" + c + "]");
 		return c;
 	}
@@ -161,6 +165,8 @@ public class MatrixFileParser {
 			else
 				commandNameDone = true;
 		}
+		if (s != null && s.equals("") && atEOF())
+			s = null;
 		if (verbose) Debugg.println("~~~gNCNameWC [" + s + "]");
 		return s;
 	}

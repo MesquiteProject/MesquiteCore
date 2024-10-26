@@ -33,6 +33,7 @@ public class ManageAssociations extends AssociationsManager {
 		blocks = new ListableVector();
 		if (nameParser==null)
 			nameParser = new NameParser(this, "taxon");
+		addMenuItem("sjCHOOSE TAXA ASSOCIATION...", makeCommand("chooseAssociation", this));
 		loadPreferences();
 		return true;
 	}
@@ -218,10 +219,16 @@ public class ManageAssociations extends AssociationsManager {
 				}
 			}
 			else if (code==MesquiteListener.PARTS_DELETED) {
+				boolean deleteContained = false;
 				for (int i = 0; i<associationsVector.size(); i++){
 					TaxaAssociation assoc = (TaxaAssociation)associationsVector.elementAt(i);
-					if (obj == assoc.getTaxa(0) || obj == assoc.getTaxa(1))
+					if (obj == assoc.getTaxa(0) || obj == assoc.getTaxa(1)){
+						
+						boolean deleteAssociatesAlso = false;
+						if (obj == assoc.getTaxa(0))
+							deleteAssociatesAlso = true;
 						assoc.resetTaxaAfterChange();
+					}
 
 				}
 			}
