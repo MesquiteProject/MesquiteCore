@@ -82,14 +82,12 @@ public class DatasetsListDeconcatenate extends DatasetsListUtility {
 			boolean deleteLast = false;
 			if (partition != null){
 				if (groups != null){
-					//Debugg.println("groups found ");
 					CharacterData partData = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());
 					partData.addCharacters(0, data.getNumChars(), false);  //will trim later
 					partData.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
 					deleteLast = true;
 					progIndicator.start();
 					for (int i=0; i< groups.size(); i++){
-						//Debugg.println("group " + i);
 						CharactersGroup group = (CharactersGroup)groups.elementAt(i);
 						int icPart = 0;
 						for (int icOrig = 0; icOrig<data.getNumChars(); icOrig++) {
@@ -101,7 +99,6 @@ public class DatasetsListDeconcatenate extends DatasetsListUtility {
 						if (icPart>0){
 							partitonFound = true;
 							String name = group.getName();
-						//	Debugg.println("partition found in matrix " + name);
 							partData.setName(datas.getUniqueName(group.getName()));
 							partData.deleteCharacters(icPart, partData.getNumChars()-icPart, false);
 							partData = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());

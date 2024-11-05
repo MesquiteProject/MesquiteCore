@@ -124,7 +124,7 @@ public class FileBlock {
 		while (!emptyToken(unconsumed) && !unconsumed.equals(";")) 
 			unconsumed = file.nextToken(null);
 
-		Debugg.println("======GNCNWC-FB -[" + unconsumed + "]");
+		if (MatrixFileParser.verbose) Debugg.println("======GNCNWC-FB -[" + unconsumed + "]");
 		return unconsumed;
 	}
 	
@@ -211,7 +211,6 @@ public class FileBlock {
 		reset();
 		String command = null;
 		while ((command = getNextFileCommand(comment)) != null){
-			//Debugg.println("@@@@@@@" + directFromFile);
 			sb.append(command + StringUtil.lineEnding());
 		}
 		readOnce = true;

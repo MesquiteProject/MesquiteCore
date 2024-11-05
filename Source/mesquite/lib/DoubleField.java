@@ -125,6 +125,9 @@ public class DoubleField  {
 		textField.setText(MesquiteDouble.toStringDigitsSpecified(value, digits));
 		currentValue = value;
 	}
+	public String getValueAsString(){
+		return MesquiteDouble.toString(getValue());
+	}
 
 }
 

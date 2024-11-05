@@ -131,7 +131,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 		/*
 		 * if (StringUtil.blank(help) && queryDialog.isInWizard()) help = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a whole number (integer).  <p>The initial value is " + value; queryDialog.appendToHelpString(help);
 		 */
-		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20);
+		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20, 1, 255);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
 
 		queryDialog.setDefaultTextComponent(integerField.getTextField());
@@ -139,7 +139,6 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 
 		queryDialog.completeAndShowDialog(true);
 
-		// Debugg.println don't ask again (reset by ...?)
 		boolean OK = buttonPressed.getValue() == 0;
 		if (OK) {
 			if (!integerField.isValidInteger()) {
@@ -412,7 +411,6 @@ class AlterThread extends MesquiteThread {
 
 	public void run() {
 		if (alterTask != null) {
-			Debugg.println("THREAD STARTED " + firstMatrix);
 			for (im = firstMatrix; im <= lastMatrix && !ownerModule.aborted; im++) {
 				lastTimeChanged = System.currentTimeMillis() / 1000 * 1000; // truncating it to the second
 				CharacterData data = (CharacterData) datas.elementAt(im);
@@ -421,14 +419,12 @@ class AlterThread extends MesquiteThread {
 					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 					if (ownerModule.matricesDone.isBitOn(im))
 						MesquiteMessage.printStackTrace("ERROR: doing matrix " + im);
-					// Debugg.println("" + im+ " <<<<<<<<");
 					int result = -10;
 					try {
 						result = alterTask.alterData(data, null, null, alteredDataParameters);
 					} catch (Exception e) {
 						ownerModule.logln("Exception in Parallel Alter Matrices -- " + e);
 					}
-					// Debugg.println("" + im+ " >>>>>>>>");
 					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 					if (result == DataAlterer.SUCCEEDED) {
 						Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);

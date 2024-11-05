@@ -2320,6 +2320,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			rowWidthsAdjusted.resetSize(numRowsTotal);
 		if (firstRowVisible >= numRowsTotal || firstRowVisible < 0)
 			firstRowVisible = 0;
+		resetNumRowsVisible(); 
 		if (vertScroll != null) {
 			vertScroll.setValue(firstRowVisible);
 			vertScroll.setMaximum(numRowsTotal);

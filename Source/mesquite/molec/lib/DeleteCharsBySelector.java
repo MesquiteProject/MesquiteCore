@@ -58,33 +58,7 @@ public abstract class DeleteCharsBySelector extends DataAlterer implements Alter
 		Bits toBeDeleted = data.getSelectedBits();
 		data.deletePartsFlagged(toBeDeleted, false);
 		data.deleteInLinkedFlagged(toBeDeleted, false);
-/* old //WayneEFF
-		int ic = data.getNumChars()-1;
-		int firstInBlockDeleted = -1;
-		int lastInBlockDeleted = -1;
-		int blockCount = 0;
-		while(ic>=0) {
-			if (data.getSelected(ic)){  // we've found a selected one
-				lastInBlockDeleted = ic;
-				while(ic>=0) {  // now let's look for the first non-selected one
-					if (data.getSelected(ic))
-						firstInBlockDeleted = ic;
-					else break;
-					ic--;
-				}
 
-				blockCount++;
-				if (blockCount % 50 == 0)
-					logln("Deleting characters, block " + blockCount);
-				//There is a huge time cost here in deleteParts in ObjSpecsSet every loop
-				// better to design new deleteCharacters and asosciated deleteParts that is passed an array of blocks to be deleted (start and end)
-				//Debugg.printlnd
-				data.deleteCharacters(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);  // now prepare contiguous block for deletion
-				data.deleteInLinked(firstInBlockDeleted, lastInBlockDeleted-firstInBlockDeleted+1, false);
-			}
-			ic--;
-		}
-		*/
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		unpauseAllPausables(v);

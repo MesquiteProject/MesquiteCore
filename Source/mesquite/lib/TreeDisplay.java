@@ -448,7 +448,7 @@ public void setTreeDrawing(TreeDrawing td) {
 			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) 
 				branchLengthsOnTree(tree, daughter, nodeStrings);
 		}
-		nodeStrings[node]= ""+tree.getBranchLength(node);
+		nodeStrings[node]= ""+ MesquiteDouble.toString(tree.getBranchLength(node));
 	}
 
 	/*.................................................................................................................*/
@@ -479,6 +479,36 @@ public void setTreeDrawing(TreeDrawing td) {
 	public String getBranchLengthList(Tree tree) {
 		return branchLengthsAtNodes(tree,tree.getRoot());
 	}
+	
+	/*.................................................................................................................*/
+	/**return a text version of information on tree*/
+	private void associatesOnTree(MesquiteTree tree, int node, String[] nodeStrings){
+		if (tree.nodeIsInternal(node)){
+			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) 
+				associatesOnTree(tree, daughter, nodeStrings);
+		}
+		nodeStrings[node]= ""+tree.toString(node);
+	}
+	public String getAssociatesAtNodes(MesquiteTree tree){
+		
+		if (!tree.hasAnyAssociates())
+			return "";
+		int node = tree.getRoot();
+		String[] nodeStrings= new String[tree.getNumNodeSpaces()];
+		associatesOnTree(tree, node, nodeStrings);
+		StringBuffer buff = new StringBuffer(50);
+		for (int i=0; i<nodeStrings.length; i++) {
+			if (!StringUtil.blank(nodeStrings[i])) {
+				buff.append("node " + i + ": \t");
+				buff.append(nodeStrings[i] + "\n");
+			}
+		}
+
+		if (StringUtil.notEmpty(buff.toString()))
+			return "Values associated with nodes\n\n" + buff.toString();
+		return "";
+	}
+	
 	/*.................................................................................................................*/
 	public String getTextVersion() {
 		if (tree==null || treeDrawing == null)
@@ -497,6 +527,11 @@ public void setTreeDrawing(TreeDrawing td) {
 		String branchLengths = getBranchLengthList(tree);
 		if (StringUtil.notEmpty(branchLengths))
 			s+=branchLengths;
+		
+		if (tree instanceof MesquiteTree){
+			String assoc = getAssociatesAtNodes((MesquiteTree)tree);
+			s += "\n" + assoc + "\n";
+		}
 		if (extras != null) {
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {

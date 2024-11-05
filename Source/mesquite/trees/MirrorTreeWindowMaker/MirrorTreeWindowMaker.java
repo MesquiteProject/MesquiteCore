@@ -488,6 +488,15 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 			}
 		}
 	}
+	public void windowResized() {
+		super.windowResized();
+		if (!MesquiteThread.isScripting())
+			sizeDisplays();
+		if (treeDisplays != null && treeDisplays[0] != null) {
+			treeDisplays[0].pleaseUpdate(true);
+		treeDisplays[1].pleaseUpdate(true);
+		}
+	}
 	/*.................................................................................................................*/
 	 public void paintContents(Graphics g) {
 		if (treeDisplays==null){

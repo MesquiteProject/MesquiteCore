@@ -316,7 +316,7 @@ public class HighlightDiscordantSeq extends DataWindowAssistantID implements Cel
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return true;  //Debugg.println Why keep this given spruceup included?
 	}
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyDNAData();

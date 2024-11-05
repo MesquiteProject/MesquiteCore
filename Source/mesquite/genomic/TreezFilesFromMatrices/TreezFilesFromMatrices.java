@@ -116,9 +116,10 @@ public class TreezFilesFromMatrices extends DatasetsListUtility {
 				if (trees.size() == 0) {
 					numFailed++;
 					stringFailed += "\t" + data.getName() + "\n";
-					if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Tree inference failed for matrix " + data.getName() + " Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
-						stop = true;
-					}
+					logln("Trees not inferred from matrix " +data.getName() + " because of some issue with the matrix or the inference program."); 
+					//if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Tree inference failed for matrix " + data.getName() + " Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
+					//	stop = true;
+					//}
 					MesquiteThread.setQuietPlease(true);
 				}
 				else {

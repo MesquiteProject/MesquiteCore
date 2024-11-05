@@ -102,7 +102,6 @@ public class CompareMatrices extends DataUtilityNoAlterer {
 				differenceFound = true;
 			}
 			else {
-				//Debugg.println make this abortable
 				CharacterState cs1 = null;
 				CharacterState cs2 = null;
 				int numStateDiffs = 0;

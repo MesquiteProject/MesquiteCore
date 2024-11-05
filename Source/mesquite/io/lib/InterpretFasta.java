@@ -639,67 +639,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	protected boolean includeOnlyTaxaWithData = true;// TO DO: also have the option of only writing taxa with data in them
 	//Debugg.println how is this different from !writeTaxaWithAllMissing?
 
-	/*	public  MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
-		Taxa taxa = data.getTaxa();
-
-		int numTaxa = taxa.getNumTaxa();
-		int numChars = data.getNumChars();
-		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
-		boolean isProtein = data instanceof ProteinData;
-		if (isProtein && !(this instanceof InterpretFastaProtein))
-			MesquiteMessage.warnProgrammer("ERROR: protein data matrix in file interpreter for DNA");
-		ProteinData pData =null;
-		if (isProtein)
-			pData = (ProteinData)data;
-
-		int counter = 1;
-		for (int it = 0; it<numTaxa; it++){
-			if ((!writeOnlySelectedTaxa || (taxa.getSelected(it))) && (!includeOnlyTaxaWithData || taxonHasData(data, it))){
-
-					counter = 1;
-					outputBuffer.append(">");
-					outputBuffer.append(getTaxonName(taxa,it, data));
-					String sup = getSupplementForTaxon(taxa, it);
-					if (StringUtil.notEmpty(sup))
-						outputBuffer.append(sup);
-					outputBuffer.append(getLineEnding());
-
-					for (int ic = 0; ic<numChars; ic++) {
-						if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
-							long currentSize = outputBuffer.length();
-							boolean wroteMoreThanOneSymbol = false;
-							boolean wroteSymbol = false;
-							if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
-								outputBuffer.append(getUnassignedSymbol());
-								counter ++;
-								wroteSymbol = true;
-							}
-							else if (includeGaps || (!data.isInapplicable(ic,it))) {
-								data.statesIntoStringBuffer(ic, it, outputBuffer, false);
-								counter ++;
-								wroteSymbol = true;
-							}
-							wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-							if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
-								outputBuffer.append(getLineEnding());
-							}
-
-							if (wroteMoreThanOneSymbol) {
-								alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-								return null;
-							}
-							if (1L*ic*it > 0 && 1L*ic*it % 10000000 == 0)
-								logln("Composing Fasta file; on taxon " + (it+1) + " character " +(ic+1));
-						}
-					}
-					outputBuffer.append(getLineEnding());
-			}
-		}
-		if (numChars * numTaxa > 2000000)
-			logln("Fasta file composed.");
-		return outputBuffer;
-	}
-	 */
+	
 	/*------------------*/
 	public  boolean writeMatrixToFile(CharacterData data, String path) { // eventually: FileWritingHints hints) {
 		Taxa taxa = data.getTaxa();

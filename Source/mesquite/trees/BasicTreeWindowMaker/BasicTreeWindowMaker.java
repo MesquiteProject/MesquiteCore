@@ -922,6 +922,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	boolean baseExplanationUsed = false;
 	boolean treeAnnotationShown = false;
 	MesquiteMenuItemSpec storeTreeMenuItem, storeTreeAsMenuItem, storeTreeAsOtherMenuItem, recoverEditedMenuItem;
+	MesquiteMenuItemSpec saveTreeAsPDFMenuItem;
 	MesquiteMenuItemSpec floatLegendsItem;
 	int oldH = 0;
 	int oldV = 0;
@@ -1056,6 +1057,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		setStoreTreeAsMenuItems(editMode);
 
 		ownerModule.addMenuSeparator();
+		saveTreeAsPDFMenuItem = ownerModule.addMenuItem("Save Tree as PDF...", ownerModule.makeCommand("saveTreeAsPDF", this));
+		ownerModule.addMenuSeparator();				
 		recoverEditedMenuItem = ownerModule.addMenuItem("Recover Last Edited Tree", ownerModule.makeCommand("recoverLastEditedTree", this));
 		ownerModule.addMenuItem("Edited Tree Handling Options...", ownerModule.makeCommand("queryEditedTreeMode", this));
 		ownerModule.addMenuSeparator();
@@ -2567,6 +2570,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			return originalTree;
 		}
+		else if (checker.compare(this.getClass(), "Saves tree as PDF.", null, commandName, "saveTreeAsPDF")) {
+			pdfWindow(MesquitePrintJob.AUTOFIT);
+		}
 		else if (checker.compare(this.getClass(), "Gets tree vector being shown.", null, commandName, "getTreeVector")) {
 			if (originalTree != null && ((MesquiteTree) originalTree).getTreeVector() != null)
 				return ((MesquiteTree) originalTree).getTreeVector();
@@ -3336,10 +3342,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		s += "\n";
 		if (treeSourceTask != null)
 			s += "----------------\nShowing " + treeSourceTask.getNotesAboutTrees(taxa) + "\n----------------\n";
-		if (originalTree != null)
+		if (originalTree != null){
 			s += "\nOriginal Tree:  " + originalTree;
+		}
 
 		s += "\n\n" + treeDisplay.getTextVersion();
+		
 		return s;
 	}
 
