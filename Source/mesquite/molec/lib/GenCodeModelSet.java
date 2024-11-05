@@ -46,8 +46,8 @@ public class GenCodeModelSet  extends ModelSet {
 	}
 	 
 	
-	/*.................................................................................................................*/
- 	/** Gets default model specified for ModelSet*/
+	/*.................................................................................................................*
+ 	/** Gets default model specified for ModelSet*
 	public Object getDefaultProperty(int ic) {
 		if (getModel(ic) != null)
 			return getModel(ic);
@@ -59,6 +59,7 @@ public class GenCodeModelSet  extends ModelSet {
 			return getModel(icRight);
 		return super.getDefaultModel(ic);
 	}
+	/*.................................................................................................................*/
 
 }
 
