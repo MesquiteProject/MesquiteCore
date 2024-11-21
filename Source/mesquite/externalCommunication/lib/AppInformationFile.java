@@ -49,7 +49,17 @@ public class AppInformationFile {
 		String s = MesquiteFile.getFileContentsAsString(infoFilePath); 
 		Document doc = XMLUtil.getDocumentFromString(s);
 		if (doc==null) {
-			MesquiteMessage.discreetNotifyUser("WARNING: properly formatted appInfo.xml file could not be found at " + appsFilePath);
+			if (!MesquiteFile.fileExists(infoFilePath))
+				MesquiteMessage.discreetNotifyUser("WARNING: appInfo.xml file could not be found at " + appsFilePath);
+			else if (StringUtil.blank(s))
+				MesquiteMessage.discreetNotifyUser("WARNING: appInfo.xml file is empty, at " + appsFilePath);
+			else {
+				MesquiteMessage.discreetNotifyUser("WARNING: appInfo.xml file is improperly formated, at " + appsFilePath);
+				if (MesquiteTrunk.debugMode) {
+					MesquiteMessage.println("Contents of appInfo.xml file: \n");
+					MesquiteMessage.println(s);
+				}
+			}
 			return false;
 		}
 		Element rootElement = doc.getRootElement();
