@@ -28,6 +28,7 @@ public class ConsoleThread extends Thread {
 	boolean useSystemIn;
 	MesquiteModule module;
 	Vector commands;
+	
 	public ConsoleThread (MesquiteModule module, Object objectCommanded, boolean useSystemIn) {
 		this.module = module;
 		setPriority(Thread.MIN_PRIORITY);
@@ -35,6 +36,7 @@ public class ConsoleThread extends Thread {
 		communicator = new CommandCommunicator(module, objectCommanded, true);
 		commands = new Vector();
 	}
+
 	public void run() {
 		String input;
 		int count =0;
@@ -45,6 +47,7 @@ public class ConsoleThread extends Thread {
 		if (!StringUtil.blank(noConsoleProperty)) {
 			useSystemIn = false;
 		}
+		long previousLastModifiedFilesToOpen = -1;
 		while (!MesquiteTrunk.mesquiteTrunk.mesquiteExiting) { 
 			try {
 
@@ -67,23 +70,6 @@ public class ConsoleThread extends Thread {
 					}
 				}
 
-				if (MesquiteTrunk.startedFromFlex2) {
-					String filesToOpenPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + MesquiteTrunk.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "filesToOpen.txt";
-
-					if (MesquiteFile.fileExists(filesToOpenPath)) {
-						String[] files = MesquiteFile.getFileContentsAsStrings(filesToOpenPath);
-						MesquiteFile.deleteFile(filesToOpenPath);
-						Thread.sleep(40);
-						if (files != null) {
-							for (int i=0; i<files.length; i++) {
-								if (MesquiteTrunk.mesquiteTrunk.applicationHandler9 != null)
-									MesquiteTrunk.mesquiteTrunk.applicationHandler9.handleOpenFile(files[i]);
-								else
-									EAWTHandler.handleOpenFile(files[i]);
-							}
-						}
-					}
-				}
 
 
 			}

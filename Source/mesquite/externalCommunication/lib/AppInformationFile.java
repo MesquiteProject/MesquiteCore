@@ -54,7 +54,7 @@ public class AppInformationFile {
 			else if (StringUtil.blank(s))
 				MesquiteMessage.discreetNotifyUser("WARNING: appInfo.xml file is empty, at " + appsFilePath);
 			else {
-				MesquiteMessage.discreetNotifyUser("WARNING: appInfo.xml file is improperly formated, at " + appsFilePath);
+				MesquiteMessage.discreetNotifyUser("WARNING: appInfo.xml file is improperly formatted, at " + appsFilePath);
 				if (MesquiteTrunk.debugMode) {
 					MesquiteMessage.println("Contents of appInfo.xml file: \n");
 					MesquiteMessage.println(s);
