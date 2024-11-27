@@ -35,9 +35,9 @@ public class TaxonGroupList extends ListModule {
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		addMenuItem("New Taxon Group...", MesquiteModule.makeCommand("newGroup",  this));
-		addMenuItem("Import Taxon Groups from File...", MesquiteModule.makeCommand("importLabels",  this));
-		addMenuItem("Export Taxon Groups to File...", MesquiteModule.makeCommand("exportLabels",  this));
+		addMenuItem("New Taxon Group Label...", MesquiteModule.makeCommand("newGroup",  this));
+		addMenuItem("Import Taxon Group Labels from File...", MesquiteModule.makeCommand("importLabels",  this));
+		addMenuItem("Export Taxon Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  this));
 		return true;
 	}
 	public boolean showing(Object obj){
@@ -91,7 +91,7 @@ public class TaxonGroupList extends ListModule {
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Creates a new group", "[]", commandName, "newGroup")) {
+		if (checker.compare(this.getClass(), "Creates a new group label", "[]", commandName, "newGroup")) {
 			MesquiteFile file = getProject().chooseFile( "Select file to which to add the new group label"); 
 			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, file);   
 			if (group!=null){
@@ -103,7 +103,7 @@ public class TaxonGroupList extends ListModule {
 		else if (checker.compare(this.getClass(), "Imports group labels from a NEXUS file.", "[]", commandName, "importLabels")) {
 			MesquiteString directoryName = new MesquiteString();
 			MesquiteString fileName = new MesquiteString();
-			MesquiteFile.openFileDialog("Please select a .nexc file that has the taxon groups.", directoryName, fileName);
+			MesquiteFile.openFileDialog("Please select a .nexc file that has the taxon group labels.", directoryName, fileName);
 			if (!fileName.isBlank()){
 				String[] lines = MesquiteFile.getFileContentsAsStrings(directoryName.getValue() + fileName.getValue());
 				if (lines != null){
@@ -125,7 +125,7 @@ public class TaxonGroupList extends ListModule {
 				s += manageTaxPart.getGroupLabelNexusCommand(group) + "\n";
 			}
 			if (!StringUtil.blank(s)){
-				MesquiteFile.putFileContentsQuery("Exported file of group names (suggested extension \".nexc\")", s, true);
+				MesquiteFile.putFileContentsQuery("Exported file of group label (suggested extension \".nexc\")", s, true);
 				
 			}
 		}
@@ -181,10 +181,10 @@ public class TaxonGroupList extends ListModule {
 		return TaxonGroupListAssistant.class;
 	}
 	public String getItemTypeName(){
-		return "Taxon Group";
+		return "Taxon Group Label";
 	}
 	public String getItemTypeNamePlural(){
-		return "Taxon Groups";
+		return "Taxon Group Labels";
 	}
 	/*.................................................................................................................*/
 	public boolean rowsDeletable(){
@@ -270,7 +270,7 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
 	they can reset their titles properly*/
 	public void resetTitle(){
-		setTitle("Taxon Groups"); 
+		setTitle("Taxon Group Labels"); 
 	}
 	/*.................................................................................................................*/
 	public Object getCurrentObject(){
