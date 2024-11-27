@@ -980,7 +980,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 		cellObjectsDisplay = Bits.deleteColumnsFlagged(cellObjectsDisplay, toBeDeleted);
-		if (anyChangesSinceSave)
+		if (changedSinceSave!= null)
 			changedSinceSave = Bits.deleteColumnsFlagged(changedSinceSave, toBeDeleted);
 		characterIllustrations = MesquiteImage.deletePartsFlagged(characterIllustrations, toBeDeleted);
 
@@ -1257,7 +1257,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		notifyOfChangeLowLevel(MesquiteListener.PARTS_MOVED, starting, num, justAfter);  
 
 		Bits.moveColumns(cellObjectsDisplay, starting, num, justAfter);
-		if (anyChangesSinceSave)
+		if (changedSinceSave!=null)
 			Bits.moveColumns(changedSinceSave, starting, num, justAfter);
 		calculateFirstLastApplicable();
 		MesquiteImage.moveParts( characterIllustrations, starting, num, justAfter); 
@@ -1314,7 +1314,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 		Bits.swapCell(cellObjectsDisplay,  first, second, it);
-		if (anyChangesSinceSave)
+		if (changedSinceSave!=null)
 			Bits.swapCell(changedSinceSave,  first, second, it);
 
 		uncheckThread();
