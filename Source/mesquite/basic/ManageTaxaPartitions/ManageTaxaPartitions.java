@@ -318,6 +318,26 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		}
 		return s;
 	}
+	
+	public String getGroupLabelNexusCommand(TaxaGroup cg){
+		String s = "\tTAXAGROUPLABEL " + ParseUtil.tokenize(cg.getName());
+		if (cg.colorSet()){
+			Color c = cg.getColor();
+			if (c!=null)
+				s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
+		}
+		if (cg.symbolSet()){
+			MesquiteSymbol symbol = cg.getSymbol();
+			if (symbol != null)
+				s += " SYMBOL = (NAME="+ParseUtil.tokenize(symbol.getName()) + " SIZE="+symbol.getSize() + " "+ symbol.getBasicNexusOptions()+ " "+ symbol.getExtraNexusOptions() + ") ";
+		}
+		if (!cg.isVisible()){
+			Color c = cg.getColor();
+			s += " HIDDEN ";
+		}
+		s += ";" + StringUtil.lineEnding();
+		return s;
+	}
 	/*.................................................................................................................*/
 	public String getNexusCommands(MesquiteFile file, String blockName){ 
 		if (blockName.equalsIgnoreCase("LABELS")) {
@@ -325,22 +345,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 			for (int i = 0; i< groups.size(); i++){
 				TaxaGroup cg = (TaxaGroup)groups.elementAt(i);
 				if (cg.getFile() == file){
-					s += "\tTAXAGROUPLABEL " + ParseUtil.tokenize(cg.getName());
-					if (cg.colorSet()){
-						Color c = cg.getColor();
-						if (c!=null)
-							s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
-					}
-					if (cg.symbolSet()){
-						MesquiteSymbol symbol = cg.getSymbol();
-						if (symbol != null)
-							s += " SYMBOL = (NAME="+ParseUtil.tokenize(symbol.getName()) + " SIZE="+symbol.getSize() + " "+ symbol.getBasicNexusOptions()+ " "+ symbol.getExtraNexusOptions() + ") ";
-					}
-					if (!cg.isVisible()){
-						Color c = cg.getColor();
-						s += " HIDDEN ";
-					}
-					s += ";" + StringUtil.lineEnding();
+					s += getGroupLabelNexusCommand(cg);
 				}
 			}
 			if (StringUtil.blank(s))
@@ -376,9 +381,13 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		}
 		return null;
 	}
+	
 	/*.................................................................................................................*/
+	//NOTE: this is used also in TaxonGroupList to read a .nexcommands file for importing
 	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
-		boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
+		boolean fuse = false;
+		if (file != null)
+			fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 		if (fuse)
 			return false;
 		if (blockName.equalsIgnoreCase("LABELS")) {
