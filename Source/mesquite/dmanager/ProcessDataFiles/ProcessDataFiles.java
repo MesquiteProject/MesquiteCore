@@ -521,7 +521,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				Date dnow = new Date(System.currentTimeMillis());
 				logln(StringUtil.getDateTime(dnow));
 				header += StringUtil.getDateTime(dnow) + StringUtil.lineEnding() + StringUtil.lineEnding();
-				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", header, true);
+				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingResults", header, true);
 				beforeProcessFiles();
 				MesquiteThread.setQuietPlease(true);
 				int filesFound = 0;
@@ -549,13 +549,13 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 								if (processFileRequestCancelled) 
 									return;
 								if ( firstResultsOverall && resultsHeading.length()>0){
-									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", resultsHeading.toString(), true);
-									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", StringUtil.lineEnding(), true);
+									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", resultsHeading.toString(), true);
+									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", StringUtil.lineEnding(), true);
 									firstResultsOverall = false;
 								}
 								if (results.length()>0){
-									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", results.toString(), true);
-									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", StringUtil.lineEnding(), true);
+									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", results.toString(), true);
+									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", StringUtil.lineEnding(), true);
 								}
 								logln(" ");
 								if (requestToSequester.getValue()) {
@@ -582,7 +582,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				afterProcessFiles();
 
 				String finalScript = recaptureScript();
-				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingScript.txt", finalScript, true);
+				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingScript", finalScript, true);
 
 				removeAllProcessors();
 				progIndicator.goAway();

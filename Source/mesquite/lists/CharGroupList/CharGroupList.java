@@ -105,10 +105,10 @@ public class CharGroupList extends ListModule {
 			}
 			return group;
 		}
-		else if (checker.compare(this.getClass(), "Imports group labels from a NEXUS file.", "[]", commandName, "importLabels")) {
+		else if (checker.compare(this.getClass(), "Imports group labels from a text file.", "[]", commandName, "importLabels")) {
 			MesquiteString directoryName = new MesquiteString();
 			MesquiteString fileName = new MesquiteString();
-			MesquiteFile.openFileDialog("Please select a .nexc file that has the character group labels.", directoryName, fileName);
+			MesquiteFile.openFileDialog("Please select a text file that has the character group labels, as exported previously.", directoryName, fileName);
 			if (!fileName.isBlank()){
 				String[] lines = MesquiteFile.getFileContentsAsStrings(directoryName.getValue() + fileName.getValue());
 				if (lines != null){
@@ -122,7 +122,7 @@ public class CharGroupList extends ListModule {
 				}
 			}
 		}
-		else if (checker.compare(this.getClass(), "Exports group labels to a .nexc file.", "[]", commandName, "exportLabels")) {
+		else if (checker.compare(this.getClass(), "Exports group labels to a text file for later import.", "[]", commandName, "exportLabels")) {
 			ManageCharPartitions manageCharPart = (ManageCharPartitions)findElementManager(CharacterPartition.class);
 			String s = "";
 			for (int row = 0; row<getNumberOfRows(); row++){
@@ -130,7 +130,7 @@ public class CharGroupList extends ListModule {
 				s += manageCharPart.getGroupLabelNexusCommand(group) + "\n";
 			}
 			if (!StringUtil.blank(s)){
-				MesquiteFile.putFileContentsQuery("Exported file of group labels (suggested extension \".nexc\")", s, true);
+				MesquiteFile.putFileContentsQuery("Exported file of group labels, for later import into other files", s, true);
 				
 			}
 		}

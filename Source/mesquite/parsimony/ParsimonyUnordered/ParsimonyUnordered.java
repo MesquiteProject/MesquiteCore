@@ -158,7 +158,7 @@ public class ParsimonyUnordered extends ParsAncStatesForModel {
 		if (CategoricalState.isUnassigned(observed) || CategoricalState.isInapplicable(observed))
 			downStates.setState(N, fullSet);
 		else {
-			if (!CategoricalState.isUncertain(observed)){
+			if (countStepsInTermPolymorphisms.getValue() && !CategoricalState.isUncertain(observed)){
 				int card = CategoricalState.cardinality(observed);
 				if (card>1)
 					steps += card-1;
