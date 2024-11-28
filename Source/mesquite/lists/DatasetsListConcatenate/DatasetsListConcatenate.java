@@ -244,7 +244,7 @@ public class DatasetsListConcatenate extends DatasetsListProcessorUtility {
 				countFailed++;
 
 		}
-		if (numMatrices>2)
+		if (numMatrices>10)
 				name = "Concat. (" + count +")";
 		logln("Total matrices concatenated: " + count);
 		if (starter != null)
