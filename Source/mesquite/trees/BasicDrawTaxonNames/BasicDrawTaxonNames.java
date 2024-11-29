@@ -78,6 +78,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	double namesAngle = MesquiteDouble.unassigned;
 	MesquiteCommand tNC;
 	MesquiteString colorerName = null;
+	MesquiteMenuItemSpec angleMenuItem;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -88,7 +89,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		fontName = new MesquiteString(MesquiteWindow.defaultFont.getName());
 		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
 		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Names");
-		addItemToSubmenu(null, namesMenu, "Taxon Name Angle...", makeCommand("namesAngle", this));
 
 		MesquiteSubmenuSpec msf = FontUtil.getFontSubmenuSpec(this,this);
 		msf.setSelected(fontName);
@@ -124,6 +124,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		centerNodeLabelItem = addCheckMenuItemToSubmenu(null, namesMenu, "Center Branch Names", makeCommand("toggleCenterNodeNames", this), centerNodeLabels);
 		centerNodeLabelItem.setEnabled(true);
 
+		angleMenuItem = addMenuItem(null, "Taxon Name Angle...", makeCommand("namesAngle", this));
 		/*End new code added Feb.15.07 oliver*/
 		showTaxonNames = new MesquiteBoolean(true);
 		addCheckMenuItemToSubmenu(null, namesMenu, "Show Taxon Names", makeCommand("toggleShowNames", this), showTaxonNames);
@@ -949,12 +950,21 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}*/
 	}
 
+	private void resetAngleMenuItem(TreeDisplay treeDisplay){
+		// non-default taxon name angles are allowed only for UP trees
+		if (angleMenuItem != null && treeDisplay != null && (angleMenuItem.isEnabled() != (treeDisplay.getOrientation()==TreeDisplay.UP))){
+			angleMenuItem.setEnabled((treeDisplay.getOrientation()==TreeDisplay.UP));
+			MesquiteTrunk.resetMenuItemEnabling();
+		}
+	}
 	int count=0;
 	NameReference triangleNameRef = NameReference.getNameReference("triangled");
 	/*.................................................................................................................*/
 	public void drawNames(TreeDisplay treeDisplay,  Tree tree, int drawnRoot, Graphics g) {
 		if (treeDisplay==null)
 			return; // alert("tree display null in draw taxon names");
+		
+		resetAngleMenuItem(treeDisplay);
 		if (tree==null)
 			return; // alert("tree null in draw taxon names");
 		if (g==null)
