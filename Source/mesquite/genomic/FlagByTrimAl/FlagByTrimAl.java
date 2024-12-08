@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.externalCommunication.lib.AppChooser;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
@@ -41,6 +42,7 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.OutputFileProcessor;
+import mesquite.lib.ParseUtil;
 import mesquite.lib.ShellScriptRunner;
 import mesquite.lib.ShellScriptUtil;
 import mesquite.lib.ProcessWatcher;
@@ -63,11 +65,12 @@ import mesquite.lib.duties.TaxaManager;
 /* ======================================================================== */
 public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionListener { 
 
-	static final String[] autoOptionNames = new String[]{"gappyout", "strict", "strictplus", "automated1"};
-	static final int autoOptionDEFAULT = 3; //automated1
+	static final String[] autoOptionNames = new String[]{"none", "gappyout", "strict", "strictplus", "automated1"};
+	static final int autoOptionDEFAULT = 4; //automated1
 
 	int autoOption = autoOptionDEFAULT;
 	static String trimAlPath = ""; 
+	static String manualOptions = "";
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -90,6 +93,9 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 		else if ("trimAlPath".equalsIgnoreCase(tag)) {
 			trimAlPath = content;
 		}
+		else if ("manualOptions".equalsIgnoreCase(tag)) {
+			manualOptions = content;
+		}
 		super.processSingleXMLPreference(tag, content);
 	}
 	/*.................................................................................................................*/
@@ -98,6 +104,8 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 		StringUtil.appendXMLTag(buffer, 2, "autoOption", autoOption);  
 		if (!StringUtil.blank(trimAlPath))
 			StringUtil.appendXMLTag(buffer, 2, "trimAlPath", trimAlPath);  
+		if (!StringUtil.blank(manualOptions))
+			StringUtil.appendXMLTag(buffer, 2, "manualOptions", manualOptions);  
 		return super.preparePreferencesForXML()+buffer.toString();
 	}
 	/*.................................................................................................................*/
@@ -109,14 +117,23 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = super.getSnapshot(file);
 		temp.addLine("autoOption " + autoOption);
+		temp.addLine("manualOptions " + ParseUtil.tokenize(manualOptions));
 		return temp;
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the option.", "[integer]", commandName, "autoOption")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (MesquiteInteger.isCombinable(s) && s>=0 && s<=3){
+			if (MesquiteInteger.isCombinable(s) && s>=0 && s<=4){
 				autoOption = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets the string for manually-specified options.", "[string]", commandName, "manualOptions")) {
+			String s = parser.getFirstToken(arguments);
+			if (!StringUtil.blank(s)){
+				manualOptions = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
 			}
@@ -132,6 +149,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 	}
 	/*.................................................................................................................*/
 	SingleLineTextField programPathField =  null;
+	SingleLineTextField manualOptionsField =  null;
 
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
@@ -140,19 +158,21 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for trimAl",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		
 		
-		/*dialog.addHorizontalLine(1);
+		/**/
+		dialog.addHorizontalLine(1);
 		dialog.addHorizontalLine(1);
 		AppChooser appChooser = new AppChooser("trimAl", true, trimAlPath);
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
 		dialog.addHorizontalLine(1);
-	*/
+/*	*/
 		
 		programPathField = dialog.addTextField("Path to trimAl:", trimAlPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");
 		dialog.addBlankLine();
 		Choice alignmentMethodChoice = dialog.addPopUpMenu("trimAl Option", autoOptionNames, autoOption);
+		manualOptionsField = dialog.addTextField("Additional options (do NOT set -in or -out):", manualOptions, 40);
 		dialog.addBlankLine();
 		dialog.addHorizontalLine(1);
 		dialog.addLargeOrSmallTextLabel("If you use this in a publication, please cite the version of trimAl you used. See (?) help button for details.");
@@ -165,6 +185,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 		if (buttonPressed.getValue()==0)  {
 			autoOption = alignmentMethodChoice.getSelectedIndex();
 			trimAlPath = programPathField.getText();
+			manualOptions = manualOptionsField.getText();
 			/*
 			trimAlPath = appChooser.getPathToUse()
  			alternativeManualPath = appChooser.getManualPath() //for preference writing
@@ -209,7 +230,12 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 
 
 			String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
-			script += trimAlPath + "  -in " + unique + "input.fas -out " + unique + "output.fas -" + autoOptionNames[autoOption] + " -colnumbering > " + unique + "columns.txt";
+			String options = "";
+			if (autoOption>0)
+				options = "-" + autoOptionNames[autoOption];
+			if (!StringUtil.blank(manualOptions))
+				options = options + " " + manualOptions;
+			script += trimAlPath + "  -in " + unique + "input.fas -out " + unique + "output.fas -" + options + " -colnumbering > " + unique + "columns.txt";
 			status = "savingScript";
 			MesquiteFile.putFileContents(scriptPath, script, false);
 			status = "scriptSaved";
