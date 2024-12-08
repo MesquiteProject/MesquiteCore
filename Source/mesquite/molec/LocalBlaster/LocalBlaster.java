@@ -76,6 +76,10 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	public void setHasApp(boolean hasApp) {
 		this.hasApp = hasApp;
 	}
+	public void setUsingBuiltinApp(boolean usingBuiltinApp) {
+		useDefaultExecutablePath = usingBuiltinApp;  
+	}
+
 	public String getAppOfficialName() {
 		return "blast";
 	}
@@ -352,17 +356,11 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		sb.append("If you are going to do a blastX to a local protein database that you downloaded from GenBank, you will need to check Use ID in Definition.");
 		dialog.appendToHelpString(sb.toString());
 
+		AppChooser appChooser = new AppChooser(this, useDefaultExecutablePath, blastExecutableFolderPath);
+		appChooser.addToDialog(dialog);
+		IntegerField numThreadsField = dialog.addIntegerField("Number of processor threads to use:", numThreads,4, 1, Integer.MAX_VALUE);
 
-		//public TextArea addTextAreaSmallFont (String initialString, int numRows, int numColumns) {
-
-
-		dialog.addLabel("Databases to search (separate by commas):");
-		TextArea databasesField = dialog.addTextAreaSmallFont(databaseString, 5, 50);
-		SingleLineTextField programOptionsField = dialog.addTextField("Additional BLAST options:", programOptions, 26, true);
-		Checkbox useIDInDefinitionBox = dialog.addCheckBox("Use ID in Definition (NCBI-provided databases)", useIDInDefinition);
-		Checkbox localBlastDBHasTaxonomyIDsBox = dialog.addCheckBox("Local BLAST database has NCBI taxonomy IDs", localBlastDBHasTaxonomyIDs);
-		IntegerField numThreadsField = dialog.addIntegerField("Number of processor threads to use:", numThreads,20, 1, Integer.MAX_VALUE);
-		if (getDefaultExecutablePathAllowed()) {
+/*		if (getDefaultExecutablePathAllowed()) {
 			defaultExecutablePathCheckBox = dialog.addCheckBox("Use built-in apps for BLAST programs", useDefaultExecutablePath);
 			executablePathField = dialog.addTextField("Path to alternative folder containing BLAST programs", blastExecutableFolderPath, 40);
 		} else {
@@ -371,10 +369,25 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		}
 		Button browseButton = dialog.addAListenedButton("Browse...",null, this);
 		browseButton.setActionCommand("browseExecutable");
+*/
+
+		//public TextArea addTextAreaSmallFont (String initialString, int numRows, int numColumns) {
+		SingleLineTextField programOptionsField = dialog.addTextField("Additional BLAST options:", programOptions, 40, true);
+		Checkbox useIDInDefinitionBox = dialog.addCheckBox("Use ID in Definition (NCBI-provided databases)", useIDInDefinition);
+		Checkbox localBlastDBHasTaxonomyIDsBox = dialog.addCheckBox("Local BLAST database has NCBI taxonomy IDs", localBlastDBHasTaxonomyIDs);
+
+		dialog.addHorizontalLine(1);
 		Checkbox databasesInDefaultLocationBox = dialog.addCheckBox("BLAST databases in default location", databasesInDefaultLocation);
 		databasePathField = dialog.addTextField("Path to folder containing BLAST databases", blastDatabaseFolderPath, 40);
 		Button browse2Button = dialog.addAListenedButton("Browse...",null, this);
 		browse2Button.setActionCommand("browseDatabase");
+
+		dialog.addLabel("Databases to search (separate by commas):");
+		TextArea databasesField = dialog.addTextAreaSmallFont(databaseString, 5, 50);
+
+		
+		
+		
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -385,7 +398,10 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 			localBlastDBHasTaxonomyIDs = localBlastDBHasTaxonomyIDsBox.getState();
 			useIDInDefinition = useIDInDefinitionBox.getState();
 			
-			if (defaultExecutablePathCheckBox!=null)
+			useDefaultExecutablePath = appChooser.useBuiltInExecutable(); //for preference writing
+			blastExecutableFolderPath = appChooser.getManualPath(); //for preference writing
+
+/*			if (defaultExecutablePathCheckBox!=null)
 				useDefaultExecutablePath = defaultExecutablePathCheckBox.getState();
 			String tempPath = executablePathField.getText();
 			if (StringUtil.blank(tempPath) && !useDefaultExecutablePath){
@@ -393,9 +409,9 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 				return false;
 			}
 			blastExecutableFolderPath = tempPath;
-			
+*/			
 			databasesInDefaultLocation = databasesInDefaultLocationBox.getState();
-			tempPath = databasePathField.getText();
+			String tempPath = databasePathField.getText();
 			if (StringUtil.blank(tempPath) && !databasesInDefaultLocation){
 				MesquiteMessage.discreetNotifyUser("The path to BLAST databases must be entered.");
 				return false;

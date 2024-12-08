@@ -28,6 +28,8 @@ import javax.swing.JLabel;
 
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.externalCommunication.lib.AppChooser;
+import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
@@ -61,10 +63,13 @@ import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.TaxaManager;
 
 /* ======================================================================== */
-public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionListener { 
+public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionListener, AppUser { 
 
 	static final String[] autoOptionNames = new String[]{"gappyout", "strict", "strictplus", "automated1"};
 	static final int autoOptionDEFAULT = 3; //automated1
+	boolean useBuiltInIfAvailable = false;
+	String alternativeManualPath;
+	String builtinVersion;
 
 	int autoOption = autoOptionDEFAULT;
 	static String trimAlPath = ""; 
@@ -130,6 +135,20 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+	/*.................................................................................................................*/
+	public String getAppOfficialName() {  // the is the official name of the app as stored within the appInfo.xml file
+		return "trimAl";
+	}
+	public String getProgramName() {   // the name for GUI purposes
+		return "TrimAl";
+	}
+	public void setHasApp(boolean hasApp) {   // if you want store the fact that the app exists
+		
+	}
+	public void setUsingBuiltinApp(boolean usingBuiltinApp) {   // if you want store that built-in app is being used
+	}
+
 	/*.................................................................................................................*/
 	SingleLineTextField programPathField =  null;
 
@@ -140,17 +159,22 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for trimAl",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		
 		
-		/*dialog.addHorizontalLine(1);
-		dialog.addHorizontalLine(1);
-		AppChooser appChooser = new AppChooser("trimAl", true, trimAlPath);
-		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
 		dialog.addHorizontalLine(1);
-	*/
 		
-		programPathField = dialog.addTextField("Path to trimAl:", trimAlPath, 40);
+		AppChooser appChooser = new AppChooser(this, useBuiltInIfAvailable, trimAlPath);
+		appChooser.addToDialog(dialog);
+ 
+ 		//AppChooser appChooser = new AppChooser("trimAl", true, trimAlPath);
+		//appChooser.addToDialog(dialog);
+		dialog.addHorizontalLine(1);
+		dialog.addHorizontalLine(1);
+
+		
+		/*programPathField = dialog.addTextField("Path to trimAl:", trimAlPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");
+		*/
 		dialog.addBlankLine();
 		Choice alignmentMethodChoice = dialog.addPopUpMenu("trimAl Option", autoOptionNames, autoOption);
 		dialog.addBlankLine();
@@ -164,13 +188,11 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			autoOption = alignmentMethodChoice.getSelectedIndex();
-			trimAlPath = programPathField.getText();
-			/*
-			trimAlPath = appChooser.getPathToUse()
- 			alternativeManualPath = appChooser.getManualPath() //for preference writing
-			useBuiltInIfAvailable = appChooser.useBuiltInIfAvailable(); //for preference writing
-			builtInVersion = appChooser.getVersion(); //for informing user; only if built-in
-			*/
+			//trimAlPath = programPathField.getText();
+			trimAlPath = appChooser.getPathToUse();
+ 			alternativeManualPath = appChooser.getManualPath(); //for preference writing
+			useBuiltInIfAvailable = appChooser.useBuiltInExecutable(); //for preference writing
+			builtinVersion = appChooser.getVersion(); //for informing user; only if built-in
 		storePreferences();
 		}
 		dialog.dispose();
