@@ -69,6 +69,18 @@ public class AppHarvester extends MesquiteInit {
 		}
 		return null;
 	}
+	/*.................................................................................................................*/
+	public static AppInformationFile getAppInfoFileForProgram(String officialAppNameInAppInfo) {
+		if (appInformationFileVector!=null && StringUtil.notEmpty(officialAppNameInAppInfo)) {
+			AppInformationFile appInfoFile;
+			for (int iv=0; iv<appInformationFileVector.size(); iv++) {
+				appInfoFile = (AppInformationFile)(appInformationFileVector.elementAt(iv));
+				if (officialAppNameInAppInfo.equalsIgnoreCase(appInfoFile.getAppName()))
+					return appInfoFile;
+			}
+		}
+		return null;
+	}
 
 	/*.................................................................................................................*/
 	public static boolean builtinAppExists(AppUser appUser) { 

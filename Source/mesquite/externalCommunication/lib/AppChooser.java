@@ -27,7 +27,7 @@ import mesquite.lib.*;
 public class AppChooser implements ActionListener {
 	String alternativeManualPath;   // if user-specified, not built in
 	String builtInAppPath;
-	String nameOfApp;  //
+	String officialAppNameInAppInfo;  //
 	String programName;
 	boolean useDefaultExecutablePath;
 	boolean builtInExecutableAllowed = false;  // whether or not the built in executable is allowed to be used
@@ -41,13 +41,27 @@ public class AppChooser implements ActionListener {
 	ExtensibleDialog containingDialog;
 	AppUser appUser;
 	
+
 	
-	
+	public AppChooser(String officialAppNameInAppInfo, String programNameForDisplay, boolean useDefaultExecutablePath, String alternativeManualPath) {
+		this.officialAppNameInAppInfo = officialAppNameInAppInfo;
+		programName = programNameForDisplay;
+		AppInformationFile appInfoFile = AppHarvester.getAppInfoFileForProgram(officialAppNameInAppInfo);
+		if (appInfoFile!=null) {
+			builtInExecutableAllowed = true;
+			builtInAppPath = appInfoFile.getFullPath();
+			versionOfBuiltIn = appInfoFile.getVersion();
+		}
+
+		this.alternativeManualPath = alternativeManualPath;
+		this.useDefaultExecutablePath = useDefaultExecutablePath;
+	}
+
 	public AppChooser(AppUser appUser, boolean useDefaultExecutablePath, String alternativeManualPath) {
 	//	this.useBuiltInIfAvailable = useBuiltInIfAvailable;
 		this.appUser = appUser;
 		if (appUser!=null) {
-			nameOfApp = appUser.getAppOfficialName();
+			officialAppNameInAppInfo = appUser.getAppOfficialName();
 			programName = appUser.getProgramName();
 			AppInformationFile appInfoFile = AppHarvester.getAppInfoFileForProgram(appUser);
 			if (appInfoFile!=null) {
@@ -58,9 +72,7 @@ public class AppChooser implements ActionListener {
 		}
 
 		this.alternativeManualPath = alternativeManualPath;
-		
 		this.useDefaultExecutablePath = useDefaultExecutablePath;
-		
 	}
 
 	/*.................................................................................................................*/
