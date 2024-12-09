@@ -26,6 +26,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.externalCommunication.AppHarvester.AppHarvester;
+import mesquite.externalCommunication.lib.AppChooser;
 import mesquite.externalCommunication.lib.AppInformationFile;
 import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.table.*;
@@ -158,6 +159,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public String getAppOfficialName() {
 		return "";
 	}
+	public void setUsingBuiltinApp(boolean usingBuiltinApp) {
+		useDefaultExecutablePath = usingBuiltinApp;  
+	}
 
 	/*.................................................................................................................*/
 	public AppInformationFile getAppInfoFile() {
@@ -281,6 +285,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (queryOptions())
 			storePreferences();
 	}
+	AppChooser appChooser;
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  
@@ -291,7 +296,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		dialog.appendToHelpString(getHelpString());
 		dialog.setHelpURL(getHelpURL());
 
-		Checkbox defaultExecutablePathCheckBox =  null;
+		
+		appChooser = new AppChooser(this, useDefaultExecutablePath, programPath);
+		appChooser.addToDialog(dialog);
+
+/*		Checkbox defaultExecutablePathCheckBox =  null;
 		if (getDefaultExecutablePathAllowed()) {
 			defaultExecutablePathCheckBox = dialog.addCheckBox("Use built-in app path for "+ getProgramName(), useDefaultExecutablePath);
 			programPathField = dialog.addTextField("Path to alternative version:", programPath, 40);
@@ -299,6 +308,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			programPathField = dialog.addTextField("Path to " + getProgramName() + ":", programPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");
+	*/	
+		
+		
 
 		Checkbox includeGapsCheckBox = dialog.addCheckBox("include gaps", includeGaps);
 
@@ -310,9 +322,15 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
-			programPath = programPathField.getText();
+			
+			programPath = appChooser.getManualPath(); //for preference writing
+			useDefaultExecutablePath = appChooser.useBuiltInExecutable(); //for preference writing
+
+/*			programPath = programPathField.getText();
 			if (defaultExecutablePathCheckBox!=null)
 				useDefaultExecutablePath = defaultExecutablePathCheckBox.getState();
+				
+*/
 			/*
 			 * File pp = new File(programPath);
 			if (!pp.canExecute()){

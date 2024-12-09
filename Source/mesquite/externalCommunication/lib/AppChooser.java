@@ -21,29 +21,46 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
 
+import mesquite.externalCommunication.AppHarvester.AppHarvester;
 import mesquite.lib.*;
 
 public class AppChooser implements ActionListener {
-	String alternativeManualPath;
-	String nameOfApp;
-	boolean useBuiltInIfAvailable;
-	boolean builtInAvailable = false;
-	String versionOfBuiltIn, pathOfBuiltIn;
+	String alternativeManualPath;   // if user-specified, not built in
+	String builtInAppPath;
+	String nameOfApp;  //
+	String programName;
+	boolean useDefaultExecutablePath;
+	boolean builtInExecutableAllowed = false;  // whether or not the built in executable is allowed to be used
+					//- the system has already harvested app info and recorded whether or not a built-in executable exists.
+	
+	String versionOfBuiltIn;
 	RadioButtons builtInVsManual;
 	Button appButton, browseButton;
 	JLabel usingLabelMainDlog;
 	SingleLineTextField alternativePathField;
 	ExtensibleDialog containingDialog;
-	public AppChooser(String nameOfApp, boolean useBuiltInIfAvailable, String alternativeManualPath) {
-		this.nameOfApp = nameOfApp;
-		this.useBuiltInIfAvailable = useBuiltInIfAvailable;
+	AppUser appUser;
+	
+	
+	
+	public AppChooser(AppUser appUser, boolean useDefaultExecutablePath, String alternativeManualPath) {
+	//	this.useBuiltInIfAvailable = useBuiltInIfAvailable;
+		this.appUser = appUser;
+		if (appUser!=null) {
+			nameOfApp = appUser.getAppOfficialName();
+			programName = appUser.getProgramName();
+			AppInformationFile appInfoFile = AppHarvester.getAppInfoFileForProgram(appUser);
+			if (appInfoFile!=null) {
+				builtInExecutableAllowed = true;
+				builtInAppPath = appInfoFile.getFullPath();
+				versionOfBuiltIn = appInfoFile.getVersion();
+			}
+		}
+
 		this.alternativeManualPath = alternativeManualPath;
 		
-		//Not finished; these should depend on whether there is a built-in copy
-		//Here get info from the AppHarvester
-		builtInAvailable = false; //here should look to see!
-		versionOfBuiltIn = "1.0";
-		pathOfBuiltIn = "/PATH";
+		this.useDefaultExecutablePath = useDefaultExecutablePath;
+		
 	}
 
 	/*.................................................................................................................*/
@@ -60,22 +77,22 @@ public class AppChooser implements ActionListener {
 
 			//Show app chooser dialog ========================
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
-			ExtensibleDialog dialog = new ExtensibleDialog(containingDialog,  "Choose " + nameOfApp,buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			ExtensibleDialog dialog = new ExtensibleDialog(containingDialog,  "Choose " + programName,buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 			dialog.addBlankLine();
 			String warningUseWorking = "";
-			if (builtInAvailable) {
-				String builtInString = "Use built-in " + nameOfApp + " (version " + versionOfBuiltIn + ")"; 
+			if (builtInExecutableAllowed) {
+				String builtInString = "Use built-in " + programName + " (version " + versionOfBuiltIn + ")"; 
 				int defaultValue = 1;
-				if (useBuiltInIfAvailable)
+				if (useDefaultExecutablePath)
 					defaultValue = 0;
 				builtInVsManual = dialog.addRadioButtons(new String[] {builtInString, "Use alternative installed copy indicated below"}, defaultValue);
 				dialog.addHorizontalLine(1);
-				dialog.addLabel("Path to alternative installed copy of " + nameOfApp + ":");
-				warningUseWorking = "If you use the alternative installed copy of " + nameOfApp + ", p";
+				dialog.addLabel("Path to alternative installed copy of " + programName + ":");
+				warningUseWorking = "If you use the alternative installed copy of " + programName + ", p";
 			}
 			else {
-				dialog.addLabel("Copy of " + nameOfApp + " installed on your computer to be used:");
-				warningUseWorking = "There is no copy of " + nameOfApp + " built into your version of Mesquite. P";
+				dialog.addLabel("Copy of " + programName + " installed on your computer to be used:");
+				warningUseWorking = "There is no copy of " + programName + " built into your version of Mesquite. P";
 			}
 			alternativePathField = dialog.addTextField(alternativeManualPath, 40);
 			
@@ -85,8 +102,12 @@ public class AppChooser implements ActionListener {
 			dialog.completeAndShowDialog(true);
 			if (buttonPressed.getValue()==0)  {
 				if (builtInVsManual != null)
-					useBuiltInIfAvailable = (builtInVsManual.getValue() == 0);
-				alternativeManualPath = alternativePathField.getText();
+					useDefaultExecutablePath = (builtInVsManual.getValue() == 0);
+				String tempPath = alternativePathField.getText();
+				if (StringUtil.blank(tempPath) && !useDefaultExecutablePath){
+					MesquiteMessage.discreetNotifyUser("If you do not use a built-in app, then the path to " +programName+ " must be entered.");
+				} else
+					alternativeManualPath = tempPath;
 				usingLabelMainDlog.setText(getMainDialogUsingString());
 				//Remember in receiving module to receive the various parts
 				// set pathOfBuiltIn etc.?
@@ -97,7 +118,7 @@ public class AppChooser implements ActionListener {
 		} 
 		//Browse for the installed copy ========================
 		else 	if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
-			alternativeManualPath = MesquiteFile.openFileDialog("Choose " + nameOfApp + ":", null, null);
+			alternativeManualPath = MesquiteFile.openFileDialog("Choose " + programName + ":", null, null);
 			if (!StringUtil.blank(alternativeManualPath)) {
 				alternativePathField.setText(alternativeManualPath);
 				usingLabelMainDlog.setText(getMainDialogUsingString());
@@ -107,28 +128,28 @@ public class AppChooser implements ActionListener {
 	/*.................................................................................................................*/
 	String getMainDialogUsingString() {
 		String usingString = "Using";
-		Debugg.println(" builtInAvailable " +builtInAvailable + " builtInVsManual" + builtInVsManual);
+		Debugg.println(" builtInAvailable " +builtInExecutableAllowed + " builtInVsManual" + builtInVsManual);
 		if (builtInVsManual != null)
 			Debugg.println( "    builtInVsManual=" +builtInVsManual.getValue());
 		if (usingBuiltIn())
-			usingString += " built-in " + nameOfApp + " (version " + versionOfBuiltIn + ")";
+			usingString += " built-in " + programName + " (version " + versionOfBuiltIn + ")";
 		else
-			usingString += " " + nameOfApp + " at " + alternativeManualPath;
+			usingString += " " + programName + " at " + alternativeManualPath;
 		return usingString;
 	}
 	/*.................................................................................................................*/
 	boolean usingBuiltIn() {
-		if (builtInAvailable) {
+		if (builtInExecutableAllowed) {
 			if (builtInVsManual != null)
 				return (builtInVsManual.getValue()==0);
-			return useBuiltInIfAvailable;
+			return useDefaultExecutablePath;
 		}
 		return false;
 	}
-	/*.................................................................................................................*/
-	public String getPathToUse() {
-		if (useBuiltInIfAvailable && builtInAvailable)
-			return pathOfBuiltIn;
+
+	public String getPathToUse() { 
+		if (useDefaultExecutablePath)
+			return builtInAppPath;
 		else
 			return alternativeManualPath;
 	}
@@ -137,8 +158,8 @@ public class AppChooser implements ActionListener {
 		return alternativeManualPath;
 	}
 
-	public boolean useBuiltInIfAvailable() { //for preference writing
-		return useBuiltInIfAvailable;
+	public boolean useBuiltInExecutable() { //for preference writing
+		return useDefaultExecutablePath;
 	}
 
 	public String getVersion() {

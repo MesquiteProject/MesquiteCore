@@ -24,11 +24,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
-import javax.swing.JLabel;
 
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.externalCommunication.lib.AppChooser;
+import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
@@ -43,33 +43,27 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.OutputFileProcessor;
 import mesquite.lib.ParseUtil;
-import mesquite.lib.ShellScriptRunner;
 import mesquite.lib.ShellScriptUtil;
-import mesquite.lib.ProcessWatcher;
-import mesquite.lib.RadioButtons;
 import mesquite.lib.SingleLineTextField;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.Taxa;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.characters.MatrixFlags;
-import mesquite.lib.duties.CharMatrixManager;
-import mesquite.lib.duties.CharactersManager;
-import mesquite.lib.duties.FileCoordinator;
-import mesquite.lib.duties.FileInterpreterI;
-import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
-import mesquite.lib.duties.TaxaManager;
 
 /* ======================================================================== */
-public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionListener { 
+public class FlagByTrimAl extends MatrixFlaggerForTrimming implements AppUser { 
 
 	static final String[] autoOptionNames = new String[]{"none", "gappyout", "strict", "strictplus", "automated1"};
 	static final int autoOptionDEFAULT = 4; //automated1
+	
+	boolean useBuiltInIfAvailable = false;
+	String builtinVersion;
+	String trimAlPath = ""; 
+	String alternativeManualPath ="";
 
 	int autoOption = autoOptionDEFAULT;
-	static String trimAlPath = ""; 
 	static String manualOptions = "";
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -90,8 +84,11 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 		if ("autoOption".equalsIgnoreCase(tag)) {
 			autoOption = MesquiteInteger.fromString(content);
 		}
-		else if ("trimAlPath".equalsIgnoreCase(tag)) {
-			trimAlPath = content;
+		else if ("alternativeManualPath".equalsIgnoreCase(tag)) {
+			alternativeManualPath = content;
+		}
+		else if ("useBuiltInIfAvailable".equalsIgnoreCase(tag)) {
+			useBuiltInIfAvailable = MesquiteBoolean.fromTrueFalseString(content);
 		}
 		else if ("manualOptions".equalsIgnoreCase(tag)) {
 			manualOptions = content;
@@ -102,8 +99,9 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "autoOption", autoOption);  
-		if (!StringUtil.blank(trimAlPath))
-			StringUtil.appendXMLTag(buffer, 2, "trimAlPath", trimAlPath);  
+		if (!StringUtil.blank(alternativeManualPath))
+			StringUtil.appendXMLTag(buffer, 2, "alternativeManualPath", alternativeManualPath);  
+		StringUtil.appendXMLTag(buffer, 2, "useBuiltInIfAvailable", useBuiltInIfAvailable);  
 		if (!StringUtil.blank(manualOptions))
 			StringUtil.appendXMLTag(buffer, 2, "manualOptions", manualOptions);  
 		return super.preparePreferencesForXML()+buffer.toString();
@@ -147,6 +145,19 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+	/*.................................................................................................................*/
+	public String getAppOfficialName() {  // the is the official name of the app as stored within the appInfo.xml file
+		return "trimAl";
+	}
+	public String getProgramName() {   // the name for GUI purposes
+		return "trimAl";
+	}
+	public void setHasApp(boolean hasApp) {   // if you want store the fact that the app exists
+	}
+	public void setUsingBuiltinApp(boolean usingBuiltinApp) {   // if you want store that built-in app is being used
+	}
+
 	/*.................................................................................................................*/
 	SingleLineTextField programPathField =  null;
 	SingleLineTextField manualOptionsField =  null;
@@ -158,20 +169,18 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for trimAl",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		
 		
-		/**/
-		dialog.addHorizontalLine(1);
-		dialog.addHorizontalLine(1);
-		AppChooser appChooser = new AppChooser("trimAl", true, trimAlPath);
+ 		//AppChooser appChooser = new AppChooser("trimAl", true, trimAlPath);
+		AppChooser appChooser = new AppChooser(this, useBuiltInIfAvailable, alternativeManualPath);
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
-		dialog.addHorizontalLine(1);
-/*	*/
+
 		
-		programPathField = dialog.addTextField("Path to trimAl:", trimAlPath, 40);
+		/*programPathField = dialog.addTextField("Path to trimAl:", trimAlPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");
+		*/
 		dialog.addBlankLine();
-		Choice alignmentMethodChoice = dialog.addPopUpMenu("trimAl Option", autoOptionNames, autoOption);
+		Choice alignmentMethodChoice = dialog.addPopUpMenu("Automated option", autoOptionNames, autoOption);
 		manualOptionsField = dialog.addTextField("Additional options (do NOT set -in or -out):", manualOptions, 40);
 		dialog.addBlankLine();
 		dialog.addHorizontalLine(1);
@@ -184,30 +193,27 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			autoOption = alignmentMethodChoice.getSelectedIndex();
-			trimAlPath = programPathField.getText();
 			manualOptions = manualOptionsField.getText();
-			/*
-			trimAlPath = appChooser.getPathToUse()
- 			alternativeManualPath = appChooser.getManualPath() //for preference writing
-			useBuiltInIfAvailable = appChooser.useBuiltInIfAvailable(); //for preference writing
-			builtInVersion = appChooser.getVersion(); //for informing user; only if built-in
-			*/
+			trimAlPath = appChooser.getPathToUse();
+ 			alternativeManualPath = appChooser.getManualPath(); //for preference writing
+			useBuiltInIfAvailable = appChooser.useBuiltInExecutable(); //for preference writing
+			builtinVersion = appChooser.getVersion(); //for informing user; only if built-in
 		storePreferences();
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public  void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
 			trimAlPath = MesquiteFile.openFileDialog("Choose trimAl: ", null, null);
-			if (!StringUtil.blank(trimAlPath)) {
-				programPathField.setText(trimAlPath);
+			if (!StringUtil.blank(alternativeManualPath)) {
+				programPathField.setText(alternativeManualPath);
 			}
 		}
 	}
-
+*/
 	String[] columns;
 
 	/*.................................................................................................................*/
@@ -235,7 +241,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 				options = "-" + autoOptionNames[autoOption];
 			if (!StringUtil.blank(manualOptions))
 				options = options + " " + manualOptions;
-			script += trimAlPath + "  -in " + unique + "input.fas -out " + unique + "output.fas -" + options + " -colnumbering > " + unique + "columns.txt";
+			script += StringUtil.protectFilePath(trimAlPath) + "  -in " + unique + "input.fas -out " + unique + "output.fas " + options + " -colnumbering > " + unique + "columns.txt";
 			status = "savingScript";
 			MesquiteFile.putFileContents(scriptPath, script, false);
 			status = "scriptSaved";
@@ -244,8 +250,14 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements ActionList
 			status = "done";
 
 			if (success){
-
-				String columnsText = MesquiteFile.getFileContentsAsString(rootDir + unique + "columns.txt");
+				String columnsPath = rootDir + unique + "columns.txt";
+				if (!MesquiteFile.fileExists(columnsPath)) {
+					MesquiteMessage.warnUser(" No trimming results file for matrix " + data.getName() + "; columns.txt file not found");
+					deleteSupportDirectory();
+					return flags;
+			}
+					
+				String columnsText = MesquiteFile.getFileContentsAsString(columnsPath);
 				if (columnsText != null) {
 					columnsText = StringUtil.stripLeadingWhitespace(columnsText);
 					columns = columnsText.split(", ");
