@@ -53,7 +53,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		rng = new Random(System.currentTimeMillis());
 		programOptions = getDefaultProgramOptions();
 		loadPreferences();
-		AppHarvester.examineAppsFolder(this);
+		hasApp = AppHarvester.builtinAppExists(this);
+		
 		//scriptBased = MesquiteTrunk.isJava VersionLessThan(1.7);
 		return true;
 	}
@@ -153,14 +154,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public boolean getHasApp() {
 		return hasApp;
 	}
-	public void setHasApp(boolean hasApp) {
-		this.hasApp = hasApp;
-	}
 	public String getAppOfficialName() {
 		return "";
-	}
-	public void setUsingBuiltinApp(boolean usingBuiltinApp) {
-		useDefaultExecutablePath = usingBuiltinApp;  
 	}
 
 	/*.................................................................................................................*/

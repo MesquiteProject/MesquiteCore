@@ -79,9 +79,6 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 	public String getProgramName(){
 		return "BLAST";
 	}
-	public void setUsingBuiltinApp(boolean usingBuiltinApp) {
-		useDefaultExecutablePath = usingBuiltinApp;  
-	}
 
 	public boolean getDefaultExecutablePathAllowed() {
 		return getHasApp();

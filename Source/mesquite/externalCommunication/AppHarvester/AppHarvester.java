@@ -71,14 +71,15 @@ public class AppHarvester extends MesquiteInit {
 	}
 
 	/*.................................................................................................................*/
-	public static void examineAppsFolder(AppUser appUser) { 
+	public static boolean builtinAppExists(AppUser appUser) { 
 		int numApps = getNumAppsForProgram(appUser);
 		if (numApps==1) {
-			appUser.setHasApp(true);
+			return true;
 			
 		} else if (numApps>1) {
 			MesquiteMessage.warnUser("There is more than one " + appUser.getProgramName() + " app in the apps folder; please remove all but one copy, and restart Mesquite.");
 		}
+		return false;
 	}
 
 

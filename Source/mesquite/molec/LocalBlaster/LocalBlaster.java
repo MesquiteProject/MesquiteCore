@@ -76,9 +76,6 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	public void setHasApp(boolean hasApp) {
 		this.hasApp = hasApp;
 	}
-	public void setUsingBuiltinApp(boolean usingBuiltinApp) {
-		useDefaultExecutablePath = usingBuiltinApp;  
-	}
 
 	public String getAppOfficialName() {
 		return "blast";
