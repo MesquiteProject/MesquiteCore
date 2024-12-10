@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.SelectCharsConcordantWTree;
+package mesquite.molec.SelectCharsDiscordantWTree;
 /*~~  */
 
 import java.util.*;
@@ -27,7 +27,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class SelectCharsConcordantWTree extends CharacterSelector {
+public class SelectCharsDiscordantWTree extends CharacterSelector {
 	OneTreeSource oneTreeSourceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -111,7 +111,7 @@ public class SelectCharsConcordantWTree extends CharacterSelector {
 			Tree tree = oneTreeSourceTask.getTree(taxa);
 			if (tree != null) {
 				//Debugg.println("");
-				data.selectAll();
+				data.deselectAll();
 				Bits[][] partitions = new Bits[tree.numberOfInternalsInClade(tree.getRoot())][2];
 				for (int i = 0; i<partitions.length; i++)
 					for (int k =0; k<2; k++)
@@ -124,7 +124,7 @@ public class SelectCharsConcordantWTree extends CharacterSelector {
 				//	Debugg.println(bitsIn.toPlusMinusString() + " / " + bitsOut.toPlusMinusString());
 					for (int ic = 0; ic<data.getNumChars(); ic++) {
 						if (discordantWithBipartition(categData, ic, bitsIn, bitsOut))
-							data.setSelected(ic, false);
+							data.setSelected(ic, true);
 					}
 				}
 				data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
@@ -133,12 +133,12 @@ public class SelectCharsConcordantWTree extends CharacterSelector {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Concordant with Tree";
+		return "Discordant with Tree";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Selects characters whose state distributions have no homoplasy on a tree" ;
+		return "Selects characters discordant with the tree (i.e. as unordered characters they would have homoplasy on the tree)." ;
 	}
 
 }

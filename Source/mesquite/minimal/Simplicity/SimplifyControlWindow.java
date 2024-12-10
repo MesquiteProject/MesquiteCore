@@ -327,7 +327,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 	Listable[] v;
 	int h = 30;
 	TextArea explanation = new TextArea("", 20, 20, TextArea.SCROLLBARS_NONE);
-	Font fontBig = new Font("SanSerif", Font.BOLD, 14);
+	Font fontBig = new Font("SansSerif", Font.BOLD, 14);
 	SimplifyControlWindow w;
 	public PackagesPanel(SimplifyControlWindow w){
 		super();

@@ -98,11 +98,12 @@ public class TextRotator {
 			g2.translate(textOffsetH, textOffsetV);
 			g2.rotate(rotation, horizPosition, vertPosition);
 			if (poly !=null){
-				double x = horizPosition;
+				
+				double x = horizPosition;			
 				double y = vertPosition-height*0.667;
 				double w = width;
 				double h = height;
-				AffineTransform transform = g2.getTransform();
+				AffineTransform transform = AffineTransform.getRotateInstance(rotation, horizPosition, vertPosition);
 				float[] dest = new float[8];
 				double[] src = new double[8];
 				src[0] = x;
@@ -114,6 +115,11 @@ public class TextRotator {
 				src[6] = x;
 				src[7] = y+h;
 				transform.transform(src, 0, dest, 0, 4);
+				for (int i = 0; i<8; i++)
+					src[i] = dest[i]; //move translated points back into src
+				transform = AffineTransform.getTranslateInstance(textOffsetH, textOffsetV);
+				transform.transform(src, 0, dest, 0, 4);
+				
 				poly.npoints=0;
 				poly.addPoint((int)dest[0], (int)dest[1]);
 				poly.addPoint((int)dest[2], (int)dest[3]);
@@ -128,7 +134,6 @@ public class TextRotator {
 				g2.setColor(c);
 			} 
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
 			g2.drawString(s, horizPosition, vertPosition);
 			g2.rotate(-rotation, horizPosition, vertPosition);
 			g2.translate(-textOffsetH, -textOffsetV);

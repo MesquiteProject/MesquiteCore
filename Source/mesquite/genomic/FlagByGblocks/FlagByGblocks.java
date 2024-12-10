@@ -22,13 +22,18 @@ import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.util.Random;
 
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.externalCommunication.lib.AppChooser;
+import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.Bits;
+import mesquite.lib.ColorTheme;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
@@ -39,6 +44,7 @@ import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
@@ -63,7 +69,7 @@ import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.TaxaManager;
 
 /* ======================================================================== */
-public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionListener, TextListener {
+public class FlagByGblocks extends MatrixFlaggerForTrimming implements AppUser, ActionListener, TextListener, ItemListener {
 
 	static final double b1DEFAULT = 0.5; //Minimum Number Of Sequences For A Conserved Position (50% of the number of sequences + 1)
 	static final double b2DEFAULT = 0.85; //Minimum Number Of Sequences For A Flank Position (85% of the number of sequences)
@@ -78,6 +84,9 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 	int b5 = b5DEFAULT; //0, 1, 2; Allowed Gap Positions (0=None, 1=With Half, 2=All)
 
 	static String gblocksPath = ""; 
+	boolean useBuiltInIfAvailable = false;
+	String builtinVersion;
+	String alternativeManualPath ="";
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -112,6 +121,12 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		else if ("gblocksPath".equalsIgnoreCase(tag)) {
 			gblocksPath = content;
 		}
+		else if ("alternativeManualPath".equalsIgnoreCase(tag)) {
+			alternativeManualPath = content;
+		}
+		else if ("useBuiltInIfAvailable".equalsIgnoreCase(tag)) {
+			useBuiltInIfAvailable = MesquiteBoolean.fromTrueFalseString(content);
+		}
 		super.processSingleXMLPreference(tag, content);
 	}
 	/*.................................................................................................................*/
@@ -124,7 +139,10 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		StringUtil.appendXMLTag(buffer, 2, "b5", b5);  
 		if (!StringUtil.blank(gblocksPath))
 			StringUtil.appendXMLTag(buffer, 2, "gblocksPath", gblocksPath);  
-		return super.preparePreferencesForXML()+buffer.toString();
+		if (!StringUtil.blank(alternativeManualPath))
+			StringUtil.appendXMLTag(buffer, 2, "alternativeManualPath", alternativeManualPath);  
+		StringUtil.appendXMLTag(buffer, 2, "useBuiltInIfAvailable", useBuiltInIfAvailable);  
+	return super.preparePreferencesForXML()+buffer.toString();
 	}
 	/*.................................................................................................................*/
 	public void queryLocalOptions () {
@@ -189,21 +207,51 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		return null;
 	}
 	/*.................................................................................................................*/
+	public void itemStateChanged(ItemEvent e) {
+		resetParamsInfo();
+	}
+
+	void resetParamsInfo(){
+		String info = "b1=" + b1F.getValueAsString() + " b2=" + b2F.getValueAsString() + " b3=" + b3F.getValueAsString() + " b4=" + b4F.getValueAsString();
+		if (b5F.getSelectedIndex()==0)
+			info += " b5=n";
+		else if (b5F.getSelectedIndex()==1)
+			info += " b5=h";
+		else
+			info += " b5=a";
+			
+		paramsInfo.setText(info);
+	}
+	/*.................................................................................................................*/
+	public String getAppOfficialName() {  // the is the official name of the app as stored within the appInfo.xml file
+		return "Gblocks";
+	}
+	public String getProgramName() {   // the name for GUI purposes
+		return "Gblocks";
+	}
+	public void setHasApp(boolean hasApp) {   // if you want store the fact that the app exists
+	}
+	public void setUsingBuiltinApp(boolean usingBuiltinApp) {   // if you want store that built-in app is being used
+	}
+	/*.................................................................................................................*/
 	SingleLineTextField programPathField =  null;
 
 	DoubleField b1F, b2F;
 	IntegerField b3F, b4F;
 	Choice b5F;
 	double b1Prev, b2Prev;
-
+	SingleLineTextField paramsInfo;
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for Gblocks",buttonPressed);  
-		programPathField = dialog.addTextField("Path to Gblocks:", gblocksPath, 40);
+		AppChooser appChooser = new AppChooser(this, useBuiltInIfAvailable, alternativeManualPath);
+		appChooser.addToDialog(dialog);
+		dialog.addHorizontalLine(1);
+		/*programPathField = dialog.addTextField("Path to Gblocks:", gblocksPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
-		programBrowseButton.setActionCommand("programBrowse");
+		programBrowseButton.setActionCommand("programBrowse");*/
 		dialog.addBlankLine();
 		if (b1<0.5)
 			b1 = 0.5;
@@ -223,14 +271,23 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		b4F = dialog.addIntegerField("Minimum length of a block (at least 2)", b4, 4, 2, MesquiteInteger.infinite);
 		b2F.getTextField().addTextListener(this); // to check b2 is >= b1
 		b5F = dialog.addPopUpMenu("Allowed Gap Positions (b5)", new String[]{"None", "With Half", "All"}, b5);
+		b1F.getTextField().addTextListener(this);
+		b2F.getTextField().addTextListener(this);
+		b3F.getTextField().addTextListener(this);
+		b4F.getTextField().addTextListener(this);
+		b5F.addItemListener(this);
 
 		dialog.addBlankLine();
+		dialog.addHorizontalLine(1);
+		paramsInfo = dialog.addTextField("Report parameters as:", "", 30);
+		paramsInfo.setEditable(false);
+		paramsInfo.setBackground(ColorTheme.getInterfaceBackgroundPale());
+		resetParamsInfo();
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
 		Button useDefaultsButton = null;
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
-		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
 		dialog.addLargeOrSmallTextLabel("If you use this in a publication, please cite the version of Gblocks you used. See (?) help button for details.");
 
@@ -246,6 +303,10 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 			b3 = b3F.getValue();
 			b4 = b4F.getValue();
 			b5 = b5F.getSelectedIndex();
+			gblocksPath = appChooser.getPathToUse();
+ 			alternativeManualPath = appChooser.getManualPath(); //for preference writing
+			useBuiltInIfAvailable = appChooser.useBuiltInExecutable(); //for preference writing
+			builtinVersion = appChooser.getVersion(); //for informing user; only if built-in
 			storePreferences();
 		}
 		dialog.dispose();
@@ -254,13 +315,14 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 
 	/*.................................................................................................................*/
 	public  void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
+		/*if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
 			gblocksPath = MesquiteFile.openFileDialog("Choose Gblocks: ", null, null);
 			if (!StringUtil.blank(gblocksPath)) {
 				programPathField.setText(gblocksPath);
 			}
 		}
-		else if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
+		else */
+		if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
 			b1F.setValue(b1DEFAULT);
 			b2F.setValue(b2DEFAULT);
 			b3F.setValue(b3DEFAULT);
@@ -296,6 +358,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 			b1Prev = b1F.getValue();
 			b2Prev = b2F.getValue();
 		}
+		resetParamsInfo();
 	}
 
 	String[] columns;
@@ -327,7 +390,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				gapsOption = "h";
 			else if (b5 == 2)
 				gapsOption = "a";
-			script += gblocksPath + "  " + unique + "alignment.fas -b1=" + b1Count + " -b2=" + b2Count + " -b3=" + b3 + " -b4=" + b4 + " -b5=" + gapsOption + " -s=n -p=s";
+			script += StringUtil.protectFilePath(gblocksPath) + "  " + unique + "alignment.fas -b1=" + b1Count + " -b2=" + b2Count + " -b3=" + b3 + " -b4=" + b4 + " -b5=" + gapsOption + " -s=n -p=s";
 			MesquiteFile.putFileContents(scriptPath, script, false);
 			success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 	
@@ -395,7 +458,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 					}
 				}
 				else
-					Debugg.println("oops, no results found");
+					MesquiteMessage.warnProgrammer("No results from Gblocks found!");
 
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}

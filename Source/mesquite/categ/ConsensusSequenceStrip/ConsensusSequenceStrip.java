@@ -86,6 +86,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	public void checkMenuItems() {
 		colorByAAMenuItem.setEnabled((data instanceof DNAData) && ((DNAData)data).someCoding());
 		emphasizeLessDegenerateMenuItem.setEnabled((data instanceof DNAData) && ((DNAData)data).someCoding()&& colorByAA.getValue());
+		MesquiteTrunk.resetMenuItemEnabling();
 	}
 	public void deleteRemoveMenuItem() {
 		deleteMenuItem(lineMenuItem);

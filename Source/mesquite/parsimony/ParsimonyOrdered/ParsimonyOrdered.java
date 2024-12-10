@@ -134,7 +134,7 @@ public class ParsimonyOrdered extends ParsAncStatesForModel  {
 			if (card>1){
 				int min = CategoricalState.minimum(observed);
 				int max = CategoricalState.maximum(observed);
-				if (!CategoricalState.isUncertain(observed))
+				if (countStepsInTermPolymorphisms.getValue() && !CategoricalState.isUncertain(observed))
 					steps += max-min;
 				downStates.setState(N, CategoricalState.span(min, max));
 			}

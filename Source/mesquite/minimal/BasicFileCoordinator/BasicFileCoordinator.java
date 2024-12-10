@@ -501,7 +501,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		if (thisFile!=null) {
 			getProject().addFile(thisFile);
 			thisFile.setProject(getProject());
-				broadcastFileRead(this, thisFile);
+			broadcastFileRead(this, thisFile);
 		}
 		resetAllMenuBars();
 		decrementMenuResetSuppression();
@@ -702,7 +702,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			saveAllFiles();
 			p.autosave = false;
 		}
-	
+
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
 	}
@@ -1062,21 +1062,30 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public void revertToSaved(boolean queryIfDirty){
 		boolean siga = false;
 		if (!queryIfDirty)
-			siga = true;
+			siga = fileCloseRequested(); //If you're just supposed to close reegardless, still need to check other modules
 		else if (!MesquiteThread.isScripting()){
 			if (getProject() == null || getProject().getHomeFile() == null)
-				siga = false;
-			else if (getProject().isDirty()){
-				if (getProject().getNumberLinkedFiles()>1){
-					String hfn = getProject().getHomeFileName();
-					siga = AlertDialog.query(containerOfModule(), "Discard unsaved changes?", "Do you want to discard all unsaved changes in all linked files and revert to the saved version of the home file (" + hfn + ")?", "Discard Changes", "Cancel");
+				siga = false; //can't revert
+			else {
+				boolean otherModulesOKWithClosing = fileCloseRequested(); //Debugg.println should pass sometjhing to learn if user was already pstered?
+				// if not, no need to ask further and leave siga set to false
+				if (otherModulesOKWithClosing){
+					if (getProject().isDirty()){ //ok, dirty, so need to ask
+						// so we need to ask because it's dirty, but fl
+						if (getProject().getNumberLinkedFiles()>1){
+							String hfn = getProject().getHomeFileName();
+							siga = AlertDialog.query(containerOfModule(), "Discard unsaved changes?", "Do you want to discard all unsaved changes in all linked files and revert to the saved version of the home file (" + hfn + ")?", "Discard Changes", "Cancel");
+						}
+						else
+							siga = AlertDialog.query(containerOfModule(), "Discard unsaved changes?", "Do you want to discard all unsaved changes and revert to the saved version of the file?", "Discard Changes", "Cancel");
+					}
+					else
+						siga = true;
 				}
-				else
-					siga = AlertDialog.query(containerOfModule(), "Discard unsaved changes?", "Do you want to discard all unsaved changes and revert to the saved version of the file?", "Discard Changes", "Cancel");
 			}
-			else
-				siga = true;
 		}
+		else
+			siga = true; //if scripting, just close it
 		if (siga){
 			MesquiteTrunk.mesquiteTrunk.openFile(getProject().getHomeFile().getPath());
 			iQuit();
@@ -1451,7 +1460,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			return null;
 		return s;
 	}
-	
+
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns the total number of character data matrices stored in the project", null, commandName, "getNumberOfDataSets")) {
@@ -2101,7 +2110,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 				}
 				CommandRecord.setScriptingFileS(sf);
 				linkedFile.fileReadingArguments = null;
-					ownerModule.broadcastFileRead(ownerModule, linkedFile);
+				ownerModule.broadcastFileRead(ownerModule, linkedFile);
 
 			}
 			else {

@@ -14,11 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharGroupList;
 /*~~  */
 
+
 import mesquite.lists.lib.*;
 
 import java.util.*;
 import java.awt.*;
 
+import mesquite.charMatrices.ManageCharPartitions.ManageCharPartitions;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -33,7 +35,9 @@ public class CharGroupList extends ListModule {
 	CharactersGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		addMenuItem("New Character Group...", MesquiteModule.makeCommand("newGroup",  this));
+		addMenuItem("New Character Group Label...", MesquiteModule.makeCommand("newGroup",  this));
+		addMenuItem("Import Character Group Labels from File...", MesquiteModule.makeCommand("importLabels",  this));
+		addMenuItem("Export Character Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  this));
 		return true;
 	}
 	public boolean showing(Object obj){
@@ -91,7 +95,7 @@ public class CharGroupList extends ListModule {
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Creates a new group", "[]", commandName, "newGroup")) {
+		if (checker.compare(this.getClass(), "Creates a new group label", "[]", commandName, "newGroup")) {
 			MesquiteString ms = new MesquiteString("");
 			MesquiteFile file = getProject().chooseFile( "Select file to which to add the new group label"); 
 			CharactersGroup group = CharListPartitionUtil.makeGroup(this,file,containerOfModule(), ms);      
@@ -101,11 +105,41 @@ public class CharGroupList extends ListModule {
 			}
 			return group;
 		}
+		else if (checker.compare(this.getClass(), "Imports group labels from a text file.", "[]", commandName, "importLabels")) {
+			MesquiteString directoryName = new MesquiteString();
+			MesquiteString fileName = new MesquiteString();
+			MesquiteFile.openFileDialog("Please select a text file that has the character group labels, as exported previously.", directoryName, fileName);
+			if (!fileName.isBlank()){
+				String[] lines = MesquiteFile.getFileContentsAsStrings(directoryName.getValue() + fileName.getValue());
+				if (lines != null){
+					SpecsSetManager manageCharPart = (SpecsSetManager)findElementManager(CharacterPartition.class);
+					for (int i = 0; i<lines.length; i++){
+						String command = lines[i]; 
+						boolean success = manageCharPart.readNexusCommand(null, null, "LABELS", command, null);
+
+						//Debugg.println("import labels" + success);
+					}
+				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Exports group labels to a text file for later import.", "[]", commandName, "exportLabels")) {
+			ManageCharPartitions manageCharPart = (ManageCharPartitions)findElementManager(CharacterPartition.class);
+			String s = "";
+			for (int row = 0; row<getNumberOfRows(); row++){
+				CharactersGroup group = ((CharGroupListWindow)getModuleWindow()).getCharGroup(row);
+				s += manageCharPart.getGroupLabelNexusCommand(group) + "\n";
+			}
+			if (!StringUtil.blank(s)){
+				MesquiteFile.putFileContentsQuery("Exported file of group labels, for later import into other files", s, true);
+				
+			}
+		}
 		else if (checker.compare(this.getClass(), "Returns data set whose characters are listed", null, commandName, "getData")) {
 			return null;
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 	/*.................................................................................................................*/
 	/* following required by ListModule*/
@@ -122,10 +156,10 @@ public class CharGroupList extends ListModule {
 		return CharGroupListAssistant.class;
 	}
 	public String getItemTypeName(){
-		return "Character Group";
+		return "Character Group Label";
 	}
 	public String getItemTypeNamePlural(){
-		return "Character Groups";
+		return "Character Group Labels";
 	}
 	/*.................................................................................................................*/
 	public boolean rowsDeletable(){
@@ -190,7 +224,7 @@ public class CharGroupList extends ListModule {
 		return "List of Character Group Labels";
 	}
 	public String getExplanation() {
-		return "Makes windows listing character groups and information about them." ;
+		return "Makes windows listing character group labels and information about them." ;
 	}
 
 }

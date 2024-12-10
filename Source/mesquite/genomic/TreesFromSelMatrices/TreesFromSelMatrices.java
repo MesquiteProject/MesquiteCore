@@ -91,7 +91,7 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 		String stringFailed = "";
 		boolean stop = false;
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Tree inference on matrices", "", datas.size(), true);
-		//Debugg.println("need to listen to abort");
+
 		progIndicator.start();
 		for (int im = 0; im < datas.size() && !stop; im++){
 			if (progIndicator.isAborted())
@@ -111,9 +111,10 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 				if (trees.size() == lastNumTrees) {
 					numFailed++;
 					stringFailed += "\t" + data.getName() + "\n";
-					if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
-						stop = true;
-					}
+					logln("Trees not inferred from matrix " +data.getName() + " because of some issue with the matrix or the inference program."); 
+					//if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
+					//	stop = true;
+					//}
 					MesquiteThread.setQuietPlease(true);
 				}
 				boolean mult = false;
@@ -130,7 +131,7 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 				}
 			}
 			else
-				logln("Tree not inferred from matrix " +data.getName() + " because it is of a data type incompatible with the tree inference method"); 
+				logln("Trees not inferred from matrix " +data.getName() + " because it is of a data type incompatible with the tree inference method"); 
 		}
 		progIndicator.goAway();
 		MesquiteThread.setQuietPlease(false);

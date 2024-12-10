@@ -41,6 +41,7 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
 import mesquite.lib.ProgressIndicator;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.SingleLineTextField;
@@ -502,7 +503,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		if (StringUtil.blank(directoryPath))
 			return;
 		File directory = new File(directoryPath);
-
+		MesquiteTimer timer = new MesquiteTimer();
 		firstFile = true;
 		processProject.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
 		boolean abort = false;
@@ -516,12 +517,12 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", files.length);
 				progIndicator.start();
 				boolean sFDMade = false;
-			//	MesquiteFile.createDirectory(directoryPath + MesquiteFile.fileSeparator + "savedFiles");
+
 				String header = "Processing of files in " + directoryPath + StringUtil.lineEnding();
 				Date dnow = new Date(System.currentTimeMillis());
 				logln(StringUtil.getDateTime(dnow));
 				header += StringUtil.getDateTime(dnow) + StringUtil.lineEnding() + StringUtil.lineEnding();
-				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", header, true);
+				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingResults", header, true);
 				beforeProcessFiles();
 				MesquiteThread.setQuietPlease(true);
 				int filesFound = 0;
@@ -532,6 +533,9 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 						abort = true;
 					if (abort)
 						break;
+					if (i==1)
+						timer.start();
+
 					if (files[i]!=null) {
 						boolean acceptableFile = (StringUtil.blank(fileExtension) || StringUtil.endsWithIgnoreCase(files[i], fileExtension));
 						if (acceptableFile){
@@ -541,7 +545,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 							file.setPath(path);
 							getProject().addFile(file);
 							file.setProject(getProject());
-							//	getProject().setHomeFile(file);
+
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
 								results.setLength(0);
 								filesFound++;
@@ -549,13 +553,13 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 								if (processFileRequestCancelled) 
 									return;
 								if ( firstResultsOverall && resultsHeading.length()>0){
-									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", resultsHeading.toString(), true);
-									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", StringUtil.lineEnding(), true);
+									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", resultsHeading.toString(), true);
+									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", StringUtil.lineEnding(), true);
 									firstResultsOverall = false;
 								}
 								if (results.length()>0){
-									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", results.toString(), true);
-									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults.txt", StringUtil.lineEnding(), true);
+									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", results.toString(), true);
+									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", StringUtil.lineEnding(), true);
 								}
 								logln(" ");
 								if (requestToSequester.getValue()) {
@@ -582,7 +586,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 				afterProcessFiles();
 
 				String finalScript = recaptureScript();
-				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingScript.txt", finalScript, true);
+				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingScript", finalScript, true);
 
 				removeAllProcessors();
 				progIndicator.goAway();
@@ -592,6 +596,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		}
 		//Debugg.println see if any other suppressions are on! pauseables?
 		zeroMenuResetSuppression();
+		logln("Total time for processing (excluding first file): " + timer.timeSinceVeryStartInHoursMinutesSeconds());
+
 		processProject.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 	}
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){

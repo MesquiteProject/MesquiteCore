@@ -18,11 +18,14 @@ package mesquite.molec.FlagByCompareOther;
 
 
 import mesquite.categ.lib.CategoricalData;
-import mesquite.lib.Debugg;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
 import mesquite.lib.ListDialog;
 import mesquite.lib.Listable;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.Taxa;
 import mesquite.lib.characters.CharacterData;
@@ -32,19 +35,88 @@ import mesquite.lib.duties.MatrixFlagger;
 
 /* ======================================================================== */
 public class FlagByCompareOther extends MatrixFlagger {
-/* to do: have menu item to choose other matrix, and remember in snapshot*/
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-
+		addMenuItem("Choose Comparison Matrix...", new MesquiteCommand("setOther", this));
 		return true;
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
+		if (oData!=null)
+			temp.addLine("setOther " + getProject().getCharMatrixReferenceExternal(oData));
 		return temp;
 	}
 
+	public void endJob(){
+		if (oData != null)
+			oData.removeListener(this);
+		super.endJob();
+	}
+
+	CharacterData currentData = null;
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the comparison matrix", "[name of block]", commandName, "setOther")) {
+			String dataReference =parser.getFirstToken(arguments);
+			CharacterData d = getProject().getCharacterMatrixByReference(checker.getFile(), null, null, dataReference, true);
+			if (d == null)
+				d = getProject().getCharacterMatrixByReference(checker.getFile(), null, null, dataReference);
+			if (d==null)
+				d = chooseOther(currentData);
+			if (d!= null && oData != null && oData != d){
+				oData.removeListener(this);
+				oData = d;
+				oData.addListener(this);
+				parametersChanged();
+			}
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+	/*.................................................................................................................*/
+	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface)*/
+	public void changed(Object caller, Object obj, Notification notification){
+		parametersChanged();
+	}
+
+	CharacterData chooseOther(CharacterData data){
+		if (data == null)
+			return null;
+		Taxa taxa = data.getTaxa();
+		int numSets = getProject().getNumberCharMatricesVisible(taxa);
+		int numSetsDiff = numSets;
+		for (int i = 0; i<numSets; i++) {
+			CharacterData pData =getProject().getCharacterMatrixVisible(taxa, i);
+			if (pData== data)
+				numSetsDiff--;
+			else if (pData.getClass() != data.getClass())
+				numSetsDiff--;
+		}
+		if (numSetsDiff<=0) {
+			alert("Sorry, there are no other compatible data matrices available for comparison.  If the other matrix is in another file, open the file as a linked file before attempting to compare.");
+			return null;
+		}
+		else {
+			Listable[] matrices = new Listable[numSetsDiff];
+			int count=0;
+			for (int i = 0; i<numSets; i++) {
+				CharacterData pData =getProject().getCharacterMatrixVisible(taxa, i);
+				if (pData!= data && (pData.getClass() == data.getClass())) {
+					matrices[count]=pData;
+					count++;
+				}
+			}
+			boolean differenceFound=false;
+			oData = (CharacterData)ListDialog.queryList(containerOfModule(), "Compare with", "Compare data matrix with:", MesquiteString.helpString,matrices, 0);
+			if (oData==null)
+				return null;
+			oData.addListener(this);
+		}
+		return oData;
+	}
 	CharacterData oData = null;
 
 	/*======================================================*/
@@ -54,38 +126,11 @@ public class FlagByCompareOther extends MatrixFlagger {
 				flags = new MatrixFlags(data);
 			else 
 				flags.reset(data);
-
+			currentData = data;
 			if (oData == null){
-				Taxa taxa = data.getTaxa();
-				int numSets = getProject().getNumberCharMatricesVisible(taxa);
-				int numSetsDiff = numSets;
-				Debugg.printStackTrace();
-				for (int i = 0; i<numSets; i++) {
-				CharacterData pData =getProject().getCharacterMatrixVisible(taxa, i);
-					if (pData== data)
-						numSetsDiff--;
-					else if (pData.getClass() != data.getClass())
-						numSetsDiff--;
-				}
-				if (numSetsDiff<=0) {
-					alert("Sorry, there are no other compatible data matrices available for comparison.  If the other matrix is in another file, open the file as a linked file before attempting to compare.");
+				oData = chooseOther(data);
+				if (oData == null)
 					return flags;
-				}
-				else {
-					Listable[] matrices = new Listable[numSetsDiff];
-					int count=0;
-					for (int i = 0; i<numSets; i++) {
-						CharacterData pData =getProject().getCharacterMatrixVisible(taxa, i);
-						if (pData!= data && (pData.getClass() == data.getClass())) {
-							matrices[count]=pData;
-							count++;
-						}
-					}
-					boolean differenceFound=false;
-					oData = (CharacterData)ListDialog.queryList(containerOfModule(), "Compare with", "Compare data matrix with:", MesquiteString.helpString,matrices, 0);
-					if (oData==null)
-						return flags;
-				}
 			}
 			log("Comparing this matrix " + data.getName() + " with other matrix " + oData.getName()+ ".");
 			boolean diffNumChars = false;
@@ -107,19 +152,35 @@ public class FlagByCompareOther extends MatrixFlagger {
 					}
 				}
 			}
+			int moreInThis = data.getNumChars()-oData.getNumChars();
+
+			if (moreInThis>0){
+				//flag parts of this matrix that other doesn't have
+				Bits charFlags = flags.getCharacterFlags();
+				for (int ic = oData.getNumChars(); ic<data.getNumChars(); ic++)
+					charFlags.setBit(ic, true);
+			}
+
 			if (count == 0){
-				if (diffNumChars)
-					logln(" No differences found among the characters examined.");
+				if (diffNumChars){
+					if (moreInThis>0)
+						logln(" No differences found among the cells examined, but this matrix has " + moreInThis + "more characters than the other.");
+					else
+						logln(" No differences found among the cells examined, but the other matrix has " + (-moreInThis) + "more characters than this.");
+				}
 				else
 					logln(" No differences found between matrices.");
 
 			}
 			else {
 				log(" " + count);
-				if (diffNumChars)
-					logln(" cells of matrix found different among the characters examined.");
-				else
-					logln(" cells of matrix found different between matrices.");
+				logln(" cells of matrix found different between matrices.");
+				if (diffNumChars){
+					if (moreInThis>0)
+						logln(" In addition, this matrix has " + moreInThis + " more characters than the other.");
+					else
+						logln(" In addition, the other matrix has " + (-moreInThis) + "more characters than this.");
+				}
 			}
 
 		}
@@ -135,7 +196,7 @@ public class FlagByCompareOther extends MatrixFlagger {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return true;  //good to go! 
 	}
 
 	/*.................................................................................................................*/

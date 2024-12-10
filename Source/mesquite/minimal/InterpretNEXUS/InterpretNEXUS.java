@@ -616,7 +616,6 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 
 	String addendum = "";
 	public void getExportOptions(boolean dataSelected, boolean taxaSelected){
-		Debugg.println(getEmployerPath());
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog exportDialog = new ExtensibleDialog(containerOfModule(), "NEXUS Options", buttonPressed);
 		//exportDialog.setSuppressLineEndQuery(true);

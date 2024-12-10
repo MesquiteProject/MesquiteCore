@@ -27,6 +27,8 @@ Also counts steps*/
 
 public abstract class ParsAncStatesForModel extends MesquiteModule  {
 	protected boolean calcConditionalMPRs = false;
+	public static MesquiteBoolean countStepsInTermPolymorphisms; //instantiated in minimal.Defaults
+	
    	 public Class getDutyClass() {
    	 	return ParsAncStatesForModel.class;
    	 }

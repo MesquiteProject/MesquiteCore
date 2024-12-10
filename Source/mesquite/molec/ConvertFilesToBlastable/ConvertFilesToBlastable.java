@@ -189,7 +189,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 
 		//Checkbox executablesInDefaultLocationBox = dialog.addCheckBox("BLAST programs in default location", executablesInDefaultLocation);
 	//	executablePathField = dialog.addTextField("Path to folder containing BLAST programs", blastExecutableFolderPath, 40);
-		if (getDefaultExecutablePathAllowed()) {
+	/*	if (getDefaultExecutablePathAllowed()) {
 			defaultExecutablePathCheckBox = dialog.addCheckBox("Use built-in apps for BLAST programs", useDefaultExecutablePath);
 			executablePathField = dialog.addTextField("Path to alternative folder containing BLAST programs", blastExecutableFolderPath, 40);
 		} else {
@@ -198,14 +198,21 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		}
 		Button browseButton = dialog.addAListenedButton("Browse...",null, this);
 		browseButton.setActionCommand("browseExecutable");
+		*/
 
+		AppChooser appChooser = new AppChooser(this, useDefaultExecutablePath, blastExecutableFolderPath);
+		appChooser.addToDialog(dialog);
+
+		
 		SingleLineTextField extensionField = dialog.addTextField("Extension for FASTA files:", extension, 10);
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			
+			useDefaultExecutablePath = appChooser.useBuiltInExecutable(); //for preference writing
+			blastExecutableFolderPath = appChooser.getManualPath(); //for preference writing
 
-			if (defaultExecutablePathCheckBox!=null)
+			/*if (defaultExecutablePathCheckBox!=null)
 				useDefaultExecutablePath = defaultExecutablePathCheckBox.getState();
 			String tempPath = executablePathField.getText();
 			if (StringUtil.blank(tempPath) && !useDefaultExecutablePath){
@@ -213,6 +220,8 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 				return false;
 			}
 			blastExecutableFolderPath = tempPath;
+			*/
+			
 			String tempExtension = extensionField.getText();
 			if (StringUtil.notEmpty(tempExtension)){
 				extension = tempExtension;

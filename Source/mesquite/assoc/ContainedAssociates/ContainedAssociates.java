@@ -1308,10 +1308,12 @@ class WideTreeDrawing extends TreeDrawing  {
 		}
 		if (force || association == null || (association.getTaxa(0)!= containingTaxa && association.getTaxa(1)!= containingTaxa)) {
 			association = associationTask.getCurrentAssociation(containingTaxa);
+			Debugg.println("association0 " + association);
 			if (association == null)
 				association = associationTask.getAssociation(containingTaxa, 0);
 			if (association == null)
 				return;
+			Debugg.println("association1 " + association.getName());
 			if (association.getTaxa(0)== containingTaxa)
 				containedTaxa = association.getTaxa(1);
 			else

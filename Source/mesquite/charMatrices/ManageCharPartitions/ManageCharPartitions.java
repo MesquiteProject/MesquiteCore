@@ -297,6 +297,18 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 		else 
 			return super.readNexusCommand(file, nBlock, blockName, command, comment);
 	}
+	
+	public String getGroupLabelNexusCommand(CharactersGroup cg){
+		String s = "";
+			s += "\tCHARGROUPLABEL " + ParseUtil.tokenize(cg.getName());
+			if (cg.colorSet()){
+				Color c = cg.getColor();
+				s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
+			}
+			s += ";" + StringUtil.lineEnding();
+		return s;
+	}
+
 	/*.................................................................................................................*/
 	public String getNexusCommands(MesquiteFile file, String blockName){ 
 		if (blockName.equalsIgnoreCase("LABELS")) {
@@ -304,12 +316,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			for (int i = 0; i< groups.size(); i++){
 				CharactersGroup cg = (CharactersGroup)groups.elementAt(i);
 				if (cg.getFile() == file){
-					s += "\tCHARGROUPLABEL " + ParseUtil.tokenize(cg.getName());
-					if (cg.colorSet()){
-						Color c = cg.getColor();
-						s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
-					}
-					s += ";" + StringUtil.lineEnding();
+					s += getGroupLabelNexusCommand(cg);
 				}
 			}
 			if (StringUtil.blank(s))

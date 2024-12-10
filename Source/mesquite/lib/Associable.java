@@ -133,6 +133,19 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		sT += "<li>Associated: <ul>" + s + "</ul></li>";
 		return sT;
 	}
+	
+	
+	
+	public String getTextVersionAssociates(String nameOfPart){
+		if (bits == null && longs == null && doubles == null && objects == null)
+			return "";
+		String s = "";
+		for (int i=0; i<numParts; i++){
+			s += nameOfPart + " " + (i+1) + ": " + toString(i) + "\n";
+		}
+		return s;
+	}
+
 	public String toString(int part){
 		String s = "";
 		String add = "";
@@ -153,14 +166,14 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			for (int i=0; i<longs.size(); i++) {
 				Object obj = longs.elementAt(i);
 				LongArray b = (LongArray)longs.elementAt(i);
-				s += add + "\"" + b.getName()+ "\": " + b.getValue(part);	
+				s += add + "" + b.getName()+ ": " + MesquiteLong.toString(b.getValue(part));	
 				add = "; ";
 			}
 		}
 		if (doubles!=null){
 			for (int i=0; i<doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				s += add + "\"" + b.getName()+ "\": " + b.getValue(part);	
+				s += add + "" + b.getName()+ ": " + MesquiteDouble.toString(b.getValue(part));	
 				add = "; ";
 			}
 		}
@@ -172,7 +185,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					Object obj = ((ObjectArray)obja).getValue(part);
 					if (obj instanceof MesquiteString){
 						MesquiteString b = (MesquiteString)obj;
-						s += add + "\"" + b.getName()+ "\": " + b.getValue();	
+						s += add + "" + b.getName()+ ": " + b.getValue();	
 					}
 					else if (obj instanceof Listable){
 						Listable b = (Listable)obj;
@@ -188,7 +201,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 				else if (obja instanceof MesquiteString){
 					MesquiteString b = (MesquiteString)obja;
-					s += add + "\"" + b.getName()+ "\": " + b.getValue();	
+					s += add + "" + b.getName()+ ": " + b.getValue();	
 				}
 				else if (obja instanceof Listable){
 					Listable b = (Listable)obja;
@@ -203,7 +216,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					add = "; ";
 			}
 		}
-		return s + ".  ";
+		return s;
 	}
 	public void equalizeParts(Associable other, int otherPart, int part){
 		if (other==null || part >= getNumberOfParts() || otherPart >= other.getNumberOfParts())
@@ -424,6 +437,18 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	/** Returns true if part is within bounds.*/
 	protected  boolean inBounds(int part) {
 		return part>=0 && part<numParts; 
+	}
+	
+	public boolean hasAnyAssociates(){
+		if (bits != null && bits.size()>0)
+			return true;
+		if (longs != null && longs.size()>0)
+			return true;
+		if (doubles != null && doubles.size()>0)
+			return true;
+		if (objects != null && objects.size()>0)
+			return true;
+		return false;
 	}
 	public String listAssociates(){ //changed May 02
 		String s = " Associates of ";

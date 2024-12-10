@@ -250,6 +250,9 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		return true;  //if unclear, ask
 	}
 	/*.................................................................................................................*/
+	public String getVersion() {
+		return "1.0";
+	}
 
 
 	IntegerField SSField;
@@ -261,10 +264,10 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for PhyIN",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		String s = "PhyIN (Phylogenetic Incompatibility among Neighbors)is a method for identifying regions of an alignment with "
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for PhyIN (version " + getVersion() + ")",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		String s = "PhyIN (Phylogenetic Incompatibility among Neighbors) is a method for identifying regions of an alignment with "
 				+"high levels of local phylogenetic conflict.";
-		s += "<p><b>Reference for PhyIN</b>: Maddison W (submitted)"; //Debugg.println
+		s += "<p><b>Reference for PhyIN</b>: Maddison WP. 2024. PhyIN: trimming alignments by phylogenetic incompatibilities among neighbouring sites. PeerJ 12:e18504 <a href=\"http://doi.org/10.7717/peerj.18504\">http://doi.org/10.7717/peerj.18504</a>"; 
 		s += "<p>The additional filter for low occupancy sites is not formally part of PhyIN, but is offered here as a convenience, because PhyIN should be combined with a filter that removes highly gappy sites."; 
 		dialog.appendToHelpString(s);
 
@@ -295,8 +298,8 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		paramsInfo = dialog.addTextField("Report parameters as:", "", 30);
 		paramsInfo.setEditable(false);
 		paramsInfo.setBackground(ColorTheme.getInterfaceBackgroundPale());
-		dialog.setDefaultComponent(PIField.getTextField());
 		resetParamsInfo();
+		dialog.setDefaultComponent(PIField.getTextField());
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
 		Button useDefaultsButton = null;
@@ -346,7 +349,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		resetParamsInfo();
 	}
 	void resetParamsInfo(){
-		String info = "b=" + SSField.getValue() + " d=" + NDField.getValue() + " p=" + PIField.getValue() + " e=" + tGAS.getState();
+		String info = "b=" + SSField.getValueAsString() + " d=" + NDField.getValueAsString() + " p=" + PIField.getValueAsString() + " e=" + tGAS.getState();
 		if (!getProject().isProcessDataFilesProject && fSO.getState())
 			info += " sot=" + pgSField.getValue();
 		paramsInfo.setText(info);

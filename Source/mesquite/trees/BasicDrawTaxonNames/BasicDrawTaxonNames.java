@@ -16,7 +16,11 @@ package mesquite.trees.BasicDrawTaxonNames;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -74,7 +78,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	double namesAngle = MesquiteDouble.unassigned;
 	MesquiteCommand tNC;
 	MesquiteString colorerName = null;
-	
+	MesquiteMenuItemSpec angleMenuItem;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		currentFont = MesquiteWindow.defaultFont;
@@ -84,7 +89,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		fontName = new MesquiteString(MesquiteWindow.defaultFont.getName());
 		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
 		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Names");
-		addItemToSubmenu(null, namesMenu, "Taxon Name Angle...", makeCommand("namesAngle", this));
 
 		MesquiteSubmenuSpec msf = FontUtil.getFontSubmenuSpec(this,this);
 		msf.setSelected(fontName);
@@ -120,6 +124,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		centerNodeLabelItem = addCheckMenuItemToSubmenu(null, namesMenu, "Center Branch Names", makeCommand("toggleCenterNodeNames", this), centerNodeLabels);
 		centerNodeLabelItem.setEnabled(true);
 
+		angleMenuItem = addMenuItem(null, "Taxon Name Angle...", makeCommand("namesAngle", this));
 		/*End new code added Feb.15.07 oliver*/
 		showTaxonNames = new MesquiteBoolean(true);
 		addCheckMenuItemToSubmenu(null, namesMenu, "Show Taxon Names", makeCommand("toggleShowNames", this), showTaxonNames);
@@ -187,6 +192,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		}
 		else if (checker.compare(this.getClass(), "Sets the angle names are shown at in default UP orientation", "[angle in degrees clockwise from horizontal; ? = default]", commandName, "namesAngle")) {
 			if (arguments == null && !MesquiteThread.isScripting()){
+				/*vvvvv  old version *
 				double current;
 				if (!MesquiteDouble.isCombinable(namesAngle))
 					current = namesAngle;
@@ -198,7 +204,14 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				namesAngle = d.getValue();
 				if (MesquiteDouble.isCombinable(namesAngle))
 					namesAngle = namesAngle/360*2*Math.PI;
+
+				Debugg.println("namesAngle " + MesquiteDouble.toString(namesAngle));
 				parametersChanged();
+ /*^^^^^^^*/		
+
+				double namesAngle = queryAngleRadians();  //could be unassigned
+				parametersChanged();
+				/**/
 			}
 			else {
 
@@ -937,12 +950,21 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}*/
 	}
 
+	private void resetAngleMenuItem(TreeDisplay treeDisplay){
+		// non-default taxon name angles are allowed only for UP trees
+		if (angleMenuItem != null && treeDisplay != null && (angleMenuItem.isEnabled() != (treeDisplay.getOrientation()==TreeDisplay.UP))){
+			angleMenuItem.setEnabled((treeDisplay.getOrientation()==TreeDisplay.UP));
+			MesquiteTrunk.resetMenuItemEnabling();
+		}
+	}
 	int count=0;
 	NameReference triangleNameRef = NameReference.getNameReference("triangled");
 	/*.................................................................................................................*/
 	public void drawNames(TreeDisplay treeDisplay,  Tree tree, int drawnRoot, Graphics g) {
 		if (treeDisplay==null)
 			return; // alert("tree display null in draw taxon names");
+		
+		resetAngleMenuItem(treeDisplay);
 		if (tree==null)
 			return; // alert("tree null in draw taxon names");
 		if (g==null)
@@ -1096,6 +1118,174 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		catch (ArrayIndexOutOfBoundsException e) {
 			alert("taxon flash out of getBounds");}
 	}
+
+
+	double queryAngleRadians(){
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Taxon Names Angle",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Click in circle to set angle of taxon names");
+		dialog.addLabel("Click a triangle for 0, 45, 90 degrees.");
+		dialog.addHorizontalLine(1);
+		AnglePickerPanel anglePicker = new AnglePickerPanel(namesAngle);
+		dialog.addNewDialogPanel(anglePicker);
+		dialog.addBlankLine();
+		Button useDefaultsButton = null;
+		useDefaultsButton = dialog.addAListenedButton("Set to Default", null, anglePicker);
+		useDefaultsButton.setActionCommand("setToDefault");
+		dialog.addHorizontalLine(1);
+		dialog.completeAndShowDialog(true);
+		if (buttonPressed.getValue()==0)  {
+			namesAngle = anglePicker.getAngle();
+			storePreferences();
+		}
+		dialog.dispose();
+		return 0;	
+	}
 }
 
+class AnglePickerPanel extends Panel implements MouseListener, ActionListener {
+	double angle = 0.0;
+	Polygon ninetyTriangle, zeroTriangle, fortyFiveTriangle;
+	//square is of w/h R*2, and within it is a circle of R.
+	//The centre of the circle is therefore at (R, R)
+	static final int R = 140;
+	static final int trisize = 8;
+	static final int border = 12;
+	static final int circleInset = border*3;
+	TextRotator textRotator;
+	public AnglePickerPanel(double initAngle){
+		this.angle = initAngle;
+		addMouseListener(this);
 
+		ninetyTriangle=new Polygon();
+		ninetyTriangle.xpoints = new int[4];
+		ninetyTriangle.ypoints = new int[4];
+		ninetyTriangle.npoints=0;
+		ninetyTriangle.addPoint(R-trisize, border);
+		ninetyTriangle.addPoint(R+trisize, border);
+		ninetyTriangle.addPoint(R, trisize+trisize+border);
+		ninetyTriangle.addPoint(R-trisize, border);
+		ninetyTriangle.npoints=4;
+		zeroTriangle=new Polygon();
+		zeroTriangle.xpoints = new int[4];
+		zeroTriangle.ypoints = new int[4];
+		zeroTriangle.npoints=0;
+		zeroTriangle.addPoint(R*2-border, R-trisize);
+		zeroTriangle.addPoint(R*2-border, R+trisize);
+		zeroTriangle.addPoint(R*2-border-trisize-trisize, R);
+		zeroTriangle.addPoint(R*2-border, R-trisize);
+		zeroTriangle.npoints=4;
+		fortyFiveTriangle=new Polygon();
+		fortyFiveTriangle.xpoints = new int[4];
+		fortyFiveTriangle.ypoints = new int[4];
+		fortyFiveTriangle.npoints=0;
+		int push = 8;
+		int xy45 = (int)((R-circleInset+push)*1.0/Math.sqrt(2));
+		fortyFiveTriangle.addPoint(R+xy45, R-xy45);
+		fortyFiveTriangle.addPoint(R+xy45+6, R-xy45-17);
+		fortyFiveTriangle.addPoint(R+xy45+17, R-xy45-6);
+		fortyFiveTriangle.addPoint(R+xy45, R-xy45);
+		fortyFiveTriangle.npoints=4;
+		textRotator = new TextRotator(1);
+	}
+	public void setAngle(double angle){
+		this.angle = angle;
+		repaint();
+	}
+
+	public Dimension getPreferredSize() {
+		return new Dimension(R*2, R*2);
+	}
+	public void paint(Graphics g){
+		g.setClip(0, 0, getBounds().width, getBounds().height);
+
+		g.drawOval(circleInset, circleInset, R*2-circleInset*2, R*2-circleInset*2);
+		if (MesquiteDouble.isCombinable(angle)){
+			g.setFont(new Font("SansSerif", Font.BOLD, 18));
+			int x, y;
+
+			int hypotenuse = R-46;
+			double adjacent = Math.abs(Math.cos(angle)*hypotenuse); //R is hypotenuse
+			double opposite = Math.abs(Math.sin(angle)*hypotenuse);
+			if (angle < -Math.PI/2){ //upper right
+				x = (int)(R-adjacent);
+				y = (int)(R-opposite);
+			}
+			else if (angle < 0){ // upper left
+				x = (int)(R+adjacent);
+				y = (int)(R-opposite);
+			}
+			else if (angle > Math.PI/2) { //lower left
+				x = (int)(R-adjacent);
+				y = (int)(R+opposite);
+			}
+			else {
+				x = (int)(R+adjacent);
+				y = (int)(R+opposite);
+			}
+
+			textRotator.assignBackground(getBackground());
+			textRotator.drawFreeRotatedText(" Abcdefg", g, R, R, angle, new Point(0, 0), false, null);  //integer nodeloc approximation
+			g.setColor(Color.gray);
+		}
+		else {
+			g.setColor(Color.gray);
+			g.fillOval(R-8, R-8, 16, 16);
+		}
+		g.fillPolygon(zeroTriangle);
+		g.fillPolygon(ninetyTriangle);
+		g.fillPolygon(fortyFiveTriangle);
+	}
+
+
+	public void mouseClicked(MouseEvent e) {
+		int cursorX = e.getX();
+		int cursorY = e.getY();
+
+		if (zeroTriangle.contains(cursorX, cursorY))
+			angle = 0.0;
+		else if (ninetyTriangle.contains(cursorX, cursorY))
+			angle = -Math.PI/2;
+		else if (fortyFiveTriangle.contains(cursorX, cursorY))
+			angle = -Math.PI/4;
+		else{
+			double hypotenuse = Math.sqrt((cursorX-R)*(cursorX-R) + (cursorY-R)*(cursorY-R));
+			if (hypotenuse<= R-circleInset){ // click is within the circle
+				//Now calculate angle
+				double opposite = (R-cursorY)*1.0;
+				angle = Math.asin(opposite/hypotenuse);
+				if (cursorX>=R && cursorY<R) //upper right quadrant; 
+					angle = -angle;
+				else if (cursorX<R && cursorY<R) //upper left quadrant; 
+					angle = - Math.PI + angle;
+				else if (cursorX<=R && cursorY>R) //lower left quadrant
+					angle = Math.PI + angle;
+				else if (cursorX>R && cursorY>R) // lower right quadrant
+					angle = -angle;
+			}
+		}
+		repaint();
+	}
+
+
+	public void mouseEntered(MouseEvent e) {
+	}
+	public void mouseExited(MouseEvent e) {
+	}
+	public void mousePressed(MouseEvent e) {
+	}
+	public void mouseReleased(MouseEvent e) {
+	}
+	/*.................................................................................................................*/
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equalsIgnoreCase("setToDefault")) {
+			angle = MesquiteDouble.unassigned;
+			repaint();
+
+		} 
+	}
+
+	public double getAngle(){
+		return angle;
+	}
+}

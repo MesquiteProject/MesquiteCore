@@ -71,7 +71,7 @@ public class TopologyCongruent extends BooleanForTree {
 		dialog.addLabel(getName() + " Options");
 
 		Checkbox exactMatchCheck = dialog.addCheckBox("Topology must be exact match", exactMatch.getValue());
-		Checkbox onlyInCommonCheck = dialog.addCheckBox("Only terminal consider taxa in common", onlyConsiderTaxaInCommon.getValue());
+		Checkbox onlyInCommonCheck = dialog.addCheckBox("Only consider terminal taxa in common", onlyConsiderTaxaInCommon.getValue());
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {

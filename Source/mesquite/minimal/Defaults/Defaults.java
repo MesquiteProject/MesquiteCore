@@ -23,6 +23,7 @@ import mesquite.externalCommunication.lib.PythonUtil;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.parsimony.lib.ParsAncStatesForModel;
 import mesquite.stochchar.lib.MargLikelihoodForModel;
 
 /** Controls some of Mesquite's default settings (like fonts in windows). */
@@ -66,6 +67,8 @@ public class Defaults extends MesquiteInit  {
 		secondaryChoicesOnInDialogs = new MesquiteBoolean(true);
 		subChoicesOnInDialogs = new MesquiteBoolean(true);
 		respectFileSpecificResourceWidth = new MesquiteBoolean(MesquiteFrame.respectFileSpecificResourceWidth);
+		ParsAncStatesForModel.countStepsInTermPolymorphisms = new MesquiteBoolean(true);
+
 		//useDotPrefs = new MesquiteBoolean(MesquiteModule.prefsDirectory.toString().indexOf(".Mesquite_Prefs")>=0);
 		loadPreferences();
 		EmployerEmployee.useOtherChoices = useOtherChoices.getValue();
@@ -118,6 +121,7 @@ public class Defaults extends MesquiteInit  {
 		if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0)
 			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Suppress Inverted Highlights", makeCommand("toggleXORMode",  this), suppressXORMode);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Ask for Random Number Seeds", makeCommand("toggleAskSeed",  this), askSeed);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Count Steps in Polymorphisms with Unord/Ord Parsimony", makeCommand("toggleCountStepsInTermPolymorphisms",  this), ParsAncStatesForModel.countStepsInTermPolymorphisms);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Partial Names in Tree Reading", makeCommand("togglePartNamesTrees",  this), taxonTruncTrees);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit t0=taxon 1, t1=taxon 2, etc. Names in Tree Reading", makeCommand("toggleT0NamesTrees",  this), taxonT0Trees);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Print Tree Names by Default", makeCommand("printTreeNameByDefault",  this), printTreeNameByDefault);
@@ -193,6 +197,9 @@ public class Defaults extends MesquiteInit  {
 		else if ("askSeed".equalsIgnoreCase(tag)){
 			askSeed.setValue(content);
 			RandomBetween.askSeed = askSeed.getValue();
+		}
+		else if ("countStepsInTermPolymorphisms".equalsIgnoreCase(tag)){
+			ParsAncStatesForModel.countStepsInTermPolymorphisms.setValue(content);
 		}
 		else if ("suppressXORMode".equalsIgnoreCase(tag)){
 			if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0){
@@ -335,6 +342,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "python3Path", PythonUtil.python3Path);
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
 		StringUtil.appendXMLTag(buffer, 2, "suppressXORMode", suppressXORMode);   
+		StringUtil.appendXMLTag(buffer, 2, "countStepsInTermPolymorphisms", ParsAncStatesForModel.countStepsInTermPolymorphisms);  
 		StringUtil.appendXMLTag(buffer, 2, "taxonTruncTrees", taxonTruncTrees);   
 		StringUtil.appendXMLTag(buffer, 2, "taxonT0TreesWarned", taxonT0TreesWarned);   
 		StringUtil.appendXMLTag(buffer, 2, "taxonT0Trees", taxonT0Trees);   
@@ -676,6 +684,13 @@ public class Defaults extends MesquiteInit  {
 			RandomBetween.askSeed = askSeed.getValue();
 			storePreferences();
 			return askSeed;
+		}
+		else if (checker.compare(getClass(), "Sets whether to count steps in terminal polymorphisms in parsimony calculations.", null, commandName, "toggleCountStepsInTermPolymorphisms")) {
+			
+			ParsAncStatesForModel.countStepsInTermPolymorphisms.toggleValue(null);
+			discreetAlert("You will need to re-initiate any calculations or restart Mesquite for this change to take effect.");
+			storePreferences();
+			return ParsAncStatesForModel.countStepsInTermPolymorphisms;
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
