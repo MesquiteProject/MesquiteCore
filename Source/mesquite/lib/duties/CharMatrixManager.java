@@ -128,7 +128,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 							toDelete = true;
 						}
 						else 
-							taxa.setTaxonName(it,taxonName);
+							taxa.setTaxonName(it,taxonName, false);  //Debugg.println
 					} 
 					else {
 						if (!warned)
@@ -139,11 +139,11 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						}
 						warned=true;
 						if (nameTaxa)  
-							taxa.setTaxonName(it,taxonName);
+							taxa.setTaxonName(it,taxonName, false);  //Debugg.println
 					}
 				}
 				else if (nameTaxa && it<taxa.getNumTaxa())  
-					taxa.setTaxonName(it,taxonName);
+					taxa.setTaxonName(it,taxonName, false);  //Debugg.println
 				int whichTaxon = lastTaxonNumber+1;
 				if (!taxonName.equalsIgnoreCase(taxa.getTaxonName(whichTaxon)))
 					whichTaxon = taxa.whichTaxonNumberRev(taxonName, false);  //use reverse order lookup in case newly added taxa with identical names as previous
@@ -271,7 +271,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			boolean toDelete = false;
 			String problem = null;
 			int lastTaxonNumber = -1;
-
+			
 			if (MatrixFileParser.verbose) Debugg.println("@@@@@@@@  CMM ");
 			for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken(false)); it++) {
 
@@ -281,7 +281,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					whichTaxon = taxa.whichTaxonNumberRev(taxonName, false);  //use reverse order lookup in case newly added taxa with identical names as previous
 					if (whichTaxon<0){ //name only if absent
 						if (nameTaxa)
-							taxa.setTaxonName(it,taxonName);
+							taxa.setTaxonName(it,taxonName, false);  //Debugg.println
 					}
 					else {
 						if (nameTaxa){
@@ -290,12 +290,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 								toDelete = true;
 							}
 							else 
-								taxa.setTaxonName(it,taxonName);
+								taxa.setTaxonName(it,taxonName, false);  //Debugg.println
 						}
 					}
 				}
 				else if (nameTaxa){
-					taxa.setTaxonName(it,taxonName);
+					taxa.setTaxonName(it,taxonName, false);  //Debugg.println
 				}
 				whichTaxon = lastTaxonNumber+1;
 				if (!taxonName.equalsIgnoreCase(taxa.getTaxonName(whichTaxon)))
@@ -351,7 +351,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 								int numTaxa = taxa.getNumTaxa();
 								taxa.addTaxa(numTaxa-1, 1, false);  //this is for future
 								data.addTaxa(numTaxa-1, 1);
-								taxa.setTaxonName(numTaxa, deleteID);
+								taxa.setTaxonName(numTaxa, deleteID, false);  //Debugg.println
 							}
 
 						}
@@ -412,6 +412,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 		}  //^^^^^^^^ NOT INTERLEAVED #################################################################
+
 
 		totalTime.end();
 	}

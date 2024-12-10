@@ -268,6 +268,13 @@ public class ListableVector extends FileElement implements StringLister, Command
 				s += " \"" + names[i].getName() + "\" ";
 		return s + " ]";
 	}
+	
+	public String toString() {
+		String first = "";
+			if (objects!= null & objects.size()>0)
+				first = " (elem.0 of class " + objects.elementAt(0).getClass() + ")";
+		return super.toString() + first;
+	}
 	/*-------------ListableVector----------------*/
 	public void addElements(ListableVector objects, boolean notify) {
 		if (objects == null)

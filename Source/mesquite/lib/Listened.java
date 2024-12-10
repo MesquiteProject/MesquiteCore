@@ -26,7 +26,7 @@ public class Listened implements Listenable {
 	private int notifySuppress = 0;
 	private Notification lastNotification = null;
 	private boolean notifyPending = false;
-	private boolean dumpNotified = false;
+	private boolean timeNotifications = false;
 	private static boolean checkMemory = MesquiteTrunk.checkMemory;
 	public static long notifications = 0;
 	public static ClassVector classes, classesNotified; //for detecting efficiency problems
@@ -158,9 +158,21 @@ public class Listened implements Listenable {
 		return false;
 	}
 	/*.................................................................................................................*/
-	/** When true, causes list of notifications made to be echoed to the console*/
-	public void setDumpNotified(boolean dn){
-		dumpNotified = dn;
+	/** When true, causes timing of notifications (ask for timing to be dumped by dumpNotificationTimes)*/
+	public void setTimeNotifications(boolean dn){
+		timeNotifications = dn;
+	}
+	public void dumpNotificationTimes(){
+		for (int m=0; m<listeners.size(); m++) {
+			System.out.println("Listener (" + m + ") "+  (MesquiteListener)listeners.elementAt(m));
+			
+		}
+		if (timeNotifications){
+			System.out.print("|/-|/-|/-|/-  timers for " + this + "::: ");
+			for (int m = 0; m<listeners.size(); m++)
+				System.out.print(" (" + m + ") " + timers[m].getAccumulatedTime());
+			System.out.println();
+		}
 	}
 	MesquiteTimer[] timers = {new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
 			new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
@@ -198,11 +210,11 @@ public class Listened implements Listenable {
 				for (int m=0; m<ls.length; m++) {
 					if (clss == null || (classOnly && clss.isAssignableFrom(ls[m].getClass())) || (!classOnly && !clss.isAssignableFrom(ls[m].getClass())))
 						if (!(ls[m] instanceof Doomable) || !((Doomable)ls[m]).isDoomed()) {
-							if (dumpNotified)
-								MesquiteTrunk.mesquiteTrunk.logln("(" + m + ") notifying " + ls[m] + " of change in " + this + ": " + notification.getCode() + " (caller: " + caller + ")");
+							//if (timeNotifications)
+							//	MesquiteTrunk.mesquiteTrunk.logln("(" + m + ") notifying " + ls[m] + " of change in " + this + ": " + notification.getCode() + " (caller: " + caller + ")");
 							if (classesNotified !=null)
 								classesNotified.record(ls[m].getClass());
-							if (dumpNotified && m<timers.length)
+							if (timeNotifications && m<timers.length)
 								timers[m].start();
 							if (MesquiteTrunk.debugMode) {
 								timer.timeSinceLast();
@@ -225,16 +237,10 @@ public class Listened implements Listenable {
 									}
 								}
 							}
-							if (dumpNotified && m<timers.length){
+							if (timeNotifications && m<timers.length){
 								timers[m].end();
 							}
 						}
-				}
-				if (dumpNotified){
-					System.out.print("timers " );
-					for (int m = 0; m<timers.length; m++)
-						System.out.print(" (" + m + ") " + timers[m].getAccumulatedTime());
-					System.out.println();
 				}
 				MesquiteThread.decrementDuringNotification();
 			}
@@ -282,7 +288,7 @@ public class Listened implements Listenable {
 						Object obj = listeners.elementAt(i);
 						MesquiteListener listener = (MesquiteListener)obj;
 						if ((notified.indexOf(listener)<0) && (!(listener instanceof Doomable) || !((Doomable)listener).isDoomed())){
-							if (dumpNotified)
+							if (timeNotifications)
 								MesquiteTrunk.mesquiteTrunk.logln("notifying " + listener + " of disposal of " + this);
 							int oldSize = listeners.size();
 							notified.addElement(listener);

@@ -1250,10 +1250,13 @@ public class Taxa extends FileElement {
 			setDirty(true);
 			taxon[it].setName(s);
 			warnIfNameIllegal(it, s);
-			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, it, 0, 0);  
+
+			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, it, 0, 0); 
+
 			if (notify)
 				notifyListeners(this, new Notification(
 						MesquiteListener.NAMES_CHANGED, new int[] { it }));
+;
 		}
 	}
 
