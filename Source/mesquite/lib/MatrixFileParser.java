@@ -19,7 +19,7 @@ public class MatrixFileParser {
 	Parser parser;
 	MesquiteStringBuffer tempBuffer;
 	FileBlock block;
-	public static final boolean READ_MATRIX_DIRECT_FROM_FILE = true;
+	public static final boolean READ_MATRIX_DIRECT_FROM_FILE = false;
 	public static boolean verbose = false;
 
 	public MatrixFileParser(FileBlock block){
