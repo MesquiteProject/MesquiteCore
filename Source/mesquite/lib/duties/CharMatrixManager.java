@@ -128,7 +128,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 							toDelete = true;
 						}
 						else 
-							taxa.setTaxonName(it,taxonName, false);  //Debugg.println
+							taxa.setTaxonName(it,taxonName, false);  
 					} 
 					else {
 						if (!warned)
@@ -139,11 +139,11 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						}
 						warned=true;
 						if (nameTaxa)  
-							taxa.setTaxonName(it,taxonName, false);  //Debugg.println
+							taxa.setTaxonName(it,taxonName, false);  
 					}
 				}
 				else if (nameTaxa && it<taxa.getNumTaxa())  
-					taxa.setTaxonName(it,taxonName, false);  //Debugg.println
+					taxa.setTaxonName(it,taxonName, false);  
 				int whichTaxon = lastTaxonNumber+1;
 				if (!taxonName.equalsIgnoreCase(taxa.getTaxonName(whichTaxon)))
 					whichTaxon = taxa.whichTaxonNumberRev(taxonName, false);  //use reverse order lookup in case newly added taxa with identical names as previous
@@ -281,7 +281,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					whichTaxon = taxa.whichTaxonNumberRev(taxonName, false);  //use reverse order lookup in case newly added taxa with identical names as previous
 					if (whichTaxon<0){ //name only if absent
 						if (nameTaxa)
-							taxa.setTaxonName(it,taxonName, false);  //Debugg.println
+							taxa.setTaxonName(it,taxonName, false);  
 					}
 					else {
 						if (nameTaxa){
@@ -290,12 +290,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 								toDelete = true;
 							}
 							else 
-								taxa.setTaxonName(it,taxonName, false);  //Debugg.println
+								taxa.setTaxonName(it,taxonName, false);  
 						}
 					}
 				}
 				else if (nameTaxa){
-					taxa.setTaxonName(it,taxonName, false);  //Debugg.println
+					taxa.setTaxonName(it,taxonName, false);  
 				}
 				whichTaxon = lastTaxonNumber+1;
 				if (!taxonName.equalsIgnoreCase(taxa.getTaxonName(whichTaxon)))
@@ -346,12 +346,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 							//	(PREFEREXISTING; PREFERINCOMING;  SEPARATENOTOVERWRITE)
 							if (overwritingRule == SEPARATENOTOVERWRITE){  //don't deassign extra taxon, and invent new taxon and change value of extraTaxon
 								preserveNewTaxon = true;
-								taxa.setTaxonName(extraTaxon, taxa.getUniqueName(taxa.getTaxonName(whichTaxon)+" (for " + data.getName() + ", from file " + fileBeingRead.getFileName() + ")"));
+								taxa.setTaxonName(extraTaxon, taxa.getUniqueName(taxa.getTaxonName(whichTaxon)+" (for " + data.getName() + ", from file " + fileBeingRead.getFileName() + ")"), false);
 								taxa.setAssociatedLong(colorNameRef, extraTaxon, 13, true);
 								int numTaxa = taxa.getNumTaxa();
 								taxa.addTaxa(numTaxa-1, 1, false);  //this is for future
 								data.addTaxa(numTaxa-1, 1);
-								taxa.setTaxonName(numTaxa, deleteID, false);  //Debugg.println
+								taxa.setTaxonName(numTaxa, deleteID, false); 
 							}
 
 						}
