@@ -41,6 +41,7 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
 import mesquite.lib.ProgressIndicator;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.SingleLineTextField;
@@ -502,7 +503,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		if (StringUtil.blank(directoryPath))
 			return;
 		File directory = new File(directoryPath);
-
+		MesquiteTimer timer = new MesquiteTimer();
 		firstFile = true;
 		processProject.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
 		boolean abort = false;
@@ -532,6 +533,9 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 						abort = true;
 					if (abort)
 						break;
+					if (i==1)
+						timer.start();
+
 					if (files[i]!=null) {
 						boolean acceptableFile = (StringUtil.blank(fileExtension) || StringUtil.endsWithIgnoreCase(files[i], fileExtension));
 						if (acceptableFile){
@@ -592,6 +596,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		}
 		//Debugg.println see if any other suppressions are on! pauseables?
 		zeroMenuResetSuppression();
+		logln("Total time for processing (excluding first file): " + timer.timeSinceVeryStartInHoursMinutesSeconds());
+
 		processProject.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 	}
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
