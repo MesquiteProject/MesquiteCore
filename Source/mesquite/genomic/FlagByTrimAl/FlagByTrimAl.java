@@ -17,18 +17,13 @@ package mesquite.genomic.FlagByTrimAl;
 
 
 
-import java.awt.Button;
-import java.awt.Checkbox;
 import java.awt.Choice;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Random;
 
 
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.externalCommunication.lib.AppChooser;
-import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
@@ -38,22 +33,19 @@ import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.OutputFileProcessor;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.ShellScriptUtil;
 import mesquite.lib.SingleLineTextField;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
-import mesquite.lib.Taxa;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
 
 /* ======================================================================== */
-public class FlagByTrimAl extends MatrixFlaggerForTrimming implements AppUser { 
+public class FlagByTrimAl extends MatrixFlaggerForTrimming { 
 
 	static final String[] autoOptionNames = new String[]{"none", "gappyout", "strict", "strictplus", "automated1"};
 	static final int autoOptionDEFAULT = 4; //automated1
@@ -147,18 +139,6 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements AppUser {
 	}
 	
 	/*.................................................................................................................*/
-	public String getAppOfficialName() {  // the is the official name of the app as stored within the appInfo.xml file
-		return "trimAl";
-	}
-	public String getProgramName() {   // the name for GUI purposes
-		return "trimAl";
-	}
-	public void setHasApp(boolean hasApp) {   // if you want store the fact that the app exists
-	}
-	public void setUsingBuiltinApp(boolean usingBuiltinApp) {   // if you want store that built-in app is being used
-	}
-
-	/*.................................................................................................................*/
 	SingleLineTextField programPathField =  null;
 	SingleLineTextField manualOptionsField =  null;
 
@@ -169,12 +149,10 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming implements AppUser {
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for trimAl",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		
 		
- 		//AppChooser appChooser = new AppChooser("trimAl", true, trimAlPath);
-		AppChooser appChooser = new AppChooser(this, useBuiltInIfAvailable, alternativeManualPath);
+		AppChooser appChooser = new AppChooser("trimAl", "trimAl", useBuiltInIfAvailable, alternativeManualPath);
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
 
-		
 		/*programPathField = dialog.addTextField("Path to trimAl:", trimAlPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");

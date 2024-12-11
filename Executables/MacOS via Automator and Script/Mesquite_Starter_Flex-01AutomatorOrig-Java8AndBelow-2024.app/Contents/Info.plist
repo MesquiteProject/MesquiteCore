@@ -32,13 +32,13 @@
 	<key>CFBundleExecutable</key>
 	<string>Automator Application Stub</string>
 	<key>CFBundleIconFile</key>
-	<string>Mesquite.icns</string>
+	<string>ApplicationStub</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.apple.automator.Mesquite-Starter-Flex-01AutomatorApp-Universal-2024December</string>
+	<string>com.apple.automator.Mesquite-Starter-Flex-01AutomatorOrig-Java8AndBelow-2024</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Mesquite_Starter_Flex-01AutomatorApp-Universal-2024December</string>
+	<string>Mesquite_Starter_Flex-01AutomatorOrig-Java8AndBelow-2024</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

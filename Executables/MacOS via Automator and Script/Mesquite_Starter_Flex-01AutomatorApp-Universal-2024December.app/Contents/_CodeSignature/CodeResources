@@ -16,10 +16,6 @@
 		<data>
 		GFHRfFTmEbAuZE1iyKibKmkU2+0=
 		</data>
-		<key>Resources/Mesquite.icns</key>
-		<data>
-		mqnGaSRzbpi8l2W1di+4pqXeH9s=
-		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
@@ -56,25 +52,14 @@
 			UOUbWh1OGuLBljFDZpqdwARDPWymLLRuoV5MvojegUE=
 			</data>
 		</dict>
-		<key>Resources/Mesquite.icns</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			mqnGaSRzbpi8l2W1di+4pqXeH9s=
-			</data>
-			<key>hash2</key>
-			<data>
-			i5EC+dPX7zdVv0gkr98Ez5XSpVYjE3Zym2KoGfXHfAk=
-			</data>
-		</dict>
 		<key>document.wflow</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			2vPvTP9b4kdRcXE7Nf84Km7rymo=
+			opja7o1T7jUTq/TO1xuUFdCNhX4=
 			</data>
 			<key>requirement</key>
-			<string>identifier document and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "8LT29UFQPL"</string>
+			<string>cdhash H"3e2963f27c1cb9ba53673a5b7741ee01cfb22a06" or cdhash H"a298daee8d53ee3513abf4ced71b9415d08d857e"</string>
 		</dict>
 	</dict>
 	<key>rules</key>

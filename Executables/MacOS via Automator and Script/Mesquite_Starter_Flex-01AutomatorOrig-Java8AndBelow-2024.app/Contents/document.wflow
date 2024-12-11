@@ -51,7 +51,7 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>-- This makes a list of the dropped files to remember and later save into a text file (need to wait in case need to set up the folder to receive the text file)on run {input, parameters}	set DELIMITER to (ASCII character 0) #to separate file paths, because NUL can't be in a file path	set inputFiles to ""	set inputList to input as list		set isFirst to true	repeat with theItem in inputList		set droppedFile to POSIX path of theItem		if isFirst then			set inputFiles to droppedFile		else			set inputFiles to inputFiles &amp; DELIMITER &amp; droppedFile		end if		set isFirst to false	end repeat		return inputFilesend run</string>
+					<string>-- This makes a list of the dropped files to remember and later save into a text file (need to wait in case need to set up the folder to receive the text file)on run {input, parameters}	set inputFiles to ""	set inputList to input as list		set isFirst to true	repeat with theItem in inputList		set droppedFile to POSIX path of theItem		if isFirst then			set inputFiles to droppedFile		else			set inputFiles to inputFiles &amp; ":" &amp; droppedFile		end if		set isFirst to false	end repeat		return inputFilesend run</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>
@@ -103,14 +103,14 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:315.000000</string>
+				<string>587.250000:111.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -215,14 +215,14 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:418.000000</string>
+				<string>587.250000:152.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Set Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -344,14 +344,14 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:545.000000</string>
+				<string>587.250000:193.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/New Folder.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -448,14 +448,14 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:790.000000</string>
+				<string>587.250000:234.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -558,14 +558,14 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:893.000000</string>
+				<string>587.250000:275.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Set Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -687,14 +687,14 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:1020.000000</string>
+				<string>587.250000:316.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/New Folder.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -1175,7 +1175,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:1061.000000</string>
+				<string>587.250000:357.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Rename Finder Items.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1285,14 +1285,14 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:1163.000000</string>
+				<string>587.250000:398.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Get Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -1335,7 +1335,7 @@ end run</string>
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>-- This does two things:-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. This includes the paths to files containing information about memory use etc., and also the encapsulated path of the app-- (2) Now that the app's unique folder (named by the encapsulated path of the app) has been created in Mesquite_Support_Files, put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open.on getPath(this_text, stripLast)	try				set DELIMITER to ":" #(ASCII character 13)		set AppleScript's text item delimiters to DELIMITER		set the item_list to every text item of this_text		set num to the number of items in item_list		if stripLast then			set lasti to num - 2		else			set lasti to num		end if		set the item_list to items 2 through lasti of item_list		set AppleScript's text item delimiters to the "/"		set this_text to the item_list as string		set AppleScript's text item delimiters to ""		set this_text to "/" &amp; this_text		return this_text	end try	return ""end getPathon writeTextToFile(theText, theFile)	try		set theFile to theFile as string		set theOpenedFile to open for access file theFile with write permission		write theText to theOpenedFile		close access theOpenedFile		return true	on error		try			close access file theFile		end try		return false	end tryend writeTextToFileon replace_text(this_text, search_string, replacement_string)	set prevTIDs to AppleScript's text item delimiters	set AppleScript's text item delimiters to the search_string	set the item_list to every text item of this_text	set AppleScript's text item delimiters to the replacement_string	set this_text to the item_list as string	set AppleScript's text item delimiters to prevTIDs	return this_textend replace_texton run {input, parameters}	set whereAmI to getPath((path to me as text), true)	set encapsulatedPathToMe to POSIX path of (path to me)	set encapsulatedPathToMe to replace_text(encapsulatedPathToMe, "/", "#") -- this isn't guaranteed but in a non-perverse world it will work		-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. 	set javaLocFile to whereAmI &amp; "/RunningOptionsForFlex/Mesquite-JavaToUse.txt"	set javaLoc to "java"	try		set lns to paragraphs of (read POSIX file javaLocFile)		set javaLoc to first item in lns	end try	set memoryFile to whereAmI &amp; "/RunningOptionsForFlex/Mesquite-MemoryToUse.txt"	set memory to 1	try		set lns to paragraphs of (read POSIX file memoryFile)		set memory to first item in lns	end try	set flagsFile to whereAmI &amp; "/RunningOptionsForFlex/Mesquite-FlagsToUse.txt"	set flags to ""	try		set lns to paragraphs of (read POSIX file flagsFile)		set flags to first item in lns	end try	set results to whereAmI	set results to results &amp; ":" &amp; encapsulatedPathToMe --send into Mesquite the path to me rather than to the dropped files, so Mesquite knows where to look for filesToOpen.txt		-- (2) Put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open	if input is not equal to {} then -- writing input files to file so Mesquite can find and open them		set droppedFilesAsText to replace_text(input as text, (ASCII character 0), linefeed) #NUL was used to separate file paths in first Applescript		set theFile to (((path to home folder) as string) &amp; "Mesquite_Support_Files:" &amp; encapsulatedPathToMe &amp; ":filesLastRequested.txt")		writeTextToFile(input as text, theFile)				-- putting list of files to open into file for Mesquite to find when it opens		set theFile to (((path to home folder) as string) &amp; "Mesquite_Support_Files:" &amp; encapsulatedPathToMe &amp; ":filesToOpen.txt")		writeTextToFile(droppedFilesAsText, theFile)	end if		set results to javaLoc &amp; ":" &amp; flags &amp; ":" &amp; memory &amp; ":" &amp; results	return resultsend run</string>
+					<string>-- This does two things:-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. This includes the paths to files containing information about memory use etc., and also the encapsulated path of the app-- (2) Now that the app's unique folder (named by the encapsulated path of the app) has been created in Mesquite_Support_Files, put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open.on getPath(this_text, stripLast)	try		set AppleScript's text item delimiters to the ":"		set the item_list to every text item of this_text		set num to the number of items in item_list		if stripLast then			set lasti to num - 2		else			set lasti to num		end if		set the item_list to items 2 through lasti of item_list		set AppleScript's text item delimiters to the "/"		set this_text to the item_list as string		set AppleScript's text item delimiters to ""		set this_text to "/" &amp; this_text		return this_text	end try	return ""end getPathon writeTextToFile(theText, theFile)	try		set theFile to theFile as string		set theOpenedFile to open for access file theFile with write permission		write theText to theOpenedFile		close access theOpenedFile		return true	on error		try			close access file theFile		end try		return false	end tryend writeTextToFileon replace_text(this_text, search_string, replacement_string)	set prevTIDs to AppleScript's text item delimiters	set AppleScript's text item delimiters to the search_string	set the item_list to every text item of this_text	set AppleScript's text item delimiters to the replacement_string	set this_text to the item_list as string	set AppleScript's text item delimiters to prevTIDs	return this_textend replace_texton run {input, parameters}	set whereAmI to getPath((path to me as text), true)	set encapsulatedPathToMe to POSIX path of (path to me)	set encapsulatedPathToMe to replace_text(encapsulatedPathToMe, "/", "#") -- this isn't guaranteed but in a non-perverse world it will work		-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. 	set javaLocFile to whereAmI &amp; "/RunningOptionsForFlex/Mesquite-JavaToUse.txt"	set javaLoc to "java"	try		set lns to paragraphs of (read POSIX file javaLocFile)		set javaLoc to first item in lns	end try	set memoryFile to whereAmI &amp; "/RunningOptionsForFlex/Mesquite-MemoryToUse.txt"	set memory to 1	try		set lns to paragraphs of (read POSIX file memoryFile)		set memory to first item in lns	end try	set flagsFile to whereAmI &amp; "/RunningOptionsForFlex/Mesquite-FlagsToUse.txt"	set flags to ""	try		set lns to paragraphs of (read POSIX file flagsFile)		set flags to first item in lns	end try	set results to whereAmI	set results to results &amp; ":" &amp; encapsulatedPathToMe --send into Mesquite the path to me rather than to the dropped files, so Mesquite knows where to look for filesToOpen.txt		-- (2) Put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open	if input is not equal to {} then -- writing input files to file so Mesquite can find and open them		set droppedFilesAsText to replace_text(input as text, ":", linefeed)		set theFile to (((path to home folder) as string) &amp; "Mesquite_Support_Files:" &amp; encapsulatedPathToMe &amp; ":filesLastRequested.txt")		writeTextToFile(input as text, theFile)				-- putting list of files to open into file for Mesquite to find when it opens		set theFile to (((path to home folder) as string) &amp; "Mesquite_Support_Files:" &amp; encapsulatedPathToMe &amp; ":filesToOpen.txt")		writeTextToFile(droppedFilesAsText, theFile)	end if		set results to javaLoc &amp; ":" &amp; flags &amp; ":" &amp; memory &amp; ":" &amp; results	return resultsend run</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>
@@ -1387,14 +1387,14 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:1408.000000</string>
+				<string>587.250000:439.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -1485,46 +1485,16 @@ sleeping="S"
 if [ "$runningOrSleeping" == "$sleeping" ]; 
 then 
 echo "SLEEPING"&gt;&gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 
-echo "$PIDrecorded"&gt;&gt; Mesquite_Support_Files/Mesquite_Flex_pid.txt 
-osascript -e "tell application \"System Events\"" -e "set processList to every process whose unix id is \"${PIDrecorded//\"/\\\"}\"" -e "repeat with proc in processList" -e "set the frontmost of proc to true" -e "end repeat" -e "end tell"
 elif [ "$runningOrSleeping" == "$running" ]; 
 then 
 echo "RUNNING"&gt;&gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 
-echo "$PIDrecorded"&gt;&gt; Mesquite_Support_Files/Mesquite_Flex_pid.txt 
-osascript -e "tell application \"System Events\"" -e "set processList to every process whose unix id is \"${PIDrecorded//\"/\\\"}\"" -e "repeat with proc in processList" -e "set the frontmost of proc to true" -e "end repeat" -e "end tell"
 else
 
 
 if [[ ${#myvar} &lt;1 ]]; #no flags passed in
 	then
-		#Java 9 or above: Following call uses --add-exports, which assumes Java 9 or above. If that fails, we'll later try Java 8
-		nohup "${JAVALOC}" --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
+		nohup "${JAVALOC}" -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
 		mesquite_PID=$!
-		echo "CHECKING of Mesquite started with add-exports flag" &gt;&gt; Mesquite_Support_Files/stdout.txt
-		sleep 1
-		psResults=$(ps -p "$mesquite_PID" -o stat)
-		IN="$psResults"
-		runningStatus=(${IN//;/ })
-		runningOrSleeping="${runningStatus[1]}"
-		running="R"
-		sleeping="S"
-		if [ "$runningOrSleeping" == "$sleeping" ]; 
-		then 
-		started=TRUE 
-		elif [ "$runningOrSleeping" == "$running" ]; 
-		then 
-		started=TRUE
-		fi
-		if [ "$started" ]; 
-		then
-			echo "Mesquite started with add-exports." &gt;&gt; Mesquite_Support_Files/Mesquite_Support_Files/stdout.txt
-		else
-			#The add-exports failed; try instead without. This probably means we are starting Java 8
-			echo "Mesquite failed to started with add-exports; attempting without." &gt;&gt; Mesquite_Support_Files/stdout.txt
-			nohup "${JAVALOC}" -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
-			mesquite_PID=$!
-		fi
-
 	else #flags passed in; use those
 		nohup "${JAVALOC}" ${FLAGS} -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
 		mesquite_PID=$!
@@ -1534,9 +1504,8 @@ echo "$mesquite_PID" &gt;| Mesquite_Support_Files/"$encapsulatedPathToMe"/curren
 
 fi
 
-
-
 #nohup used to disown process allowing backgrounign to make it continue
+# this is for Java 8 or before because it doesn't use add-exports. 
 
 # optionKeyDown=$(osascript -l JavaScript -e "ObjC.import('Cocoa'); ($.NSEvent.modifierFlags &amp; $.NSEventModifierFlagOption) &gt; 1")
 </string>
@@ -1654,7 +1623,7 @@ fi
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>552.750000:1590.000000</string>
+				<string>587.250000:1181.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1758,7 +1727,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:1631.000000</string>
+				<string>587.250000:1222.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1866,94 +1835,94 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>0</integer>
+				<integer>1</integer>
 				<key>location</key>
-				<string>552.750000:1672.000000</string>
+				<string>587.250000:1325.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Set Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>0</integer>
+			<integer>1</integer>
 		</dict>
 	</array>
 	<key>connectors</key>
 	<dict>
-		<key>0805AB50-1053-4B2C-9F7D-040537AAF0AD</key>
+		<key>1A8493AB-C92A-4820-A90F-423164BB890F</key>
+		<dict>
+			<key>from</key>
+			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
+			<key>to</key>
+			<string>F849A9B6-79F4-4C68-8A3B-7EB1D38891CF - F849A9B6-79F4-4C68-8A3B-7EB1D38891CF</string>
+		</dict>
+		<key>465C4D62-3D17-4A70-B43A-F72C0F3178A8</key>
 		<dict>
 			<key>from</key>
 			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
 			<key>to</key>
 			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
 		</dict>
-		<key>2CFB3CD2-4D4F-4387-994E-7F9DD6C455C7</key>
+		<key>48568158-7115-48EE-99B2-8E2898206AF7</key>
 		<dict>
 			<key>from</key>
-			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
+			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
 			<key>to</key>
-			<string>CE280BC0-9DA5-4B7A-B552-B8B9BACF1851 - CE280BC0-9DA5-4B7A-B552-B8B9BACF1851</string>
+			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
 		</dict>
-		<key>3EC918DC-3761-4CDA-A425-52995A2359FF</key>
+		<key>5B9C98EF-1D27-4AD3-8D5F-F8555C69708C</key>
 		<dict>
 			<key>from</key>
-			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
+			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
 			<key>to</key>
-			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
+			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
 		</dict>
-		<key>4A3C00CB-1897-44DF-8031-7B4A7B56993E</key>
+		<key>654C3B52-6B65-4D2C-BA1D-7F2A39B037C8</key>
 		<dict>
 			<key>from</key>
 			<string>F849A9B6-79F4-4C68-8A3B-7EB1D38891CF - F849A9B6-79F4-4C68-8A3B-7EB1D38891CF</string>
 			<key>to</key>
 			<string>68382CD1-D430-4B49-B9DD-A7A6818AB49F - 68382CD1-D430-4B49-B9DD-A7A6818AB49F</string>
 		</dict>
-		<key>5F2E12EA-468D-4682-8DCA-3ED9192693F0</key>
-		<dict>
-			<key>from</key>
-			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
-			<key>to</key>
-			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
-		</dict>
-		<key>782459A8-47F9-4514-ABFF-A489E2841564</key>
-		<dict>
-			<key>from</key>
-			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
-			<key>to</key>
-			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
-		</dict>
-		<key>A8398F87-7E30-4F0B-BDC7-25E502061973</key>
-		<dict>
-			<key>from</key>
-			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
-			<key>to</key>
-			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
-		</dict>
-		<key>C5548C43-0A6B-406E-BFF8-4ADE70BF1226</key>
-		<dict>
-			<key>from</key>
-			<string>B03365C9-D989-4E89-AD9B-7E0E25FC5E4B - B03365C9-D989-4E89-AD9B-7E0E25FC5E4B</string>
-			<key>to</key>
-			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
-		</dict>
-		<key>D33AB18F-5ED4-4FA6-88A8-451D4317F47A</key>
-		<dict>
-			<key>from</key>
-			<string>CE280BC0-9DA5-4B7A-B552-B8B9BACF1851 - CE280BC0-9DA5-4B7A-B552-B8B9BACF1851</string>
-			<key>to</key>
-			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
-		</dict>
-		<key>D6093400-C14D-422E-8AD2-043B0F4A2D60</key>
+		<key>829D115D-F0D4-417D-8AB3-C1FF6B56E575</key>
 		<dict>
 			<key>from</key>
 			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
 			<key>to</key>
 			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
 		</dict>
-		<key>F1A76A94-87F4-4874-A529-B218698621EE</key>
+		<key>9EF4EEC4-0341-4E0A-8515-5BBDCA543B07</key>
 		<dict>
 			<key>from</key>
-			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
+			<string>CE280BC0-9DA5-4B7A-B552-B8B9BACF1851 - CE280BC0-9DA5-4B7A-B552-B8B9BACF1851</string>
 			<key>to</key>
-			<string>F849A9B6-79F4-4C68-8A3B-7EB1D38891CF - F849A9B6-79F4-4C68-8A3B-7EB1D38891CF</string>
+			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
+		</dict>
+		<key>CE9947E2-3E28-4FE6-92D7-4132BD6F5FB5</key>
+		<dict>
+			<key>from</key>
+			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
+			<key>to</key>
+			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
+		</dict>
+		<key>D0627BC7-1D37-4F82-83B3-7A7DEAC1FEBC</key>
+		<dict>
+			<key>from</key>
+			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
+			<key>to</key>
+			<string>CE280BC0-9DA5-4B7A-B552-B8B9BACF1851 - CE280BC0-9DA5-4B7A-B552-B8B9BACF1851</string>
+		</dict>
+		<key>D7E044C6-E6F8-47C4-A15A-C407D2F5D379</key>
+		<dict>
+			<key>from</key>
+			<string>B03365C9-D989-4E89-AD9B-7E0E25FC5E4B - B03365C9-D989-4E89-AD9B-7E0E25FC5E4B</string>
+			<key>to</key>
+			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
+		</dict>
+		<key>EDD9A853-2AEF-43CF-93C6-8045712C35BB</key>
+		<dict>
+			<key>from</key>
+			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
+			<key>to</key>
+			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
 		</dict>
 	</dict>
 	<key>variables</key>
