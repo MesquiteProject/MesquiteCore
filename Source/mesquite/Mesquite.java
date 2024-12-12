@@ -128,8 +128,8 @@ public class Mesquite extends MesquiteTrunk
 	public void endJob() {
 		deleteTempDirectory();
 		if (MesquiteTrunk.startedFromFlex2) {
-		String currentPIDPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + MesquiteTrunk.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "currentPID.txt";
-		MesquiteFile.deleteFile(currentPIDPath);
+			String currentPIDPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + MesquiteTrunk.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "currentPID.txt";
+			MesquiteFile.deleteFile(currentPIDPath);
 		}
 	}
 
@@ -448,9 +448,6 @@ public class Mesquite extends MesquiteTrunk
 			discreetAlert("This version of Mesquite requires Java 1.8 or higher.  Please update your version of Java, or use an older version of Mesquite.  Please be aware however that earlier versions of Mesquite may have bugs that affect your results.  Please check the Mesquite website for information.");
 			exit(true, 0);
 		}
-		if (isJavaVersionLessThan(1.9)){
-			discreetAlert("This version of Mesquite requires Java 1.9 or higher for some important functions.  If you try to use those functions, Mesquite may crash. It is HIGHLY RECOMMENDED that you update your version of Java to the latest JDK version of Java.  Please check the Mesquite website for information.");
-		}
 
 		if (verboseStartup) System.out.println("main init 19");
 		logWindow.setConsoleMode(consoleMode);
@@ -688,7 +685,7 @@ public class Mesquite extends MesquiteTrunk
 		new MesquiteColorTable(); //initialize default charstate colors
 
 		resetContainingMenuBar();
-	/* hire all inits */
+		/* hire all inits */
 		if (verboseStartup) System.out.println("main init 29");
 		hireAllEmployees(MesquiteInit.class);
 
@@ -754,6 +751,15 @@ public class Mesquite extends MesquiteTrunk
 			ConsoleThread cot = new ConsoleThread(this, this, true);
 			cot.start();
 			consoleThread = cot;
+		}
+		if (isJavaVersionLessThan(1.9)){
+			String warning1_8 = "WARNING: You are running an old version of Java, 1.8 or lower. It is HIGHLY RECOMMENDED that you update your version of Java to the latest JDK version of Java"
+					+" (for example, JDK 21 or later) from oracle.com. Because you are using an old version of Java, Mesquite will crash with some important functions.";
+			if (!java1_8warned)
+				discreetAlert(warning1_8);
+			else
+				logln("\n\n=============\n" + warning1_8 + "\n=============\n\n");
+			java1_8warned = true;
 		}
 		storePreferences();
 
@@ -974,6 +980,9 @@ public class Mesquite extends MesquiteTrunk
 		else if ("browserString".equalsIgnoreCase(tag)){
 			browserString = (content);
 		}
+		else if ("java1_8warned".equalsIgnoreCase(tag)){
+			java1_8warned = MesquiteBoolean.fromTrueFalseString(content);
+		}
 		else if ("defaultHideMesquiteWindow".equalsIgnoreCase(tag)){
 			defaultHideMesquiteWindow=MesquiteBoolean.fromTrueFalseString(content);
 		}
@@ -1092,6 +1101,7 @@ public class Mesquite extends MesquiteTrunk
 		StringUtil.appendXMLTag(buffer, 2, "scriptRecoveryDelay", ShellScriptUtil.recoveryDelay);  
 		StringUtil.appendXMLTag(buffer, 2, "maxNumMatrixUndoTaxa", maxNumMatrixUndoTaxa);  
 		StringUtil.appendXMLTag(buffer, 2, "maxNumMatrixUndoChars", maxNumMatrixUndoChars);  
+		StringUtil.appendXMLTag(buffer, 2, "java1_8warned", java1_8warned);  
 
 		StringUtil.appendXMLTag(buffer, 2, "lastVersionRun", lastVersionRun);  
 		//	StringUtil.appendXMLTag(buffer, 2, "listUrgeGiven", listUrgeGiven);  
@@ -1937,7 +1947,7 @@ public class Mesquite extends MesquiteTrunk
 				displayer.showFile(getRootPath()  + "lesser.txt", 100000, true); 
 			return displayer;
 		}
-	/*	else if (checker.compare(this.getClass(), "Shows the currently executing command and offers to stop it.", null, commandName, "currentCommand")) {
+		/*	else if (checker.compare(this.getClass(), "Shows the currently executing command and offers to stop it.", null, commandName, "currentCommand")) {
 			if (MainThread.getCurrentlyExecuting()!=null) {
 				MainThread.mainThread.suspend();
 				if (!AlertDialog.query(containerOfModule(), "Current Command", "The current command is\n" + MainThread.getCurrentlyExecuting().getListName(), "Continue", "STOP COMMAND")) {
@@ -1954,7 +1964,7 @@ public class Mesquite extends MesquiteTrunk
 			else
 				alert("There is no command currently executing");
 		}
-		*/
+		 */
 		else if (checker.compare(this.getClass(), "Shows the list of pending commands and offers some to be suspended.", null, commandName, "pendingCommands")) {
 			if (MesquiteCommand.anyQueuedCommands(true)) {
 				String message = "This is a list of pending commands.  If you want to suspend any commands, select them and hit STOP COMMAND.  Otherwise, hit CANCEL.  The currently executing command is NOT listed.";
@@ -2502,8 +2512,8 @@ public class Mesquite extends MesquiteTrunk
 		}
 	}
 
-	
-    
+
+
 	public Mesquite(){
 		super();
 	}
@@ -2599,16 +2609,16 @@ public class Mesquite extends MesquiteTrunk
 				textEdgeCompensationHeight = 7; //6 on mac; 7 on pc
 				textEdgeCompensationWidth = 22; //12 on mac; 28 on pc
 			}
-			
+
 			/*/if JDK≥9 register quit handler */
 			if (getJavaVersionAsDouble()>=1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
 				applicationHandler9 = new ApplicationHandler9(this);
 			}
 			else
 				mesq.registerMacHandlers();  //no longer useful unless old Java & OS
-		
 
-			
+
+
 			if (MesquiteTrunk.debugMode)
 				System.out.println("main constructor 4");
 			MainThread.mainThread = new MainThread();
@@ -2635,7 +2645,7 @@ public class Mesquite extends MesquiteTrunk
 						s += " [ " + args[i] + " ]";
 				}
 				MesquiteTrunk.mesquiteTrunk.logln(s);
-					
+
 				for ( int i = 0; i < args.length; i++ ) {
 					if (args[i]!=null && !args[i].startsWith("-")) {
 						if (MesquiteTrunk.startedFromFlex2) { //the argument is not a file to open, but rather the encapsulatedpath of the app on macOS to find the list of files to open

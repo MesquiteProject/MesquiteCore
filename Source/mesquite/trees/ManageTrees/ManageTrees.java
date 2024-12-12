@@ -1606,7 +1606,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		Taxa taxa=null;
 		if (file.getProject().getNumberTaxas()==1)
 			taxa = file.getProject().getTaxa(0); //as default)
-
+		else if (file.getCurrentTaxa() != null)
+			taxa = file.getCurrentTaxa();
 		TreeVector trees = new TreeVector( taxa);
 		trees.setTaxa(taxa);
 		if (getNumberTreeBlocks(taxa)>1)

@@ -69,7 +69,7 @@ import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.TaxaManager;
 
 /* ======================================================================== */
-public class FlagByGblocks extends MatrixFlaggerForTrimming implements AppUser, ActionListener, TextListener, ItemListener {
+public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionListener, TextListener, ItemListener {
 
 	static final double b1DEFAULT = 0.5; //Minimum Number Of Sequences For A Conserved Position (50% of the number of sequences + 1)
 	static final double b2DEFAULT = 0.85; //Minimum Number Of Sequences For A Flank Position (85% of the number of sequences)
@@ -223,17 +223,6 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements AppUser, 
 		paramsInfo.setText(info);
 	}
 	/*.................................................................................................................*/
-	public String getAppOfficialName() {  // the is the official name of the app as stored within the appInfo.xml file
-		return "Gblocks";
-	}
-	public String getProgramName() {   // the name for GUI purposes
-		return "Gblocks";
-	}
-	public void setHasApp(boolean hasApp) {   // if you want store the fact that the app exists
-	}
-	public void setUsingBuiltinApp(boolean usingBuiltinApp) {   // if you want store that built-in app is being used
-	}
-	/*.................................................................................................................*/
 	SingleLineTextField programPathField =  null;
 
 	DoubleField b1F, b2F;
@@ -246,7 +235,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements AppUser, 
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for Gblocks",buttonPressed);  
-		AppChooser appChooser = new AppChooser(this, useBuiltInIfAvailable, alternativeManualPath);
+		AppChooser appChooser = new AppChooser("Gblocks", "Gblocks", useBuiltInIfAvailable, alternativeManualPath);
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
 		/*programPathField = dialog.addTextField("Path to Gblocks:", gblocksPath, 40);

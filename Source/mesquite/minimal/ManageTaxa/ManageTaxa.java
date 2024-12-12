@@ -933,36 +933,35 @@ public class ManageTaxa extends TaxaManager {
 				if (newTaxa.getTaxon(0)!=null)
 					ftn = "; Name of first taxon: " + newTaxa.getTaxon(0).getName();
 				Taxa eTOrder = existsInOtherFile(newTaxa, file, false); //this is considering taxon order; if null then order must differ
-
-				String w = ("There is taxa block that appears to be a duplicate.  \n\nFirst block: \"" + eT.getName() + "\"; \nSecond block: \"" + newTaxa.getName() + "\"" + ftn + "."); 
+				String warning = ("There is a taxa block that appears to be a duplicate.  \n\nFirst block: \"" + eT.getName() + "\"; \nSecond block: \"" + newTaxa.getName() + "\"" + ftn + "."); 
 				helpString = "In deleting the second taxon block, any other information (e.g., character matrices) associated with that second block will be reattached to the first block";
 				String button = "Delete";
 				//if unique block IDs match AND order same, then delete this block and proceed without querying user
 				//if unique block IDs match and order different, then query with warning that ordering will change
 
 				if (newTaxa.getUniqueID()!= null && eT.getUniqueID() != null && eT.getUniqueID().equals(newTaxa.getUniqueID())){  //same id's; names must be same
-					w = "This file has a taxa block with same ID and taxon names and is thus a duplicate.  First block: \"" + eT.getName() + "\"; Second block: \"" + newTaxa.getName() + "\"" + ftn + ". ";
+					warning = "This file has a taxa block with same ID and taxon names and is thus a duplicate.  First block: \"" + eT.getName() + "\"; Second block: \"" + newTaxa.getName() + "\"" + ftn + ". ";
 					if (eTOrder != null)
 						autoDelete = true;
 				}
 				if (eTOrder == null) {
-					w += " The two taxa blocks have a different ordering of taxa.  If you delete the second block, the ordering of the first block will be maintained.";
+					warning += " The two taxa blocks have a different ordering of taxa.  If you delete the second block, the ordering of the first block will be maintained.";
 				}
-
+				
 
 				if (!autoDelete && (alerts.getValue() && !MesquiteThread.isScripting())) {
-					if (AlertDialog.query(containerOfModule(), "Duplicate taxa block?", w + " \n\nDo you want to delete the second block?", button, "Keep", 1, helpString)){
+					if (AlertDialog.query(containerOfModule(), "Duplicate taxa block?", warning + " \n\nDo you want to delete the second block?", button, "Keep", 1, helpString)){
 						if (eTOrder == null)
 							setOrder(eT, newTaxa);
 						newTaxa.dispose();
 						file.setCurrentTaxa(eT);
 						if (eTOrder == null) 
 							eT.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
-						return new TaxaBlock(null, null);
+					return new TaxaBlock(null, null);
 					}
 				}
 				else {
-					discreetAlert(w + "\nOnly the first block will be kept.  Any other information (e.g., character matrices) associated with that second block will be reattached to the first block. " +
+					discreetAlert(warning + "\nOnly the first block will be kept.  Any other information (e.g., character matrices) associated with that second block will be reattached to the first block. " +
 							" If you are reading a linked file and do not intend to delete this taxon block from the linked file, then do not save the file!");
 					if (eTOrder == null)
 						setOrder(eT, newTaxa);

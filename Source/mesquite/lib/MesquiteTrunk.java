@@ -133,6 +133,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 
 	public static int  maxNumMatrixUndoTaxa = 1000;
 	public static int  maxNumMatrixUndoChars = 15000;
+	public static boolean java1_8warned = false;
 
 	public static String logFileName = "Mesquite_Log";
 	public static String recentFilesFileName = "RecentFiles.xml";
