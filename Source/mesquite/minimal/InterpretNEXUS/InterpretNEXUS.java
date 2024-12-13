@@ -145,7 +145,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 						neededHeight = i;  //remember height of nR if it's the heighest one yet.
 				}
 			}
-			
+
 			if (neededHeight < index){ //nb needs to jump to height; move it
 				blocks.removeElement(nb, false);
 				blocks.insertElementAt(nb, neededHeight, false);
@@ -308,6 +308,8 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 						alert("Not a valid NEXUS file (first token is \"" + token + "\"");
 					}
 					else {
+						MesquiteTimer fileReadTimer = new MesquiteTimer();
+						fileReadTimer.start();
 						FileBlock block;
 						boolean abort = false;
 						boolean mesquiteBlockFound = false;
@@ -356,6 +358,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 							mNF.close();
 							resetAllMenuBars();
 							decrementMenuResetSuppression();
+							fileReadTimer.end();
 							return;
 						}
 						if (fileComments.length()>0) {
@@ -384,213 +387,202 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 
 						}
 						progIndicator.goAway();
-						if (!MesquiteFile.suppressReadWriteLogging) 
-							logln("File reading complete (file " + mNF.getFileName() + ")");
-					}
-				}
-			}
-			catch (MesquiteException e){
-			}
-			mNF.closeReading();
-			//mNF.reportTimes();
-			if (mNF.foreignElements.size()>0){
+						fileReadTimer.end();
 
-
-				logln("");
-				logln("This file contained one or more blocks or commands not recognized; a list is written below.  It is possible that some packages of Mesquite that are not currently loaded might be able to recognize the commands; try rereading after choosing \"Use All Installed Modules\" under \"Activate/Deactivate Packages\".\n");
-				for (int i=0; i<mNF.foreignElements.size(); i++) {
-					logln("Unrecognized " + mNF.foreignElements.elementAt(i));
-				}
-				logln("");
-			}
-			mNF.foreignElements = null;
-		}
-		if (mf.windowToActivate !=null) {
-			MesquiteWindow w = mf.windowToActivate;
-			if (w.isPoppedOut() && !w.getPopAsTile()){
-				MesquiteFrame f = mf.getCoordinatorModule().getModuleWindow().getParentFrame();
-				MesquiteWindow pw = f.frontMostInLocation(MesquiteFrame.MAIN);
-				if (pw != null)
-					w = pw;
-			}
-
-			MesquiteFrame f = w.getParentFrame();
-			if (f != null){
-				f.setAsFrontWindow(w);
-				f.showFrontWindow();
-			}
-			mf.windowToActivate = null;
-		}
-		String s = null;
-		if ((s = mNF.getOpenAsUntitled())!=null ){
-			if (mNF.getReadCategory() == MesquiteFile.INCLUDED){
-				alert("File reading encountered the following issues.  Some components of the file might not have been read properly.  Please check any data in the file.\n" + s);
-			}
-			else {
-				alert("File reading encountered the following issues.  Some components of the file might not have been read properly, and could be lost upon resaving.  For safety's sake, you will be asked to choose another file name to avoid writing over the current file.\n" + s);
-				mNF.changeLocation(mNF.getDirectoryName(),"Untitled");
-				boolean newFilenameChosen = mNF.changeLocation("Please save the file under a new name");
-				mNF.setDirtiedByCommand(true);
-				getFileCoordinator().writeFile(mNF);
-			}
-		}
-		if (getProject() != null) {
-			resolveCharMatrixIDs();
-			MesquiteFrame f = getProject().getFrame();
-			f.checkScriptedWindowSizes();
-		}
-		decrementMenuResetSuppression();
-		
-	}
-	/*.................................................................................................................*/
-	private int  getNumberCharMatricesWithAssignedID(long ref) {   //MOVE TO InterpretNEXUS
-		ListableVector datasVector = getProject().getCharacterMatrices();
-		int count = 0;
-		for (int i=0; i<datasVector.size(); i++) {
-			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datasVector.elementAt(i);
-			if (!data.isDoomed() && ref  == (data.getAssignedIDNumber())) {
-				count++;
-			}
-		}
-
-		return count;  
-	}
-	/*.................................................................................................................*/
-	/** resolves conflicts among assigned id's */
-	public void  resolveCharMatrixIDs() {  //MOVE TO InterpretNEXUS
-
-		ListableVector datasVector = getProject().getCharacterMatrices();
-		for (int i=datasVector.size()-1; i>=0; i--) {
-			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datasVector.elementAt(i);
-			if (getNumberCharMatricesWithAssignedID(data.getAssignedIDNumber())>1) {
-				long a = MesquiteLong.unassigned;
-				while (!MesquiteLong.isCombinable(a))
-					a = Math.abs(FileElement.randomNumberGenerator.nextLong());
-				data.setAssignedIDNumber(a);
-			}
-		}
-	}
-
-	/*.................................................................................................................*/
-	/** finds the ith block of a given type and returns it raw.*/
-	public FileBlock readOneBlock(MesquiteProject mf, MesquiteFile mNF, String blockType, int i){
-		if (blockType == null)
-			return null;
-		incrementMenuResetSuppression();
-		ProgressIndicator progIndicator =  new ProgressIndicator(mf,"Processing File "+ mNF.getName() + " to find " + blockType + " block", mNF.existingLength());
-		progIndicator.start();
-		FileBlock blockSought = null;
-		if (mNF.openReading()) {
-			try {
-				logln("Processing File "+ mNF.getName() + " to find " + blockType + " block");
-				String token= mNF.firstToken(null);
-				if (token!=null) {
-					if (!token.equalsIgnoreCase("#NEXUS")) {
-						alert("Not a valid NEXUS file (first token is \"" + token + "\"");
-					}
-					else {
-						MesquiteString blockName = new MesquiteString();
-						StringBuffer blockComments = new StringBuffer(100);
-						int count = 0;
-						FileBlock block = null;
-						while (blockSought == null && !StringUtil.blank(block = mNF.getNextBlock( blockName, null, null))) {
-							if (blockType.equalsIgnoreCase(blockName.toString())){
-								if (count == i) {
-									//block found!
-									blockSought = block;
-									block.setFile(mNF);
-
-								}
-								count++;
-							}
+						if (!MesquiteFile.suppressReadWriteLogging) {
+							String timeS = "";
+							long acTime = fileReadTimer.getAccumulatedTime();
+							if (acTime>10000)
+								timeS = " in " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(acTime);
+							logln("File reading complete (file " + mNF.getFileName() + ")" + timeS);
 						}
-						progIndicator.goAway();
-						logln("File reading complete (file " + mNF.getFileName() + ")");
+					}}
+				}
+				catch (MesquiteException e){
+				}
+				mNF.closeReading();
+				//mNF.reportTimes();
+				if (mNF.foreignElements.size()>0){
+
+
+					logln("");
+					logln("This file contained one or more blocks or commands not recognized; a list is written below.  It is possible that some packages of Mesquite that are not currently loaded might be able to recognize the commands; try rereading after choosing \"Use All Installed Modules\" under \"Activate/Deactivate Packages\".\n");
+					for (int i=0; i<mNF.foreignElements.size(); i++) {
+						logln("Unrecognized " + mNF.foreignElements.elementAt(i));
 					}
+					logln("");
+				}
+				mNF.foreignElements = null;
+			}
+			if (mf.windowToActivate !=null) {
+				MesquiteWindow w = mf.windowToActivate;
+				if (w.isPoppedOut() && !w.getPopAsTile()){
+					MesquiteFrame f = mf.getCoordinatorModule().getModuleWindow().getParentFrame();
+					MesquiteWindow pw = f.frontMostInLocation(MesquiteFrame.MAIN);
+					if (pw != null)
+						w = pw;
+				}
+
+				MesquiteFrame f = w.getParentFrame();
+				if (f != null){
+					f.setAsFrontWindow(w);
+					f.showFrontWindow();
+				}
+				mf.windowToActivate = null;
+			}
+			String s = null;
+			if ((s = mNF.getOpenAsUntitled())!=null ){
+				if (mNF.getReadCategory() == MesquiteFile.INCLUDED){
+					alert("File reading encountered the following issues.  Some components of the file might not have been read properly.  Please check any data in the file.\n" + s);
+				}
+				else {
+					alert("File reading encountered the following issues.  Some components of the file might not have been read properly, and could be lost upon resaving.  For safety's sake, you will be asked to choose another file name to avoid writing over the current file.\n" + s);
+					mNF.changeLocation(mNF.getDirectoryName(),"Untitled");
+					boolean newFilenameChosen = mNF.changeLocation("Please save the file under a new name");
+					mNF.setDirtiedByCommand(true);
+					getFileCoordinator().writeFile(mNF);
 				}
 			}
-			catch (MesquiteException e){
+			if (getProject() != null) {
+				resolveCharMatrixIDs();
+				MesquiteFrame f = getProject().getFrame();
+				f.checkScriptedWindowSizes();
 			}
-			mNF.closeReading();
+			decrementMenuResetSuppression();
+
 		}
-		decrementMenuResetSuppression();
-		return blockSought;
-	}
-	/*.................................................................................................................*/
-	/** Finds the first employee in the heirarchy that  has a particular name.*/
-	private MesquiteModule findEmployeeThatCanRead(MesquiteModule module, FileBlock block, String blockName) {
-		if (blockName ==null || module == null)
-			return null;
-		Enumeration enumeration=module.getEmployeeVector().elements();
-		while (enumeration.hasMoreElements()){
-			MesquiteModule mb = (MesquiteModule)enumeration.nextElement();
-			MesquiteModuleInfo mbi = mb.getModuleInfo();
-			if (mbi.getNexusBlockTest()!=null && mbi.getNexusBlockTest().readsWritesBlock(blockName, block)) {
-				return mb;
+		/*.................................................................................................................*/
+		private int  getNumberCharMatricesWithAssignedID(long ref) {   //MOVE TO InterpretNEXUS
+			ListableVector datasVector = getProject().getCharacterMatrices();
+			int count = 0;
+			for (int i=0; i<datasVector.size(); i++) {
+				mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datasVector.elementAt(i);
+				if (!data.isDoomed() && ref  == (data.getAssignedIDNumber())) {
+					count++;
+				}
 			}
+
+			return count;  
 		}
-		//not found among immediate employees; look deeper
-		enumeration=module.getEmployeeVector().elements();
-		while (enumeration.hasMoreElements()){
-			MesquiteModule mb = (MesquiteModule)enumeration.nextElement();
-			MesquiteModule result = findEmployeeThatCanRead(mb, block, blockName);
-			if (result != null)
-				return result;
-		}
-		return null;
-	}
-	/*.................................................................................................................*/
-	boolean isForeignBlock(String blockName){		//first check employees to see if they can understand block
-		if (blockName == null)
-			return true;
-		MesquiteModule rM = findEmployeeThatCanRead(getFileCoordinator(), null, blockName);
-		if (rM!=null) {
-			return false;
+		/*.................................................................................................................*/
+		/** resolves conflicts among assigned id's */
+		public void  resolveCharMatrixIDs() {  //MOVE TO InterpretNEXUS
+
+			ListableVector datasVector = getProject().getCharacterMatrices();
+			for (int i=datasVector.size()-1; i>=0; i--) {
+				mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datasVector.elementAt(i);
+				if (getNumberCharMatricesWithAssignedID(data.getAssignedIDNumber())>1) {
+					long a = MesquiteLong.unassigned;
+					while (!MesquiteLong.isCombinable(a))
+						a = Math.abs(FileElement.randomNumberGenerator.nextLong());
+					data.setAssignedIDNumber(a);
+				}
+			}
 		}
 
-		//then look for others to hire that might understand block
-		Enumeration enumeration=MesquiteTrunk.mesquiteModulesInfoVector.elements();
-		while (enumeration.hasMoreElements()){
-			Object obj = enumeration.nextElement();
-			MesquiteModuleInfo mbi = (MesquiteModuleInfo)obj;
-			if ((rM==null || rM.getModuleInfo()!=mbi) && mbi.getNexusBlockTest()!=null && mbi.getNexusBlockTest().readsWritesBlock(blockName, null)) {
+		/*.................................................................................................................*/
+		/** finds the ith block of a given type and returns it raw.*/
+		public FileBlock readOneBlock(MesquiteProject mf, MesquiteFile mNF, String blockType, int i){
+			if (blockType == null)
+				return null;
+			incrementMenuResetSuppression();
+			ProgressIndicator progIndicator =  new ProgressIndicator(mf,"Processing File "+ mNF.getName() + " to find " + blockType + " block", mNF.existingLength());
+			progIndicator.start();
+			FileBlock blockSought = null;
+			if (mNF.openReading()) {
+				try {
+					logln("Processing File "+ mNF.getName() + " to find " + blockType + " block");
+					String token= mNF.firstToken(null);
+					if (token!=null) {
+						if (!token.equalsIgnoreCase("#NEXUS")) {
+							alert("Not a valid NEXUS file (first token is \"" + token + "\"");
+						}
+						else {
+							MesquiteString blockName = new MesquiteString();
+							StringBuffer blockComments = new StringBuffer(100);
+							int count = 0;
+							FileBlock block = null;
+							while (blockSought == null && !StringUtil.blank(block = mNF.getNextBlock( blockName, null, null))) {
+								if (blockType.equalsIgnoreCase(blockName.toString())){
+									if (count == i) {
+										//block found!
+										blockSought = block;
+										block.setFile(mNF);
+
+									}
+									count++;
+								}
+							}
+							progIndicator.goAway();
+							logln("File reading complete (file " + mNF.getFileName() + ")");
+						}
+					}
+				}
+				catch (MesquiteException e){
+				}
+				mNF.closeReading();
+			}
+			decrementMenuResetSuppression();
+			return blockSought;
+		}
+		/*.................................................................................................................*/
+		/** Finds the first employee in the heirarchy that  has a particular name.*/
+		private MesquiteModule findEmployeeThatCanRead(MesquiteModule module, FileBlock block, String blockName) {
+			if (blockName ==null || module == null)
+				return null;
+			Enumeration enumeration=module.getEmployeeVector().elements();
+			while (enumeration.hasMoreElements()){
+				MesquiteModule mb = (MesquiteModule)enumeration.nextElement();
+				MesquiteModuleInfo mbi = mb.getModuleInfo();
+				if (mbi.getNexusBlockTest()!=null && mbi.getNexusBlockTest().readsWritesBlock(blockName, block)) {
+					return mb;
+				}
+			}
+			//not found among immediate employees; look deeper
+			enumeration=module.getEmployeeVector().elements();
+			while (enumeration.hasMoreElements()){
+				MesquiteModule mb = (MesquiteModule)enumeration.nextElement();
+				MesquiteModule result = findEmployeeThatCanRead(mb, block, blockName);
+				if (result != null)
+					return result;
+			}
+			return null;
+		}
+		/*.................................................................................................................*/
+		boolean isForeignBlock(String blockName){		//first check employees to see if they can understand block
+			if (blockName == null)
+				return true;
+			MesquiteModule rM = findEmployeeThatCanRead(getFileCoordinator(), null, blockName);
+			if (rM!=null) {
 				return false;
 			}
-		}
-		return true;
-	}
-	/*.................................................................................................................*/
-	private NexusBlock sendBlockToReader(MesquiteProject mp, MesquiteFile mf, FileBlock block, String blockName, int totalLength, int readToNow, StringBuffer blockComments, String fileReadingArguments) {
-		if (blockName == null)
-			return null;
 
-		//first check employees to see if they can understand block
-		MesquiteModule rM = findEmployeeThatCanRead(getFileCoordinator(), block, blockName);
-		ListableVector blocks = getProject().getNexusBlocks();
-		if (rM!=null) {
-			if (!MesquiteFile.suppressReadWriteLogging) 
-				logln("Reading block: " + blockName);
-			long startTimeForBlock = System.currentTimeMillis();
-			NexusBlock nb = rM.readNexusBlock( mf, blockName, block, blockComments, fileReadingArguments);
-			if (MesquiteTrunk.debugMode)
-				logln("    time to read:  " + ((System.currentTimeMillis() - startTimeForBlock)/1000.00) + " sec.");
-			if (nb!=null){
-				if (blocks.indexOf(nb)<0) {
-					blocks.addElement(nb, false);
+			//then look for others to hire that might understand block
+			Enumeration enumeration=MesquiteTrunk.mesquiteModulesInfoVector.elements();
+			while (enumeration.hasMoreElements()){
+				Object obj = enumeration.nextElement();
+				MesquiteModuleInfo mbi = (MesquiteModuleInfo)obj;
+				if ((rM==null || rM.getModuleInfo()!=mbi) && mbi.getNexusBlockTest()!=null && mbi.getNexusBlockTest().readsWritesBlock(blockName, null)) {
+					return false;
 				}
-				return nb;
 			}
+			return true;
 		}
+		/*.................................................................................................................*/
+		private NexusBlock sendBlockToReader(MesquiteProject mp, MesquiteFile mf, FileBlock block, String blockName, int totalLength, int readToNow, StringBuffer blockComments, String fileReadingArguments) {
+			if (blockName == null)
+				return null;
 
-		//then look for others to hire that might understand block
-		Enumeration enumeration=MesquiteTrunk.mesquiteModulesInfoVector.elements();
-		while (enumeration.hasMoreElements()){
-			Object obj = enumeration.nextElement();
-			MesquiteModuleInfo mbi = (MesquiteModuleInfo)obj;
-			if ((rM==null || rM.getModuleInfo()!=mbi) && mbi.getNexusBlockTest()!=null && mbi.getNexusBlockTest().readsWritesBlock(blockName, block)) {
-				logln("Reading special block: " + blockName);
-				MesquiteModule mb = hireEmployeeFromModuleInfo(mbi, MesquiteModule.class);
-				NexusBlock nb = mb.readNexusBlock( mf, blockName, block, blockComments, fileReadingArguments);
+			//first check employees to see if they can understand block
+			MesquiteModule rM = findEmployeeThatCanRead(getFileCoordinator(), block, blockName);
+			ListableVector blocks = getProject().getNexusBlocks();
+			if (rM!=null) {
+				if (!MesquiteFile.suppressReadWriteLogging) 
+					logln("Reading block: " + blockName);
+				long startTimeForBlock = System.currentTimeMillis();
+				NexusBlock nb = rM.readNexusBlock( mf, blockName, block, blockComments, fileReadingArguments);
+				if (MesquiteTrunk.debugMode)
+					logln("    time to read:  " + ((System.currentTimeMillis() - startTimeForBlock)/1000.00) + " sec.");
 				if (nb!=null){
 					if (blocks.indexOf(nb)<0) {
 						blocks.addElement(nb, false);
@@ -598,124 +590,141 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 					return nb;
 				}
 			}
-		}
-		if (mf.foreignElements!=null && !("paup".equalsIgnoreCase(blockName) || "macclade".equalsIgnoreCase(blockName)))
-			mf.foreignElements.addElement("Block: " + blockName);
-		if (foreignTask!=null) {
-			NexusBlock nb = foreignTask.readNexusBlock(mf, blockName, block, blockComments, fileReadingArguments);
-			logln("Storing foreign block: " + blockName);
-			if (nb!=null) {
-				blocks.addElement(nb, false);
-				return nb;
-			}
-		}
-		else
-			logln("No module found to read block: " + blockName);
-		return null;
-	}
 
-	String addendum = "";
-	public void getExportOptions(boolean dataSelected, boolean taxaSelected){
-		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog exportDialog = new ExtensibleDialog(containerOfModule(), "NEXUS Options", buttonPressed);
-		//exportDialog.setSuppressLineEndQuery(true);
-		exportDialog.setDefaultButton(null);
-		exportDialog.addLabel("Addendum to file: ");
-		TextArea fsText =exportDialog.addTextAreaSmallFont(addendum,4);
-
-		exportDialog.completeAndShowDialog();
-
-		boolean ok = (buttonPressed.getValue()==0);
-		if (ok)
-			addendum = fsText.getText();
-		exportDialog.dispose();
-	}	
-	public void queryLocalOptions () {
-		getExportOptions(false, false);
-	}
-	/*.................................................................................................................*/
-	/** Called to see if file ready to be written.*/
-	void checkIntegrityForWriting(MesquiteModule module, MesquiteFile file) {
-		if (module==null)
-			return;
-
-		EmployeeVector e = module.getEmployeeVector();
-		if (e==null)
-			return;
-		for (int i = 0; i<e.size(); i++) {
-			MesquiteModule employee = (MesquiteModule)e.elementAt(i);
-
-			if (employee!=null){
-				employee.preWritingCheck(file, "NEXUS");
-				checkIntegrityForWriting(employee, file);
-			}
-		}
-	}
-	/*.................................................................................................................*/
-	public void writeFile(MesquiteProject mf, MesquiteFile mNF) {
-		//boolean setTC = !MesquiteFile.fileExists(mNF.getPath());
-		if (mNF.openWriting(true)) {
-			if (mNF.exporting == 1){
-				if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options"))
-					getExportOptions(false, false);
-			}
-			checkIntegrityForWriting(getFileCoordinator(), mNF);
-			mNF.setIsNexus(true);
-			ListableVector blocks = getProject().getNexusBlocks();
-			MesquiteTimer time = new MesquiteTimer();
-			time.start();
-			MesquiteBoolean finishedWriting = new MesquiteBoolean(false);
-
-			sortBlocks(blocks);
-			ProgressIndicator progIndicator = new ProgressIndicator(mf,"Writing File "+ mNF.getName(), blocks.size(), false);
-			progIndicator.start();
-
-			mNF.writeLine("#NEXUS");
-
-			Date d = new Date(System.currentTimeMillis());
-			String s = "";
-			String loc = "";
-			try {
-				loc = " at " + java.net.InetAddress.getLocalHost();
-			}
-			catch (java.net.UnknownHostException e){
-			}
-			if (!MesquiteModule.author.hasDefaultSettings())
-				loc += " (" + author.getName() + ")";
-			mNF.writeLine("[written " + d.toString() + " by Mesquite " + s + " version " + getMesquiteVersion()  + getBuildVersion() + loc + "]"); 
-			//mNF.writeLine("[!" + mNF.getAnnotation() + "]");
-
-			for (int i=0; i<blocks.size(); i++) {
-				NexusBlock nb = (NexusBlock)blocks.elementAt(i);
-				if (nb.getFile() == mNF && nb.getWritable()) {
-					progIndicator.setCurrentValue(i);
-					progIndicator.setText("Preparing to write " + nb.getName() );
-					//	logln("      Writing " + nb.getName());
-
-					nb.writeNEXUSBlock(mNF, progIndicator);
+			//then look for others to hire that might understand block
+			Enumeration enumeration=MesquiteTrunk.mesquiteModulesInfoVector.elements();
+			while (enumeration.hasMoreElements()){
+				Object obj = enumeration.nextElement();
+				MesquiteModuleInfo mbi = (MesquiteModuleInfo)obj;
+				if ((rM==null || rM.getModuleInfo()!=mbi) && mbi.getNexusBlockTest()!=null && mbi.getNexusBlockTest().readsWritesBlock(blockName, block)) {
+					logln("Reading special block: " + blockName);
+					MesquiteModule mb = hireEmployeeFromModuleInfo(mbi, MesquiteModule.class);
+					NexusBlock nb = mb.readNexusBlock( mf, blockName, block, blockComments, fileReadingArguments);
+					if (nb!=null){
+						if (blocks.indexOf(nb)<0) {
+							blocks.addElement(nb, false);
+						}
+						return nb;
+					}
 				}
 			}
-			if (addendum != null)
-				mNF.writeLine(addendum);
-			mf.fileSaved(mNF);
-			progIndicator.goAway();
-			time.end();
-			logln("      File writing finished " + time.getAccumulatedTime());
-			mNF.closeWriting(NexusBlock.numBackups);
-			//if (setTC) setFileTypeCreator(mNF);
+			if (mf.foreignElements!=null && !("paup".equalsIgnoreCase(blockName) || "macclade".equalsIgnoreCase(blockName)))
+				mf.foreignElements.addElement("Block: " + blockName);
+			if (foreignTask!=null) {
+				NexusBlock nb = foreignTask.readNexusBlock(mf, blockName, block, blockComments, fileReadingArguments);
+				logln("Storing foreign block: " + blockName);
+				if (nb!=null) {
+					blocks.addElement(nb, false);
+					return nb;
+				}
+			}
+			else
+				logln("No module found to read block: " + blockName);
+			return null;
 		}
 
-	}
-	/*.................................................................................................................*/
-	public String preferredDataFileExtension() {
-		return "nex";
-	}
-	/*.................................................................................................................*/
-	/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
-	/*public boolean usesNEXUSflavor(){
+		String addendum = "";
+		public void getExportOptions(boolean dataSelected, boolean taxaSelected){
+			MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExtensibleDialog exportDialog = new ExtensibleDialog(containerOfModule(), "NEXUS Options", buttonPressed);
+			//exportDialog.setSuppressLineEndQuery(true);
+			exportDialog.setDefaultButton(null);
+			exportDialog.addLabel("Addendum to file: ");
+			TextArea fsText =exportDialog.addTextAreaSmallFont(addendum,4);
+
+			exportDialog.completeAndShowDialog();
+
+			boolean ok = (buttonPressed.getValue()==0);
+			if (ok)
+				addendum = fsText.getText();
+			exportDialog.dispose();
+		}	
+		public void queryLocalOptions () {
+			getExportOptions(false, false);
+		}
+		/*.................................................................................................................*/
+		/** Called to see if file ready to be written.*/
+		void checkIntegrityForWriting(MesquiteModule module, MesquiteFile file) {
+			if (module==null)
+				return;
+
+			EmployeeVector e = module.getEmployeeVector();
+			if (e==null)
+				return;
+			for (int i = 0; i<e.size(); i++) {
+				MesquiteModule employee = (MesquiteModule)e.elementAt(i);
+
+				if (employee!=null){
+					employee.preWritingCheck(file, "NEXUS");
+					checkIntegrityForWriting(employee, file);
+				}
+			}
+		}
+		/*.................................................................................................................*/
+		public void writeFile(MesquiteProject mf, MesquiteFile mNF) {
+			//boolean setTC = !MesquiteFile.fileExists(mNF.getPath());
+			if (mNF.openWriting(true)) {
+				if (mNF.exporting == 1){
+					if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options"))
+						getExportOptions(false, false);
+				}
+				checkIntegrityForWriting(getFileCoordinator(), mNF);
+				mNF.setIsNexus(true);
+				ListableVector blocks = getProject().getNexusBlocks();
+				MesquiteTimer time = new MesquiteTimer();
+				time.start();
+				MesquiteBoolean finishedWriting = new MesquiteBoolean(false);
+
+				sortBlocks(blocks);
+				ProgressIndicator progIndicator = new ProgressIndicator(mf,"Writing File "+ mNF.getName(), blocks.size(), false);
+				progIndicator.start();
+
+				mNF.writeLine("#NEXUS");
+
+				Date d = new Date(System.currentTimeMillis());
+				String s = "";
+				String loc = "";
+				try {
+					loc = " at " + java.net.InetAddress.getLocalHost();
+				}
+				catch (java.net.UnknownHostException e){
+				}
+				if (!MesquiteModule.author.hasDefaultSettings())
+					loc += " (" + author.getName() + ")";
+				mNF.writeLine("[written " + d.toString() + " by Mesquite " + s + " version " + getMesquiteVersion()  + getBuildVersion() + loc + "]"); 
+				//mNF.writeLine("[!" + mNF.getAnnotation() + "]");
+
+				for (int i=0; i<blocks.size(); i++) {
+					NexusBlock nb = (NexusBlock)blocks.elementAt(i);
+					if (nb.getFile() == mNF && nb.getWritable()) {
+						progIndicator.setCurrentValue(i);
+						progIndicator.setText("Preparing to write " + nb.getName() );
+						//	logln("      Writing " + nb.getName());
+
+						nb.writeNEXUSBlock(mNF, progIndicator);
+					}
+				}
+				if (addendum != null)
+					mNF.writeLine(addendum);
+				mf.fileSaved(mNF);
+				progIndicator.goAway();
+				time.end();
+				logln("      File writing finished " + time.getAccumulatedTime());
+				mNF.closeWriting(NexusBlock.numBackups);
+				//if (setTC) setFileTypeCreator(mNF);
+			}
+
+		}
+		/*.................................................................................................................*/
+		public String preferredDataFileExtension() {
+			return "nex";
+		}
+		/*.................................................................................................................*/
+		/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
+		/*public boolean usesNEXUSflavor(){
 		return true;
 	}
-*/
+		 */
 
-}
+	}
 
