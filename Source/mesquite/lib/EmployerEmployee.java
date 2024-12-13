@@ -827,6 +827,16 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 
 	/* ................................................................................................................. */
 	/**
+	 * Finds the module that belongs to a particular subclass that is hired by an employer. Keeps going up employer chain. 
+	 * Whether one is returned depends on the employer; it may choose to give such a module only to a particular one of its employees.
+	 */
+	public MesquiteModule findModuleOfEmploymentContextWithDuty(Class dutyClass, EmployerEmployee immediateRequestor, MesquiteModule originalRequestor) {
+		if (employer != null)
+			return employer.findModuleOfEmploymentContextWithDuty(dutyClass, this, originalRequestor);
+		return null;
+	}
+	/* ................................................................................................................. */
+	/**
 	 * Finds the nearest module that belongs to a particular subclass. Searches first among employees, then among colleagues, then among modules of this project, then among modules across Mesquite.
 	 */
 	public MesquiteModule findNearestModuleWithDuty(Class dutyClass) {

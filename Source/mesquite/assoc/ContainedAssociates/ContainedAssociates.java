@@ -155,7 +155,11 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 
 		}
 	}
-
+	public MesquiteModule findModuleOfEmploymentContextWithDuty(Class dutyClass, EmployerEmployee immediateRequestor, MesquiteModule originalRequestor) {
+		if (dutyClass == AssociationSource.class && immediateRequestor == treeSourceTask)
+			return associationTask;
+		return super.findModuleOfEmploymentContextWithDuty(AssociationSource.class, immediateRequestor, originalRequestor);
+	}
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) { //TODO: should be passed scripting
 		if (treeDisplay.getEdgeWidth()<minimalEdgeWidth) {
@@ -1308,12 +1312,10 @@ class WideTreeDrawing extends TreeDrawing  {
 		}
 		if (force || association == null || (association.getTaxa(0)!= containingTaxa && association.getTaxa(1)!= containingTaxa)) {
 			association = associationTask.getCurrentAssociation(containingTaxa);
-			Debugg.println("association0 " + association);
 			if (association == null)
 				association = associationTask.getAssociation(containingTaxa, 0);
 			if (association == null)
 				return;
-			Debugg.println("association1 " + association.getName());
 			if (association.getTaxa(0)== containingTaxa)
 				containedTaxa = association.getTaxa(1);
 			else
@@ -1415,7 +1417,7 @@ class WideTreeDrawing extends TreeDrawing  {
 					}
 
 					history = reconstructTask.reconstructHistory(tree, containedTree, association, cost, resultString); //TODO: pass back string describing cost (e.g. "deep coalescence cost"
-					if (history != null){
+				if (history != null){
 						MesquiteInteger duplications = new MesquiteInteger(0);
 						MesquiteInteger extinctions = new MesquiteInteger(0);
 						history.countDuplicationsExtinctions(tree, containedTree, duplications, extinctions);

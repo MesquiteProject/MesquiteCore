@@ -1,6 +1,6 @@
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
- 
+
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -28,7 +28,7 @@ import mesquite.lib.table.*;
 public class TaxonListAssoc extends TaxonListAssistant {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(AssociationSource.class, "The current taxon association is displayed and can be edited in the List of Taxa window.",
-		"The source of an association is chosen initially.");
+				"The source of an association is chosen initially.");
 	}
 	public String getName() {
 		return "Associated Taxa";
@@ -44,7 +44,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	Taxa taxa, otherTaxa;
 	MesquiteTable table=null;
-	MesquiteMenuItemSpec m0, m1, m2, m3, m4, m5, m6;
+	MesquiteMenuItemSpec m0, m1, m2, m3, m4, m5, m6, m7, m8, m9;
 	AssociationSource associationTask;
 	MesquiteWindow containingWindow;
 	TaxaAssociation association;
@@ -55,7 +55,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	boolean matchNumbers=false;
 	int minDigitsToMatch = 3;
 	NameParser nameParser;
-	
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		associationTask = (AssociationSource)hireNamedEmployee(AssociationSource.class, "#mesquite.assoc.StoredAssociations.StoredAssociations");
@@ -71,7 +71,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		loadPreferences();
 		return true;
 	}
-	
+
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
@@ -113,7 +113,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		Checkbox matchNumberCheckBox= dialog.addCheckBox("match if a number in both names is the same", matchNumbers);
 		IntegerField matchDigitsField = dialog.addIntegerField("minimum number of digits in number:", minDigitsToMatch, 5, 1,50);
 
-//		SingleLineTextField clustalOptionsField = queryFilesDialog.addTextField("Clustal options:", clustalOptions, 26, true);
+		//		SingleLineTextField clustalOptionsField = queryFilesDialog.addTextField("Clustal options:", clustalOptions, 26, true);
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -220,6 +220,38 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		}
 	}
 	/*.................................................................................................................*/
+	private void deleteAssociatedTaxa(){
+		boolean askedOK = false;
+		if (table !=null && taxa!=null && association != null) {
+			boolean changed=false;
+			Taxa otherTaxa = null;
+			if (employer!=null && employer instanceof ListModule) {
+				int c = ((ListModule)employer).getMyColumn(this);
+				for (int i=0; i<taxa.getNumTaxa(); i++) {
+					if (table.isCellSelectedAnyWay(c, i)) {
+						Taxon t = taxa.getTaxon(i);
+						Taxon[] associates = association.getAssociates(t);
+						if (associates != null)
+							for (int k = 0; k<associates.length; k++) {
+								if (!askedOK && !AlertDialog.query(containerOfModule(), "Delete associated taxa?", "Are you sure you want to delete the associated taxa from the file? You cannot undo this."))
+									return;
+								else
+									askedOK = true;
+								otherTaxa = associates[k].getTaxa();
+								otherTaxa.deleteTaxon( associates[k], false);
+								changed = true;
+							}
+					}
+				}
+			}
+
+			if (changed) {
+				otherTaxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+				association.notifyListeners(this, new Notification(MesquiteListener.UNKNOWN));  
+				parametersChanged();
+			}
+		}
+	}
 	private void setAssociate(Taxon taxon, boolean add, boolean append){
 		if (table !=null && taxa!=null && association != null) {
 			boolean changed=false;
@@ -315,7 +347,10 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			otherTaxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			setAssociate(t, true, true);
 		}
-		else if (checker.compare(this.getClass(), "Deletes associations", null, commandName, "removeAssociates")) {
+		else if (checker.compare(this.getClass(), "Deletes associated taxa; ask user first!", null, commandName, "deleteAssociateTaxa")) {
+			deleteAssociatedTaxa();
+		}
+		else if (checker.compare(this.getClass(), "Removes associates from association", null, commandName, "removeAssociates")) {
 			setAssociate(null, false, false);
 		}
 		else
@@ -334,14 +369,20 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		deleteMenuItem(m4);
 		deleteMenuItem(m5);
 		deleteMenuItem(m6);
+		deleteMenuItem(m7);
+		deleteMenuItem(m8);
+		deleteMenuItem(m9);
 		m0 = addMenuItem(null, "Auto-assign Matches...", makeCommand("autoAssignExact", this));
 		m6 = addMenuItem(null, "Calculate Matches...", makeCommand("calculateAssociation", this));
 		m1 = addMenuItem(null, "Assign Associate...", makeCommand("setAssociate", this));
 		m2 = addMenuItem(null, "Add Associate...", makeCommand("addAssociate", this));
-		m3 = addMenuItem(null, "Remove Associates", makeCommand("removeAssociates", this));
+		m3 = addMenuItem(null, "Remove from Association", makeCommand("removeAssociates", this));
+		m8 = addMenuItem(null, "-", null);
 		m4 = addMenuItem(null, "Create New Associated Taxon...", makeCommand("createAssociate", this));
 		m5 = addMenuItem(null, "Create New Taxa in Master Block from Selected", makeCommand("createNewTaxaFromSelected", this));
-		if (this.taxa != null)
+		m7 = addMenuItem(null, "Delete Associated Taxa...", makeCommand("deleteAssociateTaxa", this));
+		m9 = addMenuItem(null, "-", null);
+	if (this.taxa != null)
 			taxa.removeListener(this);
 		this.taxa = taxa;
 		if (this.taxa != null)

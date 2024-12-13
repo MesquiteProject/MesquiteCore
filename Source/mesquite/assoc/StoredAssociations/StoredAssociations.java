@@ -86,7 +86,7 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 			if (MesquiteInteger.isCombinable(c)) {
 				currentAssociationID = c;
 				currentAssociationIndex = MesquiteInteger.unassigned;
-				parametersChanged();
+			parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Choose the current association", null, commandName, "chooseAssociation")) {
@@ -122,6 +122,7 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 	}
 	/*.................................................................................................................*/
 	public TaxaAssociation getCurrentAssociation(Taxa taxa) { 
+		
 		TaxaAssociation oldAssociation = currentAssociation;
 		currentTaxa = taxa;
 		boolean done = false;
@@ -136,11 +137,13 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 			if (!MesquiteThread.isScripting() && !MesquiteInteger.isCombinable(currentAssociationIndex) && getNumberOfAssociations(taxa)>1)
 				currentAssociation =  chooseAssociation(containerOfModule(), taxa);
 			else {
-				if (getNumberOfAssociations(taxa) ==1)
+				if (getNumberOfAssociations(taxa) ==1) {
 					currentAssociationIndex = 0;
+				}
 				else if (currentAssociationIndex>=getNumberOfAssociations(taxa) || currentAssociationIndex<0)
 					return  null;
 				currentAssociation = manager.getAssociation(taxa, currentAssociationIndex);
+				
 			}
 		}
 		if (currentAssociation!=null && currentAssociation!=oldAssociation){
