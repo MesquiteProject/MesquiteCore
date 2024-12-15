@@ -35,8 +35,8 @@ xcrun notarytool info --keychain-profile "mesquiteApp" SUBMISSION_ID
 xcrun notarytool log --keychain-profile "mesquiteApp" SUBMISSION_ID
 
 e.g.:
-xcrun notarytool info --keychain-profile "mesquiteApp" ebdae312-01f8-4798-9ef6-a31560093437
-xcrun notarytool log --keychain-profile "mesquiteApp" ebdae312-01f8-4798-9ef6-a31560093437
+xcrun notarytool info --keychain-profile "mesquiteApp" 83d46d58-972d-49d5-b22b-9d62a8466bfe
+xcrun notarytool log --keychain-profile "mesquiteApp" 83d46d58-972d-49d5-b22b-9d62a8466bfe
 
 
 AFTER SIGNED AND NOTARIZED
