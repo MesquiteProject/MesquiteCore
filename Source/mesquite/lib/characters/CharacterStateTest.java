@@ -25,7 +25,9 @@ passed object.  Classes of modules will have known ways of responding to particu
 should test whether they can handle given CharacterState types.*/
 public class CharacterStateTest extends CompatibilityTest {
 	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer){
-			return obj == null || ( obj instanceof Class && (CharacterState.class.isAssignableFrom((Class)obj)));
+			if (obj != null && !(obj instanceof Class))
+				obj = obj.getClass();
+			return obj == null || ( obj instanceof Class && (CharacterState.class.isAssignableFrom((Class)obj))) || ( obj instanceof Class && (CharacterData.class.isAssignableFrom((Class)obj)));
 	}
 }
 

@@ -53,6 +53,7 @@ import mesquite.lib.Notification;
 import mesquite.lib.SingleLineTextField;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
@@ -68,6 +69,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	static int neighbourDistanceDEFAULT = 2; //(-d)
 	static boolean treatGapAsStateDEFAULT = true; //(-e)
 	static boolean examineOnlySelectedTaxaDEFAULT = false;
+	static boolean ignoreExcludedDEFAULT = false;
 
 
 
@@ -125,6 +127,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		temp.addLine("setSpanSize " + blockSize);
 		temp.addLine("setNeighbourDistance " + neighbourDistance);
 		temp.addLine("setTreatGapAsState " + treatGapAsState.toOffOnString());
+		temp.addLine("ignoreExcluded " + ignoreExcluded.toOffOnString());
 		if (!getProject().isProcessDataFilesProject){
 			temp.addLine("filterSiteOccupancy " + filterSiteOccupancy);
 			temp.addLine("siteOccupancyThreshold " + siteOccupancyThreshold);
@@ -173,6 +176,13 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 				parametersChanged();
 			}
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to ignore excluded characters.", "[on or off]", commandName, "ignoreExcluded")) {
+			boolean current = ignoreExcluded.getValue();
+			ignoreExcluded.toggleValue(parser.getFirstToken(arguments));
+			if (current!=ignoreExcluded.getValue()) {
+				parametersChanged();
+			}
+		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to examine only the selected taxa for conflict.", "[on or off]", commandName, "setExamineOnlySelectedTaxa")) {
 			boolean current = examineOnlySelectedTaxa.getValue();
 			examineOnlySelectedTaxa.toggleValue(parser.getFirstToken(arguments));
@@ -211,6 +221,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		StringUtil.appendXMLTag(buffer, 2, "neighbourDistance", neighbourDistance);  
 		StringUtil.appendXMLTag(buffer, 2, "treatGapAsState", treatGapAsState);  
 		StringUtil.appendXMLTag(buffer, 2, "examineOnlySelectedTaxa", examineOnlySelectedTaxa);  
+		StringUtil.appendXMLTag(buffer, 2, "ignoreExcluded", ignoreExcluded);  
 		if (!getProject().isProcessDataFilesProject){
 			StringUtil.appendXMLTag(buffer, 2, "siteOccupancyThreshold", siteOccupancyThreshold);  
 			StringUtil.appendXMLTag(buffer, 2, "filterSiteOccupancy", filterSiteOccupancy);  
@@ -233,6 +244,8 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			treatGapAsState.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("examineOnlySelectedTaxa".equalsIgnoreCase(tag))
 			examineOnlySelectedTaxa.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("ignoreExcluded".equalsIgnoreCase(tag))
+			ignoreExcluded.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if (!getProject().isProcessDataFilesProject){
 			if ("siteOccupancyThreshold".equalsIgnoreCase(tag))
 				siteOccupancyThreshold = MesquiteDouble.fromString(content);
@@ -258,7 +271,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	IntegerField SSField;
 	IntegerField NDField;
 	DoubleField PIField, pgSField;
-	Checkbox tGAS, eOST, fSO;
+	Checkbox tGAS, eOST, fSO, igEx;
 	SingleLineTextField paramsInfo;
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
@@ -269,6 +282,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 				+"high levels of local phylogenetic conflict.";
 		s += "<p><b>Reference for PhyIN</b>: Maddison WP. 2024. PhyIN: trimming alignments by phylogenetic incompatibilities among neighbouring sites. PeerJ 12:e18504 <a href=\"http://doi.org/10.7717/peerj.18504\">http://doi.org/10.7717/peerj.18504</a>"; 
 		s += "<p>The additional filter for low occupancy sites is not formally part of PhyIN, but is offered here as a convenience, because PhyIN should be combined with a filter that removes highly gappy sites."; 
+		s += "<p>The low occupancy site filter is not available when running Process Data Files, because in that context the total number of taxa (and thus proportions) can vary file by file."; 
 		dialog.appendToHelpString(s);
 
 		dialog.addLabel("PhyIN criteria for incompatible sites:");
@@ -278,13 +292,14 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		tGAS = dialog.addCheckBox("Treat non-terminal gaps as extra state (-e)", treatGapAsState.getValue());
 		if (askAboutSelectedOnly())
 			eOST = dialog.addCheckBox("Examine conflict only among any selected taxa.", examineOnlySelectedTaxa.getValue());
+		igEx = dialog.addCheckBox("Ignore excluded characters.", ignoreExcluded.getValue());
 		SSField.getTextField().addTextListener(this);
 		PIField.getTextField().addTextListener(this);
 		NDField.getTextField().addTextListener(this);
 		tGAS.addItemListener(this);
 
 		dialog.addHorizontalLine(1);
-	//	dialog.addBlankLine();
+		//	dialog.addBlankLine();
 		if (!getProject().isProcessDataFilesProject){
 			dialog.addLabel("Additional filter for low occupancy (gappy) sites");
 			fSO = dialog.addCheckBox("Filter gappy sites (i.e. keep only those with high enough occupancy).", filterSiteOccupancy);
@@ -295,6 +310,8 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			dialog.addBlankLine();
 			dialog.addHorizontalLine(1);
 		}
+		else
+			dialog.addLabel("(Gappy sites filter not available in Process Data Files See \"?\".)");
 		paramsInfo = dialog.addTextField("Report parameters as:", "", 30);
 		paramsInfo.setEditable(false);
 		paramsInfo.setBackground(ColorTheme.getInterfaceBackgroundPale());
@@ -315,6 +332,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			treatGapAsState.setValue(tGAS.getState());
 			if (eOST!= null)
 				examineOnlySelectedTaxa.setValue(eOST.getState());
+			ignoreExcluded.setValue(igEx.getState());
 			if (!getProject().isProcessDataFilesProject){
 				filterSiteOccupancy = fSO.getState();
 				siteOccupancyThreshold = pgSField.getValue();
@@ -332,6 +350,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			SSField.setValue(blockSizeDEFAULT);
 			NDField.setValue(neighbourDistanceDEFAULT);
 			tGAS.setState(treatGapAsStateDEFAULT);
+			igEx.setState(ignoreExcludedDEFAULT);
 			if (eOST!= null)
 				eOST.setState(examineOnlySelectedTaxaDEFAULT);
 			if (!getProject().isProcessDataFilesProject){
@@ -370,6 +389,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	int neighbourDistance = neighbourDistanceDEFAULT; //(-d)
 	MesquiteBoolean treatGapAsState = new MesquiteBoolean(treatGapAsStateDEFAULT); //(-e)
 	MesquiteBoolean examineOnlySelectedTaxa = new MesquiteBoolean(examineOnlySelectedTaxaDEFAULT); //(no equivalent in python script)
+	MesquiteBoolean ignoreExcluded  = new MesquiteBoolean(ignoreExcludedDEFAULT); //(no equivalent in python script)
 
 	// Optional site occupancy filter. Not formally part of PhyIN, but provided here as a service, given that original paper used it; Does not appear/not used if in ProcessDataFiles
 	boolean filterSiteOccupancy = filterSiteOccupancyDEFAULT;
@@ -382,6 +402,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	int NUMSTATES = 4;
 	int numTaxaWithSequence = 0;
 	boolean[][] statePairs;
+	CharInclusionSet inclusionSet = null;
 
 	/*.................................................................................................................*/
 	int getEffectiveState(long stateSet) {
@@ -392,13 +413,13 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		return -1;
 	}
 	int getFirstInSequence(CategoricalData data, int it) {
-		for (int ic=0; ic<data.getNumChars(); ic++)
+		for (int ic=getFirstCharacter(data); ic>=0; ic=getNextCharacter(data, ic))   //this construction is used in case one is skipping characters
 			if (!data.isInapplicable(ic, it))
 				return ic;
 		return -1;
 	}
 	int getLastInSequence(CategoricalData data, int it) {
-		for (int ic=data.getNumChars()-1; ic>=0; ic--)
+		for (int ic=getLastCharacter(data); ic>=0; ic=getPreviousCharacter(data, ic))  //this construction is used in case one is skipping characters
 			if (!data.isInapplicable(ic, it))
 				return ic;
 		return -1;
@@ -514,7 +535,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			NUMSTATES++;//one extra for gaps as state
 		if (statePairs == null || statePairs.length != NUMSTATES)
 			statePairs = new boolean[NUMSTATES][NUMSTATES];
-
+		/** Standard way to do it if we are looking at all characters
 		for (int ic=0; ic<data.getNumChars(); ic++) {
 			for (int d = 1; d<neighbourDistance+1; d++)
 				if (areIncompatible(data, ic, ic+d)) {
@@ -523,25 +544,115 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 						hasConflict[ic+d] = true;
 				}
 		}
+	/*	 */
+		/**/
+		inclusionSet = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class); //in case needed! Sorry for re-entrancy risk!
+
+		for (int ic=getFirstCharacter(data); ic>=0; ic=getNextCharacter(data, ic)) {  //this construction is used in case one is skipping characters
+			int icN = ic;
+			for (int d = 1; d<neighbourDistance+1; d++) {
+				icN = getNextCharacter(data, icN);
+				if (areIncompatible(data, ic, icN)) {
+					hasConflict[ic] = true;
+					if (icN<hasConflict.length)
+						hasConflict[icN] = true;
+				}
+			}
+		}
+		/**/
 	}
+	int getFirstCharacter(CharacterData data) {
+		if (data == null || data.getNumChars()==0)
+			return -1;
+		return getNextCharacter(data, -1);
+	}
+	int getNextCharacter(CharacterData data, int ic) {
+		if (!ignoreExcluded.getValue()) {
+			int icN= ic+1;
+			if (icN>= data.getNumChars())
+				icN= -1;
+			return icN;
+		}
+		else {
+			if (inclusionSet != null) {
+				int icN = ic+1;
+				while (icN<data.getNumChars() && !inclusionSet.isBitOn(icN)) { //finding next included
+					icN++;
+				}
+				if (icN>= data.getNumChars())
+					return -1;
+				return icN;
+			}
+			int icN= ic+1;
+			if (icN>= data.getNumChars())
+				return -1;
+			return icN;
+		}
+	}
+	int getLastCharacter(CharacterData data) {
+		if (data == null || data.getNumChars()==0)
+			return -1;
+		return getPreviousCharacter(data, data.getNumChars());
+	}
+	int getPreviousCharacter(CharacterData data, int ic) {		
+		if (!ignoreExcluded.getValue()) {
+			if (ic<=0)
+				return -1;
+			return ic-1;
+		}
+		else {
+			if (ic<=0)
+				return -1;
+			if (inclusionSet != null) {
+				int icN = ic-1;
+				while (icN>0 && !inclusionSet.isBitOn(icN)) { //finding next included
+					icN--;
+				}
+				if (icN<0)
+					return -1;
+				return icN;
+			}
+			return ic-1;
+		}
+
+	}
+
 	/*.................................................................................................................*/
-	void selectSpanByProportion(int ic, boolean[] hasConflict, boolean[] toSelect, double proportionIncomp, int spanSize) {
+	void selectSpanByProportion(int ic, boolean[] hasConflict, boolean[] toSelect, double proportionIncomp, int spanSize, CharacterData data) {
 		if (!hasConflict[ic])
 			return;
-		int count = 0;
+		int count = 1;  //since ic's being conflicted is already considered; was 0 before shift to allow skipping excluded
 		int lastHit = -1;
-		for (int k = 0; k<spanSize && ic+k<hasConflict.length; k++) {
+		int k =1;  //since the first step of the span is already considered through ic being conflicted; was 0 before shift to allow skipping excluded
+		for (int icN=getNextCharacter(data, ic); icN>=0 && k<spanSize; icN=getNextCharacter(data, icN), k++) {  //this construction is used in case one is skipping characters
+			if (icN < hasConflict.length && hasConflict[icN]) {
+				count++;
+				lastHit = icN;
+			}			
+		}
+		if (1.0*count/spanSize >= proportionIncomp) {
+			k = 0;
+			for (int icN=ic; icN>=0 && k<spanSize; icN=getNextCharacter(data, icN), k++)   //this construction is used in case one is skipping characters
+				if (icN<toSelect.length && icN<=lastHit)
+					toSelect[icN]=true;
+
+		}
+		/*
+		int count = 0;  
+		int lastHit = -1;
+			for (int k = 0; k<spanSize && ic+k<hasConflict.length; k++) {
 			if (hasConflict[ic+k]) {
 				count++;
 				lastHit = ic+k;
 			}
 		}
+
 		if (1.0*count/spanSize >= proportionIncomp) {
 			for (int k = ic; k<=lastHit && k<toSelect.length; k++) {
 				toSelect[k]=true;
 			}
 		}
-
+		 */
 	}
 
 	/*.................................................................................................................*/
@@ -553,11 +664,11 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 				flags.reset(data);
 			}
 			markThoseWithConflict((CategoricalData)data);
-			for (int ic=0; ic<hasConflict.length; ic++) {
-				selectSpanByProportion(ic, hasConflict, toSelect, proportionIncompat, blockSize);
+			for (int ic=getFirstCharacter(data); ic>=0; ic=getNextCharacter(data, ic)) {  //this construction is used in case one is skipping characters
+				selectSpanByProportion(ic, hasConflict, toSelect, proportionIncompat, blockSize, data);
 			}
 
-			for (int ic=0; ic<data.getNumChars(); ic++) {
+			for (int ic=getFirstCharacter(data); ic>=0; ic=getNextCharacter(data, ic)) {  // construction used in case one is skipping characters
 				if (toSelect[ic])
 					flags.setCharacterFlag(ic, true);
 			}
@@ -565,7 +676,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			//Optional site occupancy filter
 			if (!getProject().isProcessDataFilesProject && filterSiteOccupancy){
 				int numTaxa = data.getNumTaxa();
-				for (int ic=0; ic<data.getNumChars(); ic++) {
+				for (int ic=getFirstCharacter(data); ic>=0; ic=getNextCharacter(data, ic)) {  // construction used in case one is skipping characters
 					int gapCount = 0;
 					for (int it = 0; it<numTaxa; it++) {
 						if (data.isInapplicable(ic,it)) 

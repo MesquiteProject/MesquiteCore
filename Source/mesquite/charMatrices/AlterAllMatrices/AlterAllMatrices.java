@@ -110,8 +110,8 @@ public class AlterAllMatrices extends FileProcessor {
    		CompatibilityTest test = alterTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
    			CharacterData data = proj.getCharacterMatrix(file, im);
-   			if (test.isCompatible(data.getStateClass(), getProject(), this)) {
-   				success = true;
+   			if (test == null || test.isCompatible(data.getStateClass(), getProject(), this)) {
+  				success = true;
    				logln("Altering matrix \"" + data.getName() + "\"");
    				alterTask.alterData(data, null, null);  // do not measure success based upon whether data were altered.
    			}

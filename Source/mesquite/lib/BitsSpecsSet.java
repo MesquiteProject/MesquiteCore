@@ -78,6 +78,11 @@ public abstract class BitsSpecsSet extends SpecsSet  {
 		return myBits.isBitOn(ic);
 	}
 	/*.................................................................................................................*/
+	/** Returns if part ic is on. */
+	public boolean getSelected(int ic){
+		return myBits.isBitOn(ic);
+	}
+	/*.................................................................................................................*/
 	/** Returns number of bits on. */
 	public int numBitsOn(){
 		return myBits.numBitsOn();
