@@ -1238,6 +1238,11 @@ public class Puppeteer  {
 			else if (checker.compare(null, "Stamps the time to the log", null, commandName, "stampVersion")) {
 				MesquiteTrunk.mesquiteTrunk.logln("Mesquite version " + MesquiteModule.getMesquiteVersion() + MesquiteModule.getBuildVersion());
 			}
+			else if (checker.compare(null, "writes text to log", "[text]", commandName, "logln")) {
+				String argument = nextTokenCompressAsterisk(parser); //fileName
+				MesquiteTrunk.mesquiteTrunk.logln(argument); 
+
+			}
 			else if (checker.compare(null, "Stamps the time to the log", null, commandName, "stampTime")) {
 				long t = System.currentTimeMillis();
 				Date dnow = new Date(t);

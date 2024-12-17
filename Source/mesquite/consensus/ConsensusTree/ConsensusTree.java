@@ -84,7 +84,8 @@ public class ConsensusTree extends TreeSource {
 				startTree = 0;
 			//	treeSource.setHiringCommand(tlsC);
 				treeSourceName.setValue(treeSource.getName());
-				parametersChanged();
+				if (!MesquiteThread.isScripting())
+					parametersChanged();
 			}
 			return temp;
 		}
@@ -98,7 +99,8 @@ public class ConsensusTree extends TreeSource {
 			if(newNum > 0){
 				numTreesAssigned = newNum;
 				assigned = true;
-				parametersChanged();
+				if (!MesquiteThread.isScripting())
+					parametersChanged();
 			}
 			/*Old way:
 			int newNum = MesquiteInteger.fromFirstToken(arguments, pos);
@@ -120,7 +122,8 @@ public class ConsensusTree extends TreeSource {
 					startTree = 0;
 					consenser.setHiringCommand(cC);
 					consenserName.setValue(consenser.getName());
-					parametersChanged();
+					if (!MesquiteThread.isScripting())
+						parametersChanged();
 				}
 				return temp;
 			}
@@ -189,6 +192,7 @@ public class ConsensusTree extends TreeSource {
 			boolean done = false;
 			int count = 0;
 			if (verbose) logln("Consensing trees ");
+		//	Debugg.printStackTrace();
 			for (int i= startTree; i<numTrees && !done; i++) {
 				Tree t = trees.getTree(i);
 				if (t == null)
