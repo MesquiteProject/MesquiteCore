@@ -51,10 +51,13 @@ public class AppChooser implements ActionListener {
 			builtInExecutableAllowed = true;
 			builtInAppPath = appInfoFile.getFullPath();
 			versionOfBuiltIn = appInfoFile.getVersion();
+			if (!useDefaultExecutablePath && StringUtil.blank(alternativeManualPath)) //If manualPath requested, but there is none set, AND there's built in, swtich to built in
+				useDefaultExecutablePath = true;
 		}
 
 		this.alternativeManualPath = alternativeManualPath;
 		this.useDefaultExecutablePath = useDefaultExecutablePath;
+		
 	}
 
 	public AppChooser(AppUser appUser, boolean useDefaultExecutablePath, String alternativeManualPath) {
@@ -139,6 +142,8 @@ public class AppChooser implements ActionListener {
 	}
 	/*.................................................................................................................*/
 	String getMainDialogUsingString() {
+		if (!useDefaultExecutablePath && StringUtil.blank(alternativeManualPath))
+			return "Please select app using button:";
 		String usingString = "Using";
 		Debugg.println(" builtInAvailable " +builtInExecutableAllowed + " builtInVsManual" + builtInVsManual);
 		if (builtInVsManual != null)
