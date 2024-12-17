@@ -78,12 +78,13 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("alternativeManualPath".equalsIgnoreCase(tag)) {
+		if ("alternativeManualPath".equalsIgnoreCase(tag)) 
 			alternativeManualPath = content;
-		}
-		else if ("useBuiltInIfAvailable".equalsIgnoreCase(tag)) {
+		else if ("useBuiltInIfAvailable".equalsIgnoreCase(tag)) 
 			useBuiltInIfAvailable = MesquiteBoolean.fromTrueFalseString(content);
-		}
+		else if ("usingAstral_III".equalsIgnoreCase(tag)) 
+			usingASTRAL_III = MesquiteBoolean.fromTrueFalseString(content);
+
 		super.processSingleXMLPreference(tag, content);
 	}
 	/*.................................................................................................................*/
@@ -92,6 +93,7 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 		if (!StringUtil.blank(alternativeManualPath))
 			StringUtil.appendXMLTag(buffer, 2, "alternativeManualPath", alternativeManualPath);  
 		StringUtil.appendXMLTag(buffer, 2, "useBuiltInIfAvailable", useBuiltInIfAvailable);  
+		StringUtil.appendXMLTag(buffer, 2, "usingASTRAL_III", usingASTRAL_III);  
 		return super.preparePreferencesForXML()+buffer.toString();
 	}
 	/*.................................................................................................................*/
@@ -102,17 +104,19 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 	/*.................................................................................................................*/
 	SingleLineTextField programPathField =  null;
 	SingleLineTextField manualOptionsField =  null;
-
+	Checkbox ua3 = null;
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for ASTRAL",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for ASTRAL-IV",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 
 		AppChooser appChooser = new AppChooser("ASTRAL", "ASTRAL", useBuiltInIfAvailable, alternativeManualPath);
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
+		ua3 = dialog.addCheckBox("Using ASTRAL-III", usingASTRAL_III);
+
 		dialog.addLargeOrSmallTextLabel("This is a very early draft of ASTRAL communication. Eventually, there were will options for running ASTRAL. "
 				+" Also, there will be a choice to either use existing gene trees, or to infer them now, before sending them to ASTRAL. "
 				+"For now, it will use a block of gene trees already in the file.");
@@ -123,7 +127,6 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 		programBrowseButton.setActionCommand("programBrowse");
 		 */
 		dialog.addBlankLine();
-		dialog.addHorizontalLine(1);
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -131,12 +134,14 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 			alternativeManualPath = appChooser.getManualPath(); //for preference writing
 			useBuiltInIfAvailable = appChooser.useBuiltInExecutable(); //for preference writing
 			builtinVersion = appChooser.getVersion(); //for informing user; only if built-in
+			usingASTRAL_III = ua3.getState();
 			storePreferences();
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
 	/*.................................................................................................................*/
+	boolean usingASTRAL_III = false;
 	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
 		if (treeList==null)
 			return;
@@ -162,14 +167,17 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 
 
 		String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
-		script += "java -jar " + StringUtil.protectFilePath(astralPath) + "  -i " + unique + "genes.tre -t 8 -o " + unique + "output.tre 2> " + unique + "Astral.log";
+		if (usingASTRAL_III)
+			script += "java -jar " +StringUtil.protectFilePath(astralPath) + "  -i " + unique + "genes.tre -t 8 -o " + unique + "output.tre 2> " + unique + "Astral.log";
+		else
+			script += StringUtil.protectFilePath(astralPath) + "  -i " + unique + "genes.tre -u 2 -o " + unique + "output.tre 2> " + unique + "Astral.log";
 		MesquiteFile.putFileContents(scriptPath, script, false);
 		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 
 		if (success){
 
 			if (!MesquiteFile.fileExists(outputPath)) {
-				deleteSupportDirectory();
+				//deleteSupportDirectory();
 				return;
 			}
 			MesquiteFile outputFile = new MesquiteFile();
@@ -186,7 +194,7 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 			}
 
 		}
-		deleteSupportDirectory();
+		//deleteSupportDirectory();
 
 		treeList.setName("Trees from ASTRAL");
 		treeList.setAnnotation ("Parameters:  ", false);
@@ -198,34 +206,33 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 	Parser parser = new Parser();
 	MesquiteInteger pos = new MesquiteInteger(0);
 
+	double getParameter(String s, String tag) {
+		parser.setAllowComments(false);
+		parser.setString(s);
+		String token = parser.getFirstToken(); // [
+		token = parser.getNextToken();  // param name
+		while (!StringUtil.blank(token)) {
+			if (tag.equalsIgnoreCase(token)) {
+				parser.getNextToken(); // =
+				return MesquiteDouble.fromString(parser); // value of parameter
+			}
+			parser.getNextToken(); // =
+			parser.getNextToken(); // value
+			parser.getNextToken(); // ,
+			token = parser.getNextToken(); // ,
+		}
+		return MesquiteDouble.unassigned;
+	}
 	public   void extractInfoAtNode(MesquiteTree tree, int node) {
 		if (tree.nodeIsInternal(node)) {
 			String label = tree.getNodeLabel(node);
-			parser.setAllowComments(false);
-			parser.setString(label);
-			String token = parser.getFirstToken();
-			//Debugg.println("node " + node + " label " + label + " TOKEN " + token);
-			if (token != null && token.equals("[")) {
-				parser.getNextToken(); // q1
-				parser.getNextToken(); // =
-				double q1 = MesquiteDouble.fromString(parser); // value of q1
-				parser.getNextToken(); // ;
-				parser.getNextToken(); // q2
-				parser.getNextToken(); // =
-				double q2 = MesquiteDouble.fromString(parser); // value of q2
-				parser.getNextToken(); // ;
-				parser.getNextToken(); // q3
-				parser.getNextToken(); // =
-				double q3 = MesquiteDouble.fromString(parser); // value of q3
-				parser.getNextToken(); // ]
-				//width will be based on q1, narrow if 1, wide if close to 0.33. Width = 4+(q1-0.33333)*16
-				//darkness will be based on q1 also. 
+			double q1= getParameter(label, "q1");
+			double q2= getParameter(label, "q2");
+			double q3= getParameter(label, "q3");
+			if (MesquiteDouble.isCombinable(q1)){
+
 				double R = 2;
-				//green, light green is strong left (q2 > q3*R)
-				//blue, light blue is strong right (q3 > q2*R)
-				//black, grey is more balanced
-				//width is 
-				//pink is 
+
 
 				//NOTE: Details here are temporary! Set green/blue/black, but then e.g. brDrWdMult for branch draw with multiplier, and drawPale to brighten the base colour
 				double secondary = q2;
@@ -235,46 +242,28 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 				//tree.setAssociatedDouble(widthNameReference, node, width, true);
 				boolean pale = ((q1-secondary)<0.2);
 				long colorNum =0;
-				/*
-				 * if (pale) {
-					if (q2>q3*R)
-						colorNum = 12;  //light green
-					else	if (q3 > q2*R)
-						colorNum = 15; //light blue
-					else
-						colorNum = 3; //light grey
-				}
-				else {
-					if (q2>q3*R)
-						colorNum = 11;  //green
-					else	if (q3 > q2*R)
-						colorNum = 14; // blue
-					else if (q1>90)
-						colorNum = 0; // black
-					else if (q1>90)
-						colorNum = 1; // dark grey
-				}
-	*/
-					if (q2>q3*R)
-						colorNum = 11;  //green
-					else	if (q3 > q2*R)
-						colorNum = 14; // blue
+				if (q2>q3*R)
+					colorNum = 11;  //green
+				else	if (q3 > q2*R)
+					colorNum = 14; // blue
 
 				double palenessMultiplier = (q1-secondary)+0.1;
 				if (palenessMultiplier>1.0)
 					palenessMultiplier=1.0;
 				tree.setAssociatedDouble(palenessRef, node, palenessMultiplier, true);
 				tree.setAssociatedLong(colorNameRef, node, colorNum, true);
-			//	Debugg.println("node " + node + " width " + width + " color " + colorNum);
+				tree.setNodeLabel("[q1=" + MesquiteDouble.toStringDigitsSpecified(q1, 3) + "; q2=" + MesquiteDouble.toStringDigitsSpecified(q2, 3) + "; q3=" + MesquiteDouble.toStringDigitsSpecified(q3, 3) + "]", node);
+				//	Debugg.println("node " + node + " width " + width + " color " + colorNum);
 			}
+
 		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			extractInfoAtNode(tree, d);
 	}
-	
+
 	//NOTE: Here, attach info via other tags, e.g. brDrWdMult for branch draw with multiplier, and brDrPaleness
 	MesquiteTree extractASTRALInfo(MesquiteTree tree) {
-	//	Debugg.println("EXTRACTING ASTRAL INFO");
+		//	Debugg.println("EXTRACTING ASTRAL INFO");
 		if (tree.getWhichAssociatedDouble(widthNameReference)==null)
 			tree.makeAssociatedDoubles("width");
 		if (tree.getWhichAssociatedLong(colorNameRef)==null)
