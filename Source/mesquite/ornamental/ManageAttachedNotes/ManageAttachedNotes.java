@@ -349,7 +349,7 @@ public class ManageAttachedNotes extends FileInit /*implements ElementManager*/ 
 					String whichItem = (ParseUtil.getToken(command, startCharT)); // name of taxon/etc
 					stateNumber = MesquiteInteger.fromString(whichItem);
 				}
-				else if (token.equalsIgnoreCase(AttachedNote.CHARACTERS) || token.equalsIgnoreCase("CHARACTERS")) {
+				else if (token.equalsIgnoreCase(AttachedNote.CHARACTERS) || token.equalsIgnoreCase("CHARACTERS")) { 
 					dummy =ParseUtil.getToken(command, startCharT); // =
 					String matrixName = (ParseUtil.getToken(command, startCharT));
 					//logln("   for taxa " + taxaTitle);

@@ -215,11 +215,15 @@ public class IOUtil {
 			String token = treeParser.getNextToken();  // numTaxa
 			numTrees = MesquiteInteger.fromString(token);
 		}
+		Debugg.println("numTrees " + MesquiteInteger.toString(numTrees));
 		int iTree = 0;
 		TreeVector trees = null;
 		boolean abort = false;
+		Debugg.println("rPT file " + file.fileExists());
 		line = file.readNextDarkLine();		
+		Debugg.println("rPT 0 LINE " + line);
 		while (!StringUtil.blank(line) && !abort && (iTree<numTrees)) {
+			Debugg.println("rPT 1");
 			treeParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 
 			if (trees == null) {

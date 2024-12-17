@@ -29,7 +29,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.lists.TaxaPartitionList.TaxaPartitionList.class, getName() + "  uses an assistant to display a list window.",
-		"The assistant is arranged automatically");
+				"The assistant is arranged automatically");
 	}
 	TaxaGroupVector groups; //TODO: dealing with taxa groups should probably be a separate module to allow it to be recognized as element manager
 	/*.................................................................................................................*/
@@ -100,7 +100,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	}
 	public NexusBlock elementAdded(FileElement e){
 		if (e instanceof TaxaGroup){
-			
+
 			if (groups.indexOf(e)<0) {
 				groups.addElement(e, true);
 				e.addListener(groups);
@@ -184,18 +184,18 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	}
 	ManagerAssistant lister = null;
 	/*.................................................................................................................*/
-	 public ManagerAssistant showTaxonGroupList(Object obj, String listerName){
-	 		
-		 if (lister == null)
-			 lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
-			if (lister!=null) {
-				lister.showListWindow(obj);
-	 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
-	 				lister.getModuleWindow().setVisible(true);
-	 		}
+	public ManagerAssistant showTaxonGroupList(Object obj, String listerName){
+
+		if (lister == null)
+			lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
+		if (lister!=null) {
+			lister.showListWindow(obj);
+			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
+				lister.getModuleWindow().setVisible(true);
+		}
 		return lister;
-	 		
-}
+
+	}
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -211,10 +211,10 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					return showSpecsSets(t, "List of Taxa Partitions");
 				}
 			}
-//			alert("Sorry, there are no taxa partitions");
+			//			alert("Sorry, there are no taxa partitions");
 		}
 		else if (checker.compare(this.getClass(), "Shows list of the taxon groups", null, commandName, "showTaxonGroups")) {
-					return showTaxonGroupList(null, listOfTaxonGroupsName);
+			return showTaxonGroupList(null, listOfTaxonGroupsName);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -318,7 +318,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		}
 		return s;
 	}
-	
+
 	public String getGroupLabelNexusCommand(TaxaGroup cg){
 		String s = "\tTAXAGROUPLABEL " + ParseUtil.tokenize(cg.getName());
 		if (cg.colorSet()){
@@ -381,7 +381,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		}
 		return null;
 	}
-	
+
 	/*.................................................................................................................*/
 	//NOTE: this is used also in TaxonGroupList to read a .nexcommands file for importing
 	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
@@ -414,12 +414,20 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				token = ParseUtil.getToken(command, startCharT);
 				String paradigmString = null;
 				Taxa taxa = null;
-				if (token.equalsIgnoreCase("(")) {
+				if (token.equalsIgnoreCase("(")) {//VVECTOR
 					token = ParseUtil.getToken(command, startCharT); //TAXA  //TODO: check to see what parameter is being set!
-					token = ParseUtil.getToken(command, startCharT); //=
-					token = (ParseUtil.getToken(command, startCharT)); // name of data
-					taxa = file.getProject().getTaxaLastFirst(token); //taxa is named; seek without restriction to current file
-					token = ParseUtil.getToken(command, startCharT); //)
+					if (token.equalsIgnoreCase("VECTOR")) {
+						token = ParseUtil.getToken(command, startCharT); //)
+						MesquiteMessage.discreetNotifyUser("Sorry, a TAXPARTITION could not be read because Mesquite does not support the VECTOR subcommand.");
+						return false;
+					}
+					else if (token.equalsIgnoreCase("STANDARD")) {
+						token = ParseUtil.getToken(command, startCharT); //)
+						token = ParseUtil.getToken(command, startCharT); //=
+						token = (ParseUtil.getToken(command, startCharT)); // name of taxa block
+						taxa = file.getProject().getTaxaLastFirst(token); //taxa is named; seek without restriction to current file
+						token = ParseUtil.getToken(command, startCharT); //)
+					}
 					token = ParseUtil.getToken(command, startCharT);  //=
 				}
 				else if (file.getProject().getNumberTaxas(file)>0)//taxa not named; seek with restriction to current file

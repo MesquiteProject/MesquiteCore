@@ -176,8 +176,8 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 						if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
 							if (!ms.allDefault()) {
 								ms.setNexusBlockStored(blockName);
-							ms.setName("UNTITLED");
-							s += nexusStringForSpecsSet( (CharSpecsSet)ms, data, file, true);
+								ms.setName("UNTITLED");
+								s += nexusStringForSpecsSet( (CharSpecsSet)ms, data, file, true);
 							}
 						}
 
@@ -233,14 +233,24 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 				mesquite.lib.characters.CharacterData data=null;
 				String dataName = null;
 
-				if (token.equalsIgnoreCase("(")) {
+				if (token.equalsIgnoreCase("(")) { //VVECTOR
 					token = ParseUtil.getToken(command, startCharT); //CHARACTERS  //TODO: check to see what parameter is being set!
-					token = ParseUtil.getToken(command, startCharT); //=
-					token = (ParseUtil.getToken(command, startCharT)); // name of data
+					if (token.equalsIgnoreCase("VECTOR")) {
+						token = ParseUtil.getToken(command, startCharT); //)
+						MesquiteMessage.discreetNotifyUser("Sorry, a " + lowerCaseTypeName() + " could not be read because Mesquite does not support the VECTOR subcommand.");
+						return false;
+					}
+					else if (token.equalsIgnoreCase("STANDARD")) {
+						token = ParseUtil.getToken(command, startCharT); //)
+					}
+					else {
+						token = ParseUtil.getToken(command, startCharT); //=
+						token = (ParseUtil.getToken(command, startCharT)); // name of data
 
-					dataName = token;
-					data = project.getCharacterMatrixByReference(file, dataName);
-					token = (ParseUtil.getToken(command, startCharT)); // )
+						dataName = token;
+						data = project.getCharacterMatrixByReference(file, dataName);
+						token = (ParseUtil.getToken(command, startCharT)); // )
+					}
 					token = ParseUtil.getToken(command, startCharT);  // =
 				}
 				else if (project.getNumberCharMatrices(file)>0) //should use first in this file

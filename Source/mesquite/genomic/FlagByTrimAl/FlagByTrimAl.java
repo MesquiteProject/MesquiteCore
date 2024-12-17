@@ -205,6 +205,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 				flags = new MatrixFlags(data);
 			else 
 				flags.reset(data);
+			
 			String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 			String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
 			status = "savingFasta";
