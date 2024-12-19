@@ -145,9 +145,11 @@ public class AppChooser implements ActionListener {
 		if (!useDefaultExecutablePath && StringUtil.blank(alternativeManualPath))
 			return "Please select app using button:";
 		String usingString = "Using";
+		/*
 		Debugg.println(" builtInAvailable " +builtInExecutableAllowed + " builtInVsManual" + builtInVsManual);
 		if (builtInVsManual != null)
 			Debugg.println( "    builtInVsManual=" +builtInVsManual.getValue());
+			*/
 		if (usingBuiltIn())
 			usingString += " built-in " + programName + " (version " + versionOfBuiltIn + ")";
 		else

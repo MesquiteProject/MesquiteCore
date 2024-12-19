@@ -11,23 +11,23 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.ASTRALFromGeneTrees;
+package mesquite.genomic.ASTRALDiagnosticsForTree;
 /*~~  */
 
 import java.util.*;
 import java.awt.*;
-import java.awt.image.ImageObserver;
+import java.awt.event.KeyEvent;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.distance.lib.*;
-import mesquite.externalCommunication.lib.AppChooser;
+import mesquite.genomic.ASTRALFromGeneTrees.ASTRALLiaison;
 import mesquite.io.lib.IOUtil;
+import mesquite.lib.*;
+import mesquite.lib.characters.*;
+import mesquite.lib.duties.*;
+import mesquite.pairwise.lib.*;
 
 /* ======================================================================== */
-public class ASTRALFromGeneTrees extends TreeInferer {  
+public class ASTRALDiagnosticsForTree extends TreeDisplayAssistantA {
 	ASTRALLiaison liaison;
-
 	TreeSource treeSourceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -42,23 +42,17 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 		}
 		return true;
 	}
+	/*.................................................................................................................*/
+	public String getName() {
+		return "ASTRAL Diagnostics";
+	}
+	
+	/*.................................................................................................................*/
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Gives ASTRAL diagnostics based on stored gene trees." ;
+	}
 
-	public boolean isReconnectable(){
-		return false;
-	}
-	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
-	public boolean requestPrimaryChoice(){
-		return false;  
-	}
-	public void employeeQuit(MesquiteModule m){
-		iQuit();
-	}
-	/*.................................................................................................................*/
-	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
-   	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-	public void initialize(Taxa taxa){
-	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		if (liaison != null)
@@ -77,25 +71,34 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 			storePreferences();
 	}
 	/*.................................................................................................................*/
+	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
+		Debugg.println("createTreeDisplayExtra %%%%%");
+		ASTRALDiagnosticsDisplayer newDisplayer = new ASTRALDiagnosticsDisplayer(this, treeDisplay, 0);
+		return newDisplayer;
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine("requireCalculate"); 
+		temp.addLine("calculate");
+		return temp;
+	}
+	MesquiteInteger pos = new MesquiteInteger();
+	boolean requireCalculate = false;
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Goes to next pairing", null, commandName, "nextPairing")) {
+		}
+		
+		else if (checker.compare(this.getClass(), "Turn off pairwise comparison", null, commandName, "closeShowPairs")) {
+			iQuit();
+			resetContainingMenuBar();
+		}
+		return null;
+	}
 	
-	/*.................................................................................................................*/
-   /** TreeBlockFillers should override this if they want special commands to be sent to a tree window if a tree window is created after they are used. */
- 	 public String getExtraTreeWindowCommands (boolean finalTree, long treeBlockID){
-  		String extras = super.getExtraTreeWindowCommands(finalTree, treeBlockID);
-  		extras += "getOwnerModule; tell it; ";
-  		extras += "getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles; tell It; setOn on; toggleShow q1; toggleShow q2; toggleShow q3; endTell; ";
-  		extras += "getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator; tell It;";
-  		extras +="getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames; tell It; toggleNodeLabels off; endTell;";
-  		extras += "setTreeDrawer  #mesquite.trees.SquareLineTree.SquareLineTree; tell It; setEdgeWidth 6; endTell;";
- 		extras += "endTell;";
-  		extras += "endTell;";
- 		return extras;
-	 }
-	/*.................................................................................................................*/
-	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
-		if (treeList==null)
-			return;
-		Taxa taxa = treeList.getTaxa();
+	public void diagnoseTree(Tree tree){
+		Taxa taxa = tree.getTaxa();
 		treeSourceTask.setPreferredTaxa(taxa);
 		int numGTrees = treeSourceTask.getNumberOfTrees(taxa);
 		if (numGTrees==0)
@@ -110,70 +113,132 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 			outputBuffer.append(StringUtil.lineEnding());
 		}
 		MesquiteFile.putFileContents(rootDir + unique+"genes.tre", outputBuffer,false);
+		MesquiteFile.putFileContents(rootDir + unique+"species.tre", tree.writeTreeSimpleByNames(),false);
 
 		String scriptPath = rootDir + "astralScipt" + unique + ".bat";
 		String outputPath = rootDir + unique + "output.tre";
-
+		
+		Debugg.println("=====  " + liaison.getASTRALPath());
 
 		String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
 		if (liaison.usingASTRAL_III())
-			script += "java -jar " +StringUtil.protectFilePath(liaison.getASTRALPath()) + "  -i " + unique + "genes.tre -t 8 -o " + unique + "output.tre 2> " + unique + "Astral.log\n";
+			script += "java -jar " +StringUtil.protectFilePath(liaison.getASTRALPath()) + "  -i " + unique + "genes.tre -t 8 -o " + unique + "output.tre 2> " + unique + "Astral.log";
 		else
-			script += StringUtil.protectFilePath(liaison.getASTRALPath()) + "  -u 2 -o " + unique + "output.tre " + unique + "genes.tre 2> " + unique + "Astral.log\n";
+			script += StringUtil.protectFilePath(liaison.getASTRALPath()) + " -C -c " + unique+"species.tre" + "  -s 0 -u 2 -o " + unique + "output.tre  " + unique + "genes.tre 2> " + unique + "Astral.log";
 		MesquiteFile.putFileContents(scriptPath, script, false);
 		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 
 		if (success){
 
 			if (!MesquiteFile.fileExists(outputPath)) {
-				deleteSupportDirectory();
+				//deleteSupportDirectory();
 				return;
 			}
 			MesquiteFile outputFile = new MesquiteFile();
 			outputFile.setPath(outputPath);
+			Debugg.println("outputPath " + outputPath);
 			if (outputFile.openReading()) {
 				TreeVector trees = IOUtil.readPhylipTrees(this,getProject(), outputFile, null, null, taxa, true, null, "ASTRAL", false, true);
 				if (trees != null)
 					for (int itr = 0; itr<trees.size(); itr++) {
-						MesquiteTree tree = (MesquiteTree)trees.elementAt(itr);
-						
-						tree = liaison.extractASTRALInfo(tree);
-						treeList.addElement(tree, false);
+						MesquiteTree treeO = (MesquiteTree)trees.elementAt(itr);
+						// Debugg.println(treeO.writeTreeSimpleByNames());
+					/*	MesquiteTree tree = (MesquiteTree)trees.elementAt(itr);
+						tree = liaison.extractASTRALInfo((MesquiteTree)tree);
+						treeList.addElement(tree, false);*/
 					}
 				outputFile.closeReading();
 			}
 
 		}
-	//	deleteSupportDirectory();
+		//deleteSupportDirectory();
 
-		treeList.setName("Trees from ASTRAL");
-		treeList.setAnnotation ("Parameters:  ", false);
 	}
 	/*.................................................................................................................*/
+	public void resetAllOperators() {
+		Debugg.println("RAO=========");
+	}
+	public String nameForWritableResults(){
+		return "ASTRAL Diagnostics";
+	}
 	
-	/*.................................................................................................................*/
-	public boolean hasLimitedTrees(Taxa taxa){
+	public boolean suppliesWritableResults(){
 		return true;
 	}
-	/*.................................................................................................................*/
-	public String getName() {
-		return "ASTRAL from Gene Trees";
+	public Object getWritableResults(){
+		String results = "";
+		
+		
+		return results;
 	}
-	public String getNameForMenuItem() {
-		return "ASTRAL from Gene Trees...";
+ 	/*.................................................................................................................*/
+	public void endJob() {
+		super.endJob();
 	}
-	/*.................................................................................................................*/
-	public String getExplanation() {
-		return "Supplies species tree obtained from available gene trees.";
-	}
-
 	public boolean isPrerelease(){
-		return true;
-	}
+		return false;
+	} 
 	/*.................................................................................................................*/
 	public boolean showCitation(){
 		return true;
 	}
+
 }
+
+/* ======================================================================== */
+class ASTRALDiagnosticsDisplayer extends TreeDisplayDrawnExtra {
+	public TaxaPairing pairing;
+
+	ASTRALDiagnosticsForTree ownerModule;
+
+	public ASTRALDiagnosticsDisplayer (ASTRALDiagnosticsForTree ownerModule, TreeDisplay treeDisplay, int numTaxa) {
+		super(ownerModule, treeDisplay);
+		this.ownerModule = ownerModule;
+	}
+	public void initiate() {
+		Debugg.println("initiate id displayer %%%%%");
+
+	}
+
+	public String textForLegend(){
+		return getWritableText();
+	}
+	
+	public String getWritableText(){
+		return getTextVersion();
+	}
+	
+	public String textAtNode(Tree tree, int node){
+		
+		return"";
+	}
+
+	
+	String getTextVersion(){
+		return "";
+	}
+	
+
+	/*.................................................................................................................*/
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+		
+	}
+	/*.................................................................................................................*/
+	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
+		drawOnTree(tree, drawnRoot, g);
+	}
+	/*.................................................................................................................*/
+	public   void setTree(Tree tree) {
+		Debugg.println("setTree in displayer " + tree.getID());
+		ownerModule.diagnoseTree(tree);
+	
+	}
+
+	public void turnOff() {
+		super.turnOff();
+	}
+}
+
+
 
 

@@ -42,7 +42,7 @@ public class ColorDistribution {
 	//	public static Color[] projectLight, projectDark; //pale, light, medium, dark, project, 
 	public final static int numColorSchemes = 4;
 	public static Color burlyWood, navajoWhite, bisque, sienna, paleGoldenRod, veryPaleGoldenRod;
-	public static NameReference colorNameReference;
+	public static NameReference colorNameReference, colorRGBNameReference;
 	public static StringArray standardColorNames;
 	static ObjectArray standardColors, standardColorsDimmed;
 	public static double dimmingConstant = 0.3;
@@ -120,7 +120,8 @@ public class ColorDistribution {
 
 
 		uneditable = lightYellow;
-		colorNameReference = NameReference.getNameReference("Color");
+		colorNameReference = NameReference.getNameReference("color");
+		colorRGBNameReference = NameReference.getNameReference("colorRGB");
 		standardColors = new ObjectArray(18);
 		standardColors.setValue(0, Color.black);
 		standardColors.setValue(1, Color.darkGray);
@@ -141,7 +142,7 @@ public class ColorDistribution {
 		standardColors.setValue(15, lightBlue);
 		standardColors.setValue(16, Color.magenta);
 		standardColors.setValue(17, Color.pink);
-		//DO NOT ASSIGN A COLOR TO 18
+		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorNames = new StringArray(18);
 		standardColorNames.setValue(0, "Black");
 		standardColorNames.setValue(1, "Dark Gray");
@@ -161,7 +162,7 @@ public class ColorDistribution {
 		standardColorNames.setValue(15, "Light Blue");
 		standardColorNames.setValue(16, "Magenta");
 		standardColorNames.setValue(17, "Pink");
-		//DO NOT ASSIGN A COLOR TO 18
+		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorsDimmed = new ObjectArray(18);
 		standardColorsDimmed.setValue(0, Color.gray);
 		standardColorsDimmed.setValue(1, brighter(Color.darkGray, dimmingConstant));
@@ -181,7 +182,7 @@ public class ColorDistribution {
 		standardColorsDimmed.setValue(15, brighter(lightBlue, dimmingConstant));
 		standardColorsDimmed.setValue(16, brighter(Color.magenta, dimmingConstant));
 		standardColorsDimmed.setValue(17, brighter(Color.pink, dimmingConstant));
-		//DO NOT ASSIGN A COLOR TO 18
+		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 	}
 	public ColorDistribution( Color c) {
 		this();

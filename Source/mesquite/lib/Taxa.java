@@ -45,7 +45,7 @@ public class Taxa extends FileElement {
 
 	private boolean inFlux = false;
 	private boolean duplicate = false;
-	
+
 
 	public Taxa(int numTaxa) {
 		super(numTaxa); // For associable
@@ -73,14 +73,14 @@ public class Taxa extends FileElement {
 		llListeners.removeElement(listener);
 	}
 	void notifyOfChangeLowLevel(int code, int i1, int i2, int i3){
-			for (int i = 0; i< llListeners.size(); i++){
-				LowLevelListener lll = (LowLevelListener)llListeners.elementAt(i);
-				try {
-					lll.llChange(this, code, i1, i2, i3);
-				}
-				catch (Throwable e){ //don't want problem in one of these to stop notifications
-				}
+		for (int i = 0; i< llListeners.size(); i++){
+			LowLevelListener lll = (LowLevelListener)llListeners.elementAt(i);
+			try {
+				lll.llChange(this, code, i1, i2, i3);
 			}
+			catch (Throwable e){ //don't want problem in one of these to stop notifications
+			}
+		}
 	}
 	/* ................................................................................................................. */
 	public String searchData(String s, MesquiteString commandResult) {
@@ -95,9 +95,9 @@ public class Taxa extends FileElement {
 			String name = getTaxonName(it);
 			if (name != null && StringUtil.foundIgnoreCase(name, s)) {
 				list += "<li>Taxon " + (it + 1) + ": <strong>"
-				+ StringUtil.protectForXML(name)
-				+ "</strong>. <a href=\"touchTaxon:" + it + " "
-				+ getID() + "\">Touch taxon</a></li>";
+						+ StringUtil.protectForXML(name)
+						+ "</strong>. <a href=\"touchTaxon:" + it + " "
+						+ getID() + "\">Touch taxon</a></li>";
 				numFound++;
 				fc = "touchTaxon:" + it + " " + getID();
 			}
@@ -225,7 +225,7 @@ public class Taxa extends FileElement {
 		for (int it = 0; it < numTaxa; it++)
 			if (getTaxon(taxa.getTaxonName(it)) == null) {
 				appendToEqualTaxaMessage("Taxon " + taxa.getTaxonName(it)
-						+ " not found in original matrix");
+				+ " not found in original matrix");
 				return false;
 			}
 		if (!ignoreOrder) {
@@ -238,7 +238,7 @@ public class Taxa extends FileElement {
 			for (int it = 0; it < numTaxa; it++)
 				if (whichTaxonNumber(taxa.getTaxonName(it)) != it) {
 					appendToEqualTaxaMessage("Taxon " + taxa.getTaxonName(it)
-							+ " not found in same order in original matrix");
+					+ " not found in same order in original matrix");
 					return false;
 				}
 		}
@@ -275,14 +275,14 @@ public class Taxa extends FileElement {
 		for (int it = 0; it < inputNumTaxa; it++)
 			if (getTaxon(taxa.getTaxonName(it)) == null) {
 				appendToEqualTaxaMessage("Taxon " + taxa.getTaxonName(it)
-						+ " not found in original matrix");
+				+ " not found in original matrix");
 				return false;
 			}
 		if (!ignoreOrder) {
 			for (int it = 0; it < inputNumTaxa; it++)
 				if (whichTaxonNumber(taxa.getTaxonName(it)) != it) {
 					appendToEqualTaxaMessage("Taxon " + taxa.getTaxonName(it)
-							+ " not found in same order in original matrix");
+					+ " not found in same order in original matrix");
 					return false;
 				}
 		}
@@ -304,7 +304,7 @@ public class Taxa extends FileElement {
 	}
 
 	private NameReference notesNameRef = NameReference
-	.getNameReference("notes");
+			.getNameReference("notes");
 
 	/*-----------------------------------------------------------*/
 	public void equalizeTaxon(Taxa oTaxa, int oit, int it) {
@@ -316,7 +316,7 @@ public class Taxa extends FileElement {
 		setAnnotation(it, oTaxa.getAnnotation(oit));
 		taxon.setUniqueID(oTaxon.getUniqueID());
 		AttachedNotesVector notes = (AttachedNotesVector) oTaxa
-		.getAssociatedObject(notesNameRef, oit);
+				.getAssociatedObject(notesNameRef, oit);
 		if (notes != null)
 			setAssociatedObject(notesNameRef, it, notes.cloneVector(this));
 	}
@@ -445,6 +445,11 @@ public class Taxa extends FileElement {
 	/* ................................................................................................................. */
 	/** returns which taxon (i.e., its number) has the given name */
 	public int whichTaxonNumber(String taxonName, boolean caseSensitive, boolean forgivingOfTruncation) {
+		return whichTaxonNumber(taxonName, caseSensitive, forgivingOfTruncation, false);
+	}
+	/* ................................................................................................................. */
+	/** returns which taxon (i.e., its number) has the given name */
+	public int whichTaxonNumber(String taxonName, boolean caseSensitive, boolean forgivingOfTruncation, boolean forgivingOfSpaceUnderscore) {
 		if (StringUtil.blank(taxonName))
 			return -1;
 		// second, see if there is an exact match
@@ -461,7 +466,15 @@ public class Taxa extends FileElement {
 				if (taxonName.equalsIgnoreCase(taxon[i].getName()))
 					return i;
 			}
-		}
+			if (forgivingOfSpaceUnderscore) {
+				String taxonNameSp = taxonName.replace("_"," ");
+				for (int i = 0; i < numTaxa; i++) {
+					String tNiSp = taxon[i].getName().replace("_"," ");
+					if (taxonNameSp.equalsIgnoreCase(tNiSp))
+						return i;
+				}
+			}
+	}
 		for (int i = 0; i < numTaxa; i++){  //check UniqueID's
 			String uniqueID = taxon[i].getUniqueID();
 			if (uniqueID != null && taxonName.equals(uniqueID))
@@ -590,7 +603,7 @@ public class Taxa extends FileElement {
 		// System.out.println("ERROR: bad taxon name: "+ taxonName);
 		return -1;
 	}
-	
+
 	/* ................................................................................................................. */
 	/**
 	 * returns which taxon (i.e., its number) has the given name, doing reverse
@@ -805,7 +818,7 @@ public class Taxa extends FileElement {
 	public final boolean addTaxa(int first, int num, boolean notify) {
 		if (inhibitEdit>0)
 			return false;
-	UndoReference undoReference = null;
+		UndoReference undoReference = null;
 		if (notify) {
 			UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_ADDED, this);
 			resetJustAdded();
@@ -916,10 +929,10 @@ public class Taxa extends FileElement {
 	public boolean deleteParts(int starting, int num) {
 		if (inhibitEdit>0)
 			return false;
-		
+
 		if (num <= 0 || starting < 0 || starting >= numTaxa)
 			return false;
-		
+
 		if (!checkThread(false))
 			return false;
 		inFlux = true;
@@ -1111,17 +1124,17 @@ public class Taxa extends FileElement {
 		if (caseSensitive) {
 			for (int i = 0; i < numTaxa; i++)
 				if (taxon[i].getSynonym() != null
-						&& taxonName.equals(taxon[i].getSynonym()))
+				&& taxonName.equals(taxon[i].getSynonym()))
 					return i;
 		} else {
 			for (int i = 0; i < numTaxa; i++)
 				// first try exact match
 				if (taxon[i].getSynonym() != null
-						&& taxonName.equals(taxon[i].getSynonym()))
+				&& taxonName.equals(taxon[i].getSynonym()))
 					return i;
 			for (int i = 0; i < numTaxa; i++)
 				if (taxon[i].getSynonym() != null
-						&& taxonName.equalsIgnoreCase(taxon[i].getSynonym()))
+				&& taxonName.equalsIgnoreCase(taxon[i].getSynonym()))
 					return i;
 		}
 		return -1;
@@ -1256,7 +1269,7 @@ public class Taxa extends FileElement {
 			if (notify)
 				notifyListeners(this, new Notification(
 						MesquiteListener.NAMES_CHANGED, new int[] { it }));
-;
+			;
 		}
 	}
 
@@ -1268,7 +1281,7 @@ public class Taxa extends FileElement {
 	}
 
 	java.util.zip.CRC32 crc = new java.util.zip.CRC32();
-	
+
 
 	/* ................................................................................................................. */
 	public String checkNameLegality(int it, String s) {
@@ -1294,7 +1307,7 @@ public class Taxa extends FileElement {
 					&&  sChecksum == otherTaxon.getNameChecksum() 
 					&&  !otherTaxon.isNameNull() //(i < it || !otherTaxon.isNameDefault()) &&
 					&&  s.equals(otherTaxon.getName())
-				) { 
+					) { 
 				return "The taxon name \"" + s + "\" for taxon " + (it + 1) + " is illegal because another taxon (#" + (i + 1) + ") already has it.  This may cause various problems and should be fixed.";
 			}
 		}
@@ -1337,7 +1350,7 @@ public class Taxa extends FileElement {
 	/* ................................................................................................................. */
 	public String toString() {
 		return "Taxa block (name: " + getName() + " number of taxa: " + numTaxa
-		+ " id: " + getID() + ")";
+				+ " id: " + getID() + ")";
 	}
 
 	public String toHTMLStringDescription() {
@@ -1367,7 +1380,7 @@ public class Taxa extends FileElement {
 		return duplicate;
 	}
 
-	
+
 	/**
 	 * Returns whether this there is any data matrix containing data for taxa itStart through itEnd inclusive.
 	 */
@@ -1392,7 +1405,7 @@ public class Taxa extends FileElement {
 
 	/*.................................................................................................................*/   //Debugg.println    WAYNECHECK
 	public Taxa createTaxonBlock(int numTaxa) {
-//		incrementMenuResetSuppression();
+		//		incrementMenuResetSuppression();
 		Taxa newTaxa=null;
 		String title= getProject().getTaxas().getUniqueName("Taxa");
 		MesquiteBoolean answer = new MesquiteBoolean(true);
@@ -1405,7 +1418,7 @@ public class Taxa extends FileElement {
 			return null;
 		newTaxa.addToFile(file, getProject(), null);
 
-//		decrementMenuResetSuppression();
+		//		decrementMenuResetSuppression();
 		return newTaxa;
 	}
 	/*.................................................................................................................*/

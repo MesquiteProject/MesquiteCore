@@ -207,6 +207,9 @@ public class IOUtil {
 	}
 	/*.................................................................................................................*/
 	public static TreeVector readPhylipTrees (MesquiteModule mb, MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String treeNameBase, boolean addTreesToFile) {
+		return readPhylipTrees (mb, mf, file, line, progIndicator, taxa, permitTaxaBlockEnlarge, namer, treeNameBase, addTreesToFile, false);
+	}
+	public static TreeVector readPhylipTrees (MesquiteModule mb, MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String treeNameBase, boolean addTreesToFile, boolean permitSpaceUnderscoreEquivalent) {
 		Parser treeParser = new Parser();
 		treeParser.setQuoteCharacter((char)0);
 		int numTrees = MesquiteInteger.infinite;
@@ -228,6 +231,7 @@ public class IOUtil {
 			}
 			MesquiteTree t = new MesquiteTree(taxa);
 			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
+			t.setPermitSpaceUnderscoreEquivalent(permitSpaceUnderscoreEquivalent);
 			//t.setTreeVector(treeVector);
 			t.readTree(line,namer, null, "():;,[]\'", false);  //tree reading adjusted to use Newick punctuation rather than NEXUS
 			/*MesquiteInteger pos = new MesquiteInteger(0);

@@ -440,7 +440,6 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	private   void drawClade(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
-			lightenColourByPR((MesquiteTree) tree,  node,  g);
 			if (tree.getRooted() || tree.getRoot()!=node) {
 				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, x, y, getEdgeWidth(), tree, g, null, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), defaultStroke);
 			}
@@ -578,14 +577,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		}
 	}
 	*/
-	NameReference 	palenessRef = NameReference.getNameReference("drawPale");
-	void lightenColourByPR(MesquiteTree tree, int node, Graphics g) {
-		double palenessMultiplier = ((MesquiteTree)tree).getAssociatedDouble(palenessRef, node);
-		if (MesquiteDouble.isCombinable(palenessMultiplier)) {
-			Color c = g.getColor();
-			g.setColor( new Color(255 - (int)(palenessMultiplier*(255-c.getRed())), 255 - (int)(palenessMultiplier*(255-c.getGreen())), 255 - (int)(palenessMultiplier*(255-c.getBlue()))));
-		}
-	}
+	/*_________________________________________________*/
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
@@ -599,14 +591,12 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			if (numColors<=1) {
 				if ((color = colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)))!=null)
 					g.setColor(color);
-				lightenColourByPR((MesquiteTree) tree,  node,  g);
 				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, colors, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 			}
 			else
 				for (int i=0; i<numColors; i++) {
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
-					lightenColourByPR((MesquiteTree) tree,  node,  g);
 					//			public static   void drawOneBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
 					float thickness = fillWidth/numColors;
 					float start = i*thickness+localInset;

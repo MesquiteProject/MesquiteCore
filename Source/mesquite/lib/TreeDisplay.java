@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -31,7 +31,7 @@ TreeDisplay, whether shading or node pictures or a simple tree legend, by creati
 of class TreeDisplayExtra and adding it to the vector of extras.  The TreeDisplay calls all of 
 the extras after the tree is drawn, in case those extras need to contribute to the TreeDisplay drawing.
 <p> This needs to be fixed up (e.g., fields made private with set and get methods).
-*/
+ */
 public class TreeDisplay extends TaxaTreeDisplay  {
 	DrawNamesTreeDisplay namesTask;
 
@@ -55,7 +55,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public static final int UNROOTED = 5;
 	/** Tree orientation is not yet set; take from node locs module */
 	public static final int NOTYETSET = -1;
-	
+
 	public static final int FONTSIZECHANGED = 18275;  //for notification
 
 	/**  The margin from the tips to the edge of the drawing field*/
@@ -73,7 +73,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	private int dist=8;
 	private int minDist=8;
 	int minForTerminalBoxes = 0;
-	
+
 	/**  What is the mode for highlighting selected taxa in tree displays? */
 	public static final int sTHM_NONE = 0;
 	public static final int sTHM_GREYBOX = 1;
@@ -84,7 +84,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	protected boolean showBranchColors = true;
 	public static boolean printTreeNameByDefault = false;
-	
+
 	/**  The color of the branches*/
 	public Color branchColor;
 	/**  The color of a dimmed branch*/
@@ -96,23 +96,23 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	/**  Spacing in pixels between taxa*/
 	private int taxonSpacing;
-	
+
 	/**  Spacing in pixels between taxa as set by user*/
 	private int fixedTaxonSpacing;
 	/**  Orientaton of the tree*/
 	private int treeOrientation = NOTYETSET;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree drawer*/
-//	public boolean inhibitStretchByDefault = false;
+	//	public boolean inhibitStretchByDefault = false;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree window*/
 	public boolean autoStretchIfNeeded = false;
 	/**  Is the orientation fixed, or can reorientation be done?*/
 	private boolean allowReorient = true;
 	private MesquiteInteger highlightedBranch  = new MesquiteInteger(0);
-	
+
 	/**  whether "triangled" clades are shown as simple triangles or not*/
 	private boolean simpleTriangle=true;
-	
-	
+
+
 	public TreeDisplay (MesquiteModule ownerModule, Taxa taxa) { 
 		super(ownerModule,taxa);
 		branchColor = Color.black;
@@ -124,7 +124,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public int getMouseY(){
 		return super.getMouseY();
 	}
-	
+
 	public Graphics getGraphics(){
 		Graphics g = super.getGraphics();
 		if (g == null)
@@ -137,23 +137,44 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		return namesTask.getFont();
 	}
 
+	/*_________________________________________________*/
+	NameReference 	palenessRef = NameReference.getNameReference("drawPale");
+	MesquiteInteger pos = new MesquiteInteger(0);
 	public Color getBranchColor(int N){
 		if (!showBranchColors)
 			return branchColor;
-		long c = tree.getAssociatedLong(ColorDistribution.colorNameReference, N);
-		Color col=null;
-		if (!tree.anySelected() || tree.getSelected(N)) {
-			if (MesquiteLong.isCombinable(c) && (col = ColorDistribution.getStandardColor((int)c))!=null)
-				return col;
-			else
-				return branchColor;
+		Color color = null;
+		String cRGB = (String)tree.getAssociatedObject(ColorDistribution.colorRGBNameReference, N);
+		if (cRGB != null) {
+			pos.setValue(0);
+			Color colRGB = ColorDistribution.getColorFromArguments(cRGB, pos);
+			if (colRGB != null)
+				color = colRGB;
 		}
-		else {
-			if (MesquiteLong.isCombinable(c) && (col = ColorDistribution.getStandardColorDimmed((int)c))!=null)
-				return col;
-			else
-				return branchColorDimmed;
+		if (color == null) {
+			long c = tree.getAssociatedLong(ColorDistribution.colorNameReference, N);
+			Color col=null;
+			if (!tree.anySelected() || tree.getSelected(N)) {
+				if (MesquiteLong.isCombinable(c) && (col = ColorDistribution.getStandardColor((int)c))!=null)
+					color = col;
+				else
+					color = branchColor;
+			}
+			else {
+				if (MesquiteLong.isCombinable(c) && (col = ColorDistribution.getStandardColorDimmed((int)c))!=null)
+					color = col;
+				else
+					color = branchColorDimmed;
+			}
 		}
+		if (tree instanceof MesquiteTree) {
+			double palenessMultiplier = ((MesquiteTree)tree).getAssociatedDouble(palenessRef, N);
+			if (MesquiteDouble.isCombinable(palenessMultiplier)) {
+				Color c = color;
+				color = new Color(255 - (int)(palenessMultiplier*(255-c.getRed())), 255 - (int)(palenessMultiplier*(255-c.getGreen())), 255 - (int)(palenessMultiplier*(255-c.getBlue())));
+			}
+		}
+		return color;
 	}
 
 	public Composite setBranchTransparency(Graphics g, int N){
@@ -166,7 +187,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		}
 		return null;
 	}
-public void setTreeDrawing(TreeDrawing td) {
+	public void setTreeDrawing(TreeDrawing td) {
 		treeDrawing = td;
 		if (treeDrawing!=null && tree!=null)
 			setTree(tree);
@@ -174,7 +195,7 @@ public void setTreeDrawing(TreeDrawing td) {
 	public TreeDrawing getTreeDrawing() {
 		return treeDrawing;
 	}
-	
+
 	public void setDrawingInProcess(boolean inProgress){
 		this.inProgress= inProgress;
 		if (!inProgress && holdingTree != null) {
@@ -188,22 +209,22 @@ public void setTreeDrawing(TreeDrawing td) {
 	public void forceRepaint(){
 		repaint();
 	}
-	
+
 	public Tree getTree() {
 		return tree;
 	}
-	
+
 	public void setTree(Tree tree) {
-		
+
 		if (tree!=null && tree.getTaxa() != taxa)
 			setTaxa(tree.getTaxa());
 
-	 	if (inProgress){
+		if (inProgress){
 			if (MesquiteTrunk.debugMode)
 				addToChain("TD-setTree HOLDING " + StringUtil.getDateTimeWithSeconds());
-	 		holdingTree = tree;
-	 	}
-	 	else {
+			holdingTree = tree;
+		}
+		else {
 			this.tree = tree;
 			if (treeDrawing !=null) {
 				if (tree !=null)
@@ -212,8 +233,8 @@ public void setTreeDrawing(TreeDrawing td) {
 					treeDrawing.setDrawnRoot(0);
 			}
 			redoCalculations(1);
-	 		holdingTree = null;
-	 	}
+			holdingTree = null;
+		}
 	}
 
 	public DrawNamesTreeDisplay getDrawTaxonNames(){
@@ -261,7 +282,7 @@ public void setTreeDrawing(TreeDrawing td) {
 	public void redoCalculations(int code){
 		if (treeDrawing!=null && tree !=null)
 			treeDrawing.recalculatePositions(tree); //to force node locs recalc
-		
+
 	}
 	public void setEdgeWidth(int sp) {
 		this.edgewidth = sp;
@@ -283,7 +304,7 @@ public void setTreeDrawing(TreeDrawing td) {
 	}
 	public void addExtra(TreeDisplayExtra extra) {
 		if (extras != null)
-		extras.addElement(extra, false);
+			extras.addElement(extra, false);
 	}
 	public void removeExtra(TreeDisplayExtra extra) {
 		if (extras != null)
@@ -314,21 +335,21 @@ public void setTreeDrawing(TreeDrawing td) {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-			   	if (ex.getOwnerModule() == mb) 
-			   		 count++;
-		 	}
-		 	if (count == 0)
-		 		return null;
-		 	TreeDisplayExtra[] ee = new TreeDisplayExtra[count];
+				if (ex.getOwnerModule() == mb) 
+					count++;
+			}
+			if (count == 0)
+				return null;
+			TreeDisplayExtra[] ee = new TreeDisplayExtra[count];
 			e = extras.elements();
 			count = 0;
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-			   	if (ex.getOwnerModule() == mb) 
-			   		ee[count++] = ex;
-		 	}
-		 	return ee;
+				if (ex.getOwnerModule() == mb) 
+					ee[count++] = ex;
+			}
+			return ee;
 		}
 		return null;
 	}
@@ -338,10 +359,10 @@ public void setTreeDrawing(TreeDrawing td) {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-			   	if (ownerModule==null || ownerModule.isDoomed()) 
-			   		return;
-	 			ex.setTree(tree);
-		 	}
+				if (ownerModule==null || ownerModule.isDoomed()) 
+					return;
+				ex.setTree(tree);
+			}
 		}
 	}
 	public void drawAllBackgroundExtrasOfPlacement(Tree tree, int drawnRoot, Graphics g, int placement) {
@@ -352,12 +373,12 @@ public void setTreeDrawing(TreeDrawing td) {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-	 			if (ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
-				   	if (ownerModule==null || ownerModule.isDoomed()) 
-				   		return;
-				   	ex.drawOnTree(tree, drawnRoot, g);
-	 			}
-	 		}
+				if (ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					ex.drawOnTree(tree, drawnRoot, g);
+				}
+			}
 		}
 	}
 	public void drawAllBackgroundExtras(Tree tree, int drawnRoot, Graphics g) {
@@ -373,12 +394,12 @@ public void setTreeDrawing(TreeDrawing td) {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-	 			if (!(ex instanceof TreeDisplayBkgdExtra)) {
-				   	if (ownerModule==null || ownerModule.isDoomed()) 
-				   		return;
-	 				ex.drawOnTree(tree, drawnRoot, g);
-	 			}
-	 		}
+				if (!(ex instanceof TreeDisplayBkgdExtra)) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					ex.drawOnTree(tree, drawnRoot, g);
+				}
+			}
 		}
 		if (notice!=null)
 			g.drawString(notice, 6, getBounds().height-6);
@@ -393,12 +414,12 @@ public void setTreeDrawing(TreeDrawing td) {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-	 			if (ex instanceof TreeDisplayBkgdExtra) {
-				   	if (ownerModule==null || ownerModule.isDoomed()) 
-				   		return;
-	 				ex.printOnTree(tree, drawnRoot, g);
-	 			}
-	 		}
+				if (ex instanceof TreeDisplayBkgdExtra) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					ex.printOnTree(tree, drawnRoot, g);
+				}
+			}
 		}
 	}
 	public void printAllExtras(Tree tree, int drawnRoot, Graphics g) {
@@ -409,17 +430,17 @@ public void setTreeDrawing(TreeDrawing td) {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-	 			if (!(ex instanceof TreeDisplayBkgdExtra)) {
-	 
-				   	if (ownerModule==null || ownerModule.isDoomed()) 
-				   		return;
-		 			ex.printOnTree(tree, drawnRoot, g);
-	 			}
-	 		}
+				if (!(ex instanceof TreeDisplayBkgdExtra)) {
+
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					ex.printOnTree(tree, drawnRoot, g);
+				}
+			}
 		}
 	}
-	
-	
+
+
 	/*.................................................................................................................*/
 	public void setOrientation(int orient) {
 		if (allowReorient)
@@ -479,7 +500,7 @@ public void setTreeDrawing(TreeDrawing td) {
 	public String getBranchLengthList(Tree tree) {
 		return branchLengthsAtNodes(tree,tree.getRoot());
 	}
-	
+
 	/*.................................................................................................................*/
 	/**return a text version of information on tree*/
 	private void associatesOnTree(MesquiteTree tree, int node, String[] nodeStrings){
@@ -490,7 +511,7 @@ public void setTreeDrawing(TreeDrawing td) {
 		nodeStrings[node]= ""+tree.toString(node);
 	}
 	public String getAssociatesAtNodes(MesquiteTree tree){
-		
+
 		if (!tree.hasAnyAssociates())
 			return "";
 		int node = tree.getRoot();
@@ -508,7 +529,7 @@ public void setTreeDrawing(TreeDrawing td) {
 			return "Values associated with nodes\n\n" + buff.toString();
 		return "";
 	}
-	
+
 	/*.................................................................................................................*/
 	public String getTextVersion() {
 		if (tree==null || treeDrawing == null)
@@ -527,7 +548,7 @@ public void setTreeDrawing(TreeDrawing td) {
 		String branchLengths = getBranchLengthList(tree);
 		if (StringUtil.notEmpty(branchLengths))
 			s+=branchLengths;
-		
+
 		if (tree instanceof MesquiteTree){
 			String assoc = getAssociatesAtNodes((MesquiteTree)tree);
 			s += "\n" + assoc + "\n";
@@ -543,26 +564,26 @@ public void setTreeDrawing(TreeDrawing td) {
 						sEx =ex.writeOnTree(tree, treeDrawing.getDrawnRoot());
 					else
 						sEx = ex.infoAtNodes(tree, treeDrawing.getDrawnRoot());
-		 			if (!StringUtil.blank(sEx)) {
+					if (!StringUtil.blank(sEx)) {
 						String owner = "";
 						if (ex.getOwnerModule()!=null)
 							owner = ex.getOwnerModule().getName();
 						s+= "\n\n--------------- " + owner + " ---------------";
-		 				s+= "\n\n"+ sEx + "\n";
-		 			}
-	 			}
-	 		}
+						s+= "\n\n"+ sEx + "\n";
+					}
+				}
+			}
 		}
 		return s;
 	}
-	
+
 	public String getTableVersion() {
 		if (tree==null || treeDrawing == null)
 			return "";
 		StringBuffer sb = new StringBuffer(100);
 		nodesOnTree(tree, treeDrawing.getDrawnRoot(), sb);
 		String s = "nodes" + sb.toString() + "\n" ;
-		
+
 		String[] nodeNumbers = new String[tree.getNumNodeSpaces()];
 		for (int i=0; i< nodeNumbers.length; i++)
 			nodeNumbers[i] = Integer.toString(i);
@@ -575,14 +596,14 @@ public void setTreeDrawing(TreeDrawing td) {
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
 				if (ex!=null){
 					String sEx = ex.tableAtNodes(tree, treeDrawing.getDrawnRoot());
-		 			if (!StringUtil.blank(sEx)) {
+					if (!StringUtil.blank(sEx)) {
 						String owner = "";
 						if (ex.getOwnerModule()!=null)
 							owner = ex.getOwnerModule().getName();
 						s+= owner + sEx + "\n";
-		 			}
-	 			}
-	 		}
+					}
+				}
+			}
 		}
 		return s;
 	}
@@ -599,7 +620,7 @@ public void setTreeDrawing(TreeDrawing td) {
 		MesquiteWindow w = MesquiteWindow.windowOfItem(this);
 		if (w!=null)
 			w.waitUntilDisposable();
-		
+
 		ownerModule =null;
 		if (treeDrawing !=null)
 			treeDrawing.dispose();
@@ -609,8 +630,8 @@ public void setTreeDrawing(TreeDrawing td) {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-	 			ex.dispose();
-	 		}
+				ex.dispose();
+			}
 		}
 		destroyExtras();
 		extras = null;
@@ -619,7 +640,7 @@ public void setTreeDrawing(TreeDrawing td) {
 		public Vector extras;
 		private TreeDrawing treeDrawing;
 		protected MesquiteModule ownerModule;
-		*/
+		 */
 		super.dispose();
 	}
 

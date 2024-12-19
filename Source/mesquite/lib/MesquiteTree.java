@@ -141,6 +141,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public static boolean permitT0Names = false;
 	/** If true, then taxa block is enlarged when unfamiliar taxon name encountered */
 	private boolean permitTaxaBlockEnlargement = false;
+	/** If true, then taxon name match is considered OK if differ by space/underscore */
+	private boolean permitSpaceUnderscoreEquivalent = false;
 	/** 0 if polytomies in tree treated as hard, 1 if soft, 2 if not yet assigned */
 	private int polytomiesHard = 2;
 	/** A boolean that stores whether the tree is rooted or not */
@@ -2887,6 +2889,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean getPermitTaxaBlockEnlargement(){
 		return permitTaxaBlockEnlargement;
 	}
+	public void setPermitSpaceUnderscoreEquivalent(boolean permit){
+		this.permitSpaceUnderscoreEquivalent = permit;
+	}
+	public boolean getPermitSpaceUnderscoreEquivalent(){
+		return permitSpaceUnderscoreEquivalent;
+	}
+	
 	/** Takes the node information in a file created by a recent version of MrBayes, and retokenizes it as MrBayes does not use standard NEXUS tokenization rules for this. */
 	protected String retokenizeMrBayesConTreeNodeInfo(String nodeInfo) {
 		if (StringUtil.blank(nodeInfo))
@@ -3020,15 +3029,16 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					taxonNumber = treeVector.whichTaxonNumber(c, permitTruncTaxNames && !permitTaxaBlockEnlargement); //use treeVector's translation table if one is available
 					fromWhichNamer = 2;
 					if (taxonNumber <0) {
-						taxonNumber = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
+						taxonNumber = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement, permitSpaceUnderscoreEquivalent);
 						fromWhichNamer = 3;
 					}
 					path += 1;
 				}
 				else {  //if (taxonNumber == -1) {
-					taxonNumber = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
+					taxonNumber = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement, permitSpaceUnderscoreEquivalent);
 					fromWhichNamer = 4;
 				}
+				
 				if (taxonNumber<0){
 					/* Note: There is a problem with this if permitTONames is on.  If you read in a Zephyr produced tree file by itself, not after
 					 * opening the file with the taxa in order, then you will likely get reticulations.  In particular, permitTONames not only

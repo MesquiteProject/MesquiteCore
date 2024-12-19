@@ -221,7 +221,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 	public PlotTreeDrawing (TreeDisplay treeDisplay, int numTaxa, PlotTree ownerModule, int spotSize) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		this.spotsize = spotSize;
-		colorNameRef = NameReference.getNameReference("Color");
+		colorNameRef = NameReference.getNameReference("color");
 	    	treeDisplay.setMinimumTaxonNameDistance(spotsize/2, 4);
 		treeDisplay.setOrientation(TreeDisplay.FREEFORM);
 		this.ownerModule = ownerModule;
