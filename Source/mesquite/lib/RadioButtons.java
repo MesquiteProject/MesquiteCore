@@ -98,17 +98,12 @@ public class RadioButtons implements ItemListener {
 	}
 
 	public void enableRadioButtons(){
-		Debugg.println("\nENABLING RADIO BUTTONS ");
 		for (int i=0; i< numCheckBoxes; i++) {
-			Debugg.println("     " + checkboxArray[i].getLabel());
 			checkboxArray[i].setEnabled(true);
 		}
 	}
 	public void disableRadioButtons(){
-		
-		Debugg.println("\nDISABLING RADIO BUTTONS ");
 		for (int i=0; i< numCheckBoxes; i++) {
-			Debugg.println("     " + checkboxArray[i].getLabel());
 			checkboxArray[i].setEnabled(true);
 		}
 	}
