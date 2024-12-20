@@ -34,8 +34,7 @@ public class ASTRALDiagnosticsForTree extends TreeDisplayAssistantA {
 		treeSourceTask= (TreeSource)hireNamedEmployee(TreeSource.class, "#StoredTrees");
 		if (treeSourceTask == null)
 			return false;
-		liaison = new ASTRALLiaison(this, "ASTRAL4", "ASTRAL-IVI");
-		//liaison = new ASTRALLiaison(this, "ASTRAL3", "ASTRAL-III");
+		liaison = new ASTRALLiaison(this, "ASTRAL3", "ASTRAL-III");
 		loadPreferences();
 		if (!MesquiteThread.isScripting()) {
 			if (!liaison.queryOptions())
@@ -127,9 +126,9 @@ public class ASTRALDiagnosticsForTree extends TreeDisplayAssistantA {
 
 		String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
 		//	if (liaison.usingASTRAL_III())
-	//	script += "java -jar " +StringUtil.protectFilePath(liaison.getASTRALPath()) + "  -i " + unique + "genes.tre  -q " + unique+"species.tre -t 8 -o " + unique + "output.tre 2> " + unique + "Astral.log";
+ script += "java -jar " +StringUtil.protectFilePath(liaison.getASTRALPath()) + "  -i " + unique + "genes.tre  -q " + unique+"species.tre -t 8 -o " + unique + "output.tre 2> " + unique + "Astral.log";
 		//	else
-				script += StringUtil.protectFilePath(liaison.getASTRALPath()) + " -C -c " + unique+"species.tre" + "  -s 0 -u 2 -o " + unique + "output.tre  " + unique + "genes.tre 2> " + unique + "Astral.log";
+		//		script += StringUtil.protectFilePath(liaison.getASTRALPath()) + " -C -c " + unique+"species.tre" + "  -s 0 -u 2 -o " + unique + "output.tre  " + unique + "genes.tre 2> " + unique + "Astral.log";
 		MesquiteFile.putFileContents(scriptPath, script, false);
 		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 		NameReference 	q1Ref = NameReference.getNameReference("q1");

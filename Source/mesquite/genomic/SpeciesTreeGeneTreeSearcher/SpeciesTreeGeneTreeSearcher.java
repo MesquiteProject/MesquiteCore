@@ -21,7 +21,7 @@ import mesquite.search.lib.*;
 /* ======================================================================== */
 public class SpeciesTreeGeneTreeSearcher extends TreeSearch  {
 	public String getName() {
-		return "Species tree/Gene Tree Methods";
+		return "Species tree / Gene Tree Methods";
 	}
 	public String getExplanation() {
 		return "Supplies species trees resulting from consideration of gene trees.";
