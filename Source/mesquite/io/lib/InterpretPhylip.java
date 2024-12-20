@@ -359,6 +359,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 				outputBuffer.append(tree.writeTree(Tree.BY_NUMBERS));  //or Tree.BY_NUMBERS  or Tree.BY_NAMES
 				// if do it BY_NAMES, make sure you truncate the taxon names to 10 characters!!
 				outputBuffer.append(getLineEnding());
+				outputBuffer.append(getLineEnding());
 			}
 		}
 	}

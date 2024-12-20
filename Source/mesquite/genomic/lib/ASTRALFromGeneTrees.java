@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.ASTRALFromGeneTrees;
+package mesquite.genomic.lib;
 /*~~  */
 
 import java.util.*;
@@ -22,10 +22,13 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.distance.lib.*;
 import mesquite.externalCommunication.lib.AppChooser;
+import mesquite.genomic.SpeciesTreeGeneTreeSearcher.SpeciesTreeGeneTreeSearcher;
+import mesquite.genomic.lib.ASTRALLiaison;
+import mesquite.genomic.lib.SpeciesTreeGeneTreeAnalysis;
 import mesquite.io.lib.IOUtil;
 
 /* ======================================================================== */
-public class ASTRALFromGeneTrees extends TreeInferer {  
+public abstract class ASTRALFromGeneTrees extends TreeSearcher implements SpeciesTreeGeneTreeAnalysis {  
 	ASTRALLiaison liaison;
 
 	TreeSource treeSourceTask;
@@ -34,7 +37,7 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 		treeSourceTask= (TreeSource)hireNamedEmployee(TreeSource.class, "#StoredTrees");
 		if (treeSourceTask == null)
 			return false;
-		liaison = new ASTRALLiaison(this);
+		liaison = new ASTRALLiaison(this, getOfficialAppNameInAppInfo(), getProgramNameForDisplay());
 		loadPreferences();
 		if (!MesquiteThread.isScripting()) {
 			if (!liaison.queryOptions())
@@ -42,6 +45,10 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 		}
 		return true;
 	}
+	
+	protected abstract String getOfficialAppNameInAppInfo();
+	protected abstract String getProgramNameForDisplay();
+	protected abstract String executionCommand(String ASTRALPath, String geneTreesPath, String outputPath, String logPath);
 
 	public boolean isReconnectable(){
 		return false;
@@ -57,7 +64,8 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 	/*.................................................................................................................*/
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-	public void initialize(Taxa taxa){
+	public boolean initialize(Taxa taxa){
+		return true;
 	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
@@ -92,14 +100,14 @@ public class ASTRALFromGeneTrees extends TreeInferer {
  		return extras;
 	 }
 	/*.................................................................................................................*/
-	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
+ 	public int fillTreeBlock(TreeVector treeList) {
 		if (treeList==null)
-			return;
+			return NULLVALUE;
 		Taxa taxa = treeList.getTaxa();
 		treeSourceTask.setPreferredTaxa(taxa);
 		int numGTrees = treeSourceTask.getNumberOfTrees(taxa);
 		if (numGTrees==0)
-			return;
+			return -3;
 		String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 		String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
 
@@ -116,10 +124,11 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 
 
 		String script = ShellScriptUtil.getChangeDirectoryCommand(rootDir) + "\n";
-		if (liaison.usingASTRAL_III())
-			script += "java -jar " +StringUtil.protectFilePath(liaison.getASTRALPath()) + "  -i " + unique + "genes.tre -t 8 -o " + unique + "output.tre 2> " + unique + "Astral.log\n";
-		else
-			script += StringUtil.protectFilePath(liaison.getASTRALPath()) + "  -u 2 -o " + unique + "output.tre " + unique + "genes.tre 2> " + unique + "Astral.log\n";
+		//if (liaison.usingASTRAL_III())
+		//	script += "java -jar " +StringUtil.protectFilePath(liaison.getASTRALPath()) + "  -i " + unique + "genes.tre -t 8 -o " + unique + "output.tre 2> " + unique + "Astral.log\n";
+		//else
+		//script += StringUtil.protectFilePath(liaison.getASTRALPath()) + "  -u 2 -o " + unique + "output.tre " + unique + "genes.tre 2> " + unique + "Astral.log\n";
+		script += executionCommand(liaison.getASTRALPath(), unique + "genes.tre", unique + "output.tre ", unique + "Astral.log");
 		MesquiteFile.putFileContents(scriptPath, script, false);
 		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 
@@ -127,7 +136,7 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 
 			if (!MesquiteFile.fileExists(outputPath)) {
 				deleteSupportDirectory();
-				return;
+				return -4;
 			}
 			MesquiteFile outputFile = new MesquiteFile();
 			outputFile.setPath(outputPath);
@@ -137,17 +146,18 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 					for (int itr = 0; itr<trees.size(); itr++) {
 						MesquiteTree tree = (MesquiteTree)trees.elementAt(itr);
 						
-						tree = liaison.extractASTRALInfo(tree);
+						tree = liaison.moveASTRALSupportToAssociated(tree);
 						treeList.addElement(tree, false);
 					}
 				outputFile.closeReading();
 			}
 
 		}
-	//	deleteSupportDirectory();
+		deleteSupportDirectory();
 
-		treeList.setName("Trees from ASTRAL");
+		treeList.setName("Trees from " + getProgramNameForDisplay());
 		treeList.setAnnotation ("Parameters:  ", false);
+		return NOERROR;
 	}
 	/*.................................................................................................................*/
 	
@@ -157,14 +167,14 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "ASTRAL from Gene Trees";
+		return getProgramNameForDisplay() + " Tree from Gene Trees";
 	}
 	public String getNameForMenuItem() {
-		return "ASTRAL from Gene Trees...";
+		return getProgramNameForDisplay() + " Tree from Gene Trees...";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Supplies species tree obtained from available gene trees.";
+		return "Supplies species tree from " + getProgramNameForDisplay() + " obtained from available gene trees.";
 	}
 
 	public boolean isPrerelease(){
@@ -174,6 +184,11 @@ public class ASTRALFromGeneTrees extends TreeInferer {
 	public boolean showCitation(){
 		return true;
 	}
+
+	public Class getCharacterClass() {
+		return null;
+	}
+
 }
 
 

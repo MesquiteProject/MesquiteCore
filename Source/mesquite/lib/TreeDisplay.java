@@ -171,12 +171,26 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			double palenessMultiplier = ((MesquiteTree)tree).getAssociatedDouble(palenessRef, N);
 			if (MesquiteDouble.isCombinable(palenessMultiplier)) {
 				Color c = color;
-				color = new Color(255 - (int)(palenessMultiplier*(255-c.getRed())), 255 - (int)(palenessMultiplier*(255-c.getGreen())), 255 - (int)(palenessMultiplier*(255-c.getBlue())));
+				int red =paleComponent(c.getRed(), palenessMultiplier);
+				int green =paleComponent(c.getGreen(), palenessMultiplier);
+				int blue =paleComponent(c.getBlue(), palenessMultiplier);
+				color = new Color(red, green, blue);
 			}
 		}
 		return color;
 	}
-
+	int paleComponent(int c, double palenessMultiplier) {
+		c = (int)(255 - palenessMultiplier*(255-c));
+		if (c<0) {
+		//	Debugg.println("--------------------colour " + c);
+			return 0;
+		}
+		if (c>255) {
+		// Debugg.println("++++++++++++++colour " + c);
+			return 255;
+		}
+		return c;
+	}
 	public Composite setBranchTransparency(Graphics g, int N){
 		if (!showBranchColors)
 			return null;

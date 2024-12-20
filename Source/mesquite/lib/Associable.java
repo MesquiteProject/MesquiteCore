@@ -794,7 +794,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				b.setValue(node, null);
 			}
 	}
-	public void deassignAssociated(){
+	public void deassignAssociated(){ //removeAllAssociated deleteAllAssociated
 		if (bits!=null)
 			bits.removeAllElements();
 		if (longs!=null)

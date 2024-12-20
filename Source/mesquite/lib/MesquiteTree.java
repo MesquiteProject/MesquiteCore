@@ -583,6 +583,71 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return coTraverse(this, getRoot(), minTermsThis, tree, tree.getRoot(), minTermsOther, checkBranchLengths);
 	}
 	/*----------------------------------------*/
+	private boolean coTraverseTransfer(int kind, NameReference nRef, MesquiteTree tree, int node, int[] minTerms, Tree tree2, int node2, int[] minTerms2){
+		if (kind == 0)
+			tree.setAssociatedLong(nRef, node, tree2.getAssociatedLong(nRef, node2));
+		else if (kind == 1)
+			tree.setAssociatedDouble(nRef, node, tree2.getAssociatedDouble(nRef, node2));
+		else if (kind == 2)
+			tree.setAssociatedObject(nRef, node, tree2.getAssociatedObject(nRef, node2));
+
+		int numD = tree.numberOfDaughtersOfNode(node);
+		int currentMin = -1;
+		for (int i=0; i<numD; i++){  //going through daughters by order of min terminal
+			int dMin =0;
+			int dMin2 = 0;
+			int min = 9999999;
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+				int m = minTerms[d];
+				if (m<min && m > currentMin){
+					min = m;
+					dMin = d;
+				}
+			}
+			int min2 = 9999999;
+			for (int d = tree2.firstDaughterOfNode(node2); tree2.nodeExists(d); d = tree2.nextSisterOfNode(d)) {
+				int m = minTerms2[d];
+				if (m<min2 && m > currentMin){
+					min2 = m;
+					dMin2 = d;
+				}
+			}
+			if (min != min2)
+				return false;
+			if (!coTraverseTransfer(kind, nRef, tree, dMin, minTerms, tree2, dMin2, minTerms2))
+				return false;
+			currentMin = min;
+		}
+		return true;
+	}
+	/** Copies associated from other tree. Assumes topology identicial, so check first! kind 1 = long, 2 = double, 3 = object. */
+	public void transferAssociated(Tree tree, int kind, NameReference nRef){
+		if (kind == 0) {
+			if (tree.getWhichAssociatedLong(nRef)==null) {
+				removeAssociatedLongs(nRef);
+				return;
+			}
+		}
+		else if (kind == 1) {
+			if (tree.getWhichAssociatedDouble(nRef)==null) {
+				removeAssociatedDoubles(nRef);
+				return;
+			}
+		}
+		else if (kind == 2) {
+			if (tree.getWhichAssociatedObject(nRef)==null) {
+				removeAssociatedObjects(nRef);
+				return;
+			}
+		}
+		int[] minTermsThis = new int[getNumNodeSpaces()];
+		int[] minTermsOther = new int[tree.getNumNodeSpaces()];
+		recordMinTerms(this, getRoot(), minTermsThis);
+		recordMinTerms(tree, tree.getRoot(), minTermsOther);
+		coTraverseTransfer(kind, nRef, this, getRoot(), minTermsThis, tree, tree.getRoot(), minTermsOther);
+	}	
+	
+	/*----------------------------------------*/
 	/** Returns true if passed tree has same core array storage (same root, mothers, firstDaughter, nextSister, taxonNumber). */
 	public boolean equalsCoreArrays(MesquiteTree tree){
 		if (tree ==null || taxa != tree.taxa || numNodeSpaces!=tree.numNodeSpaces || root != tree.root)
@@ -1329,7 +1394,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	 * Codes for nodes:
 	 * ILLEGAL if illegal and nothing in subclade is legal; 
 	 * SEMILEGAL: node itself is illegal but subclade includes legal one;
-     * LEGAL if legal (i.e. either more than one descendant is legal, or this is a legal terminal
+	 * LEGAL if legal (i.e. either more than one descendant is legal, or this is a legal terminal
 	 * The permits tree traversal where illegal lineages are ignored as if they aren't there
 	 * */
 	public static final int ILLEGAL = 2;
@@ -1374,10 +1439,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		int mom = motherOfNode(node);  //if this is legal, then you've gone as far as you need to go; next sister not found
 		if (!nodeExists(mom) || mom>=legality.length || legality[mom] == LEGAL)
 			return 0;
-		
+
 		//all sisters next are entirely illegal; go down to mother and the next aunt
 		for (int ancestor = motherOfNode(node); nodeExists(ancestor); ancestor= motherOfNode(ancestor)){
-			
+
 			//look to all this ancestor's sisters
 			for (int candidate = nextSisterOfNode(ancestor); nodeExists(candidate); candidate= nextSisterOfNode(candidate)){
 				if (candidate>=legality.length)
@@ -1389,12 +1454,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			}
 			// have looked to ancestor's sisters, and not found.  The next ancestor deeper is legal, then you're done.
 			int ancAnc = motherOfNode(ancestor);  
-			
+
 			if (!nodeExists(ancAnc) || ancAnc>=legality.length || legality[ancAnc] == LEGAL)//if this is ancestor legal, then you've gone as far as you need to go; next sister not found
 				return 0;
-			
+
 		}
-		
+
 		//nothing found!!!	
 		return 0;
 	}
@@ -2383,7 +2448,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return candidate;
 	}
 	/*-----------------------------------------*/
-	
+
 	/** Returns the first (left-most) daughter of node in an UNROOTED sense where the node
 	is treated as descendant from anc. This is one of the UR procedures, designed
 	to allow unrooted style traversal through the tree*/
@@ -2393,7 +2458,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return 0;
 		int first = firstDaughterOfNodeUR(anc, node);
 		int prev = first;
-		
+
 		int current = first;
 		while (nodeExists(current)) {
 			prev = current;
@@ -2414,7 +2479,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else
 			return 0;
 	}
-	
+
 	/** Returns all of the "daughters" of a node, treating the tree as unrooted.  That is, it returns as
 	 * one of the daughters the mother of the node (which should be the the last entry in the array). 
 	 * If you pass into root the MRCA of a subtree containing "node", then it will treat
@@ -2782,7 +2847,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public static String defaultValueCodeRUN = "";
 	String defaultValueCode = "";
 	NameReference defaultValueCodeRef = null;
-	
+
 	boolean checkNumericalLabelInterpretation(String c){
 		if (numericalLabelInterpretationSet){ //user has answered, therefore follow guidance
 			return (interpretLabelsAsNumerical);
@@ -2798,7 +2863,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			TreesManager em = (TreesManager)fc.findManager(fc, TreeVector.class);
 			boolean[] interps = new boolean[4]; //0 interpret as number (vs. text); 1 interpret as on branch (vs. node); 2 remember
 			MesquiteString n = new MesquiteString(); //the code name of the value, e.g. "consensusFrequency"
-			
+
 			//Ask ManageTrees to query the user; otherwise see scripting possibility in ManageTrees via command setDefaultNumericalLabelInterpetation
 			numericalLabelInterpretationSet = em.queryAboutNumericalLabelIntepretation(interps, c, n);
 			if (numericalLabelInterpretationSet){
@@ -2839,7 +2904,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				}
 				else 
 					setNodeLabel(c, sN); 
-				
+
 				if (taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null)
 					taxa.getClades().addClade(c);
 				return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
@@ -2895,7 +2960,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean getPermitSpaceUnderscoreEquivalent(){
 		return permitSpaceUnderscoreEquivalent;
 	}
-	
+
 	/** Takes the node information in a file created by a recent version of MrBayes, and retokenizes it as MrBayes does not use standard NEXUS tokenization rules for this. */
 	protected String retokenizeMrBayesConTreeNodeInfo(String nodeInfo) {
 		if (StringUtil.blank(nodeInfo))
@@ -2906,7 +2971,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
 		return nodeInfo;
 	}
-	
+
 	private boolean predefinedDouble(String TreeDescription, MesquiteInteger stringLoc){
 		int p = stringLoc.getValue();
 		String key=ParseUtil.getToken(TreeDescription, stringLoc);
@@ -3038,7 +3103,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					taxonNumber = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement, permitSpaceUnderscoreEquivalent);
 					fromWhichNamer = 4;
 				}
-				
+
 				if (taxonNumber<0){
 					/* Note: There is a problem with this if permitTONames is on.  If you read in a Zephyr produced tree file by itself, not after
 					 * opening the file with the taxa in order, then you will likely get reticulations.  In particular, permitTONames not only
@@ -3143,7 +3208,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						}
 						inProgressAddingTaxa = false;
 					}
-					
+
 					if (dWarn) { 
 						if (!AlertDialog.quietQuery(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Unrecognized taxon name", "Unrecognized name (\"" + c + "\") of terminal taxon in tree", "Continue", "Don't warn again", 0)) {
 							dWarn = false;
@@ -3530,7 +3595,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		StringBuffer tD = new StringBuffer(10);
 		writeTreeByT0Names(getRoot(), tD, includeBranchLengths);
 		return tD.toString();
-			
+
 	}
 	/*-----------------------------------------*/
 	/** Writes a tree description into the StringBuffer using taxon names */
@@ -4946,10 +5011,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		setDirty(true);
 		return true;
 	}
-	
+
 	/* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
 	values in ManageTrees.queryAboutNumericalLabelIntepretation() */
-	
+
 	static final String[] betweenLongs = new String[]{"color"};
 	static final String[] betweenDoubles = new String[]{"width", "bootstrapFrequency", "consensusFrequency", "posteriorProbability"};
 	static final String[] betweenObjects = new String[]{};
@@ -5740,6 +5805,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return label[node];
 	}
 	/*-----------------------------------------*/
+	public void removeAllInternalNodeLabels(int node){
+		if (nodeIsInternal(node)){
+			if (nodeHasLabel(node))
+				setNodeLabel(null, node);
+			for (int daughter = firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter)) {
+				removeAllInternalNodeLabels(daughter);
+			}
+		}
+
+	}
+	/*-----------------------------------------*/
 	/** Returns whether the node has a label */
 	public boolean nodeHasLabel(int node){
 		return (label!=null && nodeExists(node) && label[node]!=null) || (nodeIsTerminal(node));
@@ -6186,7 +6262,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			taxaVersion = taxa.getVersionNumber();
 		}
 	}
-	
+
 	public void resetTaxaInfo(){
 		taxaIDs = taxa.getTaxaIDs();
 		oldNumTaxa = taxa.getNumTaxa();

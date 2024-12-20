@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.ASTRALFromGeneTrees;
+package mesquite.genomic.lib;
 /*~~  */
 
 import java.util.*;
@@ -31,15 +31,16 @@ public class ASTRALLiaison {
 	String astralPath = ""; 
 	String alternativeManualPath ="";
 	MesquiteModule ownerModule;
-	boolean usingASTRAL_III = false;
+	String versionCodeName;
+	String versionPublicName;
 	
-	public ASTRALLiaison(MesquiteModule ownerModule) {
+	public ASTRALLiaison(MesquiteModule ownerModule, String versionCodeName, String versionPublicName) {
 		this.ownerModule = ownerModule;
+		this.versionCodeName = versionCodeName;
+		this.versionPublicName = versionPublicName;
 	}
 	
-	public boolean usingASTRAL_III() {
-		return usingASTRAL_III;
-	}
+	
 	public String getASTRALPath() {
 		return astralPath;
 	}
@@ -55,8 +56,8 @@ public class ASTRALLiaison {
 			alternativeManualPath = content;
 		else if ("useBuiltInIfAvailable".equalsIgnoreCase(tag)) 
 			useBuiltInIfAvailable = MesquiteBoolean.fromTrueFalseString(content);
-		else if ("usingAstral_III".equalsIgnoreCase(tag)) 
-			usingASTRAL_III = MesquiteBoolean.fromTrueFalseString(content);
+	//	else if ("usingAstral_III".equalsIgnoreCase(tag)) 
+	//		usingASTRAL_III = MesquiteBoolean.fromTrueFalseString(content);
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
@@ -64,7 +65,7 @@ public class ASTRALLiaison {
 		if (!StringUtil.blank(alternativeManualPath))
 			StringUtil.appendXMLTag(buffer, 2, "alternativeManualPath", alternativeManualPath);  
 		StringUtil.appendXMLTag(buffer, 2, "useBuiltInIfAvailable", useBuiltInIfAvailable);  
-		StringUtil.appendXMLTag(buffer, 2, "usingASTRAL_III", usingASTRAL_III);  
+	//	StringUtil.appendXMLTag(buffer, 2, "usingASTRAL_III", usingASTRAL_III);  
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
@@ -80,13 +81,13 @@ public class ASTRALLiaison {
 		if (!ownerModule.okToInteractWithUser(ownerModule.CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(ownerModule.containerOfModule(),  "Options for ASTRAL-IV",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(ownerModule.containerOfModule(),  "Options for " + versionPublicName,buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 
-		AppChooser appChooser = new AppChooser("ASTRAL", "ASTRAL", useBuiltInIfAvailable, alternativeManualPath);
+		AppChooser appChooser = new AppChooser(versionCodeName, versionPublicName, useBuiltInIfAvailable, alternativeManualPath);
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
-		ua3 = dialog.addCheckBox("Using ASTRAL-III", usingASTRAL_III);
+	//	ua3 = dialog.addCheckBox("Using ASTRAL-III", usingASTRAL_III);
 
 		dialog.addLargeOrSmallTextLabel("This is a very early draft of ASTRAL communication. Eventually, there were will options for running ASTRAL. "
 				+" Also, there will be a choice to either use existing gene trees, or to infer them now, before sending them to ASTRAL. "
@@ -105,7 +106,7 @@ public class ASTRALLiaison {
 			alternativeManualPath = appChooser.getManualPath(); //for preference writing
 			useBuiltInIfAvailable = appChooser.useBuiltInExecutable(); //for preference writing
 			builtinVersion = appChooser.getVersion(); //for informing user; only if built-in
-			usingASTRAL_III = ua3.getState();
+		//	usingASTRAL_III = ua3.getState();
 			ownerModule.storePreferences();
 		}
 		dialog.dispose();
@@ -153,14 +154,13 @@ public class ASTRALLiaison {
 		}
 		return MesquiteDouble.unassigned;
 	}
-	public   void extractInfoAtNode(MesquiteTree tree, int node) {
+	void  captureASTRALSupportAtNode(MesquiteTree tree, int node) {
 		if (tree.nodeIsInternal(node)) {
 			String label = tree.getNodeLabel(node);
 			double q1= getParameter(label, "q1");
 			double q2= getParameter(label, "q2");
 			double q3= getParameter(label, "q3");
 			if (MesquiteDouble.isCombinable(q1)){
-
 				double R = 1.5; //imbalance factor of q2, q3 to deserve colour
 				//NOTE: Details here are temporary! Set green/blue/black, but then e.g. brDrWdMult for branch draw with multiplier, and drawPale to brighten the base colour
 				double secondary = q2;
@@ -168,7 +168,11 @@ public class ASTRALLiaison {
 					secondary = q3;
 				long colorNum =0;
 				String colorRGB =null;
-				if (q2>q3*R && q2>=0.10) {
+				if (q2>q1 || q3>q1) {
+					colorNum = 5;  
+					colorRGB = "200 5 70"; 
+				}
+				else if (q2>q3*R && q2>=0.10) {
 					colorNum = 11;  //green 11 5 red
 					colorRGB = "0 200 50";  //0,200,50
 				}
@@ -177,6 +181,12 @@ public class ASTRALLiaison {
 					colorRGB = "0 0 255";
 				}
 				double palenessMultiplier = (q1-secondary)+0.1;
+				if (q2>q1 || q3>q1) {
+					if (q2>q3)
+						palenessMultiplier = (q2-q1)+0.2;
+					else 
+						palenessMultiplier = (q3-q1)+0.2;
+				}
 				if (palenessMultiplier>1.0)
 					palenessMultiplier=1.0;
 				tree.setAssociatedDouble(palenessRef, node, palenessMultiplier, true);
@@ -185,15 +195,16 @@ public class ASTRALLiaison {
 				tree.setAssociatedDouble(q3Ref, node, q3, true);
 				tree.setAssociatedLong(colorNameRef, node, colorNum, true);
 				tree.setAssociatedObject(colorRGBNameRef, node, colorRGB, true);
+				//Debugg.println(" q1 " + q1 + " q2 " + q2 + " q3 " + q3 + " palenessMultiplier " + palenessMultiplier);
 				tree.setNodeLabel("[q1=" + MesquiteDouble.toStringDigitsSpecified(q1, 3) + "; q2=" + MesquiteDouble.toStringDigitsSpecified(q2, 3) + "; q3=" + MesquiteDouble.toStringDigitsSpecified(q3, 3) + "]", node);
 			}
 		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-			extractInfoAtNode(tree, d);
+			captureASTRALSupportAtNode(tree, d);
 	}
 
 	//NOTE: Here, attach info via other tags, e.g. brDrWdMult for branch draw with multiplier, and brDrPaleness
-	MesquiteTree extractASTRALInfo(MesquiteTree tree) {
+	public MesquiteTree moveASTRALSupportToAssociated(MesquiteTree tree) {
 /* below is not really needed, but establishes sequence of storage for ? cursor */
 		if (tree.getWhichAssociatedDouble(q1Ref)==null)
 			tree.makeAssociatedDoubles(q1Ref.getValue());
@@ -206,9 +217,10 @@ public class ASTRALLiaison {
 		if (tree.getWhichAssociatedDouble(palenessRef)==null)
 			tree.makeAssociatedDoubles(palenessRef.getValue());
 
-		extractInfoAtNode(tree, tree.getRoot());
+		captureASTRALSupportAtNode(tree, tree.getRoot());
 		return tree;
 	}
+	
 	
 }
 

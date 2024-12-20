@@ -96,7 +96,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 		decrementMenuResetSuppression();
 	}
 	/*.................................................................................................................*/
-	protected void exportTrees(Taxa taxa, TreeVector treeVector, StringBuffer outputBuffer) { 
+	protected void exportTrees(Taxa taxa, TreeVector treeVector, MesquiteStringBuffer outputBuffer) { 
 		Tree tree;
 		if (treeVector !=null && treeVector.size()>0) {
 			for (int iTree = 0; iTree < treeVector.size(); iTree++) {
