@@ -292,7 +292,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		dialog.setHelpURL(getHelpURL());
 
 		
-		appChooser = new AppChooser(this, useDefaultExecutablePath, programPath);
+		appChooser = new AppChooser(this, this, useDefaultExecutablePath, programPath);
 		appChooser.addToDialog(dialog);
 
 /*		Checkbox defaultExecutablePathCheckBox =  null;

@@ -81,13 +81,38 @@ public class RadioButtons implements ItemListener {
 
 	}
 
-	public void itemStateChanged(ItemEvent e){
+	/*.................................................................................................................*/
+	public void itemStateChanged(ItemEvent arg0) {
 		dialog.requestFocus();
 	}
+
 	public void setEnabled(int button, boolean b){
 		if (button>=0 && button<numCheckBoxes)
 			checkboxArray[button].setEnabled(b);
 	}
+	
+	public void setEnabledCheckboxGroup(boolean b){
+		for (int i=0; i< numCheckBoxes; i++) {
+			checkboxArray[i].setEnabled(b);
+		}
+	}
+
+	public void enableRadioButtons(){
+		Debugg.println("\nENABLING RADIO BUTTONS ");
+		for (int i=0; i< numCheckBoxes; i++) {
+			Debugg.println("     " + checkboxArray[i].getLabel());
+			checkboxArray[i].setEnabled(true);
+		}
+	}
+	public void disableRadioButtons(){
+		
+		Debugg.println("\nDISABLING RADIO BUTTONS ");
+		for (int i=0; i< numCheckBoxes; i++) {
+			Debugg.println("     " + checkboxArray[i].getLabel());
+			checkboxArray[i].setEnabled(true);
+		}
+	}
+
 	
 	/*.................................................................................................................*/
 	public boolean isAButton(ItemSelectable itemSelectable) {

@@ -353,7 +353,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		sb.append("If you are going to do a blastX to a local protein database that you downloaded from GenBank, you will need to check Use ID in Definition.");
 		dialog.appendToHelpString(sb.toString());
 
-		AppChooser appChooser = new AppChooser(this, useDefaultExecutablePath, blastExecutableFolderPath);
+		AppChooser appChooser = new AppChooser(this, this, useDefaultExecutablePath, blastExecutableFolderPath);
 		appChooser.addToDialog(dialog);
 		IntegerField numThreadsField = dialog.addIntegerField("Number of processor threads to use:", numThreads,4, 1, Integer.MAX_VALUE);
 

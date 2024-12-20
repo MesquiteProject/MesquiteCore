@@ -200,7 +200,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		browseButton.setActionCommand("browseExecutable");
 		*/
 
-		AppChooser appChooser = new AppChooser(this, useDefaultExecutablePath, blastExecutableFolderPath);
+		AppChooser appChooser = new AppChooser(this, this, useDefaultExecutablePath, blastExecutableFolderPath);
 		appChooser.addToDialog(dialog);
 
 		

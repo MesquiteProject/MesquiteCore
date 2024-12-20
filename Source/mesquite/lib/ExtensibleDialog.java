@@ -136,7 +136,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return constraints;
 	}
 	/*.................................................................................................................*/
-	void intializeDialog (String title, MesquiteInteger buttonPressed) {
+	protected void intializeDialog (String title, MesquiteInteger buttonPressed) {
 		d = new Dimension(minDialogWidth, minDialogHeight);
 		gridBag = new GridBagLayout();
 		constraints = createGridBagConstraints();
