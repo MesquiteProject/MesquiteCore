@@ -104,7 +104,7 @@ public class RadioButtons implements ItemListener {
 	}
 	public void disableRadioButtons(){
 		for (int i=0; i< numCheckBoxes; i++) {
-			checkboxArray[i].setEnabled(true);
+			checkboxArray[i].setEnabled(false);
 		}
 	}
 

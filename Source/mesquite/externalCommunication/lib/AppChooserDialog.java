@@ -3,15 +3,7 @@ package mesquite.externalCommunication.lib;
 import java.awt.Button;
 import java.awt.event.ItemListener;
 
-import mesquite.lib.ExtensibleDialog;
-import mesquite.lib.MesquiteBoolean;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteString;
-import mesquite.lib.RadioButtons;
-import mesquite.lib.SingleLineTextField;
-import mesquite.lib.StringUtil;
+import mesquite.lib.*;
 
 public class AppChooserDialog extends ExtensibleDialog {
 	RadioButtons builtInVsManual;
