@@ -26,9 +26,12 @@ are subclasses of the subclass TreeSource*/
 
 public abstract class TreeInferer extends TreeBlockFiller {
 	protected boolean userAborted=false;
+	protected boolean userCancelled = false;
 	Listened listened;
 	TWindowMaker tWindowMaker;
 	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
+	 
+	 
 
 	 
 	public Class getDutyClass() {
@@ -46,7 +49,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	}
 	
 	
-	
+
 	/*.................................................................................................................*/
 	public String getTitleOfTextCommandLink() {
 		return "";
@@ -65,6 +68,18 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	/*.................................................................................................................*/
 	public  void setUserAborted(){
 		userAborted=true;
+	}
+	/*.................................................................................................................*/
+	public  boolean getUserAborted(){
+		return userAborted;
+	}
+	/*.................................................................................................................*/
+	public  void setUserCancelled(){
+		userCancelled=true;
+	}
+	/*.................................................................................................................*/
+	public  boolean getUserCancelled(){
+		return userCancelled;
 	}
 	public String getMessageIfUserAbortRequested () {
 		return "";
