@@ -56,6 +56,13 @@ import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 /* ======================================================================== */
 public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements ActionListener {
 
+	static final double defaultISMesquite = 0.20;   
+	static final double defaultFSMesquite = 0.4;  
+	static final int defaultCPMesquite=4;  
+	static final int defaultBLMesquite=4;  
+	static final double defaultGapThresholdMesquite = 0.5;
+	static final boolean defaultCountWithinApplicableMesquite = true;
+
 	static final double defaultIS = 0.50;   
 	static final double defaultFS = 0.85;  
 	static final int defaultCP=8;  
@@ -66,15 +73,15 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 	//static final double defaultTermGapsPropForgiven = 0.0;
 	static final boolean defaultIgnoreTaxaWithoutSequence = true;
 
-	double IS = defaultIS;   // proportion of identical residues that is upper boundary for non-conserved sequences
-	double FS = defaultFS;  // proportion of identical residues that is upper boundary for conserved sequences
-	int CP=defaultCP;  //block size limit for non-conserved blocks
-	int BL=defaultBL;  //  small region block size limit 
-	double gapThreshold = defaultGapThreshold;   // the proportion of gaps allowed at a site
+	double IS = defaultISMesquite;   // proportion of identical residues that is upper boundary for non-conserved sequences
+	double FS = defaultFSMesquite;  // proportion of identical residues that is upper boundary for conserved sequences
+	int CP=defaultCPMesquite;  //block size limit for non-conserved blocks
+	int BL=defaultBLMesquite;  //  small region block size limit 
+	double gapThreshold = defaultGapThresholdMesquite;   // the proportion of gaps allowed at a site
 
 	boolean removeAllGaps = true;
 	//MesquiteBoolean chooseBadSites = new MesquiteBoolean(defaultchooseBadSites);
-	MesquiteBoolean countWithinApplicable  = new MesquiteBoolean(defaultCountWithinApplicable);   // count proportion of identical residues only within those taxa without gaps at a site
+	MesquiteBoolean countWithinApplicable  = new MesquiteBoolean(defaultCountWithinApplicableMesquite);   // count proportion of identical residues only within those taxa without gaps at a site
 	//double termGapsPropForgiven = defaultTermGapsPropForgiven;
 	boolean ignoreTaxaWithoutSequence = defaultIgnoreTaxaWithoutSequence;
 	boolean[] taxonHasSequence=null;
@@ -259,6 +266,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 	/*.................................................................................................................*/
 
 
+	Button useMesquiteDefaultsButton = null;
 	Button useDefaultsButton = null;
 	DoubleField ISfield = null;
 	DoubleField FSfield=null;
@@ -294,7 +302,9 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 		addToQueryOptions(dialog, "GblocksM");
 
 		dialog.addNewDialogPanel();
-		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
+		useMesquiteDefaultsButton = dialog.addAListenedButton("Set to GBlocksM Defaults", null, this);
+		useMesquiteDefaultsButton.setActionCommand("setToMesquiteDefaults");
+		useDefaultsButton = dialog.addAListenedButton("Set to GBlocks Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
 
 		dialog.completeAndShowDialog(true);
@@ -307,7 +317,9 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 	}
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
+		if (e.getActionCommand().equalsIgnoreCase("setToMesquiteDefaults")) {
+			setToMesquiteDefaults();
+		} else if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
 			setToDefaults();
 		} 
 	}
@@ -350,6 +362,15 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 		//ignoreTaxaWithoutSequence = ignoreTaxaWithoutSequenceCheckbox.getState();
 	}
 	/*.................................................................................................................*/
+	public void setToMesquiteDefaults() {
+		ISfield.setValue(defaultISMesquite);	
+		FSfield.setValue(defaultFSMesquite);
+		CPfield.setValue(defaultCPMesquite);
+		BLfield.setValue(defaultBLMesquite);
+		gapThresholdField.setValue(defaultGapThresholdMesquite);
+		countWithinApplicableCheckbox.setState(defaultCountWithinApplicableMesquite);
+	}
+	/*.................................................................................................................*/
 	public void setToDefaults() {
 		ISfield.setValue(defaultIS);	
 		FSfield.setValue(defaultFS);
@@ -357,13 +378,14 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 		BLfield.setValue(defaultBL);
 		gapThresholdField.setValue(defaultGapThreshold);
 		countWithinApplicableCheckbox.setState(defaultCountWithinApplicable);
+	}
 	//	if (defaultchooseBadSites)
 	//		chooseBadSitesRadioButtons.setValue(0);
 	//	else
 	//		chooseBadSitesRadioButtons.setValue(1);
 	//	termGapsPropForgivenField.setValue(defaultTermGapsPropForgiven);
-		//ignoreTaxaWithoutSequenceCheckbox.setState(defaultIgnoreTaxaWithoutSequence);
-	}
+	//ignoreTaxaWithoutSequenceCheckbox.setState(defaultIgnoreTaxaWithoutSequence);
+
 
 
 	/*.................................................................................................................*/
