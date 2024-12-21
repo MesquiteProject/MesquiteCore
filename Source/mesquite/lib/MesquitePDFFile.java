@@ -89,6 +89,9 @@ public class MesquitePDFFile {
 			return false;
 		}
 		pdfPathString = fdlg.getDirectory()+fdlg.getFile();
+		if (StringUtil.endsWithIgnoreCase(pdfPathString, ".pdf")) {  
+			pdfPathString+=".pdf";
+		}
 		// fdlg.dispose();
 		// Back to getting page settings.
 
