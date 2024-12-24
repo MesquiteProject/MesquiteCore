@@ -1605,7 +1605,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 
 		}
 		else if (result instanceof NumberArray) {
-			((NumberArray)result).deassignArray();
+			((NumberArray)result).deassignArray(true);
 
 		}
 		lastResult = null;

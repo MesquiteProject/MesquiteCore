@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.TreesFromSelMatrices;
+package mesquite.genomic.TreezBlocksFromMatrices;
 /* created May 02 */
 
 import mesquite.lists.lib.*;
@@ -26,19 +26,20 @@ import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class TreesFromSelMatrices extends DatasetsListUtility {
+public class TreezBlocksFromMatrices extends DatasetsListUtility {
+	//Name with z to make it sort after TreesFromSelMatrices
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Infer Trees from Matrices";
+		return "Infer Tree Blocks from Matrices";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Trees from Matrices...";
+		return "Tree Blocks from Matrices...";
 	}
 
 	public String getExplanation() {
-		return "Infers trees for each of the matrices, and compiles them into a single tree block." ;
+		return "Infers trees and puts them into a tree block for each of the matrices." ;
 	}
 	TreeSearcher inferenceTask;
 	MatrixSourceCoord matrixSourceTask;
@@ -84,7 +85,6 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 			}
 		}
 		inferenceTask.initialize(taxa);
-		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();
 		int count = 0;
 		int numFailed =0;
@@ -98,17 +98,17 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 				stop = true;
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (compatibleMatrix(data)) {
+				TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 				currentMatrix = data.getMCharactersDistribution();
-				int lastNumTrees = trees.size();
-				logln("Inferring trees from matrix #" +(im+1) + " (" + data.getName() + ")"); 
-				progIndicator.setText("\nInferring trees from matrix " +data.getName());
+				logln("\nInferring trees from matrix #" +(im+1) + " (" + data.getName() + ")"); 
+				progIndicator.setText("Inferring trees from matrix " +data.getName());
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 				inferenceTask.fillTreeBlock(trees);
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 				progIndicator.increment();
 				if (im == 0)
 					progIndicator.toFront();
-				if (trees.size() == lastNumTrees) {
+				if (trees.size() == 0) {
 					numFailed++;
 					stringFailed += "\t" + data.getName() + "\n";
 					logln("Trees not inferred from matrix " +data.getName() + " because of some issue with the matrix or the inference program."); 
@@ -117,17 +117,21 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 					//}
 					MesquiteThread.setQuietPlease(true);
 				}
-				boolean mult = false;
-				if (trees.size()-lastNumTrees>1)
-					mult = true;
-				for (int itr = lastNumTrees; itr<trees.size(); itr++) { //multiple trees from same matrix; number trees .#1, 2, 3
-					String num = "";
-					if (mult)
-						num = ".#" + (itr-lastNumTrees + 1);
-					Tree t = trees.getTree(itr);
-					count++;
-					if (t instanceof MesquiteTree)
-						((MesquiteTree)trees.getTree(itr)).setName(data.getName() + num);
+				else {
+					boolean mult = false;
+					if (trees.size()>1)
+						mult = true;
+					for (int itr = 0; itr<trees.size(); itr++) { 
+						String num = "";
+						if (mult)
+							num = ".#" + (itr+1);
+						Tree t = trees.getTree(itr);
+						count++;
+						if (t instanceof MesquiteTree)
+							((MesquiteTree)trees.getTree(itr)).setName(data.getName() + num);
+					}
+					trees.setName("Trees (" + inferenceTask.getName() + ") from matrix " + data.getName());
+					trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
 				}
 			}
 			else
@@ -135,10 +139,6 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 		}
 		progIndicator.goAway();
 		MesquiteThread.setQuietPlease(false);
-		trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
-		String annot = trees.getAnnotation();
-		trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
-		trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
 		logln("Total matrices analyzed: " + count);
 		if (numFailed > 0) {
 			discreetAlert("Trees were not obtained for " + numFailed + " of the matrices. See log for details");
@@ -174,9 +174,9 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 }
 
 class MyListOfMatrices extends MatrixSourceCoord  {
-	TreesFromSelMatrices owner;
+	TreezBlocksFromMatrices owner;
 	Taxa taxa = null;
-	public MyListOfMatrices(TreesFromSelMatrices owner) {
+	public MyListOfMatrices(TreezBlocksFromMatrices owner) {
 		this.owner = owner;
 	}
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from

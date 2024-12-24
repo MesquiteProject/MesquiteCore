@@ -11,19 +11,19 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.ASTRALDiagnosticsForTree;
+package mesquite.stgt.ASTRALDiagnosticsForTree;
 /*~~  */
 
 import java.util.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-import mesquite.genomic.lib.ASTRALLiaison;
 import mesquite.io.lib.IOUtil;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.pairwise.lib.*;
+import mesquite.stgt.lib.ASTRALLiaison;
 
 /* ======================================================================== */
 public class ASTRALDiagnosticsForTree extends TreeDisplayAssistantA {

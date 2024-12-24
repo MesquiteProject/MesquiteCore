@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.lib;
+package mesquite.stgt.lib;
 /*~~  */
 
 import java.util.*;
@@ -20,11 +20,11 @@ import java.awt.image.ImageObserver;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.stgt.SpeciesTreeGeneTreeSearcher.SpeciesTreeGeneTreeSearcher;
+import mesquite.stgt.lib.ASTRALLiaison;
+import mesquite.stgt.lib.SpeciesTreeGeneTreeAnalysis;
 import mesquite.distance.lib.*;
 import mesquite.externalCommunication.lib.AppChooser;
-import mesquite.genomic.SpeciesTreeGeneTreeSearcher.SpeciesTreeGeneTreeSearcher;
-import mesquite.genomic.lib.ASTRALLiaison;
-import mesquite.genomic.lib.SpeciesTreeGeneTreeAnalysis;
 import mesquite.io.lib.IOUtil;
 
 /* ======================================================================== */

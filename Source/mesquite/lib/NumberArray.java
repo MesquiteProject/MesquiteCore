@@ -466,6 +466,11 @@ public class NumberArray {
 	/*...........................................................*/
 	/** DOCUMENT */
 	public void deassignArray() {
+		deassignArray(false);
+	}
+	/*...........................................................*/
+	/** DOCUMENT */
+	public void deassignArray(boolean resetValueClass) {
 		if (valueClass==INT) {
 			for (int i=0; i<length; i++)
 				intValues[i]=MesquiteInteger.unassigned;
@@ -478,6 +483,8 @@ public class NumberArray {
 			for (int i=0; i<length; i++)
 				doubleValues[i]=MesquiteDouble.unassigned;
 		}
+		if (resetValueClass)
+			valueClass = INT;
 	}
 	/*...........................................................*/
 	/** this method calculates the minimum value in the objects array from 

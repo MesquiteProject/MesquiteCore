@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.ASTRAL3FromGeneTrees;
+package mesquite.stgt.ASTRAL4FromGeneTrees;
 /*~~  */
 
 import java.util.*;
@@ -20,29 +20,29 @@ import java.awt.image.ImageObserver;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.stgt.SpeciesTreeGeneTreeSearcher.SpeciesTreeGeneTreeSearcher;
+import mesquite.stgt.lib.ASTRALFromGeneTrees;
+import mesquite.stgt.lib.ASTRALLiaison;
+import mesquite.stgt.lib.SpeciesTreeGeneTreeAnalysis;
 import mesquite.distance.lib.*;
 import mesquite.externalCommunication.lib.AppChooser;
-import mesquite.genomic.SpeciesTreeGeneTreeSearcher.SpeciesTreeGeneTreeSearcher;
-import mesquite.genomic.lib.ASTRALFromGeneTrees;
-import mesquite.genomic.lib.ASTRALLiaison;
-import mesquite.genomic.lib.SpeciesTreeGeneTreeAnalysis;
 import mesquite.io.lib.IOUtil;
 
 /* ======================================================================== */
-public class ASTRAL3FromGeneTrees extends ASTRALFromGeneTrees {  
+public class ASTRAL4FromGeneTrees extends ASTRALFromGeneTrees {  
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return super.startJob(arguments, condition, hiredByName);
 	}
 
 	protected  String getOfficialAppNameInAppInfo() {
-		return "ASTRAL3";
+		return "ASTRAL4";
 	}
 	protected  String getProgramNameForDisplay() {
-		return "ASTRAL-III";
+		return "ASTRAL-IV";
 	}
 	protected String executionCommand(String ASTRALPath, String geneTreesPath, String outputPath, String logPath) {
-		String command = "java -jar " +StringUtil.protectFilePath(ASTRALPath) + "  -i " + geneTreesPath+ " -t 8 -o " + outputPath + " 2> " +logPath + "\n";
+		String command = StringUtil.protectFilePath(ASTRALPath) + "  -u 2 -o " + outputPath + " " + geneTreesPath  + " 2> " +logPath + "\n";
 		return command;
 	}
 

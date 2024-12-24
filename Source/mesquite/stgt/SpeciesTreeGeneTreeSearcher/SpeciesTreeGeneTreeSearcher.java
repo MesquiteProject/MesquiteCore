@@ -11,12 +11,12 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.SpeciesTreeGeneTreeSearcher;
+package mesquite.stgt.SpeciesTreeGeneTreeSearcher;
 /*~~  */
 
-import mesquite.genomic.lib.SpeciesTreeGeneTreeAnalysis;
 import mesquite.lib.*;
 import mesquite.search.lib.*;
+import mesquite.stgt.lib.SpeciesTreeGeneTreeAnalysis;
 
 /* ======================================================================== */
 public class SpeciesTreeGeneTreeSearcher extends TreeSearch  {

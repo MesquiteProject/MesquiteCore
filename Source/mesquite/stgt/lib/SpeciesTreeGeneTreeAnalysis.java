@@ -1,4 +1,4 @@
-package mesquite.genomic.lib;
+package mesquite.stgt.lib;
 
 public interface SpeciesTreeGeneTreeAnalysis {
 
