@@ -54,10 +54,10 @@ public abstract class PanelOfCards extends MQPanel  {
 		cardPanelLayout.setConstraints(this,cardPanelConstraints);
 		this.setLayout(cardPanelLayout);
 
-		choicePanel = new Panel();
+		choicePanel = new MQPanel();
 		add(choicePanel,cardPanelConstraints);
 
-		cardPanel = new Panel();
+		cardPanel = new MQPanel();
 		add(cardPanel,cardPanelConstraints);
 
 		cardLayout = new CardLayout();

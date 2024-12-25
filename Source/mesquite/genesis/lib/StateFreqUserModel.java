@@ -72,7 +72,7 @@ public abstract class StateFreqUserModel extends StateFreqModel implements Actio
 		for (int i=0; i<getNumStates(); i++) {
 			stateFreqField[i] = dialog.addDoubleField(""+CategoricalData.getDefaultStateSymbol(dataClass(),i)+":",getStateFreq(i), 10);
 		}
-		Panel moreButtons = new Panel();
+		Panel moreButtons = new MQPanel();
 		dialog.addAListenedButton("Equal",moreButtons,this);
 		dialog.addAListenedButton("Norm+-",moreButtons,this);
 		dialog.addAListenedButton("Norm*/",moreButtons,this);

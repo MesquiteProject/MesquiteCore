@@ -4837,7 +4837,7 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 		setLayout(new BorderLayout());
 		add(hScroll, BorderLayout.SOUTH);
 		add(vScroll, BorderLayout.EAST);
-		add(port = new Panel(), BorderLayout.CENTER);
+		add(port = new MQPanel(), BorderLayout.CENTER);
 		addMouseWheelListener(this);
 		//addKeyListener(this);
 		port.setLayout(null);

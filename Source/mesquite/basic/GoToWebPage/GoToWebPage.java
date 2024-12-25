@@ -164,7 +164,7 @@ class GoToWebPageWindow extends MesquiteWindow {
 		tF.setVisible(true);
 		contents.add("North", tF);
 		contents.add("Center", explanation);
-		Panel buttons = new Panel();
+		Panel buttons = new MQPanel();
 		Font f = explanation.getFont();
 		if (f != null) {
 			Font fontToSet = new Font(f.getName(), f.getStyle(), f.getSize() + 4);
