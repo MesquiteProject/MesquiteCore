@@ -20,6 +20,12 @@ import mesquite.lib.*;
 /* ======================================================================== */
 /** An intervening class to attempt to avoid StackOverflowError on validate on Ubuntu.*/
 public class MQPanel extends Panel {
+
+	public void doLayout(){
+		Debugg.println("Layout " + this);
+		super.doLayout();
+	}
+	
 	boolean validating = false;
 	public void validate(){
 		if (!validating){
