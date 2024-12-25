@@ -10,32 +10,23 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
 import java.awt.event.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.*;
 
-public class DialogGraphicsPanel extends MQPanel {
-	ExtensibleDialog dialog;
-	
-	public DialogGraphicsPanel(ExtensibleDialog dialog){
-		super();
-		this.dialog = dialog;
-//		setBackground(Color.blue);
+/* ======================================================================== */
+/** An intervening class to attempt to avoid StackOverflowError on validate on Ubuntu.*/
+public class MQPanel extends Panel {
+	boolean validating = false;
+	public void validate(){
+		if (!validating){
+			validating = true;
+			super.validate();
+			validating = false;
+		}
 	}
-	/*.................................................................................................................*/
-	public Dimension getPreferredSize () {
-		return new Dimension(50,50);
-	}
-	/*.................................................................................................................*/
-	public void paint (Graphics g) {
-		g.setColor(Color.black);
-		g.drawLine(0,0,50,50);
-		g.drawLine(getLocation().x, getLocation().y, getLocation().x+getBounds().width, getLocation().y+getBounds().height);
-	}
-   	
 }
-
 

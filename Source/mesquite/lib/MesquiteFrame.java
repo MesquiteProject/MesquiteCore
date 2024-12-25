@@ -20,7 +20,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.*;
 import java.util.*;
-import javax.swing.*;
 
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;

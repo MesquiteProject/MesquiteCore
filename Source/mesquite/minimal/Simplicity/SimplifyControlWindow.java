@@ -313,7 +313,7 @@ class TrianglePanel extends MousePanel {
 	}
 }
 
-class OuterPackagesPanel extends Panel {
+class OuterPackagesPanel extends MQPanel {
 	PackagesPanel packagesPanel;
 	public OuterPackagesPanel(PackagesPanel pp){
 		packagesPanel = pp;
@@ -727,7 +727,7 @@ class EditModeButton extends Checkbox implements ItemListener {
 }
 
 /*.................................................................................................................*/
-class ModePanel extends Panel implements ItemListener {
+class ModePanel extends MQPanel implements ItemListener {
 	CheckboxGroup cbg;
 	Checkbox powerCB, simplerCB;
 	SimplifyControlWindow w;
@@ -872,7 +872,7 @@ class ModePanel extends Panel implements ItemListener {
 		
 	}
 }
-class ClassHeadersPanel extends Panel  {
+class ClassHeadersPanel extends MQPanel  {
 	Font fontBig = new Font("SansSerif", Font.BOLD, 12);
 	Font fontSmall = new Font("SansSerif", Font.PLAIN, 10);
 	/*.................................................................................................................*/

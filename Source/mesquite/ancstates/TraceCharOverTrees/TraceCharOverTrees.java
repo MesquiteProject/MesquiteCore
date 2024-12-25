@@ -1456,7 +1456,7 @@ class TraceLegend extends TreeDisplayLegend {
 	}
 }
 
-class TCMPanel extends Panel {
+class TCMPanel extends MQPanel {
 	String message = "";
 	StringInABox box;
 	public TCMPanel(){

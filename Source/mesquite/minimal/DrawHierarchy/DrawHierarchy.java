@@ -84,7 +84,7 @@ class HierarchyPanel extends HPanel {
 }
 
 /* ======================================================================== */
-class FieldPanel extends Panel {
+class FieldPanel extends MQPanel {
 	final static int HSpacer = 24;
 	int VSpacer = 22; 
 	HierarchyPanel pane;

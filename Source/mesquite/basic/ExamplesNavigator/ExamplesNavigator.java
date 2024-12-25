@@ -578,7 +578,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 	}
 }
 
-class FieldPanel extends Panel implements ActionListener {
+class FieldPanel extends MQPanel implements ActionListener {
 	TextField label, text; 
 	LinkPanel linkPanel;
 	public FieldPanel (boolean labelEditable, String initialLabel, String initialText, TextListener listener, LinkPanel linkPanel, boolean removeButton){
@@ -627,7 +627,7 @@ class FieldPanel extends Panel implements ActionListener {
 }
 
 
-class LinkPanel extends Panel implements ActionListener, TextListener {
+class LinkPanel extends MQPanel implements ActionListener, TextListener {
 	String title;
 	String path;
 	LinkBanner banner;

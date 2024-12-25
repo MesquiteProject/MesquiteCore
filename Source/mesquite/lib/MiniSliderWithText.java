@@ -23,7 +23,7 @@ import mesquite.lib.duties.*;
 /* ======================================================================== */
 /** A miniature slider used to set the value of a MesquiteNumber.  It provides
 an incrementing and decrementing arrow, and a text field to show current value. */
-public class MiniSliderWithText extends Panel implements MiniControl, Explainable, ImageOwner, ActionListener, TextListener {
+public class MiniSliderWithText extends MQPanel implements MiniControl, Explainable, ImageOwner, ActionListener, TextListener {
 	double currentValue, minValue, maxValue;
 	boolean adjustingSizes = true;
 	boolean allowEstimation=false;
