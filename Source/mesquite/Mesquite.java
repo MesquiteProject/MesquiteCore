@@ -2868,11 +2868,12 @@ public class Mesquite extends MesquiteTrunk
 	{
 		addToStartupNotices("Mesquite Startup arguments:" + StringArray.toString(args));
 		MesquiteWindow.GUIavailable = !MesquiteWindow.headless;
-		mesquiteTrunk = new Mesquite(args);
+		StartupThread sThread = new StartupThread(args);
+		sThread.start(); //for bug in Linus post-Java-8
+		//mesquiteTrunk = new Mesquite(args);
 	}
 
 
 }
-
 
 

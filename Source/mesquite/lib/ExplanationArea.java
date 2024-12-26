@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.trunk.StartupThread;
 /* ======================================================================== */
 /** A panel at the bottom of windows in which explanations and footnotes can be displayed and edited.*/
 public class ExplanationArea extends MousePanel implements TextListener, MesquiteListener, FocusListener {
@@ -475,6 +476,13 @@ class ExplTextArea extends TextArea {
 		setSelectionStart(0);
 		setSelectionEnd(0);
 		this.explArea = explArea;
+	}
+	public void setBounds(int a, int b, int c, int d){
+		if (!(Thread.currentThread() instanceof StartupThread)) super.setBounds(a,b,c,d);
+	}
+	
+	public void validate(){
+	 if (!(Thread.currentThread() instanceof StartupThread)) super.validate();
 	}
 	public void gotFocus(){
 		if (explArea.getFocusSuppression()){
