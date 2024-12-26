@@ -478,11 +478,11 @@ class ExplTextArea extends TextArea {
 		this.explArea = explArea;
 	}
 	public void setBounds(int a, int b, int c, int d){
-		if (!(Thread.currentThread() instanceof StartupThread)) super.setBounds(a,b,c,d);
+		if (Thread.currentThread() instanceof MesquiteThread)  super.setBounds(a,b,c,d);
 	}
 	
 	public void validate(){
-	 if (!(Thread.currentThread() instanceof StartupThread)) super.validate();
+	 if (Thread.currentThread() instanceof MesquiteThread) super.validate();
 	}
 	public void gotFocus(){
 		if (explArea.getFocusSuppression()){
