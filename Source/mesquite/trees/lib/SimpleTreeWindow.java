@@ -481,7 +481,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 	}
 }
 /* ======================================================================== */
-class SMessagePanel extends MQPanel {
+class SMessagePanel extends Panel {
 	String message;
 
 	public SMessagePanel(MesquiteWindow w) {  //in future pass general MesquiteWindow

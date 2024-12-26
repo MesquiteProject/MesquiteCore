@@ -23,23 +23,9 @@ public class MQPanel extends Panel {
 
 	public void doLayout(){
 		Debugg.println("Layout " + this);
-		listComponents(this, "  ");
 		super.doLayout();
 	}
 	
-	/** calls repaint of all components*/
-	void listComponents(Component c, String s){
-		if (c==null)
-			return;
-		System.out.println(s + c.getClass());
-		if (c instanceof Container){
-			Component[] cc = ((Container)c).getComponents();
-			if (cc!=null && cc.length>0)
-				for (int i=0; i<cc.length; i++)
-					listComponents(cc[i], s+ "  ");
-		}
-		
-	}
 	boolean validating = false;
 	public void validate(){
 		if (!validating){

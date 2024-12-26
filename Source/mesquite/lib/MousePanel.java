@@ -37,7 +37,7 @@ import mesquite.lib.table.AutoScrollThread;
 /** This class adds drop down menu capabilities to panels.  A default component of the drop down
 menu is the Font selection */
 
-public class MousePanel extends MQPanel implements Commandable, FileDirtier, MouseMotionListener, MouseListener, DropTargetListener {
+public class MousePanel extends Panel implements Commandable, FileDirtier, MouseMotionListener, MouseListener, DropTargetListener {
 	MesquiteCommand downCommand, upCommand, dragCommand, movedCommand, clickedCommand, enteredCommand, exitedCommand;
 	MesquiteCommand filesDroppedCommand, fileStringDroppedCommand;
 	MesquiteCommand showWindowCommand;

@@ -35,10 +35,10 @@ public class ColorDialog extends ExtensibleDialog implements Colorable  {
 		
 		Font f = new Font ("Dialog", Font.PLAIN, 12);
 		add("Center", field = new ColorPickerPanel (this, Color.white, 50));
-		buttons = new MQPanel();
+		buttons = new Panel();
 		Button cancel = new Button("Cancel");
 		Button ok= new Button("OK");
-		cPanel = new MQPanel();
+		cPanel = new Panel();
 		//cPanel.setBackground(Color.white);
 		buttons.add("West", cPanel);
 		buttons.add("Center", cancel);

@@ -21,7 +21,7 @@ import mesquite.lib.duties.*;
 the components (ContentAreas) in which the modules actually draw their stuff.  The ContentArea's added to this are alternative
 pages that can be displayed (the primary graphics page, the primary text page, then a series of other pages to give the user
 information.*/
-class InterContentArea extends MQPanel {
+class InterContentArea extends Panel {
 	CardLayout layout;
 	
 	public InterContentArea () {

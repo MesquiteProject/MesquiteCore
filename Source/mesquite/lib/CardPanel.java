@@ -18,7 +18,7 @@ import java.awt.*;
 
 /*===============================================*/
 /** The panel making up one card of a PanelOfCards */
-public class CardPanel extends MQPanel  {
+public class CardPanel extends Panel  {
 	public Image tabImageOn = null;
 	public Image tabImageOff = null;
 	

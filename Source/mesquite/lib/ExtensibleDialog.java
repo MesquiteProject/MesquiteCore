@@ -212,7 +212,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			if (panel != null)
 				newPanel = panel;
 			else
-				newPanel = new MQPanel();
+				newPanel = new Panel();
 			addToDialog(newPanel, c);
 			newPanel.setVisible(true);
 			if (currentGridBag!=null && (addPanel!=null || addJPanel!=null))
@@ -500,7 +500,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public void addPrimaryButtonRow (String buttonLabel0, String buttonLabel1, String buttonLabel2) {
-		Panel buttons = new MQPanel();
+		Panel buttons = new Panel();
 		//		buttons.setSize(dialogWidth, buttonHeight);
 		String singleButton = null;
 		boolean noButtons=true;
@@ -549,7 +549,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	public void addPrimaryButtonRow (String[] buttonLabels) {
 		if (buttonLabels==null)
 			return;
-		Panel buttons = new MQPanel();
+		Panel buttons = new Panel();
 		//		buttons.setSize(dialogWidth, buttonHeight);
 		String singleButton = null;
 		boolean noButtons=true;
@@ -579,7 +579,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public void addPrimaryButtonRowListener (String buttonLabel0, String buttonLabel1, ActionListener actionListener) {
-		Panel buttons = new MQPanel();
+		Panel buttons = new Panel();
 		//		buttons.setSize(dialogWidth, buttonHeight);
 		addHelpButtons(buttons);
 		addExtraButtons(buttons, actionListener);
@@ -597,7 +597,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public void addPrimaryButtonRow (String buttonLabel0) {
-		Panel buttons = new MQPanel();
+		Panel buttons = new Panel();
 		//		buttons.setSize(dialogWidth, buttonHeight);
 		addHelpButtons(buttons);
 		addExtraButtons(buttons);
@@ -1646,7 +1646,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.BOTH;
 
-		Panel newPanel = new MQPanel();
+		Panel newPanel = new Panel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;
@@ -1683,7 +1683,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.BOTH;
 
-		Panel newPanel = new MQPanel();
+		Panel newPanel = new Panel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;
@@ -1721,7 +1721,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.BOTH;
 
-		Panel newPanel = new MQPanel();
+		Panel newPanel = new Panel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;
@@ -1777,7 +1777,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.BOTH;
 
-		Panel newPanel = new MQPanel();
+		Panel newPanel = new Panel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;

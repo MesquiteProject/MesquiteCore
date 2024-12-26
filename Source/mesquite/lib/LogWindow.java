@@ -113,7 +113,7 @@ public class LogWindow extends ConsoleWindow implements SystemWindow {
 		super.keyReleased(e);
 	}
 }
-class BannerPanel extends MQPanel {
+class BannerPanel extends Panel {
 	Image banner;
 	int bannerHeight;
 	public BannerPanel(LogWindow w){

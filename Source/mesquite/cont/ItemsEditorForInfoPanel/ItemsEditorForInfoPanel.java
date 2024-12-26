@@ -217,7 +217,7 @@ class ItemsPanel extends MatrixInfoExtraPanel  {
 	}
 }
 /*-----------------------------*/
-class ItemsField extends MQPanel {
+class ItemsField extends Panel {
 	NameField[] items;
 	ItemsPanel panel;
 	ItemContainer data;

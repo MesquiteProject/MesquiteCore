@@ -19,7 +19,7 @@ import java.awt.*;
 
 /*===============================================*/
 /** a field for longs */
-public abstract class PanelOfCards extends MQPanel  {
+public abstract class PanelOfCards extends Panel  {
 	ExtensibleDialog dialog;
 	Panel addPanel = null;
 	Panel oldAddPanel = null;
@@ -54,10 +54,10 @@ public abstract class PanelOfCards extends MQPanel  {
 		cardPanelLayout.setConstraints(this,cardPanelConstraints);
 		this.setLayout(cardPanelLayout);
 
-		choicePanel = new MQPanel();
+		choicePanel = new Panel();
 		add(choicePanel,cardPanelConstraints);
 
-		cardPanel = new MQPanel();
+		cardPanel = new Panel();
 		add(cardPanel,cardPanelConstraints);
 
 		cardLayout = new CardLayout();
@@ -150,7 +150,7 @@ public abstract class PanelOfCards extends MQPanel  {
 }
 
 
-class PoCPanel extends MQPanel {
+class PoCPanel extends Panel {
 	public Dimension getPreferredSize(){
 		return new Dimension(500, 500);
 	}

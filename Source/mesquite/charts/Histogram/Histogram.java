@@ -2504,7 +2504,7 @@ x axis can represent different things (items, values, values by category) it is 
 }
 
 
-class LittlePanel extends MQPanel {
+class LittlePanel extends Panel {
 	String t;
 	StringInABox sb;
 	void setText(String s, Font f, int w){

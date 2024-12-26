@@ -278,7 +278,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		explanation= new TextArea("", 12, 12, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		contents.add("Center", explanation);
 		explanation.setBackground(Color.white);
-		controls = new MQPanel();
+		controls = new Panel();
 		buttons = new TitlePanel(this);
 		controls.setLayout(new BorderLayout());
 		controls.setBackground(ColorDistribution.lightGreen);
@@ -292,7 +292,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		next.setFont(df);
 		prev.setFont(df);
 
-		textFields = new MQPanel();
+		textFields = new Panel();
 
 		nextPanel = new FieldPanel(true, nextName, module.nextProjectName, this, null, false);
 		nextPanel.setVisible(true);
@@ -309,7 +309,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		textFields.add("South", prevPanel);
 		controls.add("Center", textFields);
 
-		extras = new MQPanel();
+		extras = new Panel();
 		extras.setLayout(extrasLayout = new GridLayout(0, 1));
 		extras.setVisible(true);
 
@@ -578,7 +578,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 	}
 }
 
-class FieldPanel extends MQPanel implements ActionListener {
+class FieldPanel extends Panel implements ActionListener {
 	TextField label, text; 
 	LinkPanel linkPanel;
 	public FieldPanel (boolean labelEditable, String initialLabel, String initialText, TextListener listener, LinkPanel linkPanel, boolean removeButton){
@@ -627,7 +627,7 @@ class FieldPanel extends MQPanel implements ActionListener {
 }
 
 
-class LinkPanel extends MQPanel implements ActionListener, TextListener {
+class LinkPanel extends Panel implements ActionListener, TextListener {
 	String title;
 	String path;
 	LinkBanner banner;

@@ -17,7 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.duties.*;
 
-public class DialogGraphicsPanel extends MQPanel {
+public class DialogGraphicsPanel extends Panel {
 	ExtensibleDialog dialog;
 	
 	public DialogGraphicsPanel(ExtensibleDialog dialog){

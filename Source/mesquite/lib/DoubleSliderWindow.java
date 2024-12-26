@@ -38,7 +38,7 @@ public class DoubleSliderWindow extends MesquiteWindow {
 		this.title = title;
 
 		//Panel contents = getGraphicsArea();
-		sliderArea = new MQPanel();
+		sliderArea = new Panel();
 		addToWindow(sliderArea);
 		sliderArea.setVisible(true);
 		sliderArea.setBounds(0, 0, minWindowWidth, 220);

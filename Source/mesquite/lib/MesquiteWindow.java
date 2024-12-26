@@ -3452,7 +3452,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 
 
-class PopUpPanel extends MQPanel {
+class PopUpPanel extends Panel {
 	String t;
 	StringInABox sb;
 	void setText(String s, Font f, int w){

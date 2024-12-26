@@ -89,7 +89,7 @@ public class ProgressPanel extends MesquitePanel implements MouseListener {
 		stringInABox3 = new StringInABox(tert, getFont(), dialogWidth-20);
 		textFont = new Font ("SanSerif", Font.PLAIN, 10);
 		if (buttonName !=null){
-			buttons = new MQPanel();
+			buttons = new Panel();
 			Font f2 = new Font ("Dialog", Font.PLAIN, 12);
 			buttons.add("East", stop = new Button(buttonName));
 			//stop.setBackground(Color.white);

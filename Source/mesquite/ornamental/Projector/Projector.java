@@ -365,7 +365,7 @@ class ProjectorToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 	}
 }
 
-class ProjectorPanel extends MQPanel {
+class ProjectorPanel extends Panel {
 	Image im=null;
 	TreeDisplay treeDisplay;
 	

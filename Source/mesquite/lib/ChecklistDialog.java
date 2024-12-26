@@ -47,7 +47,7 @@ public class ChecklistDialog extends MesquiteDialog implements ActionListener{
 		lab.setEditable(false);
 		
 		pane = new ChecklistScrollPane(ScrollPane.SCROLLBARS_ALWAYS);
-		boxPanel = new MQPanel();
+		boxPanel = new Panel();
 		boxPanel.setLayout(new GridLayout(numItems, 1));
 		addComponent(this, pane, 0, GridBagConstraints.RELATIVE, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.CENTER);
 		//pane.setBackground(Color.red);
@@ -58,7 +58,7 @@ public class ChecklistDialog extends MesquiteDialog implements ActionListener{
 
 			addComponent(this, explanation, 0, GridBagConstraints.RELATIVE, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.CENTER);
 		}
-		Panel buttons = new MQPanel();
+		Panel buttons = new Panel();
 		Button sho=null;
 		buttons.add("West", cancel = new Button("Cancel"));
 		if (doShow)

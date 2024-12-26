@@ -255,7 +255,7 @@ class SStateNamesPanel extends MatrixInfoExtraPanel  {
 */
 }
 /*-----------------------------*/
-class StatesField extends MQPanel {
+class StatesField extends Panel {
 	NameField[] states;
 	SStateNamesPanel panel;
 	CategoricalData data;

@@ -181,7 +181,7 @@ class PictureWindow extends MesquiteWindow implements Commandable  {
 }
 /* ======================================================================== */
 /** The Panel containing the Mesquite logo on the startup window */
-class ImagePanel extends MQPanel {
+class ImagePanel extends Panel {
 	Image pic;
 	PictureWindow pw;
 	public ImagePanel (PictureWindow pw) {

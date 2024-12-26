@@ -22,7 +22,7 @@ import java.awt.image.*;
 /** A little panel placed within a container to indicate an ongoing calculations.  Serves like a 
 thermometer window, but embedded in relevant container since there may be several ongoing
 at once.*/
-public class ClockPanel extends MQPanel {
+public class ClockPanel extends Panel {
 	int current=0;
 	int total = 0;
 	public void setTime(int total, int current) {

@@ -523,7 +523,7 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 	}
 }
 /* ======================================================================== */
-class DepMessagePanel extends MQPanel {
+class DepMessagePanel extends Panel {
 	String message;
 
 	public DepMessagePanel(MesquiteWindow w) {  //in future pass general MesquiteWindow

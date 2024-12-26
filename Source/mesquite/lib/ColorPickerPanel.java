@@ -17,7 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.duties.*;
 
-public class ColorPickerPanel extends MQPanel implements MouseListener {
+public class ColorPickerPanel extends Panel implements MouseListener {
 	int hues = 50;
 	int saturations = 50;
 	int brightnesses = 50;
@@ -235,7 +235,7 @@ public class ColorPickerPanel extends MQPanel implements MouseListener {
    	}
 }
 
-class CurrentColorPanel extends MQPanel {
+class CurrentColorPanel extends Panel {
 	ColorPickerPanel colorPanel;
 	public CurrentColorPanel(ColorPickerPanel cp){
 		colorPanel = cp;
