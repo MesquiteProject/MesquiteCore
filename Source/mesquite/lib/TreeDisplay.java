@@ -144,7 +144,9 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		if (!showBranchColors)
 			return branchColor;
 		Color color = null;
-		String cRGB = (String)tree.getAssociatedObject(ColorDistribution.colorRGBNameReference, N);
+		String cRGB = null;
+		if (tree != null)
+			cRGB = (String)tree.getAssociatedObject(ColorDistribution.colorRGBNameReference, N);
 		if (cRGB != null) {
 			pos.setValue(0);
 			Color colRGB = ColorDistribution.getColorFromArguments(cRGB, pos);

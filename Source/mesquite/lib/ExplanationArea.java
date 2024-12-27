@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.trunk.StartupThread;
 /* ======================================================================== */
 /** A panel at the bottom of windows in which explanations and footnotes can be displayed and edited.*/
 public class ExplanationArea extends MousePanel implements TextListener, MesquiteListener, FocusListener {
@@ -468,13 +469,43 @@ class ExplanationControl extends MousePanel {
 	}
 }
 
-class ExplTextArea extends TextArea {
+class ExplTextArea extends TextArea implements Commandable {
 	ExplanationArea explArea;
 	public ExplTextArea(String text, int rows,  int columns, int scrollbars, ExplanationArea explArea){
 		super(text, rows, columns, scrollbars);
 		setSelectionStart(0);
 		setSelectionEnd(0);
 		this.explArea = explArea;
+	}
+	/*.................................................................................................................*/
+	MesquiteCommand setBoundsCommand = new MesquiteCommand("setBounds", this);
+	MesquiteCommand validateCommand = new MesquiteCommand("validate", this);
+	/** Respond to commands sent to the window. */
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(getClass(), "Sets bounds", null, commandName, "setBounds")) {
+			super.setBounds(a, b, c, d);
+		}
+		else if (checker.compare(getClass(), "Requests validate", null, commandName, "validate")) {
+			super.validate();
+			
+		}
+		return null;
+	}
+	int a, b, c, d;
+	public void setBounds(int a, int b, int c, int d){
+	this.a = a;
+	this.b = b;
+	this.c = c;
+	this.d = d;
+	setBoundsCommand.setSuppressLogging(true);
+	setBoundsCommand.doItMainThread(null, null, this);
+		//if (Thread.currentThread() instanceof MesquiteThread)  super.setBounds(a,b,c,d);
+	}
+	
+	public void validate(){
+		validateCommand.setSuppressLogging(true);
+		validateCommand.doItMainThread(null, null, this);
+	// if (Thread.currentThread() instanceof MesquiteThread) super.validate();
 	}
 	public void gotFocus(){
 		if (explArea.getFocusSuppression()){

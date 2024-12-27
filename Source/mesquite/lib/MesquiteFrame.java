@@ -1217,6 +1217,18 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (checker.compare(getClass(), "Requests close", null, commandName, "closeWindowRequested")) {
 			closeWindowRequested();
 		}
+		else if (checker.compare(getClass(), "Requests resetSizes", null, commandName, "resetSizesDoingShow")) {
+				if (windows.size() >1 || frontMostInLocation(RESOURCES) != null)
+					setSize(savedW, savedHWithTabs);
+				else
+					setSize(savedW, savedHWithoutTabs);
+				resetSizes(true);
+			
+		}
+		else if (checker.compare(getClass(), "Requests resetSizes", null, commandName, "resetSizesSimple")) {
+			
+				resetSizes(true);
+		}
 		return null;
 	}
 
@@ -1240,6 +1252,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 		storeInsets(insets);
 		return false;
 	}
+	MesquiteCommand resetSizesSimpleCommand = new MesquiteCommand("resetSizesSimple", this);
+	MesquiteCommand resetSizesDoingShowCommand = new MesquiteCommand("resetSizesDoingShow", this);
 	/*.................................................................................................................*/
 	class MWCE extends ComponentAdapter{
 		MesquiteFrame f;
@@ -1255,14 +1269,19 @@ public class MesquiteFrame extends Frame implements Commandable {
 				checkAndResetInsets(savedFullW, savedFullH);
 			}
 			else if (doingShow || !isResizable()){
+				resetSizesDoingShowCommand.setSuppressLogging(true);
+				resetSizesDoingShowCommand.doItMainThread(null, null, this);
+				/*
 				if (windows.size() >1 || frontMostInLocation(RESOURCES) != null)
 					setSize(savedW, savedHWithTabs);
 				else
 					setSize(savedW, savedHWithoutTabs);
-				resetSizes(true);
+				resetSizes(true);*/
 			}
 			else {
-				resetSizes(true);
+				resetSizesSimpleCommand.setSuppressLogging(true);
+				resetSizesSimpleCommand.doItMainThread(null, null, this);
+				//resetSizes(true);
 			}
 
 		}
