@@ -469,7 +469,7 @@ class ExplanationControl extends MousePanel {
 	}
 }
 
-class ExplTextArea extends TextArea implements Commandable {
+class ExplTextArea extends TextArea {
 	ExplanationArea explArea;
 	public ExplTextArea(String text, int rows,  int columns, int scrollbars, ExplanationArea explArea){
 		super(text, rows, columns, scrollbars);
@@ -477,17 +477,18 @@ class ExplTextArea extends TextArea implements Commandable {
 		setSelectionEnd(0);
 		this.explArea = explArea;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
+	 * Debugg.pritnln trhing to get linux to work!
 	MesquiteCommand setBoundsCommand = new MesquiteCommand("setBounds", this);
 	MesquiteCommand validateCommand = new MesquiteCommand("validate", this);
-	/** Respond to commands sent to the window. */
+	 Respond to commands sent to the window.
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(getClass(), "Sets bounds", null, commandName, "setBounds")) {
 			super.setBounds(a, b, c, d);
 		}
 		else if (checker.compare(getClass(), "Requests validate", null, commandName, "validate")) {
 			super.validate();
-			
+
 		}
 		return null;
 	}
@@ -501,12 +502,52 @@ class ExplTextArea extends TextArea implements Commandable {
 	setBoundsCommand.doItMainThread(null, null, this);
 		//if (Thread.currentThread() instanceof MesquiteThread)  super.setBounds(a,b,c,d);
 	}
-	
+
 	public void validate(){
 		validateCommand.setSuppressLogging(true);
 		validateCommand.doItMainThread(null, null, this);
 	// if (Thread.currentThread() instanceof MesquiteThread) super.validate();
 	}
+	 */
+
+	boolean validateRequestPending = false;
+	public void validate(){
+		if (MesquiteTrunk.isLinux()){
+			validateRequestPending = true;
+		}
+		else 
+			super.validate();
+	}
+	int a, b, c, d;
+	boolean boundsRequestPending = false;
+	public void setBounds(int a, int b, int c, int d){
+		if (MesquiteTrunk.isLinux()){
+			this.a = a;
+			this.b = b;
+			this.c = c;
+			this.d = d;
+			boundsRequestPending = true;
+		}
+		else 
+			super.setBounds(a,b,c,d);
+	}
+	public void pleasePleaseValidate(){
+
+		try {
+			super.validate();
+		}
+		catch (Error e){
+		}
+	}
+	public void pleasePleaseSetBounds(){
+		try {
+			super.setBounds(a,b,c,d);
+		}
+		catch (Error e){
+		}
+	}
+
+
 	public void gotFocus(){
 		if (explArea.getFocusSuppression()){
 			explArea.window.requestFocus();
@@ -520,7 +561,7 @@ class ExplTextArea extends TextArea implements Commandable {
 			super.setEditable(b);
 		}
 		catch (Throwable e){
-			
+
 		}
 	}
 	public void setText(String t){  // and possibly others

@@ -2460,7 +2460,7 @@ public class Mesquite extends MesquiteTrunk
 		mesquiteTrunk.quitCommand = makeCommand("quit",  mesquiteTrunk);
 		mesquiteTrunk.quitCommand.setQueueBypass(true);
 		mesquiteTrunk.forceQuitCommand = makeCommand("forceQuit",  mesquiteTrunk);
-		mesquiteTrunk.forceQuitCommand.setQueueBypass(true);
+		mesquiteTrunk.forceQuitCommand.setQueueBypass(!MesquiteTrunk.isLinux());
 		mesquiteTrunk.showAllCommand = makeCommand("showAllWindows", mesquiteTrunk);
 		mesquiteTrunk.closeAllCommand = makeCommand("closeAllProjects", mesquiteTrunk);
 		mesquiteTrunk.saveAllCommand = makeCommand("saveAllProjects", mesquiteTrunk);
