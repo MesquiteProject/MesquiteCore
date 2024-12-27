@@ -2458,7 +2458,7 @@ public class Mesquite extends MesquiteTrunk
 		mesquiteTrunk.resetMenusCommand = makeCommand("resetMenus",  mesquiteTrunk);
 		mesquiteTrunk.showLicenseCommand = makeCommand("showLicense",  mesquiteTrunk);
 		mesquiteTrunk.quitCommand = makeCommand("quit",  mesquiteTrunk);
-		mesquiteTrunk.quitCommand.setQueueBypass(true);
+		mesquiteTrunk.quitCommand.setQueueBypass(!MesquiteTrunk.isLinux());
 		mesquiteTrunk.forceQuitCommand = makeCommand("forceQuit",  mesquiteTrunk);
 		mesquiteTrunk.forceQuitCommand.setQueueBypass(true);
 		mesquiteTrunk.showAllCommand = makeCommand("showAllWindows", mesquiteTrunk);
