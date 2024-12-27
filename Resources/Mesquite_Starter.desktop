@@ -1,0 +1,10 @@
+#!/bin/bash
+
+[Desktop Entry]
+Comment=Mesquite Startup
+Terminal=false
+Name=Mesquite
+Exec=./mesquite.sh
+Type=Application
+Icon=images/mesquiteIcon128.gif
+
