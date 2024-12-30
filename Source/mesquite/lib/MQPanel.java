@@ -19,24 +19,30 @@ import java.awt.*;
 /* Intermediary class for workaround of StackOverflowError JDK 11 - 23 (at least!). 
  * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
-public class MQPanel extends Panel{
+public class MQPanel extends Panel implements MQComponent {
 
 	public MQPanel () {
 		super();
 	}
 
 	public void validate(){
-		if (MesquiteTrunk.isLinux())
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
 			MesquiteTrunk.linuxGWAThread.validateRequested(this);
 		else
 			super.validate();
 	}
 
 	public void setBounds(int x, int y, int w, int h){
-		if (MesquiteTrunk.isLinux())
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
 			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
 		else
 			super.setBounds(x, y, w, h);
+	}
+	public void pleaseValidate(){
+		super.validate();
+	}
+	public void pleaseSetBounds(int x, int y, int w, int h){
+		super.setBounds(x, y, w, h);
 	}
 
 }

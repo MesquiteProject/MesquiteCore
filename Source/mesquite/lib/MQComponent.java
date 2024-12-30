@@ -19,36 +19,10 @@ import java.awt.*;
 /* Intermediary class for workaround of StackOverflowError JDK 11 - 23 (at least!). 
  * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
-public class MQTextArea extends TextArea implements MQComponent {
+public interface MQComponent {
 
-	public MQTextArea () {
-		super();
-	}
-	public MQTextArea (String s) {
-		super(s);
-	}
-	public MQTextArea (String s, int a, int b, int c) {
-		super(s, a, b, c);
-	}
-
-	public void validate(){
-		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
-			MesquiteTrunk.linuxGWAThread.validateRequested(this);
-		else
-			super.validate();
-	}
-
-	public void setBounds(int x, int y, int w, int h){
-		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
-			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
-		else
-			super.setBounds(x, y, w, h);
-	}
-	public void pleaseValidate(){
-		super.validate();
-	}
-	public void pleaseSetBounds(int x, int y, int w, int h){
-		super.setBounds(x, y, w, h);
-	}
+	
+	public void pleaseValidate();
+	public void pleaseSetBounds(int x, int y, int w, int h);
 
 }

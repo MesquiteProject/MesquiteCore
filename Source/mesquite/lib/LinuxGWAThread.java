@@ -34,28 +34,43 @@ public class LinuxGWAThread extends Thread {
 	}
 	
 	public void validateRequested(Component component){
-		addOrNotToValidate(validateGreenRoom, component);
+		addOrNotToValidate(validateGreenRoom, component, null);
 	}
 	public void setBoundsRequested(Component component, int x, int y, int w, int h){
-		addOrUpdateToSetBounds(setBoundsGreenRoom, new SBRecord(component, x, y, w, h));
+		if (true)
+			((MQComponent)component).pleaseSetBounds(x, y, w, h);
+		else
+			addOrUpdateToSetBounds(setBoundsGreenRoom, new SBRecord(component, x, y, w, h), null);
 	}
 	
-	void addOrNotToValidate(Vector v, Component component){
-		if (v.indexOf(component)<0)
+	void addOrNotToValidate(Vector v, Component component, Vector toDeleteElement){
+		if (v.indexOf(component)<0) {
 			v.addElement(component);
+		}
+		if (toDeleteElement != null)
+			toDeleteElement.remove(component);
 	}
-	void addOrUpdateToSetBounds(Vector v, SBRecord sbr){
+	void addOrUpdateToSetBounds(Vector v, SBRecord sbr, Vector toDeleteElement){
 		for (int i = 0; i<v.size(); i++){
+			try {
 			SBRecord sbr0 = (SBRecord)v.elementAt(i);
 			if (sbr0.component == sbr.component){
 				sbr0.x = sbr.x;
 				sbr0.y = sbr.y;
 				sbr0.w = sbr.w;
 				sbr0.h = sbr.h;
+				if (toDeleteElement != null)
+					toDeleteElement.remove(sbr);
 				return;
+			}
+			}
+			catch (ArrayIndexOutOfBoundsException e) {
+			
 			}
 		}
 		v.addElement(sbr);
+		if (toDeleteElement != null)
+			toDeleteElement.remove(sbr);
 	}
 	
 	String getContainersList(Component c){
@@ -72,24 +87,27 @@ public class LinuxGWAThread extends Thread {
 		while (!MesquiteTrunk.mesquiteTrunk.mesquiteExiting) { 
 			try {
 				//first transfer the green room things on my thread
-				for (int i = 0; i<validateGreenRoom.size(); i++)
-					addOrNotToValidate(validateQueue, (Component)validateGreenRoom.elementAt(i));
+				while (validateGreenRoom.size()>0)
+					addOrNotToValidate(validateQueue, (Component)validateGreenRoom.elementAt(0), validateGreenRoom);
 					
-				for (int i = 0; i<setBoundsGreenRoom.size(); i++)
-					addOrUpdateToSetBounds(setBoundsQueue, (SBRecord)setBoundsGreenRoom.elementAt(i));
+				while (setBoundsGreenRoom.size()>0)
+					addOrUpdateToSetBounds(setBoundsQueue, (SBRecord)setBoundsGreenRoom.elementAt(0), setBoundsGreenRoom);
 
 				for (int i = 0; i<validateQueue.size(); i++){
-					Component component = (Component)validateGreenRoom.elementAt(i);
+					Component component = (Component)validateQueue.elementAt(i);
 					doingString = "SOE on validate " + getContainersList(component);
-					component.validate();
+				//	((MQComponent)component).pleaseValidate();
 				}
 				
 				for (int i = 0; i<setBoundsQueue.size(); i++){
 					SBRecord sbr = (SBRecord)setBoundsQueue.elementAt(i);
-					doingString = "SOE on validate " + getContainersList(sbr.component);
-					sbr.component.setBounds(sbr.x, sbr.y, sbr.w, sbr.h);
+					doingString = "SOE on setBounds " + getContainersList(sbr.component);
+					((MQComponent)sbr.component).pleaseSetBounds(sbr.x, sbr.y, sbr.w, sbr.h);
 				}
-					Thread.sleep(20);
+				validateQueue.removeAllElements();
+				setBoundsQueue.removeAllElements();
+				
+				Thread.sleep(20);
 					
 					
 			}
@@ -97,6 +115,7 @@ public class LinuxGWAThread extends Thread {
 			}
 			catch (StackOverflowError e){
 				System.out.println(doingString);
+				Debugg.println(doingString);
 			}
 		}
 	}
