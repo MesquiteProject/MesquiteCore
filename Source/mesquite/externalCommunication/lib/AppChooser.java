@@ -36,7 +36,7 @@ public class AppChooser implements ActionListener {
 					//- the system has already harvested app info and recorded whether or not a built-in executable exists.
 	
 	String versionOfBuiltIn;
-	RadioButtons builtInVsManual;
+	//RadioButtons builtInVsManual;
 	Button appButton, browseButton;
 	JLabel usingLabelMainDlog;
 	SingleLineTextField alternativePathField;
@@ -78,8 +78,8 @@ public class AppChooser implements ActionListener {
 			}
 		}
 
-		this.alternativeManualPath.setValue(alternativeManualPath);;
-		this.useDefaultExecutablePath.setValue(useDefaultExecutablePath);;
+		this.alternativeManualPath.setValue(alternativeManualPath);
+		this.useDefaultExecutablePath.setValue(useDefaultExecutablePath);
 	}
 
 	/*.................................................................................................................*/
@@ -90,6 +90,7 @@ public class AppChooser implements ActionListener {
 		appButton = dialog.addAListenedButton("App...", null, this);
 		appButton.setActionCommand("chooseApp");
 	}
+	
 	AppChooserDialog appChooserDialog;
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
@@ -97,52 +98,12 @@ public class AppChooser implements ActionListener {
 
 			//Show app chooser dialog ========================
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
-			appChooserDialog = new AppChooserDialog(containingDialog,  "Choose " + programName,buttonPressed, builtInExecutableAllowed, ownerModule, programName, versionOfBuiltIn, useDefaultExecutablePath, alternativeManualPath);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-			/*dialog.addBlankLine();
-			String warningUseWorking = "";
-			if (builtInExecutableAllowed) {
-				String builtInString = "Use built-in " + programName + " (version " + versionOfBuiltIn + ")"; 
-				int defaultValue = 1;
-				if (useDefaultExecutablePath.getValue())
-					defaultValue = 0;
-				builtInVsManual = dialog.addRadioButtons(new String[] {builtInString, "Use alternative installed copy indicated below"}, defaultValue);
-				if (ownerModule !=null && ownerModule instanceof ItemListener) {
-					builtInVsManual.addItemListener((ItemListener)ownerModule);
-				}
-				dialog.addHorizontalLine(1);
-				dialog.addLabel("Path to alternative installed copy of " + programName + ":");
-				warningUseWorking = "If you use the alternative installed copy of " + programName + ", p";
-			}
-			else {
-				dialog.addLabel("Copy of " + programName + " installed on your computer to be used:");
-				warningUseWorking = "There is no copy of " + programName + " built into your version of Mesquite. P";
-			}
-			alternativePathField = dialog.addTextField(alternativeManualPath.getValue(), 40);
-			
-			Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
-			programBrowseButton.setActionCommand("programBrowse");
-			dialog.addLargeOrSmallTextLabel(warningUseWorking + "lease make sure the indicated copy runs on its own from the command line/command prompt before attempting to run it from Mesquite.");
-			dialog.completeAndShowDialog(true);
-			if (buttonPressed.getValue()==0)  {
-				if (builtInVsManual != null)
-					useDefaultExecutablePath.setValue(builtInVsManual.getValue() == 0);
-				String tempPath = alternativePathField.getText();
-				if (StringUtil.blank(tempPath) && !useDefaultExecutablePath.getValue()){
-					MesquiteMessage.discreetNotifyUser("If you do not use a built-in app, then the path to " +programName+ " must be entered.");
-				} else
-					alternativeManualPath.setValue(tempPath);
-				//Remember in receiving module to receive the various parts
-				// set pathOfBuiltIn etc.?
-			}
-			dialog.dispose();
-			//========================
-			 * */
-			
+			appChooserDialog = new AppChooserDialog(containingDialog,  "Choose " + programName,buttonPressed, builtInExecutableAllowed, ownerModule, this, programName, versionOfBuiltIn, useDefaultExecutablePath, alternativeManualPath);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+
 			appChooserDialog.completeAndShowDialog(true);
 			
 			if (buttonPressed.getValue()==0)  {
-				if (builtInVsManual != null)
-					useDefaultExecutablePath.setValue((builtInVsManual.getValue() == 0));
+				useDefaultExecutablePath.setValue(appChooserDialog.builtInAppChosen());
 				if (appChooserDialog.getAlternativePathField()!=null) {
 					String tempPath = appChooserDialog.getAlternativePathField().getText();
 					if (StringUtil.blank(tempPath) && !useDefaultExecutablePath.getValue()){
@@ -154,22 +115,15 @@ public class AppChooser implements ActionListener {
 				// set pathOfBuiltIn etc.?
 			}
 
+			if (appUser!=null) {
+				appUser.appChooserDialogBoxEntryChanged();
+			}
+		
+			
 			appChooserDialog.dispose();
 			usingLabelMainDlog.setText(getMainDialogUsingString());
-			containingDialog.repaintAll();
+		//	containingDialog.repaintAll();
 		} 
-		//Browse for the installed copy ========================
-		else 	if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
-			alternativeManualPath.setValue(MesquiteFile.openFileDialog("Choose " + programName + ":", null, null));
-			if (!alternativeManualPath.isBlank()) {
-				alternativePathField.setText(alternativeManualPath.getValue());
-				usingLabelMainDlog.setText(getMainDialogUsingString());
-			}
-		}
-	}
-	/*.................................................................................................................*/
-	public ItemSelectable getItemSelectable(ItemSelectable itemSelectable) {
-		return itemSelectable;
 	}
 	
 	public boolean builtInAppChosen() {
@@ -192,10 +146,14 @@ public class AppChooser implements ActionListener {
 		return usingString;
 	}
 	/*.................................................................................................................*/
+	public void informAppUser() {
+		if (appUser!=null) {
+			appUser.appChooserDialogBoxEntryChanged();
+		}
+	}
+/*.................................................................................................................*/
 	boolean usingBuiltIn() {
 		if (builtInExecutableAllowed) {
-			if (builtInVsManual != null)
-				return (builtInVsManual.getValue()==0);
 			return useDefaultExecutablePath.getValue();
 		}
 		return false;

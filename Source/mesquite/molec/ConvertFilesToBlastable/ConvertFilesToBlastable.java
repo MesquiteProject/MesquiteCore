@@ -80,6 +80,8 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		return "BLAST";
 	}
 
+	public void appChooserDialogBoxEntryChanged() {}
+
 	public boolean getDefaultExecutablePathAllowed() {
 		return getHasApp();
 	}
