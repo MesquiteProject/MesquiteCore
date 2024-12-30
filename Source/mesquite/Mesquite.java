@@ -161,9 +161,10 @@ public class Mesquite extends MesquiteTrunk
 
 
 	/*.................................................................................................................*/
+	static boolean verboseStartup = false;
 	public void init()
 	{
-		boolean verboseStartup = false;
+		verboseStartup = false;
 		long startingTime = System.currentTimeMillis();
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
@@ -310,33 +311,41 @@ public class Mesquite extends MesquiteTrunk
 		MesquiteModule.mesquiteHomePageURL = getRootPath() + "docs/home.html";
 		MesquiteModule.mesquiteDocsURL = getRootPath() + "docs/";
 
+		if (verboseStartup) System.out.println("main init 6a");
 		if (starter != null){ // because of Java 9 classloading issues, rely on starter class to make class loader if it exists
 			try {
+				if (verboseStartup) System.out.println("main init 6b");
 				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
 				startupNotices = (Vector)gsn.invoke(starter, null);
 				if (startupNotices != null)
 					System.out.println("Received startupNotices from start.Mesquite");
 				//the following could thro
+				if (verboseStartup) System.out.println("main init 6c");
 				Method gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
 				Object obj = gmcl.invoke(starter, null);
+				if (verboseStartup) System.out.println("main init 6d");
 				if (obj instanceof URLClassLoader)
 					basicClassLoader = (URLClassLoader)obj;
 				if (basicClassLoader!= null)
 					System.out.println("Received URLClassLoader from start.Mesquite");
+				if (verboseStartup) System.out.println("main init 6e");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 		}
+		if (verboseStartup) System.out.println("main init 6f");
 		if (basicClassLoader == null){ 
 			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath(), null, new Vector());
 			System.out.println("No URLClassLoader received from start.Mesquite; made one after startup");
 		}
 
+		if (verboseStartup) System.out.println("main init 6g");
 		addToStartupNotices("Current class loader " + this.getClass().getClassLoader());
 		addToStartupNotices("Module class loader " + basicClassLoader);
 		addToStartupNotices("==================================\n");
 
+		if (verboseStartup) System.out.println("main init 6h");
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
 			if (!preferencesSet) {
@@ -2852,7 +2861,9 @@ public class Mesquite extends MesquiteTrunk
 			String jarPath="";
 			for (int i = 0; i<jars.size(); i++){
 				jarPath = (String)jars.elementAt(i);
-				JarLoader.addJarFileToClassPath(jarPath);
+				if (verboseStartup) System.out.println("loading " + jarPath);
+				if (jarPath.endsWith("jar"))
+					JarLoader.addJarFileToClassPath(jarPath);
 			}
 			return classLoader;
 		} 
