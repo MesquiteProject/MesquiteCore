@@ -742,7 +742,7 @@ class LandmarkLegend extends TreeDisplayLegend {
 		setLayout(null);
 		setSize(legendWidth, legendHeight);
 
-		specsBox = new TextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
+		specsBox = new MQTextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
 		specsBox.setEditable(false);
 		if (traceModule.showLegend())// && traceModule.showReconstruct.getValue())
 			specsBox.setVisible(false);

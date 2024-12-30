@@ -5544,7 +5544,7 @@ class FootnotePanel extends MatrixInfoExtraPanel {
 
 }
 
-class NoteField extends TextArea implements FocusListener {
+class NoteField extends MQTextArea implements FocusListener {
 	FootnotePanel panel;
 
 	boolean somethingTyped;

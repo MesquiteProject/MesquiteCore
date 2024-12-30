@@ -245,7 +245,7 @@ class Ledge extends MousePanel {
 		setLayout(null);
 		this.ownerModule = ownerModule;
 		/* */
-		message = new TextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
+		message = new MQTextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
 		message.setVisible(true);
 		add(message);
 		message.setBounds(titleWidth,0,getBounds().width-titleWidth, getBounds().height);
@@ -253,7 +253,7 @@ class Ledge extends MousePanel {
 
 
 
-		title = new TextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
+		title = new MQTextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
 		title.setVisible(true);
 		add(title);
 		title.setBounds(0,0,titleWidth, getBounds().height);

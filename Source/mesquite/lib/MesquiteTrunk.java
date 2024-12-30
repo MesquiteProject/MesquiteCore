@@ -167,6 +167,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean reportErrors = true;
 	public static boolean reportUse = true;
 	public static PhoneHomeThread phoneHomeThread;
+	public static LinuxGWAThread linuxGWAThread;
 	
 	/** The panel in which all Mesquite "windows" fit if run as applet embedded in page.*/
 	public Panel embeddedPanel;

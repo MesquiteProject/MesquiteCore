@@ -19,7 +19,7 @@ import mesquite.lib.*;
 
 /* ======================================================================== */
 /** A panel at the bottom of a table or window that can be used for temporary messages.*/
-public class MessagePanel extends Panel {
+public class MessagePanel extends MQPanel {
 	String message;
 	Color textColor;
 	boolean outline = true;

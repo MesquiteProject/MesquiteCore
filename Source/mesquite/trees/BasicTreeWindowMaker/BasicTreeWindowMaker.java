@@ -4721,7 +4721,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 }
 
 /* ======================================================================== *
-class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, MouseWheelListener { // REALTreeScrollPane
+class REALTreeScrollPane extends MQScrollPane implements AdjustmentListener, MouseWheelListener { // REALTreeScrollPane
 	BasicTreeWindow window;
 
 	Component treeDisplay;
@@ -4826,7 +4826,7 @@ class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, Mouse
  * this is an attempt to get around the bug in OS X java 1.4+ in which ScrollPane scrollbars don't return their position and don't notify of adjustments. This faux-ScrollPane works reasonably well but is slower and has some graphical artifacts
  */
 
-class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { // HANDMADETreeScrollPane
+class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener { // HANDMADETreeScrollPane
 	BasicTreeWindow window;
 
 	TWScroll hScroll, vScroll;
@@ -4842,7 +4842,7 @@ class TreeScrollPane extends Panel implements MouseWheelListener, KeyListener { 
 		setLayout(new BorderLayout());
 		add(hScroll, BorderLayout.SOUTH);
 		add(vScroll, BorderLayout.EAST);
-		add(port = new Panel(), BorderLayout.CENTER);
+		add(port = new MQPanel(), BorderLayout.CENTER);
 		addMouseWheelListener(this);
 		//addKeyListener(this);
 		port.setLayout(null);
@@ -5092,7 +5092,7 @@ class TWScroll extends MesquiteScrollbar {
  */
 
 /* ======================================================================== */
-class MessagePanel extends Panel {
+class MessagePanel extends MQPanel {
 	String treeMessage = "";
 
 	String treeSourceAddendum = "";
@@ -5187,7 +5187,7 @@ class MessagePanel extends Panel {
 /* ======================================================================== */
 /* New code added Feb.07 oliver */// TODO: delete new code comments
 /** A panel at the bottom of a tree window that can be used for buttons & messages. */
-class ControlStrip extends Panel {
+class ControlStrip extends MQPanel {
 	BasicTreeWindowMaker ownerModule;
 
 	Vector buttons;

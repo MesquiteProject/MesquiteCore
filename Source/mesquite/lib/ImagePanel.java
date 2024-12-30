@@ -20,7 +20,7 @@ import java.awt.event.*;
 
 /*===============================================*/
 /** A panel containing and image */
-public class ImagePanel extends Panel implements MouseListener  {
+public class ImagePanel extends MQPanel implements MouseListener  {
 	Image image;
 	Image imagePressed;
 	ImagePanelListener imageListener;

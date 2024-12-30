@@ -17,7 +17,7 @@ import java.awt.*;
 
 /*===============================================*/
 /** A field for displaying uneditable text. */
-public class MesquiteTextCanvas extends TextArea  {
+public class MesquiteTextCanvas extends MQTextArea  {
 	String message;
 	int width = 0;
 	int totalLength;

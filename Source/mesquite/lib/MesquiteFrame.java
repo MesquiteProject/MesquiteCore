@@ -87,13 +87,13 @@ public class MesquiteFrame extends Frame implements Commandable {
 		add(rBetweenPanel);
 		pBetweenPanel = new BetweenPanel(this);
 		add(pBetweenPanel);
-		poptile = new Panel();
+		poptile = new MQPanel();
 		poptile.setBackground(backgroundColor);
 		add(poptile);
-		resources = new Panel();
+		resources = new MQPanel();
 		resources.setBackground(backgroundColor);
 		add(resources);
-		main = new Panel();
+		main = new MQPanel();
 		main.setBackground(backgroundColor);
 		if (compactible){
 			tabs = new FrameTabsPanel(this);

@@ -22,7 +22,7 @@ import java.awt.image.*;
 /** A little panel placed within a container to indicate an ongoing calculations.  Serves like a 
 thermometer window, but embedded in relevant container since there may be several ongoing
 at once.*/
-public class ThermoPanel extends Panel {
+public class ThermoPanel extends MQPanel {
 	long current=MesquiteLong.unassigned;
 	long total = MesquiteLong.unassigned;
 	String s = null;

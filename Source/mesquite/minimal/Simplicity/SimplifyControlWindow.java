@@ -221,7 +221,7 @@ class MovePanel extends MousePanel {
 	}
 }
 /* ======================================================================== */
-class ClassesPane extends ScrollPane{
+class ClassesPane extends MQScrollPane{
 
 	public ClassesPane () {
 		super(ScrollPane.SCROLLBARS_AS_NEEDED);
@@ -313,7 +313,7 @@ class TrianglePanel extends MousePanel {
 	}
 }
 
-class OuterPackagesPanel extends Panel {
+class OuterPackagesPanel extends MQPanel {
 	PackagesPanel packagesPanel;
 	public OuterPackagesPanel(PackagesPanel pp){
 		packagesPanel = pp;
@@ -326,7 +326,7 @@ class OuterPackagesPanel extends Panel {
 class PackagesPanel extends MousePanel implements ItemListener {
 	Listable[] v;
 	int h = 30;
-	TextArea explanation = new TextArea("", 20, 20, TextArea.SCROLLBARS_NONE);
+	TextArea explanation = new MQTextArea("", 20, 20, TextArea.SCROLLBARS_NONE);
 	Font fontBig = new Font("SansSerif", Font.BOLD, 14);
 	SimplifyControlWindow w;
 	public PackagesPanel(SimplifyControlWindow w){
@@ -727,7 +727,7 @@ class EditModeButton extends Checkbox implements ItemListener {
 }
 
 /*.................................................................................................................*/
-class ModePanel extends Panel implements ItemListener {
+class ModePanel extends MQPanel implements ItemListener {
 	CheckboxGroup cbg;
 	Checkbox powerCB, simplerCB;
 	SimplifyControlWindow w;
@@ -872,7 +872,7 @@ class ModePanel extends Panel implements ItemListener {
 		
 	}
 }
-class ClassHeadersPanel extends Panel  {
+class ClassHeadersPanel extends MQPanel  {
 	Font fontBig = new Font("SansSerif", Font.BOLD, 12);
 	Font fontSmall = new Font("SansSerif", Font.PLAIN, 10);
 	/*.................................................................................................................*/

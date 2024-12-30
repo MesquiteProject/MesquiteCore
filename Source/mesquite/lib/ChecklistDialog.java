@@ -42,23 +42,23 @@ public class ChecklistDialog extends MesquiteDialog implements ActionListener{
 		}
 	//	this.selected = selected;
 		Font f = new Font ("Dialog", Font.PLAIN, 12);
-		TextArea lab = new TextArea (message,3, 6, TextArea.SCROLLBARS_NONE);
+		TextArea lab = new MQTextArea (message,3, 6, TextArea.SCROLLBARS_NONE);
 		addComponent(this, lab, 0, GridBagConstraints.RELATIVE, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.CENTER);
 		lab.setEditable(false);
 		
 		pane = new ChecklistScrollPane(ScrollPane.SCROLLBARS_ALWAYS);
-		boxPanel = new Panel();
+		boxPanel = new MQPanel();
 		boxPanel.setLayout(new GridLayout(numItems, 1));
 		addComponent(this, pane, 0, GridBagConstraints.RELATIVE, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.CENTER);
 		//pane.setBackground(Color.red);
 		//boxPanel.setBackground(Color.blue);
 		if (anyDocumentables(listables)){
-			explanation = new TextArea ("",3, 6, TextArea.SCROLLBARS_VERTICAL_ONLY);
+			explanation = new MQTextArea ("",3, 6, TextArea.SCROLLBARS_VERTICAL_ONLY);
 			explanation.setFont(new Font ("SanSerif", Font.PLAIN, 12));
 
 			addComponent(this, explanation, 0, GridBagConstraints.RELATIVE, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.CENTER);
 		}
-		Panel buttons = new Panel();
+		Panel buttons = new MQPanel();
 		Button sho=null;
 		buttons.add("West", cancel = new Button("Cancel"));
 		if (doShow)
@@ -235,7 +235,7 @@ public class ChecklistDialog extends MesquiteDialog implements ActionListener{
 	}
 }
 /* ======================================================================== */
-class ChecklistScrollPane extends ScrollPane{
+class ChecklistScrollPane extends MQScrollPane{
 	public ChecklistScrollPane () {
 		super();
 	}

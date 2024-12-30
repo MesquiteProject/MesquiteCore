@@ -1284,7 +1284,7 @@ class TraceLegend extends TreeDisplayLegend {
 			stateNames[i] = null;
 			legendColors[i] = null;
 		}
-		specsBox = new TextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
+		specsBox = new MQTextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
 		specsBox.setEditable(false);
 		if (traceModule.showLegend())// && traceModule.showReconstruct.getValue())
 			specsBox.setVisible(false);
@@ -1456,7 +1456,7 @@ class TraceLegend extends TreeDisplayLegend {
 	}
 }
 
-class TCMPanel extends Panel {
+class TCMPanel extends MQPanel {
 	String message = "";
 	StringInABox box;
 	public TCMPanel(){

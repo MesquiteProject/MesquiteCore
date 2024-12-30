@@ -20,7 +20,7 @@ import mesquite.lib.table.EditorTextField;
 
 /*===============================================*/
 /** a field for text that cannot have line feeds/carriage returns in it.  */
-public class SingleLineTextArea extends TextArea  {
+public class SingleLineTextArea extends MQTextArea  {
 	KeyAdapterToConsumeKeys kListener;
 	boolean allowReturn;
 	/*.................................................................................................................*/

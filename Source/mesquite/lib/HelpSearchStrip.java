@@ -41,7 +41,7 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 		this.window = window;
 		setLayout(null);
 		searchDataOnly = data;
-		searchBox = new TextArea("", 1, 8, TextArea.SCROLLBARS_NONE);
+		searchBox = new MQTextArea("", 1, 8, TextArea.SCROLLBARS_NONE);
 		add(searchBox);
 		searchBox.setBounds(0, 1, 130, 14);  
 		searchBox.setVisible(true);

@@ -875,7 +875,7 @@ class ShowPairsLegend extends TreeDisplayLegend {
 		//characterAScroll.setBackground(Color.cyan);
 		characterAScroll.setLocation(2,scrollStart);
 		characterAScroll.setColor(Color.blue);
-		AMessageBox = new TextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
+		AMessageBox = new MQTextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
 		AMessageBox.setVisible(false);
 		AMessageBox.setBackground(Color.white);
 		AMessageBox.setEditable(false);
@@ -887,7 +887,7 @@ class ShowPairsLegend extends TreeDisplayLegend {
 		//characterBScroll.setBackground(Color.cyan);
 		characterBScroll.setLocation(2,AMessageBox.getBounds().y+AMessageBox.getBounds().height+4);
 		characterBScroll.setColor(Color.blue);
-		BMessageBox = new TextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
+		BMessageBox = new MQTextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
 		BMessageBox.setEditable(false);
 		BMessageBox.setVisible(false);
 		BMessageBox.setBackground(Color.white);
@@ -899,7 +899,7 @@ class ShowPairsLegend extends TreeDisplayLegend {
 		//pairingScroll.setBackground(Color.cyan);
 		pairingScroll.setLocation(2,BMessageBox.getBounds().y+BMessageBox.getBounds().height+4); 
 		pairingScroll.setColor(Color.blue);
-		pairingMessageBox = new TextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
+		pairingMessageBox = new MQTextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
 		pairingMessageBox.setVisible(false);
 		pairingMessageBox.setEditable(false);
 		pairingMessageBox.setBackground(Color.white);

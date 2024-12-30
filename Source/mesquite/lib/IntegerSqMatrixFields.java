@@ -65,7 +65,7 @@ public class IntegerSqMatrixFields  {
 		if (!onlyUpperRight)
 			adj = 1;
 		
-		Panel newPanel = new Panel();
+		Panel newPanel = new MQPanel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;

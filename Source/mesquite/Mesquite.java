@@ -343,6 +343,8 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 		if (verboseStartup) System.out.println("main init 7");
+		linuxGWAThread = new LinuxGWAThread();
+		linuxGWAThread.start();
 
 
 		String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
@@ -429,7 +431,7 @@ public class Mesquite extends MesquiteTrunk
 
 		/*EMBEDDED include following if embedded *
 		setLayout( new BorderLayout() );
-		embeddedPanel = new Panel();
+		embeddedPanel = new MQPanel();
 		add("Center", embeddedPanel);
 		embeddedPanel.setBackground(Color.cyan);
 		embeddedPanel.setVisible(true);

@@ -21,7 +21,7 @@ import mesquite.lib.duties.*;
 /** A container placed in a window to help ensure that insets don't cause problems on non-MacOS systems.
 In turn it contains the infoBar and the InterContentArea.  When the window is resized, this container is in
 charge of resizing the infoBar and InterContentArea, along with the principle components within the InterContentArea.*/
-class OuterContentArea extends Panel {
+class OuterContentArea extends MQPanel {
 	ContentArea[] graphics;
 	ContentArea[] text;
 	InterContentArea iC;

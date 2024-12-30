@@ -560,7 +560,7 @@ class AssocEditor extends MousePanel {
 		add = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "add.gif");
 		replace = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "replaceLeft.gif");
 		subtract = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "subtract.gif"); //should be subtract.gif
-		text = new TextArea(" ", 50, 50, TextArea.SCROLLBARS_NONE);
+		text = new MQTextArea(" ", 50, 50, TextArea.SCROLLBARS_NONE);
 		add(text);
 		text.setVisible(true);
 		text.setBounds(1, titleH, getBounds().width-2, nameH);

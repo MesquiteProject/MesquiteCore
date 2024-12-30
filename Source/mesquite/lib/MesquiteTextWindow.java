@@ -36,9 +36,9 @@ public class MesquiteTextWindow extends MesquiteWindow implements FocusListener 
 		//setBackground(Color.white);
 		setWindowSize(200, 250);
 		if (wrap)
-			tA= new TextArea("", 50, 50,  TextArea.SCROLLBARS_VERTICAL_ONLY);
+			tA= new MQTextArea("", 50, 50,  TextArea.SCROLLBARS_VERTICAL_ONLY);
 		else
-			tA= new TextArea("", 50, 50,  TextArea.SCROLLBARS_BOTH);
+			tA= new MQTextArea("", 50, 50,  TextArea.SCROLLBARS_BOTH);
 		tA.setEditable(false);
 		tA.setBackground(Color.white);
 		tA.setForeground(Color.black);

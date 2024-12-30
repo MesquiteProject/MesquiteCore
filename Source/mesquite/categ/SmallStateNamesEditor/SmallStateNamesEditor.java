@@ -114,7 +114,7 @@ class SStateNamesPanel extends MatrixInfoExtraPanel  {
 		super(container, "State Names");
 		statesBox =  new StringInABox("", null, 50);
 		charName = new NameField(this, -1);
-		pane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
+		pane = new MQScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
 		statesNames = new StatesField(this);
 		statesNames.setBackground(getBackground());
 		currentHeight = 100 + MINHEIGHT + charNameHeight;
@@ -255,7 +255,7 @@ class SStateNamesPanel extends MatrixInfoExtraPanel  {
 */
 }
 /*-----------------------------*/
-class StatesField extends Panel {
+class StatesField extends MQPanel {
 	NameField[] states;
 	SStateNamesPanel panel;
 	CategoricalData data;

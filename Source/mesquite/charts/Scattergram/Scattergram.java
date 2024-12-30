@@ -1593,7 +1593,7 @@ class ScattergramColorLegend extends Legend {
 			stateNames[i] = null;
 			legendColors[i] = null;
 		}
-		specsBox = new TextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
+		specsBox = new MQTextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
 		specsBox.setEditable(false);
 		if (module.showLegend.getValue())
 			specsBox.setVisible(false);
