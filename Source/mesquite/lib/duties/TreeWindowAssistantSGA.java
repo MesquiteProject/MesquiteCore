@@ -1,3 +1,4 @@
+
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
 
@@ -10,30 +11,26 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
- */
-package mesquite.stgt.SpeciesTreeGeneTreeSearcher;
-/*~~  */
+*/
+package mesquite.lib.duties;
 
+import java.awt.*;
 import mesquite.lib.*;
-import mesquite.search.lib.*;
-import mesquite.stgt.lib.SpeciesTreeGeneTreeAnalysis;
+
 
 /* ======================================================================== */
-public class SpeciesTreeGeneTreeSearcher extends TreeSearch  {
-	public String getName() {
-		return "Species tree / Gene Tree Methods";
-	}
-	public String getExplanation() {
-		return "Supplies species trees resulting from consideration of gene trees.";
-	}
-	/*.................................................................................................................*/
-	public Class getHireSubchoice(){
-		return SpeciesTreeGeneTreeAnalysis.class;  
-	}
-	/*
-	public boolean requestPrimaryChoice() {
-		return false;
-	}
-*/
+/**An assistant to the tree window, to appear in Analysis menu.*/
+
+public abstract class TreeWindowAssistantSGA extends TreeWindowAssistant  {
+	
+   	 public Class getDutyClass() {
+   	 	return TreeWindowAssistantSGA.class;
+   	 }
+ 	public String getDutyName() {
+ 		return "Assistant for Tree Window (Species Tree-Gene Tree Analysis)";
+   	 }
+
 }
+
+
 
