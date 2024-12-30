@@ -1173,7 +1173,7 @@ class ItemsChartWindow extends ChartWindow implements ChartListener, ActionListe
 }
 
 /* ========================================================= */
-class ChartMessages extends TextArea {
+class ChartMessages extends MQTextArea {
 	ItemsChartWindow window;
 
 	public ChartMessages(ItemsChartWindow window) {

@@ -33,9 +33,9 @@ public class WelcomeDialog extends MesquiteDialog {
 		Font f = new Font ("Dialog", Font.PLAIN, 12);
 		Font fSmall = new Font ("Serif", Font.PLAIN, 6);
 		TextArea labstr1;
-		add("North", labstr1 = new TextArea (label, 10,10, TextArea.SCROLLBARS_VERTICAL_ONLY));
+		add("North", labstr1 = new MQTextArea (label, 10,10, TextArea.SCROLLBARS_VERTICAL_ONLY));
 		
-		Panel buttons = new Panel();
+		Panel buttons = new MQPanel();
 		Button cancel;
 		Button ok;
 		buttons.add("West", t = new TextField(" "));

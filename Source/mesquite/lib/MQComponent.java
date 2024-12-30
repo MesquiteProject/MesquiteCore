@@ -10,25 +10,19 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
 
 
+/* �������������������� */
+/* Intermediary class for workaround of StackOverflowError JDK 11 - 23 (at least!). 
+ * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
-public abstract class HPanel extends MQScrollPane{
-	public HPanel () {
-	}
-	public abstract void setRootNode(HNode node);
-	public abstract void setTitle(String title);
-	public abstract void renew();
-	public abstract void disposeReferences();
-	public abstract void dispose();
-	public abstract void highlightNode(HNode node);
-	public abstract void setBackground(Color color);
-	public abstract void setDefaultDepth(int depth);
-	public abstract void showTypes(boolean s);
-}
+public interface MQComponent {
 
+	
+	public void pleaseValidate();
+	public void pleaseSetBounds(int x, int y, int w, int h);
+
+}

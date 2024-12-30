@@ -1143,7 +1143,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	}
 }
 
-class AnglePickerPanel extends Panel implements MouseListener, ActionListener {
+class AnglePickerPanel extends MQPanel implements MouseListener, ActionListener {
 	double angle = 0.0;
 	Polygon ninetyTriangle, zeroTriangle, fortyFiveTriangle;
 	//square is of w/h R*2, and within it is a circle of R.

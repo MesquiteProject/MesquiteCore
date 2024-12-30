@@ -904,7 +904,7 @@ public abstract class MesquiteDialog implements Commandable, Listable, Component
 		dispose();
 	}
 }
-class MDPanel extends Panel {
+class MDPanel extends MQPanel {
 	boolean usingWizard = false;
 	public MDPanel (boolean usingWizard){
 		this.usingWizard = usingWizard;

@@ -87,7 +87,7 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 		add(commentHeader = new HeaderPanel(this, "Comment"));
 		commentHeader.setVisible(true);
 
-		add(commentPanel = new TextArea("",50,50, TextArea.SCROLLBARS_VERTICAL_ONLY));
+		add(commentPanel = new MQTextArea("",50,50, TextArea.SCROLLBARS_VERTICAL_ONLY));
 		commentPanel.setEditable(true);
 		commentPanel.setBackground(Color.white);
 		commentPanel.setVisible(true);
@@ -96,7 +96,7 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 		add(refHeader = new HeaderPanel(this, "Reference"));
 		refHeader.setVisible(true);
 
-		add(refPanel = new TextArea("",50,50, TextArea.SCROLLBARS_VERTICAL_ONLY));
+		add(refPanel = new MQTextArea("",50,50, TextArea.SCROLLBARS_VERTICAL_ONLY));
 		refPanel.setEditable(true);
 		refPanel.setBackground(Color.white);
 		refPanel.setVisible(true);
@@ -1253,7 +1253,7 @@ class ControlP extends MesquitePanel {
 		scroll.setVisible(true);
 		trash = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "trashcan.gif");
 		addPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "add.gif");
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
+		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
 		/*
 		newPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "new.gif");
 		spotPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "spot.gif");

@@ -1645,7 +1645,7 @@ class ContainedLegend extends TreeDisplayLegend {
 		setOffsetY(ownerModule.initialOffsetY);
 		setLayout(null);
 		setSize(legendWidth, legendHeight);
-		add(text = new TextArea("", 6, 3, TextArea.SCROLLBARS_NONE));
+		add(text = new MQTextArea("", 6, 3, TextArea.SCROLLBARS_NONE));
 		text.setEditable(false);  
 		text.setBackground(Color.lightGray);
 		text.setBounds(0, scrollAreaHeight, legendWidth, legendHeight-scrollAreaHeight);

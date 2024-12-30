@@ -275,10 +275,10 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		contents = getGraphicsArea();
 		contents.setLayout(new BorderLayout());
 
-		explanation= new TextArea("", 12, 12, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		explanation= new MQTextArea("", 12, 12, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		contents.add("Center", explanation);
 		explanation.setBackground(Color.white);
-		controls = new Panel();
+		controls = new MQPanel();
 		buttons = new TitlePanel(this);
 		controls.setLayout(new BorderLayout());
 		controls.setBackground(ColorDistribution.lightGreen);
@@ -292,7 +292,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		next.setFont(df);
 		prev.setFont(df);
 
-		textFields = new Panel();
+		textFields = new MQPanel();
 
 		nextPanel = new FieldPanel(true, nextName, module.nextProjectName, this, null, false);
 		nextPanel.setVisible(true);
@@ -309,7 +309,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		textFields.add("South", prevPanel);
 		controls.add("Center", textFields);
 
-		extras = new Panel();
+		extras = new MQPanel();
 		extras.setLayout(extrasLayout = new GridLayout(0, 1));
 		extras.setVisible(true);
 
@@ -578,7 +578,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 	}
 }
 
-class FieldPanel extends Panel implements ActionListener {
+class FieldPanel extends MQPanel implements ActionListener {
 	TextField label, text; 
 	LinkPanel linkPanel;
 	public FieldPanel (boolean labelEditable, String initialLabel, String initialText, TextListener listener, LinkPanel linkPanel, boolean removeButton){
@@ -627,7 +627,7 @@ class FieldPanel extends Panel implements ActionListener {
 }
 
 
-class LinkPanel extends Panel implements ActionListener, TextListener {
+class LinkPanel extends MQPanel implements ActionListener, TextListener {
 	String title;
 	String path;
 	LinkBanner banner;

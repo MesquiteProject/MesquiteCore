@@ -58,7 +58,7 @@ public class MesquiteDialogParent extends JDialog implements Identifiable {
 	}
 	public Container getContentPane(){
 		if (MesquiteWindow.headless)
-			return new Panel();
+			return new MQPanel();
 		return super.getContentPane();
 	}
 	public long getID(){

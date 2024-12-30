@@ -55,10 +55,10 @@ then
   fi
   chmod -R u+w  "$dir/com/"
   cp -r  "$dir/../Resources/com/"* "$dir/com/" >& /dev/null
-  $java -Djava.library.path=lib -Djri.ignore.ule="yes" -jar Mesquite.jar $*
+  $java -Djava.library.path=lib -Djri.ignore.ule="yes" -XX:+EnableDynamicAgentLoading -jar Mesquite.jar $* 2>Mesquite_Running_Errors.txt
 else
   chmod -R u+w  "$dir/com/"
   cp -r  "$dir/../Resources/com/"* "$dir/com/" >& /dev/null
-  $java -Djava.library.path=lib -Djri.ignore.ule="yes" -jar Mesquite.jar $*
+  $java -Djava.library.path=lib -Djri.ignore.ule="yes" -XX:+EnableDynamicAgentLoading -jar Mesquite.jar $* 2>Mesquite_Running_Errors.txt
 fi
 

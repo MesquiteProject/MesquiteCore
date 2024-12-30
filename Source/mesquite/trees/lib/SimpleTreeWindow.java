@@ -60,7 +60,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		MesquiteSubmenuSpec mss = ownerModule.addSubmenu(null, "Analysis", MesquiteModule.makeCommand("newAssistant",  this), TreeDisplayAssistantA.class);
 		mss = ownerModule.addSubmenu(null, "Display", MesquiteModule.makeCommand("newAssistantD",  this), TreeDisplayAssistantD.class);
 		treeDisplay =treeDrawCoordTask.createOneTreeDisplay(taxa, this); //TODO: set tree display when tree is set for first time
-		scrollPane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
+		scrollPane = new MQScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
 		scrollPane.add(treeDisplay);
 		sizeDisplays();
 		addToWindow(scrollPane);
@@ -481,7 +481,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 	}
 }
 /* ======================================================================== */
-class SMessagePanel extends Panel {
+class SMessagePanel extends MQPanel {
 	String message;
 
 	public SMessagePanel(MesquiteWindow w) {  //in future pass general MesquiteWindow

@@ -27,7 +27,7 @@ class TextContentArea extends ContentArea {
     	 	Font fontToSet = new Font ("Monospaced", 0, 12);
 		if (fontToSet!=null)
 			setFont(fontToSet);
-		tA= new TextArea("", 50, 50,  TextArea.SCROLLBARS_BOTH); //or SCROLLBARS_VERTICAL_ONLY???
+		tA= new MQTextArea("", 50, 50,  TextArea.SCROLLBARS_BOTH); //or SCROLLBARS_VERTICAL_ONLY???
 		tA.setEditable(false);
 		setBackground(Color.white);
 		tA.setBackground(Color.white);
