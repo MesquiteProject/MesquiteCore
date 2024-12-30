@@ -13,7 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
+
 
 /* �������������������� */
 /* Intermediary class for workaround of StackOverflowError JDK 11 - 23 (at least!). 
