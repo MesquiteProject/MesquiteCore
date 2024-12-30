@@ -3009,7 +3009,7 @@ class ColorLegend extends MousePanel {
 		setBackground(Color.white);
 		setFont(new Font("SansSerif", Font.PLAIN, 10));
 		box = new StringInABox("", null, width);
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
+		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
 	}
 
 	public void setLegendColors(ColorRecord[] colors, String title, String explanation) {

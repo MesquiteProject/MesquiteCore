@@ -335,6 +335,7 @@ public class Mesquite extends MesquiteTrunk
 
 		addToStartupNotices("Current class loader " + this.getClass().getClassLoader());
 		addToStartupNotices("Module class loader " + basicClassLoader);
+		addToStartupNotices("==================================\n");
 
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
@@ -2785,7 +2786,9 @@ public class Mesquite extends MesquiteTrunk
 			//Accumulate all jars in Mesquite_Folder to classpath
 			collectAllJars(mesquiteDirectoryPath, urls, jars);
 			String classpathstxt = MesquiteFile.composePath(mesquiteDirectoryPath , MesquiteModule.classpathsFileName);
-			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
+			String[] paths = null;
+			if (MesquiteFile.fileExists(classpathstxt))
+				paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
 			if (paths != null){
 				//Go through each package listed in classpaths.txt
 				for (int i = 0; i<paths.length; i++){
