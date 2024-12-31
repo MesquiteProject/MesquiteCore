@@ -43,7 +43,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		instructionsPanel.setBackground(Color.white);
 		instructionsPanel.setForeground(Color.black);
 		instructionsPanel.setText(instructions);
-		instructionsScrollPane = new  JScrollPane(); 
+		instructionsScrollPane = new  MQJScrollPane(); 
 		instructionsScrollPane.getViewport().add( instructionsPanel,  BorderLayout.CENTER ); 
 		instructionsScrollPane.setVisible(true);
 		instructionsScrollPane.setBounds(0, modePanelHeight, getWidth(), getHeight()-modePanelHeight);
@@ -545,8 +545,8 @@ class PackagesPanel extends MousePanel implements ItemListener {
 }
 
 /*.................................................................................................................*/
-
-class PackageCheckbox extends JCheckBox implements Listable, MouseListener {
+//Includes workaround for Linux graphics StackOverflowError [Search for MQLINUX]
+class PackageCheckbox extends JCheckBox implements MQComponent, Listable, MouseListener {
 	String pkg = null;
 	String expl = null;
 	String name = null;
@@ -584,6 +584,26 @@ class PackageCheckbox extends JCheckBox implements Listable, MouseListener {
 	public void mousePressed(MouseEvent e){
 	}
 	public void mouseReleased(MouseEvent e){
+	}
+	public void validate(){
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
+			MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		else
+			super.validate();
+	}
+
+	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also
+	public void setBounds(int x, int y, int w, int h){
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
+			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
+		else
+			super.setBounds(x, y, w, h);
+	}
+	public void pleaseValidate(){
+		super.validate();
+	}
+	public void pleaseSetBounds(int x, int y, int w, int h){
+		super.setBounds(x, y, w, h);
 	}
 }
 /*.................................................................................................................*/

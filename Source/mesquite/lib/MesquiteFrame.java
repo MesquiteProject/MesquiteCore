@@ -249,6 +249,31 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (tabs !=null)
 			tabs.repaint();
 	}
+	public String listComponentsRec(Component c, String spacer){
+		boolean allComponents = true;
+		if (c==null)
+			return "";
+		if (allComponents)
+			spacer += "   ";
+		String clade = "";
+		if (!(c instanceof MQComponent))
+			clade += "#######"+ c.getClass() + "\n";
+		else if (allComponents)
+			clade += "" + c.getClass() + "\n";
+		if (c instanceof Container){
+			Component[] cc = ((Container)c).getComponents();
+			if (cc!=null && cc.length>0)
+				for (int i=0; i<cc.length; i++) {
+					String subclade = spacer + listComponentsRec(cc[i], spacer);
+					if (subclade.indexOf("#")>=0)
+						clade += subclade;
+				}
+		}
+		return clade;
+	}
+	public String listComponents(){
+		return "@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" + getTitle() +"\n" + listComponentsRec(this, "   ");
+	}
 	public void setResourcesState(boolean resourcesFullWindow, boolean resourcesClosedWhenMinimized, int resourcesWidth){
 		this.resourcesFullWindow = resourcesFullWindow; 
 		this.resourcesClosedWhenMinimized = resourcesClosedWhenMinimized; 
