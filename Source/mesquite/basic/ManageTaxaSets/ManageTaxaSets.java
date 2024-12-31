@@ -200,6 +200,7 @@ public class ManageTaxaSets extends SpecsSetManager {
 					else {
 						token = ParseUtil.getToken(command, startCharT); //=
 						token = (ParseUtil.getToken(command, startCharT)); // name of taxa block
+						Debugg.println("#########TAXA BLOCK NAME2" + token);
 						taxa = file.getProject().getTaxaLastFirst(token);
 						token = ParseUtil.getToken(command, startCharT); //)
 					}

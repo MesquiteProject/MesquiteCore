@@ -16,7 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 
 /* �������������������� */
-/* Intermediary class for workaround of StackOverflowError JDK 11 - 23 (at least!). 
+/* Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
  * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
 public class MQScrollPane extends ScrollPane implements MQComponent {
@@ -35,6 +35,7 @@ public class MQScrollPane extends ScrollPane implements MQComponent {
 			super.validate();
 	}
 
+	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also
 	public void setBounds(int x, int y, int w, int h){
 		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
 			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
