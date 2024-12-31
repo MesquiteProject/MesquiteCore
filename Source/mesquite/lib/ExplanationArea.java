@@ -508,7 +508,7 @@ class ExplTextArea extends TextArea {
 		validateCommand.doItMainThread(null, null, this);
 	// if (Thread.currentThread() instanceof MesquiteThread) super.validate();
 	}
-	 */
+	
 
 	boolean validateRequestPending = false;
 	public void validate(){
@@ -547,7 +547,7 @@ class ExplTextArea extends TextArea {
 		}
 	}
 
-
+ */
 	public void gotFocus(){
 		if (explArea.getFocusSuppression()){
 			explArea.window.requestFocus();
