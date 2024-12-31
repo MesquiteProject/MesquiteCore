@@ -32,7 +32,7 @@ public class TaxaSelCoordinator extends TaxaSelectCoordinator {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Select All Taxa", makeCommand("selectAll",  this));
 		addMenuItem("Deselect All Taxa", makeCommand("deselectAll",  this));
-		addMenuItem("Reverse taxon selection", makeCommand("reverse",  this));
+		addMenuItem("Invert taxon selection", makeCommand("reverse",  this));
 		return true;
   	 }
 	/*.................................................................................................................*/
@@ -57,7 +57,7 @@ public class TaxaSelCoordinator extends TaxaSelectCoordinator {
 				table.repaintAll();
     	 		}
     	 	}
-    	 	else if (checker.compare(this.getClass(), "Reverses the taxon selection", null, commandName, "reverse")) {
+    	 	else if (checker.compare(this.getClass(), "Inverts the taxon selection", null, commandName, "reverse")) {
 			if (taxa !=null && table!=null) {
  				for (int i=0; i<taxa.getNumTaxa(); i++)
  					taxa.setSelected(i, !taxa.getSelected(i));

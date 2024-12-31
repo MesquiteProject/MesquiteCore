@@ -37,7 +37,7 @@ public class CharSelCoordinator extends CharSelectCoordinator {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Select All Characters", makeCommand("selectAll",  this));
 		addMenuItem("Deselect All Characters", makeCommand("deselectAll",  this));
-		addMenuItem("Reverse Character Selection", makeCommand("reverse",  this));
+		addMenuItem("Invert Character Selection", makeCommand("reverse",  this));
 		addMenuItem("Report Characters Selected...", makeCommand("report",  this));
 		return true;
 	}
@@ -67,7 +67,7 @@ public class CharSelCoordinator extends CharSelectCoordinator {
 				table.repaintAll();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Reverses character selection", null, commandName, "reverse")) {
+		else if (checker.compare(this.getClass(), "Inverts character selection", null, commandName, "reverse")) {
 			if (data !=null && table!=null) {
 				for (int i=0; i<data.getNumChars(); i++)
 					data.setSelected(i, !data.getSelected(i));
