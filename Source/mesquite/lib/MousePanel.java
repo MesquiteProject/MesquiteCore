@@ -294,6 +294,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 		validate(); //to workaround bug in Jaguar
 	}
 
+
 	ObjectContainer  findObjectContainer(int objectID) {
 		if (dndObjectVector==null)
 			return null;

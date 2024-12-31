@@ -37,7 +37,7 @@ public class HTMLSidePanel extends MousePanel{
 		setLayout(null);
 		panel.setVisible(true);
 		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
-        scrollPane = new  JScrollPane(); 
+        scrollPane = new  MQJScrollPane(); 
         scrollPane.getViewport().add( panel,  BorderLayout.CENTER ); 
 		add(scrollPane);
 		setBackground(ColorDistribution.brown);

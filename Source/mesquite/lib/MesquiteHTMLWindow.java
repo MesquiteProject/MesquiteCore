@@ -66,7 +66,7 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 		tA.setVisible(true);
 		tA.addHyperlinkListener(this);
 		showBack = (linkTouchedCommand != null);
-		scrollPane = new  JScrollPane(); 
+		scrollPane = new  MQJScrollPane(); 
 		scrollPane.getViewport().add( tA,  BorderLayout.CENTER ); 
 		if (showExtraPanel) {
 			extraPanelHeight = defaultExtraPanelHeight;
@@ -328,7 +328,7 @@ class ExtraPanelHTMLWindow extends MesquitePanel {
 		textPane.setBackground(ColorDistribution.veryLightGray);
 		textPane.setForeground(Color.black);
 		textPane.setVisible(true);
-		scrollPane = new  JScrollPane(); 
+		scrollPane = new  MQJScrollPane(); 
 		//scrollPane.add(textPane);
 		scrollPane.setBackground(ColorDistribution.veryLightGray);
 		scrollPane.getViewport().add(textPane,  BorderLayout.CENTER ); 

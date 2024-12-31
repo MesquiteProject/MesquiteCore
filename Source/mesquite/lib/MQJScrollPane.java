@@ -1,4 +1,4 @@
-/* Mesquite source code.  Copyright 2001 and onward, D. Maddison and W. Maddison. 
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
 
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
@@ -13,39 +13,25 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import javax.swing.JEditorPane;
 import java.awt.*;
 
-//workaround for crashes on OS X && Linux  [Search for MQLINUX]
-public class MesqJEditorPane extends JEditorPane implements MQComponent{
-	public MesqJEditorPane(String a, String b){
-		super(a, b);
-	}
-	public Dimension getPreferredSize(){
-		try {
-			return super.getPreferredSize();
-		}
-		catch(Exception e){
-		}
-		return new Dimension(300, 600);
-	}
-	public boolean getScrollableTracksViewportWidth() {
-		try {
-			return super.getScrollableTracksViewportWidth();
-		}
-		catch(Exception e){
-		}
-		return true;
-	}
-	public boolean getScrollableTracksViewportHeight() {
-		try {
-			return super.getScrollableTracksViewportHeight();
-		}
-		catch(Exception e){
-		}
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
-		return true;
+/* �������������������� */
+/*  [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
+ * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
+/* ======================================================================== */
+public class MQJScrollPane extends JScrollPane implements MQComponent {
+
+	public MQJScrollPane () {
+		super();
 	}
+	public MQJScrollPane (JList list) {
+		super(list);
+	}
+
 	public void validate(){
 		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
 			MesquiteTrunk.linuxGWAThread.validateRequested(this);
@@ -68,5 +54,3 @@ public class MesqJEditorPane extends JEditorPane implements MQComponent{
 	}
 
 }
-
-

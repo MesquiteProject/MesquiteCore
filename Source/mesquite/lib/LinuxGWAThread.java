@@ -81,9 +81,15 @@ public class LinuxGWAThread extends Thread {
 
 	}
 	public void run(){
+		if (false && !MesquiteTrunk.isLinux())  //Debugg.println don't do if not Linux
+			return;
 		String doingString = "";
+		int count = 0;
 		while (!MesquiteTrunk.mesquiteTrunk.mesquiteExiting) { 
+			count++;
 			try {
+				//if (count % 50 == 0)
+				//	Debugg.println(MesquiteTrunk.logWindow.getParentFrame().listComponents());
 				Thread.sleep(50);
 				//first transfer the green room things on my thread
 				while (validateGreenRoom.size()>0)

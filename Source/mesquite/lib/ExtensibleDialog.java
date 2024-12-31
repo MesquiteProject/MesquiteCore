@@ -1939,7 +1939,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 		return tA;
 	}
-	class ConstrJEP extends JScrollPane implements javax.swing.event.HyperlinkListener {
+	class ConstrJEP extends MQJScrollPane implements javax.swing.event.HyperlinkListener {
 		int w, h;
 		MesquiteCommand linkTouchedCommand;
 		ConstrJEP(int w, int h, MesquiteCommand linkTouchedCommand){
