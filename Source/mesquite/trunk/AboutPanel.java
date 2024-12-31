@@ -21,7 +21,7 @@ import mesquite.lib.*;
 
 /* ======================================================================== */
 /** The Panel containing the Mesquite logo on the startup window */
-public class AboutPanel extends Panel {
+public class AboutPanel extends MQPanel {
 	Image logo;
 	HPanel superimposed = null;
 	public AboutPanel (Image logo) {

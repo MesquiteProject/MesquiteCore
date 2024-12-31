@@ -838,9 +838,9 @@ class EditTemplatesDLOG extends ExtensibleDialog implements ItemListener {
 		repeatTextString = new String[numFiles];
 		endTextString = new String[numFiles];
 		batchFileNameString = new String[numFiles];
-		startTextArea = new TextArea[numFiles];
-		repeatTextArea = new TextArea[numFiles];
-		endTextArea = new TextArea[numFiles];
+		startTextArea = new MQTextArea[numFiles];
+		repeatTextArea = new MQTextArea[numFiles];
+		endTextArea = new MQTextArea[numFiles];
 		batchFileNameField = new SingleLineTextField[numFiles];
 		
 		int sL = ownerModule.templates.indexOfByName(templateName);

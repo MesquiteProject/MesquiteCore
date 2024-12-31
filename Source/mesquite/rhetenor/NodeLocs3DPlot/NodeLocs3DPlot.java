@@ -1005,7 +1005,7 @@ class NodeLocs3DPlotLegend extends TreeDisplayLegend {
 		this.setHorizontal =ownerModule.setThetaCommand;
 		this.setMagnification =ownerModule.setDCommand;
 		this.pD = pD;
-		text = new TextArea("", 3, 3, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		text = new MQTextArea("", 3, 3, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		add(text);
 		text.setLocation(30, 4);
 		text.setSize(legendWidth-30-4, legendHeight -80);

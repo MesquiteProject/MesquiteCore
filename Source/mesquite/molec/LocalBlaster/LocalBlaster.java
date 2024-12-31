@@ -80,6 +80,9 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	public String getAppOfficialName() {
 		return "blast";
 	}
+
+	public void appChooserDialogBoxEntryChanged() {}
+
 	public String getProgramName(){
 		return "BLAST";
 	}

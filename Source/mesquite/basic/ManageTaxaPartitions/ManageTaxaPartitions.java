@@ -414,7 +414,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				token = ParseUtil.getToken(command, startCharT);
 				String paradigmString = null;
 				Taxa taxa = null;
-				if (token.equalsIgnoreCase("(")) {//VVECTOR
+			if (token.equalsIgnoreCase("(")) {//VVECTOR
 					token = ParseUtil.getToken(command, startCharT); //TAXA  //TODO: check to see what parameter is being set!
 					if (token.equalsIgnoreCase("VECTOR")) {
 						token = ParseUtil.getToken(command, startCharT); //)
@@ -423,6 +423,8 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					}
 					else if (token.equalsIgnoreCase("STANDARD")) {
 						token = ParseUtil.getToken(command, startCharT); //)
+					}
+					else {
 						token = ParseUtil.getToken(command, startCharT); //=
 						token = (ParseUtil.getToken(command, startCharT)); // name of taxa block
 						taxa = file.getProject().getTaxaLastFirst(token); //taxa is named; seek without restriction to current file

@@ -158,6 +158,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return "";
 	}
 
+	public void appChooserDialogBoxEntryChanged() {}
+
 	/*.................................................................................................................*/
 	public AppInformationFile getAppInfoFile() {
 		return AppHarvester.getAppInfoFileForProgram(this);

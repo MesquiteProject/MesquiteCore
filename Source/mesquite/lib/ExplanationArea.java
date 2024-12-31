@@ -469,7 +469,7 @@ class ExplanationControl extends MousePanel {
 	}
 }
 
-class ExplTextArea extends TextArea {
+class ExplTextArea extends MQTextArea {
 	ExplanationArea explArea;
 	public ExplTextArea(String text, int rows,  int columns, int scrollbars, ExplanationArea explArea){
 		super(text, rows, columns, scrollbars);

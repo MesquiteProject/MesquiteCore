@@ -1227,7 +1227,7 @@ public class MesquiteChart extends MesquitePanel  implements OwnedByModule {
 	}
 }
 /* ======================================================================== */
-class ChartScrollPane extends ScrollPane {
+class ChartScrollPane extends MQScrollPane {
 	public ChartScrollPane (int scrollPolicy) {
 		super(scrollPolicy);
 	}

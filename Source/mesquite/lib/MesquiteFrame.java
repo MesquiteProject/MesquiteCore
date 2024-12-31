@@ -87,13 +87,13 @@ public class MesquiteFrame extends Frame implements Commandable {
 		add(rBetweenPanel);
 		pBetweenPanel = new BetweenPanel(this);
 		add(pBetweenPanel);
-		poptile = new Panel();
+		poptile = new MQPanel();
 		poptile.setBackground(backgroundColor);
 		add(poptile);
-		resources = new Panel();
+		resources = new MQPanel();
 		resources.setBackground(backgroundColor);
 		add(resources);
-		main = new Panel();
+		main = new MQPanel();
 		main.setBackground(backgroundColor);
 		if (compactible){
 			tabs = new FrameTabsPanel(this);
@@ -1367,7 +1367,7 @@ class FrameTabsPanel extends MousePanel {
 	static Image goaway, popOut, popIn, minimize, mediumize, show, goawayMouseOver;
 	static {
 		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goawayTransparent.gif");
-		goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goaway.gif");
+		goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goAway.gif");
 		minimize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
 		mediumize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "mediumizeTransparent.gif");
 		popOut = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "decompactTransparent.gif");
@@ -1388,7 +1388,7 @@ class FrameTabsPanel extends MousePanel {
 		//	f.diagnose();
 		if (goaway == null){
 			goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goawayTransparent.gif");
-			goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goaway.gif");
+			goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goAway.gif");
 			minimize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
 			mediumize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "mediumizeTransparent.gif");
 			popOut = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "decompactTransparent.gif");

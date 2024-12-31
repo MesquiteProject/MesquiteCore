@@ -1,3 +1,4 @@
+
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
 
@@ -11,24 +12,25 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lib;
+package mesquite.lib.duties;
 
 import java.awt.*;
-import java.text.*;
+import mesquite.lib.*;
 
 
 /* ======================================================================== */
-public abstract class HPanel extends MQScrollPane{
-	public HPanel () {
-	}
-	public abstract void setRootNode(HNode node);
-	public abstract void setTitle(String title);
-	public abstract void renew();
-	public abstract void disposeReferences();
-	public abstract void dispose();
-	public abstract void highlightNode(HNode node);
-	public abstract void setBackground(Color color);
-	public abstract void setDefaultDepth(int depth);
-	public abstract void showTypes(boolean s);
+/**An assistant to the tree window, to appear in Analysis menu.*/
+
+public abstract class TreeWindowAssistantSGA extends TreeWindowAssistant  {
+	
+   	 public Class getDutyClass() {
+   	 	return TreeWindowAssistantSGA.class;
+   	 }
+ 	public String getDutyName() {
+ 		return "Assistant for Tree Window (Species Tree-Gene Tree Analysis)";
+   	 }
+
 }
+
+
 

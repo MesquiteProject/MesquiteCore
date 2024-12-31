@@ -752,7 +752,7 @@ class TraceLegend extends TreeDisplayLegend {
 	}
 }
 
-class TCMPanel extends Panel {
+class TCMPanel extends MQPanel {
 	String message = "";
 	StringInABox box;
 	public TCMPanel(){
@@ -791,7 +791,7 @@ class TCMPanel extends Panel {
 	}
 }
 
-class SpecsPrintTextArea extends TextArea {
+class SpecsPrintTextArea extends MQTextArea {
 	public SpecsPrintTextArea(String s, int a, int b, int c){
 		super(s, a, b, c);
 	}

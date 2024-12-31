@@ -199,7 +199,7 @@ class CADPanel extends MousePanel{
 	boolean calculating = false;
 	public CADPanel(){
 		super();
-		text = new TextArea(" ", 50, 50, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		text = new MQTextArea(" ", 50, 50, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		setLayout(null);
 		add(text);
 		text.setLocation(0,26);

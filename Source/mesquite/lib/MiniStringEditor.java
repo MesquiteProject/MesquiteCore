@@ -21,7 +21,7 @@ import mesquite.lib.duties.*;
 /* includes commands,  buttons, miniscrolls
 
 /*=================*/
-public class MiniStringEditor extends Panel implements ActionListener, MiniControl{
+public class MiniStringEditor extends MQPanel implements ActionListener, MiniControl{
 	MesquiteModule ownerModule;
 	EnterButton enterButton;
 	protected TextField text;

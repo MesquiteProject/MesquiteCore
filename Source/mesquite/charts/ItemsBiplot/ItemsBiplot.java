@@ -1182,7 +1182,7 @@ class ItemsBiplotWindow extends ChartWindow implements ChartListener, ActionList
 }
 
 /*...................................................................................................................*/
-class TChartMessages extends TextArea {
+class TChartMessages extends MQTextArea {
 	ItemsBiplotWindow window;
 	public TChartMessages (ItemsBiplotWindow window) {
 		super("", 3, 3, TextArea.SCROLLBARS_VERTICAL_ONLY);

@@ -223,7 +223,7 @@ class SequenceInfoPanel extends MatrixInfoExtraPanel  {
 
 }
 
-class NoteField extends TextArea implements FocusListener {
+class NoteField extends MQTextArea implements FocusListener {
 	SequenceInfoPanel panel;
 	boolean somethingTyped;
 	int ic = -1;

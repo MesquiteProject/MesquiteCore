@@ -18,7 +18,7 @@ import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 /** A miniature scroller containing two MiniScrolls. */
-public class DoubleMiniScroll extends Panel  {
+public class DoubleMiniScroll extends MQPanel  {
 	MiniScroll xScroll, yScroll;
 	String xTitle, yTitle;
 	MesquiteLabel yTitlePanel;

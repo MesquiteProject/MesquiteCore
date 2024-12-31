@@ -1,19 +1,29 @@
 package mesquite.externalCommunication.lib;
 
 import java.awt.Button;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import mesquite.lib.*;
 
-public class AppChooserDialog extends ExtensibleDialog {
+public class AppChooserDialog extends ExtensibleDialog implements ActionListener, ItemListener {
 	RadioButtons builtInVsManual;
 	SingleLineTextField alternativePathField;
+	AppChooser appChooser;
+	String programName;
+	String alternativeManualPath;
 	
-	public AppChooserDialog (Object parent, String title, MesquiteInteger buttonPressed, boolean builtInExecutableAllowed, MesquiteModule ownerModule, String programName, String versionOfBuiltIn, MesquiteBoolean useDefaultExecutablePath, MesquiteString alternativeManualPath) {
+	public AppChooserDialog (Object parent, String title, MesquiteInteger buttonPressed, boolean builtInExecutableAllowed, MesquiteModule ownerModule, AppChooser appChooser, String programName, String versionOfBuiltIn, MesquiteBoolean useDefaultExecutablePath, MesquiteString alternativeManualPath) {
 		super(parent, title);
 		setFont(defaultBigFont);
 		intializeDialog(title,buttonPressed);
 		addWindowListener(this);
+		this.appChooser=appChooser;
+		this.programName = programName;
+		if (alternativeManualPath!=null)
+			this.alternativeManualPath=alternativeManualPath.getValue();
 		
 		addBlankLine();
 		String warningUseWorking = "";
@@ -24,8 +34,9 @@ public class AppChooserDialog extends ExtensibleDialog {
 				defaultValue = 0;
 			builtInVsManual = addRadioButtons(new String[] {builtInString, "Use alternative installed copy indicated below"}, defaultValue);
 			if (ownerModule !=null && ownerModule instanceof ItemListener) {
-				builtInVsManual.addItemListener((ItemListener)ownerModule);
+				//builtInVsManual.addItemListener((ItemListener)ownerModule);
 			}
+			builtInVsManual.addItemListener(this);
 			addHorizontalLine(1);
 			addLabel("Path to alternative installed copy of " + programName + ":");
 			warningUseWorking = "If you use the alternative installed copy of " + programName + ", p";
@@ -35,6 +46,7 @@ public class AppChooserDialog extends ExtensibleDialog {
 			warningUseWorking = "There is no copy of " + programName + " built into your version of Mesquite. P";
 		}
 		alternativePathField = addTextField(alternativeManualPath.getValue(), 40);
+
 		
 		Button programBrowseButton = addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");
@@ -51,11 +63,27 @@ public class AppChooserDialog extends ExtensibleDialog {
 		return false;
 	}
 	
+	
 	public SingleLineTextField getAlternativePathField() {
 		return alternativePathField;
 	}
 
 	
+	/*.................................................................................................................*/
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
+			alternativeManualPath = MesquiteFile.openFileDialog("Choose " + programName + ":", null, null);
+			if (!alternativeManualPath.isBlank()) {
+				alternativePathField.setText(alternativeManualPath);
+			}
+		} 
+	}
+
+	/*.................................................................................................................*/
+	public void itemStateChanged(ItemEvent arg0) {
+		appChooser.informAppUser();
+	}
+
 	
 	
 

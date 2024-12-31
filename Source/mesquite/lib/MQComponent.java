@@ -11,29 +11,18 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.stgt.SpeciesTreeGeneTreeSearcher;
-/*~~  */
+package mesquite.lib;
 
-import mesquite.lib.*;
-import mesquite.search.lib.*;
-import mesquite.stgt.lib.SpeciesTreeGeneTreeAnalysis;
 
+
+/* �������������������� */
+/* Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
+ * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
-public class SpeciesTreeGeneTreeSearcher extends TreeSearch  {
-	public String getName() {
-		return "Species tree / Gene Tree Methods";
-	}
-	public String getExplanation() {
-		return "Supplies species trees resulting from consideration of gene trees.";
-	}
-	/*.................................................................................................................*/
-	public Class getHireSubchoice(){
-		return SpeciesTreeGeneTreeAnalysis.class;  
-	}
-	/*
-	public boolean requestPrimaryChoice() {
-		return false;
-	}
-*/
-}
+public interface MQComponent {
 
+	
+	public void pleaseValidate();
+	public void pleaseSetBounds(int x, int y, int w, int h);
+
+}

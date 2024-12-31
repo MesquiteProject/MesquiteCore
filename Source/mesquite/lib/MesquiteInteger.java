@@ -41,6 +41,10 @@ public class MesquiteInteger implements Listable{
 		this.value=value;
 		totalCreated++;
 	}
+	public MesquiteInteger(long value) { //for backwards compatibility connected with long string positions
+		this.value=(int)value;
+		totalCreated++;
+	}
 	public MesquiteInteger() {
 		this.value=unassigned;
 		totalCreated++;
@@ -53,6 +57,10 @@ public class MesquiteInteger implements Listable{
 	/** Sets value */
 	public void setValue(int value) {
 		this.value=value;
+	}
+	/** Sets value */
+	public void setValue(long value) {//for backwards compatibility connected with long string positions
+		this.value=(int)value;
 	}
 	/** Sets value */
 	public void setValue(String s) {

@@ -262,7 +262,7 @@ class SplashPanel extends MesquitePanel {
 }
 
 /* ======================================================================== */
-class AboutScrollPane extends ScrollPane{
+class AboutScrollPane extends MQScrollPane{
 	public AboutScrollPane (int scrollPolicy) {
 		super(scrollPolicy);
 	}

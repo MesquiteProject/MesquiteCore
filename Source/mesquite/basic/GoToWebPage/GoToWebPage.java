@@ -155,7 +155,7 @@ class GoToWebPageWindow extends MesquiteWindow {
 		contents.setLayout(new BorderLayout());
 		contents.setBackground(Color.cyan);
 
-		explanation = new TextArea("", 8, 3, TextArea.SCROLLBARS_NONE);
+		explanation = new MQTextArea("", 8, 3, TextArea.SCROLLBARS_NONE);
 		tF = new TextField();
 		if (!StringUtil.blank(module.targetName))
 			tF.setText(module.targetName);
@@ -164,7 +164,7 @@ class GoToWebPageWindow extends MesquiteWindow {
 		tF.setVisible(true);
 		contents.add("North", tF);
 		contents.add("Center", explanation);
-		Panel buttons = new Panel();
+		Panel buttons = new MQPanel();
 		Font f = explanation.getFont();
 		if (f != null) {
 			Font fontToSet = new Font(f.getName(), f.getStyle(), f.getSize() + 4);
