@@ -363,7 +363,7 @@ public class Installer extends MesquiteInit {
 		if (precedeWithCDToMesquiteFolder)
 			script = ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), getRootPath()) + script;
 		MesquiteFile.putFileContents(scriptPath, script, false);
-		return ShellScriptUtil.executeAndWaitForShell(scriptPath, "installScript");
+		return ShellScriptUtil.executeAndWaitForShell(scriptPath, "installScript") == ShellScriptUtil.shellScriptNoError;
 	}
 
 	//returns 1 if OK

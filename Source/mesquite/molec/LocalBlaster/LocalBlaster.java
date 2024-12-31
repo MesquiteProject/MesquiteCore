@@ -499,7 +499,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 		boolean success = false;
 		if (scriptBased) 
-			success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+			success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true) == ShellScriptUtil.shellScriptNoError;
 		else {
 			String arguments = blastArguments;
 			arguments=StringUtil.stripBoundingWhitespace(arguments);
@@ -587,7 +587,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 		boolean success = false;
 		if (scriptBased) 
-			success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
+			success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true) == ShellScriptUtil.shellScriptNoError;
 		else {
 			String arguments = blastArguments;
 			arguments=StringUtil.stripBoundingWhitespace(arguments);

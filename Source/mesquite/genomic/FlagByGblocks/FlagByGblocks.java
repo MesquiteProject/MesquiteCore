@@ -381,7 +381,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				gapsOption = "a";
 			script += StringUtil.protectFilePath(gblocksPath) + "  " + unique + "alignment.fas -b1=" + b1Count + " -b2=" + b2Count + " -b3=" + b3 + " -b4=" + b4 + " -b5=" + gapsOption + " -s=n -p=s";
 			MesquiteFile.putFileContents(scriptPath, script, false);
-			success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
+			success = ShellScriptUtil.executeAndWaitForShell(scriptPath) == ShellScriptUtil.shellScriptNoError;
 	
 			if (success){
 				String[] resultText = MesquiteFile.getFileContentsAsStrings(rootDir + unique + "alignment.fas-gb.txts");

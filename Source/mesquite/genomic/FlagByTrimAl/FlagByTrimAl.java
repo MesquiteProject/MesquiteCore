@@ -225,7 +225,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 			MesquiteFile.putFileContents(scriptPath, script, false);
 			status = "scriptSaved";
 			status = "executing";
-			success = ShellScriptUtil.executeAndWaitForShell(scriptPath);
+			success = ShellScriptUtil.executeAndWaitForShell(scriptPath) == ShellScriptUtil.shellScriptNoError;
 			status = "done";
 
 			if (success){
