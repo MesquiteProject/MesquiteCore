@@ -16,11 +16,9 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
-import mesquite.lib.duties.*;
 
-import java.io.*;
 
-/** A thread for executing commands */
+/**  [Search for MQLINUX] -- A thread attempting to sidestep bug in Linux JDKs 11 to 23. See MQ graphics components and ExplTextArea in ExplanationArea */
 public class LinuxGWAThread extends Thread {
 	Vector validateGreenRoom = new Vector();
 	Vector setBoundsGreenRoom = new Vector();
@@ -86,6 +84,7 @@ public class LinuxGWAThread extends Thread {
 		String doingString = "";
 		while (!MesquiteTrunk.mesquiteTrunk.mesquiteExiting) { 
 			try {
+				Thread.sleep(50);
 				//first transfer the green room things on my thread
 				while (validateGreenRoom.size()>0)
 					addOrNotToValidate(validateQueue, (Component)validateGreenRoom.elementAt(0), validateGreenRoom);
@@ -107,7 +106,6 @@ public class LinuxGWAThread extends Thread {
 				validateQueue.removeAllElements();
 				setBoundsQueue.removeAllElements();
 				
-				Thread.sleep(20);
 					
 					
 			}

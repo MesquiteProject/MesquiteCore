@@ -16,7 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 
 /* �������������������� */
-/* Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
+/*  [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
  * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
 public class MQPanel extends Panel implements MQComponent {

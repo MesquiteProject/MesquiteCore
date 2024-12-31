@@ -1017,15 +1017,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 			return poptile.getBounds();
 		return main.getBounds();
 	}
-	/*.................................................................................................................*/
-	boolean validating = false;
-	public void validate(){
-		if (!validating){
-			validating = true;
-			super.validate();
-			validating = false;
-		}
-	}
+	
 	/*.................................................................................................................*/
 	public void resetSizes(boolean resizeContainedWindows){
 		resetSizes(resizeContainedWindows, false);

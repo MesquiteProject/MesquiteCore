@@ -55,12 +55,5 @@ public class MesquiteTabbedPanel extends JPanel  {
 		if (dialog!=null)
 			dialog.pack();
 	}
-	boolean validating = false;
-	public void validate(){
-		if (!validating){
-			validating = true;
-			super.validate();
-			validating = false;
-		}
-	}
+	
 }
