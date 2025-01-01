@@ -344,7 +344,7 @@ class StatesField extends MQPanel {
 			}
 	}
 }
-class NameField extends TextField implements FocusListener {
+class NameField extends MQTextField implements FocusListener {
 	SStateNamesPanel panel;
 	int state = -1;
 	boolean somethingTyped;

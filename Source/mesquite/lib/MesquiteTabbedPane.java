@@ -18,7 +18,7 @@ import javax.swing.JTabbedPane;
 import java.awt.*;
 
 
-public class MesquiteTabbedPane extends JTabbedPane {
+public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 	MesquiteTabbedPanel panel;
 	public MesquiteTabbedPane(MesquiteTabbedPanel panel){
 		super();
@@ -52,4 +52,40 @@ public class MesquiteTabbedPane extends JTabbedPane {
 		//	try {Thread.sleep(20);} catch (Exception e) {}
 	//	super.setSelectedIndex(i);
 	}
+
+	/*validate -------------------------*/
+	boolean validating = false;
+	public void validate(){
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
+			MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		else {
+			if (validating)
+				Debugg.printStackTrace("Double validating " + this);
+			validating = true;
+			super.validate();
+			validating = false;
+		}
+	}
+	public void pleaseValidate(){
+		if (validating)
+			Debugg.printStackTrace("Double validating (PV) " + this);
+		validating = true;
+		super.validate();
+		validating = false;
+	}
+
+	
+	/*setBounds -------------------------*/
+	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also. See ExplTextArea also
+	public void setBounds(int x, int y, int w, int h){
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
+			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
+		else
+			super.setBounds(x, y, w, h);
+	}
+	public void pleaseSetBounds(int x, int y, int w, int h){
+		super.setBounds(x, y, w, h);
+	}
+	/*s----- -------------------------*/
+
 }

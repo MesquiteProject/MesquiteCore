@@ -30,17 +30,25 @@ public class LinuxGWAThread extends Thread {
 	public LinuxGWAThread (Runnable r) {
 		super(r);
 	}
-	
+
+	/**------------------------------------------------------------------------*/
+	boolean putValidatesOnThisThread = true;
+	boolean putSetBoundsOnThisThread = false;
+
 	public void validateRequested(Component component){
-		addOrNotToValidate(validateGreenRoom, component, null);
+		if (putValidatesOnThisThread)  //to short circuit or not?
+			addOrNotToValidate(validateGreenRoom, component, null);
+		else
+			((MQComponent)component).pleaseValidate();
 	}
 	public void setBoundsRequested(Component component, int x, int y, int w, int h){
-		if (true)
-			((MQComponent)component).pleaseSetBounds(x, y, w, h);
-		else
+		if (putSetBoundsOnThisThread)  //to short circuit or not?
 			addOrUpdateToSetBounds(setBoundsGreenRoom, new SBRecord(component, x, y, w, h), null);
+		else
+			((MQComponent)component).pleaseSetBounds(x, y, w, h);
 	}
-	
+
+	/**------------------------------------------------------------------------*/
 	void addOrNotToValidate(Vector v, Component component, Vector toDeleteElement){
 		if (v.indexOf(component)<0) {
 			v.addElement(component);
@@ -48,29 +56,32 @@ public class LinuxGWAThread extends Thread {
 		if (toDeleteElement != null)
 			toDeleteElement.remove(component);
 	}
+
 	void addOrUpdateToSetBounds(Vector v, SBRecord sbr, Vector toDeleteElement){
 		for (int i = 0; i<v.size(); i++){
 			try {
-			SBRecord sbr0 = (SBRecord)v.elementAt(i);
-			if (sbr0.component == sbr.component){
-				sbr0.x = sbr.x;
-				sbr0.y = sbr.y;
-				sbr0.w = sbr.w;
-				sbr0.h = sbr.h;
-				if (toDeleteElement != null)
-					toDeleteElement.remove(sbr);
-				return;
-			}
+				SBRecord sbr0 = (SBRecord)v.elementAt(i);
+				if (sbr0.component == sbr.component){
+					sbr0.x = sbr.x;
+					sbr0.y = sbr.y;
+					sbr0.w = sbr.w;
+					sbr0.h = sbr.h;
+					if (toDeleteElement != null)
+						toDeleteElement.remove(sbr);
+					return;
+				}
 			}
 			catch (ArrayIndexOutOfBoundsException e) {
-			
+
 			}
 		}
 		v.addElement(sbr);
 		if (toDeleteElement != null)
 			toDeleteElement.remove(sbr);
 	}
-	
+	/**------------------------------------------------------------------------*/
+
+
 	String getContainersList(Component c){
 		if (c == null)
 			return "";
@@ -80,30 +91,41 @@ public class LinuxGWAThread extends Thread {
 		return list + getContainersList(c.getParent());
 
 	}
+
+
 	public void run(){
-		if (false && !MesquiteTrunk.isLinux())  //Debugg.println don't do if not Linux
+		if (!MesquiteTrunk.isLinux())  //Debugg.println don't do if not Linux
 			return;
 		String doingString = "";
 		int count = 0;
 		while (!MesquiteTrunk.mesquiteTrunk.mesquiteExiting) { 
 			count++;
 			try {
-				//if (count % 50 == 0)
-				//	Debugg.println(MesquiteTrunk.logWindow.getParentFrame().listComponents());
+				//	if (count % 200 == 0)
+				//		Debugg.println(MesquiteFrame.listComponentsAllWindows());
 				Thread.sleep(50);
 				//first transfer the green room things on my thread
-				while (validateGreenRoom.size()>0)
+				if (validateQueue.size()== 0 && setBoundsQueue.size() == 0) { //swap only if was successful last time
+					Vector temp = validateGreenRoom;
+					validateGreenRoom = validateQueue;
+					validateQueue = temp;
+					temp = setBoundsGreenRoom;
+					setBoundsGreenRoom = setBoundsQueue;
+					setBoundsQueue = temp;
+				}
+				/*while (validateGreenRoom.size()>0)
 					addOrNotToValidate(validateQueue, (Component)validateGreenRoom.elementAt(0), validateGreenRoom);
-					
+
 				while (setBoundsGreenRoom.size()>0)
 					addOrUpdateToSetBounds(setBoundsQueue, (SBRecord)setBoundsGreenRoom.elementAt(0), setBoundsGreenRoom);
-
+				 */
+				//	Debugg.println("$$$$$$$$$$$$$$$$$$validateQueue " +validateQueue.size());
 				for (int i = 0; i<validateQueue.size(); i++){
 					Component component = (Component)validateQueue.elementAt(i);
 					doingString = "SOE on validate " + getContainersList(component);
-				//	((MQComponent)component).pleaseValidate();
+					((MQComponent)component).pleaseValidate();
 				}
-				
+
 				for (int i = 0; i<setBoundsQueue.size(); i++){
 					SBRecord sbr = (SBRecord)setBoundsQueue.elementAt(i);
 					doingString = "SOE on setBounds " + getContainersList(sbr.component);
@@ -111,9 +133,9 @@ public class LinuxGWAThread extends Thread {
 				}
 				validateQueue.removeAllElements();
 				setBoundsQueue.removeAllElements();
-				
-					
-					
+
+
+
 			}
 			catch (InterruptedException e){
 			}
@@ -123,7 +145,7 @@ public class LinuxGWAThread extends Thread {
 			}
 		}
 	}
-	
+
 
 
 }

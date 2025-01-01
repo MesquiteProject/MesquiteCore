@@ -17,7 +17,7 @@ import java.awt.*;
 
 /*===============================================*/
 /** a field for text that cannot have line feeds/carriage returns in it.  */
-public class SimpleIntegerField extends TextField  {
+public class SimpleIntegerField extends MQTextField  {
 	boolean isInteger=true;
 	int initialValue=0;
 	int min=MesquiteInteger.unassigned;

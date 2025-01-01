@@ -17,7 +17,7 @@ import java.awt.*;
 
 /*===============================================*/
 /** a field for text that cannot have line feeds/carriage returns in it.  */
-public class SingleLineTextField extends TextField  {
+public class SingleLineTextField extends MQTextField  {
 	Label fieldLabel; 
 	boolean preserveBlanks = false;
 	/*.................................................................................................................*/

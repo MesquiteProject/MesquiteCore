@@ -72,7 +72,7 @@ public class MiniStringEditor extends MQPanel implements ActionListener, MiniCon
 
 }
 
-class EnterTextField extends TextField{
+class EnterTextField extends MQTextField{
 	
 }
 
