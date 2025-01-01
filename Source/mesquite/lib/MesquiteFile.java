@@ -2748,7 +2748,21 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName".  The parameter "maxCharacters"
 	sets an upper limit on how many characters are read (if <0, then all characters read in)*/
-	public static String getFileContentsAsString(String relativePath, int maxCharacters, int startBufferSize, boolean warnIfProblem) {
+	public static String getFileContentsAsStringSeparateNotReadableWarning(String relativePath, boolean warnIfUnreadable) {
+		return getFileContentsAsString(relativePath, -1,100,true, warnIfUnreadable);
+	}
+	/*.................................................................................................................*/
+	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
+	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName".  The parameter "maxCharacters"
+	sets an upper limit on how many characters are read (if <0, then all characters read in)*/
+	public static String getFileContentsAsString(String relativePath, int maxCharacters, int startBufferSize, boolean warnIfProblem ) {
+		return getFileContentsAsString( relativePath,  maxCharacters,  startBufferSize,  warnIfProblem, warnIfProblem);
+	}
+	/*.................................................................................................................*/
+	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
+	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName".  The parameter "maxCharacters"
+	sets an upper limit on how many characters are read (if <0, then all characters read in)*/
+	public static String getFileContentsAsString(String relativePath, int maxCharacters, int startBufferSize, boolean warnIfProblem, boolean warnIfUnreadable) {
 		if (StringUtil.blank(relativePath))
 			return "";
 		try {
@@ -2764,7 +2778,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			timer.start();
 			while(in.ready()==false) {
 				if (timer.timeSinceVeryStart()>2000) {
-					if (warnIfProblem)
+					if (warnIfUnreadable)
 						MesquiteMessage.warnProgrammer("File could not be read (6) : " + relativePath);
 					return null;
 				}
