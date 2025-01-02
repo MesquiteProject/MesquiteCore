@@ -585,26 +585,40 @@ class PackageCheckbox extends JCheckBox implements MQComponent, Listable, MouseL
 	}
 	public void mouseReleased(MouseEvent e){
 	}
+	/*validate -------------------------*/
+	boolean validating = false;
 	public void validate(){
 		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
 			MesquiteTrunk.linuxGWAThread.validateRequested(this);
-		else
+		else {
+			if (validating)
+				Debugg.println("Double validating " + this);
+			validating = true;
 			super.validate();
+			validating = false;
+		}
+	}
+	public void pleaseValidate(){
+		if (validating)
+			Debugg.println("Double validating " + this);
+		validating = true;
+		super.validate();
+		validating = false;
 	}
 
-	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also
+	
+	/*setBounds -------------------------*/
+	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also. See ExplTextArea also
 	public void setBounds(int x, int y, int w, int h){
 		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
 			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
 		else
 			super.setBounds(x, y, w, h);
 	}
-	public void pleaseValidate(){
-		super.validate();
-	}
 	public void pleaseSetBounds(int x, int y, int w, int h){
 		super.setBounds(x, y, w, h);
 	}
+	/*s----- -------------------------*/
 }
 /*.................................................................................................................*/
 class SaveRenameDeleteButton extends LoadSaveDeleteButton {

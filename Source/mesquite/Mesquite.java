@@ -187,8 +187,10 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 2");
 		
 		// [Search for MQLINUX]
+	if (isLinux()) {
 		linuxGWAThread = new LinuxGWAThread();
 		linuxGWAThread.start();
+	}
 
 
 		String sep = MesquiteFile.fileSeparator;

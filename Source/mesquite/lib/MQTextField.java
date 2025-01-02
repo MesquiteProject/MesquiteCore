@@ -15,27 +15,30 @@ package mesquite.lib;
 
 import java.awt.*;
 
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-
 /* �������������������� */
-/*  [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
+/* [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
  * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
-public class MQJScrollPane extends JScrollPane implements MQComponent {
+public class MQTextField extends TextField implements MQComponent {
 
-	public MQJScrollPane () {
+	public MQTextField () {
 		super();
 	}
-	public MQJScrollPane (JList list) {
-		super(list);
+	
+	public MQTextField (String initialString, int fieldLength) {
+		super(initialString, fieldLength);
 	}
-
+	
+	public MQTextField (int fieldLength) {
+		super(fieldLength);
+	}
+	public MQTextField (String initialString) {
+		super(initialString);
+	}
 	public Dimension getPreferredSize(){
 		return super.getPreferredSize();
 	}
-
-
+	
 	/*validate -------------------------*/
 	boolean validating = false;
 	public void validate(){
@@ -70,4 +73,5 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 		super.setBounds(x, y, w, h);
 	}
 	/*s----- -------------------------*/
+
 }

@@ -289,7 +289,7 @@ class ItemsField extends MQPanel {
 		resetLocs();
 	}
 }
-class NameField extends TextField implements FocusListener {
+class NameField extends MQTextField implements FocusListener {
 	ItemsPanel panel;
 	int item = -1;
 	boolean somethingTyped;

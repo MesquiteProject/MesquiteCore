@@ -21,7 +21,7 @@ import mesquite.lib.system.*;
 /* includes commands,  buttons, miniscrolls
 /* ======================================================================== */
 /* scrollbar for tree */
-public abstract class MesquiteScrollbar extends Scrollbar implements AdjustmentListener {
+public abstract class MesquiteScrollbar extends Scrollbar implements MQComponent, AdjustmentListener {
 	public MesquiteScrollbar ( int orientation, int value, int visible, int min, int max){
 		super(orientation, value, visible, min, max);
 		addAdjustmentListener(this);
@@ -38,7 +38,41 @@ public abstract class MesquiteScrollbar extends Scrollbar implements AdjustmentL
 	public boolean processDuringAdjustment() {
 		return true;
 	}
+	/*validate -------------------------*/
+	boolean validating = false;
+	public void validate(){
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
+			MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		else {
+			if (validating)
+				Debugg.println("Double validating " + this);
+			validating = true;
+			super.validate();
+			validating = false;
+		}
+	}
+	public void pleaseValidate(){
+		if (validating)
+			Debugg.println("Double validating " + this);
+		validating = true;
+		super.validate();
+		validating = false;
+	}
+
 	
+	/*setBounds -------------------------*/
+	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also. See ExplTextArea also
+	public void setBounds(int x, int y, int w, int h){
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
+			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
+		else
+			super.setBounds(x, y, w, h);
+	}
+	public void pleaseSetBounds(int x, int y, int w, int h){
+		super.setBounds(x, y, w, h);
+	}
+	/*s----- -------------------------*/
+
 }
 
 

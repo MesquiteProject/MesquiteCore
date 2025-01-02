@@ -20,7 +20,7 @@ import mesquite.lib.duties.*;
 /* includes commands,  buttons, miniscrolls
 /*===============================================*/
 /** little text field for MiniScroll*/
-public class ScrollTextField extends TextField {
+public class ScrollTextField extends MQTextField {
 	MiniScroll miniScroll;
 	Color color=null;
 	boolean forgetFocusGained=false;

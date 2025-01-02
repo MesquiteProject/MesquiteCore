@@ -16,7 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 
 /* �������������������� */
-/* Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
+/* [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
  * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
 public class MQTextArea extends TextArea implements MQComponent {
@@ -30,26 +30,46 @@ public class MQTextArea extends TextArea implements MQComponent {
 	public MQTextArea (String s, int a, int b, int c) {
 		super(s, a, b, c);
 	}
+	
+	
+	public Dimension getPreferredSize(){
+		return super.getPreferredSize();
+	}
 
+	/*validate -------------------------*/
+	boolean validating = false;
 	public void validate(){
 		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
 			MesquiteTrunk.linuxGWAThread.validateRequested(this);
-		else
+		else {
+			if (!validating){
+			validating = true;
 			super.validate();
+			validating = false;
+			}
+		}
+	}
+	public void pleaseValidate(){
+		if (!validating) {
+			//Debugg.printStackTrace("Double validating (PV) " + this);
+		validating = true;
+		super.validate();
+		validating = false;
+		}
 	}
 
-	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also
+	
+	/*setBounds -------------------------*/
+	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also. See ExplTextArea also
 	public void setBounds(int x, int y, int w, int h){
 		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
 			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
 		else
 			super.setBounds(x, y, w, h);
 	}
-	public void pleaseValidate(){
-		super.validate();
-	}
 	public void pleaseSetBounds(int x, int y, int w, int h){
 		super.setBounds(x, y, w, h);
 	}
+	/*s----- -------------------------*/
 
 }
