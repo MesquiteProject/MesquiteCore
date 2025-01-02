@@ -1,6 +1,6 @@
 package mesquite.align.lib;
 
-import mesquite.align.AlignSequences.AlignSequences;
+
 import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.MolecularData;
 import mesquite.lib.*;
@@ -9,9 +9,17 @@ import mesquite.lib.table.MesquiteTable;
 
 public class AlignMultipleSequencesMachine {
 	MesquiteModule ownerModule;
-	public static boolean separateThreadDefault = false;
-	public static boolean separateThread = separateThreadDefault;
-	public static boolean userRequestsSeparateThread = false;   // currently no way for user to adjust this
+	
+	static boolean separateThreadDefault = false;
+	/*NOTE: in 3.x, alignment could be on a separate thread. This is disabled as of 4.0.
+	 * Thus assumes separateThread = false ALWAYS. 
+	 * If this changes, either the machine's users, like MultipleAlignService, need to wait until complete (see notes there), 
+	 * or the user's users, like AlterData, need to know the process might not be done synchronously. 
+	 * 
+	 * To ensure the separateThread isn't accidentally turned on before we have programmed elsewhere for it,
+	 * these variables are no longer public*/
+	static boolean separateThread = separateThreadDefault;  
+	static boolean userCanRequestSeparateThread = false;   // currently no way for user to adjust this
 
 	MultipleSequenceAligner aligner;
 	MolecularData data;
@@ -22,7 +30,6 @@ public class AlignMultipleSequencesMachine {
 
 	public AlignMultipleSequencesMachine (MesquiteModule ownerModule,SeparateThreadStorage separateThreadStorage, CalculationMonitor calculationMonitor, 	MultipleSequenceAligner aligner) {
 		this.ownerModule = ownerModule;
-	//	this.separateThread = separateThread;
 		this.aligner = aligner;
 		this.calculationMonitor = calculationMonitor;
 		this.separateThreadStorage = separateThreadStorage;
@@ -37,7 +44,7 @@ public class AlignMultipleSequencesMachine {
 		ownerModule.getProject().incrementProjectWindowSuppression();
 		boolean success = AlignUtil.integrateAlignment(alignedMatrix, data,  icStart,  icEnd,  itStart,  itEnd);
 		ownerModule.getProject().decrementProjectWindowSuppression();
-		if (separateThread)
+		if (separateThread && calculationMonitor != null)
 			calculationMonitor.calculationCompleted(this);  // TODO:  this should ideally be in the full control of the module
 		return success;
 	}	
@@ -51,7 +58,7 @@ public class AlignMultipleSequencesMachine {
 		//to work, either nothing is selected (in which case it works on whole matrix), or 
 		// whole characters are selected (and they must be contiguous, AND more than one character
 //		if (table.anyCellSelectedAnyWay() && (!this.data.contiguousSelection() || !this.data.anySelected() || this.data.numberSelected()<=1)) {
-		if (table.anyCellSelectedAnyWay() && !table.contiguousColumnsSelected()) {
+		if (table != null && table.anyCellSelectedAnyWay() && !table.contiguousColumnsSelected()) {
 			if (!MesquiteThread.isScripting()) {
 				if (AlertDialog.query(ownerModule.containerOfModule(), "Align entire matrix?", "Some data are currently selected, but not a block of data that can be aligned by Mesquite.  Data can be aligned only for the whole matrix or for a contiguous set of selected characters. If you wish to align only part of the matrix, then press Cancel and select a contiguous set of whole characters. ", "Align entire matrix", "Cancel"))
 					table.deselectAll();
@@ -64,16 +71,19 @@ public class AlignMultipleSequencesMachine {
 			}
 		}
 		//firstRowWithSelectedCell() != 
-		if (userRequestsSeparateThread && aligner.permitSeparateThread() && (separateThread= !AlertDialog.query(ownerModule.containerOfModule(), "Separate Thread?", "Run on separate thread? (Beware! Don't close matrix window before done)","No", "Separate", 1, MesquiteThread.SEPARATETHREADHELPMESSAGE))){
+		if (!MesquiteThread.isScripting() && userCanRequestSeparateThread && aligner.permitSeparateThread() && (separateThread= !AlertDialog.query(ownerModule.containerOfModule(), "Separate Thread?", "Run on separate thread? (Beware! Don't close matrix window before done)","No", "Separate", 1, MesquiteThread.SEPARATETHREADHELPMESSAGE))){
+			//As of 4.0, this branch can't be followed, because userCanRequestSeparateThread is false and there's not mechanism to change it
 			AlignThread alignThread = new AlignThread(ownerModule, this, aligner, this.data, this.table);
 			alignThread.separateThread = true;
-			separateThreadStorage.setSeparateThread(separateThread);
+			if (separateThreadStorage != null)
+				separateThreadStorage.setSeparateThread(separateThread);
 			alignThread.start();
 		}
 		else {
 			AlignThread alignThread = new AlignThread(ownerModule,this, aligner, this.data, this.table);
 			alignThread.separateThread = false;
-			separateThreadStorage.setSeparateThread(separateThread);
+			if (separateThreadStorage != null)
+				separateThreadStorage.setSeparateThread(separateThread);
 			alignThread.run();  
 			return true;
 		}
@@ -107,7 +117,7 @@ class AlignThread extends Thread {
 
 		boolean entireColumnsSelected = false;
 		int oldNumChars = data.getNumChars();
-		if (!table.singleCellBlockSelected(firstRow, lastRow,  firstColumn, lastColumn)) {
+		if (table == null || !table.singleCellBlockSelected(firstRow, lastRow,  firstColumn, lastColumn)) {
 			firstRow.setValue(0);
 			lastRow.setValue(data.getNumTaxa()-1);
 			firstColumn.setValue(0);
@@ -121,10 +131,12 @@ class AlignThread extends Thread {
 		if (entireColumnsSelected) {
 			for (int ic = 0; ic<data.getNumChars(); ic++) 
 				data.setSelected(ic,ic>=firstColumn.getValue() && ic<=lastColumn.getValue()- (oldNumChars - data.getNumChars()));
-			table.selectColumns(firstColumn.getValue(),lastColumn.getValue()- (oldNumChars - data.getNumChars()));
+			if (table !=null) 
+				table.selectColumns(firstColumn.getValue(),lastColumn.getValue()- (oldNumChars - data.getNumChars()));
 		}
-		if (separateThread)
+		if (separateThread) //DAVIDQUERY: Why is this here? I think it should be the responsibility of the caller when it receives the notification that the calculation is complete
 			data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
-		table.repaintAll();
+		if (table != null)
+			table.repaintAll();
 	}
 }

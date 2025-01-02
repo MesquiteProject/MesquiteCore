@@ -5,13 +5,14 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
-import mesquite.molec.lib.SequenceTrimmer;
 import mesquite.align.lib.*;
-
-
 
 /* ======================================================================== */
 public class MultipleAlignService extends CategDataAlterer  implements AltererAlignShift{
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
+		"The sequence aligner is chosen in dialogs or in the Align Sequences or Selected Block submenu");
+	}
 	MultipleSequenceAligner aligner;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -62,18 +63,38 @@ public class MultipleAlignService extends CategDataAlterer  implements AltererAl
    	public void alterCell(CharacterData data, int ic, int it){
    	}
 	/*.................................................................................................................*/
-   	/** Called to alter data in those cells selected in table*/
+  	/** Called to alter data in those cells selected in table*/
    	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		if (data==null)
 			return -10;
-		
-		if (!(data instanceof DNAData))
+		if (!(data instanceof MolecularData))
 			return INCOMPATIBLE_DATA;
+		
+		
+		AlignMultipleSequencesMachine alignmentMachine = new AlignMultipleSequencesMachine(this, null, null, aligner);
+		boolean success = alignmentMachine.alignData(data,table);
+		
+		/*NOTE: In 3.x, alignment could be on a separate thread. As of 4.0, this is disallowed; 
+		 * the alignment is on the main thread. If this goes back to allowing a separate thread, then for this module's function 
+		 * as DataAlterer, which is synchronous, it should hold here in a loop until notified (e.g. by implementing
+		 * CalculationMonitor and passing it along to the machine).
+		 * */
+		
+		if (success) {
+			if (table != null)
+				table.repaintAll();
+			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+			data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
+		}
+		
+		
+
+		/*======================* OLD
 		long[][] m  = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), null, 0, data.getNumChars()-1, 0, data.getNumTaxa()-1);
 		
 		if (m==null)
 			return -1;
-		boolean success = AlignUtil.integrateAlignment(m, (MolecularData)data,  0, data.getNumChars()-1, 0, data.getNumTaxa()-1);
+		boolean success = AlignUtil.integrateAlignment(m, (MolecularData)data,  0, data.getNumChars()-1, 0, data.getNumTaxa()-1);*/
 		if (success)
 		return SUCCEEDED;
 		return MEH;
@@ -111,7 +132,7 @@ public class MultipleAlignService extends CategDataAlterer  implements AltererAl
 	 }
 	/*.................................................................................................................*/
 	 public String getNameForMenuItem() {
-	return "Align Sequences in Matrix...";
+	return "Align Sequences or Selected Block";
 	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/

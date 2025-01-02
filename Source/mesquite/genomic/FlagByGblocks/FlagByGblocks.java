@@ -230,6 +230,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 	Choice b5F;
 	double b1Prev, b2Prev;
 	SingleLineTextField paramsInfo;
+	
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;

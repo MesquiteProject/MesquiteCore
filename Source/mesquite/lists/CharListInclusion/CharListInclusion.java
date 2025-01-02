@@ -41,7 +41,7 @@ public class CharListInclusion extends CharListAssistant {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Include", makeCommand("include", this));
 		addMenuItem("Exclude", makeCommand("exclude", this));
-		addMenuItem("Reverse", makeCommand("reverse", this));
+		addMenuItem("Invert", makeCommand("reverse", this));
 		addMenuSeparator();
 		return true;
 	}
@@ -88,7 +88,7 @@ public class CharListInclusion extends CharListAssistant {
 		else if (checker.compare(this.getClass(), "Sets the selected characters to excluded", null, commandName, "exclude")) {
 			doChange(1);
 		}
-		else if (checker.compare(this.getClass(), "Reverses the inclusion status of the selected characters", null, commandName, "reverse")) {
+		else if (checker.compare(this.getClass(), "Inverts the inclusion status of the selected characters", null, commandName, "reverse")) {
 			doChange(2);
 		}
 		else if (checker.compare(this.getClass(), "Stores the current inclusion status of all the characters as a character inclusion set", null, commandName, "storeCurrent")) {

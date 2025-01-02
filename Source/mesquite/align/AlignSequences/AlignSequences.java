@@ -28,16 +28,17 @@ import mesquite.lib.table.*;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
+/** This class duplicates part of the function of MultipleAlignService in the Alter menu, but appears in the Matrix menu */
 public class AlignSequences extends MolecDataEditorInit implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
-		"The sequence aligner is chosen in the Align Selected Characters submenu");
+		"The sequence aligner is chosen in the Align Sequences or Selected Block submenu");
 	}
-//	boolean separateThread = AlignMultipleSequencesMachine.separateThread;
+
 	MolecularData data ;
 	MultipleSequenceAligner aligner;
 	boolean jobDone = false;
-	boolean separateThread = false;
+	boolean separateThread = false;  //A remnant of 3.x, when separately threaded alignment was allowed. See commentary in AlignMultipleSequencesMachine
 	
 	AlignMultipleSequencesMachine alignmentMachine;
 
@@ -101,6 +102,7 @@ public class AlignSequences extends MolecDataEditorInit implements CalculationMo
 		return null;
 	}
 	
+	//A remnant of 3.x, when separately threaded alignment was allowed. See commentary in AlignMultipleSequencesMachine
 	public void calculationCompleted (Object obj) {
 		if (obj.equals(alignmentMachine))
 			fireEmployee(aligner);

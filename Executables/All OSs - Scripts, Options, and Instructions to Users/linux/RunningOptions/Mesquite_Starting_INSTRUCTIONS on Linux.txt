@@ -3,13 +3,13 @@ To Run Mesquite on Linux
 SYSTEM REQUIREMENTS
 To run Mesquite, you need Java installed.  The version of Mesquite you have here requires on Java 9 or higher, though we strongly recommend JDK 21 or higher from oracle.com. 
 
-BUG IN LINUX JAVA
+BUG WITH LINUX JAVA
 Linux users might notice some strange behaviour because of a bug with Java, though we have tried to mitigate its effects. We have found in Ubuntu an occasional infinite recursion (StackOverflowError) in all Java versions (up to JDK 23) compatible with Mesquite 4. We believe it's due to a problem in Java itself. We have attempted to isolate its effects, but you may notice occasional long pauses. Also, the file Mesquite_Running_Errors.txt may be produced and reach a large size during a run if many errors occur. 
 
 If Mesquite actually crashes as you are running it, perhaps 
 
 RUNNING MESQUITE
-Run Mesquite by double clicking mesquite.sh, right-click selecting it and choosing Run As Program,  or running mesquite.sh from the command line like this:
+Run Mesquite by double clicking mesquite.sh, right-click selecting it and choosing Run As A Program,  or running mesquite.sh from the command line like this:
 	./mesquite.sh
 
 You may want to edit this to request more memory using  options like "-Xmx8000M -Xss8m" (see below).
