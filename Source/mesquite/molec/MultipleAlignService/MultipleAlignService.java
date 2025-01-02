@@ -89,7 +89,7 @@ public class MultipleAlignService extends CategDataAlterer  implements AltererAl
 		
 		
 
-		/*======================* OLD
+		/*======================* OLD 3.x
 		long[][] m  = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), null, 0, data.getNumChars()-1, 0, data.getNumTaxa()-1);
 		
 		if (m==null)

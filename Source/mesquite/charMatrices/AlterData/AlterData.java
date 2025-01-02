@@ -172,7 +172,9 @@ public class AlterData extends DataWindowAssistantI  {
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
+				Debugg.println("%%%%%%%%% " + arguments);
 				DataAlterer tda= (DataAlterer)hireNamedEmployee(DataAlterer.class, arguments);
+				
 				if (tda!=null) {
 					MesquiteWindow w = table.getMesquiteWindow();
 					UndoReference undoReference = new UndoReference();
