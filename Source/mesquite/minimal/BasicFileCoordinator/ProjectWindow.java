@@ -384,7 +384,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			int m = MesquiteInteger.queryInteger(w, "Maximum items of a kind in project panel", "Your file has more than " + FileCoordinator.maxLinesOfAnyElementInPanel + " " + typeName +
 					". To save memory and time, Mesquite limits how many are shown in the project panel. If you'd like to change the limit, indicate a new maximum. You can always change this maximum " 
 					+ " via the menu item File>Defaults>Maximum # Items in Project Panel...", FileCoordinator.maxLinesOfAnyElementInPanel);
-		
+
 			if (MesquiteInteger.isCombinable(m) && MesquiteInteger.isPositive(m)){
 				FileCoordinator.maxLinesOfAnyElementInPanel = m;
 				FileCoordinator.maxLinesOfAnyElementInPanelQueried = true;
@@ -488,7 +488,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 							panel.resetTitle();
 							panel.repaint();
 							e++;
-					}
+						}
 				}
 
 			}
@@ -662,12 +662,12 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					addExtraPanel(panel = new AbundanceTPanel(bfc, this, w, proj, t));
 					if (proj.getTreeVectors().size()<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
 						for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
-						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
-						if (trees.getTaxa() == t){
-							addExtraPanel(panel = new TreesRPanel(bfc, this, w, trees));
-							panel.setLocation(0,0);
+							TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
+							if (trees.getTaxa() == t){
+								addExtraPanel(panel = new TreesRPanel(bfc, this, w, trees));
+								panel.setLocation(0,0);
+							}
 						}
-					}
 				}
 
 			}
@@ -1342,6 +1342,10 @@ class TreesRPanel extends ElementPanel {
 		addCommand(false, "trees.gif", "List &\nManage\nTrees", "List & Manage Trees", new MesquiteCommand("showMe", element));
 		addCommand(false, "chart.gif", "Chart\nTrees", "Chart Trees", new MesquiteCommand("chart", this));
 		addCommand(true, null, "-", "-", null);
+
+		if (!StringUtil.blank(getAnalysisDirectoryPath(element)))
+			addCommand(true, null, "Show Analysis Directory", "Show Analysis Directory", new MesquiteCommand("showAnalysisDirectory", this));
+
 		addCommand(true, null, "Rename Trees Block", "Rename Trees Block", new MesquiteCommand("renameMe", element));
 		addCommand(true, null, "Delete Trees Block", "Delete Trees Block", new MesquiteCommand("deleteMe", element));
 		addCommand(true, null, "Duplicate Trees Block", "Duplicate Trees Block", new MesquiteCommand("duplicateMe", element));
@@ -1352,6 +1356,37 @@ class TreesRPanel extends ElementPanel {
 			setOpen(true);
 		//	addCommand(true, null, "ID " + element.getID(), "ID " + element.getID(), new MesquiteCommand("id", this));
 
+	}
+
+	/*.................................................................................................................*/
+	String getAnalysisDirectoryPath(FileElement element) {
+		if (element instanceof TreeVector) {
+			String annot = element.getAnnotation();
+			if (annot != null) {
+				String targetHeading = "Results stored in folder:";
+				int i = StringUtil.indexOfIgnoreCase(annot, targetHeading);
+				if (i>=0) {
+					Parser parser = new Parser(annot);
+					parser.setPosition(i + targetHeading.length());
+					String path = parser.getRawNextLine();
+					path = StringUtil.stripLeadingWhitespace(path);
+					if (MesquiteFile.fileOrDirectoryExists(path)) {
+						return path;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(MesquiteWindow.class, "Shows analysis directory of element", null, commandName, "showAnalysisDirectory")) {
+			String dir = getAnalysisDirectoryPath((FileElement)getElement());
+			if (!StringUtil.blank(dir)) //show file location on  disk
+				MesquiteFile.showDirectory(dir);
+		}
+		else return  super.doCommand(commandName, arguments, checker);
+		return null;
+ 
 	}
 	/*.................................................................................................................*/
 	public String getElementTypeName(){ 

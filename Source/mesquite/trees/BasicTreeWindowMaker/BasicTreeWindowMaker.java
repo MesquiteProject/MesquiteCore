@@ -2586,6 +2586,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "nextTree")) {
 			palette.paletteScroll.increment();
 		}
+		else if (checker.compare(this.getClass(), "Resets the title (needed for Zephyr).", null, commandName, "resetTitle")) {
+			resetTitle();
+		}
 		else if (checker.compare(this.getClass(), "Goes to the previous tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "previousTree")) {
 			palette.paletteScroll.decrement();
 		}
