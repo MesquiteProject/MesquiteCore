@@ -1941,7 +1941,7 @@ abstract class FillerThread extends MesquiteThread {
 		ownerModule.fillerThreads.removeElement(this);
 		super.threadGoodbye();
 	}
-	public abstract void stopFilling();
+	public abstract void stopFilling();  //NOTE: In Zephyr the equivalent method has different signature
 }
 
 /* ======================================================================== */
