@@ -132,8 +132,34 @@ public class AppChooser implements ActionListener {
 		}
 		return false;
 	}
+	/*.................................................................................................................*/
+	static final int maxlength = 36;
+	String shortenPathIfNeeded(String path) {
+		if (StringUtil.blank(path))
+			return path;
+		if (path.length()<=maxlength)
+			return path;
+		String originalPath = path;
+		String previousPath = path;
+		int cuts = 0;
+		do {
+			previousPath = path;
+			path = StringUtil.getAllAfterSubString(path, MesquiteFile.fileSeparator);
+			cuts++;
+		} while (path.length()>maxlength);
+		Debugg.println("cuts " + cuts + " path " + path);
+		if (StringUtil.blank(path)) {
+			if (cuts ==1)
+				return previousPath;
+			else
+				return "..." + MesquiteFile.fileSeparator + previousPath;
 
-
+		}
+		if (originalPath.equals(MesquiteFile.fileSeparator + path))
+			return originalPath;
+		else
+			return "..." + MesquiteFile.fileSeparator + path;
+}
 	/*.................................................................................................................*/
 	String getMainDialogUsingString() {
 		if (!useDefaultExecutablePath.getValue() && alternativeManualPath.isBlank())
@@ -142,7 +168,7 @@ public class AppChooser implements ActionListener {
 		if (usingBuiltIn())
 			usingString += " built-in " + programName + " (version " + versionOfBuiltIn + ")";
 		else
-			usingString += " " + programName + " at " + alternativeManualPath;
+			usingString += " " + programName + " at " + shortenPathIfNeeded(alternativeManualPath.getValue());
 		return usingString;
 	}
 	/*.................................................................................................................*/
