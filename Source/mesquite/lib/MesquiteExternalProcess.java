@@ -122,6 +122,8 @@ public class MesquiteExternalProcess  {
 		if (proc!=null) {
 			if (keyProcessIsChildOfProcess) {  // it's the child process that counts - presumably as script-based
 				ProcessHandle childH = ShellScriptUtil.getChildProcess(proc);
+				if (childH==null)  // protection added 1 Jan 2025
+					return;
 				childH.destroy();
 				try {
 					Thread.sleep(100);
