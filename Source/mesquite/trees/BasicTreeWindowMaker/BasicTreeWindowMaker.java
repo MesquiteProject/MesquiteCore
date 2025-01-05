@@ -6060,6 +6060,8 @@ class BirdsEyePanel extends MesquitePanel {
 			return;
 		}
 		treeDrawing = treeWindow.treeDisplay.getTreeDrawing();
+		if (treeDrawing==null)
+			return;
 		int drawnRoot = treeDrawing.getDrawnRoot();
 		if (tree != null && !tree.nodeExists(drawnRoot))
 			drawnRoot = tree.getRoot();
