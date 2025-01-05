@@ -28,27 +28,24 @@ public class MQPanel extends Panel implements MQComponent {
 	/*validate -------------------------*/
 	boolean validating = false;
 	public void validate(){
-		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
-			MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		if (MesquiteTrunk.isLinux()) {
+			if (MesquiteTrunk.linuxGWAThread!=null)
+				MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		}
 		else {
-			if (!validating) {
-				//Debugg.println("Double validating " + this);
-			validating = true;
 			super.validate();
-			validating = false;
-			}
 		}
 	}
 	public void pleaseValidate(){
 		if (!validating) {
-			//Debugg.println("Double validating " + this);
-		validating = true;
-		super.validate();
-		validating = false;
+			System.out.println("Double validating (PV) " + this);
+			validating = true;
+			super.validate();
+			validating = false;
 		}
 	}
 
-	
+
 	/*setBounds -------------------------*/
 	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also. See ExplTextArea also
 	public void setBounds(int x, int y, int w, int h){

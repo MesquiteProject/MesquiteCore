@@ -482,6 +482,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		}
 		showInLayout(w.getTileLocation(), s);
 		setAsFrontWindow(w);
+		Debugg.println("request focus " + w.getName());
 		w.requestFocus();
 		resetSizes(true);
 		validate();

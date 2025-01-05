@@ -31,22 +31,21 @@ public class MQScrollPane extends ScrollPane implements MQComponent {
 	/*validate -------------------------*/
 	boolean validating = false;
 	public void validate(){
-		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
-			MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		if (MesquiteTrunk.isLinux()) {
+			if (MesquiteTrunk.linuxGWAThread!=null)
+				MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		}
 		else {
-			if (validating)
-				Debugg.println("Double validating " + this);
+			super.validate();
+		}
+	}
+	public void pleaseValidate(){
+		if (!validating) {
+			System.out.println("Double validating (PV) " + this);
 			validating = true;
 			super.validate();
 			validating = false;
 		}
-	}
-	public void pleaseValidate(){
-		if (validating)
-			Debugg.println("Double validating " + this);
-		validating = true;
-		super.validate();
-		validating = false;
 	}
 
 	
