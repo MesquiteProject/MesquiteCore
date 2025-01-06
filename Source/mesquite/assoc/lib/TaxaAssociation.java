@@ -755,6 +755,24 @@ public class TaxaAssociation extends FileElement  {
 			return result;
 		}
 	}
+	/*.................................................................................................................*/
+	public Bits getAssociatesAsBits(Taxa taxa, Bits taxaBits){
+		Bits accumulatedAssociates = null;
+		for (int i=0; i<taxaBits.getSize(); i++) {
+			if (taxaBits.isBitOn(i)) {
+				Bits associatedBits = getAssociatesAsBits(taxa, i);
+				if (accumulatedAssociates==null)
+					accumulatedAssociates = associatedBits;
+				else {
+					accumulatedAssociates.orBits(associatedBits);
+				}
+			}
+		}
+
+		return accumulatedAssociates;
+	}	
+	/*.................................................................................................................*/
+
 	public boolean includedTaxon(Taxon taxon){
 		if (taxaContaining==null || taxaContained == null)
 			return false;

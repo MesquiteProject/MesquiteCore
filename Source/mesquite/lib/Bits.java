@@ -531,6 +531,15 @@ public class Bits implements Listable {
 	}
 
 	/**
+	 * clears any bits that are on in the other Bits
+	 */
+	public void clearBits(Bits other) {
+		for (int i = 0; i < numBits && i < other.numBits; i++)
+			if (other.isBitOn(i))
+				setBit(i, false);
+	}
+
+	/**
 	 * Examines the two bits to see if all four combinations of paired values occur
 	 * across the Bits. Returns true if there is: - at least one position with
 	 * bits1=on and bits2=on - at least one position with bits1=on and bits2=off -

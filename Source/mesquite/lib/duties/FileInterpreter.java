@@ -365,10 +365,17 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String extension) {
 		if (outputBuffer == null)
 			return;
-			String name = suggestedFileName(null, extension);
-			filePath = getPathForExport(arguments, name, null, null);
-			if (filePath!=null) 
-				MesquiteFile.putFileContents(filePath, outputBuffer, true);
+		String name = suggestedFileName(null, extension);
+		filePath = getPathForExport(arguments, name, null, null);
+		if (filePath!=null) 
+			MesquiteFile.putFileContents(filePath, outputBuffer, true);
+	}
+	/*.................................................................................................................*/
+	public void saveExportedFileToFilePath(String filePath, MesquiteStringBuffer outputBuffer) {
+		if (outputBuffer == null)
+			return;
+		if (filePath!=null) 
+			MesquiteFile.putFileContents(filePath, outputBuffer, true);
 	}
 	/*.................................................................................................................*/
 	/** Returns the Character data as a StringBuffer in the Interperter's format.  

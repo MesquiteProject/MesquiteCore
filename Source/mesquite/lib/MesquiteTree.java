@@ -3686,8 +3686,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** Returns a simple string describing the tree in standard parenthesis notation (Newick standard), excluding associated information except branch lengths.
 	To be used for output to user, not internally (as it may lose information).*/
 	public String writeTreeSimpleByNames() {
-		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
-		writeTreeByNames(root, s, true, false, false);
+		return writeTreeSimpleByNames(root, true);
+	}
+	/*-----------------------------------------*/
+	/** Returns a simple string describing the tree in standard parenthesis notation (Newick standard), excluding associated information except branch lengths.
+	To be used for output to user, not internally (as it may lose information).*/
+	public String writeTreeSimpleByNames(int node, boolean includeBranchLengths) {
+		StringBuffer s = new StringBuffer(numberOfNodesInClade(node)*40);
+		writeTreeByNames(node, s, includeBranchLengths, false, false);
 		//writeTreeProperties(s, true);
 		s.append(';');
 		return s.toString();
@@ -5863,12 +5869,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Returns whether there are any selected nodes in the clade */
-	private boolean selectedInClade( int node) {
+	private boolean selectedInClade( int node, boolean considerNode) {
 		if (!inBounds(node))
 			return false;
 		if (selected==null)
 			return false;
-		if (getSelected(node))
+		if (getSelected(node) && considerNode)
 			return true;
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
 			if (selectedInClade(d))
@@ -5878,12 +5884,26 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Returns whether there are any selected nodes in the clade */
+	private boolean selectedInClade( int node) {
+		return selectedInClade(node, true);
+	}
+	/*-----------------------------------------*/
+	/** Returns whether there are any selected nodes in the clade */
 	public boolean anySelectedInClade(int node) {
 		if (!inBounds(node))
 			return false;
 		if (selected==null)
 			return false;
 		return selectedInClade(node);
+	}
+	/*-----------------------------------------*/
+	/** Returns whether there are any selected nodes in the clade */
+	public boolean anySelectedInClade(int node, boolean considerNode) {
+		if (!inBounds(node))
+			return false;
+		if (selected==null)
+			return false;
+		return selectedInClade(node, considerNode);
 	}
 	/*-----------------------------------------*/
 	/** Returns the number of nodes selected in the clade */

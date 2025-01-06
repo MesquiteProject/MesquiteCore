@@ -158,7 +158,7 @@ public class ExportForBPP extends FileInterpreterI {
 		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 	}
 	/*.................................................................................................................*/
-	public void exportBlock(Taxa taxa, CharacterData data, MesquiteStringBuffer outputBuffer, boolean writeTaxonNames) { 
+	public void exportBlock(Taxa taxa, Bits taxaToInclude, CharacterData data, MesquiteStringBuffer outputBuffer, boolean writeTaxonNames) { 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
 		int taxonNameLength=taxa.getLongestTaxonNameLength()+2;
@@ -167,30 +167,31 @@ public class ExportForBPP extends FileInterpreterI {
 			pad += "  ";
 
 		for (int it = 0; it<numTaxa; it++){
-			if (writeTaxonNames) {   // first block
-				String name = "";
-				name = (taxa.getTaxonName(it)+ pad);
-				name = name.substring(0,taxonNameLength);
-				name = StringUtil.blanksToUnderline(StringUtil.stripTrailingWhitespace(name));
+			if (taxaToInclude==null || taxaToInclude.isBitOn(it)) {
+				if (writeTaxonNames) {   // first block
+					String name = "";
+					name = (taxa.getTaxonName(it)+ pad);
+					name = name.substring(0,taxonNameLength);
+					name = StringUtil.blanksToUnderline(StringUtil.stripTrailingWhitespace(name));
 
-				outputBuffer.append("^"+name);
-				//	if (taxonNameLength>name.length())
-				for (int i=0;i<taxonNameLength-name.length()+1; i++)
-					outputBuffer.append(" ");
-			}
-			//outputBuffer.append(" ");
-			for (int ic = 0; ic<numChars; ic++) {
-				if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
-					long currentSize = outputBuffer.length();
-					appendPhylipStateToBuffer(data, ic, it, outputBuffer);
-					if (outputBuffer.length()-currentSize>1) {
-						alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-						return;
+					outputBuffer.append("^"+name);
+					//	if (taxonNameLength>name.length())
+					for (int i=0;i<taxonNameLength-name.length()+1; i++)
+						outputBuffer.append(" ");
+				}
+				//outputBuffer.append(" ");
+				for (int ic = 0; ic<numChars; ic++) {
+					if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
+						long currentSize = outputBuffer.length();
+						appendPhylipStateToBuffer(data, ic, it, outputBuffer);
+						if (outputBuffer.length()-currentSize>1) {
+							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
+							return;
+						}
 					}
 				}
+				outputBuffer.append(getLineEnding());
 			}
-			outputBuffer.append(getLineEnding());
-
 
 		}
 	}
@@ -201,10 +202,105 @@ public class ExportForBPP extends FileInterpreterI {
 	}
 
 	/*.................................................................................................................*/
+	public boolean exportSubTree(String dirPath, String baseFileName, Taxa populationTaxa, Taxa specimenTaxa, MesquiteTree tree, TaxaAssociation association, int nodeNumber) { //if file is null, consider whole project open to export
+
+		Bits populationTerminals = tree.getTerminalTaxaAsBits(nodeNumber);  // these are the terminals that need exporting
+		Bits specimens = association.getAssociatesAsBits(populationTaxa, populationTerminals);
+		
+		Debugg.println("\nselectedBits bit on "+baseFileName);
+		Debugg.println("    terminals that are descendants: " + populationTerminals.numBitsOn());
+		Debugg.println("    list of terminals that are descendants: " + populationTerminals.getListOfBitsOn(1));
+		Debugg.println("    number specimens: " + specimens.numBitsOn());
+		Debugg.println("    list of specimens: " + specimens.getListOfBitsOn(1));
+
+		MesquiteStringBuffer matrixBuffer = new MesquiteStringBuffer(100);
+		int numMatrices = getProject().getNumberCharMatrices(null, specimenTaxa, MolecularState.class, true);
+		if (numMatrices<1)
+			return false;
+		for (int iM = 0; iM < numMatrices; iM++){
+			CharacterData data = getProject().getCharacterMatrixVisible(specimenTaxa, iM, MolecularState.class);
+			if (data != null) {		
+				matrixBuffer.append(Integer.toString(specimenTaxa.getNumTaxa())+" ");
+				matrixBuffer.append(""+data.getNumChars()+this.getLineEnding());		
+				exportBlock(specimenTaxa,  specimens, data,  matrixBuffer, true);
+				matrixBuffer.append(this.getLineEnding());		
+			}
+		}
+			
+			
+		MesquiteStringBuffer controlFileBuffer = new MesquiteStringBuffer(100);
+		Random random = new Random(System.currentTimeMillis());
+		controlFileBuffer.append("seed = "+ random.nextInt()+"\n\n");
+		
+		controlFileBuffer.append("seqfile = " + baseFileName+".chars.txt"+"\n");
+		controlFileBuffer.append("imapfile = " + baseFileName +".imap.txt"+"\n");
+		controlFileBuffer.append("outfile = " + baseFileName+".out.txt"+"\n");
+		controlFileBuffer.append("mcmcfile = " + baseFileName +".mcmc.txt"+"\n\n");
+
+
+		controlFileBuffer.append(startOfControlFile);
+		controlFileBuffer.append("\n\n");
+		controlFileBuffer.append("species&tree = "+populationTerminals.numBitsOn());
+		for (int it=0; it<populationTaxa.getNumTaxa(); it++) {
+			if (populationTerminals.isBitOn(it)) {
+			controlFileBuffer.append(" "+prepareExportName(populationTaxa.getTaxonName(it)));
+			}
+		}
+		controlFileBuffer.append("\n");
+		for (int it=0; it<populationTaxa.getNumTaxa(); it++) {
+			if (populationTerminals.isBitOn(it)) {
+				Taxon taxon = populationTaxa.getTaxon(it);
+				int numAssociates = association.getNumAssociates(taxon);
+				if (it>0)
+					controlFileBuffer.append(" ");
+				controlFileBuffer.append(""+numAssociates);
+			}
+		}
+		
+		
+		
+		controlFileBuffer.append("\n");
+		controlFileBuffer.append(tree.writeTreeSimpleByNames(nodeNumber, false));   
+		controlFileBuffer.append("\n\n");
+		controlFileBuffer.append("phase = ");
+		for (int it=0; it<populationTaxa.getNumTaxa(); it++) {
+			if (populationTerminals.isBitOn(it)) {
+				if (phased) 
+					controlFileBuffer.append(" "+0);
+				else 
+					controlFileBuffer.append(" "+1);
+			}
+		}
+		controlFileBuffer.append("\n\nusedata = 1\n");
+		controlFileBuffer.append("nloci = " +numMatrices+"\n\n");
+		controlFileBuffer.append(endOfControlFile);
+
+
+		MesquiteStringBuffer imapFileBuffer = new MesquiteStringBuffer(100);
+		for (int it=0; it<populationTaxa.getNumTaxa(); it++) {
+			if (populationTerminals.isBitOn(it)) {
+				Taxon taxon = populationTaxa.getTaxon(it);
+				Taxon[] associatedTaxa = association.getAssociates(taxon);
+				for (int j=0; j<associatedTaxa.length; j++) {
+					imapFileBuffer.append(prepareExportName(associatedTaxa[j].getName())+"\t" +prepareExportName(taxon.getName())+"\n");
+				}
+			}
+		}
+		imapFileBuffer.append("\n\n");
+
+		if (controlFileBuffer!=null) {
+			saveExportedFileToFilePath(dirPath + MesquiteFile.fileSeparator+baseFileName+".chars.txt", matrixBuffer);
+			saveExportedFileToFilePath(dirPath + MesquiteFile.fileSeparator+baseFileName+".ctl", controlFileBuffer);
+			saveExportedFileToFilePath(dirPath + MesquiteFile.fileSeparator+baseFileName+".imap.txt", imapFileBuffer);
+			return true;
+		}
+
+		return false;
+	}
+	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
 		boolean usePrevious = args.parameterExists("usePrevious");
-
 		
 		Taxa taxa = 	 getProject().chooseTaxa(getModuleWindow(), "Choose taxa block for populations"); 
 		if (taxa==null) 
@@ -223,93 +319,87 @@ public class ExportForBPP extends FileInterpreterI {
 				associationTask=null;
 				return false;
 			}
-
-		Tree tree = oneTreeSourceTask.getTree(currentTaxa);
-		if (tree==null)
+		Tree simpleTree = oneTreeSourceTask.getTree(currentTaxa);
+		if (simpleTree==null ||  !(simpleTree instanceof MesquiteTree))
 			return false;
+		
+		MesquiteTree tree = (MesquiteTree)simpleTree;
 		
 		TaxaAssociation association = associationTask.getCurrentAssociation(currentTaxa);
 		if (association==null)
 			return false;
 		
-		
 		Taxa otherTaxa = association.getOtherTaxa(taxa);
-		MesquiteStringBuffer matrixBuffer = new MesquiteStringBuffer(100);
-		int numMatrices = getProject().getNumberCharMatrices(null, otherTaxa, MolecularState.class, true);
-		if (numMatrices<1)
+		
+		String dirPath = MesquiteFile.chooseDirectory("Choose export directory");
+		
+		if (dirPath==null)
 			return false;
-		for (int iM = 0; iM < numMatrices; iM++){
-			CharacterData data = getProject().getCharacterMatrixVisible(otherTaxa, iM, MolecularState.class);
-			if (data != null) {		
-				matrixBuffer.append(Integer.toString(otherTaxa.getNumTaxa())+" ");
-				matrixBuffer.append(""+data.getNumChars()+this.getLineEnding());		
-				exportBlock(otherTaxa,  data,  matrixBuffer, true);
-				matrixBuffer.append(this.getLineEnding());		
+				
+		boolean success = false;
+		
+		if (!tree.anySelected()) {
+			if (exportSubTree(dirPath, "bpp00", taxa, otherTaxa, tree, association, tree.getRoot())) {
+				success = true;
+			}
+		} else {
+			Bits selectedBits = tree.getSelectedBits();
+			Bits allPopulationTerminals = tree.getTerminalTaxaAsBits(tree.getRoot()); 
+			boolean nested = false;
+			
+			/*for (int i=0; i<tree.getNumberOfParts(); i++) {
+				if (selectedBits.isBitOn(i)) {
+					Bits terminals = tree.getTerminalTaxaAsBits(i); 
+				}
+			}
+			*/
+			
+			for (int i=0; i<tree.getNumberOfParts(); i++) {
+				if (selectedBits.isBitOn(i)) {
+					Bits terminalsInSelectedClade = tree.getTerminalTaxaAsBits(i); 
+					allPopulationTerminals.clearBits(terminalsInSelectedClade);  // now lets clear them
+					if (tree.anySelectedInClade(i, false)) {
+						nested = true;
+					}
+				}
+			}
+			if (allPopulationTerminals.anyBitsOn()) { // then some terminals aren't included in the selected clades.
+				Debugg.println("\nWARNING:  Some terminals not included");
+			} else if (nested) {  // all population terminals are included, but there is a nesting of selected clades
+				Debugg.println("\nWARNING:  Selected clades are nested");
+			} else {
+				boolean exportAll = true;
+				int counter = 0;
+				int numDigits=2;
+				int numParts = selectedBits.numBitsOn();
+				if (numParts>1000)
+					numDigits=4;
+				else if (numParts>100)
+					numDigits=3;
+				for (int i=0; i<tree.getNumberOfParts(); i++) {
+					if (selectedBits.isBitOn(i)) {
+						boolean exported = exportSubTree(dirPath, "bpp" + StringUtil.getIntegerAsStringWithLeadingZeros(counter, numDigits), taxa, otherTaxa, tree, association, i);  //TODO: 
+						if (!exported) {
+							exportAll=false;
+						}
+						counter++;
+					}
+				}
+				success = exportAll;
 			}
 		}
-			
-			
-		MesquiteStringBuffer controlFileBuffer = new MesquiteStringBuffer(100);
-		Random random = new Random(System.currentTimeMillis());
-		controlFileBuffer.append("seed = "+ random.nextInt()+"\n\n");
+
 		
-		controlFileBuffer.append("seqfile = " + suggestedFileName(null, "chars.txt")+"\n");
-		controlFileBuffer.append("imapfile = " + suggestedFileName(null, "imap.txt")+"\n");
-		controlFileBuffer.append("outfile = " + suggestedFileName(null, "out.txt")+"\n");
-		controlFileBuffer.append("mcmcfile = " + suggestedFileName(null, "mcmc.txt")+"\n\n");
-
-
-		controlFileBuffer.append(startOfControlFile);
-		controlFileBuffer.append("\n\n");
-		controlFileBuffer.append("species&tree = "+taxa.getNumTaxa());
-		for (int it=0; it<taxa.getNumTaxa(); it++) {
-			controlFileBuffer.append(" "+prepareExportName(taxa.getTaxonName(it)));
-		}
-		controlFileBuffer.append("\n");
-		for (int it=0; it<taxa.getNumTaxa(); it++) {
-			Taxon taxon = taxa.getTaxon(it);
-			int numAssociates = association.getNumAssociates(taxon);
-			if (it>0)
-				controlFileBuffer.append(" ");
-			controlFileBuffer.append(""+numAssociates);
-		}
-		controlFileBuffer.append("\n");
-		controlFileBuffer.append(tree.writeTree(Tree.BY_NAMES));
-		controlFileBuffer.append("\n\n");
-		controlFileBuffer.append("phase = ");
-		for (int it=0; it<taxa.getNumTaxa(); it++) {
-			if (phased) 
-				controlFileBuffer.append(" "+0);
-			else 
-				controlFileBuffer.append(" "+1);
-		}
-		controlFileBuffer.append("\n\nusedata = 1\n");
-		controlFileBuffer.append("nloci = " +numMatrices+"\n\n");
-		controlFileBuffer.append(endOfControlFile);
-
-
-		MesquiteStringBuffer imapFileBuffer = new MesquiteStringBuffer(100);
-		for (int it=0; it<taxa.getNumTaxa(); it++) {
-			Taxon taxon = taxa.getTaxon(it);
-			Taxon[] associatedTaxa = association.getAssociates(taxon);
-			for (int j=0; j<associatedTaxa.length; j++) {
-				imapFileBuffer.append(prepareExportName(associatedTaxa[j].getName())+"\t" +prepareExportName(taxon.getName())+"\n");
-			}
-		}
-		imapFileBuffer.append("\n\n");
-
-		oneTreeSourceTask = null;
-		associationTask = null;
-		
-		
-		if (controlFileBuffer!=null) {
-			saveExportedFileWithExtension(matrixBuffer, arguments, "chars.txt");
-			saveExportedFileWithExtension(controlFileBuffer, arguments, preferredDataFileExtension());
-			saveExportedFileWithExtension(imapFileBuffer, arguments, "imap.txt");
+		if (success) {
+			oneTreeSourceTask = null;
+			associationTask = null;
 			return true;
+		} else {
+			oneTreeSourceTask = null;
+			associationTask = null;
+			return false;
 		}
-
-		return false;
+			
 	}
 
 	/*.................................................................................................................*/
