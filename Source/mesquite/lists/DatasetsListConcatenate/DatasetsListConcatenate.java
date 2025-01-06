@@ -157,8 +157,15 @@ public class DatasetsListConcatenate extends DatasetsListProcessorUtility {
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		anyExcluded = false;
+		Taxa taxa = null;
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
+			if (taxa == null)
+				taxa = data.getTaxa();
+			else if (taxa != data.getTaxa()) {
+				discreetAlert("Sorry, The matrices cannot be concatenated because they pertain to different taxa blocks.");
+				return false;
+			}
 			if (data.numCharsCurrentlyIncluded() < data.getNumChars())
 				anyExcluded = true;
 		}
