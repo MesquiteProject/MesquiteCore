@@ -39,24 +39,23 @@ public class MQTextArea extends TextArea implements MQComponent {
 	/*validate -------------------------*/
 	boolean validating = false;
 	public void validate(){
-		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
-			MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		if (MesquiteTrunk.isLinux()) {
+			if (MesquiteTrunk.linuxGWAThread!=null)
+				MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		}
 		else {
-			if (!validating){
-			validating = true;
 			super.validate();
-			validating = false;
-			}
 		}
 	}
 	public void pleaseValidate(){
 		if (!validating) {
-			//Debugg.printStackTrace("Double validating (PV) " + this);
-		validating = true;
-		super.validate();
-		validating = false;
+			System.out.println("Double validating (PV) " + this);
+			validating = true;
+			super.validate();
+			validating = false;
 		}
 	}
+
 
 	
 	/*setBounds -------------------------*/

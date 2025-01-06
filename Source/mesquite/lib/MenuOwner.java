@@ -453,6 +453,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	 * This indicates what menu is to be used (e.g., employer sets it). All of its
 	 * otherwise unplaced menu items, and those of its employees, will be placed
 	 * there.
+	 * NOTE: can be used to suppress menus for an employee, by giving it a disconnected location to put menu items
+	 * 		e.g. employee.setMenuToUse(new MesquiteMenuSpec(null, null, null));
 	 */
 	public final void setMenuToUse(MesquiteMenuSpec menu) {
 		if (!useMenuBar)

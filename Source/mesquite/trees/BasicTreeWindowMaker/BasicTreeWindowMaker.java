@@ -1222,8 +1222,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	public void requestFocus(){
-		if (treePane!=null)
-			treePane.requestFocus();
+	//	super.requestFocus();
+		if (treeDisplay!=null)
+			treeDisplay.requestFocus();
 	}
 
 	void setStoreTreeAsMenuItems(boolean editMode) {
