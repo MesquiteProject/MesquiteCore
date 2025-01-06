@@ -33,6 +33,13 @@ public class ExportForBPP extends FileInterpreterI {
 	boolean suspend = false;
 	boolean phased = false;
 	
+	static final String speciesDelimitationFineTuningDefault = "1 1 2 1";
+	String speciesDelimitationFineTuning = speciesDelimitationFineTuningDefault;
+	String startOfControlFile = "speciestree = 0\nspeciesmodelprior = 1";
+	String endOfControlFile = "cleandata = 0\n\nthetaprior = 3 0.004\ntauprior = 3 0.002\nfinetune =  1 Gage:5 Gspr:0.001 mix:0.3\n\nprint = 1 0 0 0 0\nburnin = 8000\nsampfreq = 10\nnsample = 1000";
+	boolean breakAtSelectedNodes = true;
+
+	int numThreads = 4;
 	
 	/*.................................................................................................................*/
 	public boolean loadModule(){
@@ -80,9 +87,11 @@ public class ExportForBPP extends FileInterpreterI {
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "speciesDelimitationFineTuning", speciesDelimitationFineTuning);  
 		StringUtil.appendXMLTag(buffer, 2, "startOfControlFile", startOfControlFile);  
 		StringUtil.appendXMLTag(buffer, 2, "endOfControlFile", endOfControlFile);  
 		StringUtil.appendXMLTag(buffer, 2, "breakAtSelectedNodes", breakAtSelectedNodes);  
+		StringUtil.appendXMLTag(buffer, 2, "numThreads", numThreads);  
 		return buffer.toString();
 	}
 	public void processSingleXMLPreference (String tag, String flavor, String content){
@@ -91,40 +100,46 @@ public class ExportForBPP extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
+		if ("speciesDelimitationFineTuning".equalsIgnoreCase(tag))
+			speciesDelimitationFineTuning = StringUtil.cleanXMLEscapeCharacters(content);
 		if ("startOfControlFile".equalsIgnoreCase(tag))
 			startOfControlFile = StringUtil.cleanXMLEscapeCharacters(content);
 		if ("endOfControlFile".equalsIgnoreCase(tag))
 			endOfControlFile = StringUtil.cleanXMLEscapeCharacters(content);
 		if ("breakAtSelectedNodes".equalsIgnoreCase(tag))
 			breakAtSelectedNodes = MesquiteBoolean.fromTrueFalseString(content);
+		if ("numThreads".equalsIgnoreCase(tag))
+			numThreads = MesquiteInteger.fromString(content);
 	}
 
 	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
-	String startOfControlFile = "speciesdelimitation = 1 1 2 1\nspeciestree = 0\nspeciesmodelprior = 1\n";
-	String endOfControlFile = "\ncleandata = 0\n\nthetaprior = 3 0.004\n\ntauprior = 3 0.002\n\nfinetune =  1: 5 0.001 0.001  0.001 0.3 0.33 1.0\n\nprint = 1 0 0 0 0\nburnin = 8000\nsampfreq = 10\nnsample = 1000\n\n";
-	boolean breakAtSelectedNodes = true;
 	
-	String fileName = "BPP.ctl";
 
+	/*.................................................................................................................*/
 	public boolean getExportOptions(TreeVector trees){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(this.containerOfModule(), "BPP export options", buttonPressed);
 		
+		
+		IntegerField numThreadsField = dialog.addIntegerField("Number of threads", numThreads, 8, 1, MesquiteInteger.infinite);
+		Checkbox breakAtSelectedNodesCheckbox = dialog.addCheckBox("break at selected nodes", breakAtSelectedNodes);
+		SingleLineTextField speciesdelimitationTuningField = dialog.addTextField("speciesdelimitation fine tuning", speciesDelimitationFineTuning, 40);
+
 		dialog.addLabel("Text for start of control file");
-		TextArea startOfCtlFileField = dialog.addTextArea(startOfControlFile, 8);
+		TextArea startOfCtlFileField = dialog.addTextArea(startOfControlFile, 6);
 		
 		dialog.addLabel("Text for end of control file");
-		TextArea endOfCtlFileField = dialog.addTextArea(endOfControlFile, 8);
+		TextArea endOfCtlFileField = dialog.addTextArea(endOfControlFile, 6);
 		
-		Checkbox breakAtSelectedNodesCheckbox = dialog.addCheckBox("break at selected nodes", breakAtSelectedNodes);
-
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			startOfControlFile = startOfCtlFileField.getText();
 			endOfControlFile = endOfCtlFileField.getText();
 			breakAtSelectedNodes = breakAtSelectedNodesCheckbox.getState();
+			numThreads = numThreadsField.getValue();
+			speciesDelimitationFineTuning = speciesdelimitationTuningField.getText();
 			
 		}
 		//storePreferences();  // do this here even if Cancel pressed as the File Locations subdialog box might have been used
@@ -233,6 +248,8 @@ public class ExportForBPP extends FileInterpreterI {
 
 		Bits populationTerminals = tree.getTerminalTaxaAsBits(nodeNumber);  // these are the terminals that need exporting
 		Bits specimens = association.getAssociatesAsBits(populationTaxa, populationTerminals);
+		int numSpecimens = specimens.numBitsOn();
+		int numPopulations = populationTerminals.numBitsOn();
 
 		MesquiteStringBuffer matrixBuffer = new MesquiteStringBuffer(100);
 		int numMatrices = getProject().getNumberCharMatrices(null, specimenTaxa, MolecularState.class, true);
@@ -241,7 +258,7 @@ public class ExportForBPP extends FileInterpreterI {
 		for (int iM = 0; iM < numMatrices; iM++){
 			CharacterData data = getProject().getCharacterMatrixVisible(specimenTaxa, iM, MolecularState.class);
 			if (data != null) {		
-				matrixBuffer.append(Integer.toString(specimenTaxa.getNumTaxa())+" ");
+				matrixBuffer.append(Integer.toString(numSpecimens)+" ");
 				matrixBuffer.append(""+data.getNumChars()+this.getLineEnding());		
 				exportBlock(specimenTaxa,  specimens, data,  matrixBuffer, true);
 				matrixBuffer.append(this.getLineEnding());		
@@ -255,9 +272,14 @@ public class ExportForBPP extends FileInterpreterI {
 		
 		controlFileBuffer.append("seqfile = " + baseFileName+".chars.txt"+"\n");
 		controlFileBuffer.append("imapfile = " + baseFileName +".imap.txt"+"\n");
-		controlFileBuffer.append("outfile = " + baseFileName+".out.txt"+"\n");
-		controlFileBuffer.append("mcmcfile = " + baseFileName +".mcmc.txt"+"\n\n");
-
+		controlFileBuffer.append("jobname = " + baseFileName+"\n\n");
+		if (MesquiteInteger.isCombinable(numThreads)  && numThreads>1)
+			controlFileBuffer.append("threads = " + numThreads+"\n");
+		
+		if (numPopulations==1)
+			controlFileBuffer.append("speciesdelimitation = 0\n");
+		else if (!StringUtil.blank(speciesDelimitationFineTuning))
+			controlFileBuffer.append("speciesdelimitation = " + speciesDelimitationFineTuning+"\n");
 
 		controlFileBuffer.append(startOfControlFile);
 		controlFileBuffer.append("\n\n");
@@ -280,8 +302,10 @@ public class ExportForBPP extends FileInterpreterI {
 	
 		
 		controlFileBuffer.append("\n");
-		controlFileBuffer.append(tree.writeTreeSimpleByNames(nodeNumber, false));   
-		controlFileBuffer.append("\n\n");
+		if (numPopulations>1) {  // don't write tree if only one
+			controlFileBuffer.append(tree.writeTreeSimpleByNames(nodeNumber, false));   
+			controlFileBuffer.append("\n\n");
+		}
 		controlFileBuffer.append("phase = ");
 		for (int it=0; it<populationTaxa.getNumTaxa(); it++) {
 			if (populationTerminals.isBitOn(it)) {
@@ -309,9 +333,14 @@ public class ExportForBPP extends FileInterpreterI {
 		imapFileBuffer.append("\n\n");
 
 		if (controlFileBuffer!=null) {
-			saveExportedFileToFilePath(dirPath + MesquiteFile.fileSeparator+baseFileName+".chars.txt", matrixBuffer);
-			saveExportedFileToFilePath(dirPath + MesquiteFile.fileSeparator+baseFileName+".ctl", controlFileBuffer);
-			saveExportedFileToFilePath(dirPath + MesquiteFile.fileSeparator+baseFileName+".imap.txt", imapFileBuffer);
+			boolean dirCreated = MesquiteFile.createDirectory(dirPath+ MesquiteFile.fileSeparator+ baseFileName);
+			String basePath = dirPath+ MesquiteFile.fileSeparator;
+			if(dirCreated) 
+				basePath = basePath + baseFileName + MesquiteFile.fileSeparator;
+
+			saveExportedFileToFilePath(basePath+ baseFileName +".chars.txt", matrixBuffer);
+			saveExportedFileToFilePath(basePath+ baseFileName +".ctl", controlFileBuffer);
+			saveExportedFileToFilePath(basePath+ baseFileName +".imap.txt", imapFileBuffer);
 			return true;
 		}
 
