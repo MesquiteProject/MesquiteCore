@@ -32,7 +32,8 @@ public class ExportForBPP extends FileInterpreterI {
 	Taxa currentTaxa = null;
 	boolean suspend = false;
 	boolean phased = false;
-
+	
+	
 	/*.................................................................................................................*/
 	public boolean loadModule(){
 		return true;
@@ -76,11 +77,34 @@ public class ExportForBPP extends FileInterpreterI {
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 	}
 
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "startOfControlFile", startOfControlFile);  
+		StringUtil.appendXMLTag(buffer, 2, "endOfControlFile", endOfControlFile);  
+		StringUtil.appendXMLTag(buffer, 2, "breakAtSelectedNodes", breakAtSelectedNodes);  
+		return buffer.toString();
+	}
+	public void processSingleXMLPreference (String tag, String flavor, String content){
+		processSingleXMLPreference(tag, null, content);
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("startOfControlFile".equalsIgnoreCase(tag))
+			startOfControlFile = StringUtil.cleanXMLEscapeCharacters(content);
+		if ("endOfControlFile".equalsIgnoreCase(tag))
+			endOfControlFile = StringUtil.cleanXMLEscapeCharacters(content);
+		if ("breakAtSelectedNodes".equalsIgnoreCase(tag))
+			breakAtSelectedNodes = MesquiteBoolean.fromTrueFalseString(content);
+	}
 
 	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
 	String startOfControlFile = "speciesdelimitation = 1 1 2 1\nspeciestree = 0\nspeciesmodelprior = 1\n";
 	String endOfControlFile = "\ncleandata = 0\n\nthetaprior = 3 0.004\n\ntauprior = 3 0.002\n\nfinetune =  1: 5 0.001 0.001  0.001 0.3 0.33 1.0\n\nprint = 1 0 0 0 0\nburnin = 8000\nsampfreq = 10\nnsample = 1000\n\n";
+	boolean breakAtSelectedNodes = true;
+	
 	String fileName = "BPP.ctl";
 
 	public boolean getExportOptions(TreeVector trees){
@@ -92,12 +116,15 @@ public class ExportForBPP extends FileInterpreterI {
 		
 		dialog.addLabel("Text for end of control file");
 		TextArea endOfCtlFileField = dialog.addTextArea(endOfControlFile, 8);
+		
+		Checkbox breakAtSelectedNodesCheckbox = dialog.addCheckBox("break at selected nodes", breakAtSelectedNodes);
 
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			startOfControlFile = startOfCtlFileField.getText();
 			endOfControlFile = endOfCtlFileField.getText();
+			breakAtSelectedNodes = breakAtSelectedNodesCheckbox.getState();
 			
 		}
 		//storePreferences();  // do this here even if Cancel pressed as the File Locations subdialog box might have been used
@@ -206,12 +233,6 @@ public class ExportForBPP extends FileInterpreterI {
 
 		Bits populationTerminals = tree.getTerminalTaxaAsBits(nodeNumber);  // these are the terminals that need exporting
 		Bits specimens = association.getAssociatesAsBits(populationTaxa, populationTerminals);
-		
-		Debugg.println("\nselectedBits bit on "+baseFileName);
-		Debugg.println("    terminals that are descendants: " + populationTerminals.numBitsOn());
-		Debugg.println("    list of terminals that are descendants: " + populationTerminals.getListOfBitsOn(1));
-		Debugg.println("    number specimens: " + specimens.numBitsOn());
-		Debugg.println("    list of specimens: " + specimens.getListOfBitsOn(1));
 
 		MesquiteStringBuffer matrixBuffer = new MesquiteStringBuffer(100);
 		int numMatrices = getProject().getNumberCharMatrices(null, specimenTaxa, MolecularState.class, true);
@@ -256,8 +277,7 @@ public class ExportForBPP extends FileInterpreterI {
 				controlFileBuffer.append(""+numAssociates);
 			}
 		}
-		
-		
+	
 		
 		controlFileBuffer.append("\n");
 		controlFileBuffer.append(tree.writeTreeSimpleByNames(nodeNumber, false));   
@@ -338,7 +358,7 @@ public class ExportForBPP extends FileInterpreterI {
 				
 		boolean success = false;
 		
-		if (!tree.anySelected()) {
+		if (!tree.anySelected() || !breakAtSelectedNodes) {
 			if (exportSubTree(dirPath, "bpp00", taxa, otherTaxa, tree, association, tree.getRoot())) {
 				success = true;
 			}
