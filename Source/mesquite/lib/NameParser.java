@@ -9,7 +9,7 @@ public class NameParser implements XMLPreferencesProcessor{
 	MesquiteModule ownerModule;
 	
 	String startBoundary = "_";
-	boolean considerStartBoundary = true;
+	boolean considerStartBoundary = false;
 	int numFromStart = 1;
 	boolean includeStartBoundaryInName = false;
 
