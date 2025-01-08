@@ -292,6 +292,13 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 	
 	/*.................................................................................................................*/
+	public static boolean isArm64(){
+		return System.getProperty("os.arch").indexOf("aarch64")>=0;
+	} 	
+	public static boolean isX86(){
+		return System.getProperty("os.arch").indexOf("x86")>=0;
+	} 	
+	/*.................................................................................................................*/
 	public static boolean isMacOSXMajorVersion10() {
 	   return getOSXMajorVersion()==10;
 	}
