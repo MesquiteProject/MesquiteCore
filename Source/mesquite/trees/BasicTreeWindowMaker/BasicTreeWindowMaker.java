@@ -5289,6 +5289,8 @@ class RecentButton extends MousePanel {
 	public void paint(Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
+		if (window == null || window.recentEditedTrees == null)
+				return;
 		int i = window.recentEditedTrees.size();
 		if (i >= numImages)
 			i = numImages - 1;

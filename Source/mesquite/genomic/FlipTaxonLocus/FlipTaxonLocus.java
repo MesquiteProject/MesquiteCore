@@ -54,7 +54,7 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 		if (success)
 			success = externalProcessManager.monitorAndCleanUpShell(progressIndicator);
 		if (progressIndicator.isAborted())
-			logln("Aborted by user\n");
+			logln("Stopped by user\n");
 		progressIndicator.goAway();
 	}	
 

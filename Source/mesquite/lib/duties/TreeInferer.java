@@ -250,7 +250,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	
 	// given the opportunity to fill in options for user
 	public  void addItemsToDialogPanel(ExtensibleDialog dialog){
-		autoSaveFileCheckbox = dialog.addCheckBox("auto-save file after inference", autoSaveFile.getValue());
+		autoSaveFileCheckbox = dialog.addCheckBox("Auto-save file after inference", autoSaveFile.getValue());
 	}
 	public boolean optionsChosen(){
 		if (autoSaveFileCheckbox!=null)

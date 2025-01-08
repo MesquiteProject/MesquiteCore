@@ -1346,7 +1346,7 @@ class TreesRPanel extends ElementPanel {
 		addCommand(true, null, "-", "-", null);
 
 		if (!StringUtil.blank(getAnalysisDirectoryPath(element)))
-			addCommand(true, null, "Show Analysis Directory", "Show Analysis Directory", new MesquiteCommand("showAnalysisDirectory", this));
+			addCommand(true, null, "Show Analysis Folder", "Show Analysis Folder", new MesquiteCommand("showAnalysisDirectory", this));
 
 		addCommand(true, null, "Rename Trees Block", "Rename Trees Block", new MesquiteCommand("renameMe", element));
 		addCommand(true, null, "Delete Trees Block", "Delete Trees Block", new MesquiteCommand("deleteMe", element));

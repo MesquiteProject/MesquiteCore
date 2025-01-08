@@ -30,7 +30,7 @@ public class AlertWithLinkToDirectory extends ExtensibleDialog implements Action
 		
 		Panel buttons = addNewDialogPanel();
 		addExtraButtons(buttons, this);
-		directoryButton=addAListenedButton("Show Directory",buttons,this);
+		directoryButton=addAListenedButton("Show Folder",buttons,this);
 	}
 
 	/*.................................................................................................................*/
@@ -55,7 +55,7 @@ public class AlertWithLinkToDirectory extends ExtensibleDialog implements Action
 	}
 	/*.................................................................................................................*/
 	public  void actionPerformed(ActionEvent e) {
-		if  ("Show Directory".equals(e.getActionCommand())) {
+		if  ("Show Folder".equals(e.getActionCommand())) {
 			MesquiteFile.showDirectory(directoryPath);
 		} else
 			super.actionPerformed(e);
