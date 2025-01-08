@@ -26,7 +26,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class ExcludeSelectedAlt extends DataAlterer  {
+public class ExcludeSelectedAlt extends DataAlterer  implements AltererMetadata {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

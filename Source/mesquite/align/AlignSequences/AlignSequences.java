@@ -69,7 +69,6 @@ public class AlignSequences extends MolecDataEditorInit { //implements Calculati
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doAligner")) {
-			Debugg.println("beep " + arguments);
 			DataAlterer tda= (DataAlterer)hireNamedEmployee(DataAlterer.class,  arguments);
 			if (tda!=null) {
 				MesquiteWindow w = table.getMesquiteWindow();

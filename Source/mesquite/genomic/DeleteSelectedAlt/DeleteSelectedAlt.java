@@ -26,7 +26,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class DeleteSelectedAlt extends DataAlterer  {
+public class DeleteSelectedAlt extends DataAlterer   {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

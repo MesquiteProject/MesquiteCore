@@ -356,6 +356,25 @@ public class ModulesInfoVector extends ListableVector {
 			return infos;
 		}
 	}
+	/** Return the number of all modules that subclass the passed duty class.  */
+	public int getNumModulesOfDuty(Class dutyClass, Object condition, MesquiteModule prospectiveEmployer) {
+		int num = size();
+		MesquiteModuleInfo mbi=null;
+		MesquiteProject proj = null;
+		if (prospectiveEmployer !=null)
+			proj = prospectiveEmployer.getProject();
+		int count=0;
+		while ((mbi = findNextModule(dutyClass, mbi))!=null) {
+			//todo: could check for compatibility here as in menus
+			if (mbi.doesDuty(dutyClass) && mbi.getUserChooseable()) {
+				//Debugg.println("  " + mbi.getName() + " condition " + condition + " isCompatible " + mbi.isCompatible(condition, proj, prospectiveEmployer));
+				if (mbi.isCompatible(condition, proj, prospectiveEmployer))
+						count++;
+			}
+		}
+		return count;
+	}	
+	
 	/*........................................................................*/
 	/** Returns module information for first module found that is instance of dutyClass and has given name.
 	Returns null if none found.*/

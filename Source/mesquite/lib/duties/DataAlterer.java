@@ -47,6 +47,7 @@ public abstract class DataAlterer extends MesquiteModule  {
    		return false;
    	}
 	/*.................................................................................................................*/
+	public final static int INPUT_NULL = -3;
 	public final static int OBJECT_LOCKED = -2;
 	public final static int USER_STOPPED = -1;
 	public final static int SUCCEEDED = 0;

@@ -8,7 +8,7 @@ import mesquite.lib.table.*;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
-public class MultipleAlignService extends CategDataAlterer  implements AltererAlignShift{
+public class MultipleAlignService extends MolecularDataAlterer  implements AltererAlignShift{
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
 		"The sequence aligner is chosen in dialogs or in the Align Sequences or Selected Block submenu");

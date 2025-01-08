@@ -52,9 +52,9 @@ public class AlterData extends DataWindowAssistantI  {
 //	MesquiteCMenuItemSpec bySMmi; 
 
 	//Specify various interfaces here
-	String[] labels = new String[]{ "Whole Character Add/Remove", "Align/Shift/Reverse Data", "Transformations","Basic Data Cell Manipulation", "DNA/RNA Data Cell Manipulation", "Convert Gap/Missing/Polymorph/Uncertain", "Randomizations"};
-	Class[] interfaces = new Class[]{AltererWholeCharacterAddRemove.class, AltererAlignShift.class, AltererContinuousTransformations.class, AltererSimpleCell.class, AltererDNACell.class, AltererConvertGapMissPolyUncert.class,  AltererRandomizations.class};
-	boolean[] asSubmenu = new boolean[]{false,false,false,true, true, true, true};
+	String[] labels = new String[]{ "Whole Character Add/Remove", "Align/Shift/Reverse Data", "Transformations", "Metadata", "Basic Data Cell Manipulation", "DNA/RNA Data Cell Manipulation", "Convert Gap/Missing/Polymorph/Uncertain", "Randomizations"};
+	Class[] interfaces = new Class[]{AltererWholeCharacterAddRemove.class, AltererAlignShift.class, AltererContinuousTransformations.class, AltererMetadata.class, AltererSimpleCell.class, AltererDNACell.class, AltererConvertGapMissPolyUncert.class,  AltererRandomizations.class};
+	boolean[] asSubmenu = new boolean[]{false,false,false, true, true, true, true, true};
 
 
 	MesquiteSubmenuSpec[] submenu = new MesquiteSubmenuSpec[interfaces.length+1];
@@ -92,7 +92,7 @@ public class AlterData extends DataWindowAssistantI  {
 
 		submenu[interfaces.length] = addSubmenu(alterMenu, "Other Alterations", makeCommand("doAlter",  this), DataAlterer.class);
 		submenu[interfaces.length].setQualificationsTest(qualificationsTest);
-
+		resetContainingMenuBar();
 	}
 	/*.................................................................................................................*/
 	void setCompatibilityForMatrix(){
@@ -120,11 +120,19 @@ public class AlterData extends DataWindowAssistantI  {
 	}
 	
 	private void addItemsOfInterface(MesquiteMenuSpec menu, Class alterInterface, String title, QualificationsTest qualificationsTest){
-		if (getNumMenuItemSpecs()>0)
+		Class dataClass  = null;
+		if (data !=null)
+			dataClass = data.getClass();
+		int numModules = MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(alterInterface, dataClass, this);
+		if (numModules <=0)
+			return;
+		if (getNumMenuItemSpecs()>0) {
 			addMenuItem(menu, "-", null);
+		}
 		addMenuItem(menu, title, null);
 		MesquiteMenuItemSpec mmis = addModuleMenuItems(menu, makeCommand("doAlter",  this), alterInterface);
 		mmis.setQualificationsTest(qualificationsTest);
+
 
 	}
 	/*.................................................................................................................*/
@@ -135,7 +143,7 @@ public class AlterData extends DataWindowAssistantI  {
 		resetContainingMenuBar();
 		if (data!=null)
 			data.addListener(this);
-
+		buildMenu();
 	}
 
 	/* possible alterers:
