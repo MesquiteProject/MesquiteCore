@@ -49,8 +49,11 @@ public class AppHarvester extends MesquiteInit {
  		 			}
 				}
  			}
-			if (countIncomp>0)
-				sb.append(" —" + countIncomp + " other apps also in found apps folder, but they were incompatible.\n");
+			if (countIncomp>1)
+				sb.append(" —" + countIncomp + " other apps also in found apps folder, but they were incompatible with the processor architecture or the operating system.\n");
+			else if (countIncomp==1)
+				sb.append(" —" + countIncomp + " other app also in found apps folder, but it was incompatible with the processor architecture or the operating system.\n");
+
 			if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.isAarch64()){ //delete x86 if aarch64 is available
 				int numApps = appInformationFileVector.size();
 				boolean[] toDelete = new boolean[numApps];

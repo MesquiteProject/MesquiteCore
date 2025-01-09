@@ -224,7 +224,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		if (listened != null)
 			listened.notifyListeners(this, new Notification(MesquiteListener.NEW_RESULTS));
 	}
-	public void showIntermediatesWindow(){
+	public MesquiteWindow showIntermediatesWindow(){
 		if (tWindowMaker == null) {
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
 			String commands = getExtraTreeWindowCommands(false, MesquiteLong.unassigned);
@@ -236,8 +236,10 @@ public abstract class TreeInferer extends TreeBlockFiller {
 				Puppeteer p = new Puppeteer(this);
 				p.execute(w, commands, new MesquiteInteger(0), "end;", false);
 			}
+			return w;
 		}
-		
+		else
+			return tWindowMaker.getModuleWindow();
 	}
 	
 	Checkbox autoSaveFileCheckbox =  null;

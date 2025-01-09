@@ -2521,6 +2521,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Returns the last dark line of the file.  path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
 	public static String getFileLastDarkLine(String relativePath) {
+		if (relativePath == null)
+			return null;
 		DataInputStream stream;
 		StringBuffer sBb= new StringBuffer(100);
 		String lastS = null;
