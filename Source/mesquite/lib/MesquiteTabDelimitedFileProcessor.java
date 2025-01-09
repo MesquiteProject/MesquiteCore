@@ -25,9 +25,9 @@ package mesquite.lib;
 	import mesquite.lib.*;
 
 	/* ======================================================================== */
-	public class MesquiteTabbedFile implements ActionListener, TextListener {
+	public class MesquiteTabDelimitedFileProcessor implements ActionListener, TextListener {
 		String sampleCodeListPath = null;
-		String[][] sampleCodeList;
+		String[][] sampleCodeList; // organized as [row][column]
 		int chosenNameCategory = 0;
 		String[] nameCategories = new String[]{"<choose column>"};
 
@@ -115,9 +115,9 @@ package mesquite.lib;
 		SingleLineTextField sampleCodeFilePathField;
 
 		/*.................................................................................................................*/
-		public void addTabbedFileChooser(ExtensibleDialog dialog) {
+		public void addTabbedFileChooser(ExtensibleDialog dialog, String fileExplanationText, String columnExplanationText) {
 
-			sampleCodeFilePathField = dialog.addTextField("File with Replacement Names:", sampleCodeListPath,26);
+			sampleCodeFilePathField = dialog.addTextField(fileExplanationText+":", sampleCodeListPath,26);
 			sampleCodeFilePathField.addTextListener(this);
 			final Button dnaCodesBrowseButton = dialog.addAListenedButton("Browse...",null, this);
 			dnaCodesBrowseButton.setActionCommand("TaxonNameFileBrowse");
@@ -133,7 +133,7 @@ package mesquite.lib;
 			int currentCategory = chosenNameCategory;
 			if (currentCategory<0)
 				currentCategory=0;
-			categoryChoice = dialog.addPopUpMenu("Column for Replacement Names:", categories, currentCategory);
+			categoryChoice = dialog.addPopUpMenu(columnExplanationText+":", categories, currentCategory);
 
 
 		}

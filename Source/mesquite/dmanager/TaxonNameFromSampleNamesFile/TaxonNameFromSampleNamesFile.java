@@ -33,12 +33,12 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 //	SingleLineTextField sampleCodeFilePathField = null;
 //	String[] nameCategories = new String[]{"<choose column>"};
 	//String sampleCodeListPath = null;
-	MesquiteTabbedFile mesquiteTabbedFile;
+	MesquiteTabDelimitedFileProcessor mesquiteTabbedFile;
 	
 	//TODO: note that the sample code in the names file CANNOT contain "/" 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		mesquiteTabbedFile = new MesquiteTabbedFile();
+		mesquiteTabbedFile = new MesquiteTabDelimitedFileProcessor();
 		loadPreferences();
 		
 		return true;
@@ -182,7 +182,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		Checkbox matchTaxonName = dialog.addCheckBox("Match Current Taxon Name (otherwise OTU ID code)", matchCurrentTaxonName.getValue());
 		Checkbox colorChanged = dialog.addCheckBox("Color changed taxa", changeColor.getValue());
 		
-		mesquiteTabbedFile.addTabbedFileChooser(dialog);
+		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File with Replacement Names", "Column for Replacement Names");
 		//sampleCodeFilePathField = dialog.addTextField("File with Replacement Names:", sampleCodeListPath,26);
 		//sampleCodeFilePathField.addTextListener(this);
 		//final Button dnaCodesBrowseButton = dialog.addAListenedButton("Browse...",null, this);

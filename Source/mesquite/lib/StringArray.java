@@ -183,6 +183,20 @@ public class StringArray implements StringLister, Listable {
 		return -1;
 	}
 	/*...........................................................*/
+	public static int indexOfIgnoreCaseInSecondArray(String[][] s, int columnNumber, String match, boolean underlinesEqualsBlanks){
+		if (StringUtil.blank(match) || s==null || s.length == 0 || columnNumber>=s[0].length || columnNumber<0)
+			return -1;
+		for (int row = 0; row<s.length; row++) {
+			if (match.equalsIgnoreCase(s[row][columnNumber]))
+				return row;
+			if (underlinesEqualsBlanks && StringUtil.stringsEqualIgnoreCaseIgnoreBlanksUnderlines(match, s[row][columnNumber]))
+				return row;
+
+		}
+		return -1;
+	}
+
+	/*...........................................................*/
 	public int indexOf(String match){
 		if (match == null)
 			return -1;

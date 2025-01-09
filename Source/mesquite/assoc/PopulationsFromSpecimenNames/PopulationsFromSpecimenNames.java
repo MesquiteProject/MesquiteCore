@@ -23,12 +23,13 @@ import mesquite.assoc.lib.*;
 /* ======================================================================== */
 public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker {
 	NameParser nameParser;
+	String nameOfPopulationTaxonBlock = "Populations";
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (nameParser==null)
 			nameParser = new NameParser(this, "taxon");
-		
+		loadPreferences();
 		return true;
 	}
 	public String getKeywords(){
@@ -65,9 +66,9 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 			if (nameParser==null)
 				nameParser = new NameParser(this, "taxon");
 			if (!MesquiteThread.isScripting()) {
-				String helpString = "New master taxa will be created based upon a portion of the taxon names of the contained taxon.  In particular, the name of each contained taxon will be reduced "
+				String helpString = "New master taxa (i.e., populations or containing taxa) will be created based upon a portion of the taxon names of the contained taxon.  In particular, the name of each contained taxon will be reduced "
 						+ "by removing a piece from the start and/or end; that reduced name will become the name of the new master taxon.  If two contained taxa have the same"
-						+ " reduced name, the will be assigned to the same master taxon";
+						+ " reduced name, they will be assigned to the same master taxon";
 				if (nameParser.queryOptions("Options for Creating Master Taxa", "Master taxon names will be extracted from taxon names.", helpString)) {
 					storePreferences();
 				}
@@ -98,7 +99,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 			}
 			int numMasterTaxa = masterTaxaNames.getFilledSize();
 			Taxa masterTaxa =  taxa.createTaxonBlock(numMasterTaxa);
-			masterTaxa.setName("Populations");
+			masterTaxa.setName(nameOfPopulationTaxonBlock);
 			for (int it=0; it<masterTaxa.getNumTaxa(); it++) {
 				masterTaxa.setTaxonName(it, masterTaxaNames.getValue(it));
 			}
@@ -159,7 +160,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Specimen Name Components";
+		return "Specimen Name Components...";
 	}
 
 	

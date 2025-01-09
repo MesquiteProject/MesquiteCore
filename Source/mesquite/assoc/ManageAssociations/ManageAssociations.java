@@ -432,7 +432,7 @@ public class ManageAssociations extends AssociationsManager {
 				specimensTaxa = project.getTaxa(0);
 			} else {
 				helpString = "Please choose the set of taxa to be the contained taxa (e.g., specimen, gene, parasite). ";
-				specimensTaxa = (Taxa)ListDialog.queryList(containerOfModule(), "Select taxa", "Select the block of taxaa for the individual specimen/gene copies.", helpString, taxas, 0);
+				specimensTaxa = (Taxa)ListDialog.queryList(containerOfModule(), "Select taxa", "Select the block of taxa for the individual specimen/gene copies.", helpString, taxas, 0);
 			}
 			ObjectContainer popTaxaContainer = new ObjectContainer();
 			TaxaAssociation association = makerModule.makePopulationsAndAssociation(specimensTaxa, popTaxaContainer);

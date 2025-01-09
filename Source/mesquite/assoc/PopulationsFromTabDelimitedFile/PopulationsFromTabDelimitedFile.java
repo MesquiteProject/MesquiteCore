@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.assoc.PopulationsFromTable;
+package mesquite.assoc.PopulationsFromTabDelimitedFile;
 /*~~  */
 
 import java.util.*;
@@ -21,14 +21,15 @@ import mesquite.lib.duties.*;
 import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
-public class PopulationsFromTable extends PopulationsAndAssociationMaker {
+public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMaker {
 	String[][] sampleCodeList;
 	int chosenNameCategory = 0;
-	MesquiteTabbedFile mesquiteTabbedFile;
+	MesquiteTabDelimitedFileProcessor mesquiteTabbedFile;
+	String nameOfPopulationTaxonBlock = "Populations";
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		mesquiteTabbedFile = new MesquiteTabbedFile();
+		mesquiteTabbedFile = new MesquiteTabDelimitedFileProcessor();
 		loadPreferences();
 
 		return true;
@@ -40,6 +41,20 @@ public class PopulationsFromTable extends PopulationsAndAssociationMaker {
 	public boolean isPrerelease(){
 		return true;
 	}
+	
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("nameOfPopulationTaxonBlock".equalsIgnoreCase(tag)){
+			nameOfPopulationTaxonBlock = StringUtil.cleanXMLEscapeCharacters(content);
+		}
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		StringUtil.appendXMLTag(buffer, 2, "nameOfPopulationTaxonBlock", nameOfPopulationTaxonBlock);  
+		return buffer.toString();
+	}
+
 	/*.................................................................................................................*/
 	public boolean queryForOptionsAsNeeded() {
 		if (StringUtil.blank(mesquiteTabbedFile.getSampleCodeListPath()))
@@ -61,8 +76,15 @@ public class PopulationsFromTable extends PopulationsAndAssociationMaker {
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Create containing taxa based on list in file",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		String helpString = "New master taxa (e.g., populations or containing taxa) will be created based upon a column in a tab-delimited text file.  "
+				+ "In particular, the contained taxa (e.g., specimens or gene copies) should be listed in the first column of the file, and the names of the master taxa in a later column.   "
+				+ "There should be one row at the top that contains the titles for each column.  There can be more than one column of potential master taxa names.  "
+				+ "If two contained taxa have the same name in the later column, they will be assigned to the same master taxon";
+		
+		dialog.appendToHelpString(helpString);
 
-		mesquiteTabbedFile.addTabbedFileChooser(dialog);
+		SingleLineTextField populationBlockNameField = dialog.addTextField("Name of population/containing taxa block:",nameOfPopulationTaxonBlock, 20);
+		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File containing columns of specimen and population names", "Column containing population names");
 
 		dialog.completeAndShowDialog(true);
 		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
@@ -71,6 +93,7 @@ public class PopulationsFromTable extends PopulationsAndAssociationMaker {
 			mesquiteTabbedFile.processNameCategories();
 			sampleCodeList = mesquiteTabbedFile.getSampleCodeList();
 			chosenNameCategory = mesquiteTabbedFile.getChosenNameCategory();
+			nameOfPopulationTaxonBlock = populationBlockNameField.getText();
 		}
 		storePreferences();  // do this here even if Cancel pressed as the File Locations subdialog box might have been used
 		dialog.dispose();
@@ -88,7 +111,7 @@ public class PopulationsFromTable extends PopulationsAndAssociationMaker {
 		if (taxonNames!=null){
 			int numMasterTaxa = taxonNames.length;
 			Taxa masterTaxa =  taxa.createTaxonBlock(numMasterTaxa);
-			masterTaxa.setName("Populations New");
+			masterTaxa.setName(nameOfPopulationTaxonBlock);
 			for (int it=0; it<masterTaxa.getNumTaxa(); it++) {
 				masterTaxa.setTaxonName(it, taxonNames[it]);
 			}
@@ -101,12 +124,33 @@ public class PopulationsFromTable extends PopulationsAndAssociationMaker {
 		//find population names in table and make taxa block
 		if (!queryOptions())
 			return null;
+		if (sampleCodeList==null)
+			return null;
 		String[] populationNames = mesquiteTabbedFile.getCondensedSecondaryColumn();
 		Taxa populations = createNewMasterTaxaBlock(specimensTaxa, populationNames);
 		if (populations == null)
 			return null;
+		
 		AssociationsManager manager = (AssociationsManager)findElementManager(TaxaAssociation.class);
 		TaxaAssociation	association = manager.makeNewAssociation(populations, specimensTaxa, "Populations-Specimens");
+
+
+		boolean changed = false;
+		for (int ito = 0; ito<specimensTaxa.getNumTaxa(); ito++){
+			String specimenName = specimensTaxa.getTaxonName(ito);
+			
+			int row = StringArray.indexOfIgnoreCaseInSecondArray(sampleCodeList, 0, specimenName, true);
+			if (row>=0) { //we've found it
+				String populationName = sampleCodeList[row][chosenNameCategory];
+				int populationNumber = StringArray.indexOfIgnoreCase(populationNames, populationName);
+				association.setAssociation(populations.getTaxon(populationNumber), specimensTaxa.getTaxon(ito), true);
+				changed = true;
+			}
+
+		}
+
+		if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED)); //DAVIDQUERY: maybe not needed for a newly created aassociation
+
 		//now associate populations with specimens
 		//see PopulationsFromSpecimenNames for useful code
 		if (populationTaxaContainer != null)
@@ -121,13 +165,13 @@ public class PopulationsFromTable extends PopulationsAndAssociationMaker {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Specimens – Populations Table";
+		return "Specimens – Populations Tab Delimited File...";
 	}
 
 	
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Makes a new taxa block of populations based on a table of a specimens and populations.";
+		return "Makes a new taxa block of populations based on a tab-delimited text file containing a table of a specimens and populations.";
 	}
 	
 	/*.................................................................................................................*/
