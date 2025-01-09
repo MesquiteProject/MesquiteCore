@@ -123,7 +123,7 @@ public class ExportForBPP extends FileInterpreterI {
 		
 		
 		IntegerField numThreadsField = dialog.addIntegerField("Number of threads", numThreads, 8, 1, MesquiteInteger.infinite);
-		Checkbox breakAtSelectedNodesCheckbox = dialog.addCheckBox("break at selected nodes", breakAtSelectedNodes);
+		Checkbox breakAtSelectedNodesCheckbox = dialog.addCheckBox("break guide tree into pieces at selected nodes", breakAtSelectedNodes);
 		SingleLineTextField speciesdelimitationTuningField = dialog.addTextField("speciesdelimitation fine tuning", speciesDelimitationFineTuning, 40);
 
 		dialog.addLabel("Text for start of control file");
@@ -244,7 +244,7 @@ public class ExportForBPP extends FileInterpreterI {
 	}
 
 	/*.................................................................................................................*/
-	public boolean exportSubTree(String dirPath, String baseFileName, Taxa populationTaxa, Taxa specimenTaxa, MesquiteTree tree, TaxaAssociation association, int nodeNumber) { //if file is null, consider whole project open to export
+	public boolean exportSubTree(String dirPath, String baseFileName, Taxa populationTaxa, Taxa specimenTaxa, MesquiteTree tree, TaxaAssociation association, int nodeNumber, MesquiteStringBuffer imapSumBuffer, MesquiteStringBuffer resultsSumBuffer, boolean lastPiece) { //if file is null, consider whole project open to export
 
 		Bits populationTerminals = tree.getTerminalTaxaAsBits(nodeNumber);  // these are the terminals that need exporting
 		Bits specimens = association.getAssociatesAsBits(populationTaxa, populationTerminals);
@@ -300,6 +300,16 @@ public class ExportForBPP extends FileInterpreterI {
 			}
 		}
 	
+		if (imapSumBuffer!=null)
+			imapSumBuffer.append("\t\t" + baseFileName + MesquiteFile.fileSeparator+baseFileName +".imap.txt \\\n");
+		if (resultsSumBuffer!=null) {
+			resultsSumBuffer.append("\t\t" + baseFileName + MesquiteFile.fileSeparator + baseFileName +".txt");
+			if (lastPiece) 
+				resultsSumBuffer.append("\n");
+			else 
+				resultsSumBuffer.append("\\\n");
+		}
+
 		
 		controlFileBuffer.append("\n");
 		if (numPopulations>1) {  // don't write tree if only one
@@ -388,10 +398,13 @@ public class ExportForBPP extends FileInterpreterI {
 		boolean success = false;
 		
 		if (!tree.anySelected() || !breakAtSelectedNodes) {
-			if (exportSubTree(dirPath, "bpp00", taxa, otherTaxa, tree, association, tree.getRoot())) {
+			if (exportSubTree(dirPath, "bpp00", taxa, otherTaxa, tree, association, tree.getRoot(),null,null, true)) {
 				success = true;
 			}
 		} else {
+			MesquiteStringBuffer imapSumBuffer = new MesquiteStringBuffer();
+			MesquiteStringBuffer resultsSumBuffer = new MesquiteStringBuffer();
+			
 			Bits selectedBits = tree.getSelectedBits();
 			Bits allPopulationTerminals = tree.getTerminalTaxaAsBits(tree.getRoot()); 
 			boolean nested = false;
@@ -427,7 +440,7 @@ public class ExportForBPP extends FileInterpreterI {
 					numDigits=3;
 				for (int i=0; i<tree.getNumberOfParts(); i++) {
 					if (selectedBits.isBitOn(i)) {
-						boolean exported = exportSubTree(dirPath, "bpp" + StringUtil.getIntegerAsStringWithLeadingZeros(counter, numDigits), taxa, otherTaxa, tree, association, i);  //TODO: 
+						boolean exported = exportSubTree(dirPath, "bpp" + StringUtil.getIntegerAsStringWithLeadingZeros(counter, numDigits), taxa, otherTaxa, tree, association, i, imapSumBuffer, resultsSumBuffer, selectedBits.lastBitOn()==i);  //TODO: 
 						if (!exported) {
 							exportAll=false;
 						}
@@ -436,6 +449,14 @@ public class ExportForBPP extends FileInterpreterI {
 				}
 				success = exportAll;
 			}
+			MesquiteStringBuffer sb= new MesquiteStringBuffer();
+			sb.append("delineate-bppsum \\\n");
+			sb.append("--imap  \\\n");
+			sb.append(imapSumBuffer.toString());
+			sb.append("--results  \\\n");
+			sb.append(resultsSumBuffer.toString());
+			saveExportedFileToFilePath(dirPath+ MesquiteFile.fileSeparator +"bppsumScript.txt", sb);
+
 		}
 
 		
