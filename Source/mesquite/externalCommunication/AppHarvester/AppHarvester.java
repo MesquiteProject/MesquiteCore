@@ -29,29 +29,90 @@ public class AppHarvester extends MesquiteInit {
  			appInformationFileVector = new Vector();
 			String[] appsFiles = appsDir.list();
  			//StringArray.sort(nameRulesList);
+			int countIncomp = 0;
  			for (int i=0; i<appsFiles.length; i++) {
  				if (appsFiles[i]!=null && appsFiles[i].endsWith("app")&& !appsFiles[i].startsWith(".")) {
  					String appFilePath = appsDirPath + MesquiteFile.fileSeparator + appsFiles[i];
  					AppInformationFile appInfoFile = new AppInformationFile(appsFiles[i]);
  		 			boolean success = appInfoFile.processAppInfoFile();
  		 			if (success) {
- 		 				appInformationFileVector.addElement(appInfoFile);
- 	 					sb.append("Loading "+ appsFiles[i]+", version " + appInfoFile.getVersion() + "\n");
+ 		 				if (compatible(appInfoFile)) {
+ 		 					appInformationFileVector.addElement(appInfoFile);
+ 	 						sb.append("Loading "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + "\n");
+ 		 				}
+ 		 				else {
+ 		 					if (MesquiteTrunk.debugMode)
+ 	 	 						sb.append("INCOMPATIBLE: "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + " (compiledAs: " + appInfoFile.getCompiledAs() + ")\n");
+ 	 						countIncomp++;
+ 		 				}
+
  		 			}
 				}
  			}
+			if (countIncomp>0)
+				sb.append(" —" + countIncomp + " other apps also in found apps folder, but they were incompatible.\n");
+			if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.isAarch64()){ //delete x86 if aarch64 is available
+				int numApps = appInformationFileVector.size();
+				boolean[] toDelete = new boolean[numApps];
+				AppInformationFile appInfoFile;
+				for (int iv=numApps-1; iv>=0; iv--) {
+					appInfoFile = (AppInformationFile)(appInformationFileVector.elementAt(iv));
+					int numAarch64 = getNumAppsForProgram(appInfoFile.getAppName(), "aarch64");
+					int numUniv = getNumAppsForProgram(appInfoFile.getAppName(), "univ");
+					if (numAarch64>0 || numUniv >0) {
+						String compiledAs = appInfoFile.getCompiledAs();
+						String arch = StringUtil.getLastItem(compiledAs, ".");
+						if ("x86".equalsIgnoreCase(arch)) { //there is an aarch64 or universal version available, but this is x86; delete it
+							appInformationFileVector.removeElement(iv);
+
+							sb.append(" —x86 version of " + appInfoFile.getAppName() + " ignored because an Apple Silicon version is available.\n");
+						}
+					}
+				}
+
+			}
+			
  			//AppInformationFile.setAppInformationFileVector(appInformationFileVector);
  		}
  		logln(sb.toString());
 	}
+	
+	private boolean compatible(AppInformationFile appInfoFile) {
+		String compiledAs = appInfoFile.getCompiledAs();
+		String os = StringUtil.getFirstItem(compiledAs, ".");
+		String arch = StringUtil.getLastItem(compiledAs, ".");
+		if (StringUtil.blank(os) || StringUtil.blank(arch))
+			return false;
+		if (os.equalsIgnoreCase("macos") && MesquiteTrunk.isMacOSX()) {
+			if (arch.equalsIgnoreCase("univ"))
+				return true;
+			else if ( MesquiteTrunk.isAarch64())
+				return arch.equalsIgnoreCase("aarch64") || arch.equalsIgnoreCase("x86");
+			else if ( MesquiteTrunk.isX86())
+				return arch.equalsIgnoreCase("x86");
+		}
+		else if (os.equalsIgnoreCase("windows") && MesquiteTrunk.isWindows()) {
+			return arch.equalsIgnoreCase("aarch64") && MesquiteTrunk.isAarch64();
+		}
+		else if (os.equalsIgnoreCase("linux") && MesquiteTrunk.isLinux()) {
+			return arch.equalsIgnoreCase("aarch64") && MesquiteTrunk.isAarch64();
+		}
+		return false;
+	}
 	/*.................................................................................................................*/
-	public static int getNumAppsForProgram(AppUser appUser) {
+	public static int getNumAppsForProgram(String officialAppNameInAppInfo) {
+		return getNumAppsForProgram(officialAppNameInAppInfo, null);
+	}
+	/*.................................................................................................................*/
+	public static int getNumAppsForProgram(String officialAppNameInAppInfo, String architecture) {
 		int count =0;
-		if (appUser!=null && appInformationFileVector!=null && StringUtil.notEmpty(appUser.getAppOfficialName())) {
+		if (officialAppNameInAppInfo!=null && appInformationFileVector!=null && StringUtil.notEmpty(officialAppNameInAppInfo)) {
 			AppInformationFile appInfoFile;
 			for (int iv=0; iv<appInformationFileVector.size(); iv++) {
 				appInfoFile = (AppInformationFile)(appInformationFileVector.elementAt(iv));
-				if (appUser.getAppOfficialName().equalsIgnoreCase(appInfoFile.getAppName()))
+				String compiledAs = appInfoFile.getCompiledAs();
+				String arch = StringUtil.getLastItem(compiledAs, ".");
+				if (officialAppNameInAppInfo.equalsIgnoreCase(appInfoFile.getAppName()) && (StringUtil.notEmpty(arch) && arch.equalsIgnoreCase(architecture)))
 					count++;
 			}
 		}
@@ -83,13 +144,13 @@ public class AppHarvester extends MesquiteInit {
 	}
 
 	/*.................................................................................................................*/
-	public static boolean builtinAppExists(AppUser appUser) { 
-		int numApps = getNumAppsForProgram(appUser);
+	public static boolean builtinAppExists(String officialAppNameInAppInfo) { 
+		int numApps = getNumAppsForProgram(officialAppNameInAppInfo);
 		if (numApps==1) {
 			return true;
 			
 		} else if (numApps>1) {
-			MesquiteMessage.warnUser("There is more than one " + appUser.getProgramName() + " app in the apps folder; please remove all but one copy, and restart Mesquite.");
+			MesquiteMessage.warnUser("There is more than one compatible app for " + officialAppNameInAppInfo + " in the apps folder; please remove all but one copy, and restart Mesquite.");
 		}
 		return false;
 	}

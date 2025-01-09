@@ -53,7 +53,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		rng = new Random(System.currentTimeMillis());
 		programOptions = getDefaultProgramOptions();
 		loadPreferences();
-		hasApp = AppHarvester.builtinAppExists(this);
+		hasApp = AppHarvester.builtinAppExists(getAppOfficialName());
 		
 		//scriptBased = MesquiteTrunk.isJava VersionLessThan(1.7);
 		return true;
