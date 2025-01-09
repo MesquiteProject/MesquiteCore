@@ -23,21 +23,24 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements ActionListener, TextListener {
-	String sampleCodeListPath = null;
+public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 	String[][] sampleCodeList;
-	//Parser sampleCodeListParser = null;
-	boolean preferencesSet = false;
-	SingleLineTextField sampleCodeFilePathField = null;
 	int chosenNameCategory = 0;
+	boolean preferencesSet = false;
 	MesquiteBoolean matchCurrentTaxonName = new MesquiteBoolean(true);
 	MesquiteBoolean changeColor = new MesquiteBoolean(true);
-	String[] nameCategories = new String[]{"<choose column>"};
+	//Parser sampleCodeListParser = null;
+//	SingleLineTextField sampleCodeFilePathField = null;
+//	String[] nameCategories = new String[]{"<choose column>"};
+	//String sampleCodeListPath = null;
+	MesquiteTabbedFile mesquiteTabbedFile;
 	
 	//TODO: note that the sample code in the names file CANNOT contain "/" 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		mesquiteTabbedFile = new MesquiteTabbedFile();
 		loadPreferences();
+		
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -72,6 +75,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		return true;
 
 	}*/
+	/*.................................................................................................................*
 	public boolean processNameCategories() {
 		int count = sampleCodeList[0].length;
 		for (int i = 1; i<sampleCodeList[0].length; i++){
@@ -91,7 +95,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		return true;
 
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public boolean scanTabbedDocument() {
 		if (!StringUtil.blank(sampleCodeListPath)) {
 			sampleCodeList = MesquiteFile.getTabDelimitedTextFile(sampleCodeListPath);
@@ -105,26 +109,18 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 	}
 	/*.................................................................................................................*/
 	public boolean queryForOptionsAsNeeded() {
-		if (StringUtil.blank(sampleCodeListPath))
+		if (StringUtil.blank(mesquiteTabbedFile.getSampleCodeListPath()))
 			return queryOptions();
-
-		if (StringUtil.blank(sampleCodeListPath)) 
-			sampleCodeList = MesquiteFile.getTabDelimitedTextFile(sampleCodeListPath);
-
-		if (sampleCodeList != null && sampleCodeList.length>0 && sampleCodeList[0].length>1) {
-			if (nameCategories==null)
-				return processNameCategories();
-		}
-		return true;
+		return mesquiteTabbedFile.processNameCategories();
 	}
 	/*.................................................................................................................*/
 	/** A stub method for querying the user about options. If alterIndividualTaxonNames is used to 
    	alter the names, and options need to be specified for the operation, then optionsQuery should be overridden.*/
 	public  boolean getOptions(Taxa taxa, int firstSelected){
-		scanTabbedDocument();  // do this just in case there is already one there
+		mesquiteTabbedFile.scanTabbedDocument();  // do this just in case there is already one there
 		if (!queryOptions())
 			return false;
-		if (!scanTabbedDocument())
+		if (!mesquiteTabbedFile.scanTabbedDocument())
 			return false;
 		return true;
 	}
@@ -143,33 +139,36 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 
 	/*.................................................................................................................*/
 	public boolean optionsSpecified(){
-		return StringUtil.notEmpty(sampleCodeListPath);
+		return StringUtil.notEmpty(mesquiteTabbedFile.getSampleCodeListPath());
 	}
 
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("sampleCodeListPath".equalsIgnoreCase(tag)){
+	/*	if ("sampleCodeListPath".equalsIgnoreCase(tag)){
 			sampleCodeListPath = StringUtil.cleanXMLEscapeCharacters(content);
 		}
 		if ("chosenNameCategory".equalsIgnoreCase(tag)){
 			chosenNameCategory = MesquiteInteger.fromString(content);
 		}
+		*/
 		if ("matchCurrentTaxonName".equalsIgnoreCase(tag)){
 			matchCurrentTaxonName.setValue(content);
 		}
 		if ("changeColor".equalsIgnoreCase(tag)){
 			changeColor.setValue(content);
 		}
+		mesquiteTabbedFile.processSingleXMLPreference(tag, content);
 		preferencesSet = true;
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "sampleCodeListPath", sampleCodeListPath);  
-		StringUtil.appendXMLTag(buffer, 2, "chosenNameCategory", chosenNameCategory);  
+	//StringUtil.appendXMLTag(buffer, 2, "sampleCodeListPath", sampleCodeListPath);  
+		//StringUtil.appendXMLTag(buffer, 2, "chosenNameCategory", chosenNameCategory);  
 		StringUtil.appendXMLTag(buffer, 2, "matchCurrentTaxonName", matchCurrentTaxonName);  
 		StringUtil.appendXMLTag(buffer, 2, "changeColor", changeColor);  
+		mesquiteTabbedFile.preparePreferencesForXML(buffer);
 		preferencesSet = true;
 		return buffer.toString();
 	}
@@ -182,11 +181,13 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 
 		Checkbox matchTaxonName = dialog.addCheckBox("Match Current Taxon Name (otherwise OTU ID code)", matchCurrentTaxonName.getValue());
 		Checkbox colorChanged = dialog.addCheckBox("Color changed taxa", changeColor.getValue());
-		sampleCodeFilePathField = dialog.addTextField("File with Replacement Names:", sampleCodeListPath,26);
-		sampleCodeFilePathField.addTextListener(this);
-		final Button dnaCodesBrowseButton = dialog.addAListenedButton("Browse...",null, this);
-		dnaCodesBrowseButton.setActionCommand("TaxonNameFileBrowse");
-
+		
+		mesquiteTabbedFile.addTabbedFileChooser(dialog);
+		//sampleCodeFilePathField = dialog.addTextField("File with Replacement Names:", sampleCodeListPath,26);
+		//sampleCodeFilePathField.addTextListener(this);
+		//final Button dnaCodesBrowseButton = dialog.addAListenedButton("Browse...",null, this);
+		//dnaCodesBrowseButton.setActionCommand("TaxonNameFileBrowse");
+		/*
 		String[] categories=null;
 
 		if (nameCategories==null) {
@@ -199,7 +200,9 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		if (currentCategory<0)
 			currentCategory=0;
 		categoryChoice = dialog.addPopUpMenu("Column for Replacement Names:", categories, currentCategory);
-
+*/
+		
+		
 		String s = "This file must contain in its first line the titles of each of the columns, delimited by tabs.  The first column must be the target to match (current taxon name or OTU ID code), ";
 		s+= "and the second and later columns should contain naming schemes for the sequences. Each of the following lines must contain the entry for one sample.\n\n";
 		s+= "<BR><BR>For example, the file might look like this:<br><br>\n";
@@ -217,8 +220,13 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		dialog.completeAndShowDialog(true);
 		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
 		if (success)  {
-			sampleCodeListPath = sampleCodeFilePathField.getText();
-			chosenNameCategory = categoryChoice.getSelectedIndex();
+			mesquiteTabbedFile.processTabbedFileChoiceExtensibleDialog();
+			mesquiteTabbedFile.processNameCategories();
+			sampleCodeList = mesquiteTabbedFile.getSampleCodeList();
+			chosenNameCategory = mesquiteTabbedFile.getChosenNameCategory();
+
+			//sampleCodeListPath = sampleCodeFilePathField.getText();
+			//chosenNameCategory = categoryChoice.getSelectedIndex();
 			changeColor.setValue(colorChanged.getState());
 			matchCurrentTaxonName.setValue(matchTaxonName.getState());
 			//	initialize();  // is this needed?
@@ -267,9 +275,8 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		MesquiteMessage.warnUser("No OTU ID code named '" + sampleCode + "' found in taxon names file.");
 		return null;
 	}
-	/*.................................................................................................................*/
-	public  String getSeqNamesFromTabDelimitedFile(MesquiteString sampleCode, String taxonName) {
-		queryForOptionsAsNeeded();
+	/*.................................................................................................................*
+	public  String getNameFromTabDelimitedFile(MesquiteString sampleCode, String taxonName) {
 		String sampleCodeString  = sampleCode.getValue();
 		if (sampleCodeString==null){
 			MesquiteMessage.warnUser("Taxon \"" + taxonName + "\" has no target string to match.");
@@ -285,11 +292,12 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 				}
 			}
 		}
-
-		// got here and no match found -- log an error
-		//MesquiteMessage.warnUser("No matching name or code named '" + sampleCode + "' found in taxon names file.");
-		//log("-");
 		return null;
+	}
+	/*.................................................................................................................*/
+	public  String getSeqNamesFromTabDelimitedFile(MesquiteString sampleCode, String taxonName) {
+		queryForOptionsAsNeeded();
+		return mesquiteTabbedFile.getNameFromTabDelimitedFile(sampleCode, taxonName);
 	}
 
 	NameReference colorNameRef = NameReference.getNameReference("color");
@@ -321,6 +329,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		}
 		return nameChanged;
 	}
+	/*.................................................................................................................*/
 	public String getTargetString(Taxa taxa, int ic){
 
 		if (taxa!=null) {
@@ -346,7 +355,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 		return null;
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public  void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equalsIgnoreCase("TaxonNameFileBrowse")) {
 			MesquiteString dnaNumberListDir = new MesquiteString();

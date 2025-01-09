@@ -55,6 +55,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 			nameParser.processSingleXMLPreference(tag,content);
 	}
 
+	/*.................................................................................................................*/
 	private Taxa createNewMasterTaxaBlockBasedOnNames(Taxa taxa) {
 		if (taxa!=null){
 			String groupName = "";

@@ -1,0 +1,219 @@
+package mesquite.lib;
+
+
+	
+	
+	/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
+	Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+	The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+	Perhaps with your help we can be more than a few, and make Mesquite better.
+
+	Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+	Mesquite's web site is http://mesquiteproject.org
+
+	This source code and its compiled class files are free and modifiable under the terms of 
+	GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+	 */
+
+
+	import java.util.*;
+	import java.awt.*;
+	import java.awt.event.*;
+
+	import mesquite.lib.*;
+
+	/* ======================================================================== */
+	public class MesquiteTabbedFile implements ActionListener, TextListener {
+		String sampleCodeListPath = null;
+		String[][] sampleCodeList;
+		int chosenNameCategory = 0;
+		String[] nameCategories = new String[]{"<choose column>"};
+
+
+		/*.................................................................................................................*/
+		public boolean processNameCategories() {
+			int count = sampleCodeList[0].length;
+			for (int i = 1; i<sampleCodeList[0].length; i++){
+				if (StringUtil.notEmpty(sampleCodeList[0][i]))
+					count++;
+			}
+			nameCategories = new String[count+1];
+			count = 0;
+			nameCategories[count++]="<choose column>";
+			for (int i = 1; i<sampleCodeList[0].length; i++){
+				String s = sampleCodeList[0][i];
+				if (StringUtil.notEmpty(s)) {
+					nameCategories[count]=s;
+					count++;
+				}
+			}
+			return true;
+
+		}
+		/*.................................................................................................................*/
+		public boolean scanTabbedDocument() {   
+			if (!StringUtil.blank(sampleCodeListPath)) {
+				sampleCodeList = MesquiteFile.getTabDelimitedTextFile(sampleCodeListPath);
+
+				if (sampleCodeList != null && sampleCodeList.length>0 && sampleCodeList[0].length>1) {
+					return processNameCategories();
+				}
+			}	
+			return false;
+
+		}
+		public int getChosenNameCategory() {
+			return chosenNameCategory;
+		}
+		public void setChosenNameCategory(int chosenNameCategory) {
+			this.chosenNameCategory = chosenNameCategory;
+		}
+
+		public String[][] getSampleCodeList() {
+			if (sampleCodeList!=null)
+				return sampleCodeList;
+			if (scanTabbedDocument())
+				return sampleCodeList;
+			return sampleCodeList;
+		}
+		public void setSampleCodeList(String[][] sampleCodeList) {
+			this.sampleCodeList = sampleCodeList;
+		}
+
+		public String getSampleCodeListPath() {
+			return sampleCodeListPath;
+		}
+		public void setSampleCodeListPath(String sampleCodeListPath) {
+			this.sampleCodeListPath = sampleCodeListPath;
+		}
+
+
+		/*.................................................................................................................*/
+		public boolean optionsSpecified(){
+			return StringUtil.notEmpty(sampleCodeListPath);
+		}
+
+
+		/*.................................................................................................................*/
+		public void processSingleXMLPreference (String tag, String content) {
+			if ("sampleCodeListPath".equalsIgnoreCase(tag)){
+				sampleCodeListPath = StringUtil.cleanXMLEscapeCharacters(content);
+			}
+			if ("chosenNameCategory".equalsIgnoreCase(tag)){
+				chosenNameCategory = MesquiteInteger.fromString(content);
+			}
+		}
+		/*.................................................................................................................*/
+		public void preparePreferencesForXML (StringBuffer buffer) {
+			StringUtil.appendXMLTag(buffer, 2, "sampleCodeListPath", sampleCodeListPath);  
+			StringUtil.appendXMLTag(buffer, 2, "chosenNameCategory", chosenNameCategory);  
+		}
+		Choice categoryChoice ;
+		
+		SingleLineTextField sampleCodeFilePathField;
+
+		/*.................................................................................................................*/
+		public void addTabbedFileChooser(ExtensibleDialog dialog) {
+
+			sampleCodeFilePathField = dialog.addTextField("File with Replacement Names:", sampleCodeListPath,26);
+			sampleCodeFilePathField.addTextListener(this);
+			final Button dnaCodesBrowseButton = dialog.addAListenedButton("Browse...",null, this);
+			dnaCodesBrowseButton.setActionCommand("TaxonNameFileBrowse");
+
+			String[] categories=null;
+
+			if (nameCategories==null) {
+				categories = new String[1];
+				categories[0]="Sample Code                  ";
+			} else
+				categories = nameCategories;
+
+			int currentCategory = chosenNameCategory;
+			if (currentCategory<0)
+				currentCategory=0;
+			categoryChoice = dialog.addPopUpMenu("Column for Replacement Names:", categories, currentCategory);
+
+
+		}
+		
+		/*.................................................................................................................*/
+		public void processTabbedFileChoiceExtensibleDialog () {
+			sampleCodeListPath = sampleCodeFilePathField.getText();
+			chosenNameCategory = categoryChoice.getSelectedIndex();
+	}
+
+		/*.................................................................................................................*/
+		public  void actionPerformed(ActionEvent e) {
+			if (e.getActionCommand().equalsIgnoreCase("TaxonNameFileBrowse")) {
+				MesquiteString dnaNumberListDir = new MesquiteString();
+				MesquiteString dnaNumberListFile = new MesquiteString();
+				String s = MesquiteFile.openFileDialog("Choose file containing OTU ID codes and names", dnaNumberListDir, dnaNumberListFile);
+				if (!StringUtil.blank(s)) {
+					sampleCodeListPath = s;
+					if (sampleCodeFilePathField!=null) 
+						sampleCodeFilePathField.setText(sampleCodeListPath);
+				}
+			}
+		}
+		/*.................................................................................................................*/
+		public void textValueChanged(TextEvent e) {
+			if (e.getSource().equals(sampleCodeFilePathField)) {
+				sampleCodeListPath = sampleCodeFilePathField.getText();
+				if (StringUtil.notEmpty(sampleCodeListPath)) {
+					chosenNameCategory=-1;
+					scanTabbedDocument();
+					//	processNameCategories();
+					//initialize(sampleCodeListPath);
+				}	
+				categoryChoice.removeAll();
+				if (nameCategories!=null) {			
+					for (int i=0; i<nameCategories.length; i++) {
+						if (!StringUtil.blank(nameCategories[i])) {
+							categoryChoice.add(nameCategories[i]);
+						}
+					}
+				}
+				categoryChoice.repaint();
+
+			}
+		}
+		/*.................................................................................................................*/
+		public  String[] getCondensedSecondaryColumn() {
+			String[] column = new String[0];
+			for (int row = 1; row<sampleCodeList.length; row++){   // start with row 1 to skip the title
+				if (chosenNameCategory< sampleCodeList[row].length){
+					String s = sampleCodeList[row][chosenNameCategory];
+					if (!StringArray.exists(column,s)) {
+						column = StringArray.addToEnd(column, s);
+					}
+				}
+			}
+			return column;
+		}
+
+		/*.................................................................................................................*/
+		public  String getNameFromTabDelimitedFile(MesquiteString sampleCode, String taxonName) {
+			String sampleCodeString  = sampleCode.getValue();
+			if (sampleCodeString==null){
+				MesquiteMessage.warnUser("Taxon \"" + taxonName + "\" has no target string to match.");
+				return null;
+			}
+			if (sampleCodeString.contains("/"))  // if there is more than one item, then take only the first one.
+				sampleCodeString = StringUtil.getFirstItem(sampleCodeString, "/");
+			for (int row = 0; row<sampleCodeList.length; row++){
+				if (chosenNameCategory< sampleCodeList[row].length){
+					String code = sampleCodeList[row][0];
+					if (sampleCodeString.equalsIgnoreCase(code)) {
+						return sampleCodeList[row][chosenNameCategory];
+					}
+				}
+			}
+			return null;
+		}
+
+
+	}
+
+

@@ -22,9 +22,15 @@ import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
 public class PopulationsFromTable extends PopulationsAndAssociationMaker {
+	String[][] sampleCodeList;
+	int chosenNameCategory = 0;
+	MesquiteTabbedFile mesquiteTabbedFile;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		mesquiteTabbedFile = new MesquiteTabbedFile();
+		loadPreferences();
+
 		return true;
 	}
 	public String getKeywords(){
@@ -35,25 +41,79 @@ public class PopulationsFromTable extends PopulationsAndAssociationMaker {
 		return true;
 	}
 	/*.................................................................................................................*/
-	
+	public boolean queryForOptionsAsNeeded() {
+		if (StringUtil.blank(mesquiteTabbedFile.getSampleCodeListPath()))
+			return queryOptions();
+		return mesquiteTabbedFile.processNameCategories();
+	}
+	/*.................................................................................................................*/
+	/** A stub method for querying the user about options. If alterIndividualTaxonNames is used to 
+   	alter the names, and options need to be specified for the operation, then optionsQuery should be overridden.*/
+	public  boolean getOptions(Taxa taxa, int firstSelected){
+		mesquiteTabbedFile.scanTabbedDocument();  // do this just in case there is already one there
+		if (!queryOptions())
+			return false;
+		if (!mesquiteTabbedFile.scanTabbedDocument())
+			return false;
+		return true;
+	}
+	/*.................................................................................................................*/
+	public boolean queryOptions() {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Create containing taxa based on list in file",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
+		mesquiteTabbedFile.addTabbedFileChooser(dialog);
+
+		dialog.completeAndShowDialog(true);
+		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
+		if (success)  {
+			mesquiteTabbedFile.processTabbedFileChoiceExtensibleDialog();
+			mesquiteTabbedFile.processNameCategories();
+			sampleCodeList = mesquiteTabbedFile.getSampleCodeList();
+			chosenNameCategory = mesquiteTabbedFile.getChosenNameCategory();
+		}
+		storePreferences();  // do this here even if Cancel pressed as the File Locations subdialog box might have been used
+		dialog.dispose();
+		return success;
+	}	/*.................................................................................................................*/
 	
 	/*.................................................................................................................*/
-   	public TaxaAssociation makePopulationsAndAssociation(Taxa specimensTaxa, ObjectContainer populationTaxaContainer) {
-		Taxa populations = null;
+	public  String getContainingNameFromTabDelimitedFile(MesquiteString sampleCode, String taxonName) {
+		queryForOptionsAsNeeded();
+		return mesquiteTabbedFile.getNameFromTabDelimitedFile(sampleCode, taxonName);
+	}
+
+	/*.................................................................................................................*/
+	private Taxa createNewMasterTaxaBlock(Taxa taxa, String[] taxonNames) {
+		if (taxonNames!=null){
+			int numMasterTaxa = taxonNames.length;
+			Taxa masterTaxa =  taxa.createTaxonBlock(numMasterTaxa);
+			masterTaxa.setName("Populations New");
+			for (int it=0; it<masterTaxa.getNumTaxa(); it++) {
+				masterTaxa.setTaxonName(it, taxonNames[it]);
+			}
+			return  masterTaxa;
+		}	
+		return null;
+	}
+	/*.................................................................................................................*/
+	public TaxaAssociation makePopulationsAndAssociation(Taxa specimensTaxa, ObjectContainer populationTaxaContainer) {
 		//find population names in table and make taxa block
-		Debugg.println("OOPS NOT WORKING YET");
+		if (!queryOptions())
+			return null;
+		String[] populationNames = mesquiteTabbedFile.getCondensedSecondaryColumn();
+		Taxa populations = createNewMasterTaxaBlock(specimensTaxa, populationNames);
 		if (populations == null)
 			return null;
 		AssociationsManager manager = (AssociationsManager)findElementManager(TaxaAssociation.class);
 		TaxaAssociation	association = manager.makeNewAssociation(populations, specimensTaxa, "Populations-Specimens");
-			//now associate populations with specimens
-			//see PopulationsFromSpecimenNames for useful code
-			if (populationTaxaContainer != null)
-				populationTaxaContainer.setObject(populations);
-			return association;
-	
-   	}
+		//now associate populations with specimens
+		//see PopulationsFromSpecimenNames for useful code
+		if (populationTaxaContainer != null)
+			populationTaxaContainer.setObject(populations);
+		return association;
+
+	}
 
 	/*.................................................................................................................*/
 	public String getName() {

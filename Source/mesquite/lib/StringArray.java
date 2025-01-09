@@ -137,6 +137,10 @@ public class StringArray implements StringLister, Listable {
 		return -1;
 	}
 	/*...........................................................*/
+	public static boolean exists(String[]s, String match){
+		return (indexOf(s,match)>=0);
+	}
+	/*...........................................................*/
 	public static int indexOfTabbedToken(String[]s, String match, int whichToken){
 		if (match == null || s==null)
 			return -1;
@@ -283,6 +287,12 @@ public class StringArray implements StringLister, Listable {
 	public static String[] addToStart(String[] d, String s) {
 		String[] sa = addParts(d,-1,1);
 		sa[0]=s;
+		return sa;
+	}
+	/*...........................................................*/
+	public static String[] addToEnd(String[] d, String s) {
+		String[] sa = addParts(d,d.length-1,1);
+		sa[sa.length-1]=s;
 		return sa;
 	}
 	/*...........................................................*/
