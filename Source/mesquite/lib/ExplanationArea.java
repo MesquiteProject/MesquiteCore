@@ -484,12 +484,12 @@ class ExplTextArea extends MQTextArea {
 		if (!MesquiteTrunk.isLinux())
 			super.setBounds(a,b,c,d);
 	}
-		/*
+		
 	public void validate(){
 		if (!MesquiteTrunk.isLinux())
 			super.validate();
 	}
-*/
+
 
 
 	public void gotFocus(){

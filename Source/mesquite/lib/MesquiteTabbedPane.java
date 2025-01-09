@@ -53,6 +53,20 @@ public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 	//	super.setSelectedIndex(i);
 	}
 
+	/*layout -------------------------*/
+	public void layout(){
+		if (MesquiteTrunk.isLinux()) {
+			try {
+				super.layout();
+			}
+			catch (StackOverflowError e) {
+				System.out.println("Yet another StackOverflowError on  linux");
+			}
+		}
+		else {
+			super.layout();
+		}
+	}
 	/*validate -------------------------*/
 	boolean validating = false;
 	public void validate(){
@@ -70,7 +84,13 @@ public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 		if (validating)
 			Debugg.printStackTrace("Double validating (PV) " + this);
 		validating = true;
-		super.validate();
+		try {
+			super.validate();
+		}
+		catch (StackOverflowError e) {
+			System.out.println("Yet another StackOverflowError on  linux");
+			
+		}
 		validating = false;
 	}
 

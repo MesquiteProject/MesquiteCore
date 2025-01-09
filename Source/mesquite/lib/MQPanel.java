@@ -25,6 +25,20 @@ public class MQPanel extends Panel implements MQComponent {
 		super();
 	}
 
+	/*layout -------------------------*/
+	public void layout(){
+		if (MesquiteTrunk.isLinux()) {
+			try {
+				super.layout();
+			}
+			catch (StackOverflowError e) {
+				System.out.println("Yet another StackOverflowError on  linux");
+			}
+		}
+		else {
+			super.layout();
+		}
+	}
 	/*validate -------------------------*/
 	boolean validating = false;
 	public void validate(){
@@ -38,9 +52,15 @@ public class MQPanel extends Panel implements MQComponent {
 	}
 	public void pleaseValidate(){
 		if (!validating) {
-			System.out.println("Double validating (PV) " + this);
+			//System.out.println("Double validating (PV) " + this);
 			validating = true;
-			super.validate();
+			try {
+				super.validate();
+			}
+			catch (StackOverflowError e) {
+				System.out.println("Yet another StackOverflowError on  linux");
+				
+			}
 			validating = false;
 		}
 	}
