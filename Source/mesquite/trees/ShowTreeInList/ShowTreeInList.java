@@ -21,6 +21,7 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 public class ShowTreeInList extends TreeListInit  {

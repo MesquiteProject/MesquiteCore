@@ -17,6 +17,9 @@ package mesquite.consensus.MajRuleTree;
 import java.awt.Checkbox;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.*;
 import mesquite.consensus.lib.*;
 

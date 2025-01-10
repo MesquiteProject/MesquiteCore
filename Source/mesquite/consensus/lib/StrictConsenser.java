@@ -1,8 +1,8 @@
 package mesquite.consensus.lib;
 
 
-import mesquite.lib.Taxa;
-import mesquite.lib.Tree;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 
 /* A utility class designed to be used by modules to easily make a strict consensus of trees */
 

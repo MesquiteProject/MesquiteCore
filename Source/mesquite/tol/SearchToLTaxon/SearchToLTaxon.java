@@ -20,6 +20,8 @@ import java.awt.image.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.tol.lib.*;
 
 /* ======================================================================== */

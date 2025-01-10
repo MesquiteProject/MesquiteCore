@@ -18,6 +18,11 @@ import java.util.*;
 import java.io.*;
 import java.awt.event.*;
 import mesquite.lib.*;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 
 

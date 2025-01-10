@@ -15,6 +15,7 @@ package mesquite.diverse.SisterDiversification;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.tree.Tree;
 import mesquite.categ.lib.*;
 import mesquite.diverse.lib.*;
 

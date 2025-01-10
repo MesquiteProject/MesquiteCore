@@ -19,6 +19,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorRecord;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */

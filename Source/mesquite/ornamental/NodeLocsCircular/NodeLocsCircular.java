@@ -20,6 +20,14 @@ import java.awt.geom.Point2D;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayBkgdExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDrawing;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 /* ======================================================================== */
 public class NodeLocsCircular extends NodeLocsCircle {

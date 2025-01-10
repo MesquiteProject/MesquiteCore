@@ -23,6 +23,8 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
 public class RandomFillCateg extends CategDataAlterer implements AltererRandomizations {

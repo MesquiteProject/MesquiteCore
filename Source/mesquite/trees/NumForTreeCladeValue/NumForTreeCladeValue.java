@@ -15,6 +15,9 @@ package mesquite.trees.NumForTreeCladeValue;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class NumForTreeCladeValue extends NumberForTree {

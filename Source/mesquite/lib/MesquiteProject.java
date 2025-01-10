@@ -20,6 +20,16 @@ import java.awt.*;
 import java.util.*;
 import java.net.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HNode;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.HTMLDescribable;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.characters.*;
 
 /* ======================================================================== */

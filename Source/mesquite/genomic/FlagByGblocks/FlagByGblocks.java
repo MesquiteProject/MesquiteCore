@@ -33,12 +33,9 @@ import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.externalCommunication.lib.AppChooser;
 import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.Bits;
-import mesquite.lib.ColorTheme;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
-import mesquite.lib.DoubleField;
-import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
@@ -53,10 +50,8 @@ import mesquite.lib.Parser;
 import mesquite.lib.ShellScriptRunner;
 import mesquite.lib.ShellScriptUtil;
 import mesquite.lib.ProcessWatcher;
-import mesquite.lib.SingleLineTextField;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
-import mesquite.lib.Taxa;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.characters.MatrixFlags;
@@ -67,6 +62,11 @@ import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionListener, TextListener, ItemListener {

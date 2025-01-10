@@ -18,6 +18,11 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.util.*;
 import mesquite.lib.*;
+import mesquite.lib.misc.HPanel;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.InfoBar;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 /** The Panel containing the Mesquite logo on the startup window */

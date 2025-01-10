@@ -3,8 +3,8 @@ package mesquite.io.InterpretFastaDNAByOTUID;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
 import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
-import mesquite.lib.Taxa;
-import mesquite.lib.VoucherInfoFromOTUIDDB;
+import mesquite.lib.misc.VoucherInfoFromOTUIDDB;
+import mesquite.lib.taxa.Taxa;
 
 public class InterpretFastaDNAByOTUID extends InterpretFastaDNA {
 

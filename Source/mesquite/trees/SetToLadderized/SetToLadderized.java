@@ -16,6 +16,8 @@ package mesquite.trees.SetToLadderized;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.MesquiteTree;
 
 /* ======================================================================== */
 public class SetToLadderized extends TreeAltererMult {

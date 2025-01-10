@@ -15,6 +15,10 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaPartition;
+import mesquite.lib.taxa.Taxon;
 
 
 /* ======================================================================== */

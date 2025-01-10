@@ -21,6 +21,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public abstract class DataSpecssetList extends ListModule {

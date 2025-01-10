@@ -15,6 +15,8 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.Trees;
 
 
 /* ======================================================================== */

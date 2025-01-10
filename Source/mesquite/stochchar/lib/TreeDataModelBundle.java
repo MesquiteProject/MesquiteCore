@@ -15,6 +15,7 @@ package mesquite.stochchar.lib;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.tree.Tree;
 
 
 /* ======================================================================== */

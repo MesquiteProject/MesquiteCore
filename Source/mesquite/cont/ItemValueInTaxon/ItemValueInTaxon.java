@@ -20,6 +20,9 @@ import java.awt.event.KeyEvent;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.ancstates.TraceCharacterHistory.TraceCharacterOperator;
 import mesquite.cont.lib.*;
 

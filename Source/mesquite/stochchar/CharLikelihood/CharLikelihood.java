@@ -19,6 +19,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 import mesquite.stochchar.CurrentProbModels.CurrentProbModels;

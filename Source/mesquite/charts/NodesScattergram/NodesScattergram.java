@@ -18,6 +18,21 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.LabelsAtNodes;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ChartListener;
+import mesquite.lib.ui.ChartWindow;
+import mesquite.lib.ui.Charter;
+import mesquite.lib.ui.DoubleMiniScroll;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquiteChart;
+import mesquite.lib.ui.MesquiteLabel;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 /**=== Class NodesScattergram.  ===*/

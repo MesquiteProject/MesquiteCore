@@ -22,6 +22,7 @@ import org.dom4j.Element;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.categ.lib.*;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;   //is this guaranteed to be an installed package?
 import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;   //is this guaranteed to be an installed package?

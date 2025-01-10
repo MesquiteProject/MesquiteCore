@@ -21,6 +21,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.taxa.Taxa;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.ProteinState;

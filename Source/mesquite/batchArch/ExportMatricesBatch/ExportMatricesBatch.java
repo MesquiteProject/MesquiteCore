@@ -21,6 +21,12 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.batchArch.BatchTemplateManager.BatchTemplateManager;
 import mesquite.batchArch.lib.*;
 

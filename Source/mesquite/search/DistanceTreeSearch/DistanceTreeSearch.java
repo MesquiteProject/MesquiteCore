@@ -15,6 +15,7 @@ package mesquite.search.DistanceTreeSearch;
 /*~~  */
 
 import mesquite.lib.*;
+import mesquite.lib.analysis.DistanceAnalysis;
 import mesquite.search.lib.*;
 
 /* ======================================================================== */

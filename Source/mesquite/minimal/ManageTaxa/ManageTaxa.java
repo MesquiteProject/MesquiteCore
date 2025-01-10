@@ -20,6 +20,12 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaBlock;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.StringIntegerDialog;
 
 /** Manages the blocks of TAXA, including reading and writing from a NEXUS file.*/
 public class ManageTaxa extends TaxaManager {

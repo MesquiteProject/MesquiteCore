@@ -17,6 +17,7 @@ package mesquite.lib;
 import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.AlertDialog;
 
 import java.util.*;
 import java.net.*;

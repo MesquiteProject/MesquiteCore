@@ -23,6 +23,7 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MousePanel;
 
 /* ======================================================================== */
 public class AutoScrollThread extends Thread implements MouseListener {

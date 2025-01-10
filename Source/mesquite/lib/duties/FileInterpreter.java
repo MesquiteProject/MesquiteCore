@@ -19,6 +19,9 @@ import java.io.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.ProgressIndicator;
 
 
 /* ======================================================================== */

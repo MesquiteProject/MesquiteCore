@@ -15,6 +15,11 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteCMenuItemSpec;
+import mesquite.lib.ui.MesquiteWindow;
+
 /*==========================  Mesquite Basic Class Library    ==========================*/
 /*===  the basic classes used by the trunk of Mesquite and available to the modules
 /* ���������������������������bits������������������������������� */

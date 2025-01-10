@@ -2,6 +2,9 @@ package mesquite.lib;
 
 import java.awt.Checkbox;
 
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
+
 
 public class NameParser implements XMLPreferencesProcessor{
 	

@@ -24,6 +24,13 @@ import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQScrollPane;
+import mesquite.lib.ui.MQTextField;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.StringInABox;
 
 public class SmallStateNamesEditor extends MatrixInfoPanelAssistantI  {
 	SStateNamesPanel panel;

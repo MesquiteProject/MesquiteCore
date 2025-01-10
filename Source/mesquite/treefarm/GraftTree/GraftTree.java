@@ -18,6 +18,10 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
 public class GraftTree extends TreeAltererMult {

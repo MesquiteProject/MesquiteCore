@@ -15,6 +15,8 @@ package mesquite.treefarm.CladeInTree;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 
 /** this is a little module that deterimines whether or not a set of taxa is a clade in a tree */
 public class CladeInTree extends BooleanForTree implements MesquiteListener {

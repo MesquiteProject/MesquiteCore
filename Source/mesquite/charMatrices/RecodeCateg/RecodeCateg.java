@@ -24,6 +24,8 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class RecodeCateg extends CategDataAlterer implements AltererSimpleCell {

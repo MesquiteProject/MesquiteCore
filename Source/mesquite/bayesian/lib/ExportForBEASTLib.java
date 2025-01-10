@@ -22,6 +22,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.basic.ManageSetsBlock.ManageSetsBlock;
 import mesquite.categ.lib.*;
 

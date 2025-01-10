@@ -16,6 +16,7 @@ package mesquite.io.lib;
 import java.awt.*;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.MesquiteWindow;
 	
 public class PhylipExporterDialog extends ExporterDialog {
 	int tnl = 10;

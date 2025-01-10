@@ -12,6 +12,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.taxa.TaxonNamer;
+
 public class SimpleNamesTaxonNamer extends TaxonNamer {
 	int[] numberTranslationTable= null;
 	

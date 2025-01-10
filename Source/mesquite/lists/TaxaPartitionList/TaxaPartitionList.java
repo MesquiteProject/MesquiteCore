@@ -21,6 +21,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaPartition;
+import mesquite.lib.ui.AlertDialog;
 
 /* ======================================================================== */
 public class TaxaPartitionList extends TaxaSpecssetList {

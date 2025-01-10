@@ -18,6 +18,9 @@ import java.util.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.cont.lib.*;
 import Jama.*;  
 

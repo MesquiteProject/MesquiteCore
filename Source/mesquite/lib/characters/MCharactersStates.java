@@ -15,6 +15,8 @@ package mesquite.lib.characters;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 import mesquite.lib.*;
 
 /*Last documented:  April 2003*/

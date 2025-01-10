@@ -16,6 +16,8 @@ package mesquite.assoc.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
 
 
 /* ======================================================================== */

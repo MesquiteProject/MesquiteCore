@@ -16,6 +16,9 @@ package mesquite.treefarm.AllTrees;
 import mesquite.lib.*;
 import mesquite.lib.duties.TreeSimulate;
 import mesquite.lib.duties.TreeSource;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 
 public class AllTrees extends TreeSource {
 	int currentTree=0; 

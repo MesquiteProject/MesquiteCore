@@ -21,6 +21,14 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterPartition;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.taxa.TaxaPartition;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteSymbol;
+import mesquite.lib.ui.SymbolsVector;
 import mesquite.lists.lib.GroupDialog;
 
 /** Manages specifications of partitions of taxa, including reading and writing from NEXUS file. */

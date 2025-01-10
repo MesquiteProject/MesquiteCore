@@ -21,6 +21,11 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AttachedNotesVector;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.parsimony.lib.ParsimonyModelSet;
 
 /* ======================================================================== */

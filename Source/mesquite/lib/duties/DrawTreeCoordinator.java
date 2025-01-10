@@ -15,6 +15,10 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.ui.MesquiteWindow;
+
 import java.util.*;
 
 

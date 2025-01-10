@@ -19,6 +19,9 @@ import java.util.*;
 import java.awt.event.*;
 import java.io.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteMenu;
+import mesquite.lib.ui.MesquiteWindow;
 
 
 /* ======================================================================== */

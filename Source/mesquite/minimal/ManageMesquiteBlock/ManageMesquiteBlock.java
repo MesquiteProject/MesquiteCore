@@ -21,6 +21,8 @@ import java.io.*;
 import mesquite.assoc.lib.AssociationSource;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ProgressIndicator;
 
 /** Manages the Mesquite block of a nexus file, which contains scripts for Mesquite and its modules. */
 public class ManageMesquiteBlock extends ScriptingManager {

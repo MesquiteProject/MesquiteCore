@@ -18,6 +18,8 @@ package mesquite.bayesian.TreesFromMrBayes;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 
 public class TreesFromMrBayes extends TreeSource implements MesquiteListener {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

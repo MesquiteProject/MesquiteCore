@@ -17,6 +17,7 @@ package mesquite.stochchar.StoredProbModelSim;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.categ.lib.*;
 import mesquite.stochchar.lib.*;
 

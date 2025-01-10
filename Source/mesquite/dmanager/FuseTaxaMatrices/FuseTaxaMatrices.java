@@ -20,6 +20,8 @@ import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class FuseTaxaMatrices extends FileAssistantT {

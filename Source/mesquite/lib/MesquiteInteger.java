@@ -16,6 +16,9 @@ package mesquite.lib;
 import java.awt.*;
 
 import mesquite.consensus.lib.Bipartition;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.TwoIntegersDialog;
 
 /*Last documented:  August 1999 */
 

@@ -20,6 +20,7 @@ import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
 public class SelectVariableCharacters extends CharacterSelector {

@@ -15,6 +15,8 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.misc.MesquiteCollator;
+
 
 /* ======================================================================== */
 public class StringArray implements StringLister, Listable {

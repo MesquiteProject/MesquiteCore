@@ -21,6 +21,7 @@ import mesquite.diverse.BiSSELikelihood.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 
 public class BiSSELikelihoodRatio extends NumForCharAndTreeDivers {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

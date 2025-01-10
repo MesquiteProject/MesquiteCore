@@ -23,6 +23,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class CharNumForList extends CharListAssistant implements MesquiteListener {

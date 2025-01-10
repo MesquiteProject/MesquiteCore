@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteTextWindow;
 
 
 /* ======================================================================== */

@@ -18,6 +18,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.categ.lib.*;
 import mesquite.io.lib.*;
 

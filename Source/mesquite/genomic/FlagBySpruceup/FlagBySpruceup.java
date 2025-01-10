@@ -30,8 +30,6 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
-import mesquite.lib.DoubleField;
-import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
@@ -45,6 +43,8 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
 public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionListener {

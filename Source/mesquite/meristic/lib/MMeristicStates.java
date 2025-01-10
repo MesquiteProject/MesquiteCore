@@ -16,6 +16,8 @@ package mesquite.meristic.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.cont.lib.ItemContainer;

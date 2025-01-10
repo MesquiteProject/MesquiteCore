@@ -16,6 +16,8 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.ui.HTMLDescribable;
+
 /*==========================  Mesquite Basic Class Library    ==========================*/
 /*.................................................................................................................*/
 /** A class to which objects can be attached.  May 2002*/

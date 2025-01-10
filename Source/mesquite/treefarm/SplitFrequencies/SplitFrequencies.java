@@ -20,6 +20,9 @@ import mesquite.consensus.lib.Bipartition;
 import mesquite.consensus.lib.BipartitionVector;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 
 /* ======================================================================== */

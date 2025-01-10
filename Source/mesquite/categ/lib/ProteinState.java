@@ -19,6 +19,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
 /** A subclass of CategoricalState set for Protein (max state enforced at 4). */

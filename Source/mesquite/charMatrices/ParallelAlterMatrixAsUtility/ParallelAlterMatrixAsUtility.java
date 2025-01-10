@@ -26,6 +26,8 @@ import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
 public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {

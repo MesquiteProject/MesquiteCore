@@ -18,6 +18,8 @@ import java.util.*;
 import java.text.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.characters.*;
 
 

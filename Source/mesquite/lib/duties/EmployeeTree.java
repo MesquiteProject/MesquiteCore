@@ -16,6 +16,7 @@ package mesquite.lib.duties;
 import java.awt.*;
 import mesquite.lib.*;
 //import mesquite.lib.duties.*;
+import mesquite.lib.misc.HPanel;
 
 
 /* ======================================================================== */

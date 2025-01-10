@@ -24,6 +24,8 @@ import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.MQTextArea;
 
 public class SequenceInfoEditor extends MatrixInfoPanelAssistantI  {
 	SequenceInfoPanel panel;

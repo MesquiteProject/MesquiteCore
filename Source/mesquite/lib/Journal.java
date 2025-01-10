@@ -15,6 +15,8 @@ package mesquite.lib;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls

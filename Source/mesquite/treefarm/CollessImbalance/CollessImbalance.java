@@ -16,6 +16,7 @@ package mesquite.treefarm.CollessImbalance;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 
 public class CollessImbalance extends NumberForTree {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

@@ -21,6 +21,7 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ProgressIndicator;
 
 /** Manages the NOTES block of a NEXUS file */
 public class ManageNotesBlock extends FileInit {

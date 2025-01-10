@@ -17,6 +17,7 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
 public class NoColorForTaxon extends TaxonNameStyler {

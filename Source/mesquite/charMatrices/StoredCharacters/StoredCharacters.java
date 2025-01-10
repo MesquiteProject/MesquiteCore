@@ -20,6 +20,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Supplies characters from character matrices stored in the project.*/
 public class StoredCharacters extends CharacterSource implements MesquiteListener, Selectionable {

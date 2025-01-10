@@ -15,6 +15,8 @@ package mesquite.lib.characters;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.TaxaBlock;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.*;
 
 /*Last documented:  April 2003 */

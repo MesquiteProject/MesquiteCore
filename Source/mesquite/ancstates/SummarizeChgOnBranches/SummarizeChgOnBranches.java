@@ -16,6 +16,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 import mesquite.ancstates.lib.*;
 
 

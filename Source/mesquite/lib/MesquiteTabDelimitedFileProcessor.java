@@ -23,6 +23,8 @@ package mesquite.lib;
 	import java.awt.event.*;
 
 	import mesquite.lib.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 	/* ======================================================================== */
 	public class MesquiteTabDelimitedFileProcessor implements ActionListener, TextListener {

@@ -24,6 +24,14 @@ import mesquite.lib.duties.*;
 import mesquite.meristic.lib.*;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQTextField;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.StringInABox;
 
 public class MerItemsEditInfo extends MatrixInfoPanelAssistantI  {
 	ItemsPanel panel;

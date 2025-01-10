@@ -6,6 +6,8 @@ import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.molec.lib.MolecUtil;
 
 public class ExportTiledBaits extends FileInterpreterI {

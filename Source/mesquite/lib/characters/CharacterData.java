@@ -25,10 +25,25 @@ import javax.swing.text.JTextComponent;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.MolecularData;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AttachedNotesVector;
+import mesquite.lib.misc.ChangeAuthority;
+import mesquite.lib.misc.ChangeEvent;
+import mesquite.lib.misc.ChangeHistory;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lists.lib.ListModule;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.HTMLDescribable;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquitePopup;
 
 /* last documented: April 2003 */
 /* ======================================================================== */

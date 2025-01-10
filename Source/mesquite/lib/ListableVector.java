@@ -18,6 +18,9 @@ import java.util.*;
 
 import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.HTMLDescribable;
 
 /* ======================================================================== */
 /*Vector of listable objects along with a simple, currently stupid system to display the list*/

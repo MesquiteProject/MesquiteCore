@@ -17,6 +17,13 @@ import java.awt.*;
 import java.util.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.CleanUpJob;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteDialogParent;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.ProgressWindow;
 
 import java.io.*;
 
@@ -254,11 +261,11 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		comRec.requestEstablishWizard(false);
 		MesquiteDialogParent dlog = comRec.getWizard();
 		if (dlog != null) {
-			if (dlog.hiddenForCalculation)
+			if (dlog.isHiddenForCalculation())
 				dlog.setVisible(true);
 			MesquiteDialog currentDialog =dlog.getCurrentDialog();
 			if (currentDialog != null){
-				currentDialog.usingWizard = false;
+				currentDialog.setInWizard(false);
 				currentDialog.dispose();
 				MesquiteDialog.currentWizard = null;
 			}
@@ -539,7 +546,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 						dlog.tickled++;
 						if (dlog.tickled==2) {
 							Toolkit.getDefaultToolkit().sync();
-							if (!dlog.alreadyDisposed && dlog instanceof ExtensibleDialog)
+							if (!dlog.isAlreadyDisposed() && dlog instanceof ExtensibleDialog)
 								dlog.setSize(dlog.getSize().width+1, dlog.getSize().height+1);
 							//else
 							//	dlog.pack();

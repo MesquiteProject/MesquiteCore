@@ -20,6 +20,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.MesquiteColorTable;
 
 /* ======================================================================== */
 public class NumForTreeList extends TreeListAssistant implements MesquiteListener, Pausable {

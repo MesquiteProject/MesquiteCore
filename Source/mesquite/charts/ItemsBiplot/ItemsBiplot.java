@@ -19,6 +19,19 @@ import java.awt.event.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ChartListener;
+import mesquite.lib.ui.ChartTool;
+import mesquite.lib.ui.ChartWindow;
+import mesquite.lib.ui.Charter;
+import mesquite.lib.ui.DoubleMiniScroll;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteChart;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* A module to supervise scattergrams of items.  This coordinates calculations; Scattergram module handles most graphics.*/
 

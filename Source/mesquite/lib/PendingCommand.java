@@ -15,6 +15,11 @@ package mesquite.lib;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteDialogParent;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
+
 import java.io.*;
 
 public class PendingCommand implements SpecialListName, Explainable {
@@ -215,11 +220,11 @@ public class PendingCommand implements SpecialListName, Explainable {
 					comRec.requestEstablishWizard(false);
 					MesquiteDialogParent dlog = comRec.getWizard();
 					if (dlog != null) {
-						if (dlog.hiddenForCalculation)
+						if (dlog.isHiddenForCalculation())
 							dlog.setVisible(true);
 						MesquiteDialog currentDialog =dlog.getCurrentDialog();
 						if (currentDialog != null){
-							currentDialog.usingWizard = false;
+							currentDialog.setInWizard(false);
 							currentDialog.dispose();
 							MesquiteDialog.currentWizard = null;
 						}

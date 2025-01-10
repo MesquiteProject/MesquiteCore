@@ -17,6 +17,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.zip.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 /* ======================================================================== */

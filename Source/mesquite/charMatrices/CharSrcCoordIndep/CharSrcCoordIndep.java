@@ -19,6 +19,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteDialog;
 import mesquite.parsimony.lib.CharacterSteps;
 
 public class CharSrcCoordIndep extends CharSourceCoord {

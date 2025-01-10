@@ -21,15 +21,15 @@ import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteWindow;
 import mesquite.lib.NameReference;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Puppeteer;
-import mesquite.lib.Taxa;
-import mesquite.lib.Tree;
-import mesquite.lib.TreeDisplay;
-import mesquite.lib.TreeDisplayExtra;
-import mesquite.lib.TreeTool;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.tol.lib.*;
 
 public abstract class BaseSearchToLToolTaxonExtra  extends TreeDisplayExtra implements Commandable  {

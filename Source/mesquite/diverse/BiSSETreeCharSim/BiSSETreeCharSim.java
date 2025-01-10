@@ -18,6 +18,11 @@ package mesquite.diverse.BiSSETreeCharSim;
 import java.util.Vector;
 
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.categ.lib.*;
 import mesquite.diverse.lib.*;
 

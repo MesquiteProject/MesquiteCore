@@ -18,6 +18,8 @@ import mesquite.distance.lib.IncTaxaDistanceSource;
 import mesquite.distance.lib.TaxaDistance;
 import mesquite.lib.*;
 import mesquite.lib.duties.TreeSource;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 
 public class NodeCountDist extends IncTaxaDistanceSource implements Incrementable {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

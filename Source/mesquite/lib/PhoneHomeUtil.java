@@ -17,6 +17,10 @@ import java.util.*;
 
 import org.dom4j.*;
 
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+
 public class PhoneHomeUtil {	
 
 	static int OS = 0;

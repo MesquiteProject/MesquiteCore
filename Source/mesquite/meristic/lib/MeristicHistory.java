@@ -18,6 +18,11 @@ import java.util.*;
 
 import mesquite.cont.lib.ContColorTable;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorEventVector;
+import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 

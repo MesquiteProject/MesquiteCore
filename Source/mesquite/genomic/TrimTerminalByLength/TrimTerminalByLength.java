@@ -8,6 +8,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.DataAlterer;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.ui.ExtensibleDialog;
 
 public class TrimTerminalByLength extends DataAlterer implements AltererSimpleCell{
 	int numToTrim = 10;

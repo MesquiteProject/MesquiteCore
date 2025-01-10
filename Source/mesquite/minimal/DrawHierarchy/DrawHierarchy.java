@@ -20,6 +20,12 @@ import java.util.*;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HNode;
+import mesquite.lib.misc.HPanel;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteLabel;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
 
 /** Draws the trees of HNode's in various places (e.g., module tree in Module tab of windows; Project element tree in 
 Projects & Files window). */

@@ -23,6 +23,14 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.taxa.TaxonNamer;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 
 //TODO:   have option to not write empty taxa?

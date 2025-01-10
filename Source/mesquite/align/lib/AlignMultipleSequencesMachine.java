@@ -6,6 +6,7 @@ import mesquite.categ.lib.MolecularData;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.ui.AlertDialog;
 
 public class AlignMultipleSequencesMachine {
 	MesquiteModule ownerModule;

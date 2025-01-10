@@ -19,6 +19,8 @@ import mesquite.distance.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /**Supplies a number for a character matrix and a pair of taxa.  Currently, it is just a distance 
  * calculator for a specific pair of taxa, but could be made abstract for additional uses.*/

@@ -19,6 +19,9 @@ import java.awt.FileDialog;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ColorTheme;
 
 /* ======================================================================== */
 public class CopyTreesToNexusBlock extends FileProcessor {

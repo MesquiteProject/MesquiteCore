@@ -20,6 +20,9 @@ import mesquite.diverse.lib.*;
 import mesquite.diverse.BiSSELikelihoodCalculator.BiSSELikelihoodCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.ParametersDialog;
 import mesquite.stochchar.lib.MargLikelihoodForModel;
 
 public class BiSSELikelihood extends NumForCharAndTreeDivers {

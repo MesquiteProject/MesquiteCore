@@ -21,6 +21,19 @@ import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ChartWindow;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.RadioButtons;
+import mesquite.lib.ui.SingleLineTextField;
 
 /** The "vice president" of the Mesquite system (the MesquiteTrunk module "Mesquite" being the president).  One of these is hired to coordinate each project.
 Should actually be named ProjectCoordinator.*/

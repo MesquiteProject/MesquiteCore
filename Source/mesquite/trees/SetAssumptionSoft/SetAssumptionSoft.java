@@ -16,6 +16,7 @@ package mesquite.trees.SetAssumptionSoft;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
 
 /* ======================================================================== */
 public class SetAssumptionSoft extends TreeAltererMult {

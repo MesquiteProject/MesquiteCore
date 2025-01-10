@@ -23,6 +23,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.ProbabilityModelSet;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaStringsSet;
+import mesquite.lib.ui.ListDialog;
 
 /* ======================================================================== */
 public class TaxonListArchivedName extends TaxonListAssistant {

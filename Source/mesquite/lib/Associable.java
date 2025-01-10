@@ -23,10 +23,10 @@ a CharacterData contains characters, and so on.  The purpose of this class is to
 this attached ("associated") information.  Subclasses include FileElement (and thus CharacterData
 and Taxa) and Tree.  */
 public abstract class Associable extends Attachable implements Commandable, Annotatable, Selectionable {
-	Vector bits;
-	Vector longs;
-	Vector doubles;
-	Vector objects;
+	protected Vector bits;
+	protected Vector longs;
+	protected Vector doubles;
+	protected Vector objects;
 	int[] defaultOrder;
 	int[] currentOrder;
 	int[] previousOrder;
@@ -330,7 +330,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		return null;
 	}
 	/*-----------------------------------------*/
-	MesquiteInteger pos = new MesquiteInteger(0);
+	protected MesquiteInteger pos = new MesquiteInteger(0);
 	/** For Commandable interface.  TODO:  have setDouble and pass part; have getDouble and pass part.  Likewise for long, etc. */
 	public Object doCommand(String commandName, String arguments, CommandChecker checker){
 		if (checker.compare(this.getClass(), "Sets the value of an associated double", "[name of double][value]", commandName, "setDoubleOfSelected")) {

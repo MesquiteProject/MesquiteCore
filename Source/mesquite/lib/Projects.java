@@ -15,6 +15,10 @@ package mesquite.lib;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HNode;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteWindow;
+
 import java.util.*;
 
 

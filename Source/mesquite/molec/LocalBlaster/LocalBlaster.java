@@ -21,6 +21,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.molec.lib.*;
 import mesquite.externalCommunication.AppHarvester.AppHarvester;
 import mesquite.externalCommunication.lib.*;

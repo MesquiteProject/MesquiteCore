@@ -15,6 +15,9 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
+
 
 
 /*===============================================*/

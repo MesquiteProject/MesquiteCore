@@ -17,6 +17,7 @@ package mesquite.genesis.SimDNAModelCurator;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.categ.lib.*;
 import mesquite.genesis.lib.*;
 import mesquite.stochchar.lib.*;

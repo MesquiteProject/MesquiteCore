@@ -15,6 +15,9 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+
 /*Last documented:  August 1999 */
 /* ======================================================================== */
 /**This class is used to store numbers flexibly, so that system doesn't need to know whether int, long or double.

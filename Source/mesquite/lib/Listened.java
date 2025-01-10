@@ -16,6 +16,8 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.misc.ClassVector;
+
 
 
 /*.................................................................................................................*/

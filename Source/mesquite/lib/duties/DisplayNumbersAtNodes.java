@@ -16,6 +16,9 @@ package mesquite.lib.duties;
 import java.awt.*;
 
 import mesquite.lib.*;
+import mesquite.lib.tree.TreeDecorator;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
 
 
 /* ======================================================================== */

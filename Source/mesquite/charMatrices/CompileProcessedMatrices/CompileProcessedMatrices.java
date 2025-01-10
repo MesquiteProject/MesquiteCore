@@ -21,6 +21,9 @@ import mesquite.categ.lib.ProteinData;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorTheme;
 
 /* ======================================================================== */
 public class CompileProcessedMatrices extends FileProcessor {

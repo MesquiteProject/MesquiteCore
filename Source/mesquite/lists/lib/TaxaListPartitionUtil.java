@@ -4,9 +4,9 @@ import java.awt.Color;
 
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteSymbol;
 import mesquite.lib.StringUtil;
-import mesquite.lib.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.ui.MesquiteSymbol;
 
 public class TaxaListPartitionUtil {
 

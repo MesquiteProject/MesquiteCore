@@ -22,6 +22,8 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
 
 /* ======================================================================== */
 public class ProportionUniqueStates extends NumberForTaxon {

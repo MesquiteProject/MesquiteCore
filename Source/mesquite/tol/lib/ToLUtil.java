@@ -18,8 +18,8 @@ import java.util.List;
 
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteString;
-import mesquite.lib.MesquiteTree;
-import mesquite.lib.Taxa;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
 
 import org.dom4j.*;
 

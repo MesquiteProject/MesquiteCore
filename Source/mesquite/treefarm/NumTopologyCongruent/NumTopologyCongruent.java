@@ -16,6 +16,9 @@ package mesquite.treefarm.NumTopologyCongruent;
 import mesquite.lib.*;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.duties.TreeSourceDefinite;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 public class NumTopologyCongruent extends NumberForTree {
 	TreeSourceDefinite treeSourceTask;

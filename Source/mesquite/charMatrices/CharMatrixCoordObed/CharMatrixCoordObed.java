@@ -19,6 +19,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 public class CharMatrixCoordObed extends MatrixSourceCoordObed implements NameHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

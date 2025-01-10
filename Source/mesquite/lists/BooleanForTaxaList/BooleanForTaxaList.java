@@ -19,6 +19,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lists.lib.*;
 
 public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteListener, Pausable {

@@ -20,6 +20,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.RadioButtons;
 
 /* ======================================================================== */
 public class GapsToFromMissing extends CategDataAlterer implements AltererConvertGapMissPolyUncert {

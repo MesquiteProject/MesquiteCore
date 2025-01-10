@@ -21,6 +21,14 @@ import java.util.*;
 /* ======================================================================== */
 
 import mesquite.lib.*;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
 
 public class SimplicityStrip extends MousePanel implements Commandable {
 	Font smallFont = new Font("SanSerif", Font.PLAIN, 10);

@@ -21,6 +21,9 @@ import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.DNAData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 /* ======================================================================== */

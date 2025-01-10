@@ -16,6 +16,8 @@ package mesquite.io.lib;
 import java.awt.*;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.SingleLineTextField;
 	
 public class PartitionFinderDialog extends ExporterDialog {
 //	int tnl = 200;

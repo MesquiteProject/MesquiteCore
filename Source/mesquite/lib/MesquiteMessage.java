@@ -14,6 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
  import java.util.*;
+
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteWindow;
  
 /*=======================*/
 /** A utility class with method to duplicate System.out.println, or to generate user alerts.

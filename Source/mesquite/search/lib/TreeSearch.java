@@ -20,6 +20,10 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.CanRetrieveTreeBlock;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 public abstract class TreeSearch extends TreeInferer implements Incrementable {

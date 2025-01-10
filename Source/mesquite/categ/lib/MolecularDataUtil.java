@@ -7,6 +7,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.lib.duties.ElementManager;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lists.lib.ListModule;
 import mesquite.align.lib.*;
 

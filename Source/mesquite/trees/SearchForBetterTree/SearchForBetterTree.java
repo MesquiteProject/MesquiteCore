@@ -19,6 +19,8 @@ import java.awt.Checkbox;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.ui.ExtensibleDialog;
 
 
 /*  TODO: ask option of showing live updates

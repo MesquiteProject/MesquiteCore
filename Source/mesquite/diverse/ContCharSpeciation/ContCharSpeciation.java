@@ -15,6 +15,8 @@ package mesquite.diverse.ContCharSpeciation;
 
 
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.diverse.lib.*;
 import mesquite.categ.lib.CategoricalHistory;
 import mesquite.cont.lib.*;

@@ -21,6 +21,7 @@ import mesquite.lib.duties.DataAlterer;
 import mesquite.align.lib.MultipleSequenceAligner;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lists.lib.ListModule;
 import mesquite.molec.lib.CodonPositionAssigner;
 

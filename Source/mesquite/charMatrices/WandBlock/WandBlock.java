@@ -19,6 +19,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteWindow;
 
 /*   to do:
 	- deal with Option cursor, Shift cursor

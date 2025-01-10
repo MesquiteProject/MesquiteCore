@@ -20,6 +20,9 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ========== */
 public abstract class TemplateManager extends FileInit {

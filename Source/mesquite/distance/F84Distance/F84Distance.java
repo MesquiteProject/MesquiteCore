@@ -17,6 +17,8 @@ package mesquite.distance.F84Distance;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 import mesquite.distance.lib.*;
 

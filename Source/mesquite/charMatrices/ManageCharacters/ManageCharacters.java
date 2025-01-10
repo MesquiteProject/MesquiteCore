@@ -24,6 +24,15 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleExplDialog;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.SingleLineTextField;
+import mesquite.lib.ui.StringIntegerListDlog;
 
 /**  Manages character matrices, including reading and writing from files (for which it relies on managers of the particular data types).
 This has some methods and classes for recording the history of changes of the cells of the matrix.  These functions are not yet publicly available. */

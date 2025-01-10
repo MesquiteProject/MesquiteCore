@@ -22,6 +22,7 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataColumnNamesAssistant;
 import mesquite.lib.table.ColumnNamesPanel;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	MesquiteTable table;

@@ -24,6 +24,13 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.RadioButtons;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.charMatrices.lib.*;
 
 public class SaveMatrixCopies extends FileInit implements ItemListener {

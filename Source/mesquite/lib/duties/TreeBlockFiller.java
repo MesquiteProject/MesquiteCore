@@ -16,6 +16,9 @@ package mesquite.lib.duties;
 import java.awt.*;
 
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 
 
 /* ======================================================================== */

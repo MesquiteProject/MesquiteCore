@@ -21,6 +21,9 @@ import mesquite.lib.characters.ProbabilityModelSet;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 
 /* ======================================================================== */

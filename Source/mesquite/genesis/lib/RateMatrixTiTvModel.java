@@ -16,6 +16,9 @@ package mesquite.genesis.lib;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.categ.lib.*;
 
 /** A class that provides root states for probabilistic models, using frequencies for the root states. 

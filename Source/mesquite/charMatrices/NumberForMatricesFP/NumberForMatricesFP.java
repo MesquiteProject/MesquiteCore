@@ -17,6 +17,7 @@ package mesquite.charMatrices.NumberForMatricesFP;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class NumberForMatricesFP extends FileProcessor {

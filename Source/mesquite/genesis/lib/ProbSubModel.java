@@ -16,6 +16,7 @@ package mesquite.genesis.lib;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.categ.lib.*;
 
 /** A class that provides for a site-to-site rate variation model. */

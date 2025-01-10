@@ -20,6 +20,11 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharactersBlock;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.TaxaBlock;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 
 /** A file interpreter for a NEXUS file format.  Sends blocks to various managing modules for reading.  */

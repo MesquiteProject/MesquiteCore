@@ -20,6 +20,9 @@ import java.awt.*;
 import mesquite.charMatrices.lib.RandomMatrixModifier;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 /** Supplies tree blocks from other sources.*/
 public abstract class BlockFromTreeSource extends TreeBlockSource { 

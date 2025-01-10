@@ -16,6 +16,8 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls
@@ -36,9 +38,9 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	boolean disposed = false;
 	boolean letMe = true;
 	public static ListableVector currentThreads;
-	boolean bypassQueue = false;
-	boolean hideInList = false; 
-	boolean suppressLogging = false;
+	public boolean bypassQueue = false;
+	public boolean hideInList = false; 
+	public boolean suppressLogging = false;
 	public static boolean logEverything = false;
 	boolean dontDuplicate = false; //if true then the same command on to the same object will not be put on the queue more than once
 	//to find memory leaks

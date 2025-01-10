@@ -17,10 +17,10 @@ package mesquite.charMatrices.NumMatricesWithDataForTaxon;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.Notification;
-import mesquite.lib.Taxa;
-import mesquite.lib.Taxon;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.NumberForTaxon;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
 
 public class NumMatricesWithDataForTaxon extends NumberForTaxon {
 	/*.................................................................................................................*/

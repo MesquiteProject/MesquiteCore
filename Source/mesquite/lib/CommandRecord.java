@@ -16,6 +16,10 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteDialogParent;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls */
@@ -100,7 +104,7 @@ public class CommandRecord extends Listened {
 	}
 */
 	public MesquiteDialogParent getWizard(){
-		if (wizard != null && wizard.alreadyDisposed)  //just in case no one told me
+		if (wizard != null && wizard.isAlreadyDisposed())  //just in case no one told me
 			wizard = null;
 		return wizard;
 	}

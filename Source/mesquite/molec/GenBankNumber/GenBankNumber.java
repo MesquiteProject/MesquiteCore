@@ -21,6 +21,9 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 
 /* ======================================================================== */

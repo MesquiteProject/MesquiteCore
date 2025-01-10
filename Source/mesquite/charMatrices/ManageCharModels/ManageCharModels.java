@@ -19,6 +19,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Manages models of character evolution, including coordinating file reading and writing*/
 public class ManageCharModels extends FileInit implements ElementManager {

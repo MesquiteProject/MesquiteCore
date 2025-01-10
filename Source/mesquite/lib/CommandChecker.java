@@ -17,6 +17,15 @@ import java.awt.*;
 import java.util.*;
 import java.io.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ImageOwner;
+import mesquite.lib.ui.MesquiteCMenuItemSpec;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenu;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ��������������������������� commands ������������������������������� */
 /*
@@ -45,7 +54,7 @@ public class CommandChecker {
 
 	boolean includeParameters = true;
 	
-	boolean warnIfNoResponse = true;
+	public boolean warnIfNoResponse = true;
 
 	boolean LIMode = false;
 
@@ -67,7 +76,7 @@ public class CommandChecker {
 	public static CommandChecker defaultChecker;
 	public static CommandChecker quietDefaultChecker;
 
-	static CommandChecker defaultSkipChecker;
+	public static CommandChecker defaultSkipChecker;
 	static {
 		registeredClasses = new Vector();
 		representingClasses = new Vector();

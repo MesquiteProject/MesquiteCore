@@ -13,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.thinkTrees.RandomlyRotate;
 
 import mesquite.lib.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 import mesquite.treefarm.lib.RndTreeModifier;
 
 public class RandomlyRotate extends RndTreeModifier {

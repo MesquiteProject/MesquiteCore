@@ -17,6 +17,7 @@ package mesquite.trees.SetBranchLengthsIfLessThan;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
 
 public class SetBranchLengthsIfLessThan extends BranchLengthsAltererMult {
 	MesquiteDouble assignLength;

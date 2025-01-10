@@ -20,7 +20,10 @@ import java.awt.event.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.VoucherInfoFromOTUIDDB;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
 public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {

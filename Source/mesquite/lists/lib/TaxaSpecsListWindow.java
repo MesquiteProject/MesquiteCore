@@ -18,6 +18,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lib.*;
 
 /* ======================================================================== */

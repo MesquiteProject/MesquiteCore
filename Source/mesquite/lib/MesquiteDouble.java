@@ -16,6 +16,10 @@ package mesquite.lib;
 import java.awt.*;
 import java.text.*;
 import corejava.Format;
+import mesquite.lib.ui.EnglishDecimalFormatSymbols;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.TwoStringsDialog;
 
 /*Last documented:  August 1999 */
 

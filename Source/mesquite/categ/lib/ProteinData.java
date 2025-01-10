@@ -18,6 +18,7 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
 /** A subclass of CharacterData for Protein data stored as Categorical sets (e.g, "{A, C}" */

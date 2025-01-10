@@ -23,6 +23,7 @@ import java.net.URLClassLoader;
 import mesquite.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ThermoPanel;
 /*======================================================================== */
 public class ModuleLoader {
 	Mesquite mesquite;

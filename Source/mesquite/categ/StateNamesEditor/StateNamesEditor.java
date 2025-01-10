@@ -20,7 +20,19 @@ import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.AnnotPanelOwner;
+import mesquite.lib.ui.AnnotationsPanel;
+import mesquite.lib.ui.HTMLSidePanel;
+import mesquite.lib.ui.MesquiteButton;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ToolPalette;
 import mesquite.categ.lib.*;
 
 

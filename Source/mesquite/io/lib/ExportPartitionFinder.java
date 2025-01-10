@@ -20,16 +20,16 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.NumberArray;
 import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
-import mesquite.lib.Taxa;
-import mesquite.lib.Taxon;
-import mesquite.lib.TaxonNamer;
-import mesquite.lib.TreeVector;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterPartition;
 import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.taxa.TaxonNamer;
+import mesquite.lib.tree.TreeVector;
 import mesquite.io.lib.*;
 
 

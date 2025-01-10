@@ -17,6 +17,7 @@ package mesquite.molec.CodesetList;
 import mesquite.lists.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.molec.lib.*;
 
 /* ======================================================================== */

@@ -15,6 +15,9 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+
 /*Last documented:  August 1999 */
 
 /* ======================================================================== */

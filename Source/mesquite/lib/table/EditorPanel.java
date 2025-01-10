@@ -17,6 +17,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquitePopup;
 
 /* ======================================================================== */
 /** A superclass for the panels that make up a MesquiteTable.  Has an editable text field that can be repositioned over a cell.*/

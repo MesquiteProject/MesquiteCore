@@ -17,6 +17,7 @@ package mesquite.distance.F81Distance;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.categ.lib.*;
 import mesquite.distance.lib.*;
 

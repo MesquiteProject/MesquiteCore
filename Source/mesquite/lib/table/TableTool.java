@@ -15,6 +15,8 @@ package mesquite.lib.table;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MousePanel;
 import mesquite.lib.*;
 
 /* ��������������������������� commands ������������������������������� */

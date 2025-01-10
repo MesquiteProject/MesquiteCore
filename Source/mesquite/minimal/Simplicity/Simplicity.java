@@ -18,6 +18,9 @@ package mesquite.minimal.Simplicity;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.*;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MenuVisibility;
+import mesquite.lib.ui.QueryDialogs;
 
 import java.util.zip.*;
 import java.util.*;

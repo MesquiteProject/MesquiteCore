@@ -16,6 +16,7 @@ package mesquite.molec.lib;
 import java.util.Hashtable;
 
 import mesquite.lib.*;
+import mesquite.lib.duties.DatabaseURLSource;
 
 public abstract class DNADatabaseURLSource extends DatabaseURLSource {
 	public static final int PRIMER_NAME = 1;

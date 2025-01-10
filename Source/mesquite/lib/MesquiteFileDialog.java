@@ -19,6 +19,9 @@ import java.io.*;
 
 import javax.swing.JWindow;
 
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteWindow;
+
 
 /*===============================================*/
 /** A dialog box*/

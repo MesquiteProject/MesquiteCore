@@ -19,6 +19,9 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class PictureWindowMaker extends FileAssistantN {

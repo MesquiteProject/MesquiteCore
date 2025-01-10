@@ -15,6 +15,7 @@ package mesquite.lib.characters;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 import mesquite.lib.*;
 
 /*Last documented:  May 2000 */

@@ -33,13 +33,9 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.RequiresAnyDNAData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.Bits;
-import mesquite.lib.ColorDistribution;
-import mesquite.lib.ColorTheme;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
-import mesquite.lib.DoubleField;
-import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
@@ -50,7 +46,6 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
-import mesquite.lib.SingleLineTextField;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharInclusionSet;
@@ -59,6 +54,11 @@ import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements ActionListener, ItemListener, TextListener {

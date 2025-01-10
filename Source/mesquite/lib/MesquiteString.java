@@ -15,6 +15,10 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.TwoStringsDialog;
+
 /* ======================================================================== */
 /**This String wrapper class is used to be able to pass Strings by reference and have the
 	original change as needed*/

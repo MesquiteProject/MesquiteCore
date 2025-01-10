@@ -23,6 +23,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class DatasetList extends ListLVModule {

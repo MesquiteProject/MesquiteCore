@@ -20,6 +20,7 @@ import java.util.Vector;
 import org.apache.commons.httpclient.NameValuePair;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.tol.lib.BaseHttpRequestMaker;
 
 /* ======================================================================== */

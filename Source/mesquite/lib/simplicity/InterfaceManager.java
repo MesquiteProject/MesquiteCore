@@ -14,6 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.simplicity;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.MenuVisibility;
+import mesquite.lib.ui.MesquiteMenu;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+
 import java.awt.*;
 import java.util.*;
 

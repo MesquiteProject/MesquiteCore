@@ -18,6 +18,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Supplies taxa from taxa blocks stored in the project.*/
 public class StoredTaxa extends TaxonSource implements MesquiteListener {

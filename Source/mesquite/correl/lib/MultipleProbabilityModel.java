@@ -15,7 +15,6 @@ package mesquite.correl.lib;
 
 import mesquite.lib.CommandRecord;
 import mesquite.lib.MesquiteInteger;
-import mesquite.lib.Tree;
 import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.characters.CharacterState;
 import mesquite.lib.characters.CharacterStatesHolder;
@@ -23,6 +22,7 @@ import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.characters.MCharactersStatesHolder;
 import mesquite.lib.characters.ProbabilityModel;
 import mesquite.lib.characters.WholeCharacterModel;
+import mesquite.lib.tree.Tree;
 /* ======================================================================== */
 /** Sublcass of models of character evolution for likelihood and other calculations involving stochastic models of character evolution. It is expected
 that subclasses of this will be specialized for different classes of data (categorical, continuous, etc.)*/

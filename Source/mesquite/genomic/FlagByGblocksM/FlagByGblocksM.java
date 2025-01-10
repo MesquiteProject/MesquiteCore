@@ -32,8 +32,6 @@ import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
-import mesquite.lib.DoubleField;
-import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
@@ -44,7 +42,6 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
-import mesquite.lib.RadioButtons;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
@@ -52,6 +49,9 @@ import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.RadioButtons;
 
 /* ======================================================================== */
 public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements ActionListener {

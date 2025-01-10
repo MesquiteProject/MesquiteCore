@@ -22,6 +22,9 @@ import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.characters.DefaultReference;
 import mesquite.lib.characters.ModelSet;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.Mesquite3DIntPoint;
 import mesquite.molec.lib.*;
 
 import java.util.*;

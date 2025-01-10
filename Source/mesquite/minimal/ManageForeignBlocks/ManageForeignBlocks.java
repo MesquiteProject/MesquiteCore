@@ -19,6 +19,7 @@ import java.io.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 /** Manages unrecognized blocks in NEXUS data files (storing for editing or later rewriting) */
 public class ManageForeignBlocks extends MesquiteModule {

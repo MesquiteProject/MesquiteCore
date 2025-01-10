@@ -17,6 +17,9 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.SingleLineTextField;
 
 
 

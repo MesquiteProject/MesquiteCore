@@ -26,6 +26,9 @@ import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.characters.CharacterState;
 import mesquite.lib.characters.ProbabilityModel;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.stochchar.lib.MkModel;
 import Jama.Matrix;
 

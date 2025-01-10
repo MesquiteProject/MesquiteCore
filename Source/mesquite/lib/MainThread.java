@@ -17,6 +17,7 @@ import java.awt.*;
 import java.io.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteDialog;
 
 /** The main thread for executing commands */
 public class MainThread extends MesquiteThread {

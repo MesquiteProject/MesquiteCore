@@ -30,6 +30,10 @@ import mesquite.externalCommunication.lib.AppChooser;
 import mesquite.externalCommunication.lib.AppInformationFile;
 import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */

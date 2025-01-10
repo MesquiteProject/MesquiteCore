@@ -21,6 +21,7 @@ import java.awt.Checkbox;
 
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.molec.lib.*;
 
 /* ======================================================================== */

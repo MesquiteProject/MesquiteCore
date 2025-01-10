@@ -19,6 +19,11 @@ package mesquite.tol.lib;
 import java.net.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.TreeVector;
+
 import org.dom4j.*;
 
 public class ToLProjectOpener  {

@@ -6,8 +6,9 @@ import mesquite.lib.Long2DArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.Tree;
 import mesquite.lib.characters.*;
+import mesquite.lib.tree.Tree;
+
 import java.math.*;
 
 

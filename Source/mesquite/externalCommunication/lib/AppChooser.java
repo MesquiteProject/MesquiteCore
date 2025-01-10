@@ -25,6 +25,8 @@ import javax.swing.JLabel;
 
 import mesquite.externalCommunication.AppHarvester.AppHarvester;
 import mesquite.lib.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 public class AppChooser implements ActionListener {
 	MesquiteString alternativeManualPath = new MesquiteString();   // if user-specified, not built in

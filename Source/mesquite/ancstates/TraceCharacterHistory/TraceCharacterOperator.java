@@ -20,6 +20,20 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.cont.lib.ContinuousState;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDecorator;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayDrawnExtra;
+import mesquite.lib.tree.TreeDisplayLegend;
+import mesquite.lib.ui.ColorDialog;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MiniScroll;
+import mesquite.lib.ui.StringInABox;
 
 /* ======================================================================== */
 public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements CharHistoryContainer {

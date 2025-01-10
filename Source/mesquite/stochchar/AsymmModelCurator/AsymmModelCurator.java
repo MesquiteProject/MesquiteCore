@@ -20,6 +20,10 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.DoubleSliderWindow;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.RadioButtons;
 import mesquite.categ.lib.*;
 import mesquite.stochchar.lib.*;
 /* ======================================================================== */

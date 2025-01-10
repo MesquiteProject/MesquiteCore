@@ -21,6 +21,7 @@ import mesquite.io.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.taxa.Taxa;
 
 public class ExportFusedPhylip extends InterpretPhylip {
 

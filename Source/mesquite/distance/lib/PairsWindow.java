@@ -16,6 +16,11 @@ package mesquite.distance.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ChartWindow;
+import mesquite.lib.ui.Charter;
+import mesquite.lib.ui.MesquiteChart;
+import mesquite.lib.ui.MesquitePanel;
 import mesquite.lib.*;
 
 

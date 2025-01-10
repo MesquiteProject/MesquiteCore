@@ -19,6 +19,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.SliderWindow;
 import mesquite.cont.lib.*;
 import mesquite.stochchar.lib.*;
 

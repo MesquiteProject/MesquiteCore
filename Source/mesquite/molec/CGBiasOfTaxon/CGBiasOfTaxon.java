@@ -20,14 +20,14 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.Notification;
-import mesquite.lib.Taxa;
-import mesquite.lib.Taxon;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.duties.NumberForTaxon;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
 
 public class CGBiasOfTaxon extends NumberForTaxon {
 	long A = CategoricalState.makeSet(0);

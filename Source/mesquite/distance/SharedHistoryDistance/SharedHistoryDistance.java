@@ -15,6 +15,8 @@ package mesquite.distance.SharedHistoryDistance;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 import mesquite.distance.lib.*;
 
 public class SharedHistoryDistance extends IncTaxaDistanceSource implements Incrementable {

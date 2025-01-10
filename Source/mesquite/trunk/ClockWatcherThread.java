@@ -20,6 +20,9 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
 public class ClockWatcherThread extends Thread {

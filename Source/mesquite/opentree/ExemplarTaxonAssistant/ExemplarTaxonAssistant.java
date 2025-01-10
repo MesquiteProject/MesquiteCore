@@ -17,6 +17,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 import mesquite.lists.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.opentree.lib.*;
 
 

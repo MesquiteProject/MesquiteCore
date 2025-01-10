@@ -17,6 +17,14 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MiniStringEditor;
+import mesquite.lib.ui.StringInABox;
 
 /* ======================================================================== */
 public class ConstrainNodeAge extends TreeDisplayAssistantI {

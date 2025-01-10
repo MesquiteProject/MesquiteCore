@@ -21,6 +21,16 @@ import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 import mesquite.lib.table.TableTool;
+import mesquite.lib.ui.ChartTool;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ParametersDialog;
+import mesquite.lib.ui.ParametersExplorable;
+import mesquite.lib.ui.StringInABox;
+import mesquite.lib.ui.TextRotator;
 
 public class BasicParametersExplorer extends ParametersExplorer  {
 	String title = null;

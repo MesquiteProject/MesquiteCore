@@ -2,9 +2,9 @@ package mesquite.lists.lib;
 
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.Taxa;
-import mesquite.lib.TaxaSelectionSet;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
 
 /* ======================================================================== */
 public abstract class TaxonsetsListUtility extends MesquiteModule  {

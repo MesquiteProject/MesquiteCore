@@ -15,6 +15,8 @@ package mesquite.basic.PrefixedStringMatcher;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 public class PrefixedStringMatcher extends StringMatcher {
 	String prefix = "DNA";

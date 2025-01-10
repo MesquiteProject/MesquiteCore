@@ -15,6 +15,7 @@ package mesquite.search.ParsimonyTreeSearch;
 /*~~  */
 
 import mesquite.lib.*;
+import mesquite.lib.analysis.ParsimonyAnalysis;
 import mesquite.search.lib.*;
 
 /* ======================================================================== */

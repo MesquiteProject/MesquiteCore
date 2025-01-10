@@ -20,6 +20,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaPartition;
 
 /* ======================================================================== */
 public class TaxaPartListNumGroups extends TaxaPartListAssistant implements MesquiteListener {

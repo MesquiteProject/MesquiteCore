@@ -19,6 +19,7 @@ import java.util.*;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteDialog;
 
 /* ======================================================================== */
 public class ProjectRead implements Runnable {

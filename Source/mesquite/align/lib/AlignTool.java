@@ -16,6 +16,7 @@ package mesquite.align.lib;
 import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteCursor;
 import mesquite.lib.*;
 
 /* ======================================================================== */

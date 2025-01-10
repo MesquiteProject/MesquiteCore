@@ -17,7 +17,16 @@ package mesquite.lib;
 import java.awt.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HPanel;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.lib.ui.HelpSearchManager;
+import mesquite.lib.ui.LinuxGWAThread;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenu;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.trunk.ApplicationHandler9;
 import mesquite.trunk.PhoneHomeThread;
 import mesquite.trunk.ProjectTreeWindow;

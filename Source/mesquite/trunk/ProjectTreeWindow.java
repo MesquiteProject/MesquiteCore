@@ -18,6 +18,9 @@ import java.awt.image.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HPanel;
+import mesquite.lib.ui.HelpSearchStrip;
+import mesquite.lib.ui.MesquiteWindow;
 /*======================================================================== */
 public class ProjectTreeWindow extends MesquiteWindow implements SystemWindow {
 	HPanel  browser;

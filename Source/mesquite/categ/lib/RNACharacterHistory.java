@@ -18,6 +18,8 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 
 
 /** A subclass of CharacterHistory forRNA data.  Enforces max state at 3*/

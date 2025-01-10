@@ -21,6 +21,9 @@ import mesquite.charMatrices.ColorByState.ColorByState;
 import mesquite.molec.ColorByAA.ColorByAA;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.categ.lib.*;
 
 

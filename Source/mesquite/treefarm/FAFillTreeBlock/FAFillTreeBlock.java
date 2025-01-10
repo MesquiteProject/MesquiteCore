@@ -16,6 +16,9 @@ package mesquite.treefarm.FAFillTreeBlock;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class FAFillTreeBlock extends FileProcessor {

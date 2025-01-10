@@ -20,6 +20,7 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 
 /** Interprets the DATA block of a NEXUS file (this is more of an importer than manager; see ManageTaxa and ManageCharacters for the full management system for taxa and character blocks)*/
 public class ManageDATAblock extends MesquiteModule {

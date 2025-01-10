@@ -16,6 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteSymbol;
 
 
 /* ======================================================================== */

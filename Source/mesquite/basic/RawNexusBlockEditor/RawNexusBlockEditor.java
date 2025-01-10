@@ -18,6 +18,8 @@ import java.io.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteTextWindow;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class RawNexusBlockEditor extends EditRawNexusBlock {

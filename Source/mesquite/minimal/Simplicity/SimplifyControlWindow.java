@@ -2,6 +2,22 @@ package mesquite.minimal.Simplicity;
 
 import mesquite.lib.*;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MQComponent;
+import mesquite.lib.ui.MQJScrollPane;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQScrollPane;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesqJEditorPane;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteSubmenu;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MessagePanel;
+import mesquite.lib.ui.MousePanel;
 
 import java.awt.*;
 import java.util.*;

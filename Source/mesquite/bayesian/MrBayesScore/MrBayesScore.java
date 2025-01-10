@@ -15,6 +15,7 @@ package mesquite.bayesian.MrBayesScore;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 
 /* 
  * Walks a Mesquite tree and calculates the number of taxa in it.

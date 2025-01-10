@@ -19,6 +19,7 @@ import java.io.File;
 import mesquite.externalCommunication.lib.PythonUtil;
 import mesquite.lib.*;
 import mesquite.lib.duties.GeneralFileMaker;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
 public class FlipTaxonLocus extends GeneralFileMaker {

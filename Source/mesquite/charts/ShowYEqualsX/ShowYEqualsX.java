@@ -17,6 +17,9 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ChartExtra;
+import mesquite.lib.ui.Charter;
+import mesquite.lib.ui.MesquiteChart;
 
 
 

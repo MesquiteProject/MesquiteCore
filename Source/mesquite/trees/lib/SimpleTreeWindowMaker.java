@@ -17,6 +17,12 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeContext;
+import mesquite.lib.tree.TreeContextListener;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.assoc.lib.*;
 
 /* ======================================================================== */

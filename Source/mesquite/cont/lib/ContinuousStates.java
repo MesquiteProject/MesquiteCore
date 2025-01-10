@@ -16,6 +16,8 @@ package mesquite.cont.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 

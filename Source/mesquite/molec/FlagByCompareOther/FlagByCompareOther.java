@@ -20,18 +20,18 @@ package mesquite.molec.FlagByCompareOther;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
-import mesquite.lib.ListDialog;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
-import mesquite.lib.Taxa;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
 
 /* ======================================================================== */
 public class FlagByCompareOther extends MatrixFlagger {

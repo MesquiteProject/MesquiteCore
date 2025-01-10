@@ -18,6 +18,8 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaPartition;
 
 /** Supplies the current partition of taxa. */
 public class CurrentTaxaPartition extends TaxaPartitionSource implements MesquiteListener {

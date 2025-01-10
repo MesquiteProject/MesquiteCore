@@ -19,6 +19,11 @@ import java.awt.Choice;
 import java.awt.Label;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.Trees;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.*;
 
 

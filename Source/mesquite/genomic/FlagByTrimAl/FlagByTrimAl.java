@@ -28,7 +28,6 @@ import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
-import mesquite.lib.ExtensibleDialog;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
@@ -37,12 +36,13 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.ShellScriptUtil;
-import mesquite.lib.SingleLineTextField;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class FlagByTrimAl extends MatrixFlaggerForTrimming { 

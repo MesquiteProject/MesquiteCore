@@ -22,6 +22,11 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class NumForTaxaList extends TaxonListAssistant implements MesquiteListener, Pausable {

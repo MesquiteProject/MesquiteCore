@@ -19,6 +19,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
+
 
 
 /*===============================================*/
@@ -42,7 +45,7 @@ public class IntegerField implements TextListener {
 		textField = dialog.addTextField (message, previousText, fieldLength);
 		this.min = min;
 		this.max = max;
-		dialog.focalComponent = textField;
+		dialog.setFocalComponent(textField);
 		textField.addTextListener(this);
 		
 	}
@@ -55,7 +58,7 @@ public class IntegerField implements TextListener {
 			textField = dialog.addTextField (message, "", fieldLength);
 		else
 			textField = dialog.addTextField (message, MesquiteInteger.toString(initialValue), fieldLength);
-		dialog.focalComponent = textField;
+		dialog.setFocalComponent(textField);
 		textField.addTextListener(this);
 
 	}
@@ -65,7 +68,7 @@ public class IntegerField implements TextListener {
 		this.dialog = dialog;
 		this.initialValue = 0;
 		textField = dialog.addTextField (message, "", fieldLength);
-		dialog.focalComponent = textField;
+		dialog.setFocalComponent(textField);
 		textField.addTextListener(this);
 	}
 	/*.................................................................................................................*/

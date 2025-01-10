@@ -21,7 +21,14 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.AnnotPanelOwner;
+import mesquite.lib.ui.AnnotationsPanel;
+import mesquite.lib.ui.MesquiteButton;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class CharListAnnotPanel extends CharListAssistantI implements AnnotPanelOwner{

@@ -21,6 +21,11 @@ import java.util.*;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.StringInABox;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
 

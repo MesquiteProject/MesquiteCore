@@ -18,6 +18,7 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
 
 /* ======================================================================== */
 public class SPRRearranger extends TreeSwapper {

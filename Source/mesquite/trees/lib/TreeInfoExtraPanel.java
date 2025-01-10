@@ -17,9 +17,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
-import mesquite.lib.ClosablePanel;
-import mesquite.lib.ClosablePanelContainer;
-import mesquite.lib.Tree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ClosablePanel;
+import mesquite.lib.ui.ClosablePanelContainer;
 
 
 public class TreeInfoExtraPanel extends ClosablePanel {

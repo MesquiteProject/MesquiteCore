@@ -17,6 +17,8 @@ package mesquite.trees.BLFromNodeAgeConstraints;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */
 public class BLFromNodeAgeConstraints extends BranchLengthsAltererMult {

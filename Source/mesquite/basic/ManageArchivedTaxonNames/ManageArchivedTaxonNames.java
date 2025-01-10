@@ -19,6 +19,9 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaStringsSet;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 public class ManageArchivedTaxonNames extends SpecsSetManager {
 	final static String listOfAlternativeNameSetsName = "List of Alternative Name Sets";

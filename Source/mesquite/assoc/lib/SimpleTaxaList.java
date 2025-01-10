@@ -16,6 +16,10 @@ package mesquite.assoc.lib;
 import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MousePanel;
 
 
 public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener {

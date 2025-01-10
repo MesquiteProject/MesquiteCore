@@ -19,6 +19,8 @@ import mesquite.diverse.DivCategCharMLCalculator.DivCategCharMLCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ParametersDialog;
 import mesquite.diverse.lib.*;
 
 public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {

@@ -20,6 +20,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lists.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class NexusBlockList extends ListLVModule {

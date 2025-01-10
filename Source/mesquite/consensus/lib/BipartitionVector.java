@@ -18,6 +18,9 @@ import java.util.Vector;
 
 import mesquite.consensus.lib.Bipartition;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 
 public class BipartitionVector extends Vector {
 	boolean rooted = true;

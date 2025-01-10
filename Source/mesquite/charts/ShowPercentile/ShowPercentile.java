@@ -18,6 +18,13 @@ import java.awt.event.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ChartBkgdExtra;
+import mesquite.lib.ui.ChartExtra;
+import mesquite.lib.ui.Charter;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteChart;
 import mesquite.charts.Histogram.*;
 /*
 DRM May 2003

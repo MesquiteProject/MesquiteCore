@@ -18,6 +18,9 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MQPanel;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 

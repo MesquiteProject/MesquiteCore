@@ -22,6 +22,13 @@ import java.util.Vector;
 
 import mesquite.lib.duties.ElementManager;
 import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.misc.HNode;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteWindow;
 
 
 

@@ -22,6 +22,8 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 import mesquite.pairwise.lib.*;
 
 /* ======================================================================== */

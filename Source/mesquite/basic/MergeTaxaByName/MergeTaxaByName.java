@@ -21,6 +21,10 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.basic.MergeTaxa.*;
 
 

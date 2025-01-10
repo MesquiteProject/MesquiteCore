@@ -24,6 +24,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
 
 /* ======================================================================== */

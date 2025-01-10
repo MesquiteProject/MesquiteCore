@@ -19,6 +19,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ToolPalette;
 /*=======================================================*/
 /** A window that contains a table in which to edit a CategTModel.  Used for Stepmatrix editing, but could also be used for other similar models */
 public class CategTModelEditWindow extends TableWindow implements MesquiteListener {

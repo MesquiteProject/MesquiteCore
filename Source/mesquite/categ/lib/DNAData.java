@@ -20,6 +20,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lists.lib.ListModule;
 import mesquite.molec.lib.*;
 

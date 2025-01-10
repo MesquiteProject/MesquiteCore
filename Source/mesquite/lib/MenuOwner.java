@@ -23,6 +23,19 @@ import java.awt.event.*;
 import mesquite.distance.lib.TaxaDistFromMatrix;
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.lib.ui.MRPopup;
+import mesquite.lib.ui.MenuItemsSpecsVector;
+import mesquite.lib.ui.MesquiteCMenuItemSpec;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteMenu;
+import mesquite.lib.ui.MesquiteMenuBar;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteSubmenu;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ��������������������������� Menus ������������������������������� */
 
@@ -1005,7 +1018,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	public final synchronized void composeMenuBar(MesquiteMenuBar menuBar, MesquiteWindow whichWindow) {
 		if (module.isDoomed())
 			return;
-		if (System.getProperty("os.name").indexOf("Mac OS") < 0 && whichWindow.minimalMenus)
+		if (System.getProperty("os.name").indexOf("Mac OS") < 0 && whichWindow.menusMinimal())
 			return; // minimalMenu windows don't have menu bars in Windows etc.
 		try {
 			composeCount++;
@@ -1202,7 +1215,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		Vector menuVector = new Vector();
 
 		if (moduleMenuSpec != null) {
-			menu = MesquitePopup.getPopupMenu(moduleMenuSpec, whichWindow.infoBar);
+			menu = MesquitePopup.getPopupMenu(moduleMenuSpec, whichWindow.getInfoBar());
 		} else
 			menu = null;
 		MesquitePopup ancestralMenu = null;
@@ -1367,7 +1380,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	private MesquitePopup fillWindowMenu(Vector menuBar, MesquiteWindow whichWindow) {
 		MesquitePopup wMenu = MesquitePopup.getPopupMenu(new MesquiteMenuSpec(null, "Window", module),
-				whichWindow.infoBar);
+				whichWindow.getInfoBar());
 		if (whichWindow != null) {
 			if (whichWindow.permitViewMode()) {
 				MesquiteSubmenu setViewModeMenu = MesquiteSubmenu.getSubmenu("View Mode", wMenu, module);
@@ -2458,12 +2471,12 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					MesquiteMenuItemSpec mmi = (MesquiteMenuItemSpec) menuItemsSpecs.elementAt(i);
 					boolean useThisMenu = false;
 					if (mmi != null) {
-						if (mmi.whichMenu == null)
+						if (mmi.getMenu() == null)
 							useThisMenu = true;
 						else if (menu instanceof MesquiteMenu) {
-							useThisMenu = mmi.whichMenu == ((MesquiteMenu) menu).getSpecification();
+							useThisMenu = mmi.getMenu() == ((MesquiteMenu) menu).getSpecification();
 						} else if (menu instanceof MesquitePopup) {
-							useThisMenu = mmi.whichMenu == ((MesquitePopup) menu).getSpecification();
+							useThisMenu = mmi.getMenu() == ((MesquitePopup) menu).getSpecification();
 						}
 						useThisMenu = useThisMenu && assignedMenuSpec == null;
 					}
@@ -2519,7 +2532,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							}
 						}
 						if (menuTracing && mmi != null)
-							MesquiteMessage.notifyProgrammer("MENU Item " + mmi.itemName + " added");
+							MesquiteMessage.notifyProgrammer("MENU Item " + mmi.getItemName() + " added");
 					}
 				}
 			}
@@ -2915,7 +2928,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			whichWindow.fontSizeSubmenu = MesquiteSubmenu.getFontSizeSubmenu("Font Size", newMenu, module,
 					setFontSizeCommand);
 			newMenu.add(whichWindow.fontSizeSubmenu);
-			Font font = menuBar.getOwnerWindow().currentFont;
+			Font font = menuBar.getOwnerWindow().getCurrentFont();
 			if (font != null) {
 				whichWindow.fontSubmenu.checkName(font.getName());
 				whichWindow.fontSizeSubmenu.checkName(Integer.toString(font.getSize()));
@@ -3174,7 +3187,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					arg = mmi.getArgument();
 				else if (mmi.command != null)
 					arg = mmi.command.getDefaultArguments();
-				if (mmi.getZone() == zone && (mmi.whichMenu == menuSpec || getContainingMenuSpec() == menuSpec)) {
+				if (mmi.getZone() == zone && (mmi.getMenu() == menuSpec || getContainingMenuSpec() == menuSpec)) {
 					if (InterfaceManager.isFilterable(menu) && (hiddenStatus = InterfaceManager.isHiddenMenuItem(mmi,
 							mmi.getName(), arg, mmi.command, null)) == InterfaceManager.HIDDEN)
 						;
@@ -3227,7 +3240,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				else if (mmi.command != null)
 					arg = mmi.command.getDefaultArguments();
 
-				if (mmi.whichMenu == menuSpec || getContainingMenuSpec() == menuSpec) {
+				if (mmi.getMenu() == menuSpec || getContainingMenuSpec() == menuSpec) {
 					if (InterfaceManager.isFilterable(menu) && (hiddenStatus = InterfaceManager.isHiddenMenuItem(mmi,
 							mmi.getName(), arg, mmi.command, null)) == InterfaceManager.HIDDEN)
 						;

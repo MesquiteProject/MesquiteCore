@@ -17,6 +17,9 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQTextField;
+import mesquite.lib.ui.MesquiteWindow;
 
 import java.util.*;
 

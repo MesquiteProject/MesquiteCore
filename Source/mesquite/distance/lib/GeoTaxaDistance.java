@@ -17,6 +17,7 @@ import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
 
 public abstract class GeoTaxaDistance extends TaxaDistance {
 	protected MContinuousDistribution geoStates;

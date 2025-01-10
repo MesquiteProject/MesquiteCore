@@ -15,6 +15,10 @@ package mesquite.treefarm.CondensedTreeSource;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 public class CondensedTreeSource extends TreeSource {
 	TreeSourceDefinite treeSourceTask;

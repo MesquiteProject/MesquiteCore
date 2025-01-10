@@ -18,6 +18,10 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Manages TAXSETs (not Taxa blocks; see ManageTaxa), including reading the NEXUS command for TAXSETs */
 public class ManageTaxaSets extends SpecsSetManager {

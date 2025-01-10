@@ -24,6 +24,17 @@ import javax.swing.JLabel;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.ExtensibleExplDialog;
+import mesquite.lib.ui.ExtensibleListDialog;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.PopUpPanelOfCards;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.assoc.lib.AssociationSource;
 import mesquite.batchArch.lib.*;
 

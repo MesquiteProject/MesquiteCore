@@ -24,6 +24,10 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
 public class TreezFilesFromMatrices extends DatasetsListUtility {

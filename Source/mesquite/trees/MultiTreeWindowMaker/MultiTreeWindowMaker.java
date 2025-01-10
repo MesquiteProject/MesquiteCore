@@ -19,6 +19,20 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.InfoBar;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePDFFile;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquitePrintJob;
+import mesquite.lib.ui.MesquiteScrollbar;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
 public class MultiTreeWindowMaker extends FileAssistantT {

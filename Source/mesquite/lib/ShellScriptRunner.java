@@ -18,6 +18,7 @@ import java.util.*;
 import java.io.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* TODO: 
  * make a MesquiteExternalProcess that extends Process and stores things like 

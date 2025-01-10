@@ -18,6 +18,7 @@ import java.util.*;
 import java.awt.*;
 
 import mesquite.lib.table.*;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;

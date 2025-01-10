@@ -21,6 +21,10 @@ import java.awt.*;
 import mesquite.consensus.lib.StrictConsenser;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 public class TopologyCongruent extends BooleanForTree {
 	OneTreeSource constraintTreeSource;

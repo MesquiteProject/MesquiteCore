@@ -21,6 +21,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteCursor;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.categ.lib.*;
 import mesquite.align.lib.*;
 

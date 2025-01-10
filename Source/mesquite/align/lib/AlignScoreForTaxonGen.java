@@ -17,6 +17,9 @@ import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* TODO: 
  *   allow user to alter pairwise alignment parameters

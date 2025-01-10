@@ -21,6 +21,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.TreeVector;
 import mesquite.assoc.lib.*;
 import mesquite.categ.lib.*;
 

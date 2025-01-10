@@ -15,6 +15,8 @@ package mesquite.ancstates.lib;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 
 
 /* ======================================================================== */

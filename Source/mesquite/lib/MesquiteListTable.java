@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
 /* ======================================================================== */
 /** A table for List windows*/
 public class MesquiteListTable extends MesquiteTable {

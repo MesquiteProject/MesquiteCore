@@ -17,6 +17,7 @@ import mesquite.lib.*;
 import mesquite.assoc.lib.*;
 import mesquite.lib.duties.ItemsSource;
 import mesquite.lib.duties.NumberForItem;
+import mesquite.lib.tree.Tree;
 
 public abstract class NumberForAssocAndTree extends MesquiteModule implements NumberForItem {
 

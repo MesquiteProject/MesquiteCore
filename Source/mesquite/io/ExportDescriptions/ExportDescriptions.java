@@ -26,8 +26,8 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.NameReference;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
-import mesquite.lib.Taxa;
 import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.taxa.Taxa;
 
 
 

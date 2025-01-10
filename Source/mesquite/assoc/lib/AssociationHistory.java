@@ -16,6 +16,8 @@ package mesquite.assoc.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.Tree;
 
 /*June 28 2012.  There are some methods which encounter problems when a containing tree does not 
  * contain all nodes (internal or terminal) of the contained tree.  For example, if a containing tree

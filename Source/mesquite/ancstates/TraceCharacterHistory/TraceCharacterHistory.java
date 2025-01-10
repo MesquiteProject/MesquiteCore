@@ -20,6 +20,16 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteHTMLWindow;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class TraceCharacterHistory extends TreeDisplayAssistantMA {

@@ -19,6 +19,22 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ChartExtra;
+import mesquite.lib.ui.ChartListener;
+import mesquite.lib.ui.ChartTool;
+import mesquite.lib.ui.Charter;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.DragRectangle;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteChart;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.RotatedRectangle;
+import mesquite.lib.ui.StringInABox;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */

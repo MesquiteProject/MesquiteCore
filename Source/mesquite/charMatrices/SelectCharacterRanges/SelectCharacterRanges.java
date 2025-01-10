@@ -21,6 +21,9 @@ import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.RadioButtons;
+import mesquite.lib.ui.SingleLineTextArea;
 
 /* ======================================================================== */
 public class SelectCharacterRanges extends CharacterSelector {

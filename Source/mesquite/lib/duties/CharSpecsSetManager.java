@@ -19,6 +19,7 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.ui.MesquiteWindow;
 
 
 /* ======================================================================== */

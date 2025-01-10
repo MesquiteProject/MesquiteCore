@@ -19,6 +19,15 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MesquitePDFFile;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
 public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeDisplayActive {
