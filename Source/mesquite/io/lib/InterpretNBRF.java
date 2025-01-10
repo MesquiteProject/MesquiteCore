@@ -195,7 +195,7 @@ public abstract class InterpretNBRF extends FileInterpreterI implements ReadFile
 			}
 			
 			if (taxa == null){
-				taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
+				taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
 				taxa.addToFile(file, getProject(), taxaTask);
 			}
 			CategoricalData data = null;

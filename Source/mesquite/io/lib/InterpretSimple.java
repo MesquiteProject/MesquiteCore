@@ -70,7 +70,7 @@ public abstract class InterpretSimple extends FileInterpreterI {
 		progIndicator.start();
 		file.linkProgressIndicator(progIndicator);
 		if (file.openReading()) {
-			Taxa taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
+			Taxa taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CharacterData data = (CharacterData)createData(charTask,taxa);
 			data.addToFile(file, getProject(), null);

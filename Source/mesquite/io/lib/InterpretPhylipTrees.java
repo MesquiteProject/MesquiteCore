@@ -82,7 +82,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
 			if (taxaTask==null) 
 				return;
-			taxa = taxaTask.makeNewTaxa("Taxa", 0, false);
+			taxa = taxaTask.makeNewTaxaBlock("Taxa", 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			enlargeTaxaBlock = true;
 		}

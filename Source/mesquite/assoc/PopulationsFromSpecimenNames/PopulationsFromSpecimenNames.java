@@ -100,7 +100,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 			}
 			int numMasterTaxa = masterTaxaNames.getFilledSize();
 			TaxaManager manager = (TaxaManager)findElementManager(Taxa.class);
-			Taxa masterTaxa =  manager.quietMakeNewTaxa(numMasterTaxa);
+			Taxa masterTaxa =  manager.quietMakeNewTaxaBlock(numMasterTaxa);
 			masterTaxa.setName(nameOfPopulationTaxaBlock);
 			for (int it=0; it<masterTaxa.getNumTaxa(); it++) {
 				masterTaxa.setTaxonName(it, masterTaxaNames.getValue(it));

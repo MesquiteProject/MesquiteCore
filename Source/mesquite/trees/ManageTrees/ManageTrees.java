@@ -1747,7 +1747,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 						boolean permitTaxaBlockEnlargement = false;
 						if (taxa == null) { 
 							TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
-							taxa = taxaTask.makeNewTaxa("Taxa", 0, false);
+							taxa = taxaTask.makeNewTaxaBlock("Taxa", 0, false);
 							taxa.addToFile(file, getProject(), taxaTask);
 							trees.setTaxa(taxa);
 							permitTaxaBlockEnlargement = true;

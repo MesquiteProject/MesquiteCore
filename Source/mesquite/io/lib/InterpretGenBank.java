@@ -247,7 +247,7 @@ public abstract class InterpretGenBank extends FileInterpreterI implements ReadF
 			}
 			
 			if (taxa == null){
-				taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
+				taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
 				taxa.addToFile(file, getProject(), taxaTask);
 			}
 			CategoricalData data = null;

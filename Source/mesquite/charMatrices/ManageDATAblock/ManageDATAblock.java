@@ -92,7 +92,7 @@ public class ManageDATAblock extends MesquiteModule {
 					}
 				}
 				if (taxa == null)
-					taxa = taxaTask.makeNewTaxa(taxaTitle, numTaxa, false);
+					taxa = taxaTask.makeNewTaxaBlock(taxaTitle, numTaxa, false);
 			}
 			else if (commandName.equalsIgnoreCase("TITLE")) {
 				parser.setString(commandParser.getNextCommand()); 

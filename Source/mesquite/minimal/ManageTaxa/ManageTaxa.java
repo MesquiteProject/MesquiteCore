@@ -105,7 +105,7 @@ public class ManageTaxa extends TaxaManager {
 		}
 	}
 	/*.................................................................................................................*/
-	public Taxa makeNewTaxa(String title, int numTaxa, boolean userQuery){
+	public Taxa makeNewTaxaBlock(String title, int numTaxa, boolean userQuery){
 		Taxa newTaxa=null;
 		if (userQuery) {
 			title= getProject().getTaxas().getUniqueName("Taxa");
@@ -141,7 +141,7 @@ public class ManageTaxa extends TaxaManager {
 		return newTaxa;
 	}
 	/*.................................................................................................................*/   //Debugg.println    WAYNECHECK
-	public Taxa quietMakeNewTaxa(int numTaxa) {
+	public Taxa quietMakeNewTaxaBlock(int numTaxa) {
 		Taxa newTaxa=null;
 		String title= getProject().getTaxas().getUniqueName("Taxa");
 		MesquiteBoolean answer = new MesquiteBoolean(true);
@@ -180,7 +180,7 @@ public class ManageTaxa extends TaxaManager {
 			}
 			int count=0;
 			taxonProcessed.clearAllBits();
-			Taxa newTaxa = quietMakeNewTaxa(numGroups);   // now create taxa
+			Taxa newTaxa = quietMakeNewTaxaBlock(numGroups);   // now create taxa
 			newTaxa.setName("Taxa based on groups");
 			for (int it=0; it<baseTaxa.getNumTaxa(); it++) {  // now name the new taxa
 				if (!taxonProcessed.isBitOn(it)) {
@@ -328,7 +328,7 @@ public class ManageTaxa extends TaxaManager {
 			MesquiteFile file = getProject().chooseFile( "Select file to which to add the new block of taxa"); //added 20 Dec 01
 			Object o = null;
 			if (StringUtil.blank(arguments)) {
-				newTaxa = makeNewTaxa(title, numTaxa, true);
+				newTaxa = makeNewTaxaBlock(title, numTaxa, true);
 				if (newTaxa==null)
 					return null;
 				newTaxa.addToFile(file, getProject(), this);
@@ -340,7 +340,7 @@ public class ManageTaxa extends TaxaManager {
 				MesquiteInteger io = new MesquiteInteger(0);
 				numTaxa= MesquiteInteger.fromString(arguments, io);
 				title= ParseUtil.getToken(arguments, io);
-				newTaxa = makeNewTaxa(title, numTaxa, false);
+				newTaxa = makeNewTaxaBlock(title, numTaxa, false);
 				if (newTaxa==null)
 					return null;
 				newTaxa.addToFile(file, getProject(), this);

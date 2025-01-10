@@ -89,7 +89,7 @@ public class ManageDistributionBlock extends MesquiteModule {
 			else if (commandName.equalsIgnoreCase("NTAX")) {
 				//CREATE new contained taxa block here
 				numTaxa = MesquiteInteger.fromString(parser.getTokenNumber(3));
-				associateTaxa = taxaTask.makeNewTaxa(title, numTaxa, false);
+				associateTaxa = taxaTask.makeNewTaxaBlock(title, numTaxa, false);
 				associateTaxa.addToFile(file, getProject(), taxaTask);
 				//make new Assoc block
 				association = new TaxaAssociation();

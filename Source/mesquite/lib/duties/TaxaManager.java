@@ -40,14 +40,14 @@ public abstract class TaxaManager extends FileElementManager   {
    	}
 	/*.................................................................................................................*/
 	/** make new Taxa object with given name and number of taxa*/
-	public abstract Taxa makeNewTaxa(String name, int numTaxa, boolean userQuery);
+	public abstract Taxa makeNewTaxaBlock(String name, int numTaxa, boolean userQuery);
 	public Class getElementClass(){
 		return Taxa.class;
 	}
 	public abstract String getTaxaBlock(Taxa taxa, TaxaBlock tB, MesquiteFile file);
 	public abstract MesquiteModule getListOfTaxaModule(Taxa taxa, boolean show);
 	
-	public abstract Taxa quietMakeNewTaxa(int numTaxa);
+	public abstract Taxa quietMakeNewTaxaBlock(int numTaxa);
 	public abstract Taxa createTaxaBlockBasedOnPartition(Taxa baseTaxa);
 
 }

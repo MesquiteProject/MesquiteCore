@@ -463,7 +463,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			}
 
 			if (taxa == null){
-				taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
+				taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
 				taxa.addToFile(file, getProject(), taxaTask);
 			}
 			CategoricalData data = null;

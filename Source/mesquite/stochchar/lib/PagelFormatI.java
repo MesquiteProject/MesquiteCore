@@ -72,7 +72,7 @@ public abstract class PagelFormatI extends FileInterpreterI {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
 			 CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
 			
-			Taxa taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa from Pagel format file"), 0, false);
+			Taxa taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa from Pagel format file"), 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CategoricalData data = (CategoricalData)charTask.newCharacterData(taxa, 0, CategoricalData.DATATYPENAME);
 			data.addToFile(file, getProject(), null);

@@ -187,7 +187,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
 			CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
 			
-			Taxa taxa = taxaTask.makeNewTaxa("Taxa", 0, false);
+			Taxa taxa = taxaTask.makeNewTaxaBlock("Taxa", 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CategoricalData data = (CategoricalData)createData(charTask,taxa);
 
