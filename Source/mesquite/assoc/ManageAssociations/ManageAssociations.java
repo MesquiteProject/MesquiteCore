@@ -26,14 +26,11 @@ import mesquite.assoc.lib.*;
 public class ManageAssociations extends AssociationsManager {
 	ListableVector associationsVector; //establish listeners to all of the taxa
 	ListableVector blocks;
-	//NameParser nameParser; //Debugg.println clean up this
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		associationsVector = new ListableVector();
 		blocks = new ListableVector();
-		/*	if (nameParser==null)
-			nameParser = new NameParser(this, "taxon");*/
-	//	addMenuItem("sjCHOOSE TAXA ASSOCIATION...", makeCommand("chooseAssociation", this));
+		
 		loadPreferences();
 		return true;
 	}
@@ -55,22 +52,7 @@ public class ManageAssociations extends AssociationsManager {
 			NexusBlock.equalizeOrdering(v, getProject().getNexusBlocks());
 		}
 	}
-	/*.................................................................................................................*
-	public String preparePreferencesForXML () {
-		StringBuffer buffer = new StringBuffer();
-		if (nameParser!=null){
-			String s = nameParser.preparePreferencesForXML(); 
-			if (StringUtil.notEmpty(s))
-				buffer.append(s);
-		}
-		return buffer.toString();
-	}
-
-	/*.................................................................................................................*
-	public void processSingleXMLPreference (String tag, String content) {
-		if (nameParser!=null)
-			nameParser.processSingleXMLPreference(tag,content);
-	}
+	
 	/*.................................................................................................................*/
 	/** A method called immediately after the file has been read in.*/
 	public void projectEstablished() {
@@ -85,14 +67,7 @@ public class ManageAssociations extends AssociationsManager {
 		if (e instanceof TaxaAssociation){
 			TaxaAssociation t = (TaxaAssociation)e;
 			editInTaxonList(t, false);
-			/*
-			for (int i=0; i<blocks.size(); i++){
-				AssociationsBlock ab = (AssociationsBlock)blocks.elementAt(i);
-				if (ab.getAssociation()==t){
-					edit(ab);
-					break;
-				}
-			}*/
+			
 		}
 		return null;
 	}
@@ -362,63 +337,7 @@ public class ManageAssociations extends AssociationsManager {
 		return null;
 	}
 
-	/*.................................................................................................................*
-	private boolean novelGroupName(StringArray names, String name) {
-		if (names==null) return true;
-		return !names.exists(name);
-	}
-	/*.................................................................................................................*
 
-	private Taxa createNewMasterTaxaBlockBasedOnNames(Taxa taxa) {
-		if (taxa!=null){
-			String groupName = "";
-			String name="";
-			Bits taxonProcessed = new Bits(taxa.getNumTaxa());
-			Bits taxonInGroup = new Bits(taxa.getNumTaxa());
-			if (nameParser==null)
-				nameParser = new NameParser(this, "taxon");
-			if (!MesquiteThread.isScripting()) {
-				String helpString = "New master taxa will be created based upon a portion of the taxon names of the contained taxon.  In particular, the name of each contained taxon will be reduced "
-						+ "by removing a piece from the start and/or end; that reduced name will become the name of the new master taxon.  If two contained taxa have the same"
-						+ " reduced name, the will be assigned to the same master taxon";
-				if (nameParser.queryOptions("Options for Creating Master Taxa", "Master taxon names will be extracted from taxon names.", helpString)) {
-					storePreferences();
-				}
-				else
-					return null;
-			}
-
-			StringArray masterTaxaNames = new StringArray(0);
-
-			for (int it=0; it<taxa.getNumTaxa(); it++) {
-				if (!taxonProcessed.isBitOn(it)) {
-					groupName = nameParser.extractPart(taxa.getTaxonName(it));
-					if (novelGroupName(masterTaxaNames, groupName))
-						masterTaxaNames.addAndFillNextUnassigned(groupName);
-					taxonProcessed.setBit(it, true);
-					taxonInGroup.setBit(it,true);
-					for (int ij=it+1; ij<taxa.getNumTaxa(); ij++) {
-						name = nameParser.extractPart(taxa.getTaxonName(ij));
-						if (groupName!=null && groupName.equalsIgnoreCase(name)) {   // would have same name as the current group, therefore set as this group
-							taxonInGroup.setBit(ij,true);
-							taxonProcessed.setBit(ij, true);
-						}
-
-					}
-					taxonInGroup.clearAllBits();
-
-				}
-			}
-			int numMasterTaxa = masterTaxaNames.getFilledSize();
-			Taxa masterTaxa =  taxa.createTaxonBlock(numMasterTaxa);
-			masterTaxa.setName("Populations");
-			for (int it=0; it<masterTaxa.getNumTaxa(); it++) {
-				masterTaxa.setTaxonName(it, masterTaxaNames.getValue(it));
-			}
-			return  masterTaxa;
-		}	
-		return null;
-	}
 	/*.................................................................................................................*/
 	private TaxaAssociation createNewPopulationTaxaBlockAndAssociation(String arguments){
 		PopulationsAndAssociationMaker makerModule= (PopulationsAndAssociationMaker)hireNamedEmployee(PopulationsAndAssociationMaker.class,  arguments);
@@ -438,39 +357,7 @@ public class ManageAssociations extends AssociationsManager {
 			TaxaAssociation association = makerModule.makePopulationsAndAssociation(specimensTaxa, popTaxaContainer);
 			//popTaxaContainer is not used, but it will contain the newly made taxa block
 
-			/*====================
-		Taxa masterTaxa = createNewMasterTaxaBlockBasedOnNames(otherTaxa);
-		TaxaAssociation association=null;
-		if (masterTaxa!=null)
-			association = makeNewAssociation(masterTaxa, otherTaxa, "Populations-Specimens");
-
-		if (association != null) {  // taxa is population, otherTaxa is contained/specimens
-			if (nameParser==null) {
-				nameParser = new NameParser(this, "taxon");
-				if (!MesquiteThread.isScripting()) {
-					helpString = "Taxa in the specimens/gene copies block will be matched with populations based upon their names.  In particular, the name of each specimen/gene copy will be reduced "
-							+ "by removing a piece from the start and/or end; that reduced name will be compared to the name of a population taxon.";
-					nameParser.queryOptions("Options for matching associates", "Associates will be found by examining their names", helpString);
-				}
-			}
-			for (int it=0; it<masterTaxa.getNumTaxa(); it++)
-				for (int ito = 0; ito<otherTaxa.getNumTaxa(); ito++){
-					String name = masterTaxa.getTaxonName(it);
-					String nameOther = nameParser.extractPart(otherTaxa.getTaxonName(ito));
-					if (name == null || nameOther == null)
-						continue;
-					boolean matches = name.equals(nameOther);
-					if (matches){
-						//association.zeroAllAssociations(taxa.getTaxon(it));
-						association.setAssociation(masterTaxa.getTaxon(it), otherTaxa.getTaxon(ito), true);
-						changed = true;
-					}
-				}
-
-			if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED)); //DAVIDQUERY: maybe not needed for a newly created aassociation
-			return association;
-		}
-		//=======================*/
+		
 			fireEmployee(makerModule);
 			return association;
 		}

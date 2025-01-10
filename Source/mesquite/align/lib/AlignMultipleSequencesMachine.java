@@ -134,7 +134,7 @@ class AlignThread extends Thread {
 			if (table !=null) 
 				table.selectColumns(firstColumn.getValue(),lastColumn.getValue()- (oldNumChars - data.getNumChars()));
 		}
-		if (separateThread) //DAVIDQUERY: Why is this here? I think it should be the responsibility of the caller when it receives the notification that the calculation is complete
+		if (separateThread) //ZQ: Why is this here? I think it should be the responsibility of the caller when it receives the notification that the calculation is complete
 			data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
 		if (table != null)
 			table.repaintAll();

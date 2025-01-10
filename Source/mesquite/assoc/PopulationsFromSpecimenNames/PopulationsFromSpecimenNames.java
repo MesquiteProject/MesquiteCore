@@ -148,7 +148,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 					}
 				}
 
-			if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED)); //DAVIDQUERY: maybe not needed for a newly created aassociation
+			if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED)); //ZQ: maybe not needed for a newly created aassociation?? This had been here when in ManageAssociations
 			return association;
 		}
 		return null;

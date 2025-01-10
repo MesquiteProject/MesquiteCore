@@ -143,7 +143,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		setLayout(gridBag);
 		this.buttonPressed = buttonPressed;
 		this.setResizable(false);
-
+		if (MesquiteTrunk.isLinux())
+			addBlankLine();
 	}
 	
 	public void addAttachment(Object obj) {
@@ -868,7 +869,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public void prepareDialog () {
 
-
+		if (MesquiteTrunk.isLinux())
+			addBlankLine();
 		pack();
 		d = getPreferredSize(true);
 		/*if (isInWizard()){
