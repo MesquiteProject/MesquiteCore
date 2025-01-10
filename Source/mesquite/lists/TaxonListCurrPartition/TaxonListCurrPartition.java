@@ -228,72 +228,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		}	
 	}
 	
-	/*.................................................................................................................  //WAYNECHECK
-	private Taxa createTaxonBlock(int numTaxa) {
-		incrementMenuResetSuppression();
-		Taxa newTaxa=null;
-		String title= getProject().getTaxas().getUniqueName("Taxa");
-		MesquiteBoolean answer = new MesquiteBoolean(true);
-		MesquiteFile file = getProject().chooseFile( "Select file to which to add the new block of taxa"); //added 20 Dec 01
 
-		newTaxa = new Taxa(numTaxa);
-		if (title!=null)
-			newTaxa.setName(title);
-		if (newTaxa==null)
-			return null;
-		newTaxa.addToFile(file, getProject(), null);
-
-		decrementMenuResetSuppression();
-		return newTaxa;
-	}
-	/*.................................................................................................................*
-
-	public void createTaxonBlockBasedOnNames(Taxa taxa) {
-		if (taxa!=null){
-			int numGroups=0;
-			TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
-			if (part!=null) {
-				Bits taxonProcessed = new Bits(taxa.getNumTaxa());
-				for (int it=0; it<taxa.getNumTaxa(); it++) {  // first we count
-					if (!taxonProcessed.isBitOn(it)) {
-						TaxaGroup tg = part.getTaxaGroup(it);
-						if (tg!=null){
-							numGroups++;
-							taxonProcessed.setBit(it, true);
-							for (int ij=it+1; ij<taxa.getNumTaxa(); ij++) {
-								TaxaGroup tg2 = part.getTaxaGroup(ij);
-								if (tg2!=null && tg.equals(tg2))  // we've encountered this one before.
-									taxonProcessed.setBit(ij, true);
-							}
-
-						}
-					}
-				}
-				int count=0;
-				taxonProcessed.clearAllBits();
-				Taxa newTaxa = createTaxonBlock(numGroups);   // now create taxa
-				for (int it=0; it<taxa.getNumTaxa(); it++) {  // now name the new taxa
-					if (!taxonProcessed.isBitOn(it)) {
-						TaxaGroup tg = part.getTaxaGroup(it);
-						if (tg!=null){
-							String name = tg.getName();
-							if (count<newTaxa.getNumTaxa())
-								newTaxa.getTaxon(count).setName(name);
-							count++;
-							taxonProcessed.setBit(it, true);
-							for (int ij=it+1; ij<taxa.getNumTaxa(); ij++) {
-								TaxaGroup tg2 = part.getTaxaGroup(ij);
-								if (tg2!=null && tg.equals(tg2))  // we've encountered this one before.
-									taxonProcessed.setBit(ij, true);
-							}
-
-						}
-					}
-				}
-			}
-		}
-
-	}	
 	/*.................................................................................................................*/
 
 
@@ -387,9 +322,16 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			createPartitionBasedOnNames();
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
-		else if (checker.compare(this.getClass(), "Creates a taxa block based upon the names of taxa", null, commandName, "createTaxonBlock")) {
-			if (taxa!=null)
-				taxa.createTaxonBlockBasedOnNames();
+		else if (checker.compare(this.getClass(), "Creates a taxa block based upon the current partition", null, commandName, "createTaxaBlock")) {
+			//ZQ: I moved the two methods out of Taxa. They are best not done there. 
+			// A module should do this, partly because it is not just the Taxa's internal management but affects the whole project, and partly to have interface choices.
+			// Do you plan to use it elsewhere soonish? If not, I'm inclined to leave it in this module so as not to complexify central stuff.
+			// Otherwise, if to be used elsewhere, then ManageTaxa is exactly for this sort of thing.
+			// Also changed name of method, since it's from the partition.
+			TaxaManager manager = (TaxaManager)findElementManager(Taxa.class);
+			if (manager!=null) {
+				manager.createTaxaBlockBasedOnPartition(taxa);
+			}
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
 		else if (checker.compare(this.getClass(), "Loads the stored taxa partition to be the current one", "[number of partition to load]", commandName, "loadToCurrent")) {
@@ -443,7 +385,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mCreatec = addMenuItem("Create and assign groups based on taxon names...", makeCommand("createBasedOnNames",  this));
-		mCreateTaxac = addMenuItem("Create taxon block based on current groups...", makeCommand("createTaxonBlock",  this));
+		mCreateTaxac = addMenuItem("Create taxa block based on current groups...", makeCommand("createTaxaBlock",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {
 			mStc = addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));

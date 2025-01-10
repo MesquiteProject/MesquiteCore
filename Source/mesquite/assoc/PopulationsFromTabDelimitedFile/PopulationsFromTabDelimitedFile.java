@@ -28,7 +28,7 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 	String[][] sampleCodeList;
 	int chosenNameCategory = 0;
 	MesquiteTabDelimitedFileProcessor mesquiteTabbedFile;
-	String nameOfPopulationTaxonBlock = "Populations";
+	String nameOfPopulationTaxaBlock = "Populations";
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -47,14 +47,14 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 	
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("nameOfPopulationTaxonBlock".equalsIgnoreCase(tag)){
-			nameOfPopulationTaxonBlock = StringUtil.cleanXMLEscapeCharacters(content);
+		if ("nameOfPopulationTaxaBlock".equalsIgnoreCase(tag)){
+			nameOfPopulationTaxaBlock = StringUtil.cleanXMLEscapeCharacters(content);
 		}
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
-		StringUtil.appendXMLTag(buffer, 2, "nameOfPopulationTaxonBlock", nameOfPopulationTaxonBlock);  
+		StringUtil.appendXMLTag(buffer, 2, "nameOfPopulationTaxaBlock", nameOfPopulationTaxaBlock);  
 		return buffer.toString();
 	}
 
@@ -86,7 +86,7 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 		
 		dialog.appendToHelpString(helpString);
 
-		SingleLineTextField populationBlockNameField = dialog.addTextField("Name of population/containing taxa block:",nameOfPopulationTaxonBlock, 20);
+		SingleLineTextField populationBlockNameField = dialog.addTextField("Name of population/containing taxa block:",nameOfPopulationTaxaBlock, 20);
 		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File containing columns of specimen and population names", "Column containing population names");
 
 		dialog.completeAndShowDialog(true);
@@ -96,7 +96,7 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 			mesquiteTabbedFile.processNameCategories();
 			sampleCodeList = mesquiteTabbedFile.getSampleCodeList();
 			chosenNameCategory = mesquiteTabbedFile.getChosenNameCategory();
-			nameOfPopulationTaxonBlock = populationBlockNameField.getText();
+			nameOfPopulationTaxaBlock = populationBlockNameField.getText();
 		}
 		storePreferences();  // do this here even if Cancel pressed as the File Locations subdialog box might have been used
 		dialog.dispose();
@@ -113,8 +113,9 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 	private Taxa createNewMasterTaxaBlock(Taxa taxa, String[] taxonNames) {
 		if (taxonNames!=null){
 			int numMasterTaxa = taxonNames.length;
-			Taxa masterTaxa =  taxa.createTaxonBlock(numMasterTaxa);
-			masterTaxa.setName(nameOfPopulationTaxonBlock);
+			TaxaManager manager = (TaxaManager)findElementManager(Taxa.class);
+			Taxa masterTaxa =  manager.quietMakeNewTaxa(numMasterTaxa);
+			masterTaxa.setName(nameOfPopulationTaxaBlock);
 			for (int it=0; it<masterTaxa.getNumTaxa(); it++) {
 				masterTaxa.setTaxonName(it, taxonNames[it]);
 			}

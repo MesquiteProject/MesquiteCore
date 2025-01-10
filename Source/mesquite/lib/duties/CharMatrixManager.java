@@ -125,7 +125,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 
 			while (!done && !(isEndLine(taxonName=parser.getNextToken(false)))) {
 				parser.setLineEndingsDark(true);
-				if (nameTaxa && it<taxa.getNumTaxa() && taxa.whichTaxonNumber(taxonName,false,false)>=0){ // this name already exists in taxon block
+				if (nameTaxa && it<taxa.getNumTaxa() && taxa.whichTaxonNumber(taxonName,false,false)>=0){ // this name already exists in taxa block
 					if (fuse){
 						if (toDelete || AlertDialog.query(containerOfModule(), "Duplicated taxa", "Some taxon names in the file being read are the same as some already in the project for the taxa block \"" + taxa.getName() + "\". Do you want to merge these taxa? (example of duplicated name: " + taxonName + ").  WARNING: if these taxa have data in matrices that you are fusing to existing matrices, then the taxon will take on the newly fused values. (cmm1)")){
 							taxa.setTaxonNameNoWarnNoNotify(it, deleteID);

@@ -22,6 +22,8 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaBlock;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
@@ -138,6 +140,73 @@ public class ManageTaxa extends TaxaManager {
 		}
 		return newTaxa;
 	}
+	/*.................................................................................................................*/   //Debugg.println    WAYNECHECK
+	public Taxa quietMakeNewTaxa(int numTaxa) {
+		Taxa newTaxa=null;
+		String title= getProject().getTaxas().getUniqueName("Taxa");
+		MesquiteBoolean answer = new MesquiteBoolean(true);
+		MesquiteFile file = getProject().chooseFile( "Select file to which to add the new block of taxa"); //added 20 Dec 01
+
+		newTaxa = new Taxa(numTaxa);
+		if (title!=null)
+			newTaxa.setName(title);
+		if (newTaxa==null)
+			return null;
+		newTaxa.addToFile(file, getProject(), null);
+
+		return newTaxa;
+	}
+	/*.................................................................................................................*/
+	public Taxa createTaxaBlockBasedOnPartition(Taxa baseTaxa) {  //returns new taxa block 
+		incrementMenuResetSuppression();
+		int numGroups=0;
+		TaxaPartition part = (TaxaPartition)baseTaxa.getCurrentSpecsSet(TaxaPartition.class);
+		if (part!=null) {
+			Bits taxonProcessed = new Bits(baseTaxa.getNumTaxa());
+			for (int it=0; it<baseTaxa.getNumTaxa(); it++) {  // first we count
+				if (!taxonProcessed.isBitOn(it)) {
+					TaxaGroup tg = part.getTaxaGroup(it);
+					if (tg!=null){
+						numGroups++;
+						taxonProcessed.setBit(it, true);
+						for (int ij=it+1; ij<baseTaxa.getNumTaxa(); ij++) {
+							TaxaGroup tg2 = part.getTaxaGroup(ij);
+							if (tg2!=null && tg.equals(tg2))  // we've encountered this one before.
+								taxonProcessed.setBit(ij, true);
+						}
+
+					}
+				}
+			}
+			int count=0;
+			taxonProcessed.clearAllBits();
+			Taxa newTaxa = quietMakeNewTaxa(numGroups);   // now create taxa
+			newTaxa.setName("Taxa based on groups");
+			for (int it=0; it<baseTaxa.getNumTaxa(); it++) {  // now name the new taxa
+				if (!taxonProcessed.isBitOn(it)) {
+					TaxaGroup tg = part.getTaxaGroup(it);
+					if (tg!=null){
+						String name = tg.getName();
+						if (count<newTaxa.getNumTaxa())
+							newTaxa.getTaxon(count).setName(name);
+						count++;
+						taxonProcessed.setBit(it, true);
+						for (int ij=it+1; ij<baseTaxa.getNumTaxa(); ij++) {
+							TaxaGroup tg2 = part.getTaxaGroup(ij);
+							if (tg2!=null && tg.equals(tg2))  // we've encountered this one before.
+								taxonProcessed.setBit(ij, true);
+						}
+
+					}
+				}
+			}
+			decrementMenuResetSuppression();
+			return newTaxa; 
+		}
+		decrementMenuResetSuppression();
+		return null;
+	}		
+
 	/*.................................................................................................................*/
 	public void elementDisposed(FileElement e){
 		if (e==null || !(e instanceof Taxa))
@@ -727,7 +796,7 @@ public class ManageTaxa extends TaxaManager {
 				Taxa t= getProject().getTaxa(getProject().getNumberTaxas()-1);  //last first
 				if ("taxa".equalsIgnoreCase(ttoken)){
 					ttoken  = parser.getNextToken(); //=
-				
+
 					ttoken  = parser.getNextToken(); //TAXA block id
 					t = getProject().findTaxa(file, ttoken); 
 					ttoken  = parser.getNextToken(); //NAME
@@ -748,7 +817,7 @@ public class ManageTaxa extends TaxaManager {
 					else if (token!=null) {
 						if (token != null && token.equals("."))
 							token = Integer.toString(t.getNumTaxa());
-					
+
 						if (token.startsWith("-")) {
 							if (lastChar!=-1)
 								join = true;
@@ -940,7 +1009,7 @@ public class ManageTaxa extends TaxaManager {
 					ftn = "; Name of first taxon: " + newTaxa.getTaxon(0).getName();
 				Taxa eTOrder = existsInOtherFile(newTaxa, file, false); //this is considering taxon order; if null then order must differ
 				String warning = ("There is a taxa block that appears to be a duplicate.  \n\nFirst block: \"" + eT.getName() + "\"; \nSecond block: \"" + newTaxa.getName() + "\"" + ftn + "."); 
-				helpString = "In deleting the second taxon block, any other information (e.g., character matrices) associated with that second block will be reattached to the first block";
+				helpString = "In deleting the second taxa block, any other information (e.g., character matrices) associated with that second block will be reattached to the first block";
 				String button = "Delete";
 				//if unique block IDs match AND order same, then delete this block and proceed without querying user
 				//if unique block IDs match and order different, then query with warning that ordering will change
@@ -953,7 +1022,7 @@ public class ManageTaxa extends TaxaManager {
 				if (eTOrder == null) {
 					warning += " The two taxa blocks have a different ordering of taxa.  If you delete the second block, the ordering of the first block will be maintained.";
 				}
-				
+
 
 				if (!autoDelete && (alerts.getValue() && !MesquiteThread.isScripting())) {
 					if (AlertDialog.query(containerOfModule(), "Duplicate taxa block?", warning + " \n\nDo you want to delete the second block?", button, "Keep", 1, helpString)){
@@ -963,12 +1032,12 @@ public class ManageTaxa extends TaxaManager {
 						file.setCurrentTaxa(eT);
 						if (eTOrder == null) 
 							eT.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
-					return new TaxaBlock(null, null);
+						return new TaxaBlock(null, null);
 					}
 				}
 				else {
 					discreetAlert(warning + "\nOnly the first block will be kept.  Any other information (e.g., character matrices) associated with that second block will be reattached to the first block. " +
-							" If you are reading a linked file and do not intend to delete this taxon block from the linked file, then do not save the file!");
+							" If you are reading a linked file and do not intend to delete this taxa block from the linked file, then do not save the file!");
 					if (eTOrder == null)
 						setOrder(eT, newTaxa);
 					newTaxa.dispose();
@@ -1166,7 +1235,7 @@ public class ManageTaxa extends TaxaManager {
 				for (int it=0; it<taxa.getNumTaxa(); it++)
 					if (t.getTaxon(taxa.getTaxonName(it))!=null)
 						matches2+= 1.0;
-					//else logln("unmatched: " + t.getTaxonName(it));
+				//else logln("unmatched: " + t.getTaxonName(it));
 				double avg2 = matches2/t.getNumTaxa();
 				if (MesquiteDouble.minimum( avg2, avg) > 0.8)
 					return true;

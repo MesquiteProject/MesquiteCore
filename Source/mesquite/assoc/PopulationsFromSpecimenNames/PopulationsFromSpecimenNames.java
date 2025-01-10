@@ -24,7 +24,7 @@ import mesquite.assoc.lib.*;
 /* ======================================================================== */
 public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker {
 	NameParser nameParser;
-	String nameOfPopulationTaxonBlock = "Populations";
+	String nameOfPopulationTaxaBlock = "Populations";
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -99,8 +99,9 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 				}
 			}
 			int numMasterTaxa = masterTaxaNames.getFilledSize();
-			Taxa masterTaxa =  taxa.createTaxonBlock(numMasterTaxa);
-			masterTaxa.setName(nameOfPopulationTaxonBlock);
+			TaxaManager manager = (TaxaManager)findElementManager(Taxa.class);
+			Taxa masterTaxa =  manager.quietMakeNewTaxa(numMasterTaxa);
+			masterTaxa.setName(nameOfPopulationTaxaBlock);
 			for (int it=0; it<masterTaxa.getNumTaxa(); it++) {
 				masterTaxa.setTaxonName(it, masterTaxaNames.getValue(it));
 			}

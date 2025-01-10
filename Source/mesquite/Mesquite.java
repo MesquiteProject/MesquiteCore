@@ -2541,7 +2541,7 @@ public class Mesquite extends MesquiteTrunk
 				earlyWarning += w;
 				System.out.println(w);
 			}
-			catch (NoClassDefFoundError e) { //WAYNECHECK: DAVIDCHECK: need to add alternative macos application event handling methods for post-1.8 Java
+			catch (NoClassDefFoundError e) {
 				String w = "File handling failed to register with macOS (NCME).";
 				earlyWarning += w;
 				System.out.println(w);

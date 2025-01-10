@@ -227,11 +227,11 @@ public class Taxa extends FileElement {
 		}
 		// check name of Taxa???
 		if (taxa == this) {
-			// appendToEqualTaxaMessage("Taxon block compared with itself");
+			// appendToEqualTaxaMessage("Taxa block compared with itself");
 			// writeToEqualTaxaMessage = false;
 			return true;
 		} else if (taxa == null) {
-			appendToEqualTaxaMessage("Taxon block null");
+			appendToEqualTaxaMessage("Taxa block null");
 			return false;
 		} else if (taxa.getNumTaxa() != numTaxa) {
 			appendToEqualTaxaMessage("Different numbers of taxa");
@@ -282,14 +282,14 @@ public class Taxa extends FileElement {
 		}
 		// check name of Taxa???
 		if (taxa == this) {
-			// appendToEqualTaxaMessage("Taxon block compared with itself");
+			// appendToEqualTaxaMessage("Taxa block compared with itself");
 			// writeToEqualTaxaMessage = false;
 			return true;
 		} else if (taxa == null) {
-			appendToEqualTaxaMessage("Taxon block null");
+			appendToEqualTaxaMessage("Taxa block null");
 			return false;
 		} else if (taxa.getNumTaxa() > numTaxa) {
-			appendToEqualTaxaMessage("Taxon block has more taxa");
+			appendToEqualTaxaMessage("Taxa block has more taxa");
 			return false;
 		}
 		if (!ignoreName && name != null && taxa.name != null
@@ -1429,70 +1429,7 @@ public class Taxa extends FileElement {
 		this.duplicate = dup;
 	}
 
-	/*.................................................................................................................*/   //Debugg.println    WAYNECHECK
-	public Taxa createTaxonBlock(int numTaxa) {
-		//		incrementMenuResetSuppression();
-		Taxa newTaxa=null;
-		String title= getProject().getTaxas().getUniqueName("Taxa");
-		MesquiteBoolean answer = new MesquiteBoolean(true);
-		MesquiteFile file = getProject().chooseFile( "Select file to which to add the new block of taxa"); //added 20 Dec 01
 
-		newTaxa = new Taxa(numTaxa);
-		if (title!=null)
-			newTaxa.setName(title);
-		if (newTaxa==null)
-			return null;
-		newTaxa.addToFile(file, getProject(), null);
-
-		//		decrementMenuResetSuppression();
-		return newTaxa;
-	}
-	/*.................................................................................................................*/
-
-	public void createTaxonBlockBasedOnNames() {
-		int numGroups=0;
-		TaxaPartition part = (TaxaPartition)getCurrentSpecsSet(TaxaPartition.class);
-		if (part!=null) {
-			Bits taxonProcessed = new Bits(getNumTaxa());
-			for (int it=0; it<getNumTaxa(); it++) {  // first we count
-				if (!taxonProcessed.isBitOn(it)) {
-					TaxaGroup tg = part.getTaxaGroup(it);
-					if (tg!=null){
-						numGroups++;
-						taxonProcessed.setBit(it, true);
-						for (int ij=it+1; ij<getNumTaxa(); ij++) {
-							TaxaGroup tg2 = part.getTaxaGroup(ij);
-							if (tg2!=null && tg.equals(tg2))  // we've encountered this one before.
-								taxonProcessed.setBit(ij, true);
-						}
-
-					}
-				}
-			}
-			int count=0;
-			taxonProcessed.clearAllBits();
-			Taxa newTaxa = createTaxonBlock(numGroups);   // now create taxa
-			for (int it=0; it<getNumTaxa(); it++) {  // now name the new taxa
-				if (!taxonProcessed.isBitOn(it)) {
-					TaxaGroup tg = part.getTaxaGroup(it);
-					if (tg!=null){
-						String name = tg.getName();
-						if (count<newTaxa.getNumTaxa())
-							newTaxa.getTaxon(count).setName(name);
-						count++;
-						taxonProcessed.setBit(it, true);
-						for (int ij=it+1; ij<getNumTaxa(); ij++) {
-							TaxaGroup tg2 = part.getTaxaGroup(ij);
-							if (tg2!=null && tg.equals(tg2))  // we've encountered this one before.
-								taxonProcessed.setBit(ij, true);
-						}
-
-					}
-				}
-			}
-		}
-
-	}	
 
 	/* ---------------- for HNode interface ---------------------- */
 	public boolean getHShow() {

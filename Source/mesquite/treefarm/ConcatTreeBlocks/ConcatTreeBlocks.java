@@ -129,7 +129,7 @@ public class ConcatTreeBlocks extends TreeBlockListUtility  {
 		concat.setName("Concatenated");
 		concat.addToFile(file, getProject(), findElementManager(TreeVector.class));  
 		if (otherTaxaBlockFound)
-			discreetAlert( "Not all of the tree blocks were concatenated, because some were for different taxon blocks.  Only those tree blocks referring to the same taxa as the first were concatenated.");
+			discreetAlert( "Not all of the tree blocks were concatenated, because some were for different taxa blocks.  Only those tree blocks referring to the same taxa as the first were concatenated.");
 		getProject().decrementProjectWindowSuppression();
 		decrementMenuResetSuppression();
 		resetAllMenuBars();

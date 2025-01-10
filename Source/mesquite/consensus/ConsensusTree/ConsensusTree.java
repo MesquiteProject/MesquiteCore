@@ -284,6 +284,7 @@ public class ConsensusTree extends TreeSource {
 				parametersChanged(new Notification(notification.getCode()));
 			}
 		}
+		else super.employeeParametersChanged( employee,  source,  notification);
 	}
 
 	/*.................................................................................................................*/

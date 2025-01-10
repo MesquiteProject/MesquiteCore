@@ -206,7 +206,7 @@ public class ExportAssociation extends FileInterpreterI {
 
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		String s =  "Exports file containing a list of taxa in one taxon block (e.g., specimens) and the taxa in another block (e.g., populations) with which they are currently associated.  ";
+		String s =  "Exports file containing a list of taxa in one taxa block (e.g., specimens) and the taxa in another block (e.g., populations) with which they are currently associated.  ";
 		return s;
 	}
 

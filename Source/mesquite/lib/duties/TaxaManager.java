@@ -46,6 +46,10 @@ public abstract class TaxaManager extends FileElementManager   {
 	}
 	public abstract String getTaxaBlock(Taxa taxa, TaxaBlock tB, MesquiteFile file);
 	public abstract MesquiteModule getListOfTaxaModule(Taxa taxa, boolean show);
+	
+	public abstract Taxa quietMakeNewTaxa(int numTaxa);
+	public abstract Taxa createTaxaBlockBasedOnPartition(Taxa baseTaxa);
+
 }
 
 
