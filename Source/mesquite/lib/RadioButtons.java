@@ -39,6 +39,7 @@ public class RadioButtons implements ItemListener {
 		
 	}
 	
+	
 	/*.................................................................................................................*/
 	void initialize (ExtensibleDialog dialog, String[] labels, Panel[] subPanels, int defaultBox) {
 

@@ -99,7 +99,6 @@ public class AppChooser implements ActionListener {
 			//Show app chooser dialog ========================
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
 			appChooserDialog = new AppChooserDialog(containingDialog,  "Choose " + programName,buttonPressed, builtInExecutableAllowed, ownerModule, this, programName, versionOfBuiltIn, useDefaultExecutablePath, alternativeManualPath);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-
 			appChooserDialog.completeAndShowDialog(true);
 			
 			if (buttonPressed.getValue()==0)  {
@@ -147,7 +146,6 @@ public class AppChooser implements ActionListener {
 			path = StringUtil.getAllAfterSubString(path, MesquiteFile.fileSeparator);
 			cuts++;
 		} while (path.length()>maxlength);
-		Debugg.println("cuts " + cuts + " path " + path);
 		if (StringUtil.blank(path)) {
 			if (cuts ==1)
 				return previousPath;

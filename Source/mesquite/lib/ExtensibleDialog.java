@@ -88,7 +88,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	Object customConstraints=null;
 	Component focalComponent=null;
 	Component defaultTextComponent=null;
-
+	Vector attachments = new Vector();
 
 	public int sideBuffer = 12;
 
@@ -145,6 +145,24 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		this.setResizable(false);
 
 	}
+	
+	public void addAttachment(Object obj) {
+		attachments.addElement(obj);
+	}
+	public void removeAttachment(Object obj) {
+		attachments.removeElement(obj);
+	}
+	public Object findAttachment(Class c) {
+		if (c == null)
+			return null;
+		for (int i= 0; i<attachments.size(); i++) {
+			Object obj = attachments.elementAt(i);
+			if (c.isAssignableFrom(obj.getClass()))
+				return obj;
+		}
+		return null;
+	}
+
 	public void setContentPane(JPanel panel) {
 		parentDialog.setContentPane(panel);
 	}
