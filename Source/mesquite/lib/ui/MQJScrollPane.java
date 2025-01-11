@@ -58,7 +58,13 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 			}
 		}
 		else {
-			super.layout();
+			try {
+				super.layout();
+			}
+			catch (Error e) {
+				
+					System.out.println("Error in layout");
+			}
 		}
 	}
 	/*validate -------------------------*/

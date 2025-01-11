@@ -111,14 +111,14 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 	String title = "Tree";
 	public void setWindowTitle(String t){
 		title = t;
-		resetTitle();
+		setTitle(title);
 	}
 	/*.................................................................................................................*/
 	/** When called the window will determine its own title.  MesquiteWindows need
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
 	they can reset their titles properly*/
 	public void resetTitle(){
-		setTitle(title); //TODO: what tree?
+		setTitle(title); 
 	}
 	/*.................................................................................................................*/
 	public int getNumSnapshotLines(MesquiteFile file) {

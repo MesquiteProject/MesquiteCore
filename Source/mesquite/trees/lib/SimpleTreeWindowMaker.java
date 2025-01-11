@@ -59,6 +59,8 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 		simpleTreeWindow.sizeDisplays();
 		return true;
 	}
+	
+
 	protected abstract SimpleTreeWindow makeTreeWindow(SimpleTreeWindowMaker stwm, DrawTreeCoordinator dtwc);
 	protected abstract String getMenuName();
 	protected String getDefaultExplanation(){
@@ -113,10 +115,14 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree, boolean suppressDrawing) {
+		if (simpleTreeWindow == null)
+			return;
 		simpleTreeWindow.setTree(tree, suppressDrawing);
 	}
 	/*.................................................................................................................*/
 	public void  suppressDrawing(boolean suppress){
+		if (simpleTreeWindow == null)
+			return;
 		simpleTreeWindow.getTreeDisplay().suppressDrawing(suppress);
 		if (!suppress)
 			simpleTreeWindow.getTreeDisplay().repaint();
