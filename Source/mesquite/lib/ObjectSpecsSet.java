@@ -16,6 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 
 import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.ProbabilityModelSet;
 
 /*==========================  Mesquite Basic Class Library    ==========================*/
 /*===  the basic classes used by the trunk of Mesquite and available to the modules
@@ -60,12 +61,15 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		return properties;
 	}
 	/*.................................................................................................................*/
-	public boolean allDefault(){
+	public boolean allDefault(){ //NOTE: the problem here is that "default" in getDefaultProperty may be context specific
 		for (int i=0; i<getNumberOfParts(); i++) {
-			if (getProperty(i) != getDefaultProperty(i))
+			if (!hasDefaultProperty(i))
 				return false;
 		}
 		return true;
+	}
+	public boolean hasDefaultProperty(int ic) {
+		return getProperty(ic) == getDefaultProperty(ic);
 	}
 	/*.................................................................................................................*/
 	/** returns property for specified character*/
@@ -87,7 +91,7 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		this.defaultProperty = defaultProperty;
 	}
 	/*.................................................................................................................*/
-	/** Gets default model specified for ModelSet*/
+	/** Gets default model specified for ModelSet. ic passed in case the question is what should it inherit from the previous character!!*/
 	public Object getDefaultProperty(int ic) {
 		return getDefaultProperty();
 	}

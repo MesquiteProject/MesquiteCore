@@ -69,6 +69,10 @@ public class MesquiteBoolean implements Listable {
 		value = false;
 	}
 
+	public static void setValue(MesquiteBoolean b, boolean value) { //so that setting can be done in line whether or not null
+		if (b != null)
+			b.setValue(value);
+	}
 	public void setValue(boolean value) {
 		unassigned = false;
 		if (value != this.value) {

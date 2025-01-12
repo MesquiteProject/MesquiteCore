@@ -34,7 +34,7 @@ public abstract class TaxonListAssistant extends ListAssistant  {
  		return "Taxon list assistant";
    	 }
  	 public String[] getDefaultModule() {
- 	 	return new String[] {"#NumForTaxaList", "#BooleanForTaxaList", "#TaxonListCurrPartition", "#TaxonListArchivedName", "#TaxaListHasData"};
+ 	 	return new String[] {"#NumForTaxaList", "#BooleanForTaxaList", "#NumWMatrixForTaxaList","#TaxonListCurrPartition", "#TaxonListArchivedName", "#TaxaListHasData"};
  	 }
 
 	public abstract void setTableAndTaxa(MesquiteTable table, Taxa taxa);
