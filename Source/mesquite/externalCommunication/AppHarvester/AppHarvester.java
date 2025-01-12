@@ -113,9 +113,9 @@ public class AppHarvester extends MesquiteInit {
 			AppInformationFile appInfoFile;
 			for (int iv=0; iv<appInformationFileVector.size(); iv++) {
 				appInfoFile = (AppInformationFile)(appInformationFileVector.elementAt(iv));
-				String compiledAs = appInfoFile.getCompiledAs();
-				String arch = StringUtil.getLastItem(compiledAs, ".");
-				if (officialAppNameInAppInfo.equalsIgnoreCase(appInfoFile.getAppName()) && (StringUtil.notEmpty(arch) && arch.equalsIgnoreCase(architecture)))
+			//	String compiledAs = appInfoFile.getCompiledAs();
+			//	String arch = StringUtil.getLastItem(compiledAs, ".");
+				if (officialAppNameInAppInfo.equalsIgnoreCase(appInfoFile.getAppName()))
 					count++;
 			}
 		}
