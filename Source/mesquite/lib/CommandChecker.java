@@ -191,6 +191,17 @@ public class CommandChecker {
 		return checker;
 	}
 
+	/** a Kludge to add an extra endTell; so that old scripts may be read more gracefully;
+	 * see NumForTaxonList
+	 * */
+	String extraPending = null;
+	public void rememberExtraPending(String s) {
+		extraPending = s;
+	}
+	public String getExtraPending() {
+		return extraPending;
+	}
+
 	/**
 	 * Returns string explaining the operation of the widget (menu item, tool,
 	 * button, etc.) that uses the given command; for use in query mode and in

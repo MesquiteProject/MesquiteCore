@@ -48,6 +48,9 @@ public class SequenceLength extends NumberForTaxonAndMatrix {
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		 if (checker.compare(this.getClass(), "Eats command", "[on or off]", commandName, "getEmployee")) {  //to eat command for matrix source
+			return new MesquiteCommandAbsorber();
+		} else
 		 if (checker.compare(this.getClass(), "Sets whether or not excluded characters are considered in the calculation", "[on or off]", commandName, "toggleCountExcluded")) {
 			boolean current = countExcluded.getValue();
 			countExcluded.toggleValue(parser.getFirstToken(arguments));

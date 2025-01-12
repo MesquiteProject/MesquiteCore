@@ -347,7 +347,7 @@ public class Puppeteer  {
 		else return MesquiteInteger.fromString(name);
 	}
 	/*--------------------------------------*/
-	private boolean debugging = false;  
+	private boolean debugging = false;    //Debugg.println
 	private boolean logOnly = false;
 	private MesquiteTimer timer;
 	private boolean showTime = false;
@@ -610,6 +610,15 @@ public class Puppeteer  {
 				}
 				if (fineDebugging) stamp("-sc- (" + level + ")10");
 				sendCommands(who, block, stringPos, "endTell;", skip, nb, checker);
+			/*	if (checker.getExtraPending()!= null) { //back up by this string if last//Debugg.println
+					checker.rememberExtraPending(null);
+					stringPos.subtract(9);  //Debugg.println not right!!! need to go back that set of characters
+					
+				}
+		//		WQQ if (checker.hasEndTellWaiting())
+		//			stringPos back up to previous endTell;
+				//then consume that note
+				 * */
 				if (fineDebugging) stamp("-sc- (" + level + ")11");
 			} 
 			//else if (checker.compare(null, "End this level of the script", null, commandName, "endTell")) {
@@ -1322,6 +1331,7 @@ public class Puppeteer  {
 
 					try{
 						result = ((Commandable)mb).doCommand(commandName, commandArguments,checker);  //cm = mb.doCommand(commandName, commandArguments);
+						
 						//CommandRecord.tick("Command complete");
 						CommandRecord.tick(commandName + " complete");
 					}

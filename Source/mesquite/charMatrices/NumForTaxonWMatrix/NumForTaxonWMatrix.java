@@ -66,6 +66,8 @@ public class NumForTaxonWMatrix extends NumberForTaxon {
 		return temp;
 	}
 	/*.................................................................................................................*/
+	String[] legacyNfTCommands = new String[] {"toggleCountExcluded", "toggleCountMissing"};
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets calculator module", "[name of module]", commandName, "numberTask")) {
 			NumberForTaxonAndMatrix temp = (NumberForTaxonAndMatrix)replaceEmployee(NumberForTaxonAndMatrix.class, arguments, "Number for taxon with matrix", numberTask);
@@ -77,6 +79,9 @@ public class NumForTaxonWMatrix extends NumberForTaxon {
 		else if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
 			return matrixSourceTask;
 		}
+		else	if (numberTask!= null && StringArray.indexOf(legacyNfTCommands, commandName)>=0) {
+			return numberTask.doCommand(commandName, arguments, checker);
+	}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;

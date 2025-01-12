@@ -176,9 +176,31 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 
 	}
 
+	/*
+	 * mesquite.molec.CGBiasOfTaxon.CGBiasOfTaxon
+mesquite.molec.NumberPolyInTaxon.NumberPolyInTaxon
+mesquite.molec.NumberStopsInTaxon.NumberStopsInTaxon
+mesquite.molec.NumMissingData.NumMissingData
+mesquite.molec.PropUnambigSites.PropUnambigSites =NumUnambigSites
+mesquite.molec.PercentGapsInTaxon.PercentGapsInTaxon
+mesquite.molec.PercentLowerCase.PercentLowerCase
+mesquite.molec.PercentMissingInTaxon.PercentMissingInTaxon
+mesquite.molec.PropAmbiguousInTaxon.PropAmbiguousInTaxon
+mesquite.molec.SequenceLength.SequenceLength
+*/
+	String[] legacyNfTModules = new String[] {"#mesquite.molec.SequenceLength.SequenceLength"};
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a taxon", "[name of module]", commandName, "setValueTask")) {
+			if (StringArray.indexOf(legacyNfTModules, arguments)>=0) {
+
+				NumberForTaxon temp= (NumberForTaxon)replaceEmployee(NumberForTaxon.class, "#NumForTaxonWMatrix", "Number for a taxon", numberTask);
+				if (temp != null) {
+					MesquiteModule calculator = (MesquiteModule) temp.doCommand("numberTask", arguments, checker);
+					numberTask = temp;
+					return numberTask;
+				}
+			}
 			NumberForTaxon temp= (NumberForTaxon)replaceEmployee(NumberForTaxon.class, arguments, "Number for a taxon", numberTask);
 			if (temp!=null) {
 				numberTask = temp;
