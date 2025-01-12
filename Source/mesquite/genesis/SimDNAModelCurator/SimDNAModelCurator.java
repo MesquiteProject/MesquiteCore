@@ -24,7 +24,7 @@ import mesquite.stochchar.lib.*;
 /* ======================================================================== */
 public class SimDNAModelCurator extends CategProbModelCurator implements EditingCurator {
 	SimulationDNAModel modelToEdit;
-		 SimulationDNAModel defaultModel;
+	SimulationDNAModel defaultModel;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		defaultModel = new SimulationDNAModel("Jukes-Cantor", DNAState.class, this);

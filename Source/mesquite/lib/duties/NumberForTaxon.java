@@ -33,7 +33,7 @@ public abstract class NumberForTaxon extends MesquiteModule implements NumberFor
  		return "Number for Taxon";
    	 }
   	 public String[] getDefaultModule() {
-    	 	return new String[] {"#NumMatricesWithDataForTaxon", "#SequenceLength", "#TaxonValueFromTree"};
+    	 	return new String[] {"#NumMatricesWithDataForTaxon", "#SequenceLengthT", "#TaxonValueFromTree"};
     	 }
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/

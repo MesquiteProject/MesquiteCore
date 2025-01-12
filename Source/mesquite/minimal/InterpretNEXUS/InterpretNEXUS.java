@@ -378,15 +378,22 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 								MesquiteWindow mw = mb.getModuleWindow();
 								if (mw != null)
 									mw.setWindowSize(700, 500);
-								if (getProject().getNumberCharMatrices()>0){
-									MesquiteModule mbb = findNearestColleagueWithName("Data Window Coordinator");
-									if (mbb != null)
-										mbb.doCommand("showDataWindow", "0", CommandChecker.defaultChecker);
-								}
-								else if (getProject().getNumberTaxas()>0){
+							//	if (getProject().getNumberTaxas()>0){
 									MesquiteModule mbb = findNearestColleagueWithName("Manage TAXA blocks");
 									if (mbb != null)
 										mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
+							//	}
+								if (getProject().getNumberCharMatrices()>3){
+									 mbb = findNearestColleagueWithName("#ManageCharacters");
+									if (mbb != null)
+										mbb.doCommand("showDatasList", null, CommandChecker.defaultChecker);
+								}
+								else {
+									 mbb = findNearestColleagueWithName("Data Window Coordinator");
+									if (mbb != null) {
+										for (int im = 0; im< getProject().getNumberCharMatrices(); im++)
+											mbb.doCommand("showDataWindow", "" + im, CommandChecker.defaultChecker);
+									}
 								}
 							}
 

@@ -22,7 +22,6 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
-import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.table.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
@@ -96,7 +95,7 @@ public class TreezBlocksFromMatrices extends DatasetsListUtility {
 		String stringFailed = "";
 		boolean stop = false;
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Tree inference on matrices", "", datas.size(), true);
-
+		boolean userCancel = false;
 		progIndicator.start();
 		for (int im = 0; im < datas.size() && !stop; im++){
 			if (progIndicator.isAborted())
@@ -108,47 +107,56 @@ public class TreezBlocksFromMatrices extends DatasetsListUtility {
 				logln("\nInferring trees from matrix #" +(im+1) + " (" + data.getName() + ")"); 
 				progIndicator.setText("Inferring trees from matrix " +data.getName());
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
-				inferenceTask.fillTreeBlock(trees);
+				int result = inferenceTask.fillTreeBlock(trees);
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
-				progIndicator.increment();
-				if (im == 0)
-					progIndicator.toFront();
-				if (trees.size() == 0) {
-					numFailed++;
-					stringFailed += "\t" + data.getName() + "\n";
-					logln("Trees not inferred from matrix " +data.getName() + " because of some issue with the matrix or the inference program."); 
-					//if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
-					//	stop = true;
-					//}
-					MesquiteThread.setQuietPlease(true);
+				if (result == TreeSearcher.USERCANCELONINITIALIZE) {
+					logln("User cancelled the analyses."); 
+					userCancel=true;
+					stop = true;
 				}
 				else {
-					boolean mult = false;
-					if (trees.size()>1)
-						mult = true;
-					for (int itr = 0; itr<trees.size(); itr++) { 
-						String num = "";
-						if (mult)
-							num = ".#" + (itr+1);
-						Tree t = trees.getTree(itr);
-						count++;
-						if (t instanceof MesquiteTree)
-							((MesquiteTree)trees.getTree(itr)).setName(data.getName() + num);
+					progIndicator.increment();
+					if (im == 0)
+						progIndicator.toFront();
+					if (trees.size() == 0) {
+						numFailed++;
+						stringFailed += "\t" + data.getName() + "\n";
+						logln("Trees not inferred from matrix " +data.getName() + " because of some issue with the matrix or the inference program."); 
+						//if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
+						//	stop = true;
+						//}
+						MesquiteThread.setQuietPlease(true);
 					}
-					trees.setName("Trees (" + inferenceTask.getName() + ") from matrix " + data.getName());
-					trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
+					else {
+						boolean mult = false;
+						if (trees.size()>1)
+							mult = true;
+						for (int itr = 0; itr<trees.size(); itr++) { 
+							String num = "";
+							if (mult)
+								num = ".#" + (itr+1);
+							Tree t = trees.getTree(itr);
+							count++;
+							if (t instanceof MesquiteTree)
+								((MesquiteTree)trees.getTree(itr)).setName(data.getName() + num);
+						}
+						trees.setName("Trees (" + inferenceTask.getName() + ") from matrix " + data.getName());
+						trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
+					}
 				}
 			}
 			else
 				logln("Trees not inferred from matrix " +data.getName() + " because it is of a data type incompatible with the tree inference method"); 
+
 		}
 		progIndicator.goAway();
 		MesquiteThread.setQuietPlease(false);
-		logln("Total matrices analyzed: " + count);
+		if (!userCancel) {logln("Total matrices analyzed: " + count);
 		if (numFailed > 0) {
 			discreetAlert("Trees were not obtained for " + numFailed + " of the matrices. See log for details");
 			logln("Trees were not obtained for these matrices:");
 			logln(stringFailed);
+		}
 		}
 		unpauseAllPausables(v);
 		if (getProject() != null)

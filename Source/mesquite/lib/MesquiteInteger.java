@@ -69,6 +69,10 @@ public class MesquiteInteger implements Listable{
 	public void setValue(String s) {
 		this.value=fromString(s);
 	}
+	public static void setValue(MesquiteInteger b, int value) { //so that setting can be done in line whether or not null
+		if (b != null)
+			b.setValue(value);
+	}
 	/** Adds one to value */
 	public void increment() {
 		value++;
