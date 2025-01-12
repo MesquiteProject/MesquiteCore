@@ -696,10 +696,11 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		addMenuItem(aux, "-", null);
 		addModuleMenuItems(aux, makeCommand("newAssistant", basicTreeWindow), TreeDisplayAssistantA.class);
 		addModuleMenuItems(aux, makeCommand("newWindowAssistant", basicTreeWindow), TreeWindowAssistantA.class);
-		/* 4.1
-		 MesquiteSubmenuSpec mmsSG = addSubmenu(aux, "Species Tree - Gene Tree Analyses", makeCommand("newWindowAssistant", basicTreeWindow));
-		mmsSG.setList(TreeWindowAssistantSGA.class);
-		*/
+		Debugg.println("MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantSGA.class, null, this) " + MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantSGA.class, null, this));
+		if (MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantSGA.class, null, this)>0) {
+			MesquiteSubmenuSpec mmsSG = addSubmenu(aux, "Species Tree - Gene Tree Analyses", makeCommand("newWindowAssistant", basicTreeWindow));
+			mmsSG.setList(TreeWindowAssistantSGA.class);
+		}
 		addMenuItem(aux, "-", null);
 
 		MesquiteSubmenuSpec mmsO = addSubmenu(aux, "Other Analyses with Tree", makeCommand("newWindowAssistant", basicTreeWindow));
@@ -1265,7 +1266,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	public void requestFocus(){
-	//	super.requestFocus();
+		//	super.requestFocus();
 		if (treeDisplay!=null)
 			treeDisplay.requestFocus();
 	}
@@ -3399,7 +3400,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 
 		s += "\n\n" + treeDisplay.getTextVersion();
-		
+
 		return s;
 	}
 
@@ -5333,7 +5334,7 @@ class RecentButton extends MousePanel {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		if (window == null || window.recentEditedTrees == null)
-				return;
+			return;
 		int i = window.recentEditedTrees.size();
 		if (i >= numImages)
 			i = numImages - 1;
