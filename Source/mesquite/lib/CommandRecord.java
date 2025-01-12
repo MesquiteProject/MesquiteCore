@@ -34,7 +34,7 @@ public class CommandRecord extends Listened {
 	Thread thread;
 	public static long numInstances =0; 
 	long id = 0; 
-	private boolean warnModuleNotFound = true;  
+	private boolean warnModuleNotFound = MesquiteTrunk.debugMode;  
 	private boolean warnObjectToldNull = true;
 	private boolean emergencyRehire = false;
 	private boolean cancelled = false;

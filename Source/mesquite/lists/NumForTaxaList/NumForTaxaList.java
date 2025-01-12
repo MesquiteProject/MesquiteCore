@@ -176,24 +176,28 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 
 	}
 
-	/*
-	 * mesquite.molec.CGBiasOfTaxon.CGBiasOfTaxon
-mesquite.molec.NumberPolyInTaxon.NumberPolyInTaxon
-mesquite.molec.NumberStopsInTaxon.NumberStopsInTaxon
-mesquite.molec.NumMissingData.NumMissingData
-mesquite.molec.PropUnambigSites.PropUnambigSites =NumUnambigSites
-mesquite.molec.PercentGapsInTaxon.PercentGapsInTaxon
-mesquite.molec.PercentLowerCase.PercentLowerCase
-mesquite.molec.PercentMissingInTaxon.PercentMissingInTaxon
-mesquite.molec.PropAmbiguousInTaxon.PropAmbiguousInTaxon
-mesquite.molec.SequenceLength.SequenceLength
-*/
-	String[] legacyNfTModules = new String[] {"#mesquite.molec.SequenceLength.SequenceLength"};
+	
+	String[] legacyNfTModules = new String[] {
+			"#mesquite.molec.PropUnambigSites.PropUnambigSites", //this one is now called NumUnambigSites
+			"#mesquite.molec.CGBiasOfTaxon.CGBiasOfTaxon",
+			"#mesquite.molec.NumberPolyInTaxon.NumberPolyInTaxon",
+			"#mesquite.molec.NumberStopsInTaxon.NumberStopsInTaxon",
+			"#mesquite.molec.NumMissingData.NumMissingData",
+			"#mesquite.molec.PercentGapsInTaxon.PercentGapsInTaxon",
+			"#mesquite.molec.PercentLowerCase.PercentLowerCase",
+			"#mesquite.molec.PercentMissingInTaxon.PercentMissingInTaxon",
+			"#mesquite.molec.PropAmbiguousInTaxon.PropAmbiguousInTaxon",
+			"#mesquite.molec.SequenceLength.SequenceLength",
+			"#mesquite.align.AlignScoreForTaxon.AlignScoreForTaxon",
+			"#mesquite.align.AlignScoreForTaxonRC.AlignScoreForTaxonRC",
+			"#mesquite.categ.ProportionUniqueStates.ProportionUniqueStates"};
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a taxon", "[name of module]", commandName, "setValueTask")) {
-			if (StringArray.indexOf(legacyNfTModules, arguments)>=0) {
-
+			int legacyTask = StringArray.indexOf(legacyNfTModules, arguments);
+			if (legacyTask>=0) { //This is an old script directly referring to the modules that have changed duty; now they are hired indirectly via NumForTaxonWMatrix
+				if (legacyTask == 0) //this one changed names
+					arguments = "#NumUnambigSites";
 				NumberForTaxon temp= (NumberForTaxon)replaceEmployee(NumberForTaxon.class, "#NumForTaxonWMatrix", "Number for a taxon", numberTask);
 				if (temp != null) {
 					MesquiteModule calculator = (MesquiteModule) temp.doCommand("numberTask", arguments, checker);

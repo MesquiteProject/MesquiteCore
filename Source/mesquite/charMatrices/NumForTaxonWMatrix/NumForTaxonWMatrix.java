@@ -66,7 +66,7 @@ public class NumForTaxonWMatrix extends NumberForTaxon {
 		return temp;
 	}
 	/*.................................................................................................................*/
-	String[] legacyNfTCommands = new String[] {"toggleCountExcluded", "toggleCountMissing"};
+	String[] legacyNfTCommands = new String[] {"toggleCountExcluded", "toggleCountMissing", "toggleEdges", "toggleCountEvenIfOthers"};
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets calculator module", "[name of module]", commandName, "numberTask")) {
@@ -143,8 +143,8 @@ public class NumForTaxonWMatrix extends NumberForTaxon {
 				if (observedStates.getName()!= null) {
 					String n =  observedStates.getName();
 					if (n.length()>12)
-						n = n.substring(0, 12); 
-					s += " (" + n + "…)";
+						n = n.substring(0, 12) + "…"; 
+					s += " (" + n + ")";
 				}
 			}
 			return s;

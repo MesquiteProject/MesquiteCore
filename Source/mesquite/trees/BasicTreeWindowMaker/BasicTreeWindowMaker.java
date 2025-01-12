@@ -696,8 +696,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		addMenuItem(aux, "-", null);
 		addModuleMenuItems(aux, makeCommand("newAssistant", basicTreeWindow), TreeDisplayAssistantA.class);
 		addModuleMenuItems(aux, makeCommand("newWindowAssistant", basicTreeWindow), TreeWindowAssistantA.class);
-		Debugg.println("MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantSGA.class, null, this) " + MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantSGA.class, null, this));
-		if (MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantSGA.class, null, this)>0) {
+ 		if (MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantSGA.class, null, this)>0) {
 			MesquiteSubmenuSpec mmsSG = addSubmenu(aux, "Species Tree - Gene Tree Analyses", makeCommand("newWindowAssistant", basicTreeWindow));
 			mmsSG.setList(TreeWindowAssistantSGA.class);
 		}
