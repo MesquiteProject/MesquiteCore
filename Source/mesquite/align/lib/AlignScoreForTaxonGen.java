@@ -16,6 +16,7 @@ import mesquite.align.lib.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
@@ -169,8 +170,21 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxonAndMatrix {
 	public boolean isSubstantive(){
 		return true;
 	}
+	/*.................................................................................................................*/
+	public String getVeryShortName() {
+		return "Align score";  
+	}
 	
 	public String getParameters() {
+		if (observedStates != null && getProject().getNumberCharMatricesVisible()>1){
+			CharacterData d = observedStates.getParentData();
+			if (d != null && d.getName()!= null) {
+				String n =  d.getName();
+				if (n.length()>12)
+					n = n.substring(0, 12); 
+				return getScoreName() + " of sequence in matrix (" + n + ")";
+			}
+		}
 		return getScoreName() + " of sequence in matrix";
 	}
 	/*.................................................................................................................*/

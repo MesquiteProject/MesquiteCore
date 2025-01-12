@@ -190,7 +190,9 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 			"#mesquite.molec.SequenceLength.SequenceLength",
 			"#mesquite.align.AlignScoreForTaxon.AlignScoreForTaxon",
 			"#mesquite.align.AlignScoreForTaxonRC.AlignScoreForTaxonRC",
-			"#mesquite.categ.ProportionUniqueStates.ProportionUniqueStates"};
+			"#mesquite.categ.ProportionUniqueStates.ProportionUniqueStates",
+			"#mesquite.chromaseq.SequenceQuality.SequenceQuality",
+			"#mesquite.chromaseq.NumberOfReads.NumberOfReads"};
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a taxon", "[name of module]", commandName, "setValueTask")) {

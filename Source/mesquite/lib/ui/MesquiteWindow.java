@@ -30,6 +30,7 @@ import mesquite.lib.Listable;
 import mesquite.lib.Logger;
 import mesquite.lib.MainThread;
 import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteCommandAbsorber;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
@@ -2617,6 +2618,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(MesquiteWindow.class, "Makes the window visible", null, commandName, "showWindow")) {
 			setVisible(true, MesquiteThread.isScripting());
+		}
+		else if (checker.compare(MesquiteModule.class, "Absorb command (and any commands to follow in tell) without action", null, commandName, "absorbCommand")) {
+			return new MesquiteCommandAbsorber();
 		}
 		else if (checker.compare(MesquiteWindow.class, "brings window to front", null, commandName, "setAsFront")) {
 			MesquiteFrame f = getParentFrame();

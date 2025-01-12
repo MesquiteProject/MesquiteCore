@@ -21,6 +21,7 @@ import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
@@ -145,15 +146,6 @@ public class ProportionUniqueStates extends NumberForTaxonAndMatrix {
 	}
 	/*.................................................................................................................*/
 	public String getVeryShortName() {
-		if (observedStates != null && getProject() != null && getProject().getNumberCharMatricesVisible()>1){
-			CharacterData d = observedStates.getParentData();
-			if (d != null && d.getName()!= null) {
-				String n =  d.getName();
-				if (n.length()>12)
-					n = n.substring(0, 12); 
-				return "Prop. Unique (" + n + ")";
-			}
-		}
 		return "Prop. Unique";  
 	}
 	/*.................................................................................................................*/
@@ -166,6 +158,15 @@ public class ProportionUniqueStates extends NumberForTaxonAndMatrix {
 		return false;
 	}
 	public String getParameters() {
+		if (observedStates != null && getProject().getNumberCharMatricesVisible()>1){
+			CharacterData d = observedStates.getParentData();
+			if (d != null && d.getName()!= null) {
+				String n =  d.getName();
+				if (n.length()>12)
+					n = n.substring(0, 12); 
+				return "Proportion unique states in taxon in matrix (" + n + ")";
+			}
+		}
 		return "Proportion unique states in taxon in matrix";
 	}
 	/*.................................................................................................................*/

@@ -75,7 +75,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "11 January 2025";
+		return "12 January 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -93,7 +93,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1022;  
+		return 1023;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -1691,6 +1691,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return doCommand(commandName, arguments, CommandChecker.defaultChecker);
 	}
 
+	static boolean scriptUninstalledModulesWarned = false;
 	/*.................................................................................................................*/
 	/** A request for the MesquiteModule to perform a command.  It is passed two strings, the name of the command and the arguments.
 	This should be overridden by any module that wants to respond to a command.*/
@@ -1705,6 +1706,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		}
 		else if (checker.compare(MesquiteModule.class, "Show employers of this module", null, commandName, "employers")) {
 			logln(getEmployerPath());
+		}
+		else if (checker.compare(MesquiteModule.class, "Absorb command (and any commands to follow in tell) without action", null, commandName, "absorbCommand")) {
+			return new MesquiteCommandAbsorber();
 		}
 		else  if (checker.compare(MesquiteModule.class, "Executes a shell script", "[path to script file]", commandName, "executeShellScript")) {
 			String scriptPath = parser.getFirstToken(arguments);
@@ -1838,6 +1842,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				return new MesquiteInteger((int)proj.getID());
 		}
 		else if  (checker.compare(MesquiteModule.class, null, null, commandName, "getEmployee")) {
+			//if can't find it, may be for a package not here; just absorb the instructions
+			if (StringUtil.notEmpty(arguments) && MesquiteTrunk.mesquiteModulesInfoVector.findModule(MesquiteModule.class, arguments)== null) {
+				if (!scriptUninstalledModulesWarned) 
+					MesquiteMessage.println("Script includes references to a module not installed (" + arguments + ")");
+				scriptUninstalledModulesWarned = true;
+				return new MesquiteCommandAbsorber(); 
+			}
 			MesquiteModule mb =  findEmployeeWithName(parser.getFirstToken(arguments));
 			return mb;
 			//TODO: add getEmployeeWithDuty and pass duty class name

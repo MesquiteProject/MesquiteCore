@@ -988,9 +988,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		}
 		for (int i = 0; i < ownerModule.getNumberOfEmployees(); i++) {
 			Object e = ownerModule.getEmployeeVector().elementAt(i);
-			if (e instanceof DataWindowAssistant && !(e instanceof DataWindowAssistantI)) {
-				temp.addLine("newAssistant ", ((MesquiteModule) e));
-			}
+			if (e instanceof DataWindowAssistant && !(e instanceof DataWindowAssistantI))
+					temp.addLine("newAssistant ", ((MesquiteModule) e));
+			
 		}
 		if (matrixInfoPanelEverShown) {
 			if (matrixInfoPanel != null) {
@@ -2302,6 +2302,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				setColorLegend(null, null, false);
 		}
 		else if (checker.compare(this.getClass(), "Hires new data editor assistant module", "[name of module]", commandName, "newAssistant")) {
+			//if can't find it, may be for a package not here; just absorb the instructions
+		/*	if (StringUtil.notEmpty(arguments) && MesquiteTrunk.mesquiteModulesInfoVector.findModule(DataWindowAssistant.class, arguments)== null)
+				return new MesquiteCommandAbsorber(); */
 			DataWindowAssistant dwa = (DataWindowAssistant) ownerModule.hireNamedEmployee(DataWindowAssistant.class, arguments);
 			if (dwa != null)
 				dwa.setTableAndData(table, data);

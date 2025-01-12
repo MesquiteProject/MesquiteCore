@@ -377,7 +377,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 							if (mb != null){
 								MesquiteWindow mw = mb.getModuleWindow();
 								if (mw != null)
-									mw.setWindowSize(700, 500);
+									mw.setWindowSize(1000, 800);
 							//	if (getProject().getNumberTaxas()>0){
 									MesquiteModule mbb = findNearestColleagueWithName("Manage TAXA blocks");
 									if (mbb != null)
@@ -388,12 +388,22 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 									if (mbb != null)
 										mbb.doCommand("showDatasList", null, CommandChecker.defaultChecker);
 								}
-								else {
+								else if (getProject().getNumberCharMatrices()>0){
 									 mbb = findNearestColleagueWithName("Data Window Coordinator");
 									if (mbb != null) {
 										for (int im = 0; im< getProject().getNumberCharMatrices(); im++)
 											mbb.doCommand("showDataWindow", "" + im, CommandChecker.defaultChecker);
 									}
+								}
+								else {
+									 mbb = findNearestColleagueWithName("#ManageTrees");
+										if (getProject().getNumberTreeVectors()==1) {
+											mbb.doCommand("showTreesInWindow", "" + 0, CommandChecker.defaultChecker);
+										}
+										else if (getProject().getNumberTreeVectors()>1) {
+											mbb.doCommand("showTreeBlocks", null, CommandChecker.defaultChecker);
+
+										}
 								}
 							}
 
