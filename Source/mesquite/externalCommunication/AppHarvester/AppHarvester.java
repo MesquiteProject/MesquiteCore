@@ -59,8 +59,8 @@ public class AppHarvester extends MesquiteInit {
 			int numApps = appInformationFileVector.size();
 			AppInformationFile appInfoFile;
 			
-			//For macOS, delete x86 if aarch64 is available
-			if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.isAarch64()){ 
+			//For macOS or windows on aarch64, delete x86 if aarch64 is available
+			if ((MesquiteTrunk.isMacOSX() ||MesquiteTrunk.isWindows()) && MesquiteTrunk.isAarch64()){ 
 				for (int iv=numApps-1; iv>=0; iv--) {
 					appInfoFile = (AppInformationFile)(appInformationFileVector.elementAt(iv));
 					String programName = appInfoFile.getAppName();
@@ -72,7 +72,10 @@ public class AppHarvester extends MesquiteInit {
 						String arch = StringUtil.getLastItem(compiledAs, ".");
 						if ("x86".equalsIgnoreCase(arch)) { //there is an aarch64 or universal version available, but this is x86; delete it
 							appInformationFileVector.removeElement(appInfoFile);
-							sb.append(" —x86 version of " + programName + " ignored because an Apple Silicon version is available.\n");
+							if (MesquiteTrunk.isMacOSX())
+								sb.append(" —x86 version of " + programName + " ignored because an Apple Silicon version is available.\n");
+							else 
+								sb.append(" —x86 version of " + programName + " ignored because an Arm64 version is available.\n");
 						}
 					}
 
@@ -113,7 +116,7 @@ public class AppHarvester extends MesquiteInit {
 			return arch.equalsIgnoreCase("aarch64") && MesquiteTrunk.isAarch64();
 		}
 		else if (os.equalsIgnoreCase("linux") && MesquiteTrunk.isLinux()) {
-			return arch.equalsIgnoreCase("aarch64") && MesquiteTrunk.isAarch64();
+			return (MesquiteTrunk.isX86(arch) && MesquiteTrunk.isX86()) || (arch.equalsIgnoreCase("aarch64") && MesquiteTrunk.isAarch64());
 		}
 		return false;
 	}
