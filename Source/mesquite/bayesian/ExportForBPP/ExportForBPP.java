@@ -39,7 +39,9 @@ public class ExportForBPP extends FileInterpreterI {
 	Taxa currentTaxa = null;
 	boolean suspend = false;
 	boolean phased = false;
+	String exportDirectory = null;
 	
+
 	static final String speciesDelimitationFineTuningDefault = "1 1 2 1";
 	String speciesDelimitationFineTuning = speciesDelimitationFineTuningDefault;
 	String startOfControlFile = "speciestree = 0\nspeciesmodelprior = 1";
@@ -197,6 +199,13 @@ public class ExportForBPP extends FileInterpreterI {
 
 	}
 
+	public String getExportDirectory() {
+		return exportDirectory;
+	}
+
+	public void setExportDirectory(String exportDirectory) {
+		this.exportDirectory = exportDirectory;
+	}
 
 	/*.................................................................................................................*/
 	private String prepareExportName(String name) {
@@ -364,6 +373,7 @@ public class ExportForBPP extends FileInterpreterI {
 		return false;
 	}
 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
 		boolean usePrevious = args.parameterExists("usePrevious");
@@ -397,7 +407,10 @@ public class ExportForBPP extends FileInterpreterI {
 		
 		Taxa otherTaxa = association.getOtherTaxa(taxa);
 		
-		String dirPath = MesquiteFile.chooseDirectory("Choose export directory");
+		String dirPath = exportDirectory;
+		
+		if (StringUtil.blank(dirPath))
+			dirPath = MesquiteFile.chooseDirectory("Choose export folder");
 		
 		if (dirPath==null)
 			return false;

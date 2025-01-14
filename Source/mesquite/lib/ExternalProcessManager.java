@@ -222,6 +222,23 @@ public class ExternalProcessManager implements Commandable  {
 		this.basicProcessInformation = basicProcessInformation;
 	}
 
+	/*.................................................................................................................*/
+	public static boolean executeProgram(MesquiteModule ownerModule, String programPath, String programName, String arguments, String localFileDirectory, String stdOutFileName, boolean exitCodeMatters, ProgressIndicator progIndicator) {
+		arguments=StringUtil.stripBoundingWhitespace(arguments);
+
+		ExternalProcessManager externalProcessManager = new ExternalProcessManager(ownerModule, localFileDirectory, programPath, arguments, programName, null, null, null, true);
+		externalProcessManager.setExitCodeMatters(exitCodeMatters);
+		if (StringUtil.notEmpty(stdOutFileName))
+			externalProcessManager.setStdOutFileName(stdOutFileName);
+		else
+			externalProcessManager.setStdOutFileName("stdOut.txt");
+		externalProcessManager.setStdErrFileName("stdErr.txt");
+		boolean success = externalProcessManager.executeInShell(null, null); //This brings a contained window to the fore, unnecessarily, but if the contents of executeInShell are disabled, it still does.
+		if (success)
+			success = externalProcessManager.monitorAndCleanUpShell(progIndicator);
+		return success;
+	}
+
 
 	/*.................................................................................................................*/
 	public static String executeAndGetStandardOut(MesquiteModule ownerModule, String directoryPath, String programCommand, String programOptions, boolean removeQuotesStart, boolean removeQuotes, boolean setNoQuoteChar) {
