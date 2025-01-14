@@ -601,6 +601,24 @@ class PackageCheckbox extends JCheckBox implements MQComponent, Listable, MouseL
 	}
 	public void mouseReleased(MouseEvent e){
 	}
+	/*getPreferredSize -------------------------*/
+    public Dimension getPreferredSize() {
+		if (MesquiteTrunk.isLinux()) {
+			try {
+				return super.getPreferredSize();
+			}
+			catch (StackOverflowError e) {
+				System.err.println("Yet another StackOverflowError on  linux");
+			}
+		}
+		try {
+			return super.getPreferredSize();
+		}
+		catch (Exception e) {
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
+		}
+		return new Dimension(400, 400);
+	}
 	/*validate -------------------------*/
 	boolean validating = false;
 	public void validate(){

@@ -56,7 +56,7 @@ public class MesqJEditorPane extends JEditorPane implements MQComponent{
 			return super.getPreferredSize();
 		}
 		catch (Exception e) {
-			System.err.println("Exception in MesqJEditorPanel"); //Debugg.println if (MesquiteTrunk.debugMode) 
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
 		}
 		return new Dimension(400, 400);
 	}

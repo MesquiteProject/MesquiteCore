@@ -301,11 +301,24 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 	
 	/*.................................................................................................................*/
+	public static boolean isAarch64(String archName){
+	if (archName == null)
+	return false;
+		return archName.indexOf("aarch64")>=0 || archName.indexOf("arm64")>=0;
+	} 	
+	/*.................................................................................................................*/
+	public static boolean isX86(String archName){
+	if (archName == null)
+	return false;
+		return archName.indexOf("x86")>=0 || archName.indexOf("amd64")>=0;
+	} 
+	
+	/*.................................................................................................................*/
 	public static boolean isAarch64(){
-		return System.getProperty("os.arch").indexOf("aarch64")>=0;
+		return isAarch64(System.getProperty("os.arch"));
 	} 	
 	public static boolean isX86(){
-		return System.getProperty("os.arch").indexOf("x86")>=0;
+		return isX86(System.getProperty("os.arch"));
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXMajorVersion10() {

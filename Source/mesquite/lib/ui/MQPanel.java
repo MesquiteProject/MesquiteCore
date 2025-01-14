@@ -34,10 +34,16 @@ public class MQPanel extends Panel implements MQComponent {
 				return super.getPreferredSize();
 			}
 			catch (StackOverflowError e) {
-				System.out.println("Yet another StackOverflowError on  linux");
+				System.err.println("Yet another StackOverflowError on  linux");
 			}
 		}
+		try {
 			return super.getPreferredSize();
+		}
+		catch (Exception e) {
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
+		}
+		return new Dimension(400, 400);
 	}
 	/*layout -------------------------*/
 	public void layout(){
