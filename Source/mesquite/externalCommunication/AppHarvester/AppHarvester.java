@@ -42,7 +42,7 @@ public class AppHarvester extends MesquiteInit {
 							sb.append("Loading "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + "\n");
 						}
 						else {
-							if (MesquiteTrunk.debugMode)
+							if (true || MesquiteTrunk.debugMode)
 								sb.append("INCOMPATIBLE: "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + " (compiledAs: " + appInfoFile.getCompiledAs() + ")\n");
 							countIncomp++;
 						}
@@ -110,10 +110,10 @@ public class AppHarvester extends MesquiteInit {
 				return MesquiteTrunk.isX86(arch);
 		}
 		else if (os.equalsIgnoreCase("windows") && MesquiteTrunk.isWindows()) {
-			return MesquiteTrunk.isAarch64(arch) && MesquiteTrunk.isAarch64();
+			return (MesquiteTrunk.isAarch64(arch) && MesquiteTrunk.isAarch64()) ||  (MesquiteTrunk.isX86(arch) && MesquiteTrunk.isX86());
 		}
 		else if (os.equalsIgnoreCase("linux") && MesquiteTrunk.isLinux()) {
-			return MesquiteTrunk.isAarch64(arch) && MesquiteTrunk.isAarch64();
+			return (MesquiteTrunk.isAarch64(arch) && MesquiteTrunk.isAarch64()) ||  (MesquiteTrunk.isX86(arch) && MesquiteTrunk.isX86());
 		}
 		return false;
 	}
