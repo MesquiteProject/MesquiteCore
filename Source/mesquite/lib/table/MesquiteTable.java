@@ -2582,8 +2582,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		if (!columnLegal(column))
 			return;
 		columnWidths[column] = width;
-		if (treatAsAdjusted)
+		if (treatAsAdjusted) {
 			columnWidthsAdjusted.setBit(column);
+		}
 		else
 			columnWidthsAdjusted.clearBit(column);
 
@@ -5055,6 +5056,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		return false;
 	}
 
+	/* ............................................................................................................... */
+	/** returns whether a cell in a column is selected. */
+	public boolean anyCellsInColumnSelectedAnyWay(int column) {
+		if (isColumnSelected(column))
+			return true;
+		for (int row=0; row<numRowsTotal; row++)
+			if (isRowSelected(row) || isCellBitOn(column, row))
+					return true;
+		return false;
+	}
 
 	/* ............................................................................................................... */
 	/** returns whether cell in central matrix is selected. */

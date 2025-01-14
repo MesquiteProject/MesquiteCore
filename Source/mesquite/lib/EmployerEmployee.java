@@ -1705,7 +1705,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 				// s is now package name; find package and diagnose
 				MesquitePackageRecord mpr = MesquitePackageRecord.findPackage(s);
 				if (mpr == null)
-					message += "\nThe package in which this module resides (" + s + ") appears not to be installed.";
+					message += "\nThe package in which this module resides (" + s + ") appears not to be installed. This message can appear when you read a file that had been saved with a copy of Mesquite with different packages installed.";
 				else if (mpr.loaded)
 					message += "\nThe package in which this module resides (" + mpr.getName() + ") is installed and activated (loaded).  Perhaps the package has changed, or the command contains a misspelled name.";
 				else
@@ -1730,7 +1730,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 					rec.setModuleNotFoundWarning(false);
 				}
 			}
-		module.logln("\nMODULE REQUESTED BY COMMAND NOT FOUND\n" + message + "\n");
+		module.logln("\nMODULE REQUESTED BY COMMAND NOT FOUND\n" + message + " \n");
 	}
 
 	/* ................................................................................................................. */

@@ -116,10 +116,12 @@ public class TaxonList extends ListModule {
 				assistant.setUseMenubar(false);
 			}
 			/* removed as default v. 2. 01; returned for v. 2. 5 */
-			TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#TaxonListCurrPartition"));
+			if (!MesquiteThread.isScripting()) {
+				TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#TaxonListCurrPartition"));
 			if (assistant!= null){
 				((TaxonListWindow)window).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
+			}
 			}
 			/*	*/
 			resetContainingMenuBar();

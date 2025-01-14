@@ -236,6 +236,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			}
 		}
 		temp.incorporate(super.getSnapshot(file), false);
+		temp.addLine("reviewColumnWidths");
 		return temp;
 	}
 	public abstract void setRowName(int row, String name);
@@ -719,6 +720,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			deleteSelectedRows(true);
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Reviews column widths", null, commandName, "reviewColumnWidths")) {
+			reviewColumnWidths();
+			return null;
+		}
 		else if (checker.compare(this.getClass(), "Inverts which rows are selected", null, commandName, "invertSelection")) {
 			for (int im = 0; im < table.getNumRows(); im++){
 				if (table.isRowSelected(im)){
@@ -860,6 +865,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				table.setColumnWidth(table.getNumColumns()-1, w);
 			}
+  	 		reviewColumnWidths();
 		}
 	}
 	public void reviewColumnNumber() {

@@ -204,9 +204,11 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 					return;
 			}
 			int c = ((ListModule)employer).getMyColumn(this);
+			
+			boolean anySelected= table.anyCellsInColumnSelectedAnyWay(c);;
 
 			for (int it=0; it<taxa.getNumTaxa(); it++) {
-				if (!taxonProcessed.isBitOn(it)  && (table.isCellSelectedAnyWay(c, it))) {
+				if (!taxonProcessed.isBitOn(it)  && (!anySelected || table.isCellSelectedAnyWay(c, it))) {
 					groupName = nameParser.extractPart(taxa.getTaxonName(it));
 					TaxaGroup group = TaxaGroup.makeGroupIfNovel(this, groupName,taxa,groups);
 					taxonProcessed.setBit(it, true);
@@ -476,6 +478,25 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	}
 
 	public String getWidestString(){
+		if (taxa != null) {
+			TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
+			if (part != null) {
+				int max = 12;
+				for (int it = 0; it<taxa.getNumTaxa(); it++) {
+				TaxaGroup tg = part.getTaxaGroup(it);
+				if (tg != null) {
+					String name = tg.getName();
+					if (StringUtil.notEmpty(name)) {
+						 if (name.length()>max)
+							 max = name.length();
+					}
+				}
+			}
+				if (max>50)
+					max = 60;
+				return "888888888 888888888 888888888 888888888 888888888 888888888 ".substring(0, max);
+			}
+		}
 		return "88888888888  ";
 	}
 	/*.................................................................................................................*/

@@ -35,7 +35,7 @@ public class NameParser implements XMLPreferencesProcessor{
 		dialog.addHorizontalLine(2);
 
 		dialog.addLabel("Options for portion to be removed at start of name");
-		Checkbox considerStartBoundaryField = dialog.addCheckBox("remove start of name", considerStartBoundary);
+		Checkbox considerStartBoundaryField = dialog.addCheckBox("Remove start of name", considerStartBoundary);
 		SingleLineTextField startBoundaryField = dialog.addTextField("String delimiting portion at start to be removed:", startBoundary, 8, true);
 		IntegerField numStartBoundaryField = dialog.addIntegerField("Number of delimiting string that marks to end of the section to be removed :", numFromStart, 3);
 		Checkbox includeStartBoundaryInNameField = dialog.addCheckBox("include delimiting string in name", includeStartBoundaryInName);
@@ -43,7 +43,7 @@ public class NameParser implements XMLPreferencesProcessor{
 		dialog.addHorizontalLine(2);
 
 		dialog.addLabel("Options for portion to be removed at end of name");
-		Checkbox considerEndBoundaryField = dialog.addCheckBox("remove end of name", considerEndBoundary);
+		Checkbox considerEndBoundaryField = dialog.addCheckBox("Remove end of name", considerEndBoundary);
 		SingleLineTextField endBoundaryField = dialog.addTextField("String delimiting portion at end to be removed:", endBoundary, 8, true);
 		IntegerField numEndBoundaryField = dialog.addIntegerField("Number of delimiting string that marks to start of the section to be removed :", numFromEnd, 3);
 		Checkbox includeEndBoundaryInNameField = dialog.addCheckBox("include delimiting string in name", includeEndBoundaryInName);

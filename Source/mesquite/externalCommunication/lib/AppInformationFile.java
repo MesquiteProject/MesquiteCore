@@ -110,6 +110,9 @@ public class AppInformationFile {
 	public String getAppName() {
 		return appName;
 	}
+	public String getAppNameWithinAppsDirectory() {
+		return appNameWithinAppsDirectory;
+	}
 	public String getAppVariant() {
 		return appVariant;
 	}
