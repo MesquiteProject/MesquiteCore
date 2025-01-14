@@ -70,7 +70,7 @@ public class AppHarvester extends MesquiteInit {
 					if (numAarch64>0 || numUniv >0) {
 						String compiledAs = appInfoFile.getCompiledAs();
 						String arch = StringUtil.getLastItem(compiledAs, ".");
-						if ("x86".equalsIgnoreCase(arch)) { //there is an aarch64 or universal version available, but this is x86; delete it
+						if (MesquiteTrunk.isX86(arch)) { //there is an aarch64 or universal version available, but this is x86; delete it
 							appInformationFileVector.removeElement(appInfoFile);
 							sb.append(" —x86 version of " + programName + " ignored because an Apple Silicon version is available.\n");
 						}
@@ -105,15 +105,15 @@ public class AppHarvester extends MesquiteInit {
 			if (arch.equalsIgnoreCase("univ"))
 				return true;
 			else if ( MesquiteTrunk.isAarch64())
-				return arch.equalsIgnoreCase("aarch64") || arch.equalsIgnoreCase("x86");
+				return MesquiteTrunk.isAarch64(arch) || MesquiteTrunk.isX86(arch);
 			else if ( MesquiteTrunk.isX86())
-				return arch.equalsIgnoreCase("x86");
+				return MesquiteTrunk.isX86(arch);
 		}
 		else if (os.equalsIgnoreCase("windows") && MesquiteTrunk.isWindows()) {
-			return arch.equalsIgnoreCase("aarch64") && MesquiteTrunk.isAarch64();
+			return MesquiteTrunk.isAarch64(arch) && MesquiteTrunk.isAarch64();
 		}
 		else if (os.equalsIgnoreCase("linux") && MesquiteTrunk.isLinux()) {
-			return arch.equalsIgnoreCase("aarch64") && MesquiteTrunk.isAarch64();
+			return MesquiteTrunk.isAarch64(arch) && MesquiteTrunk.isAarch64();
 		}
 		return false;
 	}
