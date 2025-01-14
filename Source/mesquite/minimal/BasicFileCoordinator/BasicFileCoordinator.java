@@ -987,7 +987,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					boolean close = fileCloseRequested();
 					if (!close)  //WAYNECHECK
 						return false;
-					if (!getProject().isDirty()) {
+					if (!getProject().isDirty() || getProject().getIgnoreDirtWhenCloseRequested()) {
 						waitWriting(null);
 						logln("Closing " + getProject().getName());
 						getProject().isDoomed = true;
@@ -1083,7 +1083,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				boolean otherModulesOKWithClosing = fileCloseRequested(); //Debugg.println should pass sometjhing to learn if user was already pstered?
 				// if not, no need to ask further and leave siga set to false
 				if (otherModulesOKWithClosing){
-					if (getProject().isDirty()){ //ok, dirty, so need to ask
+					if (getProject().isDirty() || getProject().getIgnoreDirtWhenCloseRequested()){ //ok, dirty, so need to ask
 						// so we need to ask because it's dirty, but fl
 						if (getProject().getNumberLinkedFiles()>1){
 							String hfn = getProject().getHomeFileName();

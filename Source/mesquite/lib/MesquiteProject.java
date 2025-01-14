@@ -444,6 +444,14 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		totalFinalized++;
 		super.finalize();
 	}
+	
+	boolean ignoreDirtWhenCloseRequested = false;
+	public void setIgnoreDirtWhenCloseRequested(boolean closeAnyway) {
+		this.ignoreDirtWhenCloseRequested = closeAnyway;
+	}
+	public boolean getIgnoreDirtWhenCloseRequested() {
+		return ignoreDirtWhenCloseRequested;
+	}
 	/*.................................................................................................................*/
 	/** returns whether any files are dirty */
 	public boolean isDirty(){  

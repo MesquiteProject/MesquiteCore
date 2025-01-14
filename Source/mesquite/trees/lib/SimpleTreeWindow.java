@@ -306,8 +306,11 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 			tree = newTree.cloneTree();//no need to establish listener to Taxa, as will be remade when needed?
 			treeDisplay.setTree(tree);
 			treeDisplay.suppressDrawing(suppressDrawing);
-			treeDisplay.setVisible(true);
+			treeDisplay.redoCalculations(111113);
 			treeDisplay.recalculatePositions();
+			sizeDisplays();
+			treeDisplay.setVisible(true);
+
 			treeDisplay.forceRepaint();
 			treeDisplay.setTreeAllExtras(tree);
 			MesquiteModule employer = ownerModule.getEmployer();

@@ -235,7 +235,7 @@ public class ModulesInfoVector extends ListableVector {
 		boolean isDefault = false;
 		Class c = mb.getDutyClass();
 		String[] defaults = mb.getDefaultModule();
-		while (c!=MesquiteModule.class){
+		while (c != null && c!=MesquiteModule.class){
 			int loc = dutyClasses.indexOf(c);
 			if (loc<0){ //not found; simply added
 				dutyClasses.addElement(c);
@@ -250,7 +250,8 @@ public class ModulesInfoVector extends ListableVector {
 					dutyDefaultsSourceClass.setElementAt(mb.getDutyClass(), loc); 
 				}
 			}
-			c = c.getSuperclass();
+			if (c!=null)
+				c = c.getSuperclass();
 		}
 	}
 	public String getDutyName(Class dutyClass){

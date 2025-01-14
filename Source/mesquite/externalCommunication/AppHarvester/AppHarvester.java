@@ -58,7 +58,8 @@ public class AppHarvester extends MesquiteInit {
 			//Filters to remove redundant apps
 			int numApps = appInformationFileVector.size();
 			AppInformationFile appInfoFile;
-			
+			boolean redundantRemoved = false;
+
 			//For macOS or windows on aarch64, delete x86 if aarch64 is available
 			if ((MesquiteTrunk.isMacOSX() ||MesquiteTrunk.isWindows()) && MesquiteTrunk.isAarch64()){ 
 				for (int iv=numApps-1; iv>=0; iv--) {
@@ -72,6 +73,7 @@ public class AppHarvester extends MesquiteInit {
 						String arch = StringUtil.getLastItem(compiledAs, ".");
 						if (MesquiteTrunk.isX86(arch)) { //there is an aarch64 or universal version available, but this is x86; delete it
 							appInformationFileVector.removeElement(appInfoFile);
+							redundantRemoved = true;
 							if (MesquiteTrunk.isMacOSX())
 								sb.append(" —x86 version of " + programName + " ignored because an Apple Silicon version is available.\n");
 							else 
@@ -89,11 +91,14 @@ public class AppHarvester extends MesquiteInit {
 				int numComp = getNumAppsForProgram(programName);
 				if (numComp>1) {
 					sb.append(" —will ignore extra app of " + programName+ " (in " + appInfoFile.getAppNameWithinAppsDirectory() + "). Only the first will be used.\n");
+					redundantRemoved = true;
 					appInformationFileVector.removeElement(appInfoFile);
 				}
 
 			}
-
+			if (redundantRemoved)
+				sb.append("Mesquite ignored some versions of a built-in app because other copies were available. If you prefer to use the ignored version, please make sure that only the version you want to use is in the apps folder in Mesquite_Folder.\n");
+				
 			//AppInformationFile.setAppInformationFileVector(appInformationFileVector);
 		}
 		logln(sb.toString());
