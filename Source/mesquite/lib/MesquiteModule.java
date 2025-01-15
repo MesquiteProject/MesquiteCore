@@ -161,6 +161,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return " (build " + getBuildLetter() + getBuildNumber() + ")";
 	}
 	/*.................................................................................................................*/
+	//URLs for phoneHome phoning home
 	/*.................................................................................................................*/
 	//As of 3.0 this becomes fixed, not changing with version)
 	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";

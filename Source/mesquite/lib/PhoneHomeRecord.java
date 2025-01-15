@@ -17,6 +17,14 @@ import mesquite.lib.*;
 
 public class PhoneHomeRecord implements Listable {
 	
+	/*
+	 * 
+	 * The following are in MesquiteModule:
+	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
+	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
+	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
+
+	 * */
 	private int lastVersionUsed = 0;
 	private int lastNotice = 0;
 	private int lastNoticeForMyVersion = 0;
