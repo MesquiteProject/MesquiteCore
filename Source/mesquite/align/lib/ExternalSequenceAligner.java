@@ -464,7 +464,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		String filePath = rootDir +  fileName;
 
 		boolean success = false;
-		boolean externalSuccess = false;
 
 		logln("Exporting file for " + getProgramName());
 		int numTaxaToAlign=data.getNumTaxa();
@@ -556,7 +555,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			success = externalProcessManager.executeInShell(); //This brings a contained window to the fore, unnecessarily, but if the contents of executeInShell are disabled, it still does.
 			if (success) {
 				success = externalProcessManager.monitorAndCleanUpShell(progressIndicator);
-				externalSuccess = success;
 			}
 		}
 
@@ -640,13 +638,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				}
 			} else
 				MesquiteMessage.println("Processing unsuccessful: alignedData is null");
-			if (!externalSuccess){
-				logln("Because the alignment failed, the temporary folder will be kept for you to examine. It is at " + rootDir);
-			}
 			if (tempDataFile!=null)
 				tempDataFile.close();
 			getProject().decrementProjectWindowSuppression();
-			if (runs == 1 && externalSuccess)
+			if (runs == 1)
 				deleteSupportDirectory();
 			runs--;
 			data.decrementEditInhibition();
@@ -654,7 +649,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				return aligned;
 			return null;
 		}
-		if (runs == 1 && externalSuccess)
+		if (runs == 1)
 			deleteSupportDirectory();
 		runs--;
 		getProject().decrementProjectWindowSuppression();

@@ -42,7 +42,7 @@ public class AppHarvester extends MesquiteInit {
 							sb.append("Loading "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + "\n");
 						}
 						else {
-							if (true || MesquiteTrunk.debugMode)
+							if (MesquiteTrunk.debugMode)
 								sb.append("INCOMPATIBLE: "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + " (compiledAs: " + appInfoFile.getCompiledAs() + ")\n");
 							countIncomp++;
 						}
