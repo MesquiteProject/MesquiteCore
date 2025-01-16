@@ -142,7 +142,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		if (!StringUtil.blank(alternativeManualPath))
 			StringUtil.appendXMLTag(buffer, 2, "alternativeManualPath", alternativeManualPath);  
 		StringUtil.appendXMLTag(buffer, 2, "useBuiltInIfAvailable", useBuiltInIfAvailable);  
-	return super.preparePreferencesForXML()+buffer.toString();
+		return super.preparePreferencesForXML()+buffer.toString();
 	}
 	/*.................................................................................................................*/
 	public void queryLocalOptions () {
@@ -150,7 +150,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 			storePreferences();
 	}
 	public Snapshot getSnapshot(MesquiteFile file) { 
-			Snapshot temp = super.getSnapshot(file);
+		Snapshot temp = super.getSnapshot(file);
 		temp.addLine("b1 " + b1);
 		temp.addLine("b2 " + b2);
 		temp.addLine("b3 " + b3);
@@ -219,7 +219,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 			info += " b5=h";
 		else
 			info += " b5=a";
-			
+
 		paramsInfo.setText(info);
 	}
 	/*.................................................................................................................*/
@@ -230,7 +230,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 	Choice b5F;
 	double b1Prev, b2Prev;
 	SingleLineTextField paramsInfo;
-	
+
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
@@ -294,7 +294,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 			b4 = b4F.getValue();
 			b5 = b5F.getSelectedIndex();
 			gblocksPath = appChooser.getPathToUse();
- 			alternativeManualPath = appChooser.getManualPath(); //for preference writing
+			alternativeManualPath = appChooser.getManualPath(); //for preference writing
 			useBuiltInIfAvailable = appChooser.useBuiltInExecutable(); //for preference writing
 			builtinVersion = appChooser.getVersion(); //for informing user; only if built-in
 			storePreferences();
@@ -364,7 +364,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				flags.reset(data);
 			String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 			String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
-			boolean success = saveFastaFile(data, rootDir, unique + "alignment.fas");
+			boolean successSaving = saveFastaFile(data, rootDir, unique + "alignment.fas");
 			String scriptPath = rootDir + "GblocksScript" + unique + ".bat";
 
 
@@ -382,44 +382,44 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				gapsOption = "a";
 			script += StringUtil.protectFilePath(gblocksPath) + "  " + unique + "alignment.fas -b1=" + b1Count + " -b2=" + b2Count + " -b3=" + b3 + " -b4=" + b4 + " -b5=" + gapsOption + " -s=n -p=s";
 			MesquiteFile.putFileContents(scriptPath, script, false);
-			success = ShellScriptUtil.executeAndWaitForShell(scriptPath) == ShellScriptUtil.shellScriptNoError;
-	
-			if (success){
+			int resultStatus = ShellScriptUtil.executeAndWaitForShell(scriptPath);
+
+			if (successSaving && resultStatus== ShellScriptUtil.shellScriptNoError){
 				String[] resultText = MesquiteFile.getFileContentsAsStrings(rootDir + unique + "alignment.fas-gb.txts");
 				if (resultText != null) {
-				boolean done = false;
-				Parser parser = new Parser();
-				Bits charFlags = flags.getCharacterFlags();
-				int count = 0;
+					boolean done = false;
+					Parser parser = new Parser();
+					Bits charFlags = flags.getCharacterFlags();
+					int count = 0;
 					for (int i = 0; i<resultText.length && !done; i++){
-					String line = resultText[i];
-					if (!StringUtil.blank(line)){
-						if (line.startsWith("Flanks:")){
-							
-							String[] flanks = line.split("\\[");
-							int previousEnd = -1;
-							for (int k=1; k<flanks.length;k++){
-								if (!StringUtil.blank(flanks[k])){
-									parser.setString(flanks[k]);
-									int start = MesquiteInteger.fromString(parser.getFirstToken());
-									int end = MesquiteInteger.fromString(parser.getNextToken());
-									for (int f = previousEnd; f< start && f<data.getNumChars(); f++){
-										boolean wasSet = charFlags.isBitOn(f);
-										charFlags.setBit(f);
-										if (!wasSet)
-											count++;
+						String line = resultText[i];
+						if (!StringUtil.blank(line)){
+							if (line.startsWith("Flanks:")){
+
+								String[] flanks = line.split("\\[");
+								int previousEnd = -1;
+								for (int k=1; k<flanks.length;k++){
+									if (!StringUtil.blank(flanks[k])){
+										parser.setString(flanks[k]);
+										int start = MesquiteInteger.fromString(parser.getFirstToken());
+										int end = MesquiteInteger.fromString(parser.getNextToken());
+										for (int f = previousEnd; f< start && f<data.getNumChars(); f++){
+											boolean wasSet = charFlags.isBitOn(f);
+											charFlags.setBit(f);
+											if (!wasSet)
+												count++;
+										}
+										previousEnd = end;
 									}
-									previousEnd = end;
 								}
-							}
-							for (int f = previousEnd; f< data.getNumChars(); f++){
-								boolean wasSet = charFlags.isBitOn(f);
-								charFlags.setBit(f);
-								if (!wasSet)
-									count++;
-							}
-							done = true;
-							/*					columns = resultText.split(", ");
+								for (int f = previousEnd; f< data.getNumChars(); f++){
+									boolean wasSet = charFlags.isBitOn(f);
+									charFlags.setBit(f);
+									if (!wasSet)
+										count++;
+								}
+								done = true;
+								/*					columns = resultText.split(", ");
 							columns[0] = columns[0].substring(12, columns[0].length());
 							Bits charFlags = flags.getCharacterFlags();
 							int lastKeep = -1;
@@ -442,9 +442,9 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 									count++;
 							}
 							}
-*/
+								 */
+							}
 						}
-					}
 					}
 				}
 				else
@@ -452,7 +452,8 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
-			deleteSupportDirectory();
+			else MesquiteMessage.warnUser(" Error status returned from attempt to run Gblocs: " + resultStatus);
+		deleteSupportDirectory();
 
 		}
 

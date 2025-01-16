@@ -209,7 +209,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 			String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 			String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
 			status = "savingFasta";
-			boolean success = saveFastaFile(data, rootDir, unique + "input.fas");
+			boolean successSaving = saveFastaFile(data, rootDir, unique + "input.fas");
 			status = "fastaSaved";
 			String scriptPath = rootDir + "trimAlScript" + unique + ".bat";
 
@@ -225,10 +225,10 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 			MesquiteFile.putFileContents(scriptPath, script, false);
 			status = "scriptSaved";
 			status = "executing";
-			success = ShellScriptUtil.executeAndWaitForShell(scriptPath) == ShellScriptUtil.shellScriptNoError;
+			int resultStatus = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 			status = "done";
 
-			if (success){
+			if (successSaving && resultStatus== ShellScriptUtil.shellScriptNoError){
 				String columnsPath = rootDir + unique + "columns.txt";
 				if (!MesquiteFile.fileExists(columnsPath)) {
 					MesquiteMessage.warnUser(" No trimming results file for matrix " + data.getName() + "; columns.txt file not found");
@@ -275,6 +275,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
+			else MesquiteMessage.warnUser(" Error status returned from attempt to run trimAl: " + resultStatus);
 			deleteSupportDirectory();
 
 		}

@@ -4529,8 +4529,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else
 				treename = "Untitled Tree";
 		}
-		else if (usingDefaultTree)
-			treename = "DEFAULT TREE SHOWN BECAUSE TREE SOURCE NOT SUPPLYING TREE";
+		else if (usingDefaultTree) {
+			if (windowModule.editMode)
+				treename = "Edited Tree";
+			else
+				treename = "DEFAULT TREE SHOWN BECAUSE TREE SOURCE NOT SUPPLYING TREE";
+		}
 		else {
 			if (t != null && t.hasName())
 				treename = t.getName();

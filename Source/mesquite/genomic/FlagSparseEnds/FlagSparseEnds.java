@@ -170,18 +170,19 @@ public class FlagSparseEnds extends MatrixFlaggerForTrimmingSites implements Ite
 				return ic;
 		return -1;
 	}
+ 	/*.................................................................................................................*/
 	int getLastInSequence(CharacterData data, int it) {
 		for (int ic=data.getNumChars()-1; ic>=0; ic--)
 			if (!data.isInapplicable(ic, it))
 				return ic;
 		return -1;
 	}
+ 	/*.................................................................................................................*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 			if (flags == null)
 				flags = new MatrixFlags(data);
 			else 
 				flags.reset(data);
-
 
 			Bits charFlags = flags.getCharacterFlags();
 		int numTaxa = data.getNumTaxa();
@@ -204,6 +205,7 @@ public class FlagSparseEnds extends MatrixFlaggerForTrimmingSites implements Ite
 						numRepresented ++;
 				}
 			}
+			//Debugg.println("propThreshold " + propThreshold + "  numRepresented*1.0/numTaxa " + (numRepresented*1.0/numTaxa));
 			if (!useProportion && numRepresented<absThreshold)
 				charFlags.setBit(ic, true);
 			else if (useProportion && numRepresented*1.0/numTaxa<propThreshold)
