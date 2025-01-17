@@ -19,6 +19,7 @@ import java.util.*;
 
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
 
 /** a thermometer window (see class ProgressIndicator)*/
 public class ProgressWindow extends Frame implements Listable, WindowListener, ComponentListener {
@@ -56,7 +57,8 @@ public class ProgressWindow extends Frame implements Listable, WindowListener, C
 		}
 		else 
 			add(progressPanel);
-
+		if (MesquiteTrunk.isLinux())
+			progressPanel.setLocation(0, 50);
 		dialogWidth = progressIndicator.width;
 		dialogHeight = progressIndicator.height;
 		if (showDetails)

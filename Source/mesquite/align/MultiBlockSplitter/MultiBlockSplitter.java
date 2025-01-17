@@ -55,7 +55,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			dragCommand.setSuppressLogging(true);
 			MesquiteCommand dropCommand = MesquiteModule.makeCommand("moveDropCell",  this);
 			dropCommand.setSuppressLogging(true);
-			moveTool = new MultiBlockTool(this, "multiBlockSplitter", getPath(), "MultiBlockSplitter.gif", 8,8,"CrossHair.gif",8,8,"Splits multiple sequences","This tool splits and moves blocks of sequences for manual alignment.", touchCommand, dragCommand, dropCommand);
+			moveTool = new MultiBlockTool(this, "multiBlockSplitter", getPath(), "multiBlockSplitter.gif", 8,8,"CrossHair.gif",8,8,"Splits multiple sequences","This tool splits and moves blocks of sequences for manual alignment.", touchCommand, dragCommand, dropCommand);
 			setOptionTools();
 			moveTool.setDeselectIfOutsideOfCells(false);
 			moveTool.setAcceptsOutsideDrops(true);
