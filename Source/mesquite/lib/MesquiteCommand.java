@@ -135,6 +135,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 			MesquiteMessage.warnProgrammer("Warning: Command given to null object (" + commandName + "  " + arguments + ") MesquiteCommand");
 			return null;
 		}
+		MesquiteThread.shouldBeOnMesquiteThread();
 		if (StringUtil.blank(arguments))
 			arguments = defaultArguments;
 		if (!suppressLogging || logEverything)

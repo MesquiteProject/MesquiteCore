@@ -59,7 +59,8 @@ public class MQTextArea extends TextArea implements MQComponent {
 				super.layout();
 			}
 			catch (StackOverflowError e) {
-				System.out.println("Yet another StackOverflowError on  linux");
+				if (MesquiteTrunk.developmentMode)
+				System.err.println("Yet another StackOverflowError on  linux");
 			}
 		}
 		else {
@@ -85,7 +86,8 @@ public class MQTextArea extends TextArea implements MQComponent {
 				super.validate();
 			}
 			catch (StackOverflowError e) {
-				System.out.println("Yet another StackOverflowError on  linux");
+				if (MesquiteTrunk.developmentMode)
+				System.err.println("Yet another StackOverflowError on  linux");
 				
 			}
 			validating = false;

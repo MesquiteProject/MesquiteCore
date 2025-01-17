@@ -40,6 +40,7 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 				return super.getPreferredSize();
 			}
 			catch (StackOverflowError e) {
+				if (MesquiteTrunk.developmentMode)
 				System.err.println("Yet another StackOverflowError on  linux");
 			}
 		}
@@ -47,6 +48,7 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 			return super.getPreferredSize();
 		}
 		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
 			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
 		}
 		return new Dimension(400, 400);
@@ -60,7 +62,8 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 				super.layout();
 			}
 			catch (StackOverflowError e) {
-				System.out.println("Yet another StackOverflowError on  linux");
+				if (MesquiteTrunk.developmentMode)
+				System.err.println("Yet another StackOverflowError on  linux");
 			}
 		}
 		else {
@@ -69,7 +72,8 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 			}
 			catch (Error e) {
 				
-					System.out.println("Error in layout");
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Error in layout");
 			}
 		}
 	}
@@ -92,7 +96,8 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 				super.validate();
 			}
 			catch (StackOverflowError e) {
-				System.out.println("Yet another StackOverflowError on  linux");
+				if (MesquiteTrunk.developmentMode)
+				System.err.println("Yet another StackOverflowError on  linux");
 				
 			}
 			validating = false;

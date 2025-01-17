@@ -25,7 +25,7 @@ import mesquite.lib.MesquiteTrunk;
 
 /* =============================================== */
 /** A dialog box */
-public class MesquiteDialogParent extends JDialog implements Identifiable {
+public class MesquiteDialogParent extends JDialog implements Identifiable, MQComponent {
 	LayoutManager layout;
 	Component current;
 	boolean enlargeOnly = false;
@@ -210,11 +210,75 @@ public class MesquiteDialogParent extends JDialog implements Identifiable {
 		}
 		return super.getPreferredSize();
 	}
-	public Dimension getPreferredSize(){
+	/*getPreferredSize -------------------------*/
+    public Dimension getPreferredSize() {
 		if (isWizard)
 			return new Dimension(MesquiteDialog.wizardWidth, MesquiteDialog.wizardHeight);
-		return super.getPreferredSize();
+		if (MesquiteTrunk.isLinux()) {
+			try {
+				return super.getPreferredSize();
+			}
+			catch (StackOverflowError e) {
+				if (MesquiteTrunk.developmentMode)
+				System.err.println("Yet another StackOverflowError on  linux");
+			}
+		}
+		try {
+			return super.getPreferredSize();
+		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); 
+		}
+		return new Dimension(400, 400);
 	}
+	/*layout -------------------------*/
+	public void layout(){
+		if (MesquiteTrunk.isLinux()) {
+			try {
+				super.layout();
+			}
+			catch (StackOverflowError e) {
+				System.out.println("Yet another StackOverflowError on  linux");
+			}
+		}
+		else {
+			super.layout();
+		}
+	}
+	/*validate -------------------------*/
+	boolean validating = false;
+	public void validate(){
+		if (MesquiteTrunk.isLinux()) {
+			if (MesquiteTrunk.linuxGWAThread!=null)
+				MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		}
+		else {
+			super.validate();
+		}
+	}
+	public void pleaseValidate(){
+		if (!validating) {
+			validating = true;
+			try {
+				super.validate();
+			}
+			catch (StackOverflowError e) {
+				if (MesquiteTrunk.developmentMode)
+			System.out.println("Yet another StackOverflowError on  linux");
+				
+			}
+			validating = false;
+		}
+	}
+
+
+	/*setBounds -------------------------*/
+
+	public void pleaseSetBounds(int x, int y, int w, int h){
+		super.setBounds(x, y, w, h);
+	}
+	/*s----- -------------------------*/
 	void addNext(){
 		if (dialogsToAdd.size()==0)
 			return;
@@ -370,8 +434,10 @@ public class MesquiteDialogParent extends JDialog implements Identifiable {
 			if (h < getHeight())
 				h = getHeight();
 		}
-//		if (isWizard && locOnceSet)
-		super.setBounds(x, y, w, h);
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
+			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
+		else
+			super.setBounds(x, y, w, h);
 		resetSizes();
 	}
 	public void setLocation(int x, int y){

@@ -41,7 +41,7 @@ public class AlignSequences extends MolecDataEditorInit { //implements Calculati
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		mss = addModuleMenuItems(null, makeCommand("doAligner",  this), mesquite.molec.MultipleAlignService.MultipleAlignService.class);
+		mss = addModuleMenuItems(null, makeCommand("doAligner",  this), mesquite.align.AMultipleAlignService.AMultipleAlignService.class);
 	
 		return true;
 	}

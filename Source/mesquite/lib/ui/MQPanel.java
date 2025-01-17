@@ -34,6 +34,7 @@ public class MQPanel extends Panel implements MQComponent {
 				return super.getPreferredSize();
 			}
 			catch (StackOverflowError e) {
+				if (MesquiteTrunk.developmentMode)
 				System.err.println("Yet another StackOverflowError on  linux");
 			}
 		}
@@ -41,7 +42,8 @@ public class MQPanel extends Panel implements MQComponent {
 			return super.getPreferredSize();
 		}
 		catch (Exception e) {
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); 
 		}
 		return new Dimension(400, 400);
 	}
@@ -72,13 +74,13 @@ public class MQPanel extends Panel implements MQComponent {
 	}
 	public void pleaseValidate(){
 		if (!validating) {
-			//System.out.println("Double validating (PV) " + this);
 			validating = true;
 			try {
 				super.validate();
 			}
 			catch (StackOverflowError e) {
-				System.out.println("Yet another StackOverflowError on  linux");
+				if (MesquiteTrunk.developmentMode)
+			System.out.println("Yet another StackOverflowError on  linux");
 				
 			}
 			validating = false;

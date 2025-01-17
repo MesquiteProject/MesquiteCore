@@ -397,7 +397,7 @@ public class CategoricalData extends CharacterData {
 			return n;
 		if (matrix == null && matrixShort == null)
 			dataIntegrityAlert("Categorical data with null internal matrix. getNumTaxa() = " + n + " name " + getName() + " file " + getFile());
-		else if (MesquiteThread.isThreadBelongingToMesquite() && MesquiteThread.numFilesBeingRead==0 ){  //since files read on other thread, suppress warnings
+		else if (MesquiteThread.isMesquiteOrConsoleThread() && MesquiteThread.numFilesBeingRead==0 ){  //since files read on other thread, suppress warnings
 			if (matrix != null && matrix.length>0 && matrix[0] !=null && matrix[0].length != n)
 				dataIntegrityAlert("Categorical matrix with incorrect record of number of taxa. getNumTaxa() = " + n + " matrix[0].length " + matrix[0].length + " name " + getName() + " file " + getFile());
 			else if (matrixShort != null && matrixShort.length>0 && matrixShort[0] !=null && matrixShort[0].length != n)
@@ -418,7 +418,7 @@ public class CategoricalData extends CharacterData {
 			return 0;
 		}
 		else if (matrix != null && matrix.length !=n){
-			if (MesquiteThread.isThreadBelongingToMesquite() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
+			if (MesquiteThread.isMesquiteOrConsoleThread() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
 				dataIntegrityAlert("Categorical matrix with incorrect record of number of characters. getNumChar() = " + n + " matrix.length " + matrix.length + " nAdd = " + nAdd + " nDel = " + nDel + " nMove = " + nMove + " name " + getName() + " file " + getFile());
 			if (matrix.length>n)
 				return n;
@@ -426,7 +426,7 @@ public class CategoricalData extends CharacterData {
 				return matrix.length;
 		}
 		else if (matrixShort != null && matrixShort.length !=n){
-			if (MesquiteThread.isThreadBelongingToMesquite() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
+			if (MesquiteThread.isMesquiteOrConsoleThread() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
 				dataIntegrityAlert("Categorical matrix with incorrect record of number of characters. getNumChar() = " + n + " matrixShort.length " + matrixShort.length + " nAdd = " + nAdd + " nDel = " + nDel + " nMove = " + nMove + " name " + getName() + " file " + getFile());
 			if (matrixShort.length>n)
 				return n;

@@ -37,7 +37,7 @@ public abstract class DataAlterer extends MesquiteModule  {
    	}
    	
  	 public String[] getDefaultModule() {
-	 	return new String[] {"#MultipleAlignService", "#TrimSequences", "#RemoveAllGaps" ,"#CollapseEdges" };
+	 	return new String[] {"#AMultipleAlignService", "#TrimSequences", "#RemoveAllGaps" ,"#CollapseEdges" };
 	 }
   	public long getNumCellsAltered(){
    		return numCellsAltered;

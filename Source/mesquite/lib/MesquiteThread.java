@@ -24,6 +24,7 @@ import mesquite.lib.ui.MesquiteDialogParent;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.ProgressWindow;
+import mesquite.trunk.ClockWatcherThread;
 
 import java.io.*;
 
@@ -73,9 +74,21 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		if (MesquiteTrunk.checkMemory)
 			MesquiteTrunk.mesquiteTrunk.logln("Thread started (id " + id + ")");
 	}
-	public static boolean isThreadBelongingToMesquite(){
+	public static boolean isMesquiteOrConsoleThread(){
 		Thread t = Thread.currentThread();
 		return (t instanceof MesquiteThread) ||(t instanceof ConsoleThread);
+	}
+	public static boolean isThreadBelongingToMesquite(){
+		Thread t = Thread.currentThread();
+		if ((t instanceof MesquiteThread) ||(t instanceof ConsoleThread) ||(t instanceof ClockWatcherThread))
+		return true;
+		String c = t.getClass().getName();
+		return (c.indexOf("mesquite.")>=0);
+	}
+
+	public static void shouldBeOnMesquiteThread() {
+		if (!isThreadBelongingToMesquite() && (MesquiteTrunk.developmentMode || MesquiteTrunk.debugMode))
+			MesquiteMessage.printStackTrace("###### ######This thread should be on a Mesquite thread!!!");
 	}
 	public static boolean isReadingThread(){
 		Thread t = Thread.currentThread();

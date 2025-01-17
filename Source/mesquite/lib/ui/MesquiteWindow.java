@@ -3045,6 +3045,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			selectPart(mesquite.lib.characters.CharacterData.class, whichPart, whichBlock);		
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Resets title", null, commandName, "resetTitle")) {
+			resetTitle();
+			return null;
+		}
 		else {
 			//AFTERDEMO:
 			if (commandName!=null && !checker.getAccumulateMode() && checker.warnIfNoResponse) {

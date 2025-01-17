@@ -116,7 +116,7 @@ public String preparePreferencesForXML () {
   			MolecularDataUtil.reverseComplementSequencesIfNecessary(data, module, taxa, 0, taxa.getNumTaxa(), referenceSequence, false, false, false);
    		if (multipleSequenceAlignment){
    			if (aligner==null)
-   				aligner= (CategDataAlterer)hireNamedEmployee(CategDataAlterer.class, "#MultipleAlignService");
+   				aligner= (CategDataAlterer)hireNamedEmployee(CategDataAlterer.class, "#AMultipleAlignService");
    			if (aligner!=null)
    				aligner.alterData(data, null,  null);
    		} else

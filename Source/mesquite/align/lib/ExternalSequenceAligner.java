@@ -560,7 +560,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		if (progressIndicator != null) {
 			if (progressIndicator.isAborted())
-				logln("Alignment aborted by user\n");
+				logln("Alignment stopped by user\n");
 			progressIndicator.goAway();
 		}
 		if (success){

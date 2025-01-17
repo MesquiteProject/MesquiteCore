@@ -29,6 +29,7 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteModuleInfo;
 import mesquite.lib.MesquitePasswordField;
+import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Priority;
@@ -158,6 +159,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	protected void intializeDialog (String title, MesquiteInteger buttonPressed) {
+		MesquiteThread.shouldBeOnMesquiteThread();
 		d = new Dimension(minDialogWidth, minDialogHeight);
 		gridBag = new GridBagLayout();
 		constraints = createGridBagConstraints();
@@ -1276,9 +1278,9 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	public JLabel addLabelSmallText (String s) {
 
 		Panel newPanel;
-		JLabel label = new JLabel(s);
+		JLabel label = new MQJLabel(s);
 
-		label = new JLabel(s);
+		label = new MQJLabel(s);
 		newPanel = addNewDialogPanel();
 		newPanel.add(label);
 		label.setFont(defaultSmallFont);
@@ -1289,7 +1291,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	public JLabel addLabel (String s, int alignment, boolean doAlignment, boolean isBold) {
 
 		Panel newPanel;
-		JLabel label = new JLabel(s);
+		JLabel label = new MQJLabel(s);
 
 		if (doAlignment && alignment == Label.LEFT) {
 			newPanel = addNewDialogPanel();
@@ -1300,7 +1302,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				label.setFont(boldFont);
 		}
 		else {
-			label = new JLabel(s);
+			label = new MQJLabel(s);
 			newPanel = addNewDialogPanel();
 			newPanel.add(label);
 			if (isBold)
@@ -1355,7 +1357,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public Choice addPopUpMenu (String message, String[] choices, int defaultChoice) {
-		JLabel label = new JLabel (message);
+		JLabel label = new MQJLabel (message);
 		return addPopUpMenu(label, choices, defaultChoice);
 	}
 	/*.................................................................................................................*/
@@ -1433,7 +1435,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public Choice addPopUpMenu (String message, Class dutyClass, int defaultChoice) {
 		String[] choices = getModuleList(dutyClass);
-		JLabel label = new JLabel (message);
+		JLabel label = new MQJLabel (message);
 		return addPopUpMenu(label, choices, defaultChoice);
 	}
 	/*.................................................................................................................*/

@@ -21,7 +21,7 @@ import javax.swing.JTabbedPane;
 import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteTrunk;
 
-public class MesquiteTabbedPanel extends JPanel implements MQComponent  {
+public class MesquiteTabbedPanel extends MQJPanel implements MQComponent  {
 	MesquiteTabbedPane tabbedPane;
 	int numPanels=0;
 	ExtensibleDialog dialog;
@@ -34,7 +34,7 @@ public class MesquiteTabbedPanel extends JPanel implements MQComponent  {
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 	}
 	public JPanel addPanel(String title, boolean setAsAddPanel){
-		JPanel panel = new JPanel();
+		JPanel panel = new MQJPanel();
 		tabbedPane.addTab(title, panel);
 		//panel.add(new Checkbox("testing panel " + numPanels));
 		panel.setVisible(false);
@@ -65,6 +65,7 @@ public class MesquiteTabbedPanel extends JPanel implements MQComponent  {
 				return super.getPreferredSize();
 			}
 			catch (StackOverflowError e) {
+				if (MesquiteTrunk.developmentMode)
 				System.err.println("Yet another StackOverflowError on  linux");
 			}
 		}
@@ -72,6 +73,7 @@ public class MesquiteTabbedPanel extends JPanel implements MQComponent  {
 			return super.getPreferredSize();
 		}
 		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
 			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
 		}
 		return new Dimension(400, 400);

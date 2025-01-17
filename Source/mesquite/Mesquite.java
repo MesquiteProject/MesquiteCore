@@ -2586,6 +2586,9 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.startedFromFlex2 = true;
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
+					else if (args[i].equals("-development")) {
+						MesquiteTrunk.developmentMode = true;
+					}
 					else if (args[i].equals("-mqcat"))
 						; //started from Catalina executable
 					else if (args[i].equals("-mq17")) {
@@ -2689,6 +2692,8 @@ public class Mesquite extends MesquiteTrunk
 						s += " [ " + args[i] + " ]";
 				}
 				MesquiteTrunk.mesquiteTrunk.logln(s);
+				if (MesquiteTrunk.developmentMode)
+					MesquiteTrunk.mesquiteTrunk.logln("Development mode enabled.");
 
 				for ( int i = 0; i < args.length; i++ ) {
 					if (args[i]!=null && !args[i].startsWith("-")) {

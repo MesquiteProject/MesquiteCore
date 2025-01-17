@@ -13,51 +13,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-
-import mesquite.lib.Debugg;
-import mesquite.lib.MesquiteTrunk;
-
 import java.awt.*;
 
+import javax.swing.JPanel;
 
-public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
-	MesquiteTabbedPanel panel;
-	public MesquiteTabbedPane(MesquiteTabbedPanel panel){
+import mesquite.lib.MesquiteTrunk;
+
+/* �������������������� */
+/*  [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
+ * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
+/* ======================================================================== */
+public class MQJPanel extends JPanel implements MQComponent {
+
+	public MQJPanel () {
 		super();
-		this.panel = panel;
-	}
-	
-	int count = 0;
-	
-	public void setSelectedIndex2(int i){
-	
-		 int current = getSelectedIndex();
-		if (current>=0) {
-			JPanel p2 = panel.getTabPanel(current);
-			if (p2 != null)
-				p2.setVisible(false);
-		}
-
-		super.setSelectedIndex(i);
-
-
-		JPanel p = panel.getTabPanel(i);
-		//	setVisible(true);
-		if (p != null) {
-			p.setVisible(true);
-			Graphics g = p.getGraphics();
-			if (g!=null)
-				g.setClip(null);
-			p.invalidate();
-		}
-		invalidate();
-		//	try {Thread.sleep(20);} catch (Exception e) {}
-	//	super.setSelectedIndex(i);
 	}
 
-	/*getPreferredSize -------------------------*/
+		public MQJPanel (LayoutManager layout) {
+		super(layout);
+	}
+/*getPreferredSize -------------------------*/
     public Dimension getPreferredSize() {
 		if (MesquiteTrunk.isLinux()) {
 			try {
@@ -73,7 +48,7 @@ public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 		}
 		catch (Exception e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); 
 		}
 		return new Dimension(400, 400);
 	}
@@ -84,8 +59,7 @@ public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 				super.layout();
 			}
 			catch (StackOverflowError e) {
-				if (MesquiteTrunk.developmentMode)
-				System.err.println("Yet another StackOverflowError on  linux");
+				System.out.println("Yet another StackOverflowError on  linux");
 			}
 		}
 		else {
@@ -95,32 +69,30 @@ public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 	/*validate -------------------------*/
 	boolean validating = false;
 	public void validate(){
-		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
-			MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		if (MesquiteTrunk.isLinux()) {
+			if (MesquiteTrunk.linuxGWAThread!=null)
+				MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		}
 		else {
-			if (validating)
-				Debugg.printStackTrace("Double validating " + this);
-			validating = true;
 			super.validate();
-			validating = false;
 		}
 	}
 	public void pleaseValidate(){
-		if (validating)
-			Debugg.printStackTrace("Double validating (PV) " + this);
-		validating = true;
-		try {
-			super.validate();
+		if (!validating) {
+			validating = true;
+			try {
+				super.validate();
+			}
+			catch (StackOverflowError e) {
+				if (MesquiteTrunk.developmentMode)
+			System.out.println("Yet another StackOverflowError on  linux");
+				
+			}
+			validating = false;
 		}
-		catch (StackOverflowError e) {
-			if (MesquiteTrunk.developmentMode)
-			System.err.println("Yet another StackOverflowError on  linux");
-			
-		}
-		validating = false;
 	}
 
-	
+
 	/*setBounds -------------------------*/
 	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also. See ExplTextArea also
 	public void setBounds(int x, int y, int w, int h){
