@@ -58,7 +58,7 @@ public class ProgressWindow extends Frame implements Listable, WindowListener, C
 		else 
 			add(progressPanel);
 		if (MesquiteTrunk.isLinux())
-			progressPanel.setLocation(0, 50);
+			progressPanel.setLocation(0, 30);
 		dialogWidth = progressIndicator.width;
 		dialogHeight = progressIndicator.height;
 		if (showDetails)

@@ -70,7 +70,7 @@ public class ProgressIndicator implements Abortable {
 	//boolean goneAway = false;
 	public ProgressIndicator (MesquiteProject mp, String title, String initialMessage, long total, String buttonName) {
 		if (MesquiteTrunk.isLinux())
-		height += 60;
+		height += 30;
 		if (mp!=null) {
 			barColor= ColorTheme.getActiveDark();
 			barBackColor= ColorTheme.getActiveLight();
