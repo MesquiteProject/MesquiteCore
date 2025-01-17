@@ -73,7 +73,11 @@ public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 		}
 		catch (Exception e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
 		}
 		return new Dimension(400, 400);
 	}
@@ -106,16 +110,19 @@ public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 		}
 	}
 	public void pleaseValidate(){
-		if (validating)
-			Debugg.printStackTrace("Double validating (PV) " + this);
+		if (validating && MesquiteTrunk.developmentMode)
+			System.err.println("Double validating " + this);
 		validating = true;
 		try {
 			super.validate();
 		}
-		catch (StackOverflowError e) {
+		catch (Exception e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Yet another StackOverflowError on  linux");
-			
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
 		}
 		validating = false;
 	}

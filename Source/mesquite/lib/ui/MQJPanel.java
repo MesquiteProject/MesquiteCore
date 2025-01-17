@@ -48,7 +48,11 @@ public class MQJPanel extends JPanel implements MQComponent {
 		}
 		catch (Exception e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); 
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
 		}
 		return new Dimension(400, 400);
 	}
@@ -78,20 +82,22 @@ public class MQJPanel extends JPanel implements MQComponent {
 		}
 	}
 	public void pleaseValidate(){
-		if (!validating) {
-			validating = true;
-			try {
-				super.validate();
-			}
-			catch (StackOverflowError e) {
-				if (MesquiteTrunk.developmentMode)
-			System.out.println("Yet another StackOverflowError on  linux");
-				
-			}
-			validating = false;
+		if (validating && MesquiteTrunk.developmentMode)
+			System.err.println("Double validating " + this);
+		validating = true;
+		try {
+			super.validate();
 		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		validating = false;
 	}
-
 
 	/*setBounds -------------------------*/
 	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also. See ExplTextArea also

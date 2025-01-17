@@ -69,6 +69,8 @@ public class ProgressIndicator implements Abortable {
 //	0 = posts flag that button hit; 1 = posts flag that button hit AND gets rid of dialog; 2 = aborts owner thread
 	//boolean goneAway = false;
 	public ProgressIndicator (MesquiteProject mp, String title, String initialMessage, long total, String buttonName) {
+		if (MesquiteTrunk.isLinux())
+		height += 60;
 		if (mp!=null) {
 			barColor= ColorTheme.getActiveDark();
 			barBackColor= ColorTheme.getActiveLight();

@@ -228,7 +228,11 @@ public class MesquiteDialogParent extends JDialog implements Identifiable, MQCom
 		}
 		catch (Exception e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); 
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
 		}
 		return new Dimension(400, 400);
 	}
@@ -258,18 +262,21 @@ public class MesquiteDialogParent extends JDialog implements Identifiable, MQCom
 		}
 	}
 	public void pleaseValidate(){
-		if (!validating) {
-			validating = true;
-			try {
-				super.validate();
-			}
-			catch (StackOverflowError e) {
-				if (MesquiteTrunk.developmentMode)
-			System.out.println("Yet another StackOverflowError on  linux");
-				
-			}
-			validating = false;
+		if (validating && MesquiteTrunk.developmentMode)
+			System.err.println("Double validating " + this);
+		validating = true;
+		try {
+			super.validate();
 		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		validating = false;
 	}
 
 

@@ -617,7 +617,11 @@ class PackageCheckbox extends JCheckBox implements MQComponent, Listable, MouseL
 		}
 		catch (Exception e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
 		}
 		return new Dimension(400, 400);
 	}
@@ -635,10 +639,20 @@ class PackageCheckbox extends JCheckBox implements MQComponent, Listable, MouseL
 		}
 	}
 	public void pleaseValidate(){
-		if (validating)
-			Debugg.println("Double validating " + this);
+		if (validating && MesquiteTrunk.developmentMode)
+			System.err.println("Double validating " + this);
 		validating = true;
-		super.validate();
+		try {
+			super.validate();
+		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
 		validating = false;
 	}
 

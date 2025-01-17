@@ -48,7 +48,12 @@ public class MQTextArea extends TextArea implements MQComponent {
 			return super.getPreferredSize();
 		}
 		catch (Exception e) {
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ")"); //Debugg.println if (MesquiteTrunk.debugMode) 
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
 		}
 		return new Dimension(400, 400);
 	}
@@ -79,21 +84,22 @@ public class MQTextArea extends TextArea implements MQComponent {
 		}
 	}
 	public void pleaseValidate(){
-		if (!validating) {
-			//System.out.println("Double validating (PV) " + this);
-			validating = true;
-			try {
-				super.validate();
-			}
-			catch (StackOverflowError e) {
-				if (MesquiteTrunk.developmentMode)
-				System.err.println("Yet another StackOverflowError on  linux");
-				
-			}
-			validating = false;
+		if (validating && MesquiteTrunk.developmentMode)
+			System.err.println("Double validating " + this);
+		validating = true;
+		try {
+			super.validate();
 		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		validating = false;
 	}
-
 
 	
 	/*setBounds -------------------------*/
