@@ -83,7 +83,7 @@ public class AppHarvester extends MesquiteInit {
 
 				}
 			}
-			Debugg.println("getNumAppsForProgram(trimAl) " + getNumAppsForProgram("trimal"));
+
 			numApps = appInformationFileVector.size();
 			for (int iv=numApps-1; iv>=0; iv--) {
 				appInfoFile = (AppInformationFile)(appInformationFileVector.elementAt(iv));

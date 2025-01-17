@@ -63,11 +63,13 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 	//static int ASSUME_SPECIFIED_NUM_TAXA = 2;
 	static boolean ignoreDatalessDEFAULT = false;
 	static boolean assumeSpecifiedNumberDEFAULT = false; 
+	static boolean fromEndsDEFAULT = false; 
 
 	//MesquiteBoolean forgiveTaxaWithoutData = new MesquiteBoolean(forgiveTaxaWithoutDataDEFAULT);
 	boolean ignoreDataless = ignoreDatalessDEFAULT;
 	boolean assumeSpecifiedNumber = assumeSpecifiedNumberDEFAULT;
 	int specifiedNumTaxa = MesquiteInteger.unassigned;
+	boolean fromEnds = fromEndsDEFAULT;
 
 	double siteGappinessThreshold = siteGappinessThresholdDEFAULT; // A site is considered good (for gappiness) if it is less or as gappy than this (term or non-term).
 	int gappyBlockSize = gappyBlockSizeDEFAULT; // If in a block of at least this many sites, the first and last site is bad,
@@ -100,12 +102,13 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 			if (!queryOptions())
 				return false;
 		}
-		addMenuItem(null, "Set Gappy Regions options...", makeCommand("setOptions", this));
+		addMenuItem(null, "Set Sparse Regions options...", makeCommand("setOptions", this));
 		return true;
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "fromEnds", fromEnds);  
 		StringUtil.appendXMLTag(buffer, 2, "ignoreDataless", ignoreDataless);  
 		StringUtil.appendXMLTag(buffer, 2, "siteGappinessThreshold", siteGappinessThreshold);  
 		StringUtil.appendXMLTag(buffer, 2, "gappyBlockSize", gappyBlockSize);  
@@ -130,6 +133,8 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 			gappyBoundary = MesquiteInteger.fromString(content);
 		if ("ignoreDataless".equalsIgnoreCase(tag))
 			ignoreDataless=  MesquiteBoolean.fromTrueFalseString(content);
+		if ("fromEnds".equalsIgnoreCase(tag))
+			fromEnds=  MesquiteBoolean.fromTrueFalseString(content);
 		if ("assumeSpecifiedNumber".equalsIgnoreCase(tag))
 			assumeSpecifiedNumber= MesquiteBoolean.fromTrueFalseString(content);
 	}
@@ -143,6 +148,7 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 		}
 		else
 			temp.addLine("ignoreDataless " + ignoreDataless);
+		temp.addLine("fromEnds " + fromEnds);
 		temp.addLine("setSiteGappinessThreshold " + siteGappinessThreshold);
 		temp.addLine("setgappyBlockSize " + gappyBlockSize);
 		temp.addLine("setBlockGappinessThreshold " + blockGappinessThreshold);
@@ -152,20 +158,20 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 
 
 	DoubleField pgSField;
-	Checkbox fIGS;
-	Checkbox fG;
+	Checkbox fEnds;
 	IntegerField gBS;
 	IntegerField gB, sNT;
 	DoubleField pgBField;
 	Checkbox specifNumCB, ignoreDatalessCB;
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Gappy Regions Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Sparse Regions Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		pgSField = dialog.addDoubleField("Maximum permitted proportion of gaps (above which site is considered too gappy)", siteGappinessThreshold, 4);
-		String s = "<b>Gappy Regions filter</b> selects regions of an alignment with high levels of gaps. The algorithm is simple and untested, but feel free to explore!"
-				+ " It is not intended to identify regions that are unreliable or poorly aligned; it is intended simply to find regions"
-				+ " where the amount of available data is too sparse to justify inclusion, just as one filters loci for occupancy.<hr>" 
+		String s = "<b>Sparse Regions filter</b> selects regions of an alignment with high levels of gaps. "
+				+ "A region (of at least a certain length) is declared sparse if its proportion of gappy sites is above a threshold. A site is considered gappy if its porportion of gaps is above a threshold."
+				+ " A sparse region is considered to end when there is a boundary of enough non-gappy sites in a row."
+				+ " You can choose to select sparse regions throughout the aligment, or only the terminal sparse regions (\"ends only\" — from the start or end inward).<hr>" 
 				+"The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
 				+ " This could result in different countings of the proportion of gaps depending on whether the trimming is done on individual files for each locus (because each file will know only"
 				+" about the number of taxa that have data for that locus) versus in the compiled file (which will know about all of the taxa).";
@@ -173,6 +179,7 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 
 
 
+		fEnds = dialog.addCheckBox("Choose ends only (inward, up to the first non-sparse region)", fromEnds);
 		gBS = dialog.addIntegerField("Minimum length of region assessed", gappyBlockSize, 4);
 		gB = dialog.addIntegerField("Stretch of non-gappy sites that resets gappy region", gappyBoundary, 4);
 		pgBField = dialog.addDoubleField("Proportion of gappy sites for region to be judged as gappy", blockGappinessThreshold, 4);
@@ -186,14 +193,14 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 			s += "<p>When processing separate files for each locus, if you want the proportion of gaps to be assessed over the final set of all taxa," 
 					+ " choose \"Assume specified total\", and indicate the total number of taxa in the final compilation."
 					+ " Doing so will generally result in a harsher trimming, and can mimic trimming done later in a file of all loci compiled."
-					+ "<p><b>Recommendation</b>: if you want to treat this trimming as an occupancy criterion (just like filtering loci for occupancy) then DO select \"Assume specified\" and indicate the total number, OR "
+					+ "<p>Recommendation: if you want to treat this trimming as an occupancy criterion (just like filtering loci for occupancy) then DO select \"Assume specified\" and indicate the total number, OR "
 					+ "delay the gappiness trimming until after the loci are compiled into a single file.";
 		}
 		else {
 			ignoreDatalessCB = dialog.addCheckBox("Ignore gaps in taxa with no data in matrix", ignoreDataless);
 			s += "<p>To mimic the results you would obtain were you to process the loci individually in separate files (e.g. in a scripted pipeline), choose \"Ignore gaps in taxa with no data in matrix\"." 
 					+ " This will result in a more permissive trimming."
-					+ "<p><b>Recommendation</b>: if you want to treat this trimming as an occupancy criterion (just like filtering loci for occupancy) then DON'T select \"Ignore\".";
+					+ "<p>Recommendation: if you want to treat this trimming as an occupancy criterion (just like filtering loci for occupancy) then DON'T select \"Ignore\".";
 		}
 		dialog.appendToHelpString(s);
 		dialog.addHorizontalLine(1);
@@ -208,6 +215,7 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			siteGappinessThreshold = pgSField.getValue();
+			fromEnds = fEnds.getState();
 			gappyBlockSize = gBS.getValue();
 			gappyBoundary = gB.getValue();
 			if (ignoreDatalessCB!=null){
@@ -261,12 +269,19 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 				parametersChanged();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data, to count all taxa in current file, or to count as if there were a specified number.", "[0, 1, 2]", commandName, "ignoreDataless")) {
+		else if (checker.compare(this.getClass(), "Sets whether to look only from ends inward to first boundary.", "[true or false]", commandName, "fromEnds")) {
 			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
-				ignoreDataless = s;
-				if (!MesquiteThread.isScripting())
-					parametersChanged(); 
-			
+			fromEnds = s;
+			if (!MesquiteThread.isScripting())
+				parametersChanged(); 
+
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data.", "[true or false]", commandName, "ignoreDataless")) {
+			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			ignoreDataless = s;
+			if (!MesquiteThread.isScripting())
+				parametersChanged(); 
+
 		}
 		else if (checker.compare(this.getClass(), "Sets specified number of taxa to count.", "[integer]", commandName, "setSpecifiedNumTaxa")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
@@ -322,16 +337,23 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 	boolean[] taxonHasData;
 	int numTaxaCounted = 0;
 	/*======================================================*/
-	boolean isGapBlockBoundary(int k) {
-		for (int i = 0; k+i<siteGappiness.length && i<gappyBoundary; i++)
-			if (gappySite(k+i))
-				return false;
+	boolean isGapBlockBoundary(int k, boolean forward) {
+		if (forward) {
+			for (int i = 0; k+i<siteGappiness.length && i<gappyBoundary; i++)
+				if (gappySite(k+i))
+					return false;
+		}
+		else {
+			for (int i = 0; k-i>=0 && i<gappyBoundary; i++)
+				if (gappySite(k-i))
+					return false;
+		}
 		return true;
 	}
 	boolean gappySite(int k) {
 		return siteGappiness[k]>siteGappinessThreshold;
 	}
-	
+
 	boolean ignoreDatalessTaxa(){
 		return ignoreDataless && !getProject().isProcessDataFilesProject; //this option available only for stable project open to user
 	}
@@ -376,9 +398,9 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 			else if (assumeSpecifiedNumberOfTaxa()){
 				if (specifiedNumTaxa < numTaxa){
 					if (numNegWarnings<10)
-						discreetAlert("ERROR: Specified number of taxa in Flag Gappy Regions (" + specifiedNumTaxa + ") is smaller than current number of taxa in the file (" + numTaxa + ")");
+						discreetAlert("ERROR: Specified number of taxa in Flag Sparse Regions (" + specifiedNumTaxa + ") is smaller than current number of taxa in the file (" + numTaxa + ")");
 					else if (numNegWarnings<11)
-						logln("No more warnings will be given about ERROR that specified number of taxa in Flag Gappy Regions is smaller than current number of taxa in the file");
+						logln("No more warnings will be given about ERROR that specified number of taxa in Flag Sparse Regions is smaller than current number of taxa in the file");
 					numNegWarnings++;
 				}
 				if (MesquiteInteger.isPositive(specifiedNumTaxa))
@@ -392,6 +414,7 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 			if (siteGappiness == null || siteGappiness.length != numChars) {
 				siteGappiness = new double[numChars];
 			}
+
 			for (int ic=0; ic<numChars; ic++) {
 				int gapCount = 0;
 				if (assumeSpecifiedNumberOfTaxa() && MesquiteInteger.isPositive(specifiedNumTaxa)) {
@@ -409,32 +432,83 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 					charFlags.setBit(ic, true);
 			}
 
-				for (int blockStart=0; blockStart<numChars; blockStart++) { //let's look for gappy blocks
-					if (gappySite(blockStart)) { // possible start of gappy block
 
+			//From site 0
+			boolean startBlockFound = false;
+			boolean firstGappySiteFound = false;
+			for (int blockStart=0; blockStart<numChars && !(fromEnds && startBlockFound); blockStart++) { //let's look for gappy blocks
+				if (gappySite(blockStart)) { // possible start of gappy block
+					if (!firstGappySiteFound && fromEnds) { //this is the first gappy site; if fromEnds and we're already in long enough for a boundary to be counted, we are done!
+						if (blockStart >= gappyBoundary) {
+							startBlockFound = true;
+							break;
+						}
+					}
+					firstGappySiteFound = true;
+					boolean boundaryFound = false;
+					for (int candidateNextBoundary = blockStart+1; candidateNextBoundary<numChars+1 && !boundaryFound; candidateNextBoundary++) {  // go ahead until next boundary reached
+						if (isGapBlockBoundary(candidateNextBoundary, true) || candidateNextBoundary == numChars-1) {
+							boundaryFound = true;
+							int blockEnd = candidateNextBoundary-1;
+
+							//blockStart is the potential start of a block; blockEnd is a possible end. If the block is long enough, ask if its blockGappiness is bad
+							if (blockEnd-blockStart+1 >= gappyBlockSize){
+								//block is big enough, but is it bad enough?
+								int badSiteCount = 0;
+								for (int k = blockStart; k <= blockEnd; k++)
+									if (gappySite(k))  // stored as double[] in case criterion shifts, e.g., to average
+										badSiteCount++;
+								double blockGappiness = 1.0*badSiteCount/(blockEnd-blockStart+1);
+								if (blockGappiness >=blockGappinessThreshold) {
+									startBlockFound = true;
+									for (int k = blockStart; k <= blockEnd; k++)
+										charFlags.setBit(k, true);
+								}
+							}
+
+						}
+					}
+				}
+
+			}
+			if (fromEnds){//From end inward
+				startBlockFound = false;
+				firstGappySiteFound = false;
+				for (int blockStart=numChars-1; blockStart>=0 && !(fromEnds && startBlockFound); blockStart--) { //let's look for gappy blocks
+					if (gappySite(blockStart)) { // possible start of gappy block
+						if (!firstGappySiteFound && fromEnds) { //this is the first gappy site; if fromEnds and we're already in long enough for a boundary to be counted, we are done!
+							if (numChars-blockStart-1 >= gappyBoundary) {
+								startBlockFound = true;
+								break;
+							}
+						}
+						firstGappySiteFound = true;
 						boolean boundaryFound = false;
-						for (int candidateNextBoundary = blockStart+1; candidateNextBoundary<numChars+1 && !boundaryFound; candidateNextBoundary++) {  // go ahead until next boundary reached
-							if (isGapBlockBoundary(candidateNextBoundary) || candidateNextBoundary == numChars-1) {
+						for (int candidateNextBoundary = blockStart-1; candidateNextBoundary>-1 && !boundaryFound; candidateNextBoundary--) {  // go ahead until next boundary reached
+							if (isGapBlockBoundary(candidateNextBoundary, false) || candidateNextBoundary == 0) {
 								boundaryFound = true;
-								int blockEnd = candidateNextBoundary-1;
+								int blockEnd = candidateNextBoundary+1;
 
 								//blockStart is the potential start of a block; blockEnd is a possible end. If the block is long enough, ask if its blockGappiness is bad
-								if (blockEnd-blockStart+1 >= gappyBlockSize){
+								if (blockStart-blockEnd+1 >= gappyBlockSize){
 									//block is big enough, but is it bad enough?
 									int badSiteCount = 0;
-									for (int k = blockStart; k <= blockEnd; k++)
+									for (int k = blockEnd; k <= blockStart; k++)
 										if (gappySite(k))  // stored as double[] in case criterion shifts, e.g., to average
 											badSiteCount++;
-									double blockGappiness = 1.0*badSiteCount/(blockEnd-blockStart+1);
-									if (blockGappiness >=blockGappinessThreshold)
-										for (int k = blockStart; k <= blockEnd; k++)
+									double blockGappiness = 1.0*badSiteCount/(blockStart-blockEnd+1);
+									if (blockGappiness >=blockGappinessThreshold) {
+										startBlockFound = true;
+										for (int k = blockEnd; k <= blockStart; k++)
 											charFlags.setBit(k, true);
+									}
 								}
 
 							}
 						}
 					}
-				
+
+				}
 			}
 		}
 		return flags;
@@ -457,7 +531,7 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Gappy Regions";
+		return "Sparse Regions";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

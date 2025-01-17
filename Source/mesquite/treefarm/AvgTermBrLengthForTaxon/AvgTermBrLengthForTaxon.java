@@ -42,7 +42,7 @@ public class AvgTermBrLengthForTaxon extends NForTaxonWithTrees {
 	/*.................................................................................................................*/
  	/*.................................................................................................................*/
 	public void calculateNumbers(Taxa taxa, NumberArray results, MesquiteString resultsString){
-		if (results==null|| taxa == null)
+		if (results==null || taxa == null)
 			return;
 		int numTaxa = taxa.getNumTaxa();
 		results.resetSize(numTaxa);

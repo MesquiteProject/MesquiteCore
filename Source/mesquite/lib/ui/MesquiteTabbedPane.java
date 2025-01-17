@@ -57,59 +57,63 @@ public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 	//	super.setSelectedIndex(i);
 	}
 
+	/*################################
+	 *  The following overrides were built to handle (hide) the frequent StackOverflowErrors on Linux Java post-1.8, 
+	 *  but were extended in part to other OSs
+	 */
+
 	/*getPreferredSize -------------------------*/
-    public Dimension getPreferredSize() {
-		if (MesquiteTrunk.isLinux()) {
-			try {
-				return super.getPreferredSize();
-			}
-			catch (StackOverflowError e) {
-				if (MesquiteTrunk.developmentMode)
-				System.err.println("Yet another StackOverflowError on  linux");
-			}
-		}
+	public Dimension getPreferredSize() {
 		try {
 			return super.getPreferredSize();
 		}
 		catch (Exception e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+				System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
 		}
 		catch (Error e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+				System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
 		}
 		return new Dimension(400, 400);
 	}
 	/*layout -------------------------*/
 	public void layout(){
-		if (MesquiteTrunk.isLinux()) {
-			try {
-				super.layout();
-			}
-			catch (StackOverflowError e) {
-				if (MesquiteTrunk.developmentMode)
-				System.err.println("Yet another StackOverflowError on  linux");
-			}
-		}
-		else {
+		try {
 			super.layout();
+		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (layout)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (layout)"); 
 		}
 	}
 	/*validate -------------------------*/
 	boolean validating = false;
 	public void validate(){
-		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
-			MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		if (MesquiteTrunk.isLinux()) { //seems to help on linux to put on separate thread
+			if (MesquiteTrunk.linuxGWAThread!=null)
+				MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		}
 		else {
-			if (validating)
-				Debugg.printStackTrace("Double validating " + this);
-			validating = true;
-			super.validate();
-			validating = false;
+			try {
+				super.validate();
+			}
+			catch (Exception e) {
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (validate)"); 
+			}
+			catch (Error e) {
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (validate)"); 
+			}
 		}
 	}
-	public void pleaseValidate(){
+
+	public void pleaseValidate(){ //this will only be called on linux
 		if (validating && MesquiteTrunk.developmentMode)
 			System.err.println("Double validating " + this);
 		validating = true;
@@ -118,27 +122,48 @@ public class MesquiteTabbedPane extends JTabbedPane implements MQComponent {
 		}
 		catch (Exception e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+				System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
 		}
 		catch (Error e) {
 			if (MesquiteTrunk.developmentMode)
-			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+				System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
 		}
 		validating = false;
 	}
 
-	
+
 	/*setBounds -------------------------*/
-	//This is currently bypassed (see linxuGWAThread) and may not be needed; left here in case further testing shows this protection is needed also. See ExplTextArea also
 	public void setBounds(int x, int y, int w, int h){
+		//This is currently bypassed (see linxuGWAThread) and may not be needed; 
 		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
 			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
-		else
+		else {
+			try {
+				super.setBounds(x, y, w, h);
+			}
+			catch (Exception e) {
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (setBounds)"); 
+			}
+			catch (Error e) {
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (setBounds)"); 
+			}
+		}
+	}
+	public void pleaseSetBounds(int x, int y, int w, int h){ //this will only be called on linux
+		try {
 			super.setBounds(x, y, w, h);
+		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseSetBounds)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseSetBounds)"); 
+		}
 	}
-	public void pleaseSetBounds(int x, int y, int w, int h){
-		super.setBounds(x, y, w, h);
-	}
-	/*s----- -------------------------*/
+	/*################################*/
 
 }

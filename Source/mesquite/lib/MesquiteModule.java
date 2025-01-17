@@ -1156,13 +1156,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in log; also in dialog if flag is set.*/
-	public void alertHTML(String s, String windowTitle, String logTitle) {
-		alertHTML(s, windowTitle, logTitle, 400, 400);
+	public void alertHTML(Window parent, String s, String windowTitle, String logTitle) {
+		alertHTML(parent, s, windowTitle, logTitle, 400, 400);
 
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in log; also in dialog if flag is set.*/
-	public void alertHTML(String s, String windowTitle, String logTitle, int width, int height) {
+	public void alertHTML(Window parent, String s, String windowTitle, String logTitle, int width, int height) {
 		if (s == null)
 			return;
 		if (startupBailOut)
@@ -1173,7 +1173,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			logln(logTitle+": " + s);
 
 		if (alertUseDialog) {
-			AlertDialog.noticeHTML(containerOfModule(),windowTitle, s, width, height, null);
+			AlertDialog.noticeHTML(parent,windowTitle, s, width, height, null);
 		}
 	}
 	/*.................................................................................................................*/

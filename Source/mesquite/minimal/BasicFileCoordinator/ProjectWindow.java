@@ -196,7 +196,7 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		html += "</ol>";
 
 		html += "</html></body>";
-		bfc.alertHTML(html, "Incorporating File", "Incorporating File", 820, 700);
+		bfc.alertHTML(bfc.containerOfModule().getParentFrame(), html, "Incorporating File", "Incorporating File", 820, 700);
 	}
 	/*  From ManageTrees
 	 * 		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Import File with Trees");
@@ -344,7 +344,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		html += "</li></ul>";
 		html += "<p align=\"center\"><img  src=\"" + MesquiteFile.massageFilePathToURL(bfc.getPath()+"projectHTML" + MesquiteFile.fileSeparator + "projectPanel.jpg") + "\">";
 		html += "</p></html></body>";
-		bfc.alertHTML(html, "Project", "Project", 500, 600);
+		bfc.alertHTML(bfc.containerOfModule().getParentFrame(), html, "Project", "Project", 500, 600);
 	}
 	void addExtraPanel(ProjPanelPanel p){
 		elements.addElement(p);

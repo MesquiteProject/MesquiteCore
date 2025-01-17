@@ -36,6 +36,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	private Commandable ownerObject;  
 	String defaultArguments = null;
 	boolean disposed = false;
+	boolean okOnOtherThread = false;
 	boolean letMe = true;
 	public static ListableVector currentThreads;
 	public boolean bypassQueue = false;
@@ -135,7 +136,8 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 			MesquiteMessage.warnProgrammer("Warning: Command given to null object (" + commandName + "  " + arguments + ") MesquiteCommand");
 			return null;
 		}
-		MesquiteThread.shouldBeOnMesquiteThread();
+		if (!okOnOtherThread)
+			MesquiteThread.shouldBeOnMesquiteThread();
 		if (StringUtil.blank(arguments))
 			arguments = defaultArguments;
 		if (!suppressLogging || logEverything)
@@ -273,6 +275,10 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	/** returns the default arguments to be passed if argument is null */
 	public String getDefaultArguments() {
 		return defaultArguments ;
+	}
+	/** sets whether the command is to be let finish (i.e. a warning is give on quit if pending) */
+	public void setOKOnOtherThread(boolean ok) {
+		this.okOnOtherThread = ok;
 	}
 	/** sets whether the command is to be let finish (i.e. a warning is give on quit if pending) */
 	public void setLetMeFinish(boolean letMe) {

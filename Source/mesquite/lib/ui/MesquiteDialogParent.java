@@ -78,6 +78,125 @@ public class MesquiteDialogParent extends JDialog implements Identifiable, MQCom
 	public MesquiteModule getInitiatingModule(){
 		return initiatingModule ;
 	}
+	/*################################
+	 *  The following overrides were built to handle (hide) the frequent StackOverflowErrors on Linux Java post-1.8, 
+	 *  but were extended in part to other OSs
+	 */
+
+	/*getPreferredSize -------------------------*/
+	public Dimension getPreferredSize() {
+		try {
+			return super.getPreferredSize();
+		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+		}
+		return new Dimension(400, 400);
+	}
+	/*layout -------------------------*/
+	public void layout(){
+		try {
+			super.layout();
+		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (layout)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (layout)"); 
+		}
+	}
+	/*validate -------------------------*/
+	boolean validating = false;
+	public void validate(){
+		if (MesquiteTrunk.isLinux()) { //seems to help on linux to put on separate thread
+			if (MesquiteTrunk.linuxGWAThread!=null)
+				MesquiteTrunk.linuxGWAThread.validateRequested(this);
+		}
+		else {
+			try {
+				super.validate();
+			}
+			catch (Exception e) {
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (validate)"); 
+			}
+			catch (Error e) {
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (validate)"); 
+			}
+		}
+	}
+
+	public void pleaseValidate(){ //this will only be called on linux
+		if (validating && MesquiteTrunk.developmentMode)
+			System.err.println("Double validating " + this);
+		validating = true;
+		try {
+			super.validate();
+		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
+		}
+		validating = false;
+	}
+
+
+	public void pleaseSetBounds(int x, int y, int w, int h){ //this will only be called on linux
+		try {
+			super.setBounds(x, y, w, h);
+		}
+		catch (Exception e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseSetBounds)"); 
+		}
+		catch (Error e) {
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseSetBounds)"); 
+		}
+	}
+
+	/*################################*/
+	//note this is distinctive here
+	/*setBounds -------------------------*/
+	public void setBounds(int x, int y, int w, int h){
+		if (alreadyDisposed)
+			return;
+		if (enlargeOnly){
+			if (w < getWidth())
+				w = getWidth();
+			if (h < getHeight())
+				h = getHeight();
+		}
+		//This is currently bypassed (see linxuGWAThread) and may not be needed; 
+		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
+			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
+		else {
+			try {
+				super.setBounds(x, y, w, h);
+			}
+			catch (Exception e) {
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (setBounds)"); 
+			}
+			catch (Error e) {
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (setBounds)"); 
+			}
+		}
+		resetSizes();
+	}
 	/*-------------------------------------------------------*/
 	public void finalize() throws Throwable {
 		totalFinalized++;
@@ -210,81 +329,7 @@ public class MesquiteDialogParent extends JDialog implements Identifiable, MQCom
 		}
 		return super.getPreferredSize();
 	}
-	/*getPreferredSize -------------------------*/
-    public Dimension getPreferredSize() {
-		if (isWizard)
-			return new Dimension(MesquiteDialog.wizardWidth, MesquiteDialog.wizardHeight);
-		if (MesquiteTrunk.isLinux()) {
-			try {
-				return super.getPreferredSize();
-			}
-			catch (StackOverflowError e) {
-				if (MesquiteTrunk.developmentMode)
-				System.err.println("Yet another StackOverflowError on  linux");
-			}
-		}
-		try {
-			return super.getPreferredSize();
-		}
-		catch (Exception e) {
-			if (MesquiteTrunk.developmentMode)
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
-		}
-		catch (Error e) {
-			if (MesquiteTrunk.developmentMode)
-			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
-		}
-		return new Dimension(400, 400);
-	}
-	/*layout -------------------------*/
-	public void layout(){
-		if (MesquiteTrunk.isLinux()) {
-			try {
-				super.layout();
-			}
-			catch (StackOverflowError e) {
-				System.out.println("Yet another StackOverflowError on  linux");
-			}
-		}
-		else {
-			super.layout();
-		}
-	}
-	/*validate -------------------------*/
-	boolean validating = false;
-	public void validate(){
-		if (MesquiteTrunk.isLinux()) {
-			if (MesquiteTrunk.linuxGWAThread!=null)
-				MesquiteTrunk.linuxGWAThread.validateRequested(this);
-		}
-		else {
-			super.validate();
-		}
-	}
-	public void pleaseValidate(){
-		if (validating && MesquiteTrunk.developmentMode)
-			System.err.println("Double validating " + this);
-		validating = true;
-		try {
-			super.validate();
-		}
-		catch (Exception e) {
-			if (MesquiteTrunk.developmentMode)
-			System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
-		}
-		catch (Error e) {
-			if (MesquiteTrunk.developmentMode)
-			System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (pleaseValidate)"); 
-		}
-		validating = false;
-	}
 
-
-	/*setBounds -------------------------*/
-
-	public void pleaseSetBounds(int x, int y, int w, int h){
-		super.setBounds(x, y, w, h);
-	}
 	/*s----- -------------------------*/
 	void addNext(){
 		if (dialogsToAdd.size()==0)
@@ -431,21 +476,6 @@ public class MesquiteDialogParent extends JDialog implements Identifiable, MQCom
 		super.setSize(w, h);
 		resetSizes();
 
-	}
-	public void setBounds(int x, int y, int w, int h){
-		if (alreadyDisposed)
-			return;
-		if (enlargeOnly){
-			if (w < getWidth())
-				w = getWidth();
-			if (h < getHeight())
-				h = getHeight();
-		}
-		if (MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
-			MesquiteTrunk.linuxGWAThread.setBoundsRequested(this, x, y, w, h);
-		else
-			super.setBounds(x, y, w, h);
-		resetSizes();
 	}
 	public void setLocation(int x, int y){
 		if (alreadyDisposed)

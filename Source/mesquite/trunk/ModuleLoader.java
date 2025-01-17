@@ -625,6 +625,8 @@ public class ModuleLoader {
 					//instantiateTime.start();
 					MesquiteModule mb = mesquite.instantiateModule(c);
 					if (mb!=null && mb instanceof MesquiteModule) {
+						if (MesquiteTrunk.developmentMode && !mb.loadModule())
+							System.err.println("Module installed but not loaded by module's request: " + mb.getName() + " " + mb.getClass().getName());
 						if (mb.isPrerelease() && mb.isSubstantive() && mb.loadModule()){
 
 							MesquiteModule.mesquiteTrunk.substantivePrereleasesFound();

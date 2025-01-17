@@ -18,6 +18,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.IntegerField;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
@@ -157,9 +158,9 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	public void setFocalComponent(Component fc) {
 		focalComponent = fc;
 	}
+	
 	/*.................................................................................................................*/
 	protected void intializeDialog (String title, MesquiteInteger buttonPressed) {
-		MesquiteThread.shouldBeOnMesquiteThread();
 		d = new Dimension(minDialogWidth, minDialogHeight);
 		gridBag = new GridBagLayout();
 		constraints = createGridBagConstraints();
@@ -891,7 +892,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
  	}
 	/*.................................................................................................................*/
 	public void prepareDialog () {
-
+		if (parentDialog != null && parentDialog.getParent() instanceof MesquiteFrame) //if parent is another dialog, we'll forgive it for being on AWT thread
+			MesquiteThread.shouldBeOnMesquiteThread();
 		if (MesquiteTrunk.isLinux())
 			addBlankLine();
 		pack();
@@ -2139,7 +2141,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/** This displays the help note.  If you override this, make sure you call super.actionPerformed(e) at the end of your method so that the help system still works */
 	public  void actionPerformed(ActionEvent e) {
 		if   ("?".equals(e.getActionCommand())) {
-			MesquiteTrunk.mesquiteTrunk.alertHTML(getHelpString(),"Mesquite Help", "NOTE");
+			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", "NOTE");
 			toFront();
 		}
 
@@ -2149,7 +2151,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public void mouseOnImage(String imageName) {
 		if   ("?".equals(imageName)) {
-			MesquiteTrunk.mesquiteTrunk.alertHTML(getHelpString(),"Mesquite Help", "NOTE");
+			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", "NOTE");
 			toFront();
 		}
 		else if (imageName =="manual")

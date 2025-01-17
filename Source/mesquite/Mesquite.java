@@ -2503,8 +2503,10 @@ public class Mesquite extends MesquiteTrunk
 		mesquiteTrunk.showLicenseCommand = makeCommand("showLicense",  mesquiteTrunk);
 		mesquiteTrunk.quitCommand = makeCommand("quit",  mesquiteTrunk);
 		mesquiteTrunk.quitCommand.setQueueBypass(true);
+		mesquiteTrunk.quitCommand.setOKOnOtherThread(true);
 		mesquiteTrunk.forceQuitCommand = makeCommand("forceQuit",  mesquiteTrunk);
 		mesquiteTrunk.forceQuitCommand.setQueueBypass(!MesquiteTrunk.isLinux());
+		mesquiteTrunk.forceQuitCommand.setOKOnOtherThread(true);
 		mesquiteTrunk.showAllCommand = makeCommand("showAllWindows", mesquiteTrunk);
 		mesquiteTrunk.closeAllCommand = makeCommand("closeAllProjects", mesquiteTrunk);
 		mesquiteTrunk.saveAllCommand = makeCommand("saveAllProjects", mesquiteTrunk);
@@ -2594,7 +2596,7 @@ public class Mesquite extends MesquiteTrunk
 					else if (args[i].equals("-mq17")) {
 						MesquiteMessage.warnUser("This executable is not compatible with current Mesquite");
 					}
-					else if (args[i].equals("-d"))
+					else if (args[i].equals("-debug"))
 						MesquiteTrunk.debugMode = true;
 					else if (args[i].equals("--version"))
 						outputVersion = true;
