@@ -32,7 +32,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Automator Application Stub</string>
 	<key>CFBundleIconFile</key>
-	<string>Mesquite.icns</string>
+	<string>ApplicationStub</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.apple.automator.Mesquite-Starter-Flex-01AutomatorApp-Universal-2025January17b</string>
 	<key>CFBundleInfoDictionaryVersion</key>

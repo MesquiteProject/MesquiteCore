@@ -2,19 +2,9 @@
 
 
 INSTRUCTIONS
-The first line, above, is used as additional information for Mesquite to start by "Mesquite-Starter-Flex.app". These "flags" are important to get Mesquite to work with some version of Java. 
+If you put text on the first line, above, it will be used by Mesquite-Starter.app as the command-line VM arguments (flags) in starting Mesquite. 
 
-If the line is blank, this means that no flags will be added.
-
-For Java 1.8 and many others, you can leave the first line blank.
-
-Below is a suggested alternative:
-
-Java 16:
---add-exports java.desktop/com.apple.eawt=ALL-UNNAMED
-
-The above flag is needed for Mesquite to function well under some newer versions of Java (e.g., Java 16).
+Your flags will replace the ones that Mesquite-Starter.app uses by default. For Java 9 and above, the default flags are:
+--add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -XX:+EnableDynamicAgentLoading
 
 
---add-opens java.base/java.net=ALL-UNNAMED
-java.lang.reflect.InaccessibleObjectException: Unable to make protected void java.net.URLClassLoader.addURL(java.net.URL) accessible: module java.base does not "opens java.net" to unnamed module @7229724f
