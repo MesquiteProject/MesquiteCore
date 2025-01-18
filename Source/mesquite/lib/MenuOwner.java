@@ -125,9 +125,9 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	private static int composeCount = 0;
 
 	private static MenuShortcut newShortcut, openShortcut, saveShortcut, printShortcut, getInfoShortcut, quitShortcut,
-			ccShortcut, previousToolShortcut;
+	ccShortcut, previousToolShortcut;
 	private static MenuShortcut undoShortcut, copyShortcut, cutShortcut, clearShortcut, selectAllShortcut,
-			pasteShortcut;
+	pasteShortcut;
 
 	public static String leftBracket, rightBracket;
 
@@ -352,9 +352,9 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			if (MesquiteTrunk.debugMode) {
 				MesquiteModule.mesquiteTrunk.logln("\n>>>- All Menus Reset (" + allMenuBarRests
 						+ " times). This reset took " + timer.timeSinceLastInSeconds() + " seconds -<<< \n"); // temporary;
-																												// to
-																												// check
-																												// efficiency
+				// to
+				// check
+				// efficiency
 				timer.end();
 				timer = null;
 			}
@@ -1164,7 +1164,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			if (menuBar != null) {
 				for (int i = 0; i < menuBar.getMenuCount(); i++)
 					sortSubmenusBySpecsOrder(menuBar.getMenu(i)); // this is a kludge to repair an issue of ordering:
-																	// submenus of submenus floating to top
+				// submenus of submenus floating to top
 			}
 
 		} catch (NullPointerException e) {
@@ -1196,13 +1196,13 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 		if ((window != null && window.getShowInfoBar())
 				&& (MesquiteTrunk.isMacOSX() || (whichWindow == null || !whichWindow.isLoneWindow()))) // &&
-																										// MesquiteTrunk.isMacOSX())
-																										// //these menus
-																										// belong in the
-																										// window, as
-																										// long as an
-																										// info bar is
-																										// shown
+			// MesquiteTrunk.isMacOSX())
+			// //these menus
+			// belong in the
+			// window, as
+			// long as an
+			// info bar is
+			// shown
 			embeddedMenusVector = composeEmbeddedMenuBar(whichWindow);
 		else
 			embeddedMenusVector = null;
@@ -1366,7 +1366,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		else {
 			int currentWindowsNumber = menuBar.getMenuCount() - 2;
 			for (int i = menuBar.getMenuCount() - 1; i >= 0 && currentWindowsMenu == null; i--) { // leave first (file
-																									// menu) in place
+				// menu) in place
 				Menu m = menuBar.getMenu(i);
 				if (m instanceof MesquiteMenu && ((MesquiteMenu) m).getSpecification() == MesquiteTrunk.windowsMenu) {
 					currentWindowsMenu = (MesquiteMenu) m;
@@ -1482,7 +1482,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	private MesquiteMenu fillWindowsMenu(MesquiteMenuBar menuBar, MesquiteMenu currentWindowsMenu,
 			MesquiteWindow whichWindow) {
 		MesquiteMenu wMenu = currentWindowsMenu; // composeSpecificMenu(menuBar, currentWindowsMenu,
-													// MesquiteTrunk.windowsMenu, false);
+		// MesquiteTrunk.windowsMenu, false);
 		if (wMenu == null)
 			wMenu = MesquiteMenu.getMenu(MesquiteTrunk.windowsMenu);
 		if (whichWindow != null) {
@@ -1638,7 +1638,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	final void composeMenuDescendants(Menu menu) {
 		if (doomed)
 			;// MesquiteMessage.println("Error: composing menu of module that has been turned
-				// off: " + getName());
+		// off: " + getName());
 		else {
 			if (menuTracing)
 				MesquiteMessage.notifyProgrammer("Composing menu of " + module.getName());
@@ -1665,7 +1665,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	final void composeMenusOfDescendants(Vector menuBar) {
 		if (doomed)
 			;// MesquiteMessage.println("Error: composing menu of module that has been turned
-				// off: " + getName());
+		// off: " + getName());
 		else {
 			if (menuTracing)
 				MesquiteMessage.notifyProgrammer("Composing menu of " + module.getName());
@@ -1708,7 +1708,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	final void composeMenusOfDescendants(MesquiteMenuBar menuBar) { /// TO BE DELETED
 		if (doomed)
 			;// MesquiteMessage.println("Error: composing menu of module that has been turned
-				// off: " + getName());
+		// off: " + getName());
 		else {
 			if (menuTracing)
 				MesquiteMessage.notifyProgrammer("Composing menu of " + module.getName());
@@ -1847,7 +1847,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 					} else {
 						MesquiteSubmenu submenu = MesquiteSubmenu.getSubmenu(mbi.getNameForMenuItem(), menu, module); // make
-																														// submenu
+						// submenu
 						submenu.setHiddenStatus(hiddenStatus, mmi.getDutyClass());
 						submenu.setReferent(mbi);
 						MesquiteMenu.add(menu, submenu);
@@ -1886,8 +1886,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 											smbi.getNameForMenuItem(),
 											"$ " + StringUtil.tokenize(mbi.getName()) + "  "
 													+ StringUtil.tokenize(smbi.getName()),
-											mmi.command, smbi.getModuleClass(),
-											mbi.getHireSubchoice())) == InterfaceManager.HIDDEN)
+													mmi.command, smbi.getModuleClass(),
+													mbi.getHireSubchoice())) == InterfaceManager.HIDDEN)
 								;
 							else if (useOthers2 && !smbi.isPrimary(mbi.getHireSubchoice()))
 								others2[countOthers2++] = smbi;
@@ -1957,7 +1957,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			return null;
 		if (doomed) {
 			;// MesquiteMessage.println("Error: composing menu of module that has been turned
-				// off: " + getName());
+			// off: " + getName());
 		} else {
 			MesquiteSubmenu submenu = findSubmenu(containingMenu, msms);
 			if (submenu == null) { // submenu not yet created; create it
@@ -2162,7 +2162,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							mbi.getNameForMenuItem(), StringUtil.tokenize(mbi.getName()), msms.command,
 							mbi.getModuleClass(), msms.getDutyClass())) == InterfaceManager.HIDDEN) {
 					} else if (mbi.getHireSubchoice() == null) { // potential employee hasn't indicated it would like
-																	// subemployee submenu
+						// subemployee submenu
 						if (submenu.getSelected() != null) { // selected string available for checkmark
 							MesquiteCheckMenuItem m = new MesquiteCheckMenuItem(mbi.getNameForMenuItem(), null,
 									msms.command, StringUtil.tokenize(mbi.getName()), submenu.getSelected());
@@ -2241,8 +2241,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 											smbi.getNameForMenuItem(),
 											"$ " + StringUtil.tokenize(mbi.getName()) + "  "
 													+ StringUtil.tokenize(smbi.getName()),
-											msms.command, smbi.getModuleClass(),
-											mbi.getHireSubchoice())) == InterfaceManager.HIDDEN))
+													msms.command, smbi.getModuleClass(),
+													mbi.getHireSubchoice())) == InterfaceManager.HIDDEN))
 								;
 							else if (useOthers2 && !primary2)
 								others2[countOthers2++] = smbi;
@@ -2250,7 +2250,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 								MesquiteCheckMenuItem m = new MesquiteCheckMenuItem(smbi.getNameForMenuItem(), null,
 										msms.command, "$ " + StringUtil.tokenize(mbi.getName()) + "  "
 												+ StringUtil.tokenize(smbi.getName()),
-										submenu.getSelected());
+												submenu.getSelected());
 								// m.setDocument(msms.getDocumentItems());
 								if (smbi.getShortcutForMenuItem() >= 0)
 									m.setShortcut(new MenuShortcut(smbi.getShortcutForMenuItem(),
@@ -2323,14 +2323,14 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					;
 				else if (b == MesquiteSubmenuSpec.ONEDISABLE_ZERODISABLE
 						|| (submenu.getItemCount() == 0 && (b == MesquiteSubmenuSpec.ONESUBMENU_ZERODISABLE
-								|| b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE))) {
+						|| b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE))) {
 					// add a menu item here instead of submenu & disable it
 					MesquiteMenuItem m = new MesquiteMenuItem(msms);
 					m.setHiddenStatus(hiddenStatus);
 					MesquiteMenu.add(menu, m);
 					m.setEnabled(false);// Note: the MesquiteSubmenuSpec doesn't know that it's been disabled, and so
-										// when enabling is reset, it would turn back on. Thus kludge in resetEnable of
-										// MesquiteMenuItem
+					// when enabling is reset, it would turn back on. Thus kludge in resetEnable of
+					// MesquiteMenuItem
 					needToAddSubmenu = false;
 				} else if (submenu.getItemCount() == 1 && b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE) {
 					// add a menu item here instead of submenu
@@ -2362,14 +2362,14 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					;
 				else if (b == MesquiteSubmenuSpec.ONEDISABLE_ZERODISABLE
 						|| (submenu.getItemCount() == 0 && (b == MesquiteSubmenuSpec.ONESUBMENU_ZERODISABLE
-								|| b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE))) {
+						|| b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE))) {
 					// add a menu item here instead of submenu & disable it
 					MesquiteMenuItem m = new MesquiteMenuItem(msms);
 					MesquiteMenu.add(menu, m);
 					m.setHiddenStatus(hiddenStatus);
 					m.setEnabled(false);// Note: the MesquiteSubmenuSpec doesn't know that it's been disabled, and so
-										// when enabling is reset, it would turn back on. Thus kludge in resetEnable of
-										// MesquiteMenuItem
+					// when enabling is reset, it would turn back on. Thus kludge in resetEnable of
+					// MesquiteMenuItem
 					needToAddSubmenu = false;
 				} else if (submenu.getItemCount() == 1 && b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE) {
 					// add a menu item here instead of submenu
@@ -2414,14 +2414,14 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					;
 				else if (b == MesquiteSubmenuSpec.ONEDISABLE_ZERODISABLE
 						|| (submenu.getItemCount() == 0 && (b == MesquiteSubmenuSpec.ONESUBMENU_ZERODISABLE
-								|| b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE))) {
+						|| b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE))) {
 					// add a menu item here instead of submenu & disable it
 					MesquiteMenuItem m = new MesquiteMenuItem(msms);
 					m.setHiddenStatus(hiddenStatus);
 					MesquiteMenu.add(menu, m);
 					m.setEnabled(false); // Note: the MesquiteSubmenuSpec doesn't know that it's been disabled, and so
-											// when enabling is reset, it would turn back on. Thus kludge in resetEnable
-											// of MesquiteMenuItem
+					// when enabling is reset, it would turn back on. Thus kludge in resetEnable
+					// of MesquiteMenuItem
 					needToAddSubmenu = false;
 				} else if (submenu.getItemCount() == 1 && b == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE) {
 					// add a menu item here instead of submenu
@@ -2643,6 +2643,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 						MesquiteModule.mesquiteTrunk.openFileCommand);
 				openItem.setShortcut(openShortcut);
 				newMenu.add(openItem);
+				
 				boolean enableRecent = false;
 				MesquiteSubmenu openRecentSubmenu = MesquiteSubmenu.getSubmenu("Open Recent", newMenu, 
 						MesquiteModule.mesquiteTrunk);
@@ -2650,11 +2651,10 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				ListableVector recents = MesquiteTrunk.getRecentFiles();
 				for (int i = 0; i<recents.size(); i++) {
 					MesquiteFile recent = (MesquiteFile)recents.elementAt(i);
-					MesquiteFile currentFile = MesquiteTrunk.getProjectList().findFile(recent.getPath());
-					if (currentFile == null) {
+					if (MesquiteFile.fileExists(recent.getPath())){	
 						enableRecent = true;
 						openRecentSubmenu.add(new MesquiteMenuItem(recent.getFileName(), MesquiteModule.mesquiteTrunk,
-							MesquiteModule.mesquiteTrunk.openRecentCommand, ParseUtil.tokenize(recent.getPath())));
+								MesquiteModule.mesquiteTrunk.openRecentCommand, ParseUtil.tokenize(recent.getPath())));
 					}
 				}
 				openRecentSubmenu.setEnabled(enableRecent);
@@ -2703,7 +2703,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					// newMenu.add(new MesquiteMenuItem("Close Linked Files",
 					// MesquiteModule.mesquiteTrunk, proj.getCloseCommand()));
 					MesquiteSubmenu showFileSubmenu = MesquiteSubmenu.getSubmenu("Show File Location", newMenu, module); // make
-																															// submenu
+					// submenu
 					newMenu.add(showFileSubmenu);
 					addFilesToSubmenu(showFileSubmenu, proj, false, proj.getShowFileOnDiskCommand());
 				} else {
@@ -2730,7 +2730,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					saveSubmenu.add("-");
 					addFilesToSubmenu(saveSubmenu, proj, true, proj.getSaveCommand());
 					MesquiteSubmenu saveAsSubmenu = MesquiteSubmenu.getSubmenu("Save As...", newMenu, module); // make
-																											// submenu
+					// submenu
 					newMenu.add(saveAsSubmenu);
 					addFilesToSubmenu(saveAsSubmenu, proj, true, proj.getSaveAsCommand());
 				} else {
@@ -2889,12 +2889,12 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			if (whichWindow.getCutCommand() != null)
 				cut.setShortcut(cutShortcut);
 			cut.setEnabled(whichWindow.getCutCommand() != null); // window must return a copy command if command-based
-																	// copying is to be enabled; otherwise allows
-																	// automatic system
+			// copying is to be enabled; otherwise allows
+			// automatic system
 
 			MesquiteCommand copyCommand = MesquiteModule.makeCommand("copy", whichWindow);
 			copyCommand.setSuppressLogging(true); // set true so that writing "copy" doesn't prevent copying from
-													// selection in log itself
+			// selection in log itself
 			copy = new MesquiteMenuItem("Copy", MesquiteModule.mesquiteTrunk, copyCommand);
 			newMenu.add(copy);
 			copy.setShortcut(copyShortcut);
@@ -2912,8 +2912,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			if (whichWindow.getPasteCommand() != null)
 				paste.setShortcut(pasteShortcut);
 			paste.setEnabled(whichWindow.getPasteCommand() != null); // window must return a copy command if
-																		// command-based copying is to be enabled;
-																		// otherwise allows automatic system
+			// command-based copying is to be enabled;
+			// otherwise allows automatic system
 			if (whichWindow.getPasteSpecialCommand() != null) {
 				MesquiteMenuItem mps = new MesquiteMenuItem(whichWindow.getPasteSpecialName(),
 						MesquiteModule.mesquiteTrunk, whichWindow.getPasteSpecialCommand());
@@ -2927,8 +2927,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			if (whichWindow.getClearCommand() != null)
 				clear.setShortcut(clearShortcut);
 			clear.setEnabled(whichWindow.getClearCommand() != null); // window must return a copy command if
-																		// command-based copying is to be enabled;
-																		// otherwise allows automatic system
+			// command-based copying is to be enabled;
+			// otherwise allows automatic system
 
 			selectAll = new MesquiteMenuItem("Select All", MesquiteModule.mesquiteTrunk,
 					MesquiteModule.makeCommand("selectAll", whichWindow));// whichWindow.getSelectAllCommand());

@@ -1958,9 +1958,16 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if (checker.compare(this.getClass(), "Opens recent file.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file]", commandName, "openRecent")) {
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
-			Debugg.println("TOKEN " + path);
-			String completeArguments = arguments;
-			return openOrImportFileHandler( path,  completeArguments, null);
+			MesquiteFile currentFile = MesquiteTrunk.getProjectList().findFile(path);
+			if (currentFile == null) {
+				String completeArguments = arguments;
+				return openOrImportFileHandler( path,  completeArguments, null);
+			}
+			else {
+				MesquiteProject p = currentFile.getProject();
+				if (p!= null)
+					p.getCoordinatorModule().doCommand("allToFront", null);
+			}
 
 		}
 		else if (checker.compare(this.getClass(), "Opens file on web server.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[URL of file] - if parameter absent then presents user with dialog box to enter URL", commandName, "openURL")){
