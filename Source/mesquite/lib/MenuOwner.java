@@ -2643,6 +2643,21 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 						MesquiteModule.mesquiteTrunk.openFileCommand);
 				openItem.setShortcut(openShortcut);
 				newMenu.add(openItem);
+				boolean enableRecent = false;
+				MesquiteSubmenu openRecentSubmenu = MesquiteSubmenu.getSubmenu("Open Recent", newMenu, 
+						MesquiteModule.mesquiteTrunk);
+				newMenu.add(openRecentSubmenu);
+				ListableVector recents = MesquiteTrunk.getRecentFiles();
+				for (int i = 0; i<recents.size(); i++) {
+					MesquiteFile recent = (MesquiteFile)recents.elementAt(i);
+					MesquiteFile currentFile = MesquiteTrunk.getProjectList().findFile(recent.getPath());
+					if (currentFile == null) {
+						enableRecent = true;
+						openRecentSubmenu.add(new MesquiteMenuItem(recent.getFileName(), MesquiteModule.mesquiteTrunk,
+							MesquiteModule.mesquiteTrunk.openRecentCommand, ParseUtil.tokenize(recent.getPath())));
+					}
+				}
+				openRecentSubmenu.setEnabled(enableRecent);
 				// MesquiteMenuItem importItem = new MesquiteMenuItem("Open Special NEXUS
 				// File...", MesquiteModule.mesquiteTrunk,
 				// MesquiteModule.mesquiteTrunk.openSpecialNEXUSCommand);

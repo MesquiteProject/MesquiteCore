@@ -44,7 +44,20 @@ public class Projects implements HNode {
 	public int getNumProjects(){
 		return projects.size();
 	}
-	
+	public MesquiteFile findFile(String targetPath) {
+		if (targetPath == null)
+			return null;
+		for (int i=0; i<projects.size(); i++){
+			MesquiteProject project =(MesquiteProject)projects.elementAt(i);
+			for (int k=0; k<project.getNumberLinkedFiles(); k++) {
+				MesquiteFile file = project.getFile(k);
+				if (targetPath.equals(file.getPath()))
+						return file;
+			}
+		}
+		return null;
+		
+	}
 	/** Get p'th project. */
 	public MesquiteProject getProject(int p) {
 		if (p>=0 && p<projects.size())

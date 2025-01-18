@@ -386,6 +386,7 @@ public class Mesquite extends MesquiteTrunk
 				setMesquiteDirectoryPath();
 			}
 		}
+		readRecordOfRecentFiles();
 		if (verboseStartup) System.out.println("main init 7");
 
 
@@ -1955,6 +1956,13 @@ public class Mesquite extends MesquiteTrunk
 			return openOrImportFileHandler( path,  completeArguments, null);
 
 		}
+		else if (checker.compare(this.getClass(), "Opens recent file.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file]", commandName, "openRecent")) {
+			String path = ParseUtil.getFirstToken(arguments, stringPos);
+			Debugg.println("TOKEN " + path);
+			String completeArguments = arguments;
+			return openOrImportFileHandler( path,  completeArguments, null);
+
+		}
 		else if (checker.compare(this.getClass(), "Opens file on web server.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[URL of file] - if parameter absent then presents user with dialog box to enter URL", commandName, "openURL")){
 			arguments = ParseUtil.getFirstToken(arguments, stringPos);
 			return openURLString(arguments);
@@ -2494,6 +2502,7 @@ public class Mesquite extends MesquiteTrunk
 		projects = new Projects();
 		mesquiteTrunk.newFileCommand = makeCommand("newProject",  mesquiteTrunk);
 		mesquiteTrunk.openFileCommand = makeCommand("openFile",  mesquiteTrunk);
+		mesquiteTrunk.openRecentCommand = makeCommand("openRecent",  mesquiteTrunk);
 		mesquiteTrunk.openURLCommand = makeCommand("openURL",  mesquiteTrunk);
 		//mesquiteTrunk.currentCommandCommand = makeCommand("currentCommand",  mesquiteTrunk);
 		//mesquiteTrunk.currentCommandCommand.setQueueBypass(true);

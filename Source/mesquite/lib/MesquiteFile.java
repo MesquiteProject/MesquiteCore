@@ -138,6 +138,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		getNextCommandStatusTimer = new MesquiteTimer();
 	}
+	public MesquiteFile(String directoryPath, String fileName) {
+		this();
+		this.directoryName = directoryPath;
+		this.fileName = fileName;
+	}
 	/*-------------------------------------------------------*/
 	public long getID(){
 		return id;
@@ -730,6 +735,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			if (getProject() != null)
 				getProject().refreshProjectWindow();
 		}
+		MesquiteTrunk.recentFileChange(this);
 	}
 	/*-------------------------------------------------------*/
 	/** for use by save as; user puts file.  Returns true if new location successfuly found */
@@ -754,6 +760,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				if (getProject() != null)
 					getProject().refreshProjectWindow();
 			}
+			MesquiteTrunk.recentFileChange(this);
 			return true;
 		}
 		else {

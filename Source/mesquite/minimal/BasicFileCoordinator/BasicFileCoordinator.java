@@ -246,6 +246,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		addModuleMenuItems(MesquiteTrunk.analysisMenu, makeCommand("newAssistant",  this), FileAssistantA.class);
 
 		broadcastProjectEstablished(this);
+		MesquiteTrunk.recentFileRecord(p.getHomeFile(), true);
+
 		p.refreshProjectWindow();
 		p.decrementProjectWindowSuppression();
 		return p;
