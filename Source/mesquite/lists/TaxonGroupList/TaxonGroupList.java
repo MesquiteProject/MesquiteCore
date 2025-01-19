@@ -39,10 +39,11 @@ public class TaxonGroupList extends ListModule {
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		addMenuItem("New Taxon Group Label...", MesquiteModule.makeCommand("newGroup",  this));
+		addMenuItem("New Group Label...", MesquiteModule.makeCommand("newGroup",  this));
 		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
-		addMenuItem("Import Taxon Group Labels from File...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
-		addMenuItem("Export Taxon Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));
+		addMenuItem("Import Group Labels (from NEXUS File)...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
+		addMenuItem("[ORIGINAL] Import Group Labels from File...", MesquiteModule.makeCommand("importLabelsOLD",  manageTaxPart)); //Debugg.println delete?
+		addMenuItem("[ORIGINAL] Export Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));//Debugg.println delete?
 		return true;
 	}
 	public boolean showing(Object obj){
@@ -98,7 +99,7 @@ public class TaxonGroupList extends ListModule {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Creates a new group label", "[]", commandName, "newGroup")) {
 			MesquiteFile file = getProject().chooseFile( "Select file to which to add the new group label"); 
-			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, file);   
+			TaxaGroup group= TaxaGroup.createNewTaxonGroup(this, file);   
 			if (group!=null){
 				((TaxonGroupListWindow)getModuleWindow()).getTable().repaint(); 
 				parametersChanged();

@@ -31,6 +31,9 @@ public class TaxaStringsSet extends ObjectSpecsSet implements TaxaSpecsSet { //s
 		super(name, numTaxa, "");
 		this.taxa = taxa;
 	}
+	public TaxaStringsSet(String name, int numTaxa, Object defaultProperty){ //not to be used except for reflection, eg getOrMakeCurrentSpecsSet
+		super(name, numTaxa, "");
+	}
 	public String getTypeName(){
 		return typeName;
 	}
@@ -57,6 +60,9 @@ public class TaxaStringsSet extends ObjectSpecsSet implements TaxaSpecsSet { //s
 	/*.................................................................................................................*/
 	public Taxa getTaxa(){
 		return taxa;
+	}
+	public void setTaxa(Taxa taxa){
+		this.taxa = taxa;
 	}
  	/*.................................................................................................................*/
 	/** Add num taxa just after "starting" (filling with default values)  */

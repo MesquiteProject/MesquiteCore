@@ -25,11 +25,14 @@ import mesquite.lib.SpecsSet;
 /**A TaxaPartition is a specification of which property applies to each taxon (TAXAPARTITION in NEXUS file format).
   */
 
-public class TaxaPartition  extends ObjectSpecsSet {
+public class TaxaPartition  extends ObjectSpecsSet implements TaxaSpecsSet {
 	Taxa taxa;
 	public TaxaPartition (String name, int numTaxa, Object defaultProperty, Taxa taxa) {
 		super(name, numTaxa, defaultProperty);
 		this.taxa = taxa;
+	}
+	public TaxaPartition (String name, int numTaxa, Object defaultProperty) { //not to be used except e.g. in reflection to make this without knowing what kind of ObjectSpecsSet it is
+		super(name, numTaxa, defaultProperty);
 	}
 	public SpecsSet cloneSpecsSet(){
 		if (taxa==null)
@@ -42,10 +45,13 @@ public class TaxaPartition  extends ObjectSpecsSet {
 	public SpecsSet makeSpecsSet(AssociableWithSpecs parent, int numParts){
 		if (!(parent instanceof Taxa))
 			return null;
-		return new TaxaPartition("Inclusion Set", numParts, getDefaultProperty(), (Taxa)parent);
+		return new TaxaPartition("Partition", numParts, getDefaultProperty(), (Taxa)parent);
 	}
 	public Taxa getTaxa(){
 		return taxa;
+	}
+	public void setTaxa(Taxa taxa){
+		this.taxa = taxa;
 	}
 	public String getTypeName(){
 		return "Taxa partition";

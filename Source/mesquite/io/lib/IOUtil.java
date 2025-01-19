@@ -215,6 +215,7 @@ public class IOUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
+	/* See ZephyrUtil for more Phylip tree reading */
 	public static TreeVector readPhylipTrees (MesquiteModule mb, MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String treeNameBase, boolean addTreesToFile) {
 		return readPhylipTrees (mb, mf, file, line, progIndicator, taxa, permitTaxaBlockEnlarge, namer, treeNameBase, addTreesToFile, false);
 	}

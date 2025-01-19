@@ -2044,7 +2044,6 @@ public class Mesquite extends MesquiteTrunk
 			reportMemory();
 		}
 		else if (checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "quit") || checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "exit")) {
-			//CommandRecord.checkThread = false; //suppress thread checking
 			if (startedAsLibrary){
 				logln("Mesquite is being used by another program.  You should avoid asking Mesquite to quit, and instead let the other program ask Mesquite to quit");
 				return null;
@@ -2067,6 +2066,7 @@ public class Mesquite extends MesquiteTrunk
 				//CommandRecord.checkThread = true;
 				System.out.println("Quit cancelled");
 				attemptingToQuit = false;
+				MesquiteTrunk.startupShutdownThread = null;
 				return null;
 			}
 			if (debugMode){

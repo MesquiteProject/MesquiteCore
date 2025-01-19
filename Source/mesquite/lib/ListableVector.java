@@ -151,6 +151,17 @@ public class ListableVector extends FileElement implements StringLister, Command
 		}
 		return temp;
 	}
+	public static String getList(Listable[] array){
+		String temp = "";
+		for (int i=0; i<array.length; i++) {
+			Object obj = array[i];
+			if (obj instanceof SpecialListName)
+				temp += ((SpecialListName)obj).getListName() + StringUtil.lineEnding();
+			else
+				temp += ((Listable)obj).getName() + StringUtil.lineEnding();
+		}
+		return temp;
+	}
 	public String nameOfElementAt(int i){
 		Object obj = elementAt(i);
 		if (obj == null)

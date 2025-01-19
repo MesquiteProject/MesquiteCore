@@ -22,13 +22,13 @@ import mesquite.lib.ui.MesquiteSymbol;
 /* ======================================================================== */
 /** DOCUMENT.*/
 public class GroupLabel extends FileElement {
-	Color color = null;
-	MesquiteSymbol symbol = null;
+	protected Color color = null;
+	protected MesquiteSymbol symbol = null;
 	int id;
-	boolean colorWasSet = false;
-	boolean symbolWasSet = false;
-	boolean recentlyModified = false;
-	boolean visible = true;
+	protected boolean colorWasSet = false;
+	protected boolean symbolWasSet = false;
+	protected boolean recentlyModified = false;
+	protected boolean visible = true;
 	static int numLabels;
 	static {
 		numLabels = 0;
@@ -48,6 +48,7 @@ public class GroupLabel extends FileElement {
 		 */
 		color = null;
 	}
+	
 	public static boolean supportsSymbols() {
 		return false;
 	}

@@ -16,6 +16,8 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.taxa.TaxaPartition;
+
 /*==========================  Mesquite Basic Class Library    ==========================*/
 /*===  the basic classes used by the trunk of Mesquite and available to the modules
 
@@ -337,7 +339,8 @@ public abstract class AssociableWithSpecs extends Associable {
   		}
   		return 0;
   	}
- 	/*.................................................................................................................*/
+
+	/*.................................................................................................................*/
  	/** returns the given specs set from the list of specs sets*/
   	public SpecsSet getCurrentSpecsSet(Class type){  
   		if (type!=null && specsVectors!=null) {

@@ -197,7 +197,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		if (tree instanceof AdjustableTree) {
 			((AdjustableTree)tree).standardize(outgroupSet, false);
 		}
-		showIntermediatesWindow();
+		prepareIntermediatesWindow();
 		if (tree != null && tWindowMaker != null){ 
 			tWindowMaker.setTree(tree);
 			MesquiteWindow w = tWindowMaker.getModuleWindow();
@@ -232,7 +232,9 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		if (listened != null)
 			listened.notifyListeners(this, new Notification(MesquiteListener.NEW_RESULTS));
 	}
-	public MesquiteWindow showIntermediatesWindow(){
+	
+//This is used for just single current tree; a different system is used in ZephyrRunner for consensus trees
+	public MesquiteWindow prepareIntermediatesWindow(){
 		if (tWindowMaker == null) {
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
 			String commands = getExtraTreeWindowCommands(false, MesquiteLong.unassigned);

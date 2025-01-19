@@ -27,6 +27,9 @@ public abstract class TaxaBitsSet extends BitsSpecsSet implements TaxaSpecsSet {
 		super(name, numTaxa);
 		this.taxa = taxa;
 	}
+	public TaxaBitsSet(String name, int numTaxa){  //not to be used except for reflection, e.g getOrMakeCurrentSpecsSet
+		super(name, numTaxa);
+	}
 	public String getTypeName(){
 		return "Taxa bits set";
 	}
@@ -34,7 +37,10 @@ public abstract class TaxaBitsSet extends BitsSpecsSet implements TaxaSpecsSet {
 	public Taxa getTaxa(){
 		return taxa;
 	}
- 	/*.................................................................................................................*/
+	public void setTaxa(Taxa taxa){
+		this.taxa = taxa;
+	}
+	/*.................................................................................................................*/
 	/** Add num taxa just after "starting" (filling with default values)  */
   	public boolean addParts(int starting, int num){  
 		setDirty(true);

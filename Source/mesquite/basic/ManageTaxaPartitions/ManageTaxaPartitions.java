@@ -15,11 +15,10 @@ package mesquite.basic.ManageTaxaPartitions;
 /*~~  */
 
 import java.util.*;
+
 import java.awt.*;
 
 import mesquite.lib.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.characters.CharacterPartition;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
@@ -30,7 +29,6 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lib.ui.SymbolsVector;
 import mesquite.lists.lib.GroupDialog;
-import mesquite.lists.lib.TaxaListPartitionUtil;
 
 /** Manages specifications of partitions of taxa, including reading and writing from NEXUS file. */
 public class ManageTaxaPartitions extends SpecsSetManager {
@@ -225,7 +223,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		else if (checker.compare(this.getClass(), "Shows list of the taxon groups", null, commandName, "showTaxonGroups")) {
 			return showTaxonGroupList(null, listOfTaxonGroupsName);
 		}
-		else if (checker.compare(this.getClass(), "Imports group labels from a NEXUS file.", "[]", commandName, "importLabels")) {
+		else if (checker.compare(this.getClass(), "Imports group labels from a text file.", "[]", commandName, "importLabelsOLD")) {
 			MesquiteString directoryName = new MesquiteString();
 			MesquiteString fileName = new MesquiteString();
 			MesquiteFile.openFileDialog("Please select a text file that has the taxon group labels, as exported previously.", directoryName, fileName);
@@ -240,7 +238,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				}
 			}
 		}
-		else if (checker.compare(this.getClass(), "Exports group labels to a text file for later import.", "[]", commandName, "exportLabels")) {
+		else if (checker.compare(this.getClass(), "Exports group labels/colors to a text file for later import.", "[]", commandName, "exportLabels")) {
 			TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 			if (groups == null)
 				return null;
@@ -250,16 +248,51 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				s += getGroupLabelNexusCommand(group) + "\n";
 			}
 			if (!StringUtil.blank(s)){
-				MesquiteFile.putFileContentsQuery("Exported file of group labels, for later import into other files", s, true);
+				MesquiteFile.putFileContentsQuery("Exported file of group labels/colors, for later import into other files", s, true);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Imports partitions and group labels from a NEXUS file for a taxon block.", "[taxa block]", commandName, "importPartitions")) {
+		else if (checker.compare(this.getClass(), "Imports group labels from a NEXUS file.", null, commandName, "importLabels")) {
+			MesquiteProject proj = getProject();
+			TaxaGroupVector groupsVector = (TaxaGroupVector)proj.getFileElement(TaxaGroupVector.class, 0);
+			Listable[] oldGroups = groupsVector.getElementArray();
+			MesquiteString directoryName = new MesquiteString();
+			MesquiteString fileName = new MesquiteString();
+			MesquiteFile.openFileDialog("Please select a NEXUS file that has the same taxa block partitioned into groups.", directoryName, fileName);
+			if (!fileName.isBlank()){
+				MesquiteFile fileToRead = new MesquiteFile(directoryName.getValue(), fileName.getValue());
+				proj.addFile(fileToRead);
+				fileToRead.setProject(proj);
+				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
+				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent", new String[]{"LABELS"});
+
+				Listable[] combinedGroups = groupsVector.getElementArray();
+				for (int i = 0; i<combinedGroups.length; i++){
+					TaxaGroup group = (TaxaGroup)combinedGroups[i];
+					if (ObjectArray.indexOf(oldGroups, group)<0){//a new object, though may have same name as old
+						int whichCurrentByName = ListableVector.indexOfByName(oldGroups, group.getName());
+						if (whichCurrentByName>=0){
+							TaxaGroup oldGroup = (TaxaGroup)oldGroups[whichCurrentByName];
+							oldGroup.equalizeAs(group);
+						}
+						else { //just move it over
+							TaxaGroup newGroup = new TaxaGroup();
+							newGroup.equalizeAs(group);
+							newGroup.addToFile(getProject().getHomeFile(), proj, null);
+						}
+					}
+				}
+
+				//***************
+				proj.getCoordinatorModule().closeFile(fileToRead, true);
+
+			}
+		}
+		else if (checker.compare(this.getClass(), "Imports groups and group labels from a NEXUS file for a taxon block.", "[taxa block]", commandName, "importPartitions")) {
 			MesquiteProject proj = getProject();
 			TaxaGroupVector groupsVector = (TaxaGroupVector)proj.getFileElement(TaxaGroupVector.class, 0);
 			Listable[] currentGroups = groupsVector.getElementArray();
 			ListableVector newlyAddedGroups = new ListableVector();
 			Taxa taxaToReceive = proj.getTaxa(checker.getFile(), parser.getFirstToken(arguments));
-			Debugg.println("taxaToReceive " +taxaToReceive + " args " + arguments);
 			if (taxaToReceive != null){
 				Listable[] oldTaxas = proj.getTaxas().getElementArray();
 				MesquiteString directoryName = new MesquiteString();
@@ -274,12 +307,12 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					Listable[] currentTaxas = proj.getTaxas().getElementArray();
 					if (currentTaxas.length == oldTaxas.length)
 						return null;
-					TaxaPartition currentPartition = (TaxaPartition)taxaToReceive.getCurrentSpecsSet(TaxaPartition.class);
-					if (currentPartition==null){
+					TaxaPartition currentPartition = (TaxaPartition)taxaToReceive.getOrMakeCurrentSpecsSet(TaxaPartition.class);
+					/*if (currentPartition==null){
 						currentPartition= new TaxaPartition("Partition", taxaToReceive.getNumTaxa(), null, taxaToReceive);
 						currentPartition.addToFile(taxaToReceive.getFile(), getProject(), findElementManager(TaxaPartition.class));
 						taxaToReceive.setCurrentSpecsSet(currentPartition, TaxaPartition.class);
-					}
+					}*/
 
 					//***************
 					//cycle through looking for taxon names that match and pulling across info
@@ -298,23 +331,18 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 											TaxaGroup recGroupOfSameName = null;
 											int groupFoundInNew = newlyAddedGroups.indexOfByName(sourceGroup.getName());
 											int groupFoundInOld = ListableVector.indexOfByName(currentGroups, sourceGroup.getName());
-
-											if (groupFoundInOld>=0){ //group of same name already exists in this file; therefore just copy over its colours etc.
+											if (groupFoundInOld>=0) //group of same name already exists in this file; therefore just copy over its colours etc.
 												recGroupOfSameName = (TaxaGroup)currentGroups[groupFoundInOld];
-											}
-											else if (groupFoundInNew>=0){ //group of same name already exists in this file; therefore just copy over its colours etc.
+											else if (groupFoundInNew>=0) //group of same name already exists in this file; therefore just copy over its colours etc.
 												recGroupOfSameName = (TaxaGroup)newlyAddedGroups.elementAt(groupFoundInNew);
-											}
 											else {
 												recGroupOfSameName = new TaxaGroup();
 												newlyAddedGroups.addElement(recGroupOfSameName, false);
 												recGroupOfSameName.addToFile(taxaToReceive.getFile(), proj, null);
-												recGroupOfSameName.setName(sourceGroup.getName());
 											}
 											//ZQ how to bring over symbol?
-											recGroupOfSameName.setColor(sourceGroup.getColor());
-											recGroupOfSameName.setSymbol(sourceGroup.getSymbol());
-											
+											recGroupOfSameName.equalizeAs(sourceGroup);
+
 											TaxaGroup receivingGroup = (TaxaGroup)currentPartition.getProperty(recipientTaxon);
 											if (receivingGroup != recGroupOfSameName)
 												currentPartition.setProperty(recGroupOfSameName, recipientTaxon);
@@ -327,8 +355,9 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					}
 					//***************
 					proj.getCoordinatorModule().closeFile(fileToRead, true);
-				
+
 				}
+				taxaToReceive.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
 			}
 		}
 		else

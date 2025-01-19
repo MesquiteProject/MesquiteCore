@@ -48,7 +48,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC;
 	MesquiteMenuItemSpec mCreatec, mScs, mStc, mRssc, mLine, nNG, mLine2, ms2, mCreateTaxac;
-	MesquiteMenuItemSpec ie1, ie2, ie3, ie4;
+	MesquiteMenuItemSpec ie1, ie2, ie3, ie4, ie5;
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -71,12 +71,12 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			boolean changed=false;
 			if (group == null && StringUtil.blank(name))
 				return;
-			TaxaPartition partition = (TaxaPartition) taxa.getCurrentSpecsSet(TaxaPartition.class);
-			if (partition==null){
+			TaxaPartition partition = (TaxaPartition) taxa.getOrMakeCurrentSpecsSet(TaxaPartition.class);
+		/*	if (partition==null){
 				partition= new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);
 				partition.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaPartition.class));
 				taxa.setCurrentSpecsSet(partition, TaxaPartition.class);
-			}
+			}*/
 			if (group == null){
 				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 				Object obj = groups.getElement(name);
@@ -280,7 +280,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Creates a new group for use in taxon partitions", null, commandName, "newGroup")) {
-			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, taxa.getFile());
+			TaxaGroup group= TaxaGroup.createNewTaxonGroup(this, taxa.getFile());
 			if (group!=null)
 				setGroup(group, parser.getFirstToken(group.getName()), null, true);
 			return group;
@@ -398,6 +398,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		deleteMenuItem(ie2);
 		deleteMenuItem(ie3);
 		deleteMenuItem(ie4);
+		deleteMenuItem(ie5);
 		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 
@@ -409,10 +410,11 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 		addMenuSeparator();
 		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
-		ie1 = addMenuItem("Import Partition and Groups from NEXUS file...", new MesquiteCommand("importPartitions",  "#" + taxa.getAssignedID(), manageTaxPart));
-		ie2 = addMenuItem("Import Taxon Group Labels from File...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
-		ie3 = addMenuItem("Export Taxon Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));
-		ie4 = addMenuItem("Assign Colours Randomly to Colourless Groups", makeCommand("assignColorsRandomly", this));
+		ie1 = addMenuItem("Import Groups (from NEXUS file)...", new MesquiteCommand("importPartitions",  "#" + taxa.getAssignedID(), manageTaxPart));
+		ie2 = addMenuItem("Import Group Labels & Colors Only (from NEXUS File)...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
+		ie3 = addMenuItem("[ORIGINAL] Import Group Labels from File...", MesquiteModule.makeCommand("importLabelsOLD",  manageTaxPart)); //Debugg.println delete?
+		ie4 = addMenuItem("[ORIGINAL] Export Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));//Debugg.println delete?
+		ie5 = addMenuItem("Assign Colours Randomly to Colourless Groups", makeCommand("assignColorsRandomly", this));
 
 		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));

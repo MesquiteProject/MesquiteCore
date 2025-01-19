@@ -35,6 +35,7 @@ public interface TaxaSpecsSet extends Listable {
 	public boolean swapParts(int first, int second, boolean notify);
 	
 	public Taxa getTaxa();
+	public void setTaxa(Taxa taxa);
 }
 
 
