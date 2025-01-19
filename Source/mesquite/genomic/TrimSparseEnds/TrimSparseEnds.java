@@ -21,6 +21,9 @@ import mesquite.molec.lib.TrimSitesByFlagger;
 
 /* ======================================================================== */
 public class TrimSparseEnds extends TrimSitesByFlagger {
+	public boolean loadModule() { //delete in favour of FlagGappyRegions, which can now go from ends?
+		return false;
+	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		flaggerTask = (MatrixFlagger)hireNamedEmployee(MatrixFlaggerForTrimming.class, "#FlagSparseEnds");

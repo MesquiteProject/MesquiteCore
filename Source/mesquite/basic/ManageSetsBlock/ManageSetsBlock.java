@@ -69,7 +69,7 @@ public class ManageSetsBlock extends FileInit {
 					sB.processLinkCTCommand( s, getProject(), parser);
 				}
 				else
-					readUnrecognizedCommand(file, sB, "SETS", block, commandName, s, blockComments, comment);
+					readUnrecognizedCommand(file, sB, "SETS", block, commandName, s, blockComments, comment,  fileReadingArguments);
 			}
 		}
 		return sB;

@@ -63,7 +63,7 @@ public class ManageCharModelsBlock extends FileInit {
 		while (!StringUtil.blank(s=block.getNextFileCommand(comment))) {
 			String commandName = parser.getFirstToken(s);
 			if (!commandName.equalsIgnoreCase("BEGIN") && !commandName.equalsIgnoreCase("END") && !commandName.equalsIgnoreCase("ENDBLOCK"))
-				readUnrecognizedCommand(file, ab, "MESQUITECHARMODELS", block, commandName, s, blockComments, comment);
+				readUnrecognizedCommand(file, ab, "MESQUITECHARMODELS", block, commandName, s, blockComments, comment,  fileReadingArguments);
 		}
 		numBlocks++;
 		return ab; 

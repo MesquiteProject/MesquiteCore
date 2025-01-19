@@ -72,7 +72,7 @@ public class ManageCodonsBlock extends FileInit {
 					sB.processLinkCTCommand( s, getProject(), parser);
 				}
 				else
-					readUnrecognizedCommand(file, sB, "CODONS", block, commandName, s, blockComments, null);
+					readUnrecognizedCommand(file, sB, "CODONS", block, commandName, s, blockComments, null,  fileReadingArguments);
 		}
 		return sB;
 	}

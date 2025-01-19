@@ -19,6 +19,7 @@ import mesquite.lists.lib.*;
 import java.util.*;
 import java.awt.*;
 
+import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
@@ -47,6 +48,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC;
 	MesquiteMenuItemSpec mCreatec, mScs, mStc, mRssc, mLine, nNG, mLine2, ms2, mCreateTaxac;
+	MesquiteMenuItemSpec ie1, ie2, ie3, ie4;
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -129,13 +131,13 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 
 				if (changed)
 					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???
-							parametersChanged();
+				parametersChanged();
 
 			}
 		}
 	}
-	
-	
+
+
 	/*.................................................................................................................*/
 	public  static TaxaGroup createNewTaxonGroup(MesquiteModule module, MesquiteFile file) {
 		String n = "Untitled Group";
@@ -165,7 +167,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		}
 		return group;
 	}
-	
+
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
@@ -204,7 +206,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 					return;
 			}
 			int c = ((ListModule)employer).getMyColumn(this);
-			
+
 			boolean anySelected= table.anyCellsInColumnSelectedAnyWay(c);;
 
 			for (int it=0; it<taxa.getNumTaxa(); it++) {
@@ -223,13 +225,13 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 					}
 					setGroup(group, name, taxonInGroup, false);
 					taxonInGroup.clearAllBits();
-					
+
 				}
 			}
 			taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
 		}	
 	}
-	
+
 
 	/*.................................................................................................................*/
 
@@ -282,6 +284,24 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			if (group!=null)
 				setGroup(group, parser.getFirstToken(group.getName()), null, true);
 			return group;
+		}
+		else if (checker.compare(this.getClass(), "To any groups that have not color, assign color randomly", null, commandName, "assignColorsRandomly")) {
+			if (taxa!=null){
+				TaxaPartition partition = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
+				if (partition!=null) {
+					Color randomColor = null;
+					for (int it = 0; it< taxa.getNumTaxa(); it++){
+						TaxaGroup group = (TaxaGroup)partition.getProperty(it);
+						if (group != null && group.getColor() == null){
+							randomColor = ColorDistribution.getRandomColor(randomColor);
+							group.setColor(randomColor);
+						}
+					}
+
+					partition.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
+					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
+				}
+			}
 		}
 		else if (checker.compare(this.getClass(), "Stores the current taxa partition as a TAXAPARTITION", null, commandName, "storeCurrent")) {
 			if (taxa!=null){
@@ -374,6 +394,10 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		deleteMenuItem(ms2);
 		deleteMenuItem(mEGC);
 		deleteMenuItem(nNG);
+		deleteMenuItem(ie1);
+		deleteMenuItem(ie2);
+		deleteMenuItem(ie3);
+		deleteMenuItem(ie4);
 		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 
@@ -383,6 +407,12 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		nNG = addMenuItem("New Group...", makeCommand("newGroup",  this));
 		mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
+		addMenuSeparator();
+		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
+		ie1 = addMenuItem("Import Partition and Groups from NEXUS file...", new MesquiteCommand("importPartitions",  "#" + taxa.getAssignedID(), manageTaxPart));
+		ie2 = addMenuItem("Import Taxon Group Labels from File...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
+		ie3 = addMenuItem("Export Taxon Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));
+		ie4 = addMenuItem("Assign Colours Randomly to Colourless Groups", makeCommand("assignColorsRandomly", this));
 
 		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
@@ -483,15 +513,15 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			if (part != null) {
 				int max = 12;
 				for (int it = 0; it<taxa.getNumTaxa(); it++) {
-				TaxaGroup tg = part.getTaxaGroup(it);
-				if (tg != null) {
-					String name = tg.getName();
-					if (StringUtil.notEmpty(name)) {
-						 if (name.length()>max)
-							 max = name.length();
+					TaxaGroup tg = part.getTaxaGroup(it);
+					if (tg != null) {
+						String name = tg.getName();
+						if (StringUtil.notEmpty(name)) {
+							if (name.length()>max)
+								max = name.length();
+						}
 					}
 				}
-			}
 				if (max>50)
 					max = 60;
 				return "888888888 888888888 888888888 888888888 888888888 888888888 ".substring(0, max);

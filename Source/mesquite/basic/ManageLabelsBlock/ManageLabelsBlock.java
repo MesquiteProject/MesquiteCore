@@ -67,32 +67,12 @@ public class ManageLabelsBlock extends FileInit {
 					sB.processLinkCTCommand( s, getProject(), parser);
 				}
 				else
-					readUnrecognizedCommand(file, sB, "LABELS", block, commandName, s, blockComments, null);
+					readUnrecognizedCommand(file, sB, "LABELS", block, commandName, s, blockComments, null,  fileReadingArguments);
 		}
 			numBlocks++;
 		return sB;
 	}
-/*
-	private boolean findReaderForCommand (MesquiteFile mf, String blockName, String commandName, String command, MesquiteString comment, LabelsBlock sB) {
-		Enumeration enumeration=mf.getProject().getCoordinatorModule().getEmployeeVector().elements(); // WHY ARE ONLY EMPLOYEES OF FILE COORDINATOR USED????
-		MesquiteModule employeeModule;
-		MesquiteModuleInfo mbi;
-		while (enumeration.hasMoreElements()){
-			Object obj = enumeration.nextElement();
-			employeeModule = (MesquiteModule)obj;
-			mbi = employeeModule.getModuleInfo();
-			if (mbi==null)
-				MesquiteMessage.println("no employees of ownerModule!!!");
-			else if (mbi.nexusCommandTest!=null) {
-				if (mbi.nexusCommandTest.readsWritesCommand(blockName, commandName, command)) {
-					if (employeeModule.readNexusCommand(mf, blockName, command, comment))
-						return true;
-				}
-			}
-		}
-		sB.storeUnrecognizedCommand(command);
-		return false;
-	}
+
 	/*.................................................................................................................*/
 	public String getLabelsBlock(MesquiteFile file, LabelsBlock sB){
 		String contents = employeesGetCommands(getProject().ownerModule, file);

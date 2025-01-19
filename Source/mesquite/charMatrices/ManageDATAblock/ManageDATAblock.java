@@ -69,7 +69,6 @@ public class ManageDATAblock extends MesquiteModule {
 		 boolean lookForEnd = MatrixFileParser.READ_MATRIX_DIRECT_FROM_FILE;
 		 boolean endReached = false; 
 		while (!(lookForEnd && endReached) && !commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
-			 if (MatrixFileParser.verbose) Debugg.println("####DATA### commandName " + commandName);
 			if (commandName.equalsIgnoreCase("DIMENSIONS")) { 
 				parser.setString(commandParser.getNextCommand()); 
 				int numTaxa = MesquiteInteger.fromString(parser.getTokenNumber(4));
@@ -150,7 +149,7 @@ public class ManageDATAblock extends MesquiteModule {
 				if (data !=null && data.getMatrixManager()!=null)
 					success = data.getMatrixManager().processCommand(data, commandName, commandString);
 				if (!success && b != null) 
-					readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
+					readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null,  fileReadingArguments);
 			}
 			else {
 				commandParser.getNextCommand(); //eating up the full command

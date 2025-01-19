@@ -175,7 +175,7 @@ public class ManageTaxaSets extends SpecsSetManager {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("SETS") || blockName.equalsIgnoreCase("ASSUMPTIONS")) {
 			MesquiteInteger startCharT = new MesquiteInteger(0);
 
@@ -204,7 +204,6 @@ public class ManageTaxaSets extends SpecsSetManager {
 					else {
 						token = ParseUtil.getToken(command, startCharT); //=
 						token = (ParseUtil.getToken(command, startCharT)); // name of taxa block
-						Debugg.println("#########TAXA BLOCK NAME2" + token);
 						taxa = file.getProject().getTaxaLastFirst(token);
 						token = ParseUtil.getToken(command, startCharT); //)
 					}

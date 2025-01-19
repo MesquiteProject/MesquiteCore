@@ -175,55 +175,37 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	public MenuOwner() {
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** DOCUMENT */
 	protected void setModule(MesquiteModule mb) {
 		module = mb;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** DOCUMENT */
 	public void setModuleWindow(MesquiteWindow w) {
 		window = w;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** DOCUMENT */
 	public MesquiteWindow getModuleWindow() {
 		return window;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** DOCUMENT */
 	public boolean isDoomed() {
 		return doomed;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** DOCUMENT */
 	public void doom() {
 		doomed = true;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** DOCUMENT */
 	protected void disposeMenuSpecifications() {
 		if (menuItemsSpecs != null) {
@@ -264,10 +246,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return false;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** This resets the menu bar in which the MesquiteModule menu items reside */
 	public void resetContainingMenuBar() {
 
@@ -293,10 +272,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** This requests that the Windows menu of ALL menu bars be recomposed. */
 	public static final void resetAllWindowsMenus() {
 		if (menuSuppression == 0) {
@@ -319,10 +295,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	static int allMenuBarRests = 0;
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** This requests that ALL menu bars be recomposed. */
 	public static final void resetAllMenuBars() {
 		if (!MesquiteThread.okToResetUI())
@@ -365,19 +338,13 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	/* for debugging */
 	public static boolean reportMenuReset = false;
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Increments suppression level of menus; if 0 then menus can be reset. */
 	public static final void incrementMenuResetSuppression() {
 		incrementMenuResetSuppression(1);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Increments suppression level of menus; if 0 then menus can be reset. */
 	public static final void incrementMenuResetSuppression(int amount) {
 
@@ -389,10 +356,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Decrements suppression level of menus to zero; then menus can be reset. */
 	public static final void zeroMenuResetSuppression() {
 		menuSuppression = 1;
@@ -402,19 +366,13 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	static boolean warnAlreadyZero = true;
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Decrements suppression level of menus; if 0 then menus can be reset. */
 	public static final void decrementMenuResetSuppression() {
 		decrementMenuResetSuppression(1);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Decrements suppression level of menus; if 0 then menus can be reset. */
 	public static final void decrementMenuResetSuppression(int amount) {
 		if (menuSuppression == 0) {
@@ -458,10 +416,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		menuSuppression = r;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * This indicates what menu is to be used (e.g., employer sets it). All of its
 	 * otherwise unplaced menu items, and those of its employees, will be placed
@@ -477,10 +432,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			menu.addGuestModule(module);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	boolean usingGuestMenu = false;
 
 	/** A module requests of this module to have its menu items as guests. */
@@ -488,10 +440,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		this.usingGuestMenu = usingGuestMenu;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** A module requests of this module to have its menu items as guests. */
 	public final void requestGuestMenuPlacement(MesquiteModule mb) {
 		if (moduleMenuSpec != null) {
@@ -500,10 +449,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * This requests a main menu for the MesquiteModule. All of its otherwise
 	 * unplaced menu items, and those of its employees, will be placed there.
@@ -515,29 +461,20 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return moduleMenuSpec = new MesquiteMenuSpec(null, menuName, module);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** This returns the main menu for the MesquiteModule. */
 	public MesquiteMenuSpec getMenu() {
 		return moduleMenuSpec;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** This requests the main menu for the MesquiteModule be destroyed. */
 	public final void destroyMenu() {
 		if (moduleMenuSpec != null)
 			moduleMenuSpec = null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** This requests an auxiliary menu for the MesquiteModule */
 	public final MesquiteMenuSpec addAuxiliaryMenu(String menuName) {
 		if (auxiliaryMenus == null)
@@ -547,10 +484,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return newMenu;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Finds a menu of given name from employers */
 	public final MesquiteMenuSpec findMenuAmongEmployers(String menuName) {
 		if (menuName == null)
@@ -568,29 +502,20 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** DOCUMENT */
 	public void checkMISVector() {
 		if (menuItemsSpecs == null)
 			menuItemsSpecs = new MenuItemsSpecsVector();
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Sets whether module's menu items are to appear in menubar or not. */
 	public final void setUseMenubar(boolean useMenuBar) {
 		this.useMenuBar = useMenuBar;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * Returns whether module's menu items are to appear in menubar or not. Does not
 	 * apply to menu items in special menus (file, edit, windows, help). Menu items
@@ -606,10 +531,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return true;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Shows module's menus in popup. */
 	public final void showPopUp(Container cont, int x, int y) {
 		if (cont == null || !cont.isVisible())
@@ -627,10 +549,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		// cont.remove(popUp); //todo: this is zapping the menu on linux immediately
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * Called during Mesquite startup when the list of available modules is being
 	 * constructed; is mined for information about menu commands. When
@@ -648,20 +567,14 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	public void defineMenus(boolean accumulating) {
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/** Adds a dividing line to the module's containing menu. */
 	public final MesquiteMenuItemSpec addMenuSeparator() {
 		return addMenuItem("-", null);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/**
 	 * Adds a dividing line to the module's containing menu.
@@ -672,10 +585,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return addMenuSeparator();
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/**
 	 * Adds a menu item to the module's containing menu. When selected, the given
@@ -686,10 +596,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/**
 	 * Adds a menu item to the given menu. When selected, the given command will be
@@ -701,10 +608,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/** Adds a menu item to the given menu.. */
 	public final MesquiteMenuItemSpec addMenuItem(MesquiteMenuSpec whichMenu, MesquiteMenuItemSpec item) {
@@ -713,10 +617,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (item);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * Adds a series of menu items, one for each of the modules belonging to the
 	 * given dutyClass, to a menu. This differs from the similar addSubMenu in that
@@ -734,10 +635,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/**
 	 * Adds a submenu of the given name. This submenu will not have a command
@@ -749,10 +647,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/**
 	 * Adds a submenu of the given name. What to fill the submenu with SHOULD BE
@@ -771,10 +666,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/**
 	 * Adds a submenu of the given name with all the modules belonging to the given
@@ -793,10 +685,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * Adds a submenu of the given name with all the items in the ListableVector
 	 * listed as items. The submenu created will be automatically formulated, and
@@ -814,10 +703,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * Adds a submenu of the given name with all the items in the String array
 	 * listed as items. The submenu created will be automatically formulated, and
@@ -835,20 +721,14 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/** Adds a dividing line to the given submenu of the given menu. */
 	public final MesquiteMenuItemSpec addLineToSubmenu(MesquiteMenuSpec whichMenu, MesquiteSubmenuSpec submenu) {
 		return addItemToSubmenu(whichMenu, submenu, "-", null);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/**
 	 * Adds a menu item to the given submenu of the given menu. When selected, the
@@ -862,10 +742,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/**
 	 * Adds a menu item to the given submenu of the given menu. When selected, the
@@ -879,10 +756,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/* ����� */
 	/**
 	 * Adds a menu item to the given submenu of the given menu. When selected, the
@@ -897,10 +771,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (item);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Add check menu item. Checked according to state of passed MesquiteBoolean */
 	public final MesquiteCMenuItemSpec addCheckMenuItem(MesquiteMenuSpec whichMenu, String itemName,
 			MesquiteCommand command, MesquiteBoolean checkBoolean) {
@@ -909,20 +780,14 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmis);
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	public int getNumMenuItemSpecs() {
 		if (menuItemsSpecs == null)
 			return 0;
 		return menuItemsSpecs.size();
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Delete indicated menu item. */
 	public final void deleteItemsOfMenu(MesquiteMenuSpec whichMenu) {
 		if (menuItemsSpecs != null) {
@@ -943,10 +808,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Delete indicated menu item. */
 	public final void deleteAllMenuItems() {
 		if (menuItemsSpecs != null) {
@@ -956,10 +818,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/** Delete indicated menu item. */
 	public final void deleteMenuItem(MesquiteMenuItemSpec whichMenuItem) {
 		if (whichMenuItem != null) {
@@ -972,10 +831,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * Return the specific menu that had been assigned to contain its items (as
 	 * opposed to the default menu to contain them).
@@ -991,10 +847,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			return null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * This composes the menu bar for a MesquiteModule. It is only called for
 	 * modules that own windows (i.e., a frame that can own a menu bar). It adds
@@ -1351,10 +1204,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	/**
 	 * This recomposes the Windows menu for a MesquiteModule. It is only called for
 	 * modules that own windows (i.e., a frame that can own a menu bar).
@@ -1540,10 +1390,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return wMenu;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	boolean menuEmpty(Menu menu) {
 		if (menu.getItemCount() == 0)
 			return true;
@@ -1560,10 +1407,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final MesquiteMenu composeMenuAncestors(MesquiteMenuBar menuBar) {
 		MesquiteMenu putHere;
 		if (moduleMenuSpec != null) {
@@ -1584,10 +1428,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final MesquitePopup composeMenuAncestors(Vector menuBar) {
 		MesquitePopup putHere;
 		if (moduleMenuSpec != null) {
@@ -1608,10 +1449,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final boolean inMenuBar(Menu menu) {
 		if (menu == null)
 			return false;
@@ -1631,10 +1469,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return true;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void composeMenuDescendants(Menu menu) {
 		if (doomed)
 			;// MesquiteMessage.println("Error: composing menu of module that has been turned
@@ -1658,10 +1493,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void composeMenusOfDescendants(Vector menuBar) {
 		if (doomed)
 			;// MesquiteMessage.println("Error: composing menu of module that has been turned
@@ -1701,10 +1533,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void composeMenusOfDescendants(MesquiteMenuBar menuBar) { /// TO BE DELETED
 		if (doomed)
 			;// MesquiteMessage.println("Error: composing menu of module that has been turned
@@ -1744,10 +1573,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	int addListableToMenu(int currentCount, Menu menu, MesquiteMenuItemSpec mmi, Object ccc,
 			QualificationsTest qualificationsTest, MesquiteInteger j, int priorityLevel) {
 		if (mmi == null)
@@ -1816,10 +1642,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return count;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final boolean addListsToMenu(MesquiteMenuItemSpec mmi, Menu menu) {
 		if (mmi == null)
 			return false;
@@ -1948,10 +1771,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return false;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final MesquiteSubmenu addSubmenuIfAbsent(Menu containingMenu, MesquiteSubmenuSpec msms) {
 		if (msms == null)
 			return null;
@@ -1972,10 +1792,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final MesquiteSubmenu addSubmenuWithListsIfAbsent(Menu containingMenu, MesquiteSubmenuSpec msms) {
 		if (msms == null)
 			return null;
@@ -2010,10 +1827,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				|| ((CompatibilityChecker) mbi).isCompatible(mmi.getListableFilter(), null, null));
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	int fillSubmenuWithListable(int currentCount, Menu menu, MesquiteSubmenu submenu, MesquiteSubmenuSpec msms,
 			Object ccc, QualificationsTest qualificationsTest, MesquiteInteger j, int priorityLevel) {
 		if (msms == null)
@@ -2112,10 +1926,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			m[i] = null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final boolean fillSubmenu(Menu menu, MesquiteSubmenu submenu, MesquiteSubmenuSpec msms, boolean needToAddSubmenu) {
 		if (msms == null)
 			return false;
@@ -2572,10 +2383,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void addFilesToSubmenu(MesquiteSubmenu submenu, MesquiteProject proj, boolean onlyIfLocal,
 			MesquiteCommand command) {
 		Enumeration enumeration = proj.getFiles().elements();
@@ -2592,10 +2400,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	private final MesquiteMenu composeFileMenu(MesquiteMenuBar menuBar, MesquiteMenuSpec menuSpec,
 			MesquiteWindow whichWindow) {
 		if (menuSpec != null) {
@@ -2651,11 +2456,22 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				ListableVector recents = MesquiteTrunk.getRecentFiles();
 				for (int i = 0; i<recents.size(); i++) {
 					MesquiteFile recent = (MesquiteFile)recents.elementAt(i);
-					if (MesquiteFile.fileExists(recent.getPath())){	
+					String path = recent.getPath();
+					if (MesquiteFile.fileExists(path)){	
 						enableRecent = true;
-						openRecentSubmenu.add(new MesquiteMenuItem(recent.getFileName(), MesquiteModule.mesquiteTrunk,
-								MesquiteModule.mesquiteTrunk.openRecentCommand, ParseUtil.tokenize(recent.getPath())));
+						String name = recent.getFileName();
+						MesquiteFile currentFile = MesquiteTrunk.getProjectList().findFile(path);
+						if (currentFile != null)
+							name += "  [open]"; 
+						openRecentSubmenu.add(new MesquiteMenuItem(name, MesquiteModule.mesquiteTrunk,
+								MesquiteModule.mesquiteTrunk.openRecentCommand, ParseUtil.tokenize(path)));
 					}
+				}
+				if (enableRecent) {
+					openRecentSubmenu.add(new MesquiteMenuItem("-", MesquiteModule.mesquiteTrunk,
+							null));
+				openRecentSubmenu.add(new MesquiteMenuItem("Clear Recent", MesquiteModule.mesquiteTrunk,
+							MesquiteModule.mesquiteTrunk.clearRecentCommand));
 				}
 				openRecentSubmenu.setEnabled(enableRecent);
 				// MesquiteMenuItem importItem = new MesquiteMenuItem("Open Special NEXUS
@@ -2845,10 +2661,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/* .................................................................................................................*/
 	public void setUndoMenuItemEnabled(boolean b) {
 		if (undoMenuItem != null) {
 			undoEnabled = b;
@@ -2862,10 +2675,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	private final MesquiteMenu composeEditMenu(MesquiteMenuBar menuBar, MesquiteMenuSpec menuSpec,
 			MesquiteWindow whichWindow) {
 		if (menuSpec != null) {
@@ -3077,10 +2887,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void composeSpecificMenuAncestors(MesquiteMenuSpec menuSpec, Menu menu) {
 		if (module.getEmployer() != null) {
 			module.getEmployer().composeSpecificMenuAncestors(menuSpec, menu);
@@ -3089,10 +2896,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void composeSpecificMenuAncestorsByZone(MesquiteMenuSpec menuSpec, MesquiteMenu menu, int zone) {
 		if (module.getEmployer() != null) {
 			module.getEmployer().composeSpecificMenuAncestorsByZone(menuSpec, menu, zone);
@@ -3101,10 +2905,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void composeSpecificMenuDescendantsByZone(MesquiteMenuSpec menuSpec, MesquiteMenu menu, int zone) {
 		addMySpecificMenuItemsByZone(menuSpec, menu, zone);
 		ListableVector L = module.getEmployeeVector();
@@ -3119,10 +2920,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void composeSpecificMenuDescendants(MesquiteMenuSpec menuSpec, Menu menu) {
 		addMySpecificMenuItems(menuSpec, menu);
 		ListableVector L = module.getEmployeeVector();
@@ -3137,10 +2935,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void addCurrentWindows(MesquiteMenu menu) {
 		// other windows
 		Menu currentWindows = new MesquiteMenu("Current Windows");
@@ -3186,10 +2981,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void addMySpecificMenuItemsByZone(MesquiteMenuSpec menuSpec, MesquiteMenu menu, int zone) {
 		if (menuItemsSpecs != null) {
 			for (int i = 0; menuItemsSpecs != null && i < menuItemsSpecs.size(); i++) {
@@ -3238,10 +3030,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final void addMySpecificMenuItems(MesquiteMenuSpec menuSpec, Menu menu) {
 		if (menuItemsSpecs != null) {
 			for (int i = 0; menuItemsSpecs != null && i < menuItemsSpecs.size(); i++) {
@@ -3257,8 +3046,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 				if (mmi.getMenu() == menuSpec || getContainingMenuSpec() == menuSpec) {
 					if (InterfaceManager.isFilterable(menu) && (hiddenStatus = InterfaceManager.isHiddenMenuItem(mmi,
-							mmi.getName(), arg, mmi.command, null)) == InterfaceManager.HIDDEN)
-						;
+							mmi.getName(), arg, mmi.command, null)) == InterfaceManager.HIDDEN);
 					else if (mmi instanceof MesquiteSubmenuSpec) { // add submenu
 						MesquiteSubmenu submenu = addSubmenuWithListsIfAbsent(menu, ((MesquiteSubmenuSpec) mmi));
 						submenu.setHiddenStatus(hiddenStatus);
@@ -3291,10 +3079,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final MesquiteMenu findMenu(MesquiteMenuBar menuBar, String name) {
 		if (menuItemsSpecs != null) {
 			for (int i = 0; i < menuBar.getMenuCount(); i++) {
@@ -3307,10 +3092,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return null;
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	final MesquiteSubmenu findSubmenu(Menu menu, MesquiteSubmenuSpec smSpec) {
 
 		if (smSpec != null && menu != null) {
@@ -3363,10 +3145,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	void surveyDescendents(Menu menu, MenuItem[] specsOrder, MesquiteInteger count) {
 		surveySpecs(menu, specsOrder, count, menuItemsSpecs);
 		ListableVector L = module.getEmployeeVector();
@@ -3381,10 +3160,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		}
 	}
 
-	/*
-	 * .............................................................................
-	 * ....................................
-	 */
+	/*............................................................................. */
 	void surveyAncestors(Menu menu, MenuItem[] specsOrder, MesquiteInteger count) {
 		if (moduleMenuSpec != null && menu instanceof MesquiteMenu
 				&& ((MesquiteMenu) menu).getSpecification() == moduleMenuSpec) {

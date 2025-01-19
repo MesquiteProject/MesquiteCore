@@ -40,8 +40,9 @@ public class TaxonGroupList extends ListModule {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("New Taxon Group Label...", MesquiteModule.makeCommand("newGroup",  this));
-		addMenuItem("Import Taxon Group Labels from File...", MesquiteModule.makeCommand("importLabels",  this));
-		addMenuItem("Export Taxon Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  this));
+		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
+		addMenuItem("Import Taxon Group Labels from File...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
+		addMenuItem("Export Taxon Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));
 		return true;
 	}
 	public boolean showing(Object obj){
@@ -104,7 +105,7 @@ public class TaxonGroupList extends ListModule {
 			}
 			return group;
 		}
-		else if (checker.compare(this.getClass(), "Imports group labels from a NEXUS file.", "[]", commandName, "importLabels")) {
+		/*else if (checker.compare(this.getClass(), "Imports group labels from a NEXUS file.", "[]", commandName, "importLabels")) {
 			MesquiteString directoryName = new MesquiteString();
 			MesquiteString fileName = new MesquiteString();
 			MesquiteFile.openFileDialog("Please select a text file that has the taxon group labels, as exported previously.", directoryName, fileName);
@@ -115,8 +116,6 @@ public class TaxonGroupList extends ListModule {
 					for (int i = 0; i<lines.length; i++){
 						String command = lines[i]; //"	TAXAGROUPLABEL Amycoida COLOR = (RGB 1.0 0.62745098 0.06666667) ;";
 						boolean success = manageTaxPart.readNexusCommand(null, null, "LABELS", command, null);
-
-						//Debugg.println("import labels" + success);
 					}
 				}
 			}
@@ -133,9 +132,10 @@ public class TaxonGroupList extends ListModule {
 				
 			}
 		}
+		*/
 		else
 			return  super.doCommand(commandName, arguments, checker);
-		return null;
+		//return null;
 	}
 	/*.................................................................................................................*/
 	/** passes which object changed*

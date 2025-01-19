@@ -75,7 +75,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "17 January 2025";
+		return "18 January 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -93,7 +93,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1025;  
+		return 1026;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -2024,11 +2024,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Read the nexus block passed (passed only to modules claiming they can read it). */
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments) {return null;} 
 	/** Read the nexus command in the given block (passed only to modules claiming they can read it).  Returns true if successful*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){
 		return false;
 	}
 	/*.................................................................................................................*/
-	private boolean findReaderForCommand (MesquiteFile mf, NexusBlock nBlock, String blockName, String commandName, String command, MesquiteString comment, MesquiteModule mb) {
+	private boolean findReaderForCommand (MesquiteFile mf, NexusBlock nBlock, String blockName, String commandName, String command, MesquiteString comment, MesquiteModule mb, String fileReadingArguments) {
 		if (mb ==null || mb.getEmployeeVector()== null)
 			return false;
 		Enumeration enumeration=mb.getEmployeeVector().elements(); 
@@ -2042,7 +2042,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				System.out.println("no employees of ownerModule!!!");
 			else if (mbi.nexusCommandTest!=null) {
 				if (mbi.nexusCommandTest.readsWritesCommand(blockName, commandName, command)) {
-					if (employeeModule.readNexusCommand(mf, nBlock, blockName, command, comment))
+					if (employeeModule.readNexusCommand(mf, nBlock, blockName, command, comment,  fileReadingArguments))
 						return true;
 				}
 			}
@@ -2052,7 +2052,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		while (enumeration.hasMoreElements()){
 			Object obj = enumeration.nextElement();
 			MesquiteModule employeeModule = (MesquiteModule)obj;
-			if (findReaderForCommand(mf, nBlock, blockName, commandName, command, comment, employeeModule)) {
+			if (findReaderForCommand(mf, nBlock, blockName, commandName, command, comment, employeeModule, fileReadingArguments)) {
 				return true;
 			}
 		}
@@ -2061,8 +2061,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** Read the unrecognized command, first by looking for a module reading it, second by storing it as unrecognized within the nexus block. */
-	public void readUnrecognizedCommand(MesquiteFile file, NexusBlock nBlock, String blockName, FileBlock block, String commandName, String command, StringBuffer blockComments, MesquiteString comment){
-		if (!findReaderForCommand(file, nBlock, blockName, commandName, command, comment, getFileCoordinator())) {
+	public void readUnrecognizedCommand(MesquiteFile file, NexusBlock nBlock, String blockName, FileBlock block, String commandName, String command, StringBuffer blockComments, MesquiteString comment, String fileReadingArguments){
+		if (!findReaderForCommand(file, nBlock, blockName, commandName, command, comment, getFileCoordinator(),  fileReadingArguments)) {
 			if (")".equals(commandName) || "null".equals(commandName)) //to catch an only file reading/writing problem
 				file.setOpenAsUntitled("There appears to be a problem in the file format.  Illegal NEXUS command (\"" + commandName + "\", in " + blockName + " block). ");
 			else if (";".equals(commandName)) //to catch an only file reading/writing problem

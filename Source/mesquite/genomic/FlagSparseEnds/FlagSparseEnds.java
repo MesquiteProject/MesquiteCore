@@ -49,7 +49,9 @@ public class FlagSparseEnds extends MatrixFlaggerForTrimmingSites implements Ite
 	double propThreshold = MesquiteDouble.unassigned;
 	boolean useProportion = true;
 	boolean queried = false;
-
+public boolean loadModule() { //delete in favour of FlagGappyRegions, which can now go from ends?
+	return false;
+}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();

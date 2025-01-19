@@ -164,7 +164,7 @@ public class ManageDistributionBlock extends MesquiteModule {
 					}
 			}
 			else if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) {
-					readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
+					readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null,  fileReadingArguments);
 			}
 		}
 		return b;

@@ -1826,7 +1826,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					}	
 				}
 				else
-					readUnrecognizedCommand(file, t, name, block, commandName, s, blockComments, comment);
+					readUnrecognizedCommand(file, t, name, block, commandName, s, blockComments, comment,  fileReadingArguments);
 			}
 			/*else { 
 				String st = "A block of trees has been read for which no corresponding block of taxa has been found, and no block of taxa could be created for it.";

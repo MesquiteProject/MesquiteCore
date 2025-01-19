@@ -283,7 +283,7 @@ public class ManageCharModels extends FileInit implements ElementManager {
 		return readerTask;
 	}
 	/*.................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("ASSUMPTIONS") || blockName.equalsIgnoreCase("MESQUITECHARMODELS")) {
 			MesquiteInteger startCharT = new MesquiteInteger(0);
 			int format;

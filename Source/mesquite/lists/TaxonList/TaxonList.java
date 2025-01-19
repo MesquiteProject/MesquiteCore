@@ -118,10 +118,10 @@ public class TaxonList extends ListModule {
 			/* removed as default v. 2. 01; returned for v. 2. 5 */
 			if (!MesquiteThread.isScripting()) {
 				TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#TaxonListCurrPartition"));
-			if (assistant!= null){
-				((TaxonListWindow)window).addListAssistant(assistant);
-				assistant.setUseMenubar(false);
-			}
+				if (assistant!= null){
+					((TaxonListWindow)window).addListAssistant(assistant);
+					assistant.setUseMenubar(false);
+				}
 			}
 			/*	*/
 			resetContainingMenuBar();

@@ -211,10 +211,11 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 
 
 	/*.................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (appropriateBlockForReading(blockName)) { 
 			MesquiteInteger startCharT = new MesquiteInteger(0);
 
+			boolean noWarnMissingReferent = parser.hasFileReadingArgument(fileReadingArguments, "noWarnMissingReferent");
 			String commandName = ParseUtil.getToken(command, startCharT);
 			if (commandName == null)
 				return false;
@@ -264,7 +265,8 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 				}
 
 				if (data==null) {
-					MesquiteMessage.discreetNotifyUser("Sorry, a " + lowerCaseTypeName() + " could not be read because its associated data set was not found.  This can occur if you are fusing files, or if you have edited files by hand or with another program.  Another possible cause is that your current Mesquite configuration doesn't include packages to read matrices of that type.  Try restarting Mesquite after selecting \"Use all installed packages\" in the Activate/Deactivate submenu of the File menu.\n\nCommand: " + command);
+					if (!noWarnMissingReferent)
+						MesquiteMessage.discreetNotifyUser("Sorry, a " + lowerCaseTypeName() + " could not be read because its associated data set was not found.  This can occur if you are fusing files, or if you have edited files by hand or with another program.  Another possible cause is that your current Mesquite configuration doesn't include packages to read matrices of that type.  Try restarting Mesquite after selecting \"Use all installed packages\" in the Activate/Deactivate submenu of the File menu.\n\nCommand: " + command);
 					return false;
 				}
 				if (data.getSuppressSpecssetReading())

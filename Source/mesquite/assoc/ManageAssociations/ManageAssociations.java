@@ -275,7 +275,6 @@ public class ManageAssociations extends AssociationsManager {
 	private Object editInTaxonList(TaxaAssociation toBeEdited, boolean useFirst){
 		if (toBeEdited == null)
 			return null;
-		TaxaManager manageTaxa = (TaxaManager)findElementManager(Taxa.class);
 		int whichTaxa = 0;
 		if (!useFirst && !MesquiteThread.isScripting()){
 			String f = toBeEdited.getTaxa(0).getName();
@@ -297,10 +296,13 @@ public class ManageAssociations extends AssociationsManager {
 			else
 				whichTaxa = 1;
 		}
+		boolean success = showAssociationInTaxonList(toBeEdited.getTaxa(whichTaxa), toBeEdited);
+		if (!success)
+			return null;
+		
+		/**
+		TaxaManager manageTaxa = (TaxaManager)findElementManager(Taxa.class);
 		MesquiteModule list = manageTaxa.getListOfTaxaModule(toBeEdited.getTaxa(whichTaxa), true);
-
-
-
 		if (list == null) 
 			return null;
 		//here ask each list imployee if they have this assocaition shown; otherwise finish script
@@ -330,7 +332,44 @@ public class ManageAssociations extends AssociationsManager {
 
 		p.execute(list, commands, pos, "", false);
 		MesquiteThread.setCurrentCommandRecord(prevR);
+		/**/
 		return toBeEdited;
+	}
+	
+	/*.................................................................................................................*/
+	public boolean showAssociationInTaxonList(Taxa taxa, TaxaAssociation association){
+		TaxaManager manageTaxa = (TaxaManager)findElementManager(Taxa.class);
+		MesquiteModule list = manageTaxa.getListOfTaxaModule(taxa, true);
+		if (list == null) 
+			return false;
+		//here ask each list imployee if they have this assocaition shown; otherwise finish script
+		EmployeeVector e = list.getEmployeeVector();
+		if (e != null){
+			for (int i = 0; i< e.size(); i++){
+				if (e.elementAt(i) instanceof mesquite.assoc.TaxonListAssoc.TaxonListAssoc){
+					mesquite.assoc.TaxonListAssoc.TaxonListAssoc t = (mesquite.assoc.TaxonListAssoc.TaxonListAssoc)e.elementAt(i);
+					if (t.isShowing(association))
+						return true;
+				}
+			}
+		}
+		Puppeteer p = new Puppeteer(this);
+		MesquiteInteger pos = new MesquiteInteger(0);
+
+		String commands =  "getWindow; tell It; setSize 680 400; newAssistant  #mesquite.assoc.TaxonListAssoc.TaxonListAssoc; tell It;";
+		commands +=  "getEmployee #mesquite.assoc.StoredAssociations.StoredAssociations; tell It; setCurrentAssociationID ";
+		//here put number of this taxa assoc
+		commands +=  association.getID();
+		commands +=  "; endTell;";
+		commands +=  "endTell; endTell;";
+		pos.setValue(0);
+		CommandRecord cRecord = new CommandRecord(true);
+		CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
+		MesquiteThread.setCurrentCommandRecord(cRecord);
+
+		p.execute(list, commands, pos, "", false);
+		MesquiteThread.setCurrentCommandRecord(prevR);
+		return true;
 	}
 	/*.................................................................................................................*/
 	private Object edit(AssociationsBlock toBeEdited){
@@ -362,9 +401,11 @@ public class ManageAssociations extends AssociationsManager {
 			ObjectContainer popTaxaContainer = new ObjectContainer();
 			TaxaAssociation association = makerModule.makePopulationsAndAssociation(specimensTaxa, popTaxaContainer);
 			//popTaxaContainer is not used, but it will contain the newly made taxa block
-
-		
+			
 			fireEmployee(makerModule);
+			if (association != null){
+				showAssociationInTaxonList(specimensTaxa, association);
+			}
 			return association;
 		}
 		return null;
@@ -550,10 +591,10 @@ public class ManageAssociations extends AssociationsManager {
 		boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 		if (fuse)
 			return null;
-		return processText(file, name, block.toString(), block, null, blockComments);
+		return processText(file, name, block.toString(), block, null, blockComments,  fileReadingArguments);
 	}
 	/*.................................................................................................................*/
-	public NexusBlock processText(MesquiteFile file, String name, String blockAsString, FileBlock block, NexusBlock current, StringBuffer blockComments){
+	public NexusBlock processText(MesquiteFile file, String name, String blockAsString, FileBlock block, NexusBlock current, StringBuffer blockComments, String  fileReadingArguments){
 		Parser commandParser = new Parser();
 		commandParser.setString(blockAsString);
 		MesquiteLong startCharC = new MesquiteLong(0);
@@ -661,7 +702,7 @@ public class ManageAssociations extends AssociationsManager {
 				}
 			}
 			else if (current!=null && !(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) 
-				readUnrecognizedCommand(file, current, name, block, commandName, s, blockComments, null);
+				readUnrecognizedCommand(file, current, name, block, commandName, s, blockComments, null,  fileReadingArguments);
 		}
 		//a.setAssociation(association);
 		return current;
@@ -750,7 +791,7 @@ class AssociationsBlock extends NexusBlockEditableRaw {
 	}
 	/** DOCUMENT */
 	public void setText(String n){
-		owner.processText(getFile(), getName(), n, null, this, null);
+		owner.processText(getFile(), getName(), n, null, this, null, null);
 		association.notifyListeners(this, new Notification(MesquiteListener.UNKNOWN));
 	}
 

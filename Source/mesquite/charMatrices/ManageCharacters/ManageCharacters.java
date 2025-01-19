@@ -1634,7 +1634,7 @@ public class ManageCharacters extends CharactersManager {
 	
 	NameReference origIndexRef = NameReference.getNameReference("OrigIndex");
 	 /*...................................................................................................................*/
-	 public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	 public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		 if (blockName.equalsIgnoreCase("NOTES")) {
 			 boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 			 MesquiteProject project = file.getProject();
@@ -1974,7 +1974,6 @@ public class ManageCharacters extends CharactersManager {
 	 /*.................................................................................................................*/
 	 public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		 CharacterData data=null;
-		 if (MatrixFileParser.verbose) Debugg.println("####### Read Nexus Block");
 		 MatrixFileParser commandParser = new MatrixFileParser(block);
 
 		// MesquiteLong startCharC = new MesquiteLong(0);
@@ -2000,9 +1999,7 @@ public class ManageCharacters extends CharactersManager {
 		 String commandName = null;
 		 boolean lookForEnd = MatrixFileParser.READ_MATRIX_DIRECT_FROM_FILE;
 		 boolean endReached = false; 
-		 if (MatrixFileParser.verbose) Debugg.println("####### Read Nexus Block2");
 		 while (!(lookForEnd && endReached) && !commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
-			 if (MatrixFileParser.verbose) Debugg.println("####### commandName " + commandName);
 			 CommandRecord.tick("Reading " + commandName);
 		if (commandName.equalsIgnoreCase("DIMENSIONS")) {
 				 String com = commandParser.getNextCommand();
@@ -2182,8 +2179,7 @@ public class ManageCharacters extends CharactersManager {
 				 if (data !=null && data.getMatrixManager()!=null)
 					 success = data.getMatrixManager().processCommand(data, commandName, commandString);
 				 if (!success && b != null) {
-					 Debugg.println("filePOS%%%%%%%% parser[" + commandParser.getParserAtCurrentPosition().getBuffer() + "] pos " + commandParser.getParserAtCurrentPosition().getPosition() + " filePos " + block.getFilePosition());
-					 readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
+					 readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null, fileReadingArguments);
 				 }
 			 }
 			 else {

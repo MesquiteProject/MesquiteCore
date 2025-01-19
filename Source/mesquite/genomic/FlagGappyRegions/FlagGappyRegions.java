@@ -22,6 +22,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
@@ -42,12 +44,14 @@ import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
+import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.RadioButtons;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
-public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements ActionListener, ItemListener {
+public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements ActionListener, ItemListener, TextListener {
 
 	/** TODO?
 
@@ -163,28 +167,31 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 	IntegerField gB, sNT;
 	DoubleField pgBField;
 	Checkbox specifNumCB, ignoreDatalessCB;
+	SingleLineTextField paramsInfo;
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Sparse Regions Filter",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-
-		pgSField = dialog.addDoubleField("Maximum permitted proportion of gaps (above which site is considered too gappy)", siteGappinessThreshold, 4);
+		dialog.addLabel("This selects regions with high levels of gaps.");
 		String s = "<b>Sparse Regions filter</b> selects regions of an alignment with high levels of gaps. "
-				+ "A region (of at least a certain length) is declared sparse if its proportion of gappy sites is above a threshold. A site is considered gappy if its porportion of gaps is above a threshold."
+				+ "A <b>region</b> (of at least a certain length) is declared sparse if its proportion of gappy sites is above a threshold. A <b>site</b> is considered gappy if its porportion of gaps is above a threshold."
 				+ " A sparse region is considered to end when there is a boundary of enough non-gappy sites in a row."
-				+ " You can choose to select sparse regions throughout the aligment, or only the terminal sparse regions (\"ends only\" — from the start or end inward).<hr>" 
+				+ " You can choose to select sparse regions throughout the aligment, or only the terminal sparse regions (\"ends only\" — from the start or end inward).<hr><p>" 
 				+"The choice of how to count taxa is relevant especially for data with multiple loci. A locus might have data for only some taxa."
 				+ " This could result in different countings of the proportion of gaps depending on whether the trimming is done on individual files for each locus (because each file will know only"
 				+" about the number of taxa that have data for that locus) versus in the compiled file (which will know about all of the taxa).";
-
-
-
-
-		fEnds = dialog.addCheckBox("Choose ends only (inward, up to the first non-sparse region)", fromEnds);
-		gBS = dialog.addIntegerField("Minimum length of region assessed", gappyBlockSize, 4);
-		gB = dialog.addIntegerField("Stretch of non-gappy sites that resets gappy region", gappyBoundary, 4);
-		pgBField = dialog.addDoubleField("Proportion of gappy sites for region to be judged as gappy", blockGappinessThreshold, 4);
-		dialog.addHorizontalLine(1);
-		dialog.addBlankLine();
+		
+		pgSField = dialog.addDoubleField("Site gappiness threshold (max. permitted proportion of gaps in site) [-st] ", siteGappinessThreshold, 4);
+		pgBField = dialog.addDoubleField("Block sparseness threshold (region is sparse if it has this proportion of gappy sites) [-bt]", blockGappinessThreshold, 4);
+		gBS = dialog.addIntegerField("Block size (minimum length of region assessed) [-b]", gappyBlockSize, 4);
+		gB = dialog.addIntegerField("Boundary width (stretch of non-gappy sites that resets gappy region) [-w]", gappyBoundary, 4);
+		fEnds = dialog.addCheckBox("Choose ends only (inward, up to the first non-sparse region) [-e]", fromEnds);
+		pgSField.getTextField().addTextListener(this);
+		pgBField.getTextField().addTextListener(this);
+		gBS.getTextField().addTextListener(this);
+		gB.getTextField().addTextListener(this);
+		fEnds.addItemListener(this);
+		//dialog.addHorizontalLine(1);
+	//	dialog.addBlankLine();
 		if (getProject().isProcessDataFilesProject){
 			specifNumCB = dialog.addCheckBox("Assume specified total number of taxa (see Help button)", assumeSpecifiedNumber);
 			specifNumCB.addItemListener(this);
@@ -204,6 +211,11 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 		}
 		dialog.appendToHelpString(s);
 		dialog.addHorizontalLine(1);
+		paramsInfo = dialog.addTextField("Report parameters as:", "", 40);
+		paramsInfo.setEditable(false);
+		paramsInfo.setBackground(ColorTheme.getInterfaceBackgroundPale());
+		resetParamsInfo();
+
 		dialog.addBlankLine();
 		Button useDefaultsButton = null;
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
@@ -234,10 +246,19 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 		return (buttonPressed.getValue()==0);
 	}
 
+	void resetParamsInfo(){
+		
+		paramsInfo.setText(" -st " + MesquiteDouble.toString(pgSField.getValue()) + " -bt " + MesquiteDouble.toString(pgBField.getValue()) + " -b " + gBS.getValue() + " -w " + gB.getValue() + " -e " + fEnds.getState());
+	}
 	public void itemStateChanged(ItemEvent e) {
 		if (sNT != null)
 			sNT.setEnabled(specifNumCB.getState());
+		resetParamsInfo();
 
+	}
+	public void textValueChanged(TextEvent e) {
+		resetParamsInfo();
+		
 	}
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
@@ -254,6 +275,8 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 			gBS.setValue(gappyBlockSizeDEFAULT);
 			gB.setValue(gappyBoundaryDEFAULT);
 			pgBField.setValue(blockGappinessThresholdDEFAULT);
+			fEnds.setState(fromEndsDEFAULT);
+			resetParamsInfo();
 
 		} 
 	}
@@ -433,11 +456,15 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 			}
 
 
-			//From site 0
+			//From START (site 0) — whether or not going fromEnds
 			boolean startBlockFound = false;
 			boolean firstGappySiteFound = false;
+			//matrix edge starting with non-gappy can be subject to flagging, as long as it doesn't begin with a boundary-length nongappy stretch
 			for (int blockStart=0; blockStart<numChars && !(fromEnds && startBlockFound); blockStart++) { //let's look for gappy blocks
-				if (gappySite(blockStart)) { // possible start of gappy block
+				if (blockStart== 0 || gappySite(blockStart)) { // possible start of gappy block; matrix edge is allowed even if not gappy
+					int matrixEdge = 0;
+					if (blockStart==0) //because if this is an edge, need to start counting for boundary at this site itself, not next
+						matrixEdge = 1;
 					if (!firstGappySiteFound && fromEnds) { //this is the first gappy site; if fromEnds and we're already in long enough for a boundary to be counted, we are done!
 						if (blockStart >= gappyBoundary) {
 							startBlockFound = true;
@@ -446,7 +473,7 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 					}
 					firstGappySiteFound = true;
 					boolean boundaryFound = false;
-					for (int candidateNextBoundary = blockStart+1; candidateNextBoundary<numChars+1 && !boundaryFound; candidateNextBoundary++) {  // go ahead until next boundary reached
+					for (int candidateNextBoundary = blockStart+1-matrixEdge; candidateNextBoundary<numChars+1 && !boundaryFound; candidateNextBoundary++) {  // go ahead until next boundary reached
 						if (isGapBlockBoundary(candidateNextBoundary, true) || candidateNextBoundary == numChars-1) {
 							boundaryFound = true;
 							int blockEnd = candidateNextBoundary-1;
@@ -475,7 +502,10 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 				startBlockFound = false;
 				firstGappySiteFound = false;
 				for (int blockStart=numChars-1; blockStart>=0 && !(fromEnds && startBlockFound); blockStart--) { //let's look for gappy blocks
-					if (gappySite(blockStart)) { // possible start of gappy block
+					if (blockStart== numChars-1 || gappySite(blockStart)) { // possible start of gappy block; matrix edge is allowed even if not gappy
+						int matrixEdge = 0;
+						if (blockStart==numChars-1) //because if this is an edge, need to start counting for boundary at this site itself, not next
+							matrixEdge = 1;
 						if (!firstGappySiteFound && fromEnds) { //this is the first gappy site; if fromEnds and we're already in long enough for a boundary to be counted, we are done!
 							if (numChars-blockStart-1 >= gappyBoundary) {
 								startBlockFound = true;
@@ -484,7 +514,7 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 						}
 						firstGappySiteFound = true;
 						boolean boundaryFound = false;
-						for (int candidateNextBoundary = blockStart-1; candidateNextBoundary>-1 && !boundaryFound; candidateNextBoundary--) {  // go ahead until next boundary reached
+						for (int candidateNextBoundary = blockStart-1+matrixEdge; candidateNextBoundary>-1 && !boundaryFound; candidateNextBoundary--) {  // go ahead until next boundary reached
 							if (isGapBlockBoundary(candidateNextBoundary, false) || candidateNextBoundary == 0) {
 								boundaryFound = true;
 								int blockEnd = candidateNextBoundary+1;

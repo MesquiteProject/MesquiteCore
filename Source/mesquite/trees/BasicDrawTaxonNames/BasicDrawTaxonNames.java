@@ -1261,7 +1261,7 @@ class AnglePickerPanel extends MQPanel implements MouseListener, ActionListener 
 	public void mouseClicked(MouseEvent e) {
 		int cursorX = e.getX();
 		int cursorY = e.getY();
-
+		Debugg.println("mouseClicked  cursorX " + cursorX + " cursorY " + cursorY);
 		if (zeroTriangle.contains(cursorX, cursorY))
 			angle = 0.0;
 		else if (ninetyTriangle.contains(cursorX, cursorY))

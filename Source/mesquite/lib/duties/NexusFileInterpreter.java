@@ -34,6 +34,7 @@ public abstract class NexusFileInterpreter extends FileInterpreterI  {
 	public abstract NexusBlock findBlock(FileElement e);
 	/** finds the ith block of a given type and returns it raw.*/
 	public abstract FileBlock readOneBlock(MesquiteProject mf, MesquiteFile f, String blockType, int i);
+	public abstract void readFile(MesquiteProject mf, MesquiteFile mNF, String arguments, String[] justTheseBlocks) ;
 }
 
 

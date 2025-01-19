@@ -116,7 +116,7 @@ public class CharGroupList extends ListModule {
 					SpecsSetManager manageCharPart = (SpecsSetManager)findElementManager(CharacterPartition.class);
 					for (int i = 0; i<lines.length; i++){
 						String command = lines[i]; 
-						boolean success = manageCharPart.readNexusCommand(null, null, "LABELS", command, null);
+						boolean success = manageCharPart.readNexusCommand(null, null, "LABELS", command, null,  null);
 
 						//Debugg.println("import labels" + success);
 					}

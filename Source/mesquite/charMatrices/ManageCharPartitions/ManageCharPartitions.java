@@ -284,7 +284,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 		return s;
 	}
 	/*.................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("LABELS")) {
 			String commandName = parser.getFirstToken(command);
 			if ("CHARGROUPLABEL".equalsIgnoreCase(commandName)) {
@@ -295,7 +295,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			return false;
 		}
 		else 
-			return super.readNexusCommand(file, nBlock, blockName, command, comment);
+			return super.readNexusCommand(file, nBlock, blockName, command, comment,  fileReadingArguments);
 	}
 	
 	public String getGroupLabelNexusCommand(CharactersGroup cg){

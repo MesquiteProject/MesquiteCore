@@ -34,6 +34,8 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.SingleLineTextField;
+import mesquite.lists.TaxonList.TaxonList;
+import mesquite.lists.lib.TaxonListAssistant;
 
 /** The "vice president" of the Mesquite system (the MesquiteTrunk module "Mesquite" being the president).  One of these is hired to coordinate each project.
 Should actually be named ProjectCoordinator.*/
@@ -344,7 +346,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 							}
 							if (!showSubstantiveWindow){
 								showProjectWindow();
-								mTaxa.doCommand("showTaxa","0", CommandChecker.defaultChecker);
+								Object mb = (Object)mTaxa.doCommand("showTaxa","0", CommandChecker.defaultChecker);
+								if (mb instanceof TaxonList){
+									((TaxonList)mb).doCommand("newAssistant", "#TaxonListCurrPartition", CommandChecker.defaultChecker);
+								}
 							}
 
 						}

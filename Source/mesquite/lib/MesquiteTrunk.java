@@ -128,7 +128,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static MesquiteMenuSpec fileMenu, editMenu, charactersMenu, treesMenu, analysisMenu, windowsMenu, helpMenu, utilitiesMenu;  
 	public static MesquiteSubmenuSpec defaultsSubmenu, setupSubmenu;
 	/** Commands belonging to special menu items owned by the trunk of Mesquite.  */
-	public MesquiteCommand newFileCommand, openFileCommand,  openRecentCommand, openURLCommand, showLicenseCommand, resetMenusCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
+	public MesquiteCommand newFileCommand, openFileCommand,  openRecentCommand, clearRecentCommand, openURLCommand, showLicenseCommand, resetMenusCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
 	//public MesquiteCommand currentCommandCommand;
 	public MesquiteSubmenuSpec openExternalSMS;
 	/** True if MesquiteModule hiring and firing should be logged.*/
@@ -252,6 +252,15 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		}
 		MesquiteFile.putFileContents(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName, sb, false);
 	}
+	/** Save recent files */
+	public static void clearRecentFiles(boolean keepOpenFiles){
+		for (int i=recentFiles.size()-1; i>=0; i--) { //save in reverse order, so that most recent reappears on top
+			MesquiteFile stored = (MesquiteFile)recentFiles.elementAt(i);
+			if (MesquiteTrunk.getProjectList().findFile(stored.getPath())== null)
+				recentFiles.removeElementAt(i, false);
+		}
+		saveRecentFiles();
+	}
 	/** Read recent files */
 	public void readRecordOfRecentFiles(){
 		String[] rfs = MesquiteFile.getFileContentsAsStrings(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName);
@@ -259,8 +268,10 @@ public abstract class MesquiteTrunk extends MesquiteModule
 			return;
 		for (int i=0; i<rfs.length; i++) {
 			String[] rfstring = StringUtil.delimitedTokensToStrings(rfs[i], '\t');
-			MesquiteFile rf = new MesquiteFile(rfstring[0], rfstring[1]);
-			recentFileRecord(rf, false);
+			if (rfstring != null && rfstring.length>1) {
+				MesquiteFile rf = new MesquiteFile(rfstring[0], rfstring[1]);
+				recentFileRecord(rf, false);
+			}
 		}
 	}
 

@@ -26,6 +26,9 @@ public class SelectSparseEnds extends SelectSitesByFlagger {
 			return false;
 		return true;
 	}
+	public boolean loadModule() { //delete in favour of FlagGappyRegions, which can now go from ends?
+		return false;
+	}
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {

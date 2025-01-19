@@ -100,7 +100,7 @@ End;
 					b.processLinkCTCommand( s, getProject(), parser);
 				}
 				else
-					readUnrecognizedCommand(file, b, "NOTES", block, commandName, s, blockComments, comment);
+					readUnrecognizedCommand(file, b, "NOTES", block, commandName, s, blockComments, comment,  fileReadingArguments);
 			}
 		}
 		if (!nbw && file.notesBugWarn){

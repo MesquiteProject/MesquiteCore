@@ -605,6 +605,16 @@ public class ListableVector extends FileElement implements StringLister, Command
 		}
 		return -1;
 	}
+	public static int indexOfByName(Listable[] listables, String name){
+		if (name==null || listables == null)
+			return -1;
+		for (int i=0; i<listables.length; i++) {
+			Listable obj = listables[i];
+			if (name.equals(obj.getName()))
+				return i;
+		}
+		return -1;
+	}
 	public  int indexOfByName(String name){
 		if (name==null)
 			return -1;

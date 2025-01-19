@@ -68,7 +68,7 @@ public class ManageAssumptionsBlock extends FileInit {
 					ab.setOptionsCommand(s);
 				}
 				else 
-					readUnrecognizedCommand(file, ab, "ASSUMPTIONS", block, commandName, s, blockComments, comment);
+					readUnrecognizedCommand(file, ab, "ASSUMPTIONS", block, commandName, s, blockComments, comment,  fileReadingArguments);
 			}
 		}
 		numBlocks++;
