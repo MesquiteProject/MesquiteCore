@@ -79,10 +79,10 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Create containing taxa based on list in file",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		String helpString = "New master taxa (e.g., populations or containing taxa) will be created based upon a column in a tab-delimited text file.  "
-				+ "In particular, the contained taxa (e.g., specimens or gene copies) should be listed in the first column of the file, and the names of the master taxa in a later column.   "
-				+ "There should be one row at the top that contains the titles for each column.  There can be more than one column of potential master taxa names.  "
-				+ "If two contained taxa have the same name in the later column, they will be assigned to the same master taxon";
+		String helpString = "New containing taxa (e.g., populations) will be created based upon a column in a tab-delimited text file.  "
+				+ "In particular, the contained taxa (e.g., specimens or gene copies) should be listed in the first column of the file, and the names of the populations in a later column.   "
+				+ "There should be one row at the top that contains the titles for each column.  There can be more than one column of potential population names.  "
+				+ "If two contained taxa have the same name in the later column, they will be assigned to the same population";
 		
 		dialog.appendToHelpString(helpString);
 

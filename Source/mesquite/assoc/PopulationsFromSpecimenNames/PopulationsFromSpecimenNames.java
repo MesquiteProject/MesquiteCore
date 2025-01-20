@@ -28,8 +28,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		if (nameParser==null)
-			nameParser = new NameParser(this, "taxon");
+		nameParser = new NameParser(this, "specimen");
 		loadPreferences();
 		return true;
 	}
@@ -64,13 +63,17 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 			String name="";
 			Bits taxonProcessed = new Bits(taxa.getNumTaxa());
 			Bits taxonInGroup = new Bits(taxa.getNumTaxa());
-			if (nameParser==null)
-				nameParser = new NameParser(this, "taxon");
+			if (taxa.getNumTaxa()>=3)
+				nameParser.setExamples(new String[]{taxa.getTaxonName(0), taxa.getTaxonName(taxa.getNumTaxa()/2), taxa.getTaxonName(taxa.getNumTaxa()-1)});
+			else if (taxa.getNumTaxa()>0)
+				nameParser.setExamples(new String[]{taxa.getTaxonName(0)});
 			if (!MesquiteThread.isScripting()) {
-				String helpString = "New master taxa (i.e., populations or containing taxa) will be created based upon a portion of the taxon names of the contained taxon.  In particular, the name of each contained taxon will be reduced "
-						+ "by removing a piece from the start and/or end; that reduced name will become the name of the new master taxon.  If two contained taxa have the same"
-						+ " reduced name, they will be assigned to the same master taxon";
-				if (nameParser.queryOptions("Options for Creating Master Taxa", "Master taxon names will be extracted from taxon names.", helpString)) {
+
+				String helpString = "New containing taxa (i.e., populations or containing taxa) will be created based on a portion of the taxon names of the contained taxon (e.g., specimen or gene copy)." 
+						+ " In particular, the name of each specimen will be reduced "
+						+ "by removing a piece from the start and/or end; that reduced name will become the name of the population containing the specimen.  If two specimens have the same"
+						+ " reduced name, they will be assigned to the same population";
+				if (nameParser.queryOptions("Options for Creating Populations", "Population names will be derived from specimen names.", "In choosing what parts of the specimen name to use as its population name,",helpString)) {
 					storePreferences();
 				}
 				else
@@ -78,7 +81,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 			}
 
 			StringArray masterTaxaNames = new StringArray(0);
-			
+
 			for (int it=0; it<taxa.getNumTaxa(); it++) {
 				if (!taxonProcessed.isBitOn(it)) {
 					groupName = nameParser.extractPart(taxa.getTaxonName(it));
@@ -95,7 +98,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 
 					}
 					taxonInGroup.clearAllBits();
-					
+
 				}
 			}
 			int numMasterTaxa = masterTaxaNames.getFilledSize();
@@ -115,26 +118,32 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 		return !names.exists(name);
 	}
 
-	
+
 	/*.................................................................................................................*/
-   	public TaxaAssociation makePopulationsAndAssociation(Taxa specimensTaxa, ObjectContainer populationTaxaContainer) {
+	public TaxaAssociation makePopulationsAndAssociation(Taxa specimensTaxa, ObjectContainer populationTaxaContainer) {
 		Taxa populations = createNewMasterTaxaBlockBasedOnNames(specimensTaxa);
+		if (populations == null)
+			return null;
 		if (populationTaxaContainer != null)
 			populationTaxaContainer.setObject(populations);
 		TaxaAssociation association=null;
 		AssociationsManager manager = (AssociationsManager)findElementManager(TaxaAssociation.class);
-		if (populations!=null)
-			association = manager.makeNewAssociation(populations, specimensTaxa, "Populations-Specimens");
+		association = manager.makeNewAssociation(populations, specimensTaxa, "Populations-Specimens");
 
 		if (association != null) {  // taxa is population, otherTaxa is contained/specimens
-			if (nameParser==null) {
-				nameParser = new NameParser(this, "taxon");
+			/*if (nameParser==null) {  //ZQ already done in createNewMasterTaxaBlockBasedOnNames
+				nameParser = new NameParser(this, "specimen");
 				if (!MesquiteThread.isScripting()) {
-					String helpString = "Taxa in the specimens/gene copies block will be matched with populations based upon their names.  In particular, the name of each specimen/gene copy will be reduced "
-							+ "by removing a piece from the start and/or end; that reduced name will be compared to the name of a population taxon.";
-					nameParser.queryOptions("Options for matching associates", "Associates will be found by examining their names", helpString);
+					String helpString = "New containing taxa (i.e., populations or containing taxa) will be created based on a portion of the taxon names of the contained taxon (e.g., specimen or gene copy)." 
+							+ " In particular, the name of each specimen will be reduced "
+							+ "by removing a piece from the start and/or end; that reduced name will become the name of the population containing the specimen.  If two specimens have the same"
+							+ " reduced name, they will be assigned to the same population";
+					if (nameParser.queryOptions("Options for Creating Populations", "Population names will be derived from specimen names.", "In choosing what parts of the specimen name to use as its population name,",helpString)) {
+						storePreferences();
+					}
 				}
 			}
+			*/
 			boolean changed = false;
 			for (int it=0; it<populations.getNumTaxa(); it++)
 				for (int ito = 0; ito<specimensTaxa.getNumTaxa(); ito++){
@@ -154,7 +163,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 			return association;
 		}
 		return null;
-   	}
+	}
 
 	/*.................................................................................................................*/
 	public String getName() {
@@ -165,12 +174,12 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 		return "Specimen Name Components...";
 	}
 
-	
+
 	/*.................................................................................................................*/
 	public String getExplanation() {
 		return "Makes a new taxa block of populations based on the naming of a taxa (e.g. specimens/gene copies) in a current taxa block .";
 	}
-	
+
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.

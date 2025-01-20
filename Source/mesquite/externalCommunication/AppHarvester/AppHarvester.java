@@ -31,12 +31,14 @@ public class AppHarvester extends MesquiteInit {
 			//StringArray.sort(nameRulesList);
 			int countIncomp = 0;
 			//Harvesting all compatible apps
+			int countFound = 0;
 			for (int i=0; i<appsFiles.length; i++) {
 				if (appsFiles[i]!=null && appsFiles[i].endsWith("app")&& !appsFiles[i].startsWith(".")) {
 					String appFilePath = appsDirPath + MesquiteFile.fileSeparator + appsFiles[i];
 					AppInformationFile appInfoFile = new AppInformationFile(appsFiles[i]);
 					boolean success = appInfoFile.processAppInfoFile();
 					if (success) {
+						countFound++;
 						if (compatible(appInfoFile)) {
 							appInformationFileVector.addElement(appInfoFile);
 							sb.append("Loading "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + "\n");

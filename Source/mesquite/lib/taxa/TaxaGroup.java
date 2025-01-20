@@ -36,12 +36,7 @@ public class TaxaGroup extends GroupLabel {
 	}
 	public TaxaGroup() {
 	}
-	//this is not a full clone with associable/attachable parts
-	public TaxaGroup clone(){
-		TaxaGroup baby = new TaxaGroup();
-		baby.equalizeAs(this);
-		return baby;
-	}
+
 	public void equalizeAs(TaxaGroup toCopy){
 		//taxa = toCopy.taxa; //ZQ shold this be copied?
 		color = toCopy.color;
@@ -71,7 +66,7 @@ public class TaxaGroup extends GroupLabel {
 			return makeGroup(mod, name, taxa, groups);
 		}
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public void editMe(){
 		GroupDialog d = new GroupDialog(getProject(),getProject().getCoordinatorModule().containerOfModule(), "Edit Taxa Group", getName(), getColor(), getSymbol(), supportsSymbols());
 
