@@ -2231,6 +2231,52 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	}
 
+	/*.................................................................................................................*/
+	public int getStartofBlock(int seedIC, int it, boolean mustBeApplicable) {
+		int start = -1;
+			if (isInapplicable(seedIC,  it) && !mustBeApplicable) {
+				start=seedIC;
+				for (int ic=seedIC; ic>=0; ic--){
+					if (isInapplicable(ic, it))
+						start=ic;
+					else
+						break;
+				}
+			} else if (!isInapplicable(seedIC,  it)) {
+				start=seedIC;
+				for (int ic=seedIC; ic>=0; ic--){
+					if (!isInapplicable(ic, it))
+						start=ic;
+					else
+						break;
+				}
+		}
+		return start;
+	}
+	/*.................................................................................................................*/
+	public int getEndofBlock(int seedIC, int it, boolean mustBeApplicable) {
+		int end = -1;
+			if (isInapplicable(seedIC,  it) && !mustBeApplicable) {
+				end=seedIC;
+				for (int ic=seedIC+1; ic<getNumChars(); ic++){
+					if (isInapplicable(ic, it))
+						end=ic;
+					else
+						break;
+				}
+			} else if (!isInapplicable(seedIC,  it)) {
+				end=seedIC;
+				for (int ic=seedIC+1; ic<getNumChars(); ic++){
+					if (!isInapplicable(ic, it))
+						end=ic;
+					else
+						break;
+				}
+			}
+			return end;
+	}
+
+	
 	/** returns whether the character ic is inapplicable to taxon it*/
 	public abstract boolean isInapplicable(int ic, int it);
 	/** returns whether the character ic is entirely inapplicable codings*/

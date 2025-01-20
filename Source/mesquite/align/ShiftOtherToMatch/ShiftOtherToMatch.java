@@ -57,7 +57,10 @@ public class ShiftOtherToMatch extends CategDataAlterer  implements AltererAlign
 			matchFraction = MesquiteDouble.fromString(content);
 		}
 		else if ("reverseComplementIfNecessary".equalsIgnoreCase(tag)) {
-			reverseComplementIfNecessary = MesquiteBoolean.fromOffOnString(content);
+			reverseComplementIfNecessary = MesquiteBoolean.fromTrueFalseString(content);
+		}
+		else if ("shiftOneBlockOnly".equalsIgnoreCase(tag)) {
+			shiftOneBlockOnly = MesquiteBoolean.fromTrueFalseString(content);
 		}
 	
 		preferencesSet = true;
@@ -67,6 +70,7 @@ public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "matchFraction", matchFraction);  
 		StringUtil.appendXMLTag(buffer, 2, "reverseComplementIfNecessary", reverseComplementIfNecessary);  
+		StringUtil.appendXMLTag(buffer, 2, "shiftOneBlockOnly", shiftOneBlockOnly);  
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -95,6 +99,7 @@ public boolean queryOptions(int it, int max) {
 		DoubleField matchFractionField = queryFilesDialog.addDoubleField ("Fraction of Match", matchFraction, 6, 0.00001, 1.0);
 		
 		Checkbox reverseSequencesCheckBox = queryFilesDialog.addCheckBox("Reverse complement sequences if necessary", reverseComplementIfNecessary);
+		Checkbox shiftOneBlockOnlyBox = queryFilesDialog.addCheckBox("Shift only a single block of data", shiftOneBlockOnly);
 		
 		queryFilesDialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -102,6 +107,7 @@ public boolean queryOptions(int it, int max) {
 			it1 = it1Field.getValue()-1;
 			it2 = it2Field.getValue()-1;
 			reverseComplementIfNecessary = reverseSequencesCheckBox.getState();
+			shiftOneBlockOnly = shiftOneBlockOnlyBox.getState();
 			storePreferences();
 		}
 		queryFilesDialog.dispose();
@@ -158,27 +164,28 @@ public boolean queryOptions(int it, int max) {
 						match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);  // added 31 October 2015
 					}
 					if (match) {
+						int added = 0;
 						if (shiftOneBlockOnly) {
-							Debugg.println("\n\nfirstColumn: " + firstColumn.getValue());
-							Debugg.println("lastColumn: " + lastColumn.getValue());
-							Debugg.println("matchStart: " + matchStart.getValue());
-							Debugg.println("matchEnd: " + matchEnd.getValue());
-							if (data.getNumberInapplicableInTaxon(it, matchStart.getValue(), matchEnd.getValue(), true)==0) {  //no gaps
-								
-							}
+							int startBlock = data.getStartofBlock(matchStart.getValue(), it, true);
+							int endBlock = data.getEndofBlock(matchStart.getValue(), it, true);
+							int distance = firstColumn.getValue()-matchStart.getValue();
+							Bits whichTaxa = new Bits(data.getNumTaxa());
+							whichTaxa.clearAllBits();
+							whichTaxa.setBit(it);
+							added = data.moveCells(startBlock, endBlock, distance, whichTaxa, true, false, true, false, dataChanged, charAdded, null);
 						} else {
-							int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
-							if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
-								((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
-								//							((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
-							}
-							if (added!=0)
-								someAdded=true;
-							if (added<0) {
-								totalAddedToStart -=added;
-								firstColumn.add(-added);
-								lastColumn.add(-added);
-							}
+							added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
+						}
+						if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
+							((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
+							//							((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
+						}
+						if (added!=0)
+							someAdded=true;
+						if (added<0) {
+							totalAddedToStart -=added;
+							firstColumn.add(-added);
+							lastColumn.add(-added);
 						}
 					}
 				}
