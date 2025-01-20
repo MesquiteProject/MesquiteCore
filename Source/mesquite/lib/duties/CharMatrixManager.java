@@ -73,7 +73,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 
 	/*.................................................................................................................*/
 	/** Process the matrix, placing data into passed CharacterData object */
-	public void processMatrix(Taxa taxa, mesquite.lib.characters.CharacterData data, MatrixFileParser parser, int numChars, boolean nameTaxa, int firstTaxon, boolean makeNewTaxaIfNeeded, boolean fuse, MesquiteFile fileBeingRead) {
+	public void processMatrix(Taxa taxa, mesquite.lib.characters.CharacterData data, NEXUSFileParser parser, int numChars, boolean nameTaxa, int firstTaxon, boolean makeNewTaxaIfNeeded, boolean fuse, MesquiteFile fileBeingRead) {
 		if (data == null)
 			return;
 		if (taxa == null)
@@ -276,7 +276,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			String problem = null;
 			int lastTaxonNumber = -1;
 			
-			if (MatrixFileParser.verbose) Debugg.println("@@@@@@@@  CMM ");
+			if (NEXUSFileParser.verbose) Debugg.println("@@@@@@@@  CMM ");
 			for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken(false)); it++) {
 
 				boolean preserveNewTaxon = false;
@@ -322,7 +322,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					}
 				}
 				CommandRecord.tick("Reading character states for " + taxa.getTaxonName(whichTaxon));
-				if (MatrixFileParser.verbose)  Debugg.println("@@@@@@@@  CMM1");
+				if (NEXUSFileParser.verbose)  Debugg.println("@@@@@@@@  CMM1");
 				int ic=0;
 				lastTaxonNumber = whichTaxon;
 				if (fuse){ //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    FUSE

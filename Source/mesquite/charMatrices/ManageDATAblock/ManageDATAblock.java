@@ -55,7 +55,7 @@ public class ManageDATAblock extends MesquiteModule {
 		if (block == null || file == null)
 			return null;
 		CharacterData data=null;
-		MatrixFileParser commandParser = new MatrixFileParser(block);
+		NEXUSFileParser commandParser = new NEXUSFileParser(block);
 
 		String dataTitle=getProject().getCharacterMatrices().getUniqueName("Character Matrix");
 		String taxaTitle=getProject().getCharacterMatrices().getUniqueName("Taxa");
@@ -66,7 +66,7 @@ public class ManageDATAblock extends MesquiteModule {
 		Taxa taxa= null;
 		int numChars=0;
 		NexusBlock b = null;
-		 boolean lookForEnd = MatrixFileParser.READ_MATRIX_DIRECT_FROM_FILE;
+		 boolean lookForEnd = NEXUSFileParser.READ_DIRECT_FROM_FILE;
 		 boolean endReached = false; 
 		while (!(lookForEnd && endReached) && !commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
 			if (commandName.equalsIgnoreCase("DIMENSIONS")) { 

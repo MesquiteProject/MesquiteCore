@@ -124,7 +124,7 @@ public class FileBlock {
 		while (!emptyToken(unconsumed) && !unconsumed.equals(";")) 
 			unconsumed = file.nextToken(null);
 
-		if (MatrixFileParser.verbose) Debugg.println("======GNCNWC-FB -[" + unconsumed + "]");
+		if (NEXUSFileParser.verbose) Debugg.println("======GNCNWC-FB -[" + unconsumed + "]");
 		return unconsumed;
 	}
 	

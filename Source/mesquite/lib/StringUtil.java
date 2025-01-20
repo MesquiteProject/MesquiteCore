@@ -993,10 +993,40 @@ public class StringUtil {
 					numMatches++;
 					if (numMatches>=matchNumber) { // found it
 						index=currentIndex;
-						if (fromStart && !includeString)
+						if (fromStart && !includeString)  
 							index+= match.length();
 						else if (!fromStart && includeString)
 							index+= match.length();
+						completed=true;
+					}
+				}
+				else
+					completed=true;
+			}
+
+
+		return index;
+	}
+	/*.................................................................................................................*/
+	public static int getIndexOfMatchingString(String token, String match, int matchNumber, boolean fromStart) {
+		if (StringUtil.blank(token) || match==null || match=="") return 0;
+		int numMatches = 0;
+		int currentIndex =-1;
+		int index = -1;
+		boolean completed=false;
+
+		if (!fromStart) {
+			int totalNumberMatches = getNumMatchingStrings(token, match);
+			matchNumber = totalNumberMatches - matchNumber+1;			
+		}
+
+		if (matchNumber>0)
+			while (!completed) {
+				currentIndex = token.indexOf(match,currentIndex+1);
+				if (currentIndex>=0) {
+					numMatches++;
+					if (numMatches>=matchNumber) { // found it
+						index=currentIndex;
 						completed=true;
 					}
 				}

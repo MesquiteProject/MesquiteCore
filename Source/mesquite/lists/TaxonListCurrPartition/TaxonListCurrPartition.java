@@ -193,13 +193,16 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			String name="";
 			Bits taxonProcessed = new Bits(taxa.getNumTaxa());
 			Bits taxonInGroup = new Bits(taxa.getNumTaxa());
-			if (nameParser==null)
-				nameParser = new NameParser(this, "taxon");
 			if (!MesquiteThread.isScripting()) {
 				String helpString = "Taxon groups will be created based upon a portion of the taxon names.  In particular, the name of each taxon will be reduced "
 						+ "by removing a piece from the start and/or end; that reduced name will become the name of the taxon group.  If two taxa have the same"
 						+ " reduced name, the will be assigned to the same taxon group";
-				if (nameParser.queryOptions("Options for Creating Groups", "Taxon group names will be extracted from taxon names.", helpString)) {
+				if (taxa.getNumTaxa()>=3)
+					nameParser.setExamples(new String[]{taxa.getTaxonName(0), taxa.getTaxonName(taxa.getNumTaxa()/2), taxa.getTaxonName(taxa.getNumTaxa()-1)});
+				else if (taxa.getNumTaxa()>0)
+					nameParser.setExamples(new String[]{taxa.getTaxonName(0)});
+					
+				if (nameParser.queryOptions("Options for Creating Groups", "Group names will be extracted from taxon names.", "In constructing the name of the group from the taxon name,", helpString)) {
 					storePreferences();
 				}
 				else
@@ -396,8 +399,8 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		deleteMenuItem(nNG);
 		deleteMenuItem(ie1);
 		deleteMenuItem(ie2);
-		deleteMenuItem(ie3);
-		deleteMenuItem(ie4);
+	//	deleteMenuItem(ie3);
+	//	/deleteMenuItem(ie4);
 		deleteMenuItem(ie5);
 		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
@@ -412,8 +415,8 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
 		ie1 = addMenuItem("Import Groups (from NEXUS file)...", new MesquiteCommand("importPartitions",  "#" + taxa.getAssignedID(), manageTaxPart));
 		ie2 = addMenuItem("Import Group Labels & Colors Only (from NEXUS File)...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
-		ie3 = addMenuItem("[ORIGINAL] Import Group Labels from File...", MesquiteModule.makeCommand("importLabelsOLD",  manageTaxPart)); //Debugg.println delete?
-		ie4 = addMenuItem("[ORIGINAL] Export Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));//Debugg.println delete?
+	//	ie3 = addMenuItem("[ORIGINAL] Import Group Labels from File...", MesquiteModule.makeCommand("importLabelsOLD",  manageTaxPart)); //Debugg.println delete?
+	//	ie4 = addMenuItem("[ORIGINAL] Export Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));//Debugg.println delete?
 		ie5 = addMenuItem("Assign Colours Randomly to Colourless Groups", makeCommand("assignColorsRandomly", this));
 
 		mLine = addMenuSeparator();

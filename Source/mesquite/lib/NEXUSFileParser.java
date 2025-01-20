@@ -15,18 +15,18 @@ package mesquite.lib;
 
 
 /* Like Parser, but based on a file, for direct reading. Temporarily merely an intermediary to Parser */
-public class MatrixFileParser {
+public class NEXUSFileParser {
 	Parser parser;
 	MesquiteStringBuffer tempBuffer;
 	FileBlock block;
-	public static final boolean READ_MATRIX_DIRECT_FROM_FILE = false;
+	public static final boolean READ_DIRECT_FROM_FILE = false;
 	public static boolean verbose = false;
 
-	public MatrixFileParser(FileBlock block){
+	public NEXUSFileParser(FileBlock block){
 		parser = new Parser();
 		this.block = block;
 		tempBuffer = new MesquiteStringBuffer();
-		if (!READ_MATRIX_DIRECT_FROM_FILE)
+		if (!READ_DIRECT_FROM_FILE)
 			parser.setBuffer(block.toMesquiteStringBuffer());
 		parser.setWhitespaceString(StringUtil.defaultWhitespace);   //fixing to default whitespace
 	}
@@ -50,7 +50,7 @@ public class MatrixFileParser {
 	/*  ............................................................................  */
 	/* Called when tokens etc. are requested, to make sure the parser hasn't exhausted. If so, get another line from the file until one with darkspace is found*/
 	private void checkAndRefreshParser() {
-		if (!READ_MATRIX_DIRECT_FROM_FILE)
+		if (!READ_DIRECT_FROM_FILE)
 			return;
 		boolean needToGetMore = parser.atEnd();
 		while (needToGetMore && !block.atEOF()) { 
@@ -68,7 +68,7 @@ public class MatrixFileParser {
 	/*  -------------------------------------------------------------  */
 	/* gets the local parser, including at least current in the file, at current position */
 	public Parser getParserAtCurrentPosition() {
-		if (!READ_MATRIX_DIRECT_FROM_FILE)
+		if (!READ_DIRECT_FROM_FILE)
 			return parser;
 		checkAndRefreshParser();
 		return parser;
@@ -81,7 +81,7 @@ public class MatrixFileParser {
 	/*  -------------------------------------------------------------  */
 	/* Get the next (darkspace) token*/
 	public String getNextToken(boolean forceStripWhite) {
-		if (!READ_MATRIX_DIRECT_FROM_FILE) {
+		if (!READ_DIRECT_FROM_FILE) {
 			String s = parser.getNextToken();
 			if (verbose) Debugg.println("~~~gNT [" + s + "]");
 			return s;
@@ -118,7 +118,7 @@ public class MatrixFileParser {
 	public String getNextCommand(MesquiteLong posJustBeforeCommand) {
 		if (posJustBeforeCommand != null)
 			posJustBeforeCommand.setValue(parser.getPosition());
-		if (!READ_MATRIX_DIRECT_FROM_FILE) {
+		if (!READ_DIRECT_FROM_FILE) {
 			String s= parser.getNextCommand();
 			if (verbose) Debugg.println("~~~gNC [" + s + "]");
 			return s;
@@ -145,7 +145,7 @@ public class MatrixFileParser {
 
 	/*  -------------------------------------------------------------  */
 	public String getNextCommandNameWithoutConsuming() { 
-		if (!READ_MATRIX_DIRECT_FROM_FILE) {
+		if (!READ_DIRECT_FROM_FILE) {
 			String s = parser.getNextCommandNameWithoutConsuming();
 			if (verbose) Debugg.println("~~~gNCNameWC [" + s + "]");
 			return s;
@@ -173,7 +173,7 @@ public class MatrixFileParser {
 
 	/*  -------------------------------------------------------------  */
 	public String getPieceOfLine(int len) {
-		if (!READ_MATRIX_DIRECT_FROM_FILE) {
+		if (!READ_DIRECT_FROM_FILE) {
 			String s= parser.getPieceOfLine(len);
 			if (verbose) Debugg.println("~~~gPOL [" + s + "]");
 			return s;

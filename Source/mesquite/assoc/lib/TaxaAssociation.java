@@ -554,6 +554,13 @@ public class TaxaAssociation extends FileElement  {
 		return null;
 	}
 	/*.................................................................................................................*/
+	public Taxa getContainingTaxa(){
+			return taxaContaining;
+	}
+	public Taxa getContainedTaxa(){
+		return taxaContained;
+}
+	/*.................................................................................................................*/
 	public Taxa getOtherTaxa(Taxa taxa){
 		if (taxa==taxaContained)
 			return taxaContaining;

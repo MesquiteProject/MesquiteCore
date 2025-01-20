@@ -42,8 +42,8 @@ public class TaxonGroupList extends ListModule {
 		addMenuItem("New Group Label...", MesquiteModule.makeCommand("newGroup",  this));
 		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
 		addMenuItem("Import Group Labels (from NEXUS File)...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
-		addMenuItem("[ORIGINAL] Import Group Labels from File...", MesquiteModule.makeCommand("importLabelsOLD",  manageTaxPart)); //Debugg.println delete?
-		addMenuItem("[ORIGINAL] Export Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));//Debugg.println delete?
+		//addMenuItem("[ORIGINAL] Import Group Labels from File...", MesquiteModule.makeCommand("importLabelsOLD",  manageTaxPart)); //Debugg.println delete?
+		//addMenuItem("[ORIGINAL] Export Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));//Debugg.println delete?
 		return true;
 	}
 	public boolean showing(Object obj){

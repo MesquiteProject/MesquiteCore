@@ -77,7 +77,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			containingWindow.addSidePanel(panel = new AssocEditor(this), 160);
 		}
 		if (nameParser==null)
-			nameParser = new NameParser(this, "taxon");
+			nameParser = new NameParser(this, "specimen/taxon");
 		loadPreferences();
 		return true;
 	}
@@ -202,26 +202,35 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	private void calculateAssociation(){
 		boolean changed = false;
 		if (taxa!=null && association != null) {  // taxa is population, otherTaxa is contained/specimens
-			Taxa otherTaxa = association.getOtherTaxa(taxa);
-			if (nameParser==null)
-				nameParser = new NameParser(this, "taxon");
-			if (!MesquiteThread.isScripting()) {
-				String helpString = "This tool requires that the taxon names of the master block of taxa are formed as reduced versions of the taxon names of the "
-						+ "other block of taxa.  In particular, the taxon names of the master block must exactly match a portion of the names of the other block.  "
-						+ "This tool find the match by removing the start and/or end of the longer names according to the criteria you specify, and, if that shorter name"
-						+ "matches the name of a taxon in the master block, then the other taxon having that longer name is associated with the taxon in the master block.";
-				nameParser.queryOptions("Options for matching associates", "Associates will be found by examining their names", helpString);
+			Taxa populations = association.getContainingTaxa();
+			Taxa specimens = association.getContainedTaxa();
+			Debugg.println("###### PROBLEM: New Association assigns wrong block as Containing! taxa blocks  populations " + populations.getName() + " specimens " + specimens.getName());
+			if (specimens != taxa && populations != taxa){
+				discreetAlert("Can't calculate the association because current association does not refer to the taxa in this list");
+				return;
 			}
-			for (int it=0; it<taxa.getNumTaxa(); it++)
-				for (int ito = 0; ito<otherTaxa.getNumTaxa(); ito++){
-					String name = taxa.getTaxonName(it);
-					String nameOther = nameParser.extractPart(otherTaxa.getTaxonName(ito));
-					if (name == null || nameOther == null)
+			if (specimens.getNumTaxa()>=3)
+				nameParser.setExamples(new String[]{specimens.getTaxonName(0), specimens.getTaxonName(specimens.getNumTaxa()/2), specimens.getTaxonName(specimens.getNumTaxa()-1)});
+			else if (specimens.getNumTaxa()>0)
+				nameParser.setExamples(new String[]{specimens.getTaxonName(0)});
+			if (!MesquiteThread.isScripting()) {
+				String helpString = "This tool requires that the names of the containing taxa (e.g., populations) are formed as reduced versions of the taxon names of the "
+						+ "other block of taxa (e.g., specimens).  In particular, the names of the populations must exactly match a portion of specimen names of the other block.  "
+						+ "This tool finds the match by reducing the specimen names by including or excluding pieces according to the criteria you specify, and, if that reduced name"
+						+ "matches the name of a population, then the specimen is associated with that population.";
+				nameParser.queryOptions("Options for matching specimens to populations", "Populations will be matched to specimens by examining their names", "In choosing what parts of the specimen name to compare to the population names,", helpString);
+			}
+			for (int itPop=0; itPop<populations.getNumTaxa(); itPop++)
+				for (int itSpecimen = 0; itSpecimen<specimens.getNumTaxa(); itSpecimen++){
+					String populationName = populations.getTaxonName(itPop);
+					String specimenName = nameParser.extractPart(specimens.getTaxonName(itSpecimen));
+					if (populationName == null || specimenName == null)
 						continue;
-					boolean matches = name.equals(nameOther);
+					boolean matches = populationName.equals(specimenName);
 					if (matches){
 						//association.zeroAllAssociations(taxa.getTaxon(it));
-						association.setAssociation(taxa.getTaxon(it), otherTaxa.getTaxon(ito), true);
+						Debugg.println("matchfound  populationName " + populationName + " specimenName " + specimenName);
+						association.setAssociation(populations.getTaxon(itPop), specimens.getTaxon(itSpecimen), true);
 						changed = true;
 					}
 				}
@@ -389,7 +398,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		m3 = addMenuItem(null, "Remove from Association", makeCommand("removeAssociates", this));
 		m8 = addMenuItem(null, "-", null);
 		m4 = addMenuItem(null, "Create New Associated Taxon...", makeCommand("createAssociate", this));
-		m5 = addMenuItem(null, "Create New Taxa in Master Block from Selected", makeCommand("createNewTaxaFromSelected", this));
+		m5 = addMenuItem(null, "Create New Taxa in Containing Block from Selected", makeCommand("createNewTaxaFromSelected", this));
 		m7 = addMenuItem(null, "Delete Associated Taxa...", makeCommand("deleteAssociateTaxa", this));
 		m9 = addMenuItem(null, "-", null);
 	if (this.taxa != null)
