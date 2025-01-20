@@ -197,13 +197,13 @@ public boolean queryOptions(int it, int max) {
 				}
 			}
 			if ( dataChanged.getValue())
-			return SUCCEEDED;
+				return SUCCEEDED;
 			return MEH;
 		}
 		else {
-   			discreetAlert( "A portion of only one sequence can be selected.");
+			discreetAlert( "A portion of only one sequence can be selected.");
 			return -13;
-   		}
+		}
    	}
    	
 	/*.................................................................................................................*/

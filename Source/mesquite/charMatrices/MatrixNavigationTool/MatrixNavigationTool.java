@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.charMatrices.MatrixInfoTool; 
+package mesquite.charMatrices.MatrixNavigationTool; 
 
 import java.util.*;
 import java.awt.*;
@@ -30,31 +30,38 @@ import mesquite.categ.lib.*;
  * 	- convert to tool tip
  * 	- have info for things other than data cells; e.g., for whole taxa
  */
+
 /* ======================================================================== */
-public class MatrixInfoTool extends DataWindowAssistantI {
+public class MatrixNavigationTool extends DataWindowAssistantI {
 	CMTable table;
 	CharacterData  data;
 	Taxa taxa;
-	protected TableTool matrixInfoTool;
+	protected TableTool matrixNavigationTool;
 	MesquiteWindow window;
 	MesquitePopup popup;
 	MesquiteCommand respondCommand, moveToPrevCommand, moveToNextCommand;
+	MesquiteCommand moveToFirstDataCommand, moveToLastDataCommand;
+	MesquiteCommand moveToFirstRowCommand, moveToLastRowCommand;
+	
 
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (containerOfModule() instanceof MesquiteWindow) {
-			matrixInfoTool = new TableTool(this, "matrixInfo", getPath(), "matrixInfo.gif", 8, 8,"Data information", "This tool shows information about the data in each taxon", MesquiteModule.makeCommand("matrixInfo",  this) , null, null);
-			matrixInfoTool.setWorksOnColumnNames(false);
-			matrixInfoTool.setWorksOnRowNames(false);
-			matrixInfoTool.setWorksOnMatrixPanel(true);
-			matrixInfoTool.setWorksOnCornerPanel(false);
-			//matrixInfoTool.setEmphasizeRowsOnMouseDown(true);
+			matrixNavigationTool = new TableTool(this, "matrixNavigation", getPath(), "matrixNavigation.gif", 8, 8,"Matrix navigation", "This tool allows you to navigate quickly around the matrix", MesquiteModule.makeCommand("matrixNavigation",  this) , null, null);
+			matrixNavigationTool.setWorksOnColumnNames(false);
+			matrixNavigationTool.setWorksOnRowNames(false);
+			matrixNavigationTool.setWorksOnMatrixPanel(true);
+			matrixNavigationTool.setWorksOnCornerPanel(false);
 			window = (MesquiteWindow)containerOfModule();
-			window.addTool(matrixInfoTool);
+			window.addTool(matrixNavigationTool);
 			respondCommand = makeCommand("respond", this);
 			moveToPrevCommand = makeCommand("moveToPrev", this);
 			moveToNextCommand = makeCommand("moveToNext", this);
+			moveToFirstDataCommand = makeCommand("moveToFirstData", this);
+			moveToLastDataCommand = makeCommand("moveToLastData", this);
+			moveToFirstRowCommand = makeCommand("moveToFirstRow", this);
+			moveToLastRowCommand = makeCommand("moveToLastRow", this);
 		}
 		else return sorry(getName() + " couldn't start because the window with which it would be associated is not a tool container.");
 		return true;
@@ -69,20 +76,6 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 		this.data = data;
 		taxa = data.getTaxa();
 	}
-	/*.................................................................................................................*/
-	public int getApplicableNonMissing(int ic, int it, boolean before){
-		int count = 0;
-		if (before) {
-			for (int i = 0; i<ic; i++)
-				if (!data.isUnassigned(i, it) && !data.isInapplicable(i,it))
-					count++;
-		} else
-			for (int i = ic+1; i<data.getNumChars(); i++)
-				if (!data.isUnassigned(i, it) && !data.isInapplicable(i, it))
-					count++;
-
-		return count;
-	}
 
 	/*.................................................................................................................*/
 	void addToPopup(String s,int response){
@@ -96,10 +89,70 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 			return;
 		popup.addItem(s, this, command, Integer.toString(response));
 	}
+	/*.................................................................................................................*/
+	public void moveToNext(boolean next) { 
+		if (data == null || table ==null || !MesquiteInteger.isCombinable(column) || !MesquiteInteger.isCombinable(row))
+			return;
+		int icCurrent = column;
+		if (next) {
+			if (!MesquiteInteger.isCombinable(icCurrent))
+				icCurrent = -1;
+			for (int ic=icCurrent+1; ic<data.getNumChars(); ic++) {
+				if (!data.isInapplicable(ic, row)){
+					table.scrollToColumn(ic);
+					break;
+				}
+			}
+		} else {
+			if (!MesquiteInteger.isCombinable(icCurrent))
+				icCurrent = data.getNumChars();
+			for (int ic=icCurrent-1; ic>=0; ic--) {
+				if (!data.isInapplicable(ic, row)){
+					table.scrollToColumn(ic);
+					break;
+				}
+			}
+		}
+		column = MesquiteInteger.unassigned;
+		row = MesquiteInteger.unassigned;
+	}
+	/*.................................................................................................................*/
+	public void moveToStart(boolean start) { 
+		if (data == null || table ==null || !MesquiteInteger.isCombinable(column) || !MesquiteInteger.isCombinable(row))
+			return;
+		if (start) {
+			for (int ic=0; ic<data.getNumChars(); ic++) {
+				if (!data.isInapplicable(ic, row)){
+					table.scrollToColumn(ic);
+					break;
+				}
+			}
+		} else {
+			for (int ic=data.getNumChars()-1; ic>=0; ic--) {
+				if (!data.isInapplicable(ic, row)){
+					table.scrollToColumn(ic);
+					break;
+				}
+			}
+		}
+		column = MesquiteInteger.unassigned;
+		row = MesquiteInteger.unassigned;
+	}
+	/*.................................................................................................................*/
+	public void moveToRow(boolean firstRow) { 
+		if (data == null || table ==null || !MesquiteInteger.isCombinable(column) || !MesquiteInteger.isCombinable(row))
+			return;
+		if (firstRow) 
+			table.scrollToRow(1);
+		else
+			table.scrollToRow(data.getNumTaxa()-1);
+		column = MesquiteInteger.unassigned;
+		row = MesquiteInteger.unassigned;
+	}
 	int column = MesquiteInteger.unassigned;
 	int row = MesquiteInteger.unassigned;
 	/*.................................................................................................................*/
-	void infoPopupMenu (String arguments) {
+	void makePopupMenu (String arguments) {
 		if (table!=null && data !=null && taxa!=null){
 			MesquiteInteger io = new MesquiteInteger(0);
 			column= MesquiteInteger.fromString(arguments, io);
@@ -108,36 +161,44 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 			if (popup==null)
 				popup = new MesquitePopup(window.getGraphicsArea());
 			popup.removeAll();
+			popup.setEnabled(true);
 			addToPopup("Taxon: " + taxa.getTaxonName(row)+", character: " + (column+1), responseNumber++);
 			addToPopup("-", responseNumber++);
 
-			int applicableNonMissingBefore = getApplicableNonMissing(column, row,true);
-			int applicableNonMissingAfter = getApplicableNonMissing(column, row,false);
-			int totalApplicableNonMissing = applicableNonMissingBefore + applicableNonMissingAfter;
-			if (!data.isUnassigned(column, row) && !data.isInapplicable(column, row))
-				totalApplicableNonMissing++;
-
-			addToPopup("Total number of " + data.getNameOfCellEntry(2)+ ": " + totalApplicableNonMissing, responseNumber++);
-			addToPopup("Number to left: " + applicableNonMissingBefore + " " + data.getNameOfCellEntry(applicableNonMissingBefore), responseNumber++);
-			addToPopup("Number to right: " + applicableNonMissingAfter + " " + data.getNameOfCellEntry(applicableNonMissingAfter), responseNumber++);
-			//addToPopup("-", responseNumber++);
-			//addToPopup("Scroll to previous", moveToPrevCommand, responseNumber++);
-			//addToPopup("Scroll to next", moveToNextCommand, responseNumber++);
-			if (data instanceof DNAData){
-				addToPopup("-", responseNumber++);
-				addToPopup("Frequencies within character: ", responseNumber++);
-				addToPopup("   "+ ((DNAData)data).getStateFrequencyString(column), responseNumber++);
-
-			}
+			addToPopup("Scroll to start of data", moveToFirstDataCommand, responseNumber++);
+			addToPopup("Scroll to end of data", moveToLastDataCommand, responseNumber++);
+			addToPopup("Scroll to previous data", moveToPrevCommand, responseNumber++);
+			addToPopup("Scroll to next data", moveToNextCommand, responseNumber++);
+			addToPopup("-", responseNumber++);
+			addToPopup("Scroll to first row", moveToFirstRowCommand, responseNumber++);
+			addToPopup("Scroll to last row", moveToLastRowCommand, responseNumber++);
 			popup.showPopup(table.getColumnX(column), table.getRowY(row));
 		}
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "move touched cell or selected cells", "[column touched] [row touched] [percent horizontal] [percent vertical] [modifiers]", commandName, "matrixInfo")) {
-			infoPopupMenu(arguments);
+		if (checker.compare(this.getClass(), "navigate", "[column touched] [row touched] [percent horizontal] [percent vertical] [modifiers]", commandName, "matrixNavigation")) {
+			makePopupMenu(arguments);
 		}
 		else if (checker.compare(this.getClass(), "Responds to choice of popup menu", "[choice number]", commandName, "respond")) {
+		}
+		else if (checker.compare(this.getClass(), "Move to Previous Data", "", commandName, "moveToPrev")) {
+			moveToNext(false);
+		}
+		else if (checker.compare(this.getClass(), "Move to Next Data", "", commandName, "moveToNext")) {
+			moveToNext(true);
+		}
+		else if (checker.compare(this.getClass(), "Move to First Data", "", commandName, "moveToFirstData")) {
+			moveToStart(true);
+		}
+		else if (checker.compare(this.getClass(), "Move to Last Data", "", commandName, "moveToLastData")) {
+			moveToStart(false);
+		}
+		else if (checker.compare(this.getClass(), "Move to First Row", "", commandName, "moveToFirstRow")) {
+			moveToRow(true);
+		}
+		else if (checker.compare(this.getClass(), "Move to Last Row", "", commandName, "moveToLastRow")) {
+			moveToRow(false);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -145,19 +206,23 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Matrix Info";
+		return "Matrix Navigation";
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease() {
+		return true;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 200;  
+		return NEXTRELEASE;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Shows Information about the data in each taxon." ;
+		return "Allows one to navigate quickly around the matrix." ;
 	}
 
 }
