@@ -296,7 +296,7 @@ public class ManageAssociations extends AssociationsManager {
 			else
 				whichTaxa = 1;
 		}
-		boolean success = showAssociationInTaxonList(toBeEdited.getTaxa(whichTaxa), toBeEdited);
+		boolean success = showAssociationInTaxonList(toBeEdited.getTaxa(whichTaxa), toBeEdited, true);
 		if (!success)
 			return null;
 		
@@ -337,7 +337,7 @@ public class ManageAssociations extends AssociationsManager {
 	}
 	
 	/*.................................................................................................................*/
-	public boolean showAssociationInTaxonList(Taxa taxa, TaxaAssociation association){
+	boolean showAssociationInTaxonList(Taxa taxa, TaxaAssociation association, boolean showEditor){
 		TaxaManager manageTaxa = (TaxaManager)findElementManager(Taxa.class);
 		MesquiteModule list = manageTaxa.getListOfTaxaModule(taxa, true);
 		if (list == null) 
@@ -361,7 +361,7 @@ public class ManageAssociations extends AssociationsManager {
 		//here put number of this taxa assoc
 		commands +=  association.getID();
 		commands +=  "; endTell;";
-		commands +=  "endTell; endTell;";
+		commands +=  "showEditor true; endTell; endTell;";
 		pos.setValue(0);
 		CommandRecord cRecord = new CommandRecord(true);
 		CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
@@ -404,7 +404,7 @@ public class ManageAssociations extends AssociationsManager {
 			
 			fireEmployee(makerModule);
 			if (association != null){
-				showAssociationInTaxonList(specimensTaxa, association);
+				showAssociationInTaxonList(specimensTaxa, association, false);
 			}
 			return association;
 		}
@@ -496,6 +496,7 @@ public class ManageAssociations extends AssociationsManager {
 		helpString += "then we suggest you choose the first set of taxa to be the master one, containing the 'official' names for the taxa.";
 		if (taxaA == null) 
 			taxaA = (Taxa)ListDialog.queryList(containerOfModule(), "Select taxa", "Select first block of taxa for the association, e.g. the containing or master taxa.  If you are analyzing gene trees within species trees, select here the species taxa block.", helpString, taxas, 0);
+		Debugg.println("taxa block A " + taxaA);
 		if (taxaA == null)
 			return null;
 		if (taxaB == null){
@@ -519,6 +520,7 @@ public class ManageAssociations extends AssociationsManager {
 					taxaB = project.getTaxa(0);
 			}
 		}
+		Debugg.println("taxa block B " + taxaB);
 		MesquiteFile file=chooseFile( taxaA,taxaB);
 
 		if (taxaA==null ||taxaB==null || file == null)

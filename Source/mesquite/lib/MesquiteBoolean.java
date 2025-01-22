@@ -119,11 +119,19 @@ public class MesquiteBoolean implements Listable {
 				setValue(true);
 			else if  ("off".equalsIgnoreCase(arguments))
 				setValue(false);
+			else if ("true".equalsIgnoreCase(arguments))
+				setValue(true);
+			else if  ("false".equalsIgnoreCase(arguments))
+				setValue(false);
 			else {
 				 String s = ParseUtil.getFirstToken(arguments, pos);
 				 if ("on".equalsIgnoreCase(s))
 					setValue(true);
 				else if  ("off".equalsIgnoreCase(s))
+					setValue(false);
+				else if ("true".equalsIgnoreCase(s))
+					setValue(true);
+				else if  ("false".equalsIgnoreCase(s))
 					setValue(false);
 				else
 					toggleValue();

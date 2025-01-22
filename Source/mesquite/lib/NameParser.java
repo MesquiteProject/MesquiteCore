@@ -144,7 +144,7 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 			endBoundary = endBoundaryField.getText();
 			numFromEnd = numEndField.getValue();
 			includeEndBoundaryInName = includeEndBoundaryInNameField.getState();
-
+			keepPieces = includeExcludeButtons.getValue()==0;
 		}
 		//storePreferences();  // do this here even if Cancel pressed as the File Locations subdialog box might have been used
 		dialog.dispose();

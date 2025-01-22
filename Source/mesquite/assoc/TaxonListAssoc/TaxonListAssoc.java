@@ -54,7 +54,6 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	Taxa taxa, otherTaxa;
 	MesquiteTable table=null;
-	MesquiteMenuItemSpec m0, m1, m2, m3, m4, m5, m6, m7, m8, m9;
 	AssociationSource associationTask;
 	MesquiteWindow containingWindow;
 	TaxaAssociation association;
@@ -65,6 +64,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	boolean matchNumbers=false;
 	int minDigitsToMatch = 3;
 	NameParser nameParser;
+	MesquiteBoolean editorShown = new MesquiteBoolean(false);
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -74,7 +74,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		MesquiteWindow f = containerOfModule();
 		if (f instanceof MesquiteWindow){
 			containingWindow = (MesquiteWindow)f;
-			containingWindow.addSidePanel(panel = new AssocEditor(this), 160);
+			//showPanel(true);
 		}
 		if (nameParser==null)
 			nameParser = new NameParser(this, "specimen/taxon");
@@ -82,6 +82,44 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		return true;
 	}
 
+	MesquiteMenuItemSpec m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11;
+	/*.................................................................................................................*/
+	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
+		deleteMenuItem(m0);
+		deleteMenuItem(m1);
+		deleteMenuItem(m2);
+		deleteMenuItem(m3);
+		deleteMenuItem(m4);
+		deleteMenuItem(m5);
+		deleteMenuItem(m6);
+		deleteMenuItem(m7);
+		deleteMenuItem(m8);
+		deleteMenuItem(m9);
+		deleteMenuItem(m10);
+		deleteMenuItem(m11);
+		m10 = addCheckMenuItem(null, "Show Editor", makeCommand("showEditor", this), editorShown);
+		m1 = addMenuItem(null, "Assign Associates...", makeCommand("setAssociate", this));
+		m2 = addMenuItem(null, "Add Associates...", makeCommand("addAssociate", this));
+		m3 = addMenuItem(null, "Remove from Association", makeCommand("removeAssociates", this));
+		m0 = addMenuItem(null, "Auto-assign Matches...", makeCommand("autoAssignExact", this));
+		m6 = addMenuItem(null, "Calculate Matches...", makeCommand("calculateAssociation", this));
+		m8 = addMenuItem(null, "-", null);
+		m11 = addMenuItem(null, "Trade Status Contained vs. Containing", makeCommand("tradeStatus", this));
+		m8 = addMenuItem(null, "-", null);
+		m4 = addMenuItem(null, "Create New Associated Taxon...", makeCommand("createAssociate", this));
+		m5 = addMenuItem(null, "Create New Taxa in Containing Block from Selected", makeCommand("createNewTaxaFromSelected", this));
+		m7 = addMenuItem(null, "Delete Associated Taxa...", makeCommand("deleteAssociateTaxa", this));
+		m9 = addMenuItem(null, "-", null);
+	if (this.taxa != null)
+			taxa.removeListener(this);
+		this.taxa = taxa;
+		if (this.taxa != null)
+			taxa.addListener(this);
+		this.table = table;
+		if (!MesquiteThread.isScripting())
+			resetAssociation(false);
+	}
+	
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
@@ -204,7 +242,6 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		if (taxa!=null && association != null) {  // taxa is population, otherTaxa is contained/specimens
 			Taxa populations = association.getContainingTaxa();
 			Taxa specimens = association.getContainedTaxa();
-			Debugg.println("###### PROBLEM: New Association assigns wrong block as Containing! taxa blocks  populations " + populations.getName() + " specimens " + specimens.getName());
 			if (specimens != taxa && populations != taxa){
 				discreetAlert("Can't calculate the association because current association does not refer to the taxa in this list");
 				return;
@@ -229,7 +266,6 @@ public class TaxonListAssoc extends TaxonListAssistant {
 					boolean matches = populationName.equals(specimenName);
 					if (matches){
 						//association.zeroAllAssociations(taxa.getTaxon(it));
-						Debugg.println("matchfound  populationName " + populationName + " specimenName " + specimenName);
 						association.setAssociation(populations.getTaxon(itPop), specimens.getTaxon(itSpecimen), true);
 						changed = true;
 					}
@@ -271,6 +307,9 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			}
 		}
 	}
+	
+	//QQ: change tomultiple taxa selected
+	//QQ: trade status
 	private void setAssociate(Taxon taxon, boolean add, boolean append){
 		if (table !=null && taxa!=null && association != null) {
 			boolean changed=false;
@@ -307,6 +346,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		Snapshot temp = new Snapshot();
 		temp.addLine("getAssociationsTask " + associationTask); 
 		temp.addLine("resetAssociation"); 
+		temp.addLine("showEditor " + editorShown.toOffOnString());
 		return temp;
 	}
 	/*.................................................................................................................*/
@@ -319,6 +359,9 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		}
 		else  if (checker.compare(this.getClass(), "Calculates associates based upon an algorithm", null, commandName, "calculateAssociation")) {
 			calculateAssociation();
+		}
+		else  if (checker.compare(this.getClass(), "Trade status as to whether contained or containing", null, commandName, "tradeStatus")) {
+			alert("Sorry, not built!"); //Debugg.println;
 		}
 		else  if (checker.compare(this.getClass(), "Automatically sets associates if there is an exact match of names", null, commandName, "autoAssignExact")) {
 			if (queryOptions())
@@ -369,6 +412,10 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		else if (checker.compare(this.getClass(), "Deletes associated taxa; ask user first!", null, commandName, "deleteAssociateTaxa")) {
 			deleteAssociatedTaxa();
 		}
+		else if (checker.compare(this.getClass(), "Toggles show editor", "[true or false]", commandName, "showEditor")) {
+				editorShown.toggleValue(parser.getFirstToken(arguments));
+					showPanel(editorShown.getValue());
+		}
 		else if (checker.compare(this.getClass(), "Removes associates from association", null, commandName, "removeAssociates")) {
 			setAssociate(null, false, false);
 		}
@@ -379,37 +426,8 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	public boolean isShowing(TaxaAssociation assoc){
 		return assoc == association;
 	}
+
 	/*.................................................................................................................*/
-	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
-		deleteMenuItem(m0);
-		deleteMenuItem(m1);
-		deleteMenuItem(m2);
-		deleteMenuItem(m3);
-		deleteMenuItem(m4);
-		deleteMenuItem(m5);
-		deleteMenuItem(m6);
-		deleteMenuItem(m7);
-		deleteMenuItem(m8);
-		deleteMenuItem(m9);
-		m0 = addMenuItem(null, "Auto-assign Matches...", makeCommand("autoAssignExact", this));
-		m6 = addMenuItem(null, "Calculate Matches...", makeCommand("calculateAssociation", this));
-		m1 = addMenuItem(null, "Assign Associate...", makeCommand("setAssociate", this));
-		m2 = addMenuItem(null, "Add Associate...", makeCommand("addAssociate", this));
-		m3 = addMenuItem(null, "Remove from Association", makeCommand("removeAssociates", this));
-		m8 = addMenuItem(null, "-", null);
-		m4 = addMenuItem(null, "Create New Associated Taxon...", makeCommand("createAssociate", this));
-		m5 = addMenuItem(null, "Create New Taxa in Containing Block from Selected", makeCommand("createNewTaxaFromSelected", this));
-		m7 = addMenuItem(null, "Delete Associated Taxa...", makeCommand("deleteAssociateTaxa", this));
-		m9 = addMenuItem(null, "-", null);
-	if (this.taxa != null)
-			taxa.removeListener(this);
-		this.taxa = taxa;
-		if (this.taxa != null)
-			taxa.addListener(this);
-		this.table = table;
-		if (!MesquiteThread.isScripting())
-			resetAssociation(false);
-	}
 	void resetAssociation(boolean doEvenIfSame){
 		Taxa oldOtherTaxa = otherTaxa;
 		TaxaAssociation oldAssociation = association;
@@ -428,7 +446,8 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			otherTaxa.addListener(this);
 		if (!doEvenIfSame && oldAssociation == association && oldOtherTaxa == otherTaxa)
 			return;
-		panel.setAssociation(association, otherTaxa, taxa);
+		if (panel != null)
+			panel.setAssociation(association, otherTaxa, taxa);
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
@@ -436,11 +455,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		parametersChanged(notification);
 	}
 
-
-
-
-
-
+	/*.................................................................................................................*/
 	public void changed(Object caller, Object obj, Notification notification){
 		if (Notification.appearsCosmetic(notification)){
 			if (panel != null)
@@ -461,11 +476,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	}
 
 
-	public String getTitle() {
-		if (otherTaxa != null && otherTaxa.getName() != null && !StringUtil.startsWithIgnoreCase(otherTaxa.getName(),"Untitled") &&  !StringUtil.startsWithIgnoreCase(otherTaxa.getName(),"Taxa Association"))
-			return otherTaxa.getName();
-		return "Associates";
-	}
+	/*.................................................................................................................*/
 	Taxon[] associates;
 	public String getStringForTaxon(int ic){
 
@@ -495,52 +506,27 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	public boolean useString(int ic){
 		return true;
 	}
-	/*public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
-	 if (taxa==null || g==null)
-	 return;
-	 TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
-	 Color c = g.getColor();
-	 boolean colored = false;
-	 if (part!=null) {
-	 TaxaGroup tg = part.getTaxaGroup(ic);
-	 if (tg!=null){
-	 Color cT = tg.getColor();
-	 if (cT!=null){
-	 g.setColor(cT);
-	 g.fillRect(x+1,y+1,w-1,h-1);
-	 colored = true;
-	 }
-	 }
-	 }
-	 if (!colored){ 
-	 if (selected)
-	 g.setColor(Color.black);
-	 else
-	 g.setColor(Color.white);
-	 g.fillRect(x+1,y+1,w-1,h-1);
-	 }
-
-	 String s = getStringForRow(ic);
-	 if (s!=null){
-	 FontMetrics fm = g.getFontMetrics(g.getFont());
-	 if (fm==null)
-	 return;
-	 int sw = fm.stringWidth(s);
-	 int sh = fm.getMaxAscent()+ fm.getMaxDescent();
-	 if (selected)
-	 g.setColor(Color.white);
-	 else
-	 g.setColor(Color.black);
-	 g.drawString(s, x+(w-sw)/2, y+h-(h-sh)/2);
-	 g.setColor(c);
-	 }
-	 }
-	 */
+	
+	/*.................................................................................................................*/
 	public String getWidestString(){
-		return "88888888888  ";
+		return "88888888888888  ";
 	}
 	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
+	public String getTitle() {
+		if (association != null && taxa != null && otherTaxa != null){
+			Taxa containing = association.getContainingTaxa();
+			if (containing == taxa)
+				return "Contained taxa";
+			else if (containing == otherTaxa)
+				return "Containing taxa";
+				
+		}
+		if (otherTaxa != null && otherTaxa.getName() != null && !StringUtil.startsWithIgnoreCase(otherTaxa.getName(),"Untitled") &&  !StringUtil.startsWithIgnoreCase(otherTaxa.getName(),"Taxa Association"))
+			return otherTaxa.getName();
+		return "Associates";
+	}
+	/*.................................................................................................................*/
+/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return true;  
 	}
@@ -553,8 +539,22 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			otherTaxa.removeListener(this);
 		super.endJob();
 	}
-	void close(){
-		iQuit();
+
+	void showPanel(boolean show){
+		if (show){
+			if (panel == null)
+				panel = new AssocEditor(this);
+			resetAssociation(true);
+		containingWindow.addSidePanel(panel , 160);
+			panel.setVisible(true);
+			editorShown.setValue(true);
+			}
+		else {
+			containingWindow.removeSidePanel(panel);
+			
+			editorShown.setValue(false);
+		}
+
 	}
 }
 /*=======================================*/
@@ -671,7 +671,7 @@ class AssocEditor extends MousePanel {
 		prepareList(true);
 	}
 	private void close(){
-		ownerModule.close();
+		ownerModule.showPanel(false);
 	}
 	void reset(boolean completeReset){
 		if (assoc == null)
@@ -760,13 +760,22 @@ class AssocEditor extends MousePanel {
 
 		g.setColor(Color.black);
 		if (ownerModule!=null)
-			g.drawString(ownerModule.getTitle(), 24, 16);
+			g.drawString(getTitle(), 24, 16);
 		g.drawLine(getBounds().width-1, 0, getBounds().width-1, getBounds().height);
 		g.drawLine(0, 0, 0, getBounds().height);
 		int bottom = titleH + nameH+buttonH -2;
 		g.drawLine(0, bottom, getBounds().width, bottom);
 	}
-
+	String getTitle(){
+			if (assoc != null && taxa != null && otherTaxa != null){
+				Taxa containing = assoc.getContainingTaxa();
+				if (containing == taxa)
+					return "Contained taxa";
+				else if (containing == otherTaxa)
+					return "Containing taxa";
+			}
+			return "Associates";
+	}
 	/* to be used by subclasses to tell that panel touched */
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
 		String message = "";
@@ -786,7 +795,7 @@ class AssocEditor extends MousePanel {
 	/* to be used by subclasses to tell that panel touched */
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		if (x >= 2 && x <2+16 && y>= 2 && y< 2 + 16)
-			close();
+			ownerModule.showPanel(false);
 		else if (x >= 8 && x <8+16 && y>= titleH + nameH+2 && y< titleH + nameH+2 + 16)
 			assignSelectedAssociates();
 		else if (x >= 32 && x <32+16 && y>= titleH + nameH+2 && y< titleH + nameH+2 + 16)

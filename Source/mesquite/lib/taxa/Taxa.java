@@ -26,6 +26,7 @@ import mesquite.lib.Debugg;
 import mesquite.lib.FileElement;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
 import mesquite.lib.LowLevelListener;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -1402,6 +1403,20 @@ public class Taxa extends FileElement {
 		Listable chosen = ListDialog.queryList(parent, "Choose taxon", message,
 				MesquiteString.helpString, names, -1);
 		return (Taxon) chosen;
+	}
+	/* ................................................................................................................. */
+	public Taxon[] userChooseTaxa(MesquiteWindow parent, String message) {
+		ListableVector names = new ListableVector();
+		for (int i = 0; i < numTaxa; i++)
+			names.addElement(taxon[i], false);
+		Listable[] chosen = ListDialog.queryListMultiple(parent, "Choose taxa", message,
+				MesquiteString.helpString, names, null);
+		if (chosen == null)
+			return null;
+		Taxon[] taxaChosen = new Taxon[chosen.length];
+		for (int i=0; i<chosen.length; i++)
+			taxaChosen[i] = (Taxon)chosen[i];
+		return taxaChosen;
 	}
 
 	/* ................................................................................................................. */
