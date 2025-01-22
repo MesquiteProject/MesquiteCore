@@ -25,6 +25,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
+import mesquite.charMatrices.AlterData.AlterData;
 import mesquite.externalCommunication.AppHarvester.AppHarvester;
 import mesquite.externalCommunication.lib.AppChooser;
 import mesquite.externalCommunication.lib.AppInformationFile;
@@ -425,11 +426,16 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	}
 	protected boolean optionsAlreadySet = false;
 	/*.................................................................................................................*/
-	public long[][] alignSequences(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon) {
-		if (!optionsAlreadySet && !queryOptions())
+	public long[][] alignSequences(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon, MesquiteInteger resultCode) {
+		if (!optionsAlreadySet && !queryOptions()){
+			if (resultCode != null)
+				resultCode.setValue(DataAlterer.USER_STOPPED);
 			return null;
+		}
 		if (!(matrix.getParentData() != null && matrix.getParentData() instanceof MolecularData)){
 			discreetAlert( "Sorry, " + getName() + " works only if given a full MolecularData object");
+			if (resultCode != null)
+				resultCode.setValue(DataAlterer.INCOMPATIBLE_DATA);
 			return null;
 		}
 		MolecularData data = (MolecularData)matrix.getParentData();
@@ -489,9 +495,13 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		if (!success) {
 			logln("File export failed");
+			if (resultCode != null)
+				resultCode.setValue(DataAlterer.FILE_PROBLEM);
 			data.decrementEditInhibition();
 			return null;
 		}
+		if (resultCode != null)
+			resultCode.setValue(DataAlterer.ERROR);  //As default; turned to success later with success
 		String runningFilePath = rootDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFileName = "alignedFile" + MesquiteFile.massageStringToFilePathSafe(unique) + getImportExtension();
 		String outFilePath = rootDir + outFileName;
@@ -635,9 +645,13 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 								aligned[ic][keys[it]] = ((MolecularData)alignedData).getState(ic, it);
 							}
 					}
+					if (resultCode != null)
+						resultCode.setValue(DataAlterer.SUCCEEDED);
 				}
-			} else
+			} 
+			else 
 				MesquiteMessage.println("Processing unsuccessful: alignedData is null");
+
 			if (tempDataFile!=null)
 				tempDataFile.close();
 			getProject().decrementProjectWindowSuppression();

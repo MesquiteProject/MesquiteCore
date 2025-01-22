@@ -72,15 +72,15 @@ public class AMultipleAlignService extends MolecularDataAlterer  implements Alte
 		
 		
 		AlignMultipleSequencesMachine alignmentMachine = new AlignMultipleSequencesMachine(this, null, null, aligner);
-		boolean success = alignmentMachine.alignData(data,table);
-		
+		int resultCode = alignmentMachine.alignData(data,table);
+	
 		/*NOTE: In 3.x, alignment could be on a separate thread. As of 4.0, this is disallowed; 
 		 * the alignment is on the main thread. If this goes back to allowing a separate thread, then for this module's function 
 		 * as DataAlterer, which is synchronous, it should hold here in a loop until notified (e.g. by implementing
 		 * CalculationMonitor and passing it along to the machine).
 		 * */
 		
-		if (success) {
+		if (resultCode >=0) {
 			if (table != null)
 				table.repaintAll();
 			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
@@ -95,9 +95,7 @@ public class AMultipleAlignService extends MolecularDataAlterer  implements Alte
 		if (m==null)
 			return -1;
 		boolean success = AlignUtil.integrateAlignment(m, (MolecularData)data,  0, data.getNumChars()-1, 0, data.getNumTaxa()-1);*/
-		if (success)
-		return SUCCEEDED;
-		return MEH;
+		return resultCode;
    	}
    	
 	/*.................................................................................................................*/

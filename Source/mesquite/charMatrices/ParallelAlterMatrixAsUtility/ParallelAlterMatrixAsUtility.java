@@ -200,7 +200,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 				successFirstMatrix = firstAlterTask.alterData(data, null, null, alteredDataParameters);
 				doneFirstMatrix = true;
-				if (successFirstMatrix == 0) {
+				if (successFirstMatrix == DataAlterer.SUCCEEDED) {
 					matricesDone.setBit(im);
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 					if (alteredDataParameters.getSubcodes() != null)

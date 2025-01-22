@@ -5,6 +5,7 @@ import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.MolecularData;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAlterer;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.AlertDialog;
 
@@ -53,7 +54,7 @@ public class AlignMultipleSequencesMachine {
 
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alignData(CharacterData data, MesquiteTable table){
+	public int alignData(CharacterData data, MesquiteTable table){
 		this.data = (MolecularData)data;
 		this.table = table;
 		//to work, either nothing is selected (in which case it works on whole matrix), or 
@@ -64,11 +65,11 @@ public class AlignMultipleSequencesMachine {
 				if (AlertDialog.query(ownerModule.containerOfModule(), "Align entire matrix?", "Some data are currently selected, but not a block of data that can be aligned by Mesquite.  Data can be aligned only for the whole matrix or for a contiguous set of selected characters. If you wish to align only part of the matrix, then press Cancel and select a contiguous set of whole characters. ", "Align entire matrix", "Cancel"))
 					table.deselectAll();
 				else
-					return false;
+					return DataAlterer.USER_STOPPED;
 			}
 			else {
 				ownerModule.discreetAlert( "Data can be aligned only for the whole matrix or for a contiguous set of selected characters.  Please make sure that nothing in the matrix is selected, or that a contiguous set of characters (sites) is selected.");
-				return false;
+				return DataAlterer.INCOMPATIBLE_DATA;
 			}
 		}
 		//firstRowWithSelectedCell() != 
@@ -79,6 +80,7 @@ public class AlignMultipleSequencesMachine {
 			if (separateThreadStorage != null)
 				separateThreadStorage.setSeparateThread(separateThread);
 			alignThread.start();
+			return alignThread.resultCode;
 		}
 		else {
 			AlignThread alignThread = new AlignThread(ownerModule,this, aligner, this.data, this.table);
@@ -86,9 +88,8 @@ public class AlignMultipleSequencesMachine {
 			if (separateThreadStorage != null)
 				separateThreadStorage.setSeparateThread(separateThread);
 			alignThread.run();  
-			return true;
+			return alignThread.resultCode;
 		}
-		return false;
 	}
 
 }
@@ -102,6 +103,7 @@ class AlignThread extends Thread {
 	MolecularData data;
 	MesquiteTable table;
 	boolean separateThread = false;
+	int resultCode = DataAlterer.NOT_YET_DONE;
 	public AlignThread(MesquiteModule ownerModule, AlignMultipleSequencesMachine alignmentMachine, MultipleSequenceAligner aligner, MolecularData data, MesquiteTable table){
 		this.aligner = aligner;
 		this.ownerModule = ownerModule;
@@ -127,7 +129,9 @@ class AlignThread extends Thread {
 		else 				
 			entireColumnsSelected =  table.isColumnSelected(firstColumn.getValue());
 		//NOTE: at present this deals only with whole character selecting, and with all taxa
-		long[][] m  = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), null, firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue());
+		MesquiteInteger resultCodeFromAligner = new MesquiteInteger(DataAlterer.NO_RESPONSE);
+		long[][] m  = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), null, firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue(), resultCodeFromAligner);
+		resultCode = resultCodeFromAligner.getValue();
 		alignmentMachine.integrateAlignment(m, data,  firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue());
 		if (entireColumnsSelected) {
 			for (int ic = 0; ic<data.getNumChars(); ic++) 

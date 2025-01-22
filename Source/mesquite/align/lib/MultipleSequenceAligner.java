@@ -52,7 +52,7 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
 	 * thus, it should be returned as a long[numChars][numTaxa]
 	 * 
 	 */
-	public long[][] alignSequences(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon) {
+	public long[][] alignSequences(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon, MesquiteInteger resultCode) {
 		characterDataClass=matrix.getCharacterDataClass();
 		isProtein = (characterDataClass==ProteinData.class);
 		int numChars = lastSite - firstSite+1;
@@ -92,6 +92,8 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
 	 * This method is not called directly by Mesquite, but modules preferring to
 	 * receive and return the information as long[][] can override this and let the previous
 	 * method call it.  Also, this method receives only the pieces to be aligned.
+	 * 
+	 * NOTE However, this does not handle the resultCode as the method above promises (but see override in ExternalSequenceAligner), and thus callers won't know if it succeeded or failed.
 	 */
 	protected long[][] alignSequences(long[][] sequences) {
 		return null;

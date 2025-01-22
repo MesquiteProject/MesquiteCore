@@ -47,12 +47,17 @@ public abstract class DataAlterer extends MesquiteModule  {
    		return false;
    	}
 	/*.................................................................................................................*/
-	public final static int INPUT_NULL = -3;
-	public final static int OBJECT_LOCKED = -2;
+	public final static int NOT_YET_DONE = -7;
+	public final static int FILE_PROBLEM = -6;
+	public final static int INPUT_NULL = -5;
+	public final static int OBJECT_LOCKED = -4;
+	public final static int INCOMPATIBLE_DATA = -3;
+	public final static int ERROR = -2;  //use only if you don't want to say what kind of error
 	public final static int USER_STOPPED = -1;
 	public final static int SUCCEEDED = 0;
-	public final static int INCOMPATIBLE_DATA = 1;
+	public final static int NO_RESPONSE = 1;
 	public final static int MEH = 2;
+	
    	/** Called to alter data in those cells selected in table.  
    	 * Returns 
    	 * 0 if data altered; 
