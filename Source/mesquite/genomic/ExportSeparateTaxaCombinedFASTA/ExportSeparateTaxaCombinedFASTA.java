@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.io.ExportSeparateTaxaCombinedFASTA;
+package mesquite.genomic.ExportSeparateTaxaCombinedFASTA;
 
 /*~~  */
 
@@ -102,13 +102,13 @@ public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
 			if (!getExportOptions(false, true))
 				return false;
 */
-		String directory = MesquiteFile.chooseDirectory("Choose directory into which files will be saved:");
+		String directory = MesquiteFile.chooseDirectory("Choose folder into which files will be saved:");
 		if (StringUtil.blank(directory))
 			return false;
 		if (!directory.endsWith(MesquiteFile.fileSeparator))
 			directory+=MesquiteFile.fileSeparator;
 
-
+		boolean INCLUDE_GAPS = true;
 		StringBuffer buffer = new StringBuffer(500);
 
 		Taxa taxa = (Taxa)getProject().chooseTaxa(containerOfModule(),"For which block of taxa to export FASTA files?");
@@ -120,7 +120,7 @@ public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
 				for (int iM = 0; iM < numMatrices; iM++){
 					CharacterData data = getProject().getCharacterMatrixVisible(taxa, iM, MolecularState.class);
 					if (data != null) {
-						MesquiteStringBuffer taxMatrixFastaBuffer = ((MolecularData)data).getSequenceAsFasta(false,false,it, data.getName());
+						MesquiteStringBuffer taxMatrixFastaBuffer = ((MolecularData)data).getSequenceAsFasta(INCLUDE_GAPS,false,it, data.getName());
 						String taxMatrixFasta = taxMatrixFastaBuffer.toString();
 						if (StringUtil.notEmpty(taxMatrixFasta)){
 							buffer.append(taxMatrixFasta);
@@ -146,7 +146,7 @@ public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "FASTA File for each taxon, with sequences from each matrix";
+		return "Flipped FASTA Files (One per Taxon)";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

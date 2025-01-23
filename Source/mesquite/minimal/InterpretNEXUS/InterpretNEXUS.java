@@ -385,9 +385,10 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 								mNF.setAnnotation(fileComments.toString(), false);
 						}
 						if (!mesquiteBlockFound && (mNF == mProj.getHomeFile())) {
-							MesquiteModule mb = getProject().getCoordinatorModule();
+							FileCoordinator mb = (FileCoordinator)getProject().getCoordinatorModule();
 							if (mb != null){
-								MesquiteWindow mw = mb.getModuleWindow();
+								mb.showBasicWindows();
+							/*	MesquiteWindow mw = mb.getModuleWindow();
 								if (mw != null)
 									mw.setWindowSize(1000, 800);
 								//	if (getProject().getNumberTaxas()>0){
@@ -417,6 +418,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 
 									}
 								}
+								*/
 							}
 
 						}

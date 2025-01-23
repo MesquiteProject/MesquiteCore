@@ -415,12 +415,7 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteFile.rename(logPath, supportFilesPath + sep + MesquiteTrunk.logFileName + "_(Previous#1)");
 		}
 		if (verboseStartup) System.out.println("main init 10");
-		/*
-		 * 		String recentFilesPath = supportFilesPath + sep + MesquiteTrunk.recentFilesFileName; 
-		File recentFilesFile = new File(recentFilesPath);
-		if (recentFilesFile.exists()) {
-		}
-		 */
+	
 
 		/**/
 		/*

@@ -300,44 +300,11 @@ public class ManageAssociations extends AssociationsManager {
 		if (!success)
 			return null;
 		
-		/**
-		TaxaManager manageTaxa = (TaxaManager)findElementManager(Taxa.class);
-		MesquiteModule list = manageTaxa.getListOfTaxaModule(toBeEdited.getTaxa(whichTaxa), true);
-		if (list == null) 
-			return null;
-		//here ask each list imployee if they have this assocaition shown; otherwise finish script
-		EmployeeVector e = list.getEmployeeVector();
-		if (e != null){
-			for (int i = 0; i< e.size(); i++){
-				if (e.elementAt(i) instanceof mesquite.assoc.TaxonListAssoc.TaxonListAssoc){
-					mesquite.assoc.TaxonListAssoc.TaxonListAssoc t = (mesquite.assoc.TaxonListAssoc.TaxonListAssoc)e.elementAt(i);
-					if (t.isShowing(toBeEdited))
-						return toBeEdited;
-				}
-			}
-		}
-		Puppeteer p = new Puppeteer(this);
-		MesquiteInteger pos = new MesquiteInteger(0);
-
-		String commands =  "getWindow; tell It; setSize 680 400; newAssistant  #mesquite.assoc.TaxonListAssoc.TaxonListAssoc; tell It;";
-		commands +=  "getEmployee #mesquite.assoc.StoredAssociations.StoredAssociations; tell It; setCurrentAssociationID ";
-		//here put number of this taxa assoc
-		commands +=  toBeEdited.getID();
-		commands +=  "; endTell;";
-		commands +=  "endTell; endTell;";
-		pos.setValue(0);
-		CommandRecord cRecord = new CommandRecord(true);
-		CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
-		MesquiteThread.setCurrentCommandRecord(cRecord);
-
-		p.execute(list, commands, pos, "", false);
-		MesquiteThread.setCurrentCommandRecord(prevR);
-		/**/
 		return toBeEdited;
 	}
 	
 	/*.................................................................................................................*/
-	boolean showAssociationInTaxonList(Taxa taxa, TaxaAssociation association, boolean showEditor){
+	public boolean showAssociationInTaxonList(Taxa taxa, TaxaAssociation association, boolean showEditor){
 		TaxaManager manageTaxa = (TaxaManager)findElementManager(Taxa.class);
 		MesquiteModule list = manageTaxa.getListOfTaxaModule(taxa, true);
 		if (list == null) 

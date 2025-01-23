@@ -223,7 +223,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		else if (checker.compare(this.getClass(), "Shows list of the taxon groups", null, commandName, "showTaxonGroups")) {
 			return showTaxonGroupList(null, listOfTaxonGroupsName);
 		}
-		else if (checker.compare(this.getClass(), "Imports group labels from a text file.", "[]", commandName, "importLabelsOLD")) {
+		else if (checker.compare(this.getClass(), "Imports group labels from a text file.", "[]", commandName, "importLabelsOLD")) { //Debugg.println get rid of this
 			MesquiteString directoryName = new MesquiteString();
 			MesquiteString fileName = new MesquiteString();
 			MesquiteFile.openFileDialog("Please select a text file that has the taxon group labels, as exported previously.", directoryName, fileName);

@@ -45,6 +45,7 @@ public abstract class AssociationsManager extends FileElementManager   {
   	 public abstract TaxaAssociation makeNewAssociation(Taxa containingTaxa, Taxa containedTaxa, String name);
   	 public abstract TaxaAssociation duplicateAssociation(TaxaAssociation association);
 	public abstract ListableVector getAssociationsVector();
+	public abstract boolean showAssociationInTaxonList(Taxa taxa, TaxaAssociation association, boolean showEditor);
 	public Class getElementClass(){
 		return TaxaAssociation.class;
 	}

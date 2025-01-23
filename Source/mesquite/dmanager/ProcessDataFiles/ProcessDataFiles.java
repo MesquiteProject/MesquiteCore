@@ -648,7 +648,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
 		boolean success= false;
-		directoryPath = MesquiteFile.chooseDirectory("Choose directory containing data files:", lastDirectoryUsed); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+		directoryPath = MesquiteFile.chooseDirectory("Choose folder containing data files:", lastDirectoryUsed); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 		if (StringUtil.blank(directoryPath))
 			return null;
 		fileCoord = getFileCoordinator();

@@ -1897,7 +1897,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							m.setHiddenStatus(hiddenStatus);
 							m.setReferent(mw);
 							submenu.add(m);
-						} else {
+						} else if (name!= null) {
 							MesquiteMenuItem m = new MesquiteMenuItem(name, null /* msms.ownerModule */, msms.command,
 									j.toString());
 							j.add(1);
@@ -2474,10 +2474,6 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							MesquiteModule.mesquiteTrunk.clearRecentCommand));
 				}
 				openRecentSubmenu.setEnabled(enableRecent);
-				// MesquiteMenuItem importItem = new MesquiteMenuItem("Open Special NEXUS
-				// File...", MesquiteModule.mesquiteTrunk,
-				// MesquiteModule.mesquiteTrunk.openSpecialNEXUSCommand);
-				// newMenu.add(importItem);
 			}
 			/*-------------- open URL menu or submenu */
 			// newMenu.add(new MesquiteMenuItem("Open URL...", MesquiteModule.mesquiteTrunk,

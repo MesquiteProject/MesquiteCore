@@ -558,7 +558,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 
-		boolean imp = false; //was it imported???
+		boolean importing = false; //was it imported???
 
 		if (thisFile!=null && !StringUtil.blank(thisFile.getFileName())) {
 
@@ -574,7 +574,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (importerSubclass== null && nfi!=null && nfi.canReadFile(thisFile))  
 				fileInterp = nfi;
 			else {
-				imp = true;
+				importing = true;
 				fileInterp = findImporter(thisFile, 0, importerSubclass, arguments);
 			}
 			if (fileInterp !=null) {
@@ -616,7 +616,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					// behaviour: autosave or not
 
 					p.fileSaved(thisFile);  // If used import system, then doesn't add extension or save file if it was some type of NEXUS file 
-					if (imp && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
+					if (importing && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
 						thisFile.changeLocation(thisFile.getDirectoryName(), thisFile.getFileName()+".nex");
 						if (MesquiteThread.isScripting() || thisFile.changeLocation("Save imported file as NEXUS file")) {
 							afterProjectRead();
@@ -647,17 +647,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			p.refreshProjectWindow();
 		if (noWindowsShowing()){
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
-			if (imp){
-				if (getProject().getNumberCharMatrices()>0){
-					MesquiteModule mbb = findEmployeeWithName("Data Window Coordinator");
-					if (mbb != null)
-						mbb.doCommand("showDataWindow", "0", CommandChecker.defaultChecker);
-				}
-				else if (getProject().getNumberTaxas()>0){
-					MesquiteModule mbb = findEmployeeWithName("Manage TAXA blocks");
-					if (mbb != null)
-						mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
-				}
+			if (importing){
+				showBasicWindows();
 			}
 		}
 
@@ -668,6 +659,39 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
+	}
+	
+	public void showBasicWindows(){
+		MesquiteWindow mw = getModuleWindow();
+		if (mw != null)
+			mw.setWindowSize(1000, 800);
+		//	if (getProject().getNumberTaxas()>0){
+		MesquiteModule mbb = (MesquiteModule)findElementManager(Taxa.class);
+		if (mbb != null)
+			mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
+		//	}
+		if (getProject().getNumberCharMatrices()>3){
+			mbb = findEmployeeWithName("#ManageCharacters");
+			if (mbb != null)
+				mbb.doCommand("showDatasList", null, CommandChecker.defaultChecker);
+		}
+		else if (getProject().getNumberCharMatrices()>0){
+			mbb = findEmployeeWithName("#BasicDataWindowCoord");
+			if (mbb != null) {
+				for (int im = 0; im< getProject().getNumberCharMatrices(); im++)
+					mbb.doCommand("showDataWindow", "" + im, CommandChecker.defaultChecker);
+			}
+		}
+		else {
+			mbb = (MesquiteModule)findElementManager(TreesManager.class);
+			if (getProject().getNumberTreeVectors()==1) {
+				mbb.doCommand("showTreesInWindow", "" + 0, CommandChecker.defaultChecker);
+			}
+			else if (getProject().getNumberTreeVectors()>1) {
+				mbb.doCommand("showTreeBlocks", null, CommandChecker.defaultChecker);
+
+			}
+		}
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile readProjectGeneral(String arguments) { 
@@ -703,6 +727,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				p.decrementProjectWindowSuppression();
 			}
 			resetAllMenuBars();
+			
 		}
 		decrementMenuResetSuppression();
 		if (p==null){
@@ -711,8 +736,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			return null;
 		}
 		MesquiteFile thisFile = p.getHomeFile();
-		if (noWindowsShowing())
+		if (noWindowsShowing()){
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
+			showBasicWindows();
+			}
 		if (thisFile != null && thisFile.getCloseAfterReading()){
 			closeFile(thisFile);
 			MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
@@ -722,7 +749,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			saveAllFiles();
 			p.autosave = false;
 		}
-
+		MesquiteTrunk.recentFileRecord(p.getHomeFile(), true);
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
 	}

@@ -42,7 +42,8 @@ public class ManageFileComments extends FileInit {
 		super.projectEstablished();
  	}
   	 
-	/*.................................................................................................................*
+	
+/*.................................................................................................................*
  	/** A method called immediately after the file has been read in or completely set up (if a new file).*
  	public void fileReadIn(MesquiteFile f) {
  		NexusBlock[] blocks = getProject().getNexusBlocks(FileCommentsBlock.class, f);

@@ -170,7 +170,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 	public  void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equalsIgnoreCase("browseExecutable")) {
 			String directoryName = "";
-			String path = MesquiteFile.chooseDirectory("Choose directory containing the BLAST programs", directoryName);
+			String path = MesquiteFile.chooseDirectory("Choose folder containing the BLAST programs", directoryName);
 			if (StringUtil.notEmpty(path))
 				executablePathField.setText(path);
 		}
@@ -278,7 +278,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 	/*.................................................................................................................*/
 	public void processFiles(String directoryPath) { 
 		if (StringUtil.blank(directoryPath)) {
-			directoryPath = MesquiteFile.chooseDirectory("Choose directory containing FASTA files to be processed:", previousDirectory); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+			directoryPath = MesquiteFile.chooseDirectory("Choose folder containing FASTA files to be processed:", previousDirectory); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 		}
 		if (StringUtil.blank(directoryPath)) {
 			return;

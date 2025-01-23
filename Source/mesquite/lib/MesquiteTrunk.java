@@ -277,6 +277,8 @@ public abstract class MesquiteTrunk extends MesquiteModule
 
 	/** Returns a recent file record that matches the incoming file */
 	public static MesquiteFile findRecentFile(MesquiteFile file, boolean objectIdentity){
+		if (file == null)
+			return null;
 		for (int i=0; i<recentFiles.size(); i++) {
 			MesquiteFile stored = (MesquiteFile)recentFiles.elementAt(i);
 			if (stored == file) 
@@ -289,6 +291,8 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/*.................................................................................................................*/
 	/** Records new or newly opened file among Recent Files */
 	public static void recentFileRecord(MesquiteFile file, boolean saveToPrefs){
+		if (file.getFileName() == null)
+			return;
 		MesquiteFile stored = findRecentFile(file, false);
 		if (stored==null) {
 			recentFiles.insertElementAt(file, 0, false);

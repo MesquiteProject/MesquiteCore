@@ -331,12 +331,12 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	public  void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equalsIgnoreCase("browseExecutable")) {
 			String directoryName = "";
-			String path = MesquiteFile.chooseDirectory("Choose directory containing the BLAST programs", directoryName);
+			String path = MesquiteFile.chooseDirectory("Choose folder containing the BLAST programs", directoryName);
 			if (StringUtil.notEmpty(path))
 				executablePathField.setText(path);
 		} else if (e.getActionCommand().equalsIgnoreCase("browseDatabase")) {
 			String directoryName = "";
-			String path = MesquiteFile.chooseDirectory("Choose directory containing the BLAST databases", directoryName);
+			String path = MesquiteFile.chooseDirectory("Choose folder containing the BLAST databases", directoryName);
 			if (StringUtil.notEmpty(path))
 				databasePathField.setText(path);
 		}

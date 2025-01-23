@@ -30,7 +30,6 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;
 	}
-
 	/*.................................................................................................................*/
 	public void processDirectory(String directoryPath) {
 		if (!PythonUtil.pythonAvailable())
@@ -62,7 +61,7 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
-		String directoryPath = MesquiteFile.chooseDirectory("Choose directory containing data files:", null); 
+		String directoryPath = MesquiteFile.chooseDirectory("Choose folder containing data files:", null); 
 		if (StringUtil.blank(directoryPath))
 			return null;
 
@@ -78,7 +77,7 @@ public class FlipTaxonLocus extends GeneralFileMaker {
 
 	/*.................................................................................................................*/
 	public boolean loadModule() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {

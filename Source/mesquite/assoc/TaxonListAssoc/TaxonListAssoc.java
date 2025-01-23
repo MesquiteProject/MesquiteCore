@@ -85,6 +85,8 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
 		deleteAllMenuItems();
 		addCheckMenuItem(null, "Show Editor", makeCommand("showEditor", this), editorShown);
+		addMenuItem(null, "View from Other Taxa's Perspective", makeCommand("otherPerspective", this));
+		addMenuItem(null, "-", null);
 		addMenuItem(null, "Assign Associates to Selected Taxa...", makeCommand("setAssociates", this));
 		addMenuItem(null, "Add Associates to Selected Taxa...", makeCommand("addAssociates", this));
 		addMenuItem(null, "Remove Associates", makeCommand("removeAssociates", this));
@@ -464,6 +466,14 @@ public class TaxonListAssoc extends TaxonListAssistant {
 				association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
 				resetAssociation(true);
 			}
+		}
+		else  if (checker.compare(this.getClass(), "Open from perspective of other taxa", null, commandName, "otherPerspective")) {
+			AssociationsManager manager = (AssociationsManager)findElementManager(TaxaAssociation.class);
+			if (association !=null && taxa != null){
+				Taxa otherTaxa = association.getOtherTaxa(taxa);
+				manager.showAssociationInTaxonList(otherTaxa,  association, false);
+			}
+
 		}
 		else  if (checker.compare(this.getClass(), "Duplicate the current association", null, commandName, "duplicateAssociation")) {
 			if (association == null)
@@ -865,7 +875,17 @@ class AssocEditor extends MousePanel implements TextListener, FocusListener {
 				}
 			}
 		}
+		int rowHeight = taxonList.getRowHeight();
+		if (rowHeight>10)
+			headerH = (int)(2.2*rowHeight);
+		headerList.setSize(getWidth(), headerH);
+		taxonList.setSize(getWidth(), getHeight()-titleH -  nameH - buttonH-headerH);
+		taxonList.setLocation(0,titleH + nameH + buttonH+headerH);
 		repaint();
+	/*	int rowHeight = taxonList.getRowHeight();
+		if (rowHeight>10){
+			headerList.setSize(a,b);
+		}*/
 		headerList.repaint();
 		taxonList.repaint();
 		//	button.repaint();
@@ -916,8 +936,12 @@ class AssocEditor extends MousePanel implements TextListener, FocusListener {
 
 	public void setSize(int w, int h){
 		super.setSize(w, h);
+		int rowHeight = taxonList.getRowHeight();
+		if (rowHeight>10)
+			headerH = (int)(2.2*rowHeight);
 		headerList.setSize(w, headerH);
 		taxonList.setSize(w, h-titleH -  nameH - buttonH-headerH);
+		taxonList.setLocation(0,titleH + nameH + buttonH+headerH);
 		text.setBounds(1, titleH, getBounds().width-2, nameH);
 		repaint();
 		text.repaint();
@@ -926,8 +950,12 @@ class AssocEditor extends MousePanel implements TextListener, FocusListener {
 	}
 	public void setBounds(int x, int y, int w, int h){
 		super.setBounds(x, y, w, h);
+		int rowHeight = taxonList.getRowHeight();
+		if (rowHeight>10)
+			headerH = (int)(2.2*rowHeight);
 		headerList.setSize(w, headerH);
 		taxonList.setSize(w, h-titleH - nameH - buttonH-headerH);
+		taxonList.setLocation(0,titleH + nameH + buttonH+headerH);
 		text.setBounds(1, titleH, getBounds().width-2, nameH);
 		repaint();
 		text.repaint();
