@@ -132,6 +132,7 @@ public class TaxaAssociation extends FileElement  {
 		else
 			associations = null;
 	}
+
 	public String getDefaultIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "taxaAssocSmall.gif";
 	}
@@ -192,6 +193,18 @@ public class TaxaAssociation extends FileElement  {
 		}
 	}
 
+	public void transposeAssociation(){
+		TaxaAssociation tempAssociation = cloneAssociation(); 
+		setTaxa(tempAssociation.getContainedTaxa(), 0); //notice flip
+		setTaxa(tempAssociation.getContainingTaxa(), 1); //notice flip
+		tempAssociation.setName("Transposed (" + getName() + ")");
+		for (int a=0;a<taxaContaining.getNumTaxa() ; a++){
+			for (int b=0;b<taxaContained.getNumTaxa(); b++){
+				if (tempAssociation.areAssociated(taxaContaining.getTaxon(a),taxaContained.getTaxon(b)))
+					setAssociated(taxaContaining.getTaxon(a),taxaContained.getTaxon(b),true);
+			}
+		}
+	}
 	/*.................................................................................................................*/
 	public TaxaAssociation cloneAssociation(){
 		TaxaAssociation newAssociation = new TaxaAssociation();
@@ -320,6 +333,20 @@ public class TaxaAssociation extends FileElement  {
 		return false;
 	}
 	/*.................................................................................................................*/
+	private boolean areAssociated(Taxon taxonA, Taxon taxonB){
+		if (taxonA == null)
+			return false;
+		for (int i= 0; i<associations.length; i++){
+			if (associations[i].taxonContaining == taxonA)
+				return associations[i].findAssociate(taxonB)>=0;
+		}
+		for (int i= 0; i<associations.length; i++){
+			if (associations[i].taxonContaining == taxonB)
+				return associations[i].findAssociate(taxonA)>=0;
+		}
+		return false;
+	}
+	/*.................................................................................................................*/
 	public boolean equals(TaxaAssociation association){
 		if (association==null)
 			return false;
@@ -424,29 +451,26 @@ public class TaxaAssociation extends FileElement  {
 			}
 		}
 	}
-	
+
 	static boolean warnedDuplicate = false;
 	/*.................................................................................................................*/
-	private void setAssociated(int a, int b, boolean assoc){
-		if (a >=0 && a < taxaContaining.getNumTaxa() && b >= 0 && b < taxaContained.getNumTaxa()) {
-			Taxon taxonA = taxaContaining.getTaxon(a);
+	private void setAssociated(int containingTaxon, int containedTaxon, boolean assoc){
+		if (containingTaxon >=0 && containingTaxon < taxaContaining.getNumTaxa() && containedTaxon >= 0 && containedTaxon < taxaContained.getNumTaxa()) {
+			Taxon taxonA = taxaContaining.getTaxon(containingTaxon);
 			if (taxonA == null)
 				return;
 			for (int i= 0; i<associations.length; i++){
 				if (associations[i] != null && associations[i].taxonContaining == taxonA){
-					Taxon taxonContained = taxaContained.getTaxon(b);
+					Taxon taxonContained = taxaContained.getTaxon(containedTaxon);
 					if (assoc){
 						if (getAssociates(taxonContained)!=null){ //oops, already has this as an associate; don't add
-							String warning = "Terminal taxon of contained tree (" + taxonContained.getName() + ") is associated with more than one terminal taxon in the containing tree.  This is not allowed in the current version of Contained Associates.";
-							if (warnedDuplicate)
+							String warning = "WARNING: Contained taxon (" + taxonContained.getName() + ") is already placed within another containing taxon. This may cause issues for some calculations. This warning will not be given again.";
+							if (!warnedDuplicate)
 								MesquiteTrunk.mesquiteTrunk.logln(warning);
-							else 
-								MesquiteTrunk.mesquiteTrunk.discreetAlert(warning + " (This warning will be given subsequently only in the log)");
 							warnedDuplicate = true;
 						}
-						else 
-							associations[i].addAssociate(taxonContained);
-						
+						associations[i].addAssociate(taxonContained);
+
 					}
 					else {
 						associations[i].deleteAssociate(taxonContained);
@@ -455,6 +479,36 @@ public class TaxaAssociation extends FileElement  {
 			}
 		}
 	}
+	private void setAssociated(Taxon taxonA, Taxon taxonB, boolean assoc){ //this allows for the two taxa to be in either block
+		if (taxonA == null)
+			return;
+		for (int i= 0; i<associations.length; i++){
+			if (associations[i] != null && associations[i].taxonContaining == taxonA){
+				if (assoc){
+					if (getAssociates(taxonB)!=null){ //oops, already has this as an associate; don't add
+						String warning = "WARNING: Contained taxon (" + taxonB.getName() + ") is already placed within another containing taxon. This may cause issues for some calculations. This warning will not be given again.";
+						if (!warnedDuplicate)
+							MesquiteTrunk.mesquiteTrunk.logln(warning);
+						warnedDuplicate = true;
+					}
+					associations[i].addAssociate(taxonB);
+
+				}
+				else {
+					associations[i].deleteAssociate(taxonB);
+				}
+			}
+		}
+		for (int i= 0; i<associations.length; i++){
+			if (associations[i] != null && associations[i].taxonContaining == taxonB){
+				if (assoc)
+					associations[i].addAssociate(taxonB);
+				else 
+					associations[i].deleteAssociate(taxonB);
+			}
+		}
+	}
+	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public void replaceWith(TaxaAssociation source){
 
@@ -555,11 +609,11 @@ public class TaxaAssociation extends FileElement  {
 	}
 	/*.................................................................................................................*/
 	public Taxa getContainingTaxa(){
-			return taxaContaining;
+		return taxaContaining;
 	}
 	public Taxa getContainedTaxa(){
 		return taxaContained;
-}
+	}
 	/*.................................................................................................................*/
 	public Taxa getOtherTaxa(Taxa taxa){
 		if (taxa==taxaContained)
@@ -571,9 +625,9 @@ public class TaxaAssociation extends FileElement  {
 		return null;
 	}
 	/*.................................................................................................................*/
-	
+
 	/*.................................................................................................................*/
-	
+
 	public void setAssociation(Taxon taxonA, Taxon taxonB, boolean associated){
 		if (taxaContaining==null || taxaContained == null)
 			return;

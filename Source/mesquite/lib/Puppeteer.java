@@ -610,15 +610,7 @@ public class Puppeteer  {
 				}
 				if (fineDebugging) stamp("-sc- (" + level + ")10");
 				sendCommands(who, block, stringPos, "endTell;", skip, nb, checker);
-			/*	if (checker.getExtraPending()!= null) { //back up by this string if last//Debugg.println
-					checker.rememberExtraPending(null);
-					stringPos.subtract(9);  //Debugg.println not right!!! need to go back that set of characters
-					
-				}
-		//		WQQ if (checker.hasEndTellWaiting())
-		//			stringPos back up to previous endTell;
-				//then consume that note
-				 * */
+
 				if (fineDebugging) stamp("-sc- (" + level + ")11");
 			} 
 			//else if (checker.compare(null, "End this level of the script", null, commandName, "endTell")) {

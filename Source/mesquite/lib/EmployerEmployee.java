@@ -476,7 +476,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	}
 	/* ................................................................................................................. */
 	/** Returns whether the given module is employer OR higher. */
-	public String dumpEmployers() {
+	public String listEmployers() {
 		String s = "";
 		EmployerEmployee empr = getEmployer();
 		while (empr != null){

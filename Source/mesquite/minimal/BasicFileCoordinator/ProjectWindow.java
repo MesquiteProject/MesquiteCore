@@ -1438,7 +1438,7 @@ class TreesRPanel extends ElementPanel {
 class AssocPanel extends ElementPanel {
 	public AssocPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, FileElement element){
 		super(bfc, container, w,element);
-		setTitle("Association: " + element.getName());
+		setTitle(element.getName());
 		setColors(ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceTextMedium());
 		addCommand(true, null, "Edit Associaton", "Edit Associaton", new MesquiteCommand("showMe", element));
 		addCommand(true, null, "-", "-", null);

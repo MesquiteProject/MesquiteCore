@@ -30,6 +30,7 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 	AssociationsManager manager;
 	TaxaAssociation currentAssociation = null;
 	Taxa currentTaxa = null;
+	ListableVector associationsVector;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		manager = (AssociationsManager)findElementManager(TaxaAssociation.class);
@@ -40,6 +41,8 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 			return sorry("No stored associations between taxa are available. If you want to use this, please first establish an association, e.g. by the menu item Taxa&Trees > New Association...");
 		} 
 		addMenuItem("Choose Taxa Association...", makeCommand("chooseAssociation", this));
+		associationsVector = manager.getAssociationsVector();
+		associationsVector.addListener(this);
 		return true;
 	}
 	public String getKeywords(){
@@ -48,6 +51,11 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 
 	public boolean isPrerelease(){
 		return false;
+	}
+	public void endJob() {
+		if (this.associationsVector != null)
+			associationsVector.removeListener(this);
+		super.endJob();
 	}
 	/*.................................................................................................................*/
 	public void changed(Object caller, Object obj, Notification notification){

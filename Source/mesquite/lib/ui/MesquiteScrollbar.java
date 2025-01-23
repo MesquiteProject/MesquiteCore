@@ -24,7 +24,7 @@ import mesquite.lib.system.*;
 /* includes commands,  buttons, miniscrolls
 /* ======================================================================== */
 /* scrollbar for tree */
-public abstract class MesquiteScrollbar extends Scrollbar implements MQComponent, AdjustmentListener {
+public abstract class MesquiteScrollbar extends MQScrollbar implements MQComponent, AdjustmentListener {
 	public MesquiteScrollbar ( int orientation, int value, int visible, int min, int max){
 		super(orientation, value, visible, min, max);
 		addAdjustmentListener(this);
