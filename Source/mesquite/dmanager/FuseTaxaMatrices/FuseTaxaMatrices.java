@@ -24,7 +24,7 @@ import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
-public class FuseTaxaMatrices extends FileAssistantT {
+public class FuseTaxaMatrices extends FileAssistantFM {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		includeFuse();
@@ -52,6 +52,7 @@ public class FuseTaxaMatrices extends FileAssistantT {
 		MesquiteModule fCoord = getFileCoordinator();
 		MesquiteCommand command = makeCommand("includeFileFuse", fCoord);
 		command.doItMainThread(StringUtil.argumentMarker + "fuseTaxaCharBlocks", null, this);
+		
 		MesquiteWindow w = containerOfModule();
 		MesquiteFrame f = w.getParentFrame();
 		if (f.getResourcesClosedWhenMinimized())
@@ -59,13 +60,16 @@ public class FuseTaxaMatrices extends FileAssistantT {
 		iQuit();
 
 	}
+	public boolean requestPrimaryChoice(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() { 
 		return false;
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Merge Taxa & Matrices from File...";
+		return "General Merge Taxa & Matrices from File...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {

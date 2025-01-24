@@ -124,11 +124,14 @@ public class ImportByTaxonFastas extends GeneralFileMaker {
 										for (int iLocus = 0; iLocus < loci.getNumTaxa(); iLocus++){
 											String locusName = loci.getTaxonName(iLocus);
 											CharacterData locusMatrix = recProject.getCharacterMatrixByReference(null,  taxa, null, locusName);
+											if (!(locusMatrix instanceof DNAData))
+													locusMatrix = null;
 											if (locusMatrix == null) { //no matrix yet; establish
 												locusMatrix = charactersManager.newCharacterData(taxa, 0, DNAData.DATATYPENAME); //this is manager of receiving project
 												locusMatrix.setName(locusName);
 												locusMatrix.addToFile(taxa.getFile(), recProject, null);
 											}
+											
 
 											/*Now time to pull sequence into locus matrix 
 											 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix

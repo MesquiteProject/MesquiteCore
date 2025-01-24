@@ -848,6 +848,12 @@ public class ManageTaxa extends TaxaManager {
 	//NameReference origIndexRef = NameReference.getNameReference("OrigIndex");
 	/*.................................................................................................................*/
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
+
+		if (parser.hasFileReadingArgument(fileReadingArguments, "readOneTaxaBlockOnly") && getProject().getNumberTaxas(file)>0){
+			logln("Taxa block skipped");
+			
+			return skipNexusBlock(file, name, block, null, fileReadingArguments);
+			}
 		Parser commandParser = new Parser();
 
 		commandParser.setString(block.toString());
@@ -864,12 +870,12 @@ public class ManageTaxa extends TaxaManager {
 		Vector unrecName = new Vector();
 		String blockID = null;
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
-		boolean noWarnDupTaxa = parser.hasFileReadingArgument(fileReadingArguments, "noWarnDupTaxa");
+		boolean noWarnDupTaxaBlock = parser.hasFileReadingArgument(fileReadingArguments, "noWarnDupTaxaBlock");
 		boolean hadDuplicateNames= false;
 		int firstNewTaxon = 0;
 		boolean nameProblems = false;
 		boolean merging = false;
-		
+
 		while (!StringUtil.blank(s=commandParser.getNextCommand(startCharC))) {
 			String commandName = parser.getFirstToken(s);
 			if (commandName.equalsIgnoreCase("DIMENSIONS")) {
@@ -993,16 +999,18 @@ public class ManageTaxa extends TaxaManager {
 				if (newTaxa != null)
 					newTaxa.setUniqueID(blockID);
 			}
-			else if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK")))  {
-				unrec.addElement(s); //store unrecognized commands because they can't be stored until issue of duplicate taxa blocks is resolved
-				unrecName.addElement(commandName);
+			else {
+				if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK")))  {
+					unrec.addElement(s); //store unrecognized commands because they can't be stored until issue of duplicate taxa blocks is resolved
+					unrecName.addElement(commandName);
+				}
 			}
 		}
 		CommandRecord.tick("TAXA block read; checking");
 		if (newTaxa!=null) {
 
 			Taxa eT = existsInOtherFile(newTaxa, file, true, false);
-			if (eT !=null && !noWarnDupTaxa){  //>>>>>>>>>>>>>>>>>> block of taxa with same names found
+			if (eT !=null && !noWarnDupTaxaBlock){  //>>>>>>>>>>>>>>>>>> block of taxa with same names found
 				boolean autoDelete = false;
 				String ftn = "";
 				String helpString ="";
@@ -1048,13 +1056,13 @@ public class ManageTaxa extends TaxaManager {
 					return new TaxaBlock(null, null);
 				}
 			} //<<<<<<<<<<<<<<<<<<<<<<
-			
+
 			if (eT == null){ //>>>>>>>>>>>>>>>>>>>> 
 				eT = existsInOtherFileByID(newTaxa, file); 
 				if (eT != null) { //taxa block exists according to id, but has either different names or different number of taxa
 
 					if (eT.getNumTaxa() == newTaxa.getNumTaxa()){//same number of Taxa
-						
+
 					}
 				}
 				//taxa claimed to be same ID but names have changed
@@ -1075,7 +1083,7 @@ public class ManageTaxa extends TaxaManager {
 					readUnrecognizedCommand(file, tBlock, name, block, commandName, s, blockComments, null,  fileReadingArguments);
 				}
 			}
-			if (almostExistsInOtherFile(newTaxa, file) && !noWarnDupTaxa) {
+			if (almostExistsInOtherFile(newTaxa, file) && !noWarnDupTaxaBlock) {
 				String ftn = "";
 				if (newTaxa.getTaxon(0)!=null)
 					ftn = "; name of first taxon: " + newTaxa.getTaxon(0).getName();

@@ -10,24 +10,44 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
-package mesquite.lib.duties;
+ */
+package mesquite.lib;
 
 import java.awt.*;
-import mesquite.lib.*;
+import java.util.*;
+import java.text.*;
+
+import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.characters.*;
+
 
 
 /* ======================================================================== */
-/** Subclass of FileAssistant that deals with trees.*/
+/**Represents a block in a NEXUS file to be ignored
+ */
+public class SkipBlock extends NexusBlock {
+	
+	public SkipBlock(MesquiteFile f, MesquiteModule manager){
+		super(null, null);
+	}
+	public boolean getWritable(){
+		return false;
+	}
 
-public abstract class FileAssistantT extends FileAssistant  {
+	public String getBlockName() {
+		return "SKIP";
+	}
 
-   	 public Class getDutyClass() {
-   	 	return FileAssistantT.class;
-   	 }
- 	public String getDutyName() {
- 		return "Taxa/Trees Assistant for File";
-   	 }
+	public boolean contains(FileElement e) {
+		return false;
+	}
+
+	public boolean mustBeAfter(NexusBlock block) {
+		return false;
+	}
+	
 }
 
 

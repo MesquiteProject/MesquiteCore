@@ -24,6 +24,16 @@ see BasicFileCoordinator.*/
 
 /** a subclass for reading nexus files*/
 public abstract class NexusFileInterpreter extends FileInterpreterI  {  
+	/* some file reading arguments:
+	 * 
+	@noWarnMissingReferent
+	@noWarnUnrecognized
+	@noWarnDupTaxaBlock
+	@readOneTaxaBlockOnly
+	@readOneMatrixOnly
+	 */
+
+	
 	/** returns whether module can read given file.*/
 	public abstract boolean canReadFile(MesquiteFile f);
 	/** writes the given MesquiteFile belonging to the MesquiteProject.*/
@@ -35,6 +45,7 @@ public abstract class NexusFileInterpreter extends FileInterpreterI  {
 	/** finds the ith block of a given type and returns it raw.*/
 	public abstract FileBlock readOneBlock(MesquiteProject mf, MesquiteFile f, String blockType, int i);
 	public abstract void readFile(MesquiteProject mf, MesquiteFile mNF, String arguments, String[] justTheseBlocks) ;
+
 }
 
 

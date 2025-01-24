@@ -18,15 +18,15 @@ import mesquite.lib.*;
 
 
 /* ======================================================================== */
-/** Subclass of FileAssistant that deals with trees.*/
+/** Subclass of FileAssistant that merges other files.*/
 
-public abstract class FileAssistantT extends FileAssistant  {
+public abstract class FileAssistantFM extends FileAssistant  {
 
    	 public Class getDutyClass() {
-   	 	return FileAssistantT.class;
+   	 	return FileAssistantFM.class;
    	 }
  	public String getDutyName() {
- 		return "Taxa/Trees Assistant for File";
+ 		return "File Merge Assistant for File";
    	 }
 }
 

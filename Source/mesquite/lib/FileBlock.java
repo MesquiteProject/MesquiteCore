@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -40,7 +40,7 @@ public class FileBlock {
 		directFromFile = false;
 		reset();
 	}
-	
+
 	//##########################
 	MesquiteFile file;
 	MesquiteString blockName;
@@ -63,8 +63,8 @@ public class FileBlock {
 		status = new MesquiteInteger(0);
 		withinCommandComments = new StringBuffer(10);
 		reset();
-		
-	
+
+
 		String command = file.getNextCommand(status, withinCommandComments);
 		String wcc = withinCommandComments.toString();
 		if (!StringUtil.blank(wcc) && wcc.length()>2){
@@ -84,7 +84,7 @@ public class FileBlock {
 		blockName.setValue(bName);
 		firstCommand = command;
 	}
-	
+
 	public void setFile(MesquiteFile f){
 		this.f = f;
 	}
@@ -103,9 +103,9 @@ public class FileBlock {
 	}
 	public int getCurrentCommandNumber(){
 		return currentCommand;
-		
+
 	}
-	
+
 	/*========= methods for direct matrix reading '24 ==========*/
 	public String getNextToken() {	//NOTE: Note safe for comment preservation
 		if (!StringUtil.blank(unconsumed)){
@@ -114,7 +114,7 @@ public class FileBlock {
 		}
 		return file.nextToken(null);
 	}
-	
+
 	private boolean emptyToken(String token) {
 		return token == null || token.length() ==0;
 	}
@@ -127,7 +127,7 @@ public class FileBlock {
 		if (NEXUSFileParser.verbose) Debugg.println("======GNCNWC-FB -[" + unconsumed + "]");
 		return unconsumed;
 	}
-	
+
 	public long getFilePosition() {
 		return file.getFilePosition();
 	}
@@ -138,8 +138,8 @@ public class FileBlock {
 	public void getNextLine(MesquiteStringBuffer buffer) {
 		file.readLine(buffer);
 	}
-	
-	
+
+
 	public String getNextFileCommand(MesquiteString comment){
 		if (!directFromFile)
 			return getNextFileCommandStored(comment);
@@ -197,15 +197,18 @@ public class FileBlock {
 		}
 		return null;
 	}
-	*/
+	 */
 	public int getNumCommands(){
 		if (directFromFile)
 			return MesquiteInteger.unassigned;
 		return commands.size();
 	}
 	public MesquiteStringBuffer toMesquiteStringBuffer(){
-		if (readOnce && directFromFile)
-			MesquiteMessage.warnUser("FileBlock toString() used even though directFromFile and already read: " + blockName);
+		if (readOnce && directFromFile){
+			MesquiteMessage.warnUser("FileBlock toMesquiteStringBuffer() used even though directFromFile and already read: " + blockName);
+			if (MesquiteTrunk.developmentMode)
+				MesquiteMessage.printStackTrace();
+		}
 		MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 		MesquiteString comment = new MesquiteString();
 		reset();
@@ -217,8 +220,11 @@ public class FileBlock {
 		return sb;
 	}
 	public String toString(){
-		if (readOnce && directFromFile)
+		if (readOnce && directFromFile){
 			MesquiteMessage.warnUser("FileBlock toString() used even though directFromFile and already read: " + blockName);
+			if (MesquiteTrunk.developmentMode)
+				MesquiteMessage.printStackTrace();
+		}
 		MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 		MesquiteString comment = new MesquiteString();
 		reset();

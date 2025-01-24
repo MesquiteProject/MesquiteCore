@@ -31,6 +31,7 @@ import mesquite.lib.ui.ProgressIndicator;
 
 /** A file interpreter for a NEXUS file format.  Sends blocks to various managing modules for reading.  */
 public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpreter {
+
 	public String getName() {
 		return "NEXUS file";
 	}
@@ -291,6 +292,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 	}
 	/*.................................................................................................................*/
 	public void readFile(MesquiteProject mProj, MesquiteFile mNF, String arguments, String[] justTheseBlocks) {
+		
 		incrementMenuResetSuppression();
 		int length = (int)mNF.existingLength();
 		int readToNow = 0;
@@ -440,7 +442,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			}
 			mNF.closeReading();
 			//mNF.reportTimes();
-			if (mNF.foreignElements.size()>0){
+			if (mNF.foreignElements.size()>0 && !parser.hasFileReadingArgument(arguments, "noWarnUnrecognized")){
 
 
 				logln("");
@@ -605,20 +607,6 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			}
 		}
 		return true;
-	}
-	private void skipNexusBlock (MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
-	//	Parser commandParser = new Parser();
-		 NEXUSFileParser commandParser = new NEXUSFileParser(block);
-
-	//	commandParser.setString(block.toString()); //AVOID
-		MesquiteLong startCharC = new MesquiteLong(0);
-		String s = null;
-		while (!StringUtil.blank(s=commandParser.getNextCommand(startCharC))) {
-			String commandName = parser.getFirstToken(s);
-			if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK")))  {
-			}
-		}
-		
 	}
 	/*.................................................................................................................*/
 	private NexusBlock sendBlockToReader(MesquiteProject mp, MesquiteFile mf, FileBlock block, String blockName, int totalLength, int readToNow, StringBuffer blockComments, String fileReadingArguments) {

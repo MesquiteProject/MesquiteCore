@@ -365,8 +365,11 @@ public class ManageCharacters extends CharactersManager {
 	/*.................................................................................................................*/
 	public CharacterData newCharacterData(Taxa taxa, int numChars, String dataType) {
 		CharMatrixManager manager = findCharacterTypeManager(dataType);
-		if (manager == null )
+		if (manager == null ){
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("No manager for matrices of type " + dataType  + " found");
 			return null;
+		}
 		return manager.getNewData(taxa, numChars);
 	}
 	/*.................................................................................................................*/
@@ -1973,6 +1976,10 @@ public class ManageCharacters extends CharactersManager {
 	 }
 	 /*.................................................................................................................*/
 	 public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
+			if (parser.hasFileReadingArgument(fileReadingArguments, "readOneMatrixOnly") && getProject().getNumberCharMatrices(file)>0){
+				logln("Character matrix skipped");
+				return skipNexusBlock(file, name, block, null, fileReadingArguments);
+			}
 		 CharacterData data=null;
 		 NEXUSFileParser commandParser = new NEXUSFileParser(block);
 

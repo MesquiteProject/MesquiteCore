@@ -2141,7 +2141,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/** This displays the help note.  If you override this, make sure you call super.actionPerformed(e) at the end of your method so that the help system still works */
 	public  void actionPerformed(ActionEvent e) {
 		if   ("?".equals(e.getActionCommand())) {
-			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", "NOTE");
+			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", null);
 			toFront();
 		}
 
@@ -2151,7 +2151,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public void mouseOnImage(String imageName) {
 		if   ("?".equals(imageName)) {
-			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", "NOTE");
+			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", null);
 			toFront();
 		}
 		else if (imageName =="manual")

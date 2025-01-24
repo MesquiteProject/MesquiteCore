@@ -260,7 +260,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 				if (data == null) {
 					if (dataName!=null)
 						data = project.getCharacterMatrixByReference(null, dataName);
-					else
+					else if (project.getNumberCharMatrices()>0)
 						data= project.getCharacterMatrix(0);
 				}
 

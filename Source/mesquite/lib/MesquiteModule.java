@@ -75,7 +75,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "22 January 2025";
+		return "23 January 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -93,7 +93,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1028;  
+		return 1029;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -1140,38 +1140,40 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in log; also in dialog if flag is set.*/
-	public void alert(String s, String windowTitle, String logTitle) {
+	public void alert(String s, String windowTitle, String logTitle) {//not put in log if logTitle is null
 		if (s == null)
 			return;
 		if (startupBailOut)
 			return;
-		if (showModuleInAlert)
+		if (logTitle != null){
+			if (showModuleInAlert)
 			logln(logTitle+": (" + getName() + "): " + s);
 		else
 			logln(logTitle+": " + s);
-
+		}
 		if (alertUseDialog) {
 			AlertDialog.notice(containerOfModule(),windowTitle, s);
 		}
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in log; also in dialog if flag is set.*/
-	public void alertHTML(Window parent, String s, String windowTitle, String logTitle) {
+	public void alertHTML(Window parent, String s, String windowTitle, String logTitle) {//not put in log if logTitle is null
 		alertHTML(parent, s, windowTitle, logTitle, 400, 400);
 
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in log; also in dialog if flag is set.*/
-	public void alertHTML(Window parent, String s, String windowTitle, String logTitle, int width, int height) {
+	public void alertHTML(Window parent, String s, String windowTitle, String logTitle, int width, int height) {  //not put in log if logTitle is null
 		if (s == null)
 			return;
 		if (startupBailOut)
 			return;
-		if (showModuleInAlert)
+		if (logTitle != null){
+			if (showModuleInAlert)
 			logln(logTitle+": (" + getName() + "): " + s);
 		else
 			logln(logTitle+": " + s);
-
+		}
 		if (alertUseDialog) {
 			AlertDialog.noticeHTML(parent,windowTitle, s, width, height, null);
 		}
@@ -1435,9 +1437,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public boolean sorry(String s) {
 		CommandRecord.tick("Sorry, module couldn't be started");
 		if (!startupBailOut){
-			if (!MesquiteThread.isScripting()) 
-				alert(s);
-			else
+		//	if (!MesquiteThread.isScripting()) //as of v.4, made silent only
+				//alert(s);  //
+		//	else
 				logln("Message from " + getNameForMenuItem() + ": " + s);
 		}
 		return false;
@@ -2026,6 +2028,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Read the nexus command in the given block (passed only to modules claiming they can read it).  Returns true if successful*/
 	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){
 		return false;
+	}
+	/*.................................................................................................................*/
+	public NexusBlock skipNexusBlock (MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
+		//Parser commandParser = new Parser(block.toString());
+		NEXUSFileParser commandParser = new NEXUSFileParser(block);
+		MesquiteLong startCharC = new MesquiteLong(0);
+		String s = null;
+		while (!StringUtil.blank(s=commandParser.getNextCommand(startCharC))) {
+			String commandName = parser.getFirstToken(s);
+			if ((commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK")))  {  //these actually aren't received
+				break;
+			}
+		}
+		return new SkipBlock(file, null);
 	}
 	/*.................................................................................................................*/
 	private boolean findReaderForCommand (MesquiteFile mf, NexusBlock nBlock, String blockName, String commandName, String command, MesquiteString comment, MesquiteModule mb, String fileReadingArguments) {
