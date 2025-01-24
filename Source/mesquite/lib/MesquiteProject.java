@@ -28,7 +28,9 @@ import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.HTMLDescribable;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.characters.*;
 
@@ -71,6 +73,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** Commands used with standard Close, Save and Save As...and other menu items*/
 	private MesquiteCommand closeCommand, closeFilesCommand, showFileOnDiskCommand, saveCommand, saveFilesCommand, saveAsCommand, saveLinkagesCommand, revertCommand, linkFileCommand, linkURLCommand, includeFileCommand, includeURLCommand;
 	public MesquiteCommand exportCommand, newLinkFileCommand, getInfoCommand;
+	public MesquiteSubmenuSpec includeMergeSubmenuSpec;
 	/** The file coordinator module that owns this object*/
 	public FileCoordinator ownerModule=null; 
 
@@ -133,6 +136,9 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		linkURLCommand = MesquiteModule.makeCommand("linkURL", ownerModule);
 		includeFileCommand = MesquiteModule.makeCommand("includeFile", ownerModule);
 		includeURLCommand = MesquiteModule.makeCommand("includeURL", ownerModule);
+		includeMergeSubmenuSpec = MesquiteSubmenuSpec.getMSSSpec(MesquiteTrunk.fileMenu, "Include & Merge from File",   ownerModule);
+		includeMergeSubmenuSpec.setList(FileAssistantFM.class);
+		includeMergeSubmenuSpec.setCommand(new MesquiteCommand("newAssistant", ownerModule));
 	}
 
 	public void refreshProjectWindow(){
@@ -773,6 +779,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** returns command to save as project (linked files)*/
 	public MesquiteCommand getSaveLinkagesCommand(){
 		return saveLinkagesCommand;
+	}
+	
+	public MesquiteSubmenuSpec getIncludeMergeSubmenuSpec(){
+		return includeMergeSubmenuSpec;
 	}
 	/*.................................................................................................................*/
 	/** returns the file coordinator module in charge of the project*/

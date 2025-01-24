@@ -2487,6 +2487,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							proj.getLinkFileCommand()));
 					newMenu.add(new MesquiteMenuItem("Include File...", MesquiteModule.mesquiteTrunk,
 							proj.getIncludeFileCommand()));
+					newMenu.add(new MesquiteSubmenu(proj.includeMergeSubmenuSpec, newMenu, proj.getCoordinatorModule()));
+
 				}
 
 			}

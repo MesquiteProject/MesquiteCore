@@ -320,7 +320,6 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Save Trees To File from", makeCommand("saveDrectTreeFileInt",  this), TreeSource.class);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
 		getFileCoordinator().addModuleMenuItems( MesquiteTrunk.treesMenu, makeCommand("newAssistant",  getFileCoordinator()), FileAssistantT.class);
-		getFileCoordinator().addSubmenu( MesquiteTrunk.treesMenu, "Merge from File", makeCommand("newAssistant",  getFileCoordinator()), FileAssistantFM.class);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
 
 		taxas = getProject().getTaxas();
