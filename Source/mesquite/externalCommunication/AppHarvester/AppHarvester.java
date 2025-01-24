@@ -18,7 +18,7 @@ public class AppHarvester extends MesquiteInit {
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		harvestApps();
-		addMenuItem(MesquiteTrunk.helpMenu, "External Apps", makeCommand("showDetails", this));
+		addMenuItem(MesquiteTrunk.helpMenu, "Helper Apps", makeCommand("showDetails", this));
 		return true;
 	}
 	StringBuffer details = new StringBuffer();
@@ -128,7 +128,7 @@ public class AppHarvester extends MesquiteInit {
 			if (redundantRemoved)
 				sb.append("Mesquite ignored some versions of a built-in app because other copies were available. If you prefer to use the ignored version, please make sure that only the version you want to use is in the apps folder in Mesquite_Folder.\n");
 			if (countFound>0)
-				sb.append("For more details about apps in apps folder, choose External Apps from the Help menu.");
+				sb.append("For more details about apps in apps folder, choose Helper Apps from the Help menu.");
 			//AppInformationFile.setAppInformationFileVector(appInformationFileVector);
 		}
 		logln(sb.toString());
