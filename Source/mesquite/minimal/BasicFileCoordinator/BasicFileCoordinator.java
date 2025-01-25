@@ -684,12 +684,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		else {
 			mbb = (MesquiteModule)findElementManager(TreesManager.class);
-			if (getProject().getNumberTreeVectors()==1) {
-				mbb.doCommand("showTreesInWindow", "" + 0, CommandChecker.defaultChecker);
-			}
-			else if (getProject().getNumberTreeVectors()>1) {
-				mbb.doCommand("showTreeBlocks", null, CommandChecker.defaultChecker);
+			if (mbb != null) {
+				if (getProject().getNumberTreeVectors()==1) {
+					mbb.doCommand("showTreesInWindow", "" + 0, CommandChecker.defaultChecker);
+				}
+				else if (getProject().getNumberTreeVectors()>1) {
+					mbb.doCommand("showTreeBlocks", null, CommandChecker.defaultChecker);
 
+				}
 			}
 		}
 	}
