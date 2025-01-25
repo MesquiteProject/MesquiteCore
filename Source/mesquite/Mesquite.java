@@ -2713,9 +2713,14 @@ public class Mesquite extends MesquiteTrunk
 				if (MesquiteTrunk.developmentMode)
 					MesquiteTrunk.mesquiteTrunk.logln("Development mode enabled.");
 
+				if (MesquiteTrunk.developmentMode)
+					MesquiteTrunk.mesquiteTrunk.logln("Started from flex2");
 				for ( int i = 0; i < args.length; i++ ) {
 					if (args[i]!=null && !args[i].startsWith("-")) {
-						if (MesquiteTrunk.startedFromFlex2) { //the argument is not a file to open, but rather the encapsulatedpath of the app on macOS to find the list of files to open
+					if (MesquiteTrunk.startedFromFlex2) { //the argument is not a file to open, but rather the encapsulatedpath of the app on macOS to find the list of files to open
+							if (MesquiteTrunk.developmentMode)
+								MesquiteTrunk.mesquiteTrunk.logln("Encapsulated path to me: "+ args[i]);
+								
 							MesquiteTrunk.encapsulatedPathOfExecutable= args[i];
 							//record the encapsulated path to the filesToOpen so that ConsoleThread can find any list of files
 						}

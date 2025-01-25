@@ -263,6 +263,8 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 	/** Read recent files */
 	public void readRecordOfRecentFiles(){
+		if (!MesquiteFile.fileExists(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName))
+			return;
 		String[] rfs = MesquiteFile.getFileContentsAsStrings(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName);
 		if (rfs == null)
 			return;
