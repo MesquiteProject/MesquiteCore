@@ -1082,11 +1082,41 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 
 	/* ................................................................................................................. */
-	protected boolean anyCellInRowSelected(int row) {
+	public boolean anyCellInRowSelected(int row) {
 		if (!rowLegal(row))
 			return false;
 		for (int i = 0; i < numColumnsTotal; i++) {
 			if (isCellSelected(i, row))
+				return true;
+		}
+		return false;
+	}
+	/* ................................................................................................................. */
+	public boolean anyCellInRowSelectedAnyWay(int row) {
+		if (!rowLegal(row))
+			return false;
+		for (int i = 0; i < numColumnsTotal; i++) {
+			if (isCellSelectedAnyWay(i, row))
+				return true;
+		}
+		return false;
+	}
+	/* ................................................................................................................. */
+	public boolean anyCellInColumnSelected(int column) {
+		if (!columnLegal(column))
+			return false;
+		for (int i = 0; i < numRowsTotal; i++) {
+			if (isCellSelected(column, i))
+				return true;
+		}
+		return false;
+	}
+	/* ................................................................................................................. */
+	public boolean anyCellInColumnSelectedAnyWay(int column) {
+		if (!columnLegal(column))
+			return false;
+		for (int i = 0; i < numRowsTotal; i++) {
+			if (isCellSelectedAnyWay(column, i))
 				return true;
 		}
 		return false;

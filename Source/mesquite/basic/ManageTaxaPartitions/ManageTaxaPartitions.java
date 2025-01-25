@@ -223,32 +223,18 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		else if (checker.compare(this.getClass(), "Shows list of the taxon groups", null, commandName, "showTaxonGroups")) {
 			return showTaxonGroupList(null, listOfTaxonGroupsName);
 		}
-		else if (checker.compare(this.getClass(), "Imports group labels from a text file.", "[]", commandName, "importLabelsOLD")) { //Debugg.println get rid of this
-			MesquiteString directoryName = new MesquiteString();
-			MesquiteString fileName = new MesquiteString();
-			MesquiteFile.openFileDialog("Please select a text file that has the taxon group labels, as exported previously.", directoryName, fileName);
-			if (!fileName.isBlank()){
-				String[] lines = MesquiteFile.getFileContentsAsStrings(directoryName.getValue() + fileName.getValue());
-				if (lines != null){
-					SpecsSetManager manageTaxPart = (SpecsSetManager)findElementManager(TaxaPartition.class);
-					for (int i = 0; i<lines.length; i++){
-						String command = lines[i]; //"	TAXAGROUPLABEL Amycoida COLOR = (RGB 1.0 0.62745098 0.06666667) ;";
-						boolean success = manageTaxPart.readNexusCommand(null, null, "LABELS", command, null,  null);
-					}
-				}
-			}
-		}
-		else if (checker.compare(this.getClass(), "Exports group labels/colors to a text file for later import.", "[]", commandName, "exportLabels")) {
+		else if (checker.compare(this.getClass(), "Exports group labels/colors to a NEXUS file for later import.", "[]", commandName, "exportLabels")) {
 			TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 			if (groups == null)
 				return null;
-			String s = "";
+			String s = "#NEXUS\nBEGIN LABELS;\n\n";
 			for (int ig = 0; ig<groups.size(); ig++){
 				TaxaGroup group = (TaxaGroup)groups.elementAt(ig);
 				s += getGroupLabelNexusCommand(group) + "\n";
 			}
+			s += "END;";
 			if (!StringUtil.blank(s)){
-				MesquiteFile.putFileContentsQuery("Exported file of group labels/colors, for later import into other files", s, true);
+				MesquiteFile.putFileContentsQuery("Exported NEXUS file of group labels/colors, for later import into other files", s, true);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Imports group labels from a NEXUS file.", null, commandName, "importLabels")) {
@@ -257,7 +243,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 			Listable[] oldGroups = groupsVector.getElementArray();
 			MesquiteString directoryName = new MesquiteString();
 			MesquiteString fileName = new MesquiteString();
-			MesquiteFile.openFileDialog("Please select a NEXUS file that has the same taxa block partitioned into groups.", directoryName, fileName);
+			MesquiteFile.openFileDialog("Please select a NEXUS file that has taxa group labels to import.", directoryName, fileName);
 			if (!fileName.isBlank()){
 				MesquiteFile fileToRead = new MesquiteFile(directoryName.getValue(), fileName.getValue());
 				proj.addFile(fileToRead);

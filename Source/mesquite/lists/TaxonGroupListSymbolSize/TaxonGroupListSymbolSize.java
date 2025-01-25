@@ -33,6 +33,8 @@ public class TaxonGroupListSymbolSize extends TaxonGroupListAssistant  {
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		if (!MesquiteSymbol.symbolsAvailable(getProject()))
+			return false;
 		addMenuItem("Set Size...", makeCommand("setSize", this));
 		return true;
 	}

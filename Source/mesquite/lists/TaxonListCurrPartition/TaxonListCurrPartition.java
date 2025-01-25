@@ -46,9 +46,6 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	Taxa taxa;
 	MesquiteTable table=null;
-	MesquiteSubmenuSpec mss, mEGC;
-	MesquiteMenuItemSpec mCreatec, mScs, mStc, mRssc, mLine, nNG, mLine2, ms2, mCreateTaxac;
-	MesquiteMenuItemSpec ie1, ie2, ie3, ie4, ie5;
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -386,46 +383,30 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
 		/* hire employees here */
-		deleteMenuItem(mss);
-		deleteMenuItem(mScs);
-		deleteMenuItem(mCreatec);
-		deleteMenuItem(mCreateTaxac);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mLine2);
-		deleteMenuItem(mStc);
-		deleteMenuItem(ms2);
-		deleteMenuItem(mEGC);
-		deleteMenuItem(nNG);
-		deleteMenuItem(ie1);
-		deleteMenuItem(ie2);
-	//	deleteMenuItem(ie3);
-	//	/deleteMenuItem(ie4);
-		deleteMenuItem(ie5);
-		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
+		deleteAllMenuItems();
+		MesquiteSubmenuSpec mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 
-		ms2 = addMenuItem("Remove Group Designation", makeCommand("removeGroup",  this));
+		addMenuItem("Remove Group Designation", makeCommand("removeGroup",  this));
 
-		mLine2 = addMenuSeparator();
-		nNG = addMenuItem("New Group...", makeCommand("newGroup",  this));
-		mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
+		addMenuSeparator();
+		addMenuItem("New Group...", makeCommand("newGroup",  this));
+		MesquiteSubmenuSpec mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 		addMenuSeparator();
 		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
-		ie1 = addMenuItem("Import Groups (from NEXUS file)...", new MesquiteCommand("importPartitions",  "#" + taxa.getAssignedID(), manageTaxPart));
-		ie2 = addMenuItem("Import Group Labels & Colors Only (from NEXUS File)...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
-	//	ie3 = addMenuItem("[ORIGINAL] Import Group Labels from File...", MesquiteModule.makeCommand("importLabelsOLD",  manageTaxPart)); //Debugg.println delete?
-	//	ie4 = addMenuItem("[ORIGINAL] Export Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));//Debugg.println delete?
-		ie5 = addMenuItem("Assign Colours Randomly to Colourless Groups", makeCommand("assignColorsRandomly", this));
+		addMenuItem("Import Groups from File...", new MesquiteCommand("importPartitions",  "#" + taxa.getAssignedID(), manageTaxPart));
+		addMenuItem("Import Group Labels & Colors Only from File...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
+		addMenuItem("Export Group Labels & Colors to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));
+		addMenuItem("Assign Colours Randomly to Colourless Groups", makeCommand("assignColorsRandomly", this));
 
-		mLine = addMenuSeparator();
-		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
-		mCreatec = addMenuItem("Create and assign groups based on taxon names...", makeCommand("createBasedOnNames",  this));
-		mCreateTaxac = addMenuItem("Create taxa block based on current groups...", makeCommand("createTaxaBlock",  this));
-		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
+		addMenuSeparator();
+		addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
+		addMenuItem("Create and assign groups based on taxon names...", makeCommand("createBasedOnNames",  this));
+		addMenuItem("Create taxa block based on current groups...", makeCommand("createTaxaBlock",  this));
+		addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {
-			mStc = addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));
+			addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));
 		}
 		if (taxa != this.taxa){
 			if (this.taxa != null)

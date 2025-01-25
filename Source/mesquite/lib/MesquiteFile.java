@@ -19,8 +19,10 @@ import java.net.*;
 import java.util.*;
 import com.apple.mrj.*;
 
+import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.misc.HNode;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxonFilterer;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MesquitePopup;

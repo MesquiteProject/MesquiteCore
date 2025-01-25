@@ -19,11 +19,14 @@ import mesquite.lists.lib.*;
 import java.util.*;
 import java.awt.*;
 
+import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
 import mesquite.categ.lib.DNAData;
+import mesquite.charMatrices.ManageCharPartitions.ManageCharPartitions;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
@@ -40,8 +43,6 @@ public class CharListPartition extends CharListAssistant {
 	/*.................................................................................................................*/
 	CharacterData data=null;
 	MesquiteTable table=null;
-	MesquiteSubmenuSpec mss, mEGC, mDGC;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, mss2, msRCP;
 	CharactersGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -264,38 +265,28 @@ public class CharListPartition extends CharListAssistant {
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		/* hire employees here */
-		deleteMenuItem(mss);
-		deleteMenuItem(mss2);
-		deleteMenuItem(mScs);
-	//	deleteMenuItem(mScsPF);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mLine2);
-		deleteMenuItem(mStc);
-		deleteMenuItem(nNG);
-		deleteMenuItem(mEGC);
-		deleteMenuItem(mDGC);
-	//	deleteMenuItem(mEGN);
-		deleteMenuItem(nNG);
-		deleteMenuItem(msRCP);
-		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
+		deleteAllMenuItems();
+		MesquiteSubmenuSpec mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
 		if (data != null && data instanceof DNAData)
-			msRCP =	 addMenuItem("Refine Groups by Codon Position", makeCommand("refineByCodonPosition", this));
+			 addMenuItem("Refine Groups by Codon Position", makeCommand("refineByCodonPosition", this));
 
 			
-		mss2 = addMenuItem("Remove Group Designation", makeCommand("removeGroup", this));
-		mLine2 = addMenuSeparator();
-		nNG = addMenuItem("New Group...", makeCommand("newGroup",  this));
-		mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
+		addMenuItem("Remove Group Designation", makeCommand("removeGroup", this));
+		addMenuSeparator();
+		addMenuItem("New Group...", makeCommand("newGroup",  this));
+		MesquiteSubmenuSpec mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
 		mEGC.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
-		mDGC = addSubmenu(null, "Delete Group...", makeCommand("deleteGroup", this));
+		MesquiteSubmenuSpec mDGC = addSubmenu(null, "Delete Group...", makeCommand("deleteGroup", this));
 		mDGC.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
-		mLine = addMenuSeparator();
-		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
+		addMenuSeparator();
+		addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
+		addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
-			mStc = addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharacterPartition.class));
+			addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharacterPartition.class));
+		ManageCharPartitions manageCharPart = (ManageCharPartitions)findElementManager(CharacterPartition.class);
+		addMenuItem("Import Group Labels & Colors Only from File...", MesquiteModule.makeCommand("importLabels",  manageCharPart));
+		addMenuItem("Export Group Labels & Colors to File...", MesquiteModule.makeCommand("exportLabels",  manageCharPart));
 		//mScsPF = addMenuItem("Create Partition Based upon RAxML Format...", makeCommand("createByRAxML",  this));
 		this.data = data;
 		this.table = table;

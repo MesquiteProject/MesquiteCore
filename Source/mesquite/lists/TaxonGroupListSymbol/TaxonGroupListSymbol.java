@@ -42,6 +42,8 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		if (!MesquiteSymbol.symbolsAvailable(getProject()))
+				return false;
 		addMenuItem("Set Symbol...", makeCommand("setSymbol", this));
 		return true;
 	}
@@ -110,7 +112,11 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the symbol", null, commandName, "setSymbol")) {
 			String newSymbolName = parser.getFirstToken(arguments);
-			if (StringUtil.blank(newSymbolName)){
+			if (table != null && !table.anyCellInColumnSelectedAnyWay(getListModule().getMyColumn(this))){
+				discreetAlert("One or more rows must be selected to set their symbol");
+				return null;
+			}
+		if (StringUtil.blank(newSymbolName)){
 				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 				if (groups!=null  && table != null) {
 					String oldSymbolName = null;

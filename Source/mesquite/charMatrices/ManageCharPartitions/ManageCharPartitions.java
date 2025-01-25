@@ -20,6 +20,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lists.lib.GroupDialog;
 
 /** Manages specifications of character partitions, including reading and writing from NEXUS files */
@@ -140,7 +142,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	}
 	public void elementDisposed(FileElement e){
 		if (groups!=null)
-			groups.removeElement(e, false);
+			groups.removeElement(e, true);
 	}
 	public void projectEstablished(){
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, listOfCharacterGroupsName, makeCommand("showCharacterGroups",  this));
@@ -180,9 +182,59 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 		if (checker.compare(this.getClass(), "Shows list of the character groups", null, commandName, "showCharacterGroups")) {
 			return showCharacterGroupList(null, listOfCharacterGroupsName);
 		}
+		else if (checker.compare(this.getClass(), "Exports group labels/colors to a NEXUS file for later import.", "[]", commandName, "exportLabels")) {
+			CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
+			if (groups == null)
+				return null;
+			String s = "#NEXUS\nBEGIN LABELS;\n\n";
+			for (int ig = 0; ig<groups.size(); ig++){
+				CharactersGroup group = (CharactersGroup)groups.elementAt(ig);
+				s += getGroupLabelNexusCommand(group) + "\n";
+			}
+			s += "END;";
+			if (!StringUtil.blank(s)){
+				MesquiteFile.putFileContentsQuery("Exported NEXUS file of group labels/colors, for later import into other files", s, true);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Imports group labels from a NEXUS file.", null, commandName, "importLabels")) {
+			MesquiteProject proj = getProject();
+			CharactersGroupVector groupsVector = (CharactersGroupVector)proj.getFileElement(CharactersGroupVector.class, 0);
+			Listable[] oldGroups = groupsVector.getElementArray();
+			MesquiteString directoryName = new MesquiteString();
+			MesquiteString fileName = new MesquiteString();
+			MesquiteFile.openFileDialog("Please select a NEXUS file that has character group labels to import.", directoryName, fileName);
+			if (!fileName.isBlank()){
+				MesquiteFile fileToRead = new MesquiteFile(directoryName.getValue(), fileName.getValue());
+				proj.addFile(fileToRead);
+				fileToRead.setProject(proj);
+				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
+				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized", new String[]{"LABELS"});
+
+				Listable[] combinedGroups = groupsVector.getElementArray();
+				for (int i = 0; i<combinedGroups.length; i++){
+					CharactersGroup group = (CharactersGroup)combinedGroups[i];
+					if (ObjectArray.indexOf(oldGroups, group)<0){//a new object, though may have same name as old
+						int whichCurrentByName = ListableVector.indexOfByName(oldGroups, group.getName());
+						if (whichCurrentByName>=0){
+							CharactersGroup oldGroup = (CharactersGroup)oldGroups[whichCurrentByName];
+							oldGroup.equalizeAs(group);
+						}
+						else { //just move it over
+							CharactersGroup newGroup = new CharactersGroup();
+							newGroup.equalizeAs(group);
+							newGroup.addToFile(getProject().getHomeFile(), proj, null);
+						}
+					}
+				}
+
+				//***************
+				proj.getCoordinatorModule().closeFile(fileToRead, true);
+
+			}
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
-		//return null;
+		return null;
 	}
 	public Class getElementClass(){
 		return CharacterPartition.class;

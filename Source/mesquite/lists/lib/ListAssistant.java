@@ -60,7 +60,10 @@ public abstract class ListAssistant extends MesquiteModule  {
 	public void setString(int row, String s){
 		
 	}
-
+	public ListModule getListModule(){
+		return (ListModule)findEmployerWithDuty(ListModule.class);
+	}
+	
 	/** Draw cell for row ic */
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
 	}

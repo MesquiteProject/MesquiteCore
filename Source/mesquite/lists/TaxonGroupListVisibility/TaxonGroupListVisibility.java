@@ -24,6 +24,7 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
 
 /* ======================================================================== */
@@ -32,6 +33,8 @@ public class TaxonGroupListVisibility extends TaxonGroupListAssistant  {
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		if (!MesquiteSymbol.symbolsAvailable(getProject()))
+			return false;
 		addMenuItem("Show in Maps", makeCommand("showInMaps", this));
 		addMenuItem("Hide in Maps", makeCommand("hideInMaps", this));
 		return true;

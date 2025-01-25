@@ -20,11 +20,13 @@ import mesquite.lists.lib.*;
 import java.util.*;
 import java.awt.*;
 
+import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
 import mesquite.charMatrices.ManageCharPartitions.ManageCharPartitions;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
@@ -37,8 +39,9 @@ public class CharGroupList extends ListModule {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("New Character Group Label...", MesquiteModule.makeCommand("newGroup",  this));
-		addMenuItem("Import Character Group Labels from File...", MesquiteModule.makeCommand("importLabels",  this));
-		addMenuItem("Export Character Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  this));
+		ManageCharPartitions manageCharPart = (ManageCharPartitions)findElementManager(CharacterPartition.class);
+		addMenuItem("Import Group Labels & Colors from File...", MesquiteModule.makeCommand("importLabels",  manageCharPart));
+		addMenuItem("Export Group Labels & Colors to File...", MesquiteModule.makeCommand("exportLabels",  manageCharPart));
 		return true;
 	}
 	public boolean showing(Object obj){

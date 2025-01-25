@@ -19,6 +19,7 @@ import mesquite.lib.IntegerField;
 import mesquite.lib.Listable;
 import mesquite.lib.Listened;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
 import mesquite.lib.Parser;
 import mesquite.lib.duties.*;
 
@@ -57,7 +58,13 @@ public abstract class MesquiteSymbol extends Listened implements Listable  {
 	public void setRescaleValue(double rescaleValue) {
 		this.rescaleValue = rescaleValue;
 	}
-
+	/*.................................................................................................................*/
+	public static boolean symbolsAvailable(MesquiteProject proj){
+		Listable[] list = proj.getFileElements(SymbolsVector.class);
+		if (list == null || list.length == 0)
+			return false;
+		return true;
+	}
 	/*.................................................................................................................*/
 	public void  setToCloned(MesquiteSymbol cloned){
 		setSize(cloned.getSize());
