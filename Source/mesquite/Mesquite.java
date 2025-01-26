@@ -2706,19 +2706,19 @@ public class Mesquite extends MesquiteTrunk
 				// report arguments
 				String s = "Arguments: ";
 				for ( int i = 0; i < args.length; i++ ) {
-					if (!MesquiteTrunk.startedFromFlex2 || (args[i]!=null && args[i].startsWith("-")))
+					if (!MesquiteTrunk.startedFromFlex2 || (args[i]!=null && args[i].startsWith("-"))){
+						if (!args[i].equalsIgnoreCase("-null"))
 						s += " [ " + args[i] + " ]";
+					}
 				}
 				MesquiteTrunk.mesquiteTrunk.logln(s);
 				if (MesquiteTrunk.developmentMode)
 					MesquiteTrunk.mesquiteTrunk.logln("Development mode enabled.");
 
-				if (MesquiteTrunk.developmentMode)
-					MesquiteTrunk.mesquiteTrunk.logln("Started from flex2");
 				for ( int i = 0; i < args.length; i++ ) {
 					if (args[i]!=null && !args[i].startsWith("-")) {
 					if (MesquiteTrunk.startedFromFlex2) { //the argument is not a file to open, but rather the encapsulatedpath of the app on macOS to find the list of files to open
-							if (MesquiteTrunk.developmentMode)
+							if (MesquiteTrunk.debugMode)
 								MesquiteTrunk.mesquiteTrunk.logln("Encapsulated path to me: "+ args[i]);
 								
 							MesquiteTrunk.encapsulatedPathOfExecutable= args[i];

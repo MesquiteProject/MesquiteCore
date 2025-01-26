@@ -34,11 +34,11 @@
 	<key>CFBundleIconFile</key>
 	<string>Mesquite.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.apple.automator.Mesquite-Starter-Flex-01AutomatorApp-Universal-2025January17b</string>
+	<string>com.apple.automator.Mesquite-Starter-Flex2-AutomatorApp-Universal-2025January25</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Mesquite_Starter_Flex-01AutomatorApp-Universal-2025January17b</string>
+	<string>Mesquite_Starter_Flex2-AutomatorApp-Universal-2025January25</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

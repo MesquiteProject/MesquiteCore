@@ -105,7 +105,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:111.000000</string>
+				<string>560.250000:111.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -217,7 +217,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:152.000000</string>
+				<string>560.250000:152.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Set Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -346,7 +346,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:193.000000</string>
+				<string>560.250000:193.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/New Folder.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -450,7 +450,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:234.000000</string>
+				<string>560.250000:234.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -560,7 +560,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:275.000000</string>
+				<string>560.250000:275.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Set Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -689,7 +689,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:316.000000</string>
+				<string>560.250000:316.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/New Folder.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1175,7 +1175,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:357.000000</string>
+				<string>560.250000:357.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Rename Finder Items.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1218,9 +1218,11 @@ end run</string>
 				<dict>
 					<key>Container</key>
 					<string>List</string>
+					<key>Optional</key>
+					<true/>
 					<key>Types</key>
 					<array>
-						<string>*</string>
+						<string>com.apple.applescript.object</string>
 					</array>
 				</dict>
 				<key>AMRequiredResources</key>
@@ -1287,7 +1289,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:398.000000</string>
+				<string>560.250000:398.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Get Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1335,7 +1337,7 @@ end run</string>
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>-- This does two things:-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. This includes the paths to files containing information about memory use etc., and also the encapsulated path of the app-- (2) Now that the app's unique folder (named by the encapsulated path of the app) has been created in Mesquite_Support_Files, put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open.on getPath(this_text, stripLast)	try				set DELIMITER to ":" #(ASCII character 13)		set AppleScript's text item delimiters to DELIMITER		set the item_list to every text item of this_text		set num to the number of items in item_list		if stripLast then			set lasti to num - 2		else			set lasti to num		end if		set the item_list to items 2 through lasti of item_list		set AppleScript's text item delimiters to the "/"		set this_text to the item_list as string		set AppleScript's text item delimiters to ""		set this_text to "/" &amp; this_text		return this_text	end try	return ""end getPathon writeTextToFile(theText, theFile)	try		set theFile to theFile as string		set theOpenedFile to open for access file theFile with write permission		write theText to theOpenedFile		close access theOpenedFile		return true	on error		try			close access file theFile		end try		return false	end tryend writeTextToFileon replace_text(this_text, search_string, replacement_string)	set prevTIDs to AppleScript's text item delimiters	set AppleScript's text item delimiters to the search_string	set the item_list to every text item of this_text	set AppleScript's text item delimiters to the replacement_string	set this_text to the item_list as string	set AppleScript's text item delimiters to prevTIDs	return this_textend replace_texton run {input, parameters}	set DELIM to ":"	set whereAmI to getPath((path to me as text), true)	set encapsulatedPathToMe to POSIX path of (path to me)	set encapsulatedPathToMe to replace_text(encapsulatedPathToMe, "/", "#") -- this isn't guaranteed but in a non-perverse world it will work		-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. 	set javaLocFile to whereAmI &amp; "/RunningOptions/Mesquite-JavaToUse.txt"	set javaLoc to "java"	try		set lns to paragraphs of (read POSIX file javaLocFile)		set javaLoc to first item in lns	end try	set memoryFile to whereAmI &amp; "/RunningOptions/Mesquite-MemoryToUse.txt"	set memory to 1	try		set lns to paragraphs of (read POSIX file memoryFile)		set memory to first item in lns	end try	set flagsFile to whereAmI &amp; "/RunningOptions/Mesquite-FlagsToUse.txt"	set flags to ""	try		set lns to paragraphs of (read POSIX file flagsFile)		set flags to first item in lns	end try	set progArgsFile to whereAmI &amp; "/RunningOptions/Mesquite-ProgramArgumentsToAdd.txt"	set progArguments to ""	try		set lns to paragraphs of (read POSIX file progArgsFile)		set progArguments to first item in lns	end try	set results to whereAmI	set results to results &amp; DELIM &amp; encapsulatedPathToMe --send into Mesquite the path to me rather than to the dropped files, so Mesquite knows where to look for filesToOpen.txt		-- (2) Put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open	if input is not equal to {} then -- writing input files to file so Mesquite can find and open them		set droppedFilesAsText to replace_text(input as text, (ASCII character 0), linefeed) #NUL was used to separate file paths in first Applescript		set theFile to (((path to home folder) as string) &amp; "Mesquite_Support_Files:" &amp; encapsulatedPathToMe &amp; ":filesLastRequested.txt")		writeTextToFile(input as text, theFile)				-- putting list of files to open into file for Mesquite to find when it opens		set theFile to (((path to home folder) as string) &amp; "Mesquite_Support_Files:" &amp; encapsulatedPathToMe &amp; ":filesToOpen.txt")		writeTextToFile(droppedFilesAsText, theFile)	end if	set results to javaLoc &amp; DELIM &amp; flags &amp; DELIM &amp; memory &amp; DELIM &amp; progArguments &amp; DELIM &amp; results	return resultsend run</string>
+					<string>-- This does two things:-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. This includes the paths to files containing information about memory use etc., and also the encapsulated path of the app-- (2) Now that the app's unique folder (named by the encapsulated path of the app) has been created in Mesquite_Support_Files, put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open.on getPath(this_text, stripLast)	try				set DELIMITER to ":" #(ASCII character 13)		set AppleScript's text item delimiters to DELIMITER		set the item_list to every text item of this_text		set num to the number of items in item_list		if stripLast then			set lasti to num - 2		else			set lasti to num		end if		set the item_list to items 2 through lasti of item_list		set AppleScript's text item delimiters to the "/"		set this_text to the item_list as string		set AppleScript's text item delimiters to ""		set this_text to "/" &amp; this_text		return this_text	end try	return ""end getPathon writeTextToFile(theText, theFile)	try		set theFile to theFile as string		set theOpenedFile to open for access file theFile with write permission		write theText to theOpenedFile		close access theOpenedFile		return true	on error		try			close access file theFile		end try		return false	end tryend writeTextToFileon replace_text(this_text, search_string, replacement_string)	set prevTIDs to AppleScript's text item delimiters	set AppleScript's text item delimiters to the search_string	set the item_list to every text item of this_text	set AppleScript's text item delimiters to the replacement_string	set this_text to the item_list as string	set AppleScript's text item delimiters to prevTIDs	return this_textend replace_texton run {input, parameters}	set DELIM to ":"	set whereAmI to getPath((path to me as text), true)	set encapsulatedPathToMe to POSIX path of (path to me)	set encapsulatedPathToMe to replace_text(encapsulatedPathToMe, "/", "#") -- this isn't guaranteed but in a non-perverse world it will work		-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. 	set javaLocFile to whereAmI &amp; "/RunningOptions/Mesquite-JavaToUse.txt"	set javaLoc to "java"	try		set lns to paragraphs of (read POSIX file javaLocFile)		set javaLoc to first item in lns	end try	set memoryFile to whereAmI &amp; "/RunningOptions/Mesquite-MemoryToUse.txt"	set memory to 1	try		set lns to paragraphs of (read POSIX file memoryFile)		set memory to first item in lns	end try	set flagsFile to whereAmI &amp; "/RunningOptions/Mesquite-FlagsToUse.txt"	set flags to "  "	try		set flags to item 1 of paragraphs of (read POSIX file flagsFile)	end try	set progArgsFile to whereAmI &amp; "/RunningOptions/Mesquite-ProgramArgumentsToAdd.txt"	set progArguments to "-null" -- use -null and it will be ignored	try		set temp to item 1 of paragraphs of (read POSIX file progArgsFile)		if (count temp) is not equal to 0 then			set progArguments to temp		end if	end try	if (count progArguments) is equal to 0 then		set progArguments to "-null"	end if	set results to whereAmI	set results to results &amp; DELIM &amp; encapsulatedPathToMe --send into Mesquite the path to me rather than to the dropped files, so Mesquite knows where to look for filesToOpen.txt		-- (2) Put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open	if input is not equal to {} then -- writing input files to file so Mesquite can find and open them		set droppedFilesAsText to replace_text(input as text, (ASCII character 0), linefeed) #NUL was used to separate file paths in first Applescript		set theFile to (((path to home folder) as string) &amp; "Mesquite_Support_Files:" &amp; encapsulatedPathToMe &amp; ":filesLastRequested.txt")		writeTextToFile(input as text, theFile)				-- putting list of files to open into file for Mesquite to find when it opens		set theFile to (((path to home folder) as string) &amp; "Mesquite_Support_Files:" &amp; encapsulatedPathToMe &amp; ":filesToOpen.txt")		writeTextToFile(droppedFilesAsText, theFile)	end if	set results to javaLoc &amp; DELIM &amp; flags &amp; DELIM &amp; memory &amp; DELIM &amp; progArguments &amp; DELIM &amp; results	set theFile to (((path to home folder) as string) &amp; "Mesquite_Support_Files:" &amp; encapsulatedPathToMe &amp; ":argumentsPassedToScript.txt")	writeTextToFile(results, theFile)	return resultsend run</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>
@@ -1389,7 +1391,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>552.750000:979.000000</string>
+				<string>560.250000:921.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1655,7 +1657,7 @@ fi
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>552.750000:1550.000000</string>
+				<string>560.250000:1103.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1759,7 +1761,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:1591.000000</string>
+				<string>560.250000:1144.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1869,7 +1871,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>552.750000:1632.000000</string>
+				<string>560.250000:1185.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Set Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1879,82 +1881,82 @@ end run</string>
 	</array>
 	<key>connectors</key>
 	<dict>
-		<key>1209C74B-0D3E-4312-A115-BB7E7AD21087</key>
+		<key>052020CB-FBCD-43CD-8E26-7D9BEC111724</key>
 		<dict>
 			<key>from</key>
 			<string>F849A9B6-79F4-4C68-8A3B-7EB1D38891CF - F849A9B6-79F4-4C68-8A3B-7EB1D38891CF</string>
 			<key>to</key>
 			<string>68382CD1-D430-4B49-B9DD-A7A6818AB49F - 68382CD1-D430-4B49-B9DD-A7A6818AB49F</string>
 		</dict>
-		<key>56AAC355-ED52-44B8-AAC7-B61FFA01C83E</key>
+		<key>31E74405-0B0C-41B4-866D-06A885132693</key>
 		<dict>
 			<key>from</key>
-			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
+			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
 			<key>to</key>
-			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
-		</dict>
-		<key>57746B1D-81BC-4F16-8953-99FD78FA02C6</key>
-		<dict>
-			<key>from</key>
-			<string>B03365C9-D989-4E89-AD9B-7E0E25FC5E4B - B03365C9-D989-4E89-AD9B-7E0E25FC5E4B</string>
-			<key>to</key>
-			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
-		</dict>
-		<key>60041756-0882-4161-9C59-DB01C46F3327</key>
-		<dict>
-			<key>from</key>
-			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
-			<key>to</key>
-			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
-		</dict>
-		<key>613F620E-F41D-4982-9A72-68540125A932</key>
-		<dict>
-			<key>from</key>
 			<string>CE280BC0-9DA5-4B7A-B552-B8B9BACF1851 - CE280BC0-9DA5-4B7A-B552-B8B9BACF1851</string>
-			<key>to</key>
-			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
 		</dict>
-		<key>7A9C7206-EDAF-4768-93A2-202C5279A10E</key>
-		<dict>
-			<key>from</key>
-			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
-			<key>to</key>
-			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
-		</dict>
-		<key>A363BE8D-C5E3-4CB6-8E7F-C45E09F27505</key>
+		<key>3A557D0E-0B22-42F1-BE6D-7EDE26FA3C88</key>
 		<dict>
 			<key>from</key>
 			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
 			<key>to</key>
 			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
 		</dict>
-		<key>AEBF5FFB-A886-406B-A524-9B6D7E12961D</key>
+		<key>5253ADF6-1510-40B0-B4B3-382C16EE5511</key>
+		<dict>
+			<key>from</key>
+			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
+			<key>to</key>
+			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
+		</dict>
+		<key>75C5D6E8-91BD-4194-BF0B-E9FEE8905901</key>
+		<dict>
+			<key>from</key>
+			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
+			<key>to</key>
+			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
+		</dict>
+		<key>92039AF2-7C14-47BD-BD22-A85BBB21EC54</key>
 		<dict>
 			<key>from</key>
 			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
 			<key>to</key>
 			<string>F849A9B6-79F4-4C68-8A3B-7EB1D38891CF - F849A9B6-79F4-4C68-8A3B-7EB1D38891CF</string>
 		</dict>
-		<key>B3BFC3B8-F7A6-481B-9E61-B7F3D95BF2C5</key>
+		<key>A4B6DF31-30FC-426C-83F5-58C407FF892C</key>
 		<dict>
 			<key>from</key>
-			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
+			<string>B03365C9-D989-4E89-AD9B-7E0E25FC5E4B - B03365C9-D989-4E89-AD9B-7E0E25FC5E4B</string>
 			<key>to</key>
+			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
+		</dict>
+		<key>A84E2F37-241B-45FD-8689-140D665AFF22</key>
+		<dict>
+			<key>from</key>
 			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
+			<key>to</key>
+			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
 		</dict>
-		<key>D91B2415-7227-4961-8669-5E562D4A726A</key>
+		<key>B2A2FA28-590E-454F-8FB5-E576FC135F66</key>
 		<dict>
 			<key>from</key>
-			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
+			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
 			<key>to</key>
+			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
+		</dict>
+		<key>B4B16A07-B448-4FB8-A7FF-A6650D8E8276</key>
+		<dict>
+			<key>from</key>
 			<string>CE280BC0-9DA5-4B7A-B552-B8B9BACF1851 - CE280BC0-9DA5-4B7A-B552-B8B9BACF1851</string>
+			<key>to</key>
+			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
 		</dict>
-		<key>FC59B6C9-9E62-4FE6-9352-DA622769E181</key>
+		<key>B8FE519F-AD0F-45EB-9FA3-0C35F32389CA</key>
 		<dict>
 			<key>from</key>
-			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
+			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
 			<key>to</key>
-			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
+			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
 		</dict>
 	</dict>
 	<key>variables</key>
