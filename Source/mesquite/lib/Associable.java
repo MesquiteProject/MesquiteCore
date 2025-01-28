@@ -479,12 +479,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			}
 		}
 		if (objects!=null) {
-			s += "Objects " + '\n';
+			s += "Objects (" + objects.size() + ")\n";
 			for (int i=0; i<objects.size(); i++) {
 				Object obj = objects.elementAt(i);
-				if (obj instanceof Listable){
-					Listable b = (Listable)obj;
-					s += "   " + b.getName()+ "\n";	
+				if (obj instanceof DoubleArray){
+					s += "  doubleArray:  " + ((DoubleArray)obj).getName()+ "\n";	
 				}
 				else if (obj instanceof String){
 					s += "  string:  " + obj+ "\n";	
@@ -495,6 +494,10 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					for (int k = 0; k<st.length; k++)
 						s += " [" + st[k] + "]";
 					s += "\n";	
+				}
+				else if (obj instanceof Listable){
+					Listable b = (Listable)obj;
+					s += "   " + b.getName()+ " " + b.getClass() + "\n";	
 				}
 				else
 					s += "   Object of class " + obj.getClass().getName()+ "\n";	
@@ -550,7 +553,19 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					if (!first)
 						s += " , ";
 					first = false;
-					if (obj instanceof Listable)
+					if (obj instanceof DoubleArray){
+						DoubleArray doubles = (DoubleArray)obj;
+						s+= StringUtil.tokenize(b.getName()) + " = { ";
+						boolean firstD = true;
+						for (int k = 0; k<doubles.getSize(); k++){
+							if (!firstD)
+								s += " , ";
+							firstD = false;
+							s += MesquiteDouble.toString(doubles.getValue(k));
+						}
+						s+=  " } ";
+					}
+					else if (obj instanceof Listable)
 						s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize(((Listable)obj).getName()) + " ";
 					else if (obj instanceof String){
 						s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize("string:" + (String)obj) + " ";

@@ -150,6 +150,14 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	}
 
 	/*_________________________________________________*/
+	double[] scaleValues; // graphical start x, y; end x, y; time unit start, end.
+	public void setScale(double[] values){
+		this.scaleValues = values;
+	}
+	public double[] getScale(){
+		return scaleValues;
+	}
+	/*_________________________________________________*/
 	NameReference 	palenessRef = NameReference.getNameReference("drawPale");
 	MesquiteInteger pos = new MesquiteInteger(0);
 	public Color getBranchColor(int N){

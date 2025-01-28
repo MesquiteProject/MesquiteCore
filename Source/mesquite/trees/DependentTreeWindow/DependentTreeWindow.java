@@ -78,6 +78,7 @@ public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDis
 			dependentTreeWindow.sizeDisplays();
 			if (!MesquiteThread.isScripting())
 				dependentTreeWindow.setVisible(true);
+
 		}
 		dependentTreeWindow.setTree(tree);
 	}

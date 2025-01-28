@@ -23,7 +23,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.lang3.StringEscapeUtils;
 import mesquite.lib.duties.*;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.ui.AlertDialog;
@@ -32,7 +31,6 @@ import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ToolPalette;
 import mesquite.tol.lib.BaseHttpRequestMaker;
-import mesquite.trunk.PhoneHomeThread;
 import edu.stanford.ejalbert.*;  //for Browserlauncher
 
 

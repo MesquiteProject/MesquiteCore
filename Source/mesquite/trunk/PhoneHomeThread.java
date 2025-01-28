@@ -91,7 +91,6 @@ public class PhoneHomeThread extends Thread {
 		StringBuffer logBuffer = new StringBuffer();
 		String path  = MesquiteModule.prefsDirectory+ MesquiteFile.fileSeparator+ "phoneRecords.xml";
 		PhoneHomeUtil.readOldPhoneRecords(path, phoneRecords);
-
 		for (int i= 0; i<MesquiteTrunk.mesquiteModulesInfoVector.size(); i++){
 			MesquiteModuleInfo mmi = (MesquiteModuleInfo)MesquiteTrunk.mesquiteModulesInfoVector.elementAt(i);
 			if (!StringUtil.blank(mmi.getHomePhoneNumber())) {

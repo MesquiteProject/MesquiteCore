@@ -1191,7 +1191,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 			treeDisplay.scaling=treeDisplay.nodeLocsParameters[scaling];
 		}
-
+		calculateScale(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay);
 	}
 	private void drawString(Graphics g, String s, double x, double y){
 		if (g == null || StringUtil.blank(s))
@@ -1204,13 +1204,53 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 	}
 	/*.................................................................................................................*/
+	public void calculateScale(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay) {
+		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
+		int buffer = treeDisplay.getTaxonSpacing();
+		double[] scaleValues = null;
+
+		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
+			double yBase = (totalScaleHeight-totalTreeHeight)*scaling +treeDisplay.getTreeDrawing().y[drawnRoot];
+			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;
+			scaleValues = new double[]{xPos,yBase, xPos, yBase- (totalScaleHeight*scaling), 0, totalScaleHeight};
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN) {
+			double yBase = treeDrawing.y[drawnRoot];
+			if (fixedScale)
+				yBase += (totalTreeHeight - fixedDepth)*scaling;
+			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)]+ buffer;
+			scaleValues = new double[]{xPos,yBase, xPos, yBase+ (totalScaleHeight*scaling), 0, totalScaleHeight};
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
+			double yPos = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)]+ buffer;
+			//if fixed then base is centered on root!
+			double xBase = (totalScaleHeight-totalTreeHeight)*scaling +treeDisplay.getTreeDrawing().x[drawnRoot];
+			scaleValues = new double[]{xBase,yPos, xBase- (totalScaleHeight*scaling), yPos, 0, totalScaleHeight};
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
+			double yPos = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;
+			double xBase = treeDrawing.x[drawnRoot];
+			if (fixedScale)
+				xBase += (totalTreeHeight - fixedDepth)*scaling;
+			scaleValues = new double[]{xBase,yPos, xBase+ (totalScaleHeight*scaling), yPos, 0, totalScaleHeight};
+		}
+		if (scaleValues != null)
+			treeDisplay.setScale(scaleValues);
+}
+	
+	/*.................................................................................................................*/
 	public void drawGrid(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, Graphics g) {
 		if (g == null)
 			return;
+		
 		boolean narrowScaleOnly = !broadScale.getValue();
 		boolean rulerOnly = false;
 		int rulerWidth = 8;
 		Color c=g.getColor();
+		if (treeDisplay.getScale()!= null) {
+			g.setColor(Color.red);
+			GraphicsUtil.drawLine(g,treeDisplay.getScale()[0], treeDisplay.getScale()[1], treeDisplay.getScale()[2], treeDisplay.getScale()[3]);
+		}
 		g.setColor(Color.cyan);
 		int scaleBuffer = 28;
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();

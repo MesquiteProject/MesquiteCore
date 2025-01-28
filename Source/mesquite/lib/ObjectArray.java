@@ -15,6 +15,7 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.text.*;
+import java.util.Vector;
 
 
 /* ======================================================================== */
@@ -53,6 +54,26 @@ public class ObjectArray implements Listable {
 	public void zeroArray(){
 		for (int i=0; i<values.length; i++)
 			values[i] =  null;
+	}
+	
+	public Vector getClassesOfObjects(){ 
+		Vector classes = new Vector();
+		for (int i=0; i<values.length; i++) {
+			if (values[i] != null){
+				Class vC = values[i].getClass();
+				if (classes.indexOf(vC)<0)
+					classes.addElement(vC);
+			}
+		}
+		return classes;
+		
+	}
+
+	public Class getCommonClassOfObjects(){ //returns null if they vary; must be exact match
+		Vector v = getClassesOfObjects();
+		if (v == null || v.size()>1)
+			return null;
+		return (Class)v.elementAt(0);
 	}
 	/*...........................................................*/
 	public void copyTo(ObjectArray d){
