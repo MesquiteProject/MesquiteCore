@@ -1208,31 +1208,31 @@ public class NodeLocsStandard extends NodeLocsVH {
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 		int buffer = treeDisplay.getTaxonSpacing();
 		double[] scaleValues = null;
-
+//Debugg.println CHECK FIXED SCALING
 		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 			double yBase = (totalScaleHeight-totalTreeHeight)*scaling +treeDisplay.getTreeDrawing().y[drawnRoot];
 			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;
-			scaleValues = new double[]{xPos,yBase, xPos, yBase- (totalScaleHeight*scaling), 0, totalScaleHeight};
+			scaleValues = new double[]{xPos, yBase- (totalScaleHeight*scaling), xPos,yBase, 0, totalScaleHeight};
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN) {
 			double yBase = treeDrawing.y[drawnRoot];
 			if (fixedScale)
 				yBase += (totalTreeHeight - fixedDepth)*scaling;
 			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)]+ buffer;
-			scaleValues = new double[]{xPos,yBase, xPos, yBase+ (totalScaleHeight*scaling), 0, totalScaleHeight};
+			scaleValues = new double[]{xPos, yBase+ (totalScaleHeight*scaling), xPos,yBase, 0, totalScaleHeight};
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
 			double yPos = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)]+ buffer;
 			//if fixed then base is centered on root!
 			double xBase = (totalScaleHeight-totalTreeHeight)*scaling +treeDisplay.getTreeDrawing().x[drawnRoot];
-			scaleValues = new double[]{xBase,yPos, xBase- (totalScaleHeight*scaling), yPos, 0, totalScaleHeight};
+			scaleValues = new double[]{xBase- (totalScaleHeight*scaling), yPos, xBase,yPos, 0, totalScaleHeight};
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
 			double yPos = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;
 			double xBase = treeDrawing.x[drawnRoot];
 			if (fixedScale)
 				xBase += (totalTreeHeight - fixedDepth)*scaling;
-			scaleValues = new double[]{xBase,yPos, xBase+ (totalScaleHeight*scaling), yPos, 0, totalScaleHeight};
+			scaleValues = new double[]{xBase+ (totalScaleHeight*scaling), yPos, xBase,yPos, 0, totalScaleHeight};
 		}
 		if (scaleValues != null)
 			treeDisplay.setScale(scaleValues);
@@ -1249,7 +1249,9 @@ public class NodeLocsStandard extends NodeLocsVH {
 		Color c=g.getColor();
 		if (treeDisplay.getScale()!= null) {
 			g.setColor(Color.red);
+			int si = 3;
 			GraphicsUtil.drawLine(g,treeDisplay.getScale()[0], treeDisplay.getScale()[1], treeDisplay.getScale()[2], treeDisplay.getScale()[3]);
+			g.fillOval((int)(treeDisplay.getScale()[0]-si), (int)(treeDisplay.getScale()[1]-si), si*2, si*2);
 		}
 		g.setColor(Color.cyan);
 		int scaleBuffer = 28;
