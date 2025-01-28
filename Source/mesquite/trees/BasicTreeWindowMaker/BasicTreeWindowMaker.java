@@ -5602,6 +5602,7 @@ class BranchInfoPanel extends TreeInfoExtraPanel {
 		super(container, "Branch/Node Info");
 		query = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "queryGray.gif");
 		statsBox = new StringInABox("", null, 50);
+		setOpen(true);
 	}
 
 	public void setTree(Tree tree) {
@@ -5650,6 +5651,19 @@ class BranchInfoPanel extends TreeInfoExtraPanel {
 						attachmentsMessage += nr.getValue();
 						attachmentsMessage += ": " + (d.getValue(node));
 						attachmentsMessage += "\n";
+					}
+					else if (d.getValue(node) instanceof DoubleArray){
+						attachmentsMessage += nr.getValue();
+						attachmentsMessage += ": {";
+						DoubleArray dA = (DoubleArray)d.getValue(node);
+						boolean first = true;
+						for (int k = 0; k< dA.getSize(); k++){
+							if (!first)
+								attachmentsMessage += ", ";
+							attachmentsMessage += MesquiteDouble.toString(dA.getValue(k));
+							first = false;
+						}
+						attachmentsMessage += "}\n";
 					}
 				}
 				if (StringUtil.blank(attachmentsMessage)) {

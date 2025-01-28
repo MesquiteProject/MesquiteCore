@@ -133,9 +133,9 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		sT += "<li>Associated: <ul>" + s + "</ul></li>";
 		return sT;
 	}
-	
-	
-	
+
+
+
 	public String getTextVersionAssociates(String nameOfPart){
 		if (bits == null && longs == null && doubles == null && objects == null)
 			return "";
@@ -438,7 +438,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	protected  boolean inBounds(int part) {
 		return part>=0 && part<numParts; 
 	}
-	
+
 	public boolean hasAnyAssociates(){
 		if (bits != null && bits.size()>0)
 			return true;
@@ -574,13 +574,13 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 	public void readAssociated(String assocString, int node, MesquiteInteger pos){
 		readAssociated(assocString,node,pos, (String)null, (String)null, false);
-		
+
 	}
 	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation){
 		readAssociated(assocString, node, pos, whitespace, punctuation, false);
 	}
 	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation, boolean forceNumberToDouble){
-		
+
 		if (pos==null || node>numParts || node<0 || StringUtil.blank(assocString))
 			return;
 		String key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
@@ -617,16 +617,20 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				//	bb.setValue(node, value.substring(7, value.length()));
 			}
 			else if (value.indexOf("{") == 0) { //treat as String bounded by {}; added to read BEAST results
-				String stored = "";
+				DoubleArray values = new DoubleArray(1);
 				String s="";
-				while (!">".equals(s) && !"}".equals(s)) {
-					s=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
-					if ((!">".equals(s) && !"}".equals(s)))
-						stored += s;
+				int count = 1;
+				while (!"}".equals(s)) {
+					double v = MesquiteDouble.fromString(assocString, pos);
+					values.resetSize(count);
+					values.setValue(count-1, v);
+					count++;
+					s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); //comma or }
 				}
+
 				NameReference nr = makeAssociatedObjects(key);
 				ObjectArray bb = getWhichAssociatedObject(nr);
-				bb.setValue(node, stored);
+				bb.setValue(node, values);
 			}
 			else if ((forceNumberToDouble && MesquiteNumber.isNumber(value)) || ((value.indexOf(".")>=0) && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos))) { //treat as double 
 				NameReference nrEx= NameReference.getNameReference(key);   // fixed in 3.01
@@ -989,7 +993,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 	/** Deletes parts flagged for deletion in Bits*/
 	protected boolean deletePartsFlagged(Bits toDelete){ 
-		
+
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
@@ -1021,10 +1025,10 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (previousOrder != null){
 			previousOrder = IntegerArray.deletePartsFlagged(previousOrder, toDelete);
 		}
-		
+
 		//figuring out how many deleted total to adjust numParts
 		numParts = numParts-toDelete.numBitsOn();
-		
+
 		setDirty(true);
 		return true;
 	}	
@@ -1033,7 +1037,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	 * blocks[i][0] is start of block; blocks[i][1] is end of block
 	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! *
 	protected boolean deletePartsBy Blocks(int[][] blocks){ 
-		
+
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
@@ -1065,13 +1069,13 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (previousOrder != null){
 			previousOrder = IntegerArray.deletePartsBy Blocks(previousOrder, blocks);
 		}
-		
+
 		//figuring out how many deleted total to adjust numParts
 		int shift = 0;
 		for (int block = 0; block<blocks.length; block++) 
 			shift += blocks[block][1]-blocks[block][0]+1;		
 		numParts = numParts-shift;
-		
+
 		setDirty(true);
 		return true;
 	}
@@ -1146,7 +1150,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public boolean swapParts(int first, int second){
 		return swapParts(first, second, true);
 	}
-	*/
+	 */
 	public boolean swapParts(int first, int second, boolean notify){
 		if (first>numParts || first<0) 
 			return false;

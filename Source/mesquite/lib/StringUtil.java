@@ -167,6 +167,13 @@ public class StringUtil {
 		pos.setValue(s.length());
 		return null;
 	}
+	/*.................................................................................................................*/
+	public static char charAt(String string, MesquiteInteger pos) {
+		int loc = pos.getValue();
+		if (loc>=0 && loc< string.length())
+			return string.charAt(loc);
+		return 0;
+	}
 
 	static boolean isLineBreak(String s, int index) {
 		if (s == null || index >= s.length() || index < 0)

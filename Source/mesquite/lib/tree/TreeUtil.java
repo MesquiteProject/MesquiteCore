@@ -91,7 +91,7 @@ public class TreeUtil {
 			MesquiteTree t = new MesquiteTree(taxa);
 			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
 			//t.setTreeVector(treeVector);
-			t.readTree(line,namer, null, "():;,[]\'", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS
+			t.readTree(line,namer, null, "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
 			/*MesquiteInteger pos = new MesquiteInteger(0);
 			treeParser.setString(line);
 			readClade(t, t.getRoot());

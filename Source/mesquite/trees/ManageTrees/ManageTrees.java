@@ -505,7 +505,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					//send script to tree window coord to makeTreeWindow with set of taxa and then set to stored trees and this tree vector
 					int whichTreeBlock = getTreeBlockNumber(taxa, trees);
 
-					
+
 					//Make new tree window and feed it script to show consensus
 					CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
 					CommandRecord scr = new CommandRecord(true);
@@ -1733,15 +1733,15 @@ public class ManageTrees extends TreesManager implements ItemListener {
 				}
 			}
 			else { //if (taxa !=null || getProject().getNumberTaxas()>1) {
-				int whichType = 0;
+				int rootingStatus = 0;
 				if (commandName.equalsIgnoreCase("TREE")) 
-					whichType = 1;
+					rootingStatus = 1;
 				else if (commandName.equalsIgnoreCase("UTREE")) 
-					whichType =2;
+					rootingStatus =2;
 				else if (commandName.equalsIgnoreCase("RTREE")) 
-					whichType = 1;
+					rootingStatus = 1;
 
-				if (whichType > 0 && (!fuse || translationTableRead || (taxa!= null && taxa.getFile() == file))) {
+				if (rootingStatus > 0 && (!fuse || translationTableRead || (taxa!= null && taxa.getFile() == file))) {
 					//if (fuseTaxaCharBlocks && !translationTableRead)
 					treeNum++;
 					if (treeNum >= firstTree && (!MesquiteInteger.isCombinable(lastTree) || treeNum<=lastTree) && (!MesquiteInteger.isCombinable(everyNth) || everyNth == 1 || (treeNum-firstTree) % everyNth == 0)) {
@@ -1776,20 +1776,20 @@ public class ManageTrees extends TreesManager implements ItemListener {
 							treeName=parser.getNextToken();
 						parser.getNextToken(); //eat up "equals"
 						treeDescription=command.substring((int)parser.getPosition(), command.length());
-						//Debugg.println("!!! treedescription " + treeDescription);
 						MesquiteTree thisTree =new MesquiteTree(taxa);
 						thisTree.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlargement);
-						String commentString = comment.getValue();
-
+						String commentString = comment.getValue();						
 						if (commentString!=null && commentString.length()>1){
 							if (commentString.charAt(0)=='!')
 								thisTree.setAnnotation(commentString.substring(1, commentString.length()), false);
-							else {
-								int wpos = commentString.indexOf("&W");
-								if (wpos <0)
-									wpos = commentString.indexOf("&w");
-								if (wpos>=0) {
-									cPos.setValue(wpos+2);
+						}
+						Parser tempParser = new Parser(treeDescription);
+
+						if ("<".equals(tempParser.getFirstToken())){ 
+							String token = "";
+							while (!(">".equals(token=tempParser.getNextToken())) && StringUtil.notEmpty(token)){
+								if (token.equalsIgnoreCase("W")){
+
 									String num = ParseUtil.getToken(commentString, cPos);
 									String slash = ParseUtil.getToken(commentString, cPos);
 									String denom = ParseUtil.getToken(commentString, cPos);
@@ -1804,32 +1804,39 @@ public class ManageTrees extends TreesManager implements ItemListener {
 										thisTree.attachIfUniqueName(d);
 									}
 								}
+								else if (token.equalsIgnoreCase("U")){
+									rootingStatus = 2;
+								}
+								else if (token.equalsIgnoreCase("R")){
+									rootingStatus = 1;
 							}
-						}
-						thisTree.setTreeVector(trees);
-						trees.addElement(thisTree, false);
-						treeRead = true;
-						if (file.mrBayesReadingMode)
-							thisTree.setReadingMrBayesConTree(true);
-						thisTree.readTree(treeDescription);
-						thisTree.setReadingMrBayesConTree(false);
-						//thisTree.warnRetIfNeeded();
-						thisTree.setName(treeName);
-						if (whichType ==2) 
-							thisTree.setRooted(false, false);
-						if (treeNum>1 && treeNum % 100 == 0) 
-							logln("   " + Integer.toString(treeNum) + " trees read ");
 
-						if (treeNum>1 && treeNum % 1000 == 0) {
-							Runtime rt = Runtime.getRuntime();
-							rt.gc();
 						}
-					}	
-				}
-				else
-					readUnrecognizedCommand(file, t, name, block, commandName, command, blockComments, comment,  fileReadingArguments);
+					}
+					thisTree.setTreeVector(trees);
+					trees.addElement(thisTree, false);
+					treeRead = true;
+					if (file.mrBayesReadingMode)
+						thisTree.setReadingMrBayesConTree(true);
+					thisTree.readTree(treeDescription);
+					thisTree.setReadingMrBayesConTree(false);
+					//thisTree.warnRetIfNeeded();
+					thisTree.setName(treeName);
+					if (rootingStatus ==2) 
+						thisTree.setRooted(false, false);
+					if (treeNum>1 && treeNum % 100 == 0) 
+						logln("   " + Integer.toString(treeNum) + " trees read ");
+
+					if (treeNum>1 && treeNum % 1000 == 0) {
+						Runtime rt = Runtime.getRuntime();
+						rt.gc();
+					}
+				}	
 			}
-			/*else { 
+			else
+				readUnrecognizedCommand(file, t, name, block, commandName, command, blockComments, comment,  fileReadingArguments);
+		}
+		/*else { 
 				String st = "A block of trees has been read for which no corresponding block of taxa has been found, and no block of taxa could be created for it.";
 				st += "  If you had expected that the trees would have applied to an existing block of taxa, it is possible that the taxa no longer correspond because of changes in names or in which taxa are included.";
 
@@ -1837,111 +1844,111 @@ public class ManageTrees extends TreesManager implements ItemListener {
 				trees.dispose();
 				return null;
 			}*/
+	}
+	if (treeRead){
+		//assigning informative name if none or untitled
+		if (trees!=null && (StringUtil.blank(trees.getName())|| "UNTITLED".equalsIgnoreCase(trees.getName()))) {
+			trees.setName(treesVector.getUniqueName("Untitled Tree Block"));
 		}
-		if (treeRead){
-			//assigning informative name if none or untitled
-			if (trees!=null && (StringUtil.blank(trees.getName())|| "UNTITLED".equalsIgnoreCase(trees.getName()))) {
-				trees.setName(treesVector.getUniqueName("Untitled Tree Block"));
-			}
-			if (trees != null && blockComments!=null && blockComments.length()>0)
-				trees.setAnnotation(blockComments.toString(), false);
-			if (getProject() != null)
-				getProject().refreshProjectWindow();
-			return t;
-		}
-		if (trees !=null)
-			trees.dispose();
-		discreetAlert( "No trees were read from the tree block.");
-		getProject().refreshProjectWindow();
+		if (trees != null && blockComments!=null && blockComments.length()>0)
+			trees.setAnnotation(blockComments.toString(), false);
+		if (getProject() != null)
+			getProject().refreshProjectWindow();
+		return t;
+	}
+	if (trees !=null)
+		trees.dispose();
+	discreetAlert( "No trees were read from the tree block.");
+	getProject().refreshProjectWindow();
+	return null;
+}
+
+
+public String getTreeBlock(TreeVector trees, NexusBlock tB){
+	if (trees == null || trees.size()==0)
 		return null;
-	}
-
-
-	public String getTreeBlock(TreeVector trees, NexusBlock tB){
-		if (trees == null || trees.size()==0)
-			return null;
-		String endLine = ";" + StringUtil.lineEnding();
-		StringBuffer block = new StringBuffer(5000);
-		Taxa taxa = trees.getTaxa();
-		block.append("BEGIN TREES");
-		if (trees.getAnnotation()!=null) 
-			block.append("[!" + StringUtil.tokenize(trees.getAnnotation()) + "]");
+	String endLine = ";" + StringUtil.lineEnding();
+	StringBuffer block = new StringBuffer(5000);
+	Taxa taxa = trees.getTaxa();
+	block.append("BEGIN TREES");
+	if (trees.getAnnotation()!=null) 
+		block.append("[!" + StringUtil.tokenize(trees.getAnnotation()) + "]");
+	block.append(endLine);
+	if (!NexusBlock.suppressNEXUSTITLESANDLINKS){
+		block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
 		block.append(endLine);
-		if (!NexusBlock.suppressNEXUSTITLESANDLINKS){
-			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
-			block.append(endLine);
-		}
-		if (!NexusBlock.suppressNEXUSIDS){
-			block.append("\tID " + StringUtil.tokenize(trees.getUniqueID()));
-			block.append(endLine);
-		}
-		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressNEXUSTITLESANDLINKS)) {
-			block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
-			block.append(endLine);
-		}
-		block.append("\tTRANSLATE" + StringUtil.lineEnding());
-		String tt =trees.getTranslationTable();
-		int writeMode = Tree.BY_TABLE;
-		if (tt==null) {
-			tt = "";
-			if (taxa!=null)
-				for(int i=0; i<taxa.getNumTaxa(); i++) {
-					if (i>0)
-						tt += ","+ StringUtil.lineEnding();
-					tt += "\t\t" + Taxon.toExternal(i) + "\t" + StringUtil.tokenize(taxa.getTaxonName(i)) ;
-				}
-			writeMode = Tree.BY_NUMBERS;
-		}
-		block.append( tt);
+	}
+	if (!NexusBlock.suppressNEXUSIDS){
+		block.append("\tID " + StringUtil.tokenize(trees.getUniqueID()));
 		block.append(endLine);
-
-		Enumeration e = trees.elements();
-		while (e.hasMoreElements()) {
-			Object obj = e.nextElement();
-			Tree t = (Tree)obj;
-
-			block.append("\tTREE ");
-			if (t instanceof MesquiteTree && !StringUtil.blank(((MesquiteTree)t).getAnnotation())) {
-				String s = ((MesquiteTree)t).getAnnotation();
-				s= StringUtil.replace(s, '\n', ' ');
-				s=StringUtil.replace(s, '\r', ' ');
-				block.append(" [!" + s + "] ");
+	}
+	if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressNEXUSTITLESANDLINKS)) {
+		block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
+		block.append(endLine);
+	}
+	block.append("\tTRANSLATE" + StringUtil.lineEnding());
+	String tt =trees.getTranslationTable();
+	int writeMode = Tree.BY_TABLE;
+	if (tt==null) {
+		tt = "";
+		if (taxa!=null)
+			for(int i=0; i<taxa.getNumTaxa(); i++) {
+				if (i>0)
+					tt += ","+ StringUtil.lineEnding();
+				tt += "\t\t" + Taxon.toExternal(i) + "\t" + StringUtil.tokenize(taxa.getTaxonName(i)) ;
 			}
+		writeMode = Tree.BY_NUMBERS;
+	}
+	block.append( tt);
+	block.append(endLine);
 
-			Object weightObject = ((Attachable)t).getAttachment(WEIGHT);
-			if(trees.getWriteWeights()&& weightObject!=null && weightObject instanceof MesquiteString){
-				block.append(StringUtil.tokenize(t.getName()) + " = [&W " + ((MesquiteString)weightObject).getValue() + "] " + t.writeTree(writeMode) + StringUtil.lineEnding());
-			}
-			else {
-				String ttt = t.writeTree(Tree.BY_TABLE);
-				block.append(StringUtil.tokenize(t.getName() )+ " = " +  t.writeTree(writeMode) + StringUtil.lineEnding());
-			}
+	Enumeration e = trees.elements();
+	while (e.hasMoreElements()) {
+		Object obj = e.nextElement();
+		Tree t = (Tree)obj;
 
+		block.append("\tTREE ");
+		if (t instanceof MesquiteTree && !StringUtil.blank(((MesquiteTree)t).getAnnotation())) {
+			String s = ((MesquiteTree)t).getAnnotation();
+			s= StringUtil.replace(s, '\n', ' ');
+			s=StringUtil.replace(s, '\r', ' ');
+			block.append(" [!" + s + "] ");
 		}
-		if (tB != null) block.append(tB.getUnrecognizedCommands() + StringUtil.lineEnding());
-		block.append("END");
 
-		block.append(";" + StringUtil.lineEnding()+ StringUtil.lineEnding());
-		return block.toString();
-	}
-	/*.................................................................................................................*/
-	public String getName() {
-		return "Manage TREES blocks"; //Name must be updated in Basic File Coord
-	}
-	/*.................................................................................................................*/
-	public String getNameForMenuItem() {
-		return "Tree Manager";
-	}
+		Object weightObject = ((Attachable)t).getAttachment(WEIGHT);
+		if(trees.getWriteWeights()&& weightObject!=null && weightObject instanceof MesquiteString){
+			block.append(StringUtil.tokenize(t.getName()) + " = [&W " + ((MesquiteString)weightObject).getValue() + "] " + t.writeTree(writeMode) + StringUtil.lineEnding());
+		}
+		else {
+			String ttt = t.writeTree(Tree.BY_TABLE);
+			block.append(StringUtil.tokenize(t.getName() )+ " = " +  t.writeTree(writeMode) + StringUtil.lineEnding());
+		}
 
-	/*.................................................................................................................*/
-	/** returns an explanation of what the module does.*/
-	public String getExplanation() {
-		return "Manages tree blocks (including read/write TREES block in NEXUS file)." ;
 	}
+	if (tB != null) block.append(tB.getUnrecognizedCommands() + StringUtil.lineEnding());
+	block.append("END");
 
-	public boolean isPrerelease(){
-		return false;
-	}
+	block.append(";" + StringUtil.lineEnding()+ StringUtil.lineEnding());
+	return block.toString();
+}
+/*.................................................................................................................*/
+public String getName() {
+	return "Manage TREES blocks"; //Name must be updated in Basic File Coord
+}
+/*.................................................................................................................*/
+public String getNameForMenuItem() {
+	return "Tree Manager";
+}
+
+/*.................................................................................................................*/
+/** returns an explanation of what the module does.*/
+public String getExplanation() {
+	return "Manages tree blocks (including read/write TREES block in NEXUS file)." ;
+}
+
+public boolean isPrerelease(){
+	return false;
+}
 }
 /* ======================================================================== */
 abstract class FillerThread extends MesquiteThread {
@@ -2064,7 +2071,7 @@ class TreeBlockThread extends FillerThread {
 				if (!aborted){
 					if (trees.size()==before) {
 						ownerModule.alert("Sorry, no trees were returned by " + fillTask.getName() + " [error code " + resultCode + "]");
-					ownerModule.fireTreeFiller();
+						ownerModule.fireTreeFiller();
 
 					}
 					else {

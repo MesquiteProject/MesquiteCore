@@ -3331,7 +3331,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
-
+		if (readAssociated && TreeDescription.indexOf("[&")>=0){
+			TreeDescription = StringUtil.replace(TreeDescription, "[&", "<");
+			TreeDescription = StringUtil.replace(TreeDescription, "]", ">");
+		}
 		intializeTree();
 		lastUnrecognizedName = null;
 		try {
