@@ -5500,6 +5500,10 @@ class BasicTreeStatisticsPanel extends TreeInfoExtraPanel {
 				treeStats = "All " + numTerms + " taxa included.\n";
 			else
 				treeStats = "" + numTerms + " of " + numTermsTotal + " taxa included.\n";
+			if (tree.getRooted())
+				treeStats += "Is rooted.\n";
+			else 
+				treeStats += "Is unrooted.\n";
 			if (tree.hasPolytomies(tree.getRoot()))
 				treeStats += "Has polytomies.\n";
 			if (!tree.hasBranchLengths())

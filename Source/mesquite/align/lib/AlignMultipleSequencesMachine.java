@@ -65,11 +65,11 @@ public class AlignMultipleSequencesMachine {
 				if (AlertDialog.query(ownerModule.containerOfModule(), "Align entire matrix?", "Some data are currently selected, but not a block of data that can be aligned by Mesquite.  Data can be aligned only for the whole matrix or for a contiguous set of selected characters. If you wish to align only part of the matrix, then press Cancel and select a contiguous set of whole characters. ", "Align entire matrix", "Cancel"))
 					table.deselectAll();
 				else
-					return DataAlterer.USER_STOPPED;
+					return ResultCodes.USER_STOPPED;
 			}
 			else {
 				ownerModule.discreetAlert( "Data can be aligned only for the whole matrix or for a contiguous set of selected characters.  Please make sure that nothing in the matrix is selected, or that a contiguous set of characters (sites) is selected.");
-				return DataAlterer.INCOMPATIBLE_DATA;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			}
 		}
 		//firstRowWithSelectedCell() != 
@@ -103,7 +103,7 @@ class AlignThread extends Thread {
 	MolecularData data;
 	MesquiteTable table;
 	boolean separateThread = false;
-	int resultCode = DataAlterer.NOT_YET_DONE;
+	int resultCode = ResultCodes.NOT_YET_DONE;
 	public AlignThread(MesquiteModule ownerModule, AlignMultipleSequencesMachine alignmentMachine, MultipleSequenceAligner aligner, MolecularData data, MesquiteTable table){
 		this.aligner = aligner;
 		this.ownerModule = ownerModule;
@@ -129,7 +129,7 @@ class AlignThread extends Thread {
 		else 				
 			entireColumnsSelected =  table.isColumnSelected(firstColumn.getValue());
 		//NOTE: at present this deals only with whole character selecting, and with all taxa
-		MesquiteInteger resultCodeFromAligner = new MesquiteInteger(DataAlterer.NO_RESPONSE);
+		MesquiteInteger resultCodeFromAligner = new MesquiteInteger(ResultCodes.NO_RESPONSE);
 		long[][] m  = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), null, firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue(), resultCodeFromAligner);
 		resultCode = resultCodeFromAligner.getValue();
 		alignmentMachine.integrateAlignment(m, data,  firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue());

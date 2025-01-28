@@ -61,7 +61,7 @@ public class ExcludeSelectedAlt extends DataAlterer  implements AltererMetadata 
 		if (changed)
 			data.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
 
-		return SUCCEEDED;
+		return ResultCodes.SUCCEEDED;
 
    	}
 	/*.................................................................................................................*/

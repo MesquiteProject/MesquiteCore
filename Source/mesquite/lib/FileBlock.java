@@ -140,7 +140,8 @@ public class FileBlock {
 	}
 
 
-	public String getNextFileCommand(MesquiteString comment){
+	/*.................................................................................................................*/
+public String getNextFileCommand(MesquiteString comment){
 		if (!directFromFile)
 			return getNextFileCommandStored(comment);
 		if (empty)
@@ -158,7 +159,7 @@ public class FileBlock {
 			command = unconsumed + " " + command;
 			unconsumed = "";
 		}
-
+		
 		if (betweenCommandComments.length()>0 && fileComments!=null) {
 			String bcc = betweenCommandComments.toString();
 			if (ParseUtil.darkBeginsWithIgnoreCase(bcc, "!"))
@@ -173,6 +174,7 @@ public class FileBlock {
 
 		return command;
 	}
+/*.................................................................................................................*/
 	public boolean isEmpty(){
 		if (directFromFile){
 			return empty;
@@ -180,6 +182,7 @@ public class FileBlock {
 		else
 			return commands.size()==0;
 	}
+	/*.................................................................................................................*/
 	public String getNextFileCommandStored(MesquiteString comment){
 		if (currentCommand>=0 && currentCommand< commands.size()){
 			if (comment !=null)

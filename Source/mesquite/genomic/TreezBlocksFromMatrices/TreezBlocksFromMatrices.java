@@ -109,7 +109,7 @@ public class TreezBlocksFromMatrices extends DatasetsListUtility {
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 				int result = inferenceTask.fillTreeBlock(trees);
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
-				if (result == TreeSearcher.USERCANCELONINITIALIZE) {
+				if (result == ResultCodes.USERCANCELONINITIALIZE) {
 					logln("User cancelled the analyses."); 
 					userCancel=true;
 					stop = true;

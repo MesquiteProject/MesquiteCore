@@ -105,15 +105,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	 }
 	 
 	 
-	public static int INCOMPATIBLE_DATA = -4;
-	public static int NULLVALUE = -3;
-	public static int USERCANCELONINITIALIZE = -2;
-	public static int NORESPONSE = -1;
-	public static int NOERROR = 0;
 
    	 /** Fills the passed tree block with trees. */
   	public abstract int fillTreeBlock(TreeVector treeList);
-  	  
+  	 
 	public void setNumberTask(NumberForTree numTask){
 	}
   	

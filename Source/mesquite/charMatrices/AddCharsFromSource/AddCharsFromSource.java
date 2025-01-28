@@ -81,7 +81,7 @@ public class AddCharsFromSource extends CategDataAlterer implements AltererWhole
 			s = " (" + maxNum + " available)";
 		int numChars = MesquiteInteger.queryInteger(containerOfModule(), "Number of characters", "Number of characters to add from " + characterSourceTask.getName() + s, 1, 1, maxNum);
 		if (!MesquiteInteger.isCombinable(numChars))
-			return USER_STOPPED;
+			return ResultCodes.USER_STOPPED;
 		CharacterState cs = null;
 		for (int i = 0; i<numChars; i++){
 			CharacterDistribution dist = characterSourceTask.getCharacter(data.getTaxa(), i);
@@ -96,7 +96,7 @@ public class AddCharsFromSource extends CategDataAlterer implements AltererWhole
 				data.setState(ic, it, cs);
 			}
 		}
-		return SUCCEEDED;
+		return ResultCodes.SUCCEEDED;
 	}
 
 	//	Double d = new Double(value);

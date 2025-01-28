@@ -39,7 +39,7 @@ public class NucleotideComplement extends DNADataAlterer  implements AltererDNAC
  				return -10;
  			if (!(data instanceof DNAData)){
 				MesquiteMessage.warnProgrammer("Attempt to complement non-DNA data");
-				return INCOMPATIBLE_DATA;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			}
 			return alterContentOfCells(data,table, undoReference);
    	}

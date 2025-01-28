@@ -53,8 +53,8 @@ public class DeleteSelectedAlt extends DataAlterer   {
 		logln("" + (oldNumChars-data.getNumChars()) +  " characters removed");
 
 		if ( oldNumChars!=data.getNumChars())
-		return SUCCEEDED;
-		return MEH;
+		return ResultCodes.SUCCEEDED;
+		return ResultCodes.MEH;
 
    	}
 	/*.................................................................................................................*/

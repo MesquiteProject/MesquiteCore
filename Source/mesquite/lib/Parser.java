@@ -37,7 +37,7 @@ public class Parser extends StringUtil {
 	boolean hyphensArePartOfNumbers = true;
 	MesquiteStringBuffer line = new MesquiteStringBuffer(1000);
 	char[][] charTranslationTable = new char[50][2];  //50 max
-	
+
 	public Parser(){
 		pos = new MesquiteLong(0);
 		buffer = new StringBuffer(100); 
@@ -290,7 +290,7 @@ public class Parser extends StringUtil {
 		}
 	}
 	/*.................................................................................................................*/
-	
+
 	public void setPunctuationStringRaw(String s){
 		if (s==null){
 			punctuationStringSet = null;
@@ -303,7 +303,7 @@ public class Parser extends StringUtil {
 	public String getPunctuationString (){
 		return punctuationString;
 	}
-	
+
 	private boolean storageNull() {
 		return line == null;
 	}
@@ -575,7 +575,7 @@ public class Parser extends StringUtil {
 			return null;
 		char c=getNextChar();
 		buffer.setLength(0);
-		
+
 		int count = 0;
 		while (count++< n && pos.getValue()<=line.length() && c!=(char)0) {  
 			buffer.append(c);
@@ -595,7 +595,7 @@ public class Parser extends StringUtil {
 			return null;
 		char c=getNextChar();
 		buffer.setLength(0);
-		
+
 		int count = 0;
 		while (count++< n && !lineEndCharacter(c) &&  pos.getValue()<=line.length() && c!=(char)0) {  
 			buffer.append(c);
@@ -1174,7 +1174,7 @@ public class Parser extends StringUtil {
 			return null;
 		else {
 			String st = line.toString();
-			
+
 			return st.substring((int)startPos,(int)endPos.getValue()); //Debugg.println
 		}
 	}
@@ -1227,7 +1227,11 @@ public class Parser extends StringUtil {
 	}
 	/*.................................................................................................................*/
 
-	int pendingPComment = 0;
+	boolean pendingPComment = false;
+
+	public boolean isSubstantiveCommentPending(){
+		return pendingPComment;
+	}
 	/*.................................................................................................................*/
 	char getNextChar(MesquiteInteger pendingBrackets, StringBuffer comment, MesquiteBoolean suppressComment) {
 		long posTemp = pos.getValue();
@@ -1246,11 +1250,12 @@ public class Parser extends StringUtil {
 			char next = 0;
 			if (posTemp<line.length())
 				next = lineCharAt(line, posTemp);
-			if (debt==0 && (next == '%')) { 
+			if (debt==0 && (next == '%' || next == '&')) { //a substantive comment Mesquite-style; can only be at first level
 				c = '<';
 				posTemp++; //done to go past %
 				line.setCharAt(posTemp-1, c); //done in case punctuation passed back will cause pos to decrement
-				pendingPComment = 1;
+				pendingPComment = true;
+				//don't add to debt to treat as a comment, but remember that there is a pending Substantive comment
 			}
 			else {
 				if (!storeCharToComment(c, debt, comment, suppressComment))
@@ -1264,10 +1269,10 @@ public class Parser extends StringUtil {
 		else if (closingCommentBracket(c)) {
 			if (comment!=null)
 				comment.append("$1");
-			if (debt==0 && pendingPComment >0) {
+			if (debt==0 && pendingPComment) {
 				c = '>';
 				line.setCharAt(posTemp-1, c); //done in case punctuation passed back will cause pos to decrement
-				pendingPComment = 0;
+				pendingPComment = false;
 			}
 			else {
 				if (debt>0){
@@ -1287,7 +1292,7 @@ public class Parser extends StringUtil {
 			c=lineCharAt(line, posTemp);
 			if (!whitespace(c) && count == 1 && checkExclamation){
 				if (checkExclamation && debt ==1)
-					if (c != '!' && c!= '&')
+					if (c != '!') // && c!= '&')
 						suppressComment.setValue(true);
 				checkExclamation = false;
 			}
@@ -1589,6 +1594,7 @@ public class Parser extends StringUtil {
 			p.setValue(pos.getValue());
 		return token;
 	}
+
 	/*.................................................................................................................*/
 	/** Returns the next command in the string passed starting at the given character */
 	public String getNextCommand() {
@@ -1600,10 +1606,10 @@ public class Parser extends StringUtil {
 		String token = getUnalteredToken(false);
 		if (!blankByCurrentWhitespace(token)) {
 			commandBuffer.append(token);
-			while (!blankByCurrentWhitespace(token) && !token.equals(";")) {
+			while (!blankByCurrentWhitespace(token) && !(token.equals(";") && !isSubstantiveCommentPending())) {
 				token = getUnalteredToken( false);
 				if (token != null && token.length() >0) {
-					if (token.charAt(0)!=';') 
+					if (!(token.charAt(0)==';' && !isSubstantiveCommentPending())) 
 						commandBuffer.append(' ');
 					commandBuffer.append(token);
 				}

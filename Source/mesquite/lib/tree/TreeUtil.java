@@ -19,16 +19,30 @@ import java.awt.Label;
 import mesquite.assoc.lib.*;
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
+import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.NameReference;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxonNamer;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.ProgressIndicator;
 
 public class TreeUtil {
 	
+	public static String translationTableFileName = "taxonNamesTranslationTable.txt";
+
+	
+	/*.................................................................................................................*/
 	/** Returns true iff the two trees have the same topologies.  The two trees must use the same block of taxa */
 	public static boolean identicalTopologies (Tree tree1, Tree tree2, boolean checkBranchLengths) {
 		if (tree1==null || tree2==null)
@@ -38,6 +52,7 @@ public class TreeUtil {
 		}
 		return false;
 	}
+	/*.................................................................................................................*/
 	/** Returns true iff the contained taxa in all containing taxa are monophyletic . */
 	public static boolean containedAllMonophyletic (Tree containedTree, Tree containingTree, TaxaAssociation association) {
 		if (containedTree==null || containingTree==null || association == null)
@@ -52,8 +67,95 @@ public class TreeUtil {
 		return true;
 	}
 	
-		
 	/*.................................................................................................................*/
+	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String treeNameBase) {
+		Parser treeParser = new Parser();
+		treeParser.setQuoteCharacter((char)0);
+		int numTrees = MesquiteInteger.infinite;
+		if (line != null){
+			treeParser.setString(line); 
+			String token = treeParser.getNextToken();  // numTaxa
+			numTrees = MesquiteInteger.fromString(token);
+		}
+		int iTree = 0;
+		TreeVector trees = null;
+		boolean abort = false;
+		line = file.readNextDarkLine();		
+		while (!StringUtil.blank(line) && !abort && (iTree<numTrees)) {
+			treeParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
+
+			if (trees == null) {
+				trees = new TreeVector(taxa);
+				trees.setName("Imported trees");
+			}
+			MesquiteTree t = new MesquiteTree(taxa);
+			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
+			//t.setTreeVector(treeVector);
+			t.readTree(line,namer, null, "():;,[]\'", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS
+			/*MesquiteInteger pos = new MesquiteInteger(0);
+			treeParser.setString(line);
+			readClade(t, t.getRoot());
+			t.setAsDefined(true);*/
+			t.setName(treeNameBase + (iTree+1));
+			trees.addElement(t, false);
+
+
+			iTree++;
+			line = file.readNextDarkLine();		
+			if (file.getFileAborted())
+				abort = true;
+		}
+		return trees;
+		
+	}
+	/*.................................................................................................................*
+	public static Tree readPhylipTree (String line, Taxa taxa, boolean permitTaxaBlockEnlarge, boolean permitSpaceUnderscoreEquivalent, TaxonNamer namer) {
+		if (StringUtil.blank(line))
+			return null;
+		if (!validNewickEnds(line))
+			return null;
+		MesquiteTree t = new MesquiteTree(taxa);
+		t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
+		t.setPermitSpaceUnderscoreEquivalent(permitSpaceUnderscoreEquivalent);
+		t.readTree(line, namer, null, "():;,[]\'"); //tree reading adjusted to use Newick punctuation rather than NEXUS
+		return t;
+	}
+
+	/*.................................................................................................................*/
+	public static void reinterpretNodeLabels(Tree tree, int node, NameReference[] nameRefs, boolean asText, double divisor){
+		if (nameRefs==null || nameRefs.length == 0)
+			return;
+		MesquiteTree t = null;
+		if (tree instanceof MesquiteTree)
+			t=(MesquiteTree)tree;
+		if (t==null)
+			return;
+		if (divisor==0.0) divisor=1.0;
+		if (t.nodeIsInternal(node)){
+			if (t.nodeHasLabel(node)){
+				String label = t.getNodeLabel(node);
+				if (asText) {
+					t.setAssociatedObject(nameRefs[0], node, label, true);
+				} else {
+					Parser parser = new Parser(label);
+					parser.setWhitespaceString(parser.getWhitespaceString()+"/");
+					double[] support = new double[nameRefs.length];
+					for (int i=0; i<nameRefs.length; i++) {
+						support[i] = MesquiteDouble.fromString(parser.getNextToken());
+						if (MesquiteDouble.isCombinable(support[i]))
+							t.setAssociatedDouble(nameRefs[i], node, support[i]/divisor, true);
+					}
+				}
+				t.setNodeLabel(null, node);
+			}
+			for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter)) {
+				reinterpretNodeLabels(t, daughter, nameRefs, asText, divisor);
+			}
+		}
+
+	}
+	/*.................................................................................................................*/
+	//THIS IS NOT CALLED
 	public  static boolean showAssociatedChoiceDialog(Associable tree, ListableVector names, String message, MesquiteModule module) {
 		if (tree == null)
 			return false;
@@ -108,22 +210,5 @@ public class TreeUtil {
 		return false;
 	}
 
-
-	/** Returns true iff the two trees from different taxa blocks have the same topologies; this is used for associated trees in which one is a containing and one a contained tree. *
-	public static boolean containedMatchesContaining (Tree containedTree, Tree containingTree, TaxaAssociation association) {
-		if (containedTree==null || containingTree==null || association == null)
-			return false;
-		if (!containedAllMonophyletic(containedTree, containingTree, association))  // check for monophyly of each contained group
-				return false;
-		Taxa containedTaxa = containedTree.getTaxa();
-		Taxa containingTaxa = containingTree.getTaxa();
-
-// now we know all of the associates are monophyletic within a containing branch.  Let's see if the deeper branches match.
-		
-		
-		
-		return true;
-	}
-	/*......................................*/
 	
 }

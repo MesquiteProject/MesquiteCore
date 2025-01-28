@@ -21,6 +21,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeUtil;
 import mesquite.lib.tree.TreeVector;
 import mesquite.categ.lib.*;
 import mesquite.io.lib.*;
@@ -92,7 +93,9 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 			if (StringUtil.notEmpty(arguments) && arguments.indexOf("useStandardizedTaxonNames")>=0)
 				taxonNamer = new SimpleNamesTaxonNamer();
 				
-			TreeVector trees = IOUtil.readPhylipTrees(this,mf, file, null, null, taxa, enlargeTaxaBlock, taxonNamer,getTreeNameBase(), true);
+			TreeVector trees = TreeUtil.readNewickTreeFile(file, null, taxa, enlargeTaxaBlock, taxonNamer,getTreeNameBase());
+			if (trees != null)
+				trees.addToFile(file,mf,(TreesManager)findElementManager(TreeVector.class));
 			importExtraFiles(file,taxa, trees);
 			finishImport(null, file, false );
 		}

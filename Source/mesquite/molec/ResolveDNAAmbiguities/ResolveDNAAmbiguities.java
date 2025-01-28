@@ -93,10 +93,10 @@ public class ResolveDNAAmbiguities extends DNADataAlterer implements AltererDNAC
 		this.table = table;
 		if (!(data instanceof DNAData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on nucleotide data");
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		}
 		if (!queryOptions())
-			return USER_STOPPED;
+			return ResultCodes.USER_STOPPED;
 		return alterContentOfCells(data,table, undoReference);
 	}
 

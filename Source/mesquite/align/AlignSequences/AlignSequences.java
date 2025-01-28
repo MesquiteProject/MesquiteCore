@@ -82,7 +82,7 @@ public class AlignSequences extends MolecDataEditorInit { //implements Calculati
 				if (MesquiteTrunk.debugMode)
 					logln("Memory available after data alterer invoked: " + MesquiteTrunk.getMaxAvailableMemory());
 
-				if (a== DataAlterer.SUCCEEDED) {
+				if (a== ResultCodes.SUCCEEDED) {
 					table.repaintAll();
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), undoReference);
 					if (alteredDataParameters.getSubcodes()!=null)

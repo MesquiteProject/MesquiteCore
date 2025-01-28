@@ -37,10 +37,10 @@ public class AddNoise extends ContDataAlterer implements AltererRandomizations {
    	/** Called to alter data in those cells selected in table*/
    	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 			if (!(data instanceof ContinuousData))
-				return INCOMPATIBLE_DATA;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			standardDeviation = MesquiteDouble.queryDouble(containerOfModule(), "Add Noise", "Variance of noise", 1.0);
 			if (!MesquiteDouble.isCombinable(standardDeviation) || standardDeviation<=0)
-				return USER_STOPPED;
+				return ResultCodes.USER_STOPPED;
 			standardDeviation = Math.sqrt(standardDeviation);
 			return alterContentOfCells(data,table, undoReference);
    	}

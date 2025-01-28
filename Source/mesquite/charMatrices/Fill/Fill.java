@@ -59,7 +59,7 @@ public class Fill extends DataAlterer implements AltererSimpleCell {
 		else
 			fillString = MesquiteString.queryString(containerOfModule(), "Fill selected cells", "Fill selected cells with states:", "");
 		if (StringUtil.blank(fillString))
-			return USER_STOPPED;
+			return ResultCodes.USER_STOPPED;
 		
    		fillState = data.getCharacterState(fillState, 0, 0); //just to have a template
    		fillState.setValue(fillString, data);

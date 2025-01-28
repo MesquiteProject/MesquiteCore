@@ -40,7 +40,7 @@ public class Standardize extends ContDataAlterer  implements AltererContinuousTr
    	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
    		boolean did=false;
    		if (!(data instanceof ContinuousData))
-   			return INCOMPATIBLE_DATA;
+   			return ResultCodes.INCOMPATIBLE_DATA;
    		ContinuousData cData = (ContinuousData)data;
    		if (data !=null){
    			UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
@@ -106,8 +106,8 @@ public class Standardize extends ContDataAlterer  implements AltererContinuousTr
    			}
   		}
    		if (did)
-   			return SUCCEEDED;
-   		return MEH;
+   			return ResultCodes.SUCCEEDED;
+   		return ResultCodes.MEH;
    	}
 
    	boolean shouldIDoIt(int ic, int it, MesquiteTable table){

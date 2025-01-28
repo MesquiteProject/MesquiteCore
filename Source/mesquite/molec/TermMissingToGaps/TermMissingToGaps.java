@@ -34,7 +34,7 @@ public class TermMissingToGaps extends CategDataAlterer implements AltererConver
 		this.table = table;
 		if (!(dData instanceof CategoricalData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on categorical data");
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		}
 		numCellsAltered = 0;
 		CategoricalData data = (CategoricalData)dData;
@@ -76,8 +76,8 @@ public class TermMissingToGaps extends CategDataAlterer implements AltererConver
 			}
 		}
 		if (numCellsAltered >0)
-			return SUCCEEDED;
-			return MEH;
+			return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
 	}
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData ddata, int ic, int it){

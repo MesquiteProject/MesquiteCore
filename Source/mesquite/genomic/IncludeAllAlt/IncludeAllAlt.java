@@ -39,7 +39,7 @@ public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
 		boolean changed = false;
 		CharInclusionSet inclusionSet = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
 		if (inclusionSet == null) {
-			return SUCCEEDED; //if no inclusion set, then all must be included!
+			return ResultCodes.SUCCEEDED; //if no inclusion set, then all must be included!
 		}
 		if (inclusionSet != null) {
 			for (int i=0; i<data.getNumChars(); i++) {
@@ -53,7 +53,7 @@ public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
 		if (changed)
 			data.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
 
-		return SUCCEEDED;
+		return ResultCodes.SUCCEEDED;
 
    	}
 	/*.................................................................................................................*/

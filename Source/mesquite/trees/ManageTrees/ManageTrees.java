@@ -849,10 +849,10 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			else if (separateThread == 0) {// same thread
 				long s = System.currentTimeMillis();
 				int before = trees.size();
-				treeFillerTask.fillTreeBlock(trees, howManyTrees);
+				int resultCode = treeFillerTask.fillTreeBlock(trees, howManyTrees);
 
 				if (trees.size()==before) {
-					logln("Sorry, no trees were returned by " + treeFillerTask.getName());
+					logln("Sorry, no trees were returned by " + treeFillerTask.getName() + " [error code " + resultCode + "]");
 					return null;
 				}
 
@@ -1033,9 +1033,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else if (separateThread == 0) {// same thread
 			long s = System.currentTimeMillis();
 			int before = trees.size();
-			treeFillerTask.fillTreeBlock(trees, howManyTrees);
+			int resultCode = treeFillerTask.fillTreeBlock(trees, howManyTrees);
 			if (trees.size()==before) {
-				alert("Sorry, no trees were returned by " + treeFillerTask.getName());
+				logln("Sorry, no trees were returned by " + treeFillerTask.getName() + " [error code " + resultCode + "]");
 				return null;
 			}
 			if (trees.getName()==null || "Untitled".equalsIgnoreCase(trees.getName()))
@@ -1106,9 +1106,10 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			tLT.start();
 		}
 		else if (separateThread == 0) {// same thread
-			if (!saveDirectTreeFile(treeSourceTask, taxa, howManyTrees, file))
+			if (!saveDirectTreeFile(treeSourceTask, taxa, howManyTrees, file)){
+				alert("Sorry, no trees were returned by " + treeFillerTask.getName() + " [error code Debugg.println(!!! " + 0 + "]");
 
-				alert("Sorry, no trees were returned by " + treeSourceTask.getName());
+			}
 			return null;
 		}
 
@@ -1613,7 +1614,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 
 		MesquiteInteger cPos = new MesquiteInteger(0);
 		MesquiteString comment = new MesquiteString();
-		String s;
+		String command;
 		int treeNum=-1;
 		boolean treeRead = false;
 		Taxa taxa=null;
@@ -1630,9 +1631,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		boolean nameSet = false;
 		boolean translationTableRead = false;
 		NexusBlock t =trees.addToFile(file, getProject(), this);
-		while (!StringUtil.blank(s=block.getNextFileCommand(comment))) {
+		while (!StringUtil.blank(command=block.getNextFileCommand(comment))) {
 			String punc = ",";
-			String commandName = parser.getFirstToken(s);
+			String commandName = parser.getFirstToken(command);
 			if (commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK")) {
 			}
 			//todo: here, allow figuring of taxa by first tree string and taxon names
@@ -1774,8 +1775,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 						if (treeName.equals("*"))
 							treeName=parser.getNextToken();
 						parser.getNextToken(); //eat up "equals"
-						treeDescription=s.substring((int)parser.getPosition(), s.length());
-
+						treeDescription=command.substring((int)parser.getPosition(), command.length());
+						//Debugg.println("!!! treedescription " + treeDescription);
 						MesquiteTree thisTree =new MesquiteTree(taxa);
 						thisTree.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlargement);
 						String commentString = comment.getValue();
@@ -1826,7 +1827,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					}	
 				}
 				else
-					readUnrecognizedCommand(file, t, name, block, commandName, s, blockComments, comment,  fileReadingArguments);
+					readUnrecognizedCommand(file, t, name, block, commandName, command, blockComments, comment,  fileReadingArguments);
 			}
 			/*else { 
 				String st = "A block of trees has been read for which no corresponding block of taxa has been found, and no block of taxa could be created for it.";
@@ -2056,14 +2057,14 @@ class TreeBlockThread extends FillerThread {
 		long s = System.currentTimeMillis();
 		int before = trees.size();
 		try {
-			fillTask.fillTreeBlock(trees, howManyTrees);
+			int resultCode = fillTask.fillTreeBlock(trees, howManyTrees);
 
 			boolean okToSave = false;
 			if (!ownerModule.isDoomed()){
 				if (!aborted){
 					if (trees.size()==before) {
-						ownerModule.alert("Sorry, no trees were returned by " + fillTask.getName());
-						ownerModule.fireTreeFiller();
+						ownerModule.alert("Sorry, no trees were returned by " + fillTask.getName() + " [error code " + resultCode + "]");
+					ownerModule.fireTreeFiller();
 
 					}
 					else {

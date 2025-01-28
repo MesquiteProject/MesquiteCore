@@ -48,7 +48,7 @@ public class MultiplyByCharacter extends ContDataAlterer   implements AltererCon
    	/** Called to alter data in those cells selected in table*/
    	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!(data instanceof ContinuousData))
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
  			Taxa taxa = data.getTaxa();
    			multiplyingIC=characterSourceTask.queryUserChoose(taxa, "by which to multiply states");
    			multiplyingCharacter = (ContinuousDistribution)characterSourceTask.getCharacter(taxa, multiplyingIC); 

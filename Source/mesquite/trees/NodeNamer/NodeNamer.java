@@ -183,7 +183,7 @@ class NodeNamerExtra extends TreeDisplayExtra implements Commandable  {
 						hideMiniEditor();
 						return null;
 					}
-					if (!MesquiteTree.cosmeticInternalNames){
+				/*	if (!MesquiteTree.cosmeticInternalNames){
 						int n = t.nodeOfLabel(arguments, true);
 						if (n<0) {
 							n = t.getTaxa().whichTaxonNumber(arguments, false);
@@ -192,7 +192,7 @@ class NodeNamerExtra extends TreeDisplayExtra implements Commandable  {
 						if (n!=editorNode && t.nodeExists(n)) // node with that label already exists
 							if (!AlertDialog.query(ownerModule.containerOfModule(), "Name already exists", "That name already exists for some other node or terminal taxon.  Assigning the label to this node may cause the tree to be interpreted as reticulate if later re-read from a file.  Continue?"))
 								return null;
-					}
+					} */
 					t.setNodeLabel(arguments, editorNode);
 					if (arguments != null){
 						Clade c = t.getTaxa().getClades().findClade(arguments);

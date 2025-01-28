@@ -1877,7 +1877,24 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return token;
 	}
 
-
+	boolean endCommand(char c, Parser parser){
+		if (c != ';')
+			return false;
+		// it is a semicolon, but is there a substantive comment pending? If not, then it's the end
+		if (parser == null)
+			return true;
+		return !parser.isSubstantiveCommentPending();
+	}
+	boolean endCommand(String c, Parser parser){
+		if (c == null || c.length() == 0)
+			return false;
+		if (c.charAt(0) != ';')
+			return false;
+		// it is a semicolon, but is there a substantive comment pending? If not, then it's the end
+		if (parser == null)
+			return true;
+		return !parser.isSubstantiveCommentPending();
+	}
 	/*.................................................................................................................*/
 	/** returns the next command in the file.  Extra information about the command is
 	returned in the MesquiteInteger status.  If the command is the "begin", 1 is returned; if "end;", 2 is returned.
@@ -1903,10 +1920,10 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 		if (!emptyToken(token)) {
 			command.append(token);  // this is the command name
-			while (!emptyToken(token) && !token.equals(";")) {
+			while (!emptyToken(token) && !endCommand(token, parser)) {
 				token = nextToken(commandComments);
 				if (includeEntireCommand && !emptyToken(token)) {
-					if (token.charAt(0)!=';' && !parser.whitespace(token.charAt(0))) 
+					if (!endCommand(token, parser) && !parser.whitespace(token.charAt(0))) 
 						command.append(' ');
 					command.append(token);
 				}
@@ -1942,7 +1959,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			status.setValue(0);
 		String lastT = null;
 		if (!emptyToken(token)) {
-			while (token!=null && !token.equals(";")) {
+			while (token!=null && !endCommand(token, parser)) {
 				lastT = token;
 				token = nextToken(null);
 			}

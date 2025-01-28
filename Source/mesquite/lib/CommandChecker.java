@@ -622,6 +622,8 @@ public class CommandChecker {
 
 	/* ................................................................................................................. */
 	void addToDutyClasses(Class duty) {
+		if (duty == null)
+			return;
 		int numDuties = dutyClasses.size();
 		int found = -1;
 		for (int d = 0; d < numDuties && found != -2; d++) {

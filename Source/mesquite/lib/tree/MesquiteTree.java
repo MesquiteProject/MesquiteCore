@@ -25,6 +25,7 @@ import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
 import mesquite.lib.CompatibilityChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Identifiable;
@@ -163,8 +164,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** A count of the listeners remaining, used to try to catch memory leaks.
 	private static int listenersRemaining=0;
 	 */
-	/** True if internal node names are treated as cosmetic */
+	/* True if internal node names are treated as cosmetic 
 	public static boolean cosmeticInternalNames = true;
+	 */
 	/** True if internal node names should be converted to annotations */
 	public static boolean convertInternalNames = false;
 	/** True if should warn if reticulations found */
@@ -173,12 +175,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public static boolean polytomyDefaultHard = true;
 	/** True if tree reading permits truncated taxon names */
 	public static boolean permitTruncTaxNames = true;
+	/** True if tree reading permits space and underscore as equivalent */
+	public static boolean permitSpaceUnderscoreEquivalent = true;
+	
 	/** True if tree reading permits taxon names to be expressed as t0, t1, etc.*/
-	public static boolean permitT0Names = false;
+	private boolean permitT0Names = false;
 	/** If true, then taxa block is enlarged when unfamiliar taxon name encountered */
 	private boolean permitTaxaBlockEnlargement = false;
-	/** If true, then taxon name match is considered OK if differ by space/underscore */
-	private boolean permitSpaceUnderscoreEquivalent = false;
 	/** 0 if polytomies in tree treated as hard, 1 if soft, 2 if not yet assigned */
 	private int polytomiesHard = 2;
 	/** A boolean that stores whether the tree is rooted or not */
@@ -682,7 +685,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		recordMinTerms(tree, tree.getRoot(), minTermsOther);
 		coTraverseTransfer(kind, nRef, this, getRoot(), minTermsThis, tree, tree.getRoot(), minTermsOther);
 	}	
-	
+
 	/*----------------------------------------*/
 	/** Returns true if passed tree has same core array storage (same root, mothers, firstDaughter, nextSister, taxonNumber). */
 	public boolean equalsCoreArrays(MesquiteTree tree){
@@ -2930,21 +2933,23 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		else {
 			int taxon = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
+
 			if (taxon>=0){
 				System.out.println("Observed taxon " + c + " in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly");
 			}
-			if (cosmeticInternalNames){
-				if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
-					double d = MesquiteDouble.fromString(c);
-					setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
-				}
-				else 
-					setNodeLabel(c, sN); 
-
-				if (taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null)
-					taxa.getClades().addClade(c);
-				return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
+			//if (cosmeticInternalNames){
+			/* Debugg.println delete this? if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
+				double d = MesquiteDouble.fromString(c);
+				setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
 			}
+			else */
+				setNodeLabel(c, sN); 
+
+			if (!MesquiteNumber.isNumber(c) && taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null){
+				taxa.getClades().addClade(c);
+			}
+			return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
+			/*	}
 			else if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
 				double d = MesquiteDouble.fromString(c);
 				setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
@@ -2963,7 +2968,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					if (permitTruncTaxNames)
 						s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
 					if (numReticWarnings++ < 5)
-						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same)." + s  + " " + TreeDescription);
+						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same; A). [" + c  + "; interp as " + taxonNumber+ "] " + s  + " stringLoc after " + stringLoc + "  " + TreeDescription);
 					else if (numReticWarnings == 5)
 						MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
 					else if (numReticWarnings <100)
@@ -2976,7 +2981,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					setParentOfNode(labNode, motherOfNode(sN), false);
 					return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
 				}
-			}
+			}*/
 		}
 	}
 	static int numReticWarnings = 0;
@@ -2990,11 +2995,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean getPermitTaxaBlockEnlargement(){
 		return permitTaxaBlockEnlargement;
 	}
-	public void setPermitSpaceUnderscoreEquivalent(boolean permit){
+	/*public void setPermitSpaceUnderscoreEquivalent(boolean permit){
 		this.permitSpaceUnderscoreEquivalent = permit;
 	}
 	public boolean getPermitSpaceUnderscoreEquivalent(){
 		return permitSpaceUnderscoreEquivalent;
+	}*/
+	public void setPermitT0Names(boolean permit){
+		this.permitT0Names = permit;
+	}
+	public boolean getPermitT0Names(){
+		return permitT0Names;
 	}
 
 	/** Takes the node information in a file created by a recent version of MrBayes, and retokenizes it as MrBayes does not use standard NEXUS tokenization rules for this. */
@@ -3148,7 +3159,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					 * treedescription, this will be taxon 0.  So if it reads t0, it will interpret it as taxon 0, even if it is the 99th taxon read in. 
 					 * Our solution to this has been to set permitTONames to false by default, and warn the user not to turn it on unless they need to.
 					 * */
-					if (MesquiteTree.permitT0Names && c != null && c.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there 
+					if (permitT0Names && c != null && c.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there 
 						String number = c.substring(1, c.length());
 						int num = MesquiteInteger.fromString(number);
 						if (MesquiteInteger.isCombinable(num) && num>=0 && num<taxa.getNumTaxa())
@@ -3178,7 +3189,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						if (permitTruncTaxNames)
 							s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
 						if (numReticWarnings++ < 5)
-							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same). [" + c + "] " + s  + " " + TreeDescription);
+							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same; B). [" + c + "; interp as " + taxonNumber + "] " + s  + " stringLoc after " + stringLoc + "  " + TreeDescription);
 						else if (numReticWarnings == 5)
 							MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
 						else if (numReticWarnings <100){
@@ -3208,7 +3219,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						if (permitTruncTaxNames)
 							s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
 						if (numReticWarnings++ < 5)
-							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same). [" + c + "] " + s  + " " + TreeDescription);
+							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same; C). [" + c  + "; interp as " + taxonNumber+ "] " + s  + " stringLoc after " + stringLoc + "  " + TreeDescription);
 						else if (numReticWarnings == 5)
 							MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
 						else if (numReticWarnings <100)

@@ -27,6 +27,7 @@ import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.taxa.TaxonNamer;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeUtil;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ListDialog;
@@ -139,8 +140,11 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 
 
 /*.................................................................................................................*/
-	public TreeVector readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa) {
-		return IOUtil.readPhylipTrees(this,mf, file, line, progIndicator, taxa, false, null, getTreeNameBase(), true);
+	private TreeVector readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa) {
+		TreeVector trees = TreeUtil.readNewickTreeFile(file, line, taxa, false, null, getTreeNameBase());
+		if (trees != null)
+			trees.addToFile(file,mf,(TreesManager)findElementManager(TreeVector.class));
+		return trees;
 	}	
 
 	public void setTaxonNameLength(int value) {

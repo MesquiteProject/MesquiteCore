@@ -196,7 +196,7 @@ public class AlterData extends DataWindowAssistantI  {
 					if (MesquiteTrunk.debugMode)
 						logln("Memory available after data alterer invoked: " + MesquiteTrunk.getMaxAvailableMemory());
 
-					if (a== DataAlterer.SUCCEEDED) {
+					if (a== ResultCodes.SUCCEEDED) {
 						table.repaintAll();
 						Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), undoReference);
 						if (alteredDataParameters.getSubcodes()!=null)

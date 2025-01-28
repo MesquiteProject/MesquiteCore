@@ -53,7 +53,7 @@ public class Defaults extends MesquiteInit  {
 	}
 	/*.................................................................................................................*/
 	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode;
-	MesquiteBoolean taxonTruncTrees, taxonT0TreesWarned, taxonT0Trees, printTreeNameByDefault;
+	MesquiteBoolean taxonTruncTrees, permitSpaceUnderscoreEquivalentTrees, printTreeNameByDefault;
 	MesquiteBoolean tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; 
 	MesquiteString themeName;
 	StringArray themes;
@@ -68,8 +68,7 @@ public class Defaults extends MesquiteInit  {
 		tabbedWindows = new MesquiteBoolean(MesquiteWindow.compactWindows);
 		//tilePopouts = new MesquiteBoolean(MesquiteFrame.popIsTile);
 		taxonTruncTrees = new MesquiteBoolean(MesquiteTree.permitTruncTaxNames);
-		taxonT0Trees = new MesquiteBoolean(MesquiteTree.permitT0Names);
-		taxonT0TreesWarned = new MesquiteBoolean(false);
+		permitSpaceUnderscoreEquivalentTrees = new MesquiteBoolean(MesquiteTree.permitSpaceUnderscoreEquivalent);
 		printTreeNameByDefault = new MesquiteBoolean(TreeDisplay.printTreeNameByDefault);
 		debugMode = new MesquiteBoolean(false);
 		phoneHome = new MesquiteBoolean(MesquiteTrunk.phoneHome);
@@ -134,7 +133,7 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Ask for Random Number Seeds", makeCommand("toggleAskSeed",  this), askSeed);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Count Steps in Polymorphisms with Unord/Ord Parsimony", makeCommand("toggleCountStepsInTermPolymorphisms",  this), ParsAncStatesForModel.countStepsInTermPolymorphisms);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Partial Names in Tree Reading", makeCommand("togglePartNamesTrees",  this), taxonTruncTrees);
-		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit t0=taxon 1, t1=taxon 2, etc. Names in Tree Reading", makeCommand("toggleT0NamesTrees",  this), taxonT0Trees);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Spaces and Underscores Equivalent in Tree Reading", makeCommand("toggleSpaceUnderscoreTrees",  this), permitSpaceUnderscoreEquivalentTrees);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Print Tree Names by Default", makeCommand("printTreeNameByDefault",  this), printTreeNameByDefault);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Matrix Limits for Undo...", makeCommand("setMaxMatrixSizeUndo",  this));
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Python Settings...", makeCommand("pythonSettings",  this));
@@ -222,28 +221,13 @@ public class Defaults extends MesquiteInit  {
 			taxonTruncTrees.setValue(content);
 			MesquiteTree.permitTruncTaxNames = taxonTruncTrees.getValue();
 		}
-		else if ("taxonT0Trees".equalsIgnoreCase(tag)){
-			taxonT0Trees.setValue(content);
-			if (taxonT0Trees.getValue() && !taxonT0TreesWarned.getValue()){
-				String message ="Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (now, or in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.";
-				if (MesquiteThread.isScripting())
-					logln(message);
-				else {
-					boolean answer = AlertDialog.query(containerOfModule(), "Tree reading", message, "OK, permit t0...", "No, be careful, turn off", 2);
-					if (!answer)
-						taxonT0Trees.setValue(false);
-				}
-				taxonT0TreesWarned.setValue(true);
-			}
-
-			MesquiteTree.permitT0Names = taxonT0Trees.getValue();
+		else if ("permitSpaceUnderscoreEquivalentTrees".equalsIgnoreCase(tag)){
+			permitSpaceUnderscoreEquivalentTrees.setValue(content);
+			MesquiteTree.permitSpaceUnderscoreEquivalent = permitSpaceUnderscoreEquivalentTrees.getValue();
 		}
 		else if ("printTreeNameByDefault".equalsIgnoreCase(tag)){
 			printTreeNameByDefault.setValue(content);
 			TreeDisplay.printTreeNameByDefault = printTreeNameByDefault.getValue();
-		}
-		else if ("taxonT0TreesWarned".equalsIgnoreCase(tag)){
-			taxonT0TreesWarned.setValue(content);
 		}
 		else if ("maxLinesOfAnyElementInPanelQueried".equalsIgnoreCase(tag)){
 			MesquiteBoolean q = new MesquiteBoolean();
@@ -355,8 +339,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "suppressXORMode", suppressXORMode);   
 		StringUtil.appendXMLTag(buffer, 2, "countStepsInTermPolymorphisms", ParsAncStatesForModel.countStepsInTermPolymorphisms);  
 		StringUtil.appendXMLTag(buffer, 2, "taxonTruncTrees", taxonTruncTrees);   
-		StringUtil.appendXMLTag(buffer, 2, "taxonT0TreesWarned", taxonT0TreesWarned);   
-		StringUtil.appendXMLTag(buffer, 2, "taxonT0Trees", taxonT0Trees);   
+		StringUtil.appendXMLTag(buffer, 2, "permitSpaceUnderscoreEquivalentTrees", permitSpaceUnderscoreEquivalentTrees);   
 		StringUtil.appendXMLTag(buffer, 2, "printTreeNameByDefault", printTreeNameByDefault);   
 		StringUtil.appendXMLTag(buffer, 2, "tabbedWindows", tabbedWindows);   
 		StringUtil.appendXMLTag(buffer, 2, "respectFileSpecificResourceWidth", respectFileSpecificResourceWidth);   
@@ -636,17 +619,13 @@ public class Defaults extends MesquiteInit  {
 			storePreferences();
 			return taxonTruncTrees;
 		}
-		else if (checker.compare(getClass(), "Sets whether to permit taxon names being expressed as t0, t1, t2 in trees", null, commandName, "toggleT0NamesTrees")) {
-			taxonT0Trees.toggleValue(null);
-			MesquiteTree.permitT0Names = taxonTruncTrees.getValue();
-			if (taxonT0Trees.getValue() && !taxonT0TreesWarned.getValue()){
-				discreetAlert("Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.");
-				taxonT0TreesWarned.setValue(true);
-			}
+		else if (checker.compare(getClass(), "Sets whether to permit spaces and underscores to be equivalent in taxon names in trees", null, commandName, "toggleSpaceUnderscoreTrees")) {
+			permitSpaceUnderscoreEquivalentTrees.toggleValue(null);
+			MesquiteTree.permitSpaceUnderscoreEquivalent = permitSpaceUnderscoreEquivalentTrees.getValue();
 
 			resetAllMenuBars();
 			storePreferences();
-			return taxonT0Trees;
+			return permitSpaceUnderscoreEquivalentTrees;
 		}
 		else if (checker.compare(getClass(), "Sets whether names of trees will be printed on tree by default", null, commandName, "printTreeNameByDefault")) {
 			printTreeNameByDefault.toggleValue(null);

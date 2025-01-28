@@ -68,7 +68,7 @@ public class AMultipleAlignService extends MolecularDataAlterer  implements Alte
 		if (data==null)
 			return -10;
 		if (!(data instanceof MolecularData))
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		
 		
 		AlignMultipleSequencesMachine alignmentMachine = new AlignMultipleSequencesMachine(this, null, null, aligner);

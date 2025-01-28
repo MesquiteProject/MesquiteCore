@@ -34,7 +34,7 @@ public class GapsToMissing extends CategDataAlterer implements AltererConvertGap
 		this.table = table;
 		if (!(data instanceof CategoricalData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on categorical data");
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		}
 		return alterContentOfCells(data,table, undoReference);
 	}
