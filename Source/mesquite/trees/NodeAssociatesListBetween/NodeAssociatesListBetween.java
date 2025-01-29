@@ -102,7 +102,7 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 		return false;  
 	}
 	String nodeOrBranch(boolean isBetween){
-		if (isBetween)
+		if (!isBetween)
 			return "Node";
 		return "Branch";
 	}

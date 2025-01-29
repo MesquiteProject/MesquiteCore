@@ -159,6 +159,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	}
 	/*_________________________________________________*/
 	NameReference 	palenessRef = NameReference.getNameReference("drawPale");
+	NameReference 	oldColourNameRef = NameReference.getNameReference("color");
 	MesquiteInteger pos = new MesquiteInteger(0);
 	public Color getBranchColor(int N){
 		if (!showBranchColors)
@@ -166,15 +167,15 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		Color color = null;
 		String cRGB = null;
 		if (tree != null)
-			cRGB = (String)tree.getAssociatedObject(ColorDistribution.colorRGBNameReference, N);
+			cRGB = (String)((MesquiteTree)tree).getColorAsHexString(N);
 		if (cRGB != null) {
 			pos.setValue(0);
 			Color colRGB = ColorDistribution.getColorFromArguments(cRGB, pos);
 			if (colRGB != null)
 				color = colRGB;
 		}
-		if (color == null) {
-			long c = tree.getAssociatedLong(ColorDistribution.colorNameReference, N);
+		if (color == null) {  //old, just in case
+			long c = tree.getAssociatedLong(oldColourNameRef, N);
 			Color col=null;
 			if (!tree.anySelected() || tree.getSelected(N)) {
 				if (MesquiteLong.isCombinable(c) && (col = ColorDistribution.getStandardColor((int)c))!=null)

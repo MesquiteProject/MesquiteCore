@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.duties.*;
@@ -32,6 +33,8 @@ public class MesquiteSubmenuSpec extends MesquiteMenuSpec{
 	public static final int ONEDISABLE_ZERODISABLE = 2;
 	public static final int ONESUBMENU_ZERODISABLE = 3;
 	int beh = ONESUBMENU_ZERODISABLE;
+	protected ListableVector items = new ListableVector();
+
 	public static CommandChecker checkerMS = null;
 	
 	public MesquiteSubmenuSpec(MesquiteMenuSpec whichMenu, String submenuName,  MesquiteModule ownerModule) {
@@ -54,7 +57,18 @@ public class MesquiteSubmenuSpec extends MesquiteMenuSpec{
 	public String getSubmenuName(){
 		return getCurrentItemName();
 	}
+	public void dispose(){
+		items.removeAllElements(false);
+		super.dispose();
+	}
 	
+	public void addExtraItem(MesquiteMenuItemSpec mmis){
+		items.addElement(mmis, false);
+	}
+	public ListableVector getExtraItems(){
+		return items;
+	}
+
 	public void setBehaviorIfNoChoice(int beh) {
 		this.beh = beh;
 	}

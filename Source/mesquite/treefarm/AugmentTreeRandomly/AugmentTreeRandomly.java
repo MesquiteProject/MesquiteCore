@@ -66,14 +66,12 @@ public class AugmentTreeRandomly extends RndTreeModifier {
    	 	temp.addLine("setMode " + mode);
  	 	return temp;
   	 }
-	NameReference colorNameRef = NameReference.getNameReference("color");
+
 	private void setColor(Tree tree, int node, boolean[] added){
 		if (tree == null || !(tree instanceof Associable))
 			return;
 		Associable aTree = (Associable)tree;
-		if (aTree.getWhichAssociatedLong(colorNameRef)==null)
-			aTree.makeAssociatedLongs("color");
-		aTree.setAssociatedLong(colorNameRef, node, ColorDistribution.numberOfGreen, true);
+		aTree.setColor(node, "#00ff00");
 		added[node] = true;
 	}
 	/** goes through the tree returning which node is the nodeNumberTH found in the traversal */

@@ -28,6 +28,7 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteMenuSpec;
 
 /* ======================================================================== */
 public class ColorTreeByPartition extends TreeDisplayAssistantDI {
@@ -37,7 +38,11 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
 		colorByPartition = new MesquiteBoolean(false);
-		addCheckMenuItem(null, "Color Branches by Partition", makeCommand("colorByPartition",  this), colorByPartition);
+		MesquiteMenuSpec colorMenu = findMenuAmongEmployers("Color");
+		MesquiteModule mb = this;
+		if (colorMenu != null && colorMenu.getOwnerModule() != null)
+				mb = colorMenu.getOwnerModule();
+		mb.addCheckMenuItem(colorMenu, "Color Branches by Partition", makeCommand("colorByPartition",  this), colorByPartition);
 		return true;
 	} 
 	/*.................................................................................................................*/

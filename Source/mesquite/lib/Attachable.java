@@ -181,7 +181,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 	public String writeAttachments(boolean useComments){
 		String s = null;
 		if (useComments)
-			s = "[%";
+			s = "[" + Parser.substantiveCommentMark;
 		else
 			s = "<";
 		if (attachments!=null)
@@ -202,7 +202,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 					}
 				}
 			}
-		if ((useComments && s.equals("[%")) || (!useComments && s.equals("<")))
+		if ((useComments && s.equals("[" + Parser.substantiveCommentMark)) || (!useComments && s.equals("<")))
 			return "";
 		else if (useComments)
 			return s+ "]";
@@ -216,7 +216,10 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 	public void readAttachments(String assocString, MesquiteInteger pos){
 		//assumes already past "<";
 		String s=ParseUtil.getToken(assocString, pos);
-		while (!">".equals(s)) {
+		if (StringUtil.blank(s))
+			return;
+		
+		while (!">".equals(s) && !"}".equals(s)) {
 			if (StringUtil.blank(s))
 				return;
 			String tok = ParseUtil.getToken(assocString, pos); //eating up equals

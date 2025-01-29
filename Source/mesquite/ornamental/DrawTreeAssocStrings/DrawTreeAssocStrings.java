@@ -25,6 +25,7 @@ import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteCheckMenuItem;
 import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.StringInABox;
@@ -47,13 +48,17 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 		horizontal = new MesquiteBoolean(true);
 		centred = new MesquiteBoolean(true);
 		showOnTerminals = new MesquiteBoolean(true);
-		MesquiteSubmenuSpec mss = addSubmenu(null, "Node or Branch-Associated Text");
-		addItemToSubmenu(null, mss, "Choose Associated Text To Show...", makeCommand("chooseText",  this));
-		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
-		addCheckMenuItemToSubmenu(null, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
-		addCheckMenuItemToSubmenu(null, mss, "Show on Terminal Branches", makeCommand("toggleShowOnTerminals",  this), showOnTerminals);
-		addItemToSubmenu(null, mss, "Font Size...", makeCommand("setFontSize",  this));
-		addItemToSubmenu(null, mss, "Locations...", makeCommand("setOffset",  this));
+		MesquiteMenuSpec textMenu = findMenuAmongEmployers("Text");
+		MesquiteModule mb = this;
+		if (textMenu != null && textMenu.getOwnerModule() != null)
+				mb = textMenu.getOwnerModule();
+		MesquiteSubmenuSpec mss = mb.addSubmenu(textMenu, "Node or Branch-Associated Text");
+		mb.addItemToSubmenu(textMenu, mss, "Choose Associated Text To Show...", makeCommand("chooseText",  this));
+		mb.addCheckMenuItemToSubmenu(textMenu, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
+		mb.addCheckMenuItemToSubmenu(textMenu, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
+		mb.addCheckMenuItemToSubmenu(textMenu, mss, "Show on Terminal Branches", makeCommand("toggleShowOnTerminals",  this), showOnTerminals);
+		mb.addItemToSubmenu(textMenu, mss, "Font Size...", makeCommand("setFontSize",  this));
+		mb.addItemToSubmenu(textMenu, mss, "Locations...", makeCommand("setOffset",  this));
 		return true;
 	} 
 	/*.................................................................................................................*/

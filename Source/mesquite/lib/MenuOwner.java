@@ -486,7 +486,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	/*............................................................................. */
 	/** Finds a menu of given name from employers */
-	public final MesquiteMenuSpec findMenuAmongEmployers(String menuName) {
+	public MesquiteMenuSpec findMenu(String menuName) {
 		if (menuName == null)
 			return null;
 		if (moduleMenuSpec != null)
@@ -497,6 +497,16 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				if (menuName.equals(((MesquiteMenuSpec) auxiliaryMenus.elementAt(i)).getLabel()))
 					return ((MesquiteMenuSpec) auxiliaryMenus.elementAt(i));
 		}
+		return null;
+	}
+	/*............................................................................. */
+	/** Finds a menu of given name from employers */
+	public MesquiteMenuSpec findMenuAmongEmployers(String menuName) {
+		if (menuName == null)
+			return null;
+		MesquiteMenuSpec mine = findMenu(menuName); //do I have it?
+		if (mine != null)
+			return mine;
 		if (module.getEmployer() != null)
 			return module.getEmployer().findMenuAmongEmployers(menuName);
 		return null;
@@ -639,11 +649,26 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	/* ����� */
 	/**
 	 * Adds a submenu of the given name. This submenu will not have a command
+	 * associated with it.
+	 */
+	public final MesquiteSubmenuSpec addSubmenuToSubmenu(MesquiteMenuSpec whichMenu, MesquiteSubmenuSpec mss, String submenuName) {
+		MesquiteSubmenuSpec mmis = MesquiteSubmenuSpec.getMSSSpec(whichMenu, submenuName, module);
+		mss.addExtraItem(mmis);
+
+		return (mmis);
+	}
+	/*............................................................................. */
+	/* ����� */
+	/**
+	 * Adds a submenu of the given name. This submenu will not have a command
 	 * associated with it. Instead, menu items with their own independent commands
 	 * can be added to it using addItemToSubmenu.
 	 */
 	public final MesquiteSubmenuSpec addSubmenu(MesquiteMenuSpec whichMenu, String submenuName) {
 		MesquiteSubmenuSpec mmis = MesquiteSubmenuSpec.getMSSSpec(whichMenu, submenuName, module);
+		if (whichMenu instanceof MesquiteSubmenuSpec && mmis != null)
+				mmis.setInSubmenu((MesquiteSubmenuSpec)whichMenu);
+
 		return (mmis);
 	}
 
@@ -1547,7 +1572,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				for (int i = 0; i < num; i++) {
 					Object obj = L.elementAt(i);
 					MesquiteModule mb = (MesquiteModule) obj;
-					if (mb.getUseMenubar() && !mb.usingGuestMenu && mb.window == null) {
+					if (mb != null && mb.getUseMenubar() && !mb.usingGuestMenu && mb.window == null) {
 						if (mb.moduleMenuSpec != null) {
 							MesquiteMenu menu = MesquiteMenu.getMenu(mb.moduleMenuSpec);
 							mb.composeMenuDescendants(menu);
@@ -2217,6 +2242,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					}
 				}
 			}
+			
 			if (submenu.getItemCount() <= 1 && msms.getBehaviorIfNoChoice() != MesquiteSubmenuSpec.SHOW_SUBMENU) {
 				int b = msms.getBehaviorIfNoChoice();
 				int hiddenStatus = 0;

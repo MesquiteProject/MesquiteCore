@@ -1005,25 +1005,24 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		return temp;
 	}
 
-	NameReference colorNameRef = NameReference.getNameReference("color");
-
+NameReference oldColourNameRef = NameReference.getNameReference("color");
 	private void setColor(int ic, int it, int c) {
 		if (data == null)
 			return;
 		if (ic < 0 && it < 0) {
 		}
 		else if (ic < 0) { // taxon
-			data.getTaxa().setAssociatedLong(colorNameRef, it, c);
+			data.getTaxa().setColor(it, ColorDistribution.getStandardColorAsHex(c));
 		}
 		else if (it < 0) { // character
-			data.setAssociatedLong(colorNameRef, ic, c);
+			data.setColor(ic, ColorDistribution.getStandardColorAsHex(c));
 		}
 		else if (!MesquiteLong.isCombinable(c) || c < 0) {
-			data.setCellObject(colorNameRef, ic, it, null);
+			data.setCellObject(oldColourNameRef, ic, it, null);
 		}
 		else {
 			MesquiteInteger ms = new MesquiteInteger((int) c);
-			data.setCellObject(colorNameRef, ic, it, ms);
+			data.setCellObject(oldColourNameRef, ic, it, ms);
 		}
 	}
 

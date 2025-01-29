@@ -25,6 +25,7 @@ import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteCheckMenuItem;
 import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.StringInABox;
@@ -59,20 +60,24 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		centred = new MesquiteBoolean(CENTEREDDEFAULT);
 		whiteEdges = new MesquiteBoolean(true);
 		showOnTerminals = new MesquiteBoolean(true);
-		MesquiteSubmenuSpec mss = addSubmenu(null, "Node-Associated Values");
-		addItemToSubmenu(null, mss, "Choose Values To Show...", makeCommand("chooseValues",  this));
-		addItemToSubmenu(null, mss, "Threshold Value...", makeCommand("setThreshold",  this));
-		MesquiteSubmenuSpec mss2 =  addSubmenu(mss, "Styles");  //Wayne: here it is.   x123y
-		addItemToSubmenu(mss, mss2, "Percentage, Below Branch", makeCommand("setCorvallisStyle",  this));
-		addItemToSubmenu(null, mss, "Digits...", makeCommand("setDigits",  this));
-		addCheckMenuItemToSubmenu(null, mss, "Show As Percentage", makeCommand("writeAsPercentage",  this), percentage);
-		addItemToSubmenu(null, mss, "Font Size...", makeCommand("setFontSize",  this));
-		addCheckMenuItemToSubmenu(null, mss, "White Edges", makeCommand("toggleWhiteEdges",  this), whiteEdges);
-		addCheckMenuItemToSubmenu(null, mss, "Show on Terminal Branches", makeCommand("toggleShowOnTerminals",  this), showOnTerminals);
-		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
+		MesquiteMenuSpec textMenu = findMenuAmongEmployers("Text");
+		MesquiteModule mb = this;
+		if (textMenu != null && textMenu.getOwnerModule() != null)
+				mb = textMenu.getOwnerModule();
+		MesquiteSubmenuSpec mss = mb.addSubmenu(textMenu, "Node-Associated Values");
+		mb.addItemToSubmenu(textMenu, mss, "Choose Values To Show...", makeCommand("chooseValues",  this));
+		mb.addItemToSubmenu(textMenu, mss, "Threshold Value...", makeCommand("setThreshold",  this));
+		MesquiteSubmenuSpec mss2 =  mb.addSubmenu(mss, "Styles");  //Wayne: here it is.   x123y
+		mb.addItemToSubmenu(mss, mss2, "Percentage, Below Branch", makeCommand("setCorvallisStyle",  this));
+		mb.addItemToSubmenu(textMenu, mss, "Digits...", makeCommand("setDigits",  this));
+		mb.addCheckMenuItemToSubmenu(textMenu, mss, "Show As Percentage", makeCommand("writeAsPercentage",  this), percentage);
+		mb.addItemToSubmenu(textMenu, mss, "Font Size...", makeCommand("setFontSize",  this));
+		mb.addCheckMenuItemToSubmenu(textMenu, mss, "White Edges", makeCommand("toggleWhiteEdges",  this), whiteEdges);
+		mb.addCheckMenuItemToSubmenu(textMenu, mss, "Show on Terminal Branches", makeCommand("toggleShowOnTerminals",  this), showOnTerminals);
+		mb.addCheckMenuItemToSubmenu(textMenu, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
 		//		addItemToSubmenu(null, mss, "Position Along Branch...", makeCommand("setPositionAlongBranch",  this));
-		addItemToSubmenu(null, mss, "Locations...", makeCommand("setOffset",  this));
-		addCheckMenuItemToSubmenu(null, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
+		mb.addItemToSubmenu(textMenu, mss, "Locations...", makeCommand("setOffset",  this));
+		mb.addCheckMenuItemToSubmenu(textMenu, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
 		return true;
 	} 
 	/*.................................................................................................................*/

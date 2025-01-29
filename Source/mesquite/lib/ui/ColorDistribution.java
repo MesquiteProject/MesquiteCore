@@ -15,11 +15,13 @@ package mesquite.lib.ui;
 
 import java.awt.*;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteProject;
 import mesquite.lib.NameReference;
 import mesquite.lib.ObjectArray;
+import mesquite.lib.Parser;
 import mesquite.lib.RandomBetween;
 import mesquite.lib.StringArray;
 import mesquite.lib.duties.*;
@@ -49,9 +51,11 @@ public class ColorDistribution {
 	//	public static Color[] projectLight, projectDark; //pale, light, medium, dark, project, 
 	public final static int numColorSchemes = 4;
 	public static Color burlyWood, navajoWhite, bisque, sienna, paleGoldenRod, veryPaleGoldenRod;
-	public static NameReference colorNameReference, colorRGBNameReference;
+	
+	public static NameReference colorRGBNameReference;
+	
 	public static StringArray standardColorNames;
-	static ObjectArray standardColors, standardColorsDimmed;
+	static ObjectArray standardColors, standardColorsDimmed, standardColorsAsHex;
 	public static double dimmingConstant = 0.3;
 	public static int NO_COLOR = 18;
 	static {
@@ -127,8 +131,8 @@ public class ColorDistribution {
 
 
 		uneditable = lightYellow;
-		colorNameReference = NameReference.getNameReference("color");
-		colorRGBNameReference = NameReference.getNameReference("colorRGB");
+
+		colorRGBNameReference = NameReference.getNameReference("!color");
 		standardColors = new ObjectArray(18);
 		standardColors.setValue(0, Color.black);
 		standardColors.setValue(1, Color.darkGray);
@@ -149,7 +153,13 @@ public class ColorDistribution {
 		standardColors.setValue(15, lightBlue);
 		standardColors.setValue(16, Color.magenta);
 		standardColors.setValue(17, Color.pink);
-		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
+
+		standardColorsAsHex = new ObjectArray(18);
+		for (int i=0; i<standardColorsAsHex.getSize(); i++)
+			standardColorsAsHex.setValue(i, hexFromColor((Color)standardColors.getValue(i)));
+		
+
+//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorNames = new StringArray(18);
 		standardColorNames.setValue(0, "Black");
 		standardColorNames.setValue(1, "Dark Gray");
@@ -201,6 +211,7 @@ public class ColorDistribution {
 		weights = new double[MAXCOLORS];
 
 	}
+
 	/*--------------------------------------------------------------*/
 	/* Random colors originally made for auto-coloring of character groups during matrix concatenation*/
 
@@ -216,7 +227,7 @@ public class ColorDistribution {
 			v = v*10/enhancement*10/enhancement;
 		return v;
 	}
-	
+
 	private static boolean tooClose(int red, int green, int blue, Color previous){
 		if (previous == null)
 			return false;
@@ -423,6 +434,11 @@ public class ColorDistribution {
 			return null;
 		return (Color)standardColors.getValue(ci);
 	}
+	public static String getStandardColorAsHex(int ci){
+		if (ci<0)
+			return null;
+		return (String)standardColorsAsHex.getValue(ci);
+	}
 	public static Color getStandardColorDimmed(int ci){
 		if (ci<0)
 			return null;
@@ -460,6 +476,40 @@ public class ColorDistribution {
 			colorsDimmed[i] = dimmed;
 		}
 	}
+
+	public static boolean hexColorsEqual(String c1, String c2){
+		if (c1 == null || c2== null)
+			return (c1 == null && c2 == null);
+		return c1.equalsIgnoreCase(c2);
+	}
+	/** finds name of color.*/
+	public static String standardName(Color color) {
+		if (color == null)
+			return "";
+		int which = indexOfStandard(color);
+		if (which >=0 && which<standardColorNames.getSize())
+			return standardColorNames.getValue(which);
+		return "";
+	}
+	/** finds name of color.*/
+	public static String standardName(String hex) {
+		Color color = colorFromHex(hex);
+		if (color == null)
+			return "";
+		int which = indexOfStandard(color);
+		if (which >=0 && which<standardColorNames.getSize())
+			return standardColorNames.getValue(which);
+		return "";
+	}
+	/** finds index of color.*/
+	public static int indexOfStandard(Color color) {
+		if (color == null)
+			return -1;
+		for (int i=0; i<standardColors.getSize(); i++)
+			if (standardColors.getValue(i) != null && color.equals(standardColors.getValue(i))) 
+				return i;
+		return -1;
+	}
 	/** finds index of color.*/
 	public int indexOf(Color color) {
 		if (color == null)
@@ -469,14 +519,42 @@ public class ColorDistribution {
 				return i;
 		return -1;
 	}
-	public static Color getColorFromArguments(String arguments, MesquiteInteger pos) {
-		int red =  MesquiteInteger.fromString(arguments, pos);
-		int green =  MesquiteInteger.fromString(arguments, pos);
-		int blue =  MesquiteInteger.fromString(arguments, pos);
-		return new Color(red,green,blue);
+	/*--------------------------------------------------------------*/
+	private static String fillToTwo(String s){
+		if (s.length() >=2)
+			return s;
+		else if (s.length() == 1)
+			return "0" + s;
+		else
+			return "00";
 	}
+	public static String hexFromColor(long oldCode){
+		Color std = getStandardColor((int)oldCode);
+		return hexFromColor(std);
+	}
+	public static String hexFromColor(Color c){
+		if (c == null)
+			return null;
+		return "#" + fillToTwo(Integer.toHexString(c.getRed())) + fillToTwo(Integer.toHexString(c.getGreen())) + fillToTwo(Integer.toHexString(c.getBlue()));
+	}
+	public static Color getColorFromArguments(String arguments, MesquiteInteger pos) {
+		String token = Parser.getNextTabbedToken(arguments, pos);
+		return colorFromHex(token);
+	}
+	public static Color colorFromHex(String hex) {
+		try {
+			Color color = Color.decode(hex);
+			return color;
+		}
+		catch (Exception e){
+		}
+		return null;
+	}
+	/*--------------------------------------------------------------*/
 
 	public static String getColorStringForSnapshot(Color color) {
+		if (color == null)
+			return "";
 		return color.getRed() + " " + color.getGreen() + " " + color.getBlue();
 	}
 

@@ -32,6 +32,7 @@ import mesquite.lib.tree.TreeDisplayActive;
 import mesquite.lib.ui.ColorDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
@@ -57,7 +58,6 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	MesquiteCommand tdC;
 	static String defaultDrawer = null;
 	MesquiteBoolean showNodeNumbers, labelBranchLengths, showBranchColors;
-
 	MesquiteBoolean centerBrLenLabels = new MesquiteBoolean(true);
 	MesquiteBoolean showBrLensUnspecified = new MesquiteBoolean(true);
 	MesquiteBoolean showBrLenLabelsOnTerminals = new MesquiteBoolean(true);
@@ -66,12 +66,17 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	MesquiteString highlightModeName;
 	String[] highlightChoices = new String[]{"No Highlight", "Gray Box", "Enlarge 1.25X", "Enlarge 1.5X", "Enlarge 1.75X", "Enlarge 2X"};
 	int selectedTaxonHighlightMode = TreeDisplay.sTHM_DEFAULT;
+	MesquiteMenuSpec displayMenu, colorMenu, textMenu;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
 		//addMenuSeparator();
-		makeMenu("Display");
+		displayMenu = makeMenu("Form");
+		colorMenu = addAuxiliaryMenu("Color");
+		textMenu = addAuxiliaryMenu("Text");
+	//	textMenu = findEmployerWithDuty(TreeWindowMaker.class).addAuxiliaryMenu("Text");
+		
 		if (defaultDrawer !=null && (condition == null || !(condition instanceof MesquiteBoolean) || ((MesquiteBoolean)condition).getValue() )) {
 			treeDrawTask= (DrawTree)hireNamedEmployee(DrawTree.class, defaultDrawer);
 			if (treeDrawTask == null)
@@ -93,35 +98,37 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		addMenuItem("Set Current Form as Default", makeCommand("setFormToDefault",  this));
 		mmis.setList(DrawTree.class);
 		mmis.setSelected(treeDrawName);
-
-
-		mmis = addSubmenu(null, "Background Color", makeCommand("setBackground",  this));
+		mmis = addSubmenu(colorMenu, "Background Color", makeCommand("setBackground",  this));
 		mmis.setList(ColorDistribution.standardColorNames);
 		mmis.setSelected(bgColorName);
-		mmis = addSubmenu(null, "Default Branch Color", makeCommand("setBranchColor",  this));
+		mmis = addSubmenu(colorMenu, "Default Branch Color", makeCommand("setBranchColor",  this));
 		mmis.setList(ColorDistribution.standardColorNames);
 		mmis.setSelected(brColorName);
-		showNodeNumbers = new MesquiteBoolean(false);
-		labelBranchLengths = new MesquiteBoolean(false);
 		showBranchColors = new MesquiteBoolean(true);
-		addCheckMenuItem(null, "Show Node Numbers", MesquiteModule.makeCommand("showNodeNumbers",  this), showNodeNumbers);
-		addCheckMenuItem(null, "Show Branch Colors", MesquiteModule.makeCommand("showBranchColors",  this), showBranchColors);
+		addCheckMenuItem(colorMenu, "Show Branch Colors", MesquiteModule.makeCommand("showBranchColors",  this), showBranchColors);
 
-		mmis = addSubmenu(null, "Branch Length Labels");
-		addCheckMenuItemToSubmenu(null, mmis, "Show Labels", MesquiteModule.makeCommand("labelBranchLengths",  this), labelBranchLengths);
-		addCheckMenuItemToSubmenu(null, mmis, "Center Labels", MesquiteModule.makeCommand("centerBrLenLabels",  this), centerBrLenLabels);
-		addCheckMenuItemToSubmenu(null, mmis, "Label Terminal Taxa", MesquiteModule.makeCommand("showBrLenLabelsOnTerminals",  this), showBrLenLabelsOnTerminals);
-		addItemToSubmenu(null, mmis, "Label Color...", MesquiteModule.makeCommand("chooseBrLenLabelColor",  this));
-		addItemToSubmenu(null, mmis, "Number of Decimal Places...", MesquiteModule.makeCommand("setNumBrLenDecimals",  this));
-		addCheckMenuItemToSubmenu(null, mmis, "Include Missing Values", MesquiteModule.makeCommand("showBrLensUnspecified",  this), showBrLensUnspecified);
+		showNodeNumbers = new MesquiteBoolean(false);
+		addCheckMenuItem(null, "Show Node Numbers", MesquiteModule.makeCommand("showNodeNumbers",  this), showNodeNumbers);
+		
+		//TEXT MENU
+		mmis = addSubmenu(textMenu, "Branch Length Labels");
+		labelBranchLengths = new MesquiteBoolean(false);
+		addCheckMenuItemToSubmenu(textMenu, mmis, "Show Labels", MesquiteModule.makeCommand("labelBranchLengths",  this), labelBranchLengths);
+		addCheckMenuItemToSubmenu(textMenu, mmis, "Center Labels", MesquiteModule.makeCommand("centerBrLenLabels",  this), centerBrLenLabels);
+		addCheckMenuItemToSubmenu(textMenu, mmis, "Label Terminal Taxa", MesquiteModule.makeCommand("showBrLenLabelsOnTerminals",  this), showBrLenLabelsOnTerminals);
+		addItemToSubmenu(textMenu, mmis, "Label Color...", MesquiteModule.makeCommand("chooseBrLenLabelColor",  this));
+		addItemToSubmenu(textMenu, mmis, "Number of Decimal Places...", MesquiteModule.makeCommand("setNumBrLenDecimals",  this));
+		addCheckMenuItemToSubmenu(textMenu, mmis, "Include Missing Values", MesquiteModule.makeCommand("showBrLensUnspecified",  this), showBrLensUnspecified);
 
 		highlightModeName = new MesquiteString(highlightChoices[selectedTaxonHighlightMode]);
-		MesquiteSubmenuSpec highlightSubmenu = addSubmenu(null, "Highlight for Selected Taxa");
+		MesquiteSubmenuSpec highlightSubmenu = addSubmenu(textMenu, "Highlight for Selected Taxa");
 		highlightSubmenu.setSelected(highlightModeName);
 		for (int i = 0; i<highlightChoices.length; i++)
-			addItemToSubmenu(null, highlightSubmenu, highlightChoices[i], new MesquiteCommand("setSelectedTaxonHighlightMode",  MesquiteInteger.toString(i), this));
+			addItemToSubmenu(textMenu, highlightSubmenu, highlightChoices[i], new MesquiteCommand("setSelectedTaxonHighlightMode",  MesquiteInteger.toString(i), this));
+		addMenuItem(textMenu, "-", null);
 		return true;
 	}
+	
 	public boolean getShowBrLensUnspecified(){
 		return showBrLensUnspecified.getValue();
 	}

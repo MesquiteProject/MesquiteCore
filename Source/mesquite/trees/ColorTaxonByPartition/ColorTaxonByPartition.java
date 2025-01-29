@@ -48,7 +48,6 @@ public class ColorTaxonByPartition extends TaxonNameStyler {
  	}
  
  	/*.................................................................................................................*/
-	NameReference colorNameRef = NameReference.getNameReference("color");
 	
 	public Color getTaxonNameColor(Taxa taxa, int ic){
 		TaxaPartition partitions =  (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);

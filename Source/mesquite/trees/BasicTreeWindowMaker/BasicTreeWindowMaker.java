@@ -137,34 +137,21 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 
 	/* ................................................................................................................. */
 	public DrawTreeCoordinator treeDrawCoordTask;
-
 	public TreeSource treeSourceTask;
-
 	public Vector contextListeners;
-
 	Taxa taxa;
-
 	static boolean warnUnsaved;
-
 	boolean editMode = false;
-
 	MesquiteBoolean printNameOnTree;
-
 	BasicTreeWindow basicTreeWindow;
-
 	MesquiteString treeSourceName;
-
 	MagnifyExtra magnifyExtra;
-
 	MesquiteString xmlPrefs = new MesquiteString();
-
 	boolean useXORForBranchMoves = true;
-
 	String xmlPrefsString = null;
 	static {
 		warnUnsaved = true;
 	}
-
 	/* ................................................................................................................... */
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences(xmlPrefs);
@@ -197,7 +184,16 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	public Taxa getTaxa() {
 		return taxa;
 	}
-
+	/*............................................................................. */
+	/** Finds a menu of given name from employers */
+	public MesquiteMenuSpec findMenu(String menuName) {
+		if (treeDrawCoordTask != null){
+			MesquiteMenuSpec tdcM = treeDrawCoordTask.findMenu(menuName);
+			if (tdcM != null)
+				return tdcM;
+		}
+		return super.findMenu(menuName);
+	}
 	/* ................................................................................................................. */
 	public DrawTreeCoordinator hireTreeDrawCoordTask() {
 		treeDrawCoordTask = (DrawTreeCoordinator) hireEmployee(DrawTreeCoordinator.class, null);
@@ -218,6 +214,16 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		}
 		resetContainingMenuBar();
 		return treeDrawCoordTask;
+	}
+	/* ................................................................................................................. *
+	//Return the menu if you have one of that label
+	public MesquiteMenuSpec findMenuAmongEmployers(String label){
+		if (treeDrawCoordTask != null){
+			MesquiteMenuSpec m = treeDrawCoordTask.findMenu(label);
+			if (m != null)
+				return m;
+		}
+		return super.findMenuAmongEmployers(label);
 	}
 
 	/*--------------------------------------*/
@@ -1005,6 +1011,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		treeDrawCoordTask = windowModule.hireTreeDrawCoordTask(); // do this here to ensure that any modules hired by the task have a window into which to put things
 		if (treeDrawCoordTask == null)
 			return;
+		windowModule.moveEmployeeToFirst(treeDrawCoordTask);
 		setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/tree.gif");
 
 		recentEditedTrees = new TreeVector(taxa);
@@ -1037,7 +1044,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		controlStrip.addButton(nodeInfoButton);
 		addToWindow(controlStrip);
 		ownerModule.addCheckMenuItem(null, "Show Tree Info Panel", ownerModule.makeCommand("toggleInfoPanel", this), infoPanelOn);
-		treeDrawCoordTask.addCheckMenuItem(null, "Add Name to Printed Tree", ownerModule.makeCommand("togglePrintName", this), ownerModule.printNameOnTree);
+		treeDrawCoordTask.addCheckMenuItem(treeDrawCoordTask.findMenu("Text"), "Add Tree Name when Printing", treeDrawCoordTask.makeCommand("togglePrintName", this), ownerModule.printNameOnTree);
 		tree = null;
 		if (originalTree != null && originalTree instanceof MesquiteTree)
 			taxa.removeListener((MesquiteTree) originalTree);
@@ -1163,11 +1170,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		drawSizeSubmenu = treeDrawCoordTask.addSubmenu(null, "Drawing Size", MesquiteModule.makeCommand("setDrawingSizeMode", this), sizeModes);
 		drawSizeSubmenu.setSelected(sizeModeName);
 		drawSizeSubmenu.setEnabled(!treeDrawCoordTask.hasPreferredSize());
-		floatLegendsItem = treeDrawCoordTask.addCheckMenuItem(null, "Float Legends", ownerModule.makeCommand("toggleLegendFloat", this), floatLegends);
-		treeDrawCoordTask.addMenuItem("Legends To Default Positions", ownerModule.makeCommand("legendsToHome", this));
-		treeDrawCoordTask.addCheckMenuItem(null, "Text Extras On Trees", ownerModule.makeCommand("toggleTextOnTree", this), textVersionDrawOnTree);
-		treeDrawCoordTask.addMenuSeparator();
+		
+		//TEXT
+		floatLegendsItem = treeDrawCoordTask.addCheckMenuItem(treeDrawCoordTask.findMenu("Text"), "Float Legends", ownerModule.makeCommand("toggleLegendFloat", this), floatLegends);
+		treeDrawCoordTask.addMenuItem(treeDrawCoordTask.findMenu("Text"),"Legends To Default Positions", ownerModule.makeCommand("legendsToHome", this));
+		treeDrawCoordTask.addCheckMenuItem(treeDrawCoordTask.findMenu("Text"), "In Text Mode, Show Extras On Trees", treeDrawCoordTask.makeCommand("toggleTextOnTree", this), textVersionDrawOnTree);
 
+		treeDrawCoordTask.addMenuItem(treeDrawCoordTask.findMenu("Text"), "-", null);
 		undoCommand = MesquiteModule.makeCommand("undo", this);
 		copyCommand = MesquiteModule.makeCommand("copyTree", this);
 		pasteCommand = MesquiteModule.makeCommand("paste", this);
@@ -2494,7 +2503,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else if (checker.compare(this.getClass(), "Sets the tree to that described by the string passed", "[Parenthesis notation string of tree]", commandName, "setTree")) {
 			String descr = ParseUtil.getFirstToken(arguments, pos);
 
-			Tree t = setTree(descr); // process the tree fully, including [%color = 4]
+			Tree t = setTree(descr); // process the tree fully, including [&color = 4]
 			if (t != null) {
 				treeEdited(true);
 				setTreeName(t);

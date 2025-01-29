@@ -32,9 +32,9 @@ import mesquite.lib.ui.MesquiteWindow;
 /* ======================================================================== */
 public class ColorBranches extends TreeDisplayAssistantI {
 	Vector extras;
-	long branchColor = ColorDistribution.numberOfRed;
+	String branchColor = ColorDistribution.hexFromColor(Color.red);
 	String colorString = "Color Red";
-	long savedColor = branchColor;
+	String savedColor = branchColor;
 	MesquiteBoolean removeColor;
 	public String getFunctionIconPath(){
 		return getPath() + "color.gif";
@@ -61,7 +61,7 @@ public class ColorBranches extends TreeDisplayAssistantI {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
-		temp.addLine("setColor " + ColorDistribution.getStandardColorName(ColorDistribution.getStandardColor((int)branchColor)));
+		temp.addLine("setColorRGB " + branchColor);
 		temp.addLine("removeColor " + removeColor.toOffOnString());
 		return temp;
 	}
@@ -72,13 +72,27 @@ public class ColorBranches extends TreeDisplayAssistantI {
 			int bc = ColorDistribution.standardColorNames.indexOf(parser.getFirstToken(arguments)); 
 			if (bc >=0 && MesquiteInteger.isCombinable(bc)){
 				removeColor.setValue(false);
-				branchColor = bc;
-				savedColor = bc;
+				branchColor = ColorDistribution.hexFromColor(bc); //ColorDistribution.standardColors[bc];
+				savedColor = ColorDistribution.hexFromColor(bc); 
 				colorString = "Color " + ColorDistribution.standardColorNames.getValue(bc);
 				for (int i =0; i<extras.size(); i++){
 					ColorToolExtra e = (ColorToolExtra)extras.elementAt(i);
 					e.setToolText(colorString);
 				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets the color to be used to paint branches", "[name of color]", commandName, "setColorRGB")) {
+			String bcRGB = parser.getFirstToken(arguments); 
+			if (StringUtil.notEmpty(bcRGB)){
+				removeColor.setValue(false);
+				branchColor = bcRGB;
+				savedColor = bcRGB;
+				colorString = "Color " + ColorDistribution.standardName(bcRGB);
+				for (int i =0; i<extras.size(); i++){
+					ColorToolExtra e = (ColorToolExtra)extras.elementAt(i);
+					e.setToolText(colorString);
+				}
+		
 			}
 		}
 		else if (checker.compare(this.getClass(), "Removes color from all the branches", null, commandName, "removeAllColor")) {
@@ -95,10 +109,10 @@ public class ColorBranches extends TreeDisplayAssistantI {
 
 			if (removeColor.getValue()) {
 				colorString = "Remove color";
-				branchColor = MesquiteLong.unassigned;
+				branchColor = null;
 			}
 			else {
-				colorString = "Color " + ColorDistribution.standardColorNames.getValue((int)branchColor);
+				//colorString = "Color " + ColorDistribution.standardColorNames.getValue((int)branchColor);
 				branchColor = savedColor;
 			}
 			for (int i =0; i<extras.size(); i++){
@@ -128,11 +142,9 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 	MesquiteMenuItemSpec hideMenuItem = null;
 	ColorBranches colorModule;
 	MesquiteTree tree;
-	NameReference colorNameRef;
 	public ColorToolExtra (ColorBranches ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		colorModule = ownerModule;
-		colorNameRef = NameReference.getNameReference("color");
 		colorTool = new TreeTool(this, "ColorBranches", ownerModule.getPath(), "color.gif", 1,1,colorModule.colorString, "This tool colors the branches of the tree.  This has cosmetic effect only.  The color painted can be changed using the Branch Colors submenu.  Control-click colors the branch and the clade desdendant from it; Shift-click shrink wraps the color. ");
 		colorTool.setTouchedCommand(MesquiteModule.makeCommand("colorBranch",  this));
 		colorTool.setTouchedTaxonCommand(MesquiteModule.makeCommand("colorTaxon",  this));
@@ -143,8 +155,8 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 		}
 	}
 	/*.................................................................................................................*/
-	private boolean anyColored(Tree tree, int node, long targetColor){
-		if (tree.getAssociatedLong(colorNameRef, node)== targetColor)
+	private boolean anyColored(MesquiteTree tree, int node, String targetColor){
+		if (tree.getColorAsHexString(node).equals(targetColor))
 			return true;
 		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
 			if (anyColored(tree, daughter, targetColor))
@@ -153,15 +165,15 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 		return false;
 	}
 	/*.................................................................................................................*/
-	private void wrapColors(MesquiteTree tree, int node, boolean coloredBelow, long targetColor){
+	private void wrapColors(MesquiteTree tree, int node, boolean coloredBelow, String targetColor){
 		if (coloredBelow)
-			tree.setAssociatedLong(colorNameRef, node, colorModule.branchColor, true);
+			tree.setColor( node, colorModule.branchColor);
 		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
-			wrapColors(tree, daughter, coloredBelow || tree.getAssociatedLong(colorNameRef, node) == targetColor, targetColor);
+			wrapColors(tree, daughter, coloredBelow || tree.getColorAsHexString(node).equals(targetColor), targetColor);
 		}
 	}
 	/*.................................................................................................................*/
-	private void coloredTwiceAbove(MesquiteTree tree, int node, long targetColor){
+	private void coloredTwiceAbove(MesquiteTree tree, int node, String targetColor){
 		int numColoredAbove = 0;
 		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
 			coloredTwiceAbove(tree, daughter, targetColor);
@@ -169,7 +181,7 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 				numColoredAbove ++;
 		}
 		if (numColoredAbove>1)
-			tree.setAssociatedLong(colorNameRef, node, colorModule.branchColor, true);
+			tree.setColor(node, colorModule.branchColor);
 	}
 	/*.................................................................................................................*/
 	void setToolText(String s){
@@ -235,16 +247,16 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 	private void setColor(int node){
 		if (tree == null)
 			return;
-		if (tree.getWhichAssociatedLong(colorNameRef)==null)
-			tree.makeAssociatedLongs("color");
 		if (!colorModule.removeColor.getValue())
-			tree.setAssociatedLong(colorNameRef, node, colorModule.branchColor, true);
+			tree.setColor(node, colorModule.branchColor);
 		else
-			tree.setAssociatedLong(colorNameRef, node, MesquiteLong.unassigned, true);
+			tree.setColor(node, (String)null);
 	}
 	private void removeColor(int node){
-		tree.setAssociatedLong(colorNameRef, node, MesquiteLong.unassigned, true);
+		tree.setColor(node, (String)null);
 	}
+	
+	
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
 
@@ -253,12 +265,12 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 			if (branchFound<=0)
 				return null;
 			if (arguments.indexOf("shift")>=0) {  //color smallest containing clade
-				if (tree.getAssociatedLong(colorNameRef, branchFound)!=colorModule.branchColor) {
+				if (!ColorDistribution.hexColorsEqual(tree.getColorAsHexString(branchFound), colorModule.branchColor)) {
 					setColor(branchFound);
 					shrinkWrapSelections(tree, tree.getRoot());
 				}
 				else
-					tree.deassignAllAssociatedLongs(colorNameRef);
+					tree.deassignAllColor();
 				tree.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 				treeDisplay.pleaseUpdate(false);
 			}
@@ -268,7 +280,7 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 				treeDisplay.pleaseUpdate(false);
 			}
 			else if (branchFound >0) {
-				if (tree.getAssociatedLong(colorNameRef, branchFound)!=colorModule.branchColor)
+				if (!ColorDistribution.hexColorsEqual(tree.getColorAsHexString(branchFound), colorModule.branchColor)) 
 					setColor(branchFound);
 				else
 					removeColor(branchFound);
@@ -292,12 +304,11 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 		if (tree == null)
 			return;
 		Taxa taxa = tree.getTaxa();
-		if (taxa.getWhichAssociatedLong(colorNameRef)==null)
-			taxa.makeAssociatedLongs("color");
-		if (!colorModule.removeColor.getValue())
-			taxa.setAssociatedLong(colorNameRef, taxon, colorModule.branchColor, true);
+		if (!colorModule.removeColor.getValue()){
+			taxa.setColor(taxon, colorModule.branchColor);
+		}
 		else
-			taxa.setAssociatedLong(colorNameRef, taxon, MesquiteLong.unassigned, true);
+			taxa.setColor(taxon, (String)null);
 	}
 	public void turnOff() {
 		colorModule.extras.removeElement(this);

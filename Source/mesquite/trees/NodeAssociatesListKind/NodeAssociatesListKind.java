@@ -64,7 +64,7 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 
  	public void setTree(MesquiteTree tree){
  		this.tree = tree;
-		outputInvalid();
+		parametersChanged();
 	}
 
 	/*.................................................................................................................*/
@@ -106,9 +106,9 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 			ObjectContainer objContainer = (ObjectContainer)associatedInfo.elementAt(ic);
 			Object obj = objContainer.getObject();
 			if (obj instanceof DoubleArray)
-				return "Numbers";
+				return "Number";
 			else if (obj instanceof LongArray)
-				return "Numbers";
+				return "Number";
 			else if (obj instanceof StringArray)
 				return "Text";
 			else if (obj instanceof ObjectArray) {

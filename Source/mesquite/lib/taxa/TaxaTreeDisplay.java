@@ -219,7 +219,7 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		if (chainResetTime <0) //hasn't yet started
 			return;
 		repaintChain = repaintChain + "\n" + s;
-		MesquiteMessage.println("@@@@@@@@\nTime since tree changed in tree window " + ((System.currentTimeMillis()-chainResetTime)/1000.0) + " seconds");
+		MesquiteMessage.println("#########\nTime since tree changed in tree window " + ((System.currentTimeMillis()-chainResetTime)/1000.0) + " seconds");
 		MesquiteMessage.println(repaintChain);
 		resetChain();
 	}

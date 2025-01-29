@@ -40,6 +40,7 @@ import mesquite.lib.ui.FontUtil;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteSubmenu;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
@@ -89,7 +90,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected NumberForTaxon shader = null;
 	protected TaxonNameStyler colorerTask = null;
 	protected int longestString = 0;
-	protected MesquiteMenuItemSpec offShadeMI = null;
+	//protected MesquiteMenuItemSpec offShadeMI = null;
 	/* New code added Feb.26.07 oliver*/ //TODO: delete new code comments
 	protected MesquiteMenuItemSpec centerNodeLabelItem = null;
 	/* End new code Feb.26.07 oliver*/
@@ -108,47 +109,53 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
 		fontName = new MesquiteString(MesquiteWindow.defaultFont.getName());
 		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
-		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Names");
 
-		MesquiteSubmenuSpec msf = FontUtil.getFontSubmenuSpec(this,this);
+		MesquiteMenuSpec textMenu = findMenuAmongEmployers("Text");
+		MesquiteMenuSpec colorMenu = findMenuAmongEmployers("Color");
+		MesquiteSubmenuSpec msf = FontUtil.getFontSubmenuSpec(textMenu, "Font", this, this);
+
 		msf.setSelected(fontName);
-
-		MesquiteSubmenuSpec mss = addSubmenu(null, "Font Size", makeCommand("setFontSize", this), MesquiteSubmenu.getFontSizeList());
+		MesquiteSubmenuSpec mss = addSubmenu(textMenu, "Font Size", makeCommand("setFontSize", this), MesquiteSubmenu.getFontSizeList());
 		mss.setList(MesquiteSubmenu.getFontSizeList());
 		mss.setDocumentItems(false);
 		mss.setSelected(fontSizeName);
 		fontColorName = new MesquiteString("Black");
-		MesquiteSubmenuSpec mmis = addSubmenu(null, "Default Font Color", makeCommand("setColor",  this));
+		MesquiteSubmenuSpec mmis = addSubmenu(colorMenu, "Default Font Color", makeCommand("setColor",  this));
 		mmis.setList(ColorDistribution.standardColorNames);
 		mmis.setSelected(fontColorName);
 		colorerTask =  (TaxonNameStyler)hireNamedEmployee(TaxonNameStyler.class, "#NoColorForTaxon");
 		tNC = makeCommand("setTaxonNameStyler",  this);
 		colorerTask.setHiringCommand(tNC);
 
-		MesquiteSubmenuSpec mmTNC = addSubmenu(null, "Color And Style Of Taxon Names", tNC);
+		MesquiteSubmenuSpec mmTNC = addSubmenu(colorMenu, "Color Of Taxon Names", tNC);
 		mmTNC.setList(TaxonNameStyler.class);
 		colorerName = new MesquiteString(colorerTask.getName());
 		mmTNC.setSelected(colorerName);
 
-		addItemToSubmenu(null, namesMenu, "Shade by Value...", makeCommand("shadeByNumber",  this));
-		offShadeMI = addItemToSubmenu(null, namesMenu, "Turn off Shading", makeCommand("offShading",  this));
-		offShadeMI.setEnabled(false);
+		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Taxon Names");
 		shadePartition = new MesquiteBoolean(false);
-		addCheckMenuItemToSubmenu(null, namesMenu, "Background Color by Taxon Group", makeCommand("toggleShadePartition", this), shadePartition);
+		addCheckMenuItem(colorMenu, "Taxon Background Color by Group", makeCommand("toggleShadePartition", this), shadePartition);
 		showFootnotes = new MesquiteBoolean(true);
-		addCheckMenuItemToSubmenu(null, namesMenu, "Show Footnotes Etc.", makeCommand("toggleShowFootnotes", this), showFootnotes);
+		addCheckMenuItemToSubmenu(textMenu, namesMenu, "Mark Footnotes in Taxon Name", makeCommand("toggleShowFootnotes", this), showFootnotes);
 		showNodeLabels = new MesquiteBoolean(true);
-		addCheckMenuItemToSubmenu(null, namesMenu, "Show Branch/Clade Names", makeCommand("toggleNodeLabels", this), showNodeLabels);
-		/*New code added Feb.15.07 oliver*/ //TODO: delete new code comments
+
+		
+		MesquiteSubmenuSpec branchNamesMenu = addSubmenu(null, "Node/Branch Names");
+		/*addItemToSubmenu(textMenu, namesMenu, "Shade by Value...", makeCommand("shadeByNumber",  this));
+		offShadeMI = addItemToSubmenu(textMenu, namesMenu, "Turn off Shading", makeCommand("offShading",  this));
+		offShadeMI.setEnabled(false); */
+		addCheckMenuItemToSubmenu(textMenu, branchNamesMenu, "Show Node/Branch Names", makeCommand("toggleNodeLabels", this), showNodeLabels);
+		showTaxonNames = new MesquiteBoolean(true);
+		addCheckMenuItemToSubmenu(textMenu, namesMenu, "Show Taxon Names", makeCommand("toggleShowNames", this), showTaxonNames);
+		angleMenuItem = addMenuItem(textMenu, "Taxon Name Angle...", makeCommand("namesAngle", this));
+		
 		centerNodeLabels = new MesquiteBoolean(false);
-		centerNodeLabelItem = addCheckMenuItemToSubmenu(null, namesMenu, "Center Branch Names", makeCommand("toggleCenterNodeNames", this), centerNodeLabels);
+		centerNodeLabelItem = addCheckMenuItemToSubmenu(textMenu, branchNamesMenu, "Center Branch Names", makeCommand("toggleCenterNodeNames", this), centerNodeLabels);
 		centerNodeLabelItem.setEnabled(true);
 
-		angleMenuItem = addMenuItem(null, "Taxon Name Angle...", makeCommand("namesAngle", this));
-		/*End new code added Feb.15.07 oliver*/
-		showTaxonNames = new MesquiteBoolean(true);
-		addCheckMenuItemToSubmenu(null, namesMenu, "Show Taxon Names", makeCommand("toggleShowNames", this), showTaxonNames);
-		addSubmenu(namesMenu, "Alter Names", makeCommand("alterBranchNames",  this), BranchNamesAlterer.class);
+
+		addMenuItem(textMenu, "-", null);
+		addSubmenu(textMenu, "Alter Node Names", makeCommand("alterBranchNames",  this), BranchNamesAlterer.class);
 
 		return true;
 	}
@@ -197,7 +204,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets module that calculates a number for a taxon by which to shade", "[name of module]", commandName, "shadeByNumber")) {
+	/*if (checker.compare(this.getClass(), "Sets module that calculates a number for a taxon by which to shade", "[name of module]", commandName, "shadeByNumber")) {
 			NumberForTaxon temp= (NumberForTaxon)replaceEmployee(NumberForTaxon.class, arguments, "Value by which to shade taxon names", shader);
 			if (temp!=null) {
 				shader = temp;
@@ -210,7 +217,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				return temp;
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets the angle names are shown at in default UP orientation", "[angle in degrees clockwise from horizontal; ? = default]", commandName, "namesAngle")) {
+		else   SUPERSEDED */
+		if (checker.compare(this.getClass(), "Sets the angle names are shown at in default UP orientation", "[angle in degrees clockwise from horizontal; ? = default]", commandName, "namesAngle")) {
 			if (arguments == null && !MesquiteThread.isScripting()){
 				/*vvvvv  old version *
 				double current;
@@ -240,7 +248,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				parametersChanged();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Turns of shading by number", null, commandName, "offShading")) {
+		/*else if (checker.compare(this.getClass(), "Turns of shading by number", null, commandName, "offShading")) {
 			if (shader != null)
 				fireEmployee(shader);
 			shader = null;
@@ -248,7 +256,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			offShadeMI.setEnabled(false);
 			MesquiteTrunk.resetMenuItemEnabling();
 			parametersChanged();
-		}
+		}*/
 		else if (checker.compare(this.getClass(), "Toggles whether to show taxon names colored by partition", "[on or off]", commandName, "toggleColorPartition")) { //for backwards compatibility
 			String s = parser.getFirstToken(arguments);
 			if (s != null){
@@ -510,7 +518,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 
 		return true;
 	}
-	NameReference colorNameRef = NameReference.getNameReference("color");
+
 	/*.................................................................................................................*/
 	protected void drawNamesOnTree(Tree tree, int drawnRoot, int N, TreeDisplay treeDisplay, TaxaPartition partitions, int triangleBase) {
 		if (triangleBase < 0 && tree.getAssociatedBit(triangleNameRef, N))
@@ -1026,6 +1034,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			alert("node displays null in draw taxon names");
 		try{
 			if (MesquiteTree.OK(tree)) {
+				
 				if (currentFont ==null) {
 					currentFont = g.getFont();
 					if (myFont==null)

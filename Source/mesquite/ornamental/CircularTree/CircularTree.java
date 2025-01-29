@@ -362,7 +362,6 @@ class CircleTreeDrawing extends TreeDrawing  {
 	/*----------------------------------------------------------------------------*/
 	private   void drawClade(Tree tree, int node, Graphics g) {
 		if (tree.nodeExists(node)) {
-			long c = tree.getAssociatedLong(ColorDistribution.colorNameReference, node);
 			g.setColor(treeDisplay.getBranchColor(node));
 			if (tree.getRooted() || tree.getRoot()!=node)
 				drawOneBranch(tree, node, g);

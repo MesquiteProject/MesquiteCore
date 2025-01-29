@@ -61,6 +61,7 @@ public class MesquiteMenuItemSpec implements Listable, Disposable {
 	public MesquiteMenuItemSpec(MesquiteMenuSpec whichMenu, String itemName, MesquiteModule ownerModule, MesquiteCommand command) {
 		this.whichMenu = whichMenu;
 		this.itemName = itemName;
+		this.ownerModule = ownerModule;
 		if (ownerModule!=null){
 			ownerID  = ownerModule.getID();
 			ownerClass = 	ownerModule.getClass();
@@ -120,6 +121,9 @@ boolean alreadyDisposed = false;
 	}
 	public void setOwnerModuleID(long id){
 		ownerID = id;
+	}
+	public MesquiteModule getOwnerModule(){
+		return ownerModule;
 	}
 	public String getName(){
 		return getCurrentItemName();

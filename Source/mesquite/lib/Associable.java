@@ -16,6 +16,8 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.ui.ColorDistribution;
+
 /*.................................................................................................................*/
 /** A class that contains serially repeated parts, to each of which may be attached information.
 For example, a Tree contains many nodes, and information might be attached to each node.  A Taxa contains taxons,
@@ -505,10 +507,40 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		return s;
 	}
+	
+	public void deassignAllColor(){
+		zeroAllAssociatedObjects(ColorDistribution.colorRGBNameReference);
+	}
+	public void setColor(int node, String hex){
+		setAssociatedObject(ColorDistribution.colorRGBNameReference, node, hex);
+	}
+	public void setColor(int node, Color c){
+		String hex = ColorDistribution.hexFromColor(c);
+		setAssociatedObject(ColorDistribution.colorRGBNameReference, node, hex);
+	}
+	public void setColor(int node, int standardColorNumber){
+		String hex = ColorDistribution.hexFromColor(standardColorNumber);
+		setAssociatedObject(ColorDistribution.colorRGBNameReference, node, hex);
+	}
+	public Color getColor(int node){
+		Object c = getAssociatedObject(ColorDistribution.colorRGBNameReference, node);
+		if (c instanceof String){
+			return ColorDistribution.colorFromHex((String)c);
+		}
+		return Color.black;
+	}
+	public String getColorAsHexString(int node){
+		Object c = getAssociatedObject(ColorDistribution.colorRGBNameReference, node);
+		if (c instanceof String){
+			return (String)c;
+		}
+		return null;
+	}
+
 	public String writeAssociated(int node, boolean associatedUseComments){
 		String s = null;
 		if (associatedUseComments)
-			s = "[%";
+			s = "["  + Parser.substantiveCommentMark;
 		else
 			s = "<";
 		boolean first = true;
@@ -518,7 +550,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				Bits b = (Bits)bits.elementAt(i);
 				if (b.isBitOn(node)) {
 					if (!first)
-						s += " , ";
+						s += ", ";
 					first = false;
 					s+= StringUtil.tokenize(b.getName()) + " = on ";
 					biton = true;
@@ -527,12 +559,17 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (longs!=null)
 			for (int i=0; i<longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
-
+				
 				if (b.getValue(node)!=MesquiteLong.unassigned) {
 					if (!first)
-						s += " , ";
+						s += ", ";
 					first = false;
-					s+= StringUtil.tokenize(b.getName()) + " = " + MesquiteLong.toString(b.getValue(node)) + " ";
+					if ("color".equals(b.getName())) {  //special treatment to convert old to new
+						s+= StringUtil.tokenize("!color") + " = " + ColorDistribution.hexFromColor(b.getValue(node)) + " ";
+					}
+					else {
+						s+= StringUtil.tokenize(b.getName()) + " = " + MesquiteLong.toString(b.getValue(node)) + " ";
+					}
 				}
 			}
 		if (doubles!=null)
@@ -540,7 +577,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
 				if (b.getValue(node)!=MesquiteDouble.unassigned){
 					if (!first)
-						s += " , ";
+						s += ", ";
 					first = false;
 					s+= StringUtil.tokenize(b.getName()) + " = " + MesquiteDouble.toString(b.getValue(node)) + " ";
 				}
@@ -551,24 +588,27 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				Object obj = b.getValue(node);
 				if (obj!=null && (obj instanceof Listable || obj instanceof String)){
 					if (!first)
-						s += " , ";
+						s += ", ";
 					first = false;
 					if (obj instanceof DoubleArray){
 						DoubleArray doubles = (DoubleArray)obj;
-						s+= StringUtil.tokenize(b.getName()) + " = { ";
+						s+= StringUtil.tokenize(b.getName()) + " = {";
 						boolean firstD = true;
 						for (int k = 0; k<doubles.getSize(); k++){
 							if (!firstD)
-								s += " , ";
+								s += ", ";
 							firstD = false;
 							s += MesquiteDouble.toString(doubles.getValue(k));
 						}
-						s+=  " } ";
+						s+=  "} ";
 					}
 					else if (obj instanceof Listable)
 						s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize(((Listable)obj).getName()) + " ";
 					else if (obj instanceof String){
-						s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize("string:" + (String)obj) + " ";
+						if (associatedUseComments) //v. 4
+							s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize((String)obj) + " ";
+						else
+							s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize("string:" + (String)obj) + " ";
 					}
 					else if (obj instanceof String[] && ((String[])obj).length>0){
 						MesquiteMessage.warnProgrammer("String[] saving in associables not yet working!");
@@ -580,7 +620,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					}
 				}
 			}
-		if ((associatedUseComments && s.equals("[%")) || (!associatedUseComments && s.equals("<")))
+		if ((associatedUseComments && s.equals("[" + Parser.substantiveCommentMark)) || (!associatedUseComments && s.equals("<")))
 			return "";
 		else if (associatedUseComments)
 			return s+ "]";
@@ -609,7 +649,13 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			value=StringUtil.removeLastCharacterIfMatch(value, '\'');
 			if (StringUtil.blank(value))
 				return;
-			if (value.equalsIgnoreCase("on")) {
+			if (key.equals("color")){ //special case; reading old color possibly
+				int oldColor = MesquiteInteger.fromString(value);
+				if (value.length()<=2 && oldColor>=0 && oldColor<20) //old color; convert
+					value =ColorDistribution.hexFromColor(oldColor);
+				setAssociatedObject(ColorDistribution.colorRGBNameReference, node, value);
+			}
+			else if (value.equalsIgnoreCase("on")) {
 				NameReference nr = makeAssociatedBits(key);
 				Bits bb = getWhichAssociatedBits(nr);
 				bb.setBit(node, true);

@@ -199,11 +199,9 @@ class PlotTreeDrawing extends TreeDrawing  {
 	private int foundBranch;
 	double[] zScores;
 	int[] nodes;
-	private NameReference colorNameRef;
 	public PlotTreeDrawing (TreeDisplay treeDisplay, int numTaxa, PlotTree3D ownerModule, int spotSize) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		this.spotsize = spotSize;
-		colorNameRef = NameReference.getNameReference("color");
 	    	treeDisplay.setMinimumTaxonNameDistance(spotsize/2, 4);
 		treeDisplay.setOrientation(TreeDisplay.FREEFORM);
 		this.ownerModule = ownerModule;

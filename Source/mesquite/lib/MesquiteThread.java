@@ -422,11 +422,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 				if (diagnose) MesquiteMessage.println("isScripting:CommandRecordHolder, " + situation);
 			}
 		}
-		/*
-		if (shouldBeScripting != isScripting || stackTrace){
-			MesquiteMessage.println("@@@@@@@@@@@@@@@@@@@@");
-			MesquiteMessage.printStackTrace("UNEXPECTED SCRIPTING STATUS:  " + situation + " (" + isScripting + "; thread: " + thisThread + ")");
-		}*/
+		
 		return shouldBeScripting;
 	}
 	public static void setShowWaitWindow(boolean show){

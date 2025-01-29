@@ -26,6 +26,7 @@ import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.StringIntegerDialog;
 
@@ -904,9 +905,8 @@ public class ManageTaxa extends TaxaManager {
 				if (newTaxa != null && fuse){
 
 					newTaxa.addTaxa( newTaxa.getNumTaxa()-1, numTaxa, true);
-					NameReference colorNameRef = NameReference.getNameReference("color");
 					for (int it = firstNewTaxon; it<newTaxa.getNumTaxa(); it++)
-						newTaxa.setAssociatedLong(colorNameRef, it, 10, true);
+						newTaxa.setColor(it, ColorDistribution.hexFromColor(ColorDistribution.sienna)); //sienna
 				}
 				else {
 

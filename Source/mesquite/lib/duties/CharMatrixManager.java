@@ -20,6 +20,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ProgressIndicator;
 
 
@@ -88,9 +89,8 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			extraTaxon = numTaxa;
 			taxa.addTaxa(numTaxa-1, 1, false);
 			data.addTaxa(numTaxa-1, 1);
-			NameReference colorNameRef = NameReference.getNameReference("color");
 			for (int it = extraTaxon; it<taxa.getNumTaxa(); it++)
-				taxa.setAssociatedLong(colorNameRef, it, 8, true);
+				taxa.setColor(it, ColorDistribution.hexFromColor(ColorDistribution.paleGoldenRod)); //paleGoldenRod
 		}
 		if (numChars<0 || !MesquiteInteger.isCombinable(numChars))
 			numChars = data.getNumChars();
@@ -98,7 +98,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		int PREFEREXISTING = 1;
 		int PREFERINCOMING = 0;
 		int SEPARATENOTOVERWRITE = 2;
-		NameReference colorNameRef = NameReference.getNameReference("color");
 		MesquiteTimer readTime = new MesquiteTimer();
 		MesquiteTimer totalTime = new MesquiteTimer();
 
@@ -351,7 +350,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 							if (overwritingRule == SEPARATENOTOVERWRITE){  //don't deassign extra taxon, and invent new taxon and change value of extraTaxon
 								preserveNewTaxon = true;
 								taxa.setTaxonName(extraTaxon, taxa.getUniqueName(taxa.getTaxonName(whichTaxon)+" (for " + data.getName() + ", from file " + fileBeingRead.getFileName() + ")"), false);
-								taxa.setAssociatedLong(colorNameRef, extraTaxon, 13, true);
+								taxa.setColor(extraTaxon, ColorDistribution.hexFromColor(Color.cyan));
 								int numTaxa = taxa.getNumTaxa();
 								taxa.addTaxa(numTaxa-1, 1, false);  //this is for future
 								data.addTaxa(numTaxa-1, 1);

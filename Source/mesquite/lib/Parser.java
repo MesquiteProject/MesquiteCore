@@ -29,6 +29,7 @@ public class Parser extends StringUtil {
 	String lineEndStringSet = null;
 	static char openCommentBracket = '[';
 	static char closeCommentBracket = ']';
+	public static char substantiveCommentMark = '&'; //had been % before v. 4
 	public static boolean allowComments = true;
 	boolean convertUnderscoresToBlanks = true;
 	char quoteChar = defaultQuote;

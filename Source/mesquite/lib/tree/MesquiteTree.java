@@ -48,6 +48,7 @@ import mesquite.lib.NameReference;
 import mesquite.lib.Notification;
 import mesquite.lib.ObjectArray;
 import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
 import mesquite.lib.RandomBetween;
 import mesquite.lib.Renamable;
 import mesquite.lib.StringArray;
@@ -177,7 +178,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public static boolean permitTruncTaxNames = true;
 	/** True if tree reading permits space and underscore as equivalent */
 	public static boolean permitSpaceUnderscoreEquivalent = true;
-	
+
 	/** True if tree reading permits taxon names to be expressed as t0, t1, etc.*/
 	private boolean permitT0Names = false;
 	/** If true, then taxa block is enlarged when unfamiliar taxon name encountered */
@@ -2943,7 +2944,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
 			}
 			else */
-				setNodeLabel(c, sN); 
+			setNodeLabel(c, sN); 
 
 			if (!MesquiteNumber.isNumber(c) && taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null){
 				taxa.getClades().addClade(c);
@@ -3716,6 +3717,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	numbers to refer to the taxa.*/
 	public String writeTreeWithNodeNumbers() {
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*20);
+		if (!getRooted())
+			s.append("[&U] ");
 		writeTreeByNumbersWithNodeNumbers(root, s, true);
 		writeTreeProperties(s, true);
 
@@ -3727,6 +3730,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	numbers to refer to the taxa.*/
 	public String writeTree() {
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
+		if (!getRooted())
+			s.append("[&U] ");
 		writeTreeByNumbers(root, s, true, true);
 		writeTreeProperties(s, true);
 		s.append(';');
@@ -3789,6 +3794,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** Returns a Newick tree with taxon names supplied by TaxonNamer, e.g. so that modules may use their own codes for taxa.*/
 	public String writeTreeWithNamer(TaxonNamer namer, boolean includeBranchLengths, boolean includeAssocAndProperties) {
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
+		if (includeAssocAndProperties && !getRooted())
+			s.append("[&U] ");
 		writeTreeWithNamer(root, s, namer, includeBranchLengths, includeAssocAndProperties, true);
 		if (includeAssocAndProperties)
 			writeTreeProperties(s, true);
@@ -3806,6 +3813,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	names or numbers to refer to the taxa, depending on the boolean parameter byNames.*/
 	public String writeClade(int node, int byWhat, boolean associatedUseComments) {
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
+		if (!getRooted())
+			s.append("[&U] ");
 		if (byWhat == BY_NAMES)
 			writeTreeByNames(node, s, true, true, associatedUseComments);
 		else if (byWhat == BY_NUMBERS)
@@ -3827,17 +3836,18 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		String spref = "";
 		if (StringUtil.blank(writeAssociated(root, useComments))){ //if nothing at root put dummy so second will be tree properties
 			if (useComments)
-				spref = "[% ]"; 
+				spref = "[" + Parser.substantiveCommentMark + " ]"; 
 			else
 				spref = "<>";
 		}
 		MesquiteBoolean mb = null;
 		MesquiteBoolean mr = null;
-		if (!getRooted()) {
+		/*
+		 * if (!getRooted()) {
 			mr = new MesquiteBoolean(!getRooted());
 			mr.setName("unrooted");
 			attachIfUniqueName(mr);
-		}
+		}*/
 		if (polytomiesHard == 0 || polytomiesHard == 1) {
 			mb = new MesquiteBoolean(polytomiesHard==0);
 			mb.setName("polytomiesHard");
@@ -3847,7 +3857,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		String sprefpref = "";
 		if (StringUtil.blank(s)){
 			if (useComments)
-				sprefpref = "[% ]"; 
+				sprefpref = "[" + Parser.substantiveCommentMark + " ]"; 
 			else
 				sprefpref = "<>";
 		}
@@ -3867,7 +3877,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (!StringUtil.blank(b)){
 			sb.append(spref + " " + sprefpref + " ");
 			if (useComments)
-				sb.append("[% " + b + " ]"); 
+				sb.append("[" + Parser.substantiveCommentMark + " " + b + " ]"); 
 			else
 				sb.append("< " + b + " >"); 
 		}
@@ -3897,6 +3907,29 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			detach(mb);
 		}
 	}
+
+	void readAppliesToBranches(String toWhom){
+		NameReference nRef = NameReference.getNameReference(toWhom);
+		Bits b = getWhichAssociatedBits(nRef);
+		if (b != null)
+			b.setBetweenness(true);
+		else {
+			LongArray bL = getWhichAssociatedLong(nRef);
+			if (bL != null)
+				bL.setBetweenness(true);
+			else {
+				DoubleArray bD = getWhichAssociatedDouble(nRef);
+				if (bD != null)
+					bD.setBetweenness(true);
+				else {
+					ObjectArray bO = getWhichAssociatedObject(nRef);
+					if (bO != null)
+						bO.setBetweenness(true);
+				}
+			}
+		}
+	}
+
 	public void readExtras(String assocString, MesquiteInteger pos){
 		//assumes already past "<";
 		String key=ParseUtil.getToken(assocString, pos);
@@ -3908,7 +3941,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			String value = ParseUtil.getToken(assocString, pos); //finding value
 			if (StringUtil.blank(value))
 				return;
-			if (key.equalsIgnoreCase("setBetweenBits")) {
+			if (key.equalsIgnoreCase("appliesToBranches")){
+				if (value.equals("{")){
+					String value2 = ParseUtil.getToken(assocString, pos); //finding value
+					while (StringUtil.notEmpty(value2) && !value2.equals("}")){
+						readAppliesToBranches(value2);
+						value2 = ParseUtil.getToken(assocString, pos); //finding value
+					}
+				}
+				else {
+					readAppliesToBranches(value);
+				}
+			}
+			else if (key.equalsIgnoreCase("setBetweenBits")) {
 				NameReference nRef = NameReference.getNameReference(value);
 				Bits b = getWhichAssociatedBits(nRef);
 				if (b != null)
@@ -5126,33 +5171,60 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 	private String writeAssociatedBetweenness(){
 		String s = "";
+		int count = 0;
+		boolean first = true;
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
-				if (b.isBetween())
-					s += " setBetweenBits = " + StringUtil.tokenize(b.getNameReference().getValue());
+				if (b.isBetween()) {
+					if (!first)
+						s += ",";
+					first = false;
+					s += " " + StringUtil.tokenize(b.getNameReference().getValue());
+					count++;
+				}
 			}
 		}
 		if (longs!=null) {
 			for (int i=0; i< longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
-				if (b.isBetween())
-					s += " setBetweenLong = " + StringUtil.tokenize(b.getNameReference().getValue());
+				if (b.isBetween()) {
+					if (!first)
+						s += ",";
+					first = false;
+					s += " " + StringUtil.tokenize(b.getNameReference().getValue());
+					count++;
+				}
 			}
 		}
 		if (doubles!=null)
 			for (int i=0; i< doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				if (b.isBetween())
-					s += " setBetweenDouble = " + StringUtil.tokenize(b.getNameReference().getValue());
+				if (b.isBetween()) {
+					if (!first)
+						s += ",";
+					first = false;
+					s += " " + StringUtil.tokenize(b.getNameReference().getValue());
+					count++;
+				}
 			}
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				if (b.isBetween())
-					s += " setBetweenObject = " + StringUtil.tokenize(b.getNameReference().getValue());
+				if (b.isBetween()) {
+					if (!first)
+						s += ",";
+					first = false;
+					s += " " + StringUtil.tokenize(b.getNameReference().getValue());
+					count++;
+				}
 			}
-		return s;
+		if (count == 0)
+			return "";
+		if (count ==1)
+			return " appliesToBranches = " + s;
+		
+		return " appliesToBranches = {" + s + " }";
 	}
 	/*-----------------------------------------*/
 	//floatNode and reroot corrected to handle branch lengths 29 Sept 2001
