@@ -73,6 +73,7 @@ import mesquite.lib.ui.ToolPalette;
 import java.awt.datatransfer.*;
 
 import mesquite.tol.lib.TaxonOnWebServer;
+import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
 /** Makes and manages a Tree Window for tree editing and visualization */
@@ -1027,6 +1028,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		infoButton.setShowBackground(false);
 		infoButton.setButtonExplanation("Show Tree Info Panel");
 		controlStrip.addButton(infoButton);
+		MesquiteModule mbNAL = ownerModule.findEmployeeWithDuty(NodeAssociatesList.class);
+		MesquiteButton nodeInfoButton = new MesquiteButton(ownerModule, MesquiteModule.makeCommand("toggleWindow", mbNAL), null, true, MesquiteModule.getRootImageDirectoryPath() + "showNodeAssoc.gif", 12, 16);
+		// infoBar.addExtraButton(MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", MesquiteModule.makeCommand("toggleInfoPanel", this));
+		nodeInfoButton.setUseWaitThread(false);
+		nodeInfoButton.setShowBackground(false);
+		nodeInfoButton.setButtonExplanation("Show Information At Nodes Window");
+		controlStrip.addButton(nodeInfoButton);
 		addToWindow(controlStrip);
 		ownerModule.addCheckMenuItem(null, "Show Tree Info Panel", ownerModule.makeCommand("toggleInfoPanel", this), infoPanelOn);
 		treeDrawCoordTask.addCheckMenuItem(null, "Add Name to Printed Tree", ownerModule.makeCommand("togglePrintName", this), ownerModule.printNameOnTree);
@@ -1900,7 +1908,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			togglePane(true, false);
 			treePane.setSize(getWidth(), getHeight() - scrollWidth);
 		}
-		int CONTROLWIDTH = 42;
+		int CONTROLWIDTH = 63;
 		messageWidth = getWidth() - CONTROLWIDTH;
 		if (usingPane) {
 			// treeDisplay.setSize(getWidth()-scrollWidth, getHeight()-scrollWidth-scrollWidth);
