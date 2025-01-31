@@ -175,36 +175,11 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("defaultDrawer".equalsIgnoreCase(tag))
 			defaultDrawer = StringUtil.cleanXMLEscapeCharacters(content);
-		/*	if ("selectedTaxonHighlightMode".equalsIgnoreCase(tag)){
-			int m = MesquiteInteger.fromString(content);
-			if (MesquiteInteger.isNonNegative(m))
-				selectedTaxonHighlightMode = m;
-		}
-		 */
+		
 	}
 
 
-	/*.................................................................................................................*
-	public Snapshot getSnapshotForMacro(MesquiteFile file) {
-		treeDrawCoordTask= (DrawTreeCoordinator)hireEmployee(DrawTreeCoordinator.class, null);
-		if (treeDrawCoordTask== null) {
-			sorry(getName() + " couldn't start because no tree draw coordinating module was obtained.");
-			return null;
-		}
-		treeDrawCoordTask.setToLastEmployee(true);
-		hireAllEmployees(TreeDisplayAssistantI.class);
-		hireAllEmployees(TreeDisplayAssistantDI.class);
-		Enumeration enumeration = getEmployeeVector().elements();
-		while (enumeration.hasMoreElements()) {
-			Object obj = enumeration.nextElement();
-			if (obj instanceof TreeDisplayAssistantDI) {
-				TreeDisplayAssistantDI init = (TreeDisplayAssistantDI) obj;
-				treeDrawCoordTask.requestGuestMenuPlacement(init);
-			}
-		}
-		resetContainingMenuBar();
-		return treeDrawCoordTask;
-	}
+	
 	/*.................................................................................................................*/
 	/** return whether or not this module should have snapshot saved when saving a macro given the current snapshot mode.*/
 	public boolean satisfiesSnapshotMode(){

@@ -3798,7 +3798,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				currentTreeTool.branchTouched(branchFound, x, y, tree, modifiers);
 				// branchFrom = 0;
 			}
-			notifyExtrasOfBranchTouch(g, branchFound);
+				notifyExtrasOfBranchTouch(g, branchFound, modifiers, currentTreeTool.isArrowTool());
 			return true;
 		}
 		else { // not in a branch
@@ -3806,7 +3806,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (nameFound != -1) { // it is in a taxon
 				currentTreeTool.taxonTouched(nameFound, tree, modifiers);
 				taxonTouched = nameFound;
-				notifyExtrasOfTaxonTouch(g, nameFound);
+				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool.isArrowTool());
 				if (highlightedTaxon >= 0)
 					RevertTaxon(g, highlightedTaxon);
 				return true;
@@ -3915,7 +3915,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				if (taxonTouched == nameFound && currentTreeTool.isArrowTool())
 					selectTaxon(modifiers, taxonTouched);
 				currentTreeTool.taxonMouseUp(nameFound, x, y, tree, modifiers);
-				notifyExtrasOfTaxonTouch(g, nameFound);
+				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool.isArrowTool());
 				if (highlightedTaxon >= 0)
 					RevertTaxon(g, highlightedTaxon);
 				taxonTouched = -1;
@@ -4238,14 +4238,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	public void notifyExtrasOfTaxonTouch(Graphics g, int M) {
+	void notifyExtrasOfTaxonTouch(Graphics g, int M, int modifiers, boolean isTreeTool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorTouchTaxon(tree, M, g);
+					tce.cursorTouchTaxon(tree, M, g, modifiers, isTreeTool);
 				}
 			}
 		}
@@ -4254,7 +4254,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	public void notifyExtrasOfBranchEnter(Graphics g, int N) {
+	void notifyExtrasOfBranchEnter(Graphics g, int N) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
@@ -4270,7 +4270,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	public void notifyExtrasOfBranchExit(Graphics g, int N) {
+	void notifyExtrasOfBranchExit(Graphics g, int N) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
@@ -4286,14 +4286,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	public void notifyExtrasOfBranchTouch(Graphics g, int N) {
+	void notifyExtrasOfBranchTouch(Graphics g, int N, int modifiers, boolean isTreeTool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorTouchBranch(tree, N, g);
+					tce.cursorTouchBranch(tree, N, g, modifiers, isTreeTool);
 				}
 			}
 		}
@@ -4302,7 +4302,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	public void notifyExtrasOfFieldTouch(Graphics g, int x, int y, int modifiers) {
+	void notifyExtrasOfFieldTouch(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {

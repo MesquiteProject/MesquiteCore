@@ -29,7 +29,7 @@ import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
 import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
 
 /* ======================================================================== */
-public class NodeAssociatesListStarter extends TreeDisplayAssistantDI  {
+public class NodeAssociatesListStarter extends TreeDisplayAssistantI  {
 	NodeAssociatesList nodeAssocListModule = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

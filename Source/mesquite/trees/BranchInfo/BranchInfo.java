@@ -30,6 +30,9 @@ import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class BranchInfo extends TreeDisplayAssistantI {
+	public boolean loadModule(){
+		return false;
+	}
 	public Vector extras;
 	 public String getFunctionIconPath(){
    		 return getPath() + "branchInfo.gif";

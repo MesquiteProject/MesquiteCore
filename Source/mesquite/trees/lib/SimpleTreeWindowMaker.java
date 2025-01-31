@@ -49,7 +49,7 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 		Enumeration e = getEmployeeVector().elements();
 		while (e.hasMoreElements()) {
 			Object obj = e.nextElement();
-			if (obj instanceof TreeDisplayAssistantI || obj instanceof TreeDisplayAssistantDI) {
+			if (obj instanceof TreeDisplayAssistantDI) {
 				TreeDisplayAssistant tca = (TreeDisplayAssistant)obj;
 				simpleTreeWindow.addAssistant(tca);
 			}

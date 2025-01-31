@@ -43,7 +43,7 @@ public class MesquiteEvent {  //DRM
 		return ((modifiers & InputEvent.CTRL_MASK)!=0);
 	}
 	public static boolean rightClick(int modifiers) {
-		return ((modifiers & InputEvent.CTRL_MASK)!=0) || ((modifiers & InputEvent.BUTTON2_DOWN_MASK)!=0);
+		return ((modifiers & InputEvent.BUTTON3_MASK)!=0) || ((modifiers & InputEvent.BUTTON3_DOWN_MASK)!=0);
 	//	return ((modifiers & InputEvent.CTRL_MASK)!=0) || ((modifiers & InputEvent.BUTTON2_DOWN_MASK)!=0) || ((modifiers & Event.META_MASK)!=0);
 	}
 	public static boolean commandKeyDown(int modifiers) {

@@ -31,6 +31,7 @@ import java.util.List;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.FileDirtier;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDropListener;
@@ -487,6 +488,8 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 		currentX = e.getX();
 		currentY = e.getY();
 		MesquiteException.lastLocation = 108;
+		
+		Debugg.println("@@@mouse clicked " + MesquiteEvent.getModifiers(e));
 		clickedCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " " +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteException.lastLocation = 0;
 	}
@@ -531,6 +534,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 		currentX = e.getX();
 		currentY = e.getY();
 		MesquiteException.lastLocation = 111;
+
 		downCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " " + e.getClickCount() + " " + e.getWhen() + " " +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteException.lastLocation = 0;
 	}

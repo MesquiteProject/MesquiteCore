@@ -386,44 +386,10 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 							else
 								mNF.setAnnotation(fileComments.toString(), false);
 						}
-						if (!mesquiteBlockFound && (mNF == mProj.getHomeFile())) {
-							FileCoordinator mb = (FileCoordinator)getProject().getCoordinatorModule();
-							if (mb != null){
-								mb.showBasicWindows();
-							/*	MesquiteWindow mw = mb.getModuleWindow();
-								if (mw != null)
-									mw.setWindowSize(1000, 800);
-								//	if (getProject().getNumberTaxas()>0){
-								MesquiteModule mbb = findNearestColleagueWithName("Manage TAXA blocks");
-								if (mbb != null)
-									mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
-								//	}
-								if (getProject().getNumberCharMatrices()>3){
-									mbb = findNearestColleagueWithName("#ManageCharacters");
-									if (mbb != null)
-										mbb.doCommand("showDatasList", null, CommandChecker.defaultChecker);
-								}
-								else if (getProject().getNumberCharMatrices()>0){
-									mbb = findNearestColleagueWithName("Data Window Coordinator");
-									if (mbb != null) {
-										for (int im = 0; im< getProject().getNumberCharMatrices(); im++)
-											mbb.doCommand("showDataWindow", "" + im, CommandChecker.defaultChecker);
-									}
-								}
-								else {
-									mbb = findNearestColleagueWithName("#ManageTrees");
-									if (getProject().getNumberTreeVectors()==1) {
-										mbb.doCommand("showTreesInWindow", "" + 0, CommandChecker.defaultChecker);
-									}
-									else if (getProject().getNumberTreeVectors()>1) {
-										mbb.doCommand("showTreeBlocks", null, CommandChecker.defaultChecker);
 
-									}
-								}
-								*/
-							}
-
-						}
+						if (mesquiteBlockFound && (mNF == mProj.getHomeFile()))
+							mProj.openedWithoutMesquiteBlock = false;
+						
 						progIndicator.goAway();
 						fileReadTimer.end();
 

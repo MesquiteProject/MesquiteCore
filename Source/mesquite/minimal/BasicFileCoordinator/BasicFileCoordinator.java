@@ -615,6 +615,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					// "Import" or "Translate"  Open Special NEXUS File
 					// behaviour: autosave or not
 
+					if (p.openedWithoutMesquiteBlock)
+						showBasicWindows();
+					p.openedWithoutMesquiteBlock = false;
 					p.fileSaved(thisFile);  // If used import system, then doesn't add extension or save file if it was some type of NEXUS file 
 					if (importing && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
 						thisFile.changeLocation(thisFile.getDirectoryName(), thisFile.getFileName()+".nex");

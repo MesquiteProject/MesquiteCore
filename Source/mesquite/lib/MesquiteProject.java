@@ -88,6 +88,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public boolean autosave = false;
 	public boolean isDoomed = false;
 	public boolean isProcessDataFilesProject = false;
+	public boolean openedWithoutMesquiteBlock = true;
 	public long timePreviouslySavedAsRecorded = 0;
 	public long timePreviouslySavedByFile = 0;
 
