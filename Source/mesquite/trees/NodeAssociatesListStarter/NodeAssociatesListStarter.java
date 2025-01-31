@@ -14,25 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.NodeAssociatesListStarter;
 
 import java.util.*;
+
 import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
-import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
-import mesquite.lib.tree.TreeDisplayActive;
 import mesquite.lib.tree.TreeDisplayExtra;
-import mesquite.lib.tree.TreeTool;
-import mesquite.lib.ui.ColorTheme;
-import mesquite.lib.ui.Legend;
-import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.lib.ui.MesquiteWindow;
-import mesquite.lib.ui.MessagePanel;
 import mesquite.lists.lib.ListModule;
 import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
+import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
 
 /* ======================================================================== */
 public class NodeAssociatesListStarter extends TreeDisplayAssistantDI  {
@@ -65,13 +59,13 @@ public class NodeAssociatesListStarter extends TreeDisplayAssistantDI  {
 	
 	/*.................................................................................................................*/
 	public String getName() {
-		return "List of Information at Nodes";
+		return "Node/Branch Properties List Starter";
 	}
 
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Starts the node associates list." ;
+		return "Starts list module of node associates." ;
 	}
 
 }

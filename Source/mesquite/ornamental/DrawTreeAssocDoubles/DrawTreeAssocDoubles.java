@@ -32,6 +32,10 @@ import mesquite.lib.ui.StringInABox;
 
 /* ======================================================================== */
 public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
+	public boolean loadModule(){
+		return false;
+	}   	 
+
 	public Vector extras;
 	public boolean first = true;
 	MesquiteBoolean on, percentage, horizontal, centred, whiteEdges, showOnTerminals;
@@ -64,10 +68,12 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		MesquiteModule mb = this;
 		if (textMenu != null && textMenu.getOwnerModule() != null)
 				mb = textMenu.getOwnerModule();
+		mb = this;
+		textMenu = null;
 		MesquiteSubmenuSpec mss = mb.addSubmenu(textMenu, "Node-Associated Values");
 		mb.addItemToSubmenu(textMenu, mss, "Choose Values To Show...", makeCommand("chooseValues",  this));
 		mb.addItemToSubmenu(textMenu, mss, "Threshold Value...", makeCommand("setThreshold",  this));
-		MesquiteSubmenuSpec mss2 =  mb.addSubmenu(mss, "Styles");  //Wayne: here it is.   x123y
+		MesquiteSubmenuSpec mss2 =  mb.addSubmenu(mss, "Styles");  
 		mb.addItemToSubmenu(mss, mss2, "Percentage, Below Branch", makeCommand("setCorvallisStyle",  this));
 		mb.addItemToSubmenu(textMenu, mss, "Digits...", makeCommand("setDigits",  this));
 		mb.addCheckMenuItemToSubmenu(textMenu, mss, "Show As Percentage", makeCommand("writeAsPercentage",  this), percentage);

@@ -460,7 +460,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		else
 			selected = null;
-		checkAssociated();
+		checkAssociatedBetweenness();
 		setAnnotation(tree.getAnnotation(), false); 
 		root=tree.root;
 		subRoot=tree.subRoot;
@@ -3358,6 +3358,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, "Problem reading tree");
 			return false;
 		}
+
+		//Now for the root
 		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 		if (!StringUtil.blank(c) && !(";".equals(c))){  //TODO: all these "equals" should be replaced by StringUtil static methods
 			if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || ("<".equals(c) && readAssociated) || "%".equals(c) || "#".equals(c)))// name of internal node!!!!
@@ -3382,26 +3384,37 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					}
 				}
 				else if  ("<".equals(c) && readAssociated) {
-					readAssociatedInTree(TreeDescription, root, stringLoc);
-					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
-					if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
-						intializeTree();
-						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 9");
-						return false;
-					}
-					if  ("<".equals(c) && readAssociated){
-						readAttachedProperties(TreeDescription, stringLoc);
-						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
-					}
-					if  ("<".equals(c) && readAssociated){
-						readExtras(TreeDescription, stringLoc);
-						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
+					checkAssociatedBetweenness();
+					boolean done = false;
+					int count = 0;
+					while (!done && stringLoc.getValue()<=TreeDescription.length() && count++<10) {
+						int oldPos = stringLoc.getValue();
+						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  
+						if (c == null)
+							done = true;
+						else {
+							if (c.equalsIgnoreCase("treeProperties")){ //first key is forTree; therefore attachment rather than associated for root
+								stringLoc.setValue(oldPos); //have to back up because c was actually first key
+								readAttachments(TreeDescription, stringLoc);
+							}
+							else {
+								stringLoc.setValue(oldPos); //have to back up because c was actually first key
+								readAssociatedInTree(TreeDescription, root, stringLoc);
+							}
+							oldPos = stringLoc.getValue();
+							c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip >
+							if (";".equals(c))
+								done = true;
+							else if (!"<".equals(c))
+								stringLoc.setValue(oldPos);
+						}
 					}
 				}
 			}
 		}
+		if (readAssociated)
+			processAttachedProperties();
 		selected = getWhichAssociatedBits(NameReference.getNameReference("selected"));
-		checkAssociated();
 		exists=true;
 		if (!checkTreeIntegrity(root)) {
 			intializeTree();
@@ -3832,60 +3845,44 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return writeClade(root, byWhat, associatedUseComments);
 	}
 	/*-----------------------------------------*/
+	//write attachments to whole tree
 	private void writeTreeProperties(StringBuffer sb, boolean useComments){
-		String spref = "";
-		if (StringUtil.blank(writeAssociated(root, useComments))){ //if nothing at root put dummy so second will be tree properties
-			if (useComments)
-				spref = "[" + Parser.substantiveCommentMark + " ]"; 
-			else
-				spref = "<>";
-		}
+		// no longer writes unrooted here; see prior to v 4
+		
 		MesquiteBoolean mb = null;
-		MesquiteBoolean mr = null;
-		/*
-		 * if (!getRooted()) {
-			mr = new MesquiteBoolean(!getRooted());
-			mr.setName("unrooted");
-			attachIfUniqueName(mr);
-		}*/
-		if (polytomiesHard == 0 || polytomiesHard == 1) {
+		if (polytomiesHard == 0 || polytomiesHard == 1) {  //make sure this is recorded as an attachment
 			mb = new MesquiteBoolean(polytomiesHard==0);
 			mb.setName("polytomiesHard");
 			attachIfUniqueName(mb);
 		}
-		String s = writeAttachments(useComments);
-		String sprefpref = "";
-		if (StringUtil.blank(s)){
-			if (useComments)
-				sprefpref = "[" + Parser.substantiveCommentMark + " ]"; 
-			else
-				sprefpref = "<>";
-		}
-		else 
-			sprefpref = s;
+		String attachments = writeAttachments();  //these are the attachments
 		if (mb !=null) {
 			detach(mb);
 		}
-		if (mr !=null) {
-			detach(mr);
-		}
-		if (s ==null || s.length()>0) {
-			sb.append(spref + " " + s);
-			spref = "";
-		}
-		String b = writeAssociatedBetweenness();
-		if (!StringUtil.blank(b)){
-			sb.append(spref + " " + sprefpref + " ");
+		String betweennesses = writeAssociatedBetweenness();
+
+		if (!StringUtil.blank(attachments) || !StringUtil.blank(betweennesses)){
 			if (useComments)
-				sb.append("[" + Parser.substantiveCommentMark + " " + b + " ]"); 
+				sb.append("[" + Parser.substantiveCommentMark + " treeProperties=true, ");  
 			else
-				sb.append("< " + b + " >"); 
+				sb.append("<"  + " treeProperties=true, "); 
+			if (!StringUtil.blank(attachments))
+				sb.append(attachments);
+			if (!StringUtil.blank(betweennesses)) {
+				if (!StringUtil.blank(attachments))
+					sb.append(",");
+				sb.append(betweennesses);
+			}
+			if (useComments)
+				sb.append("]");  
+			else
+				sb.append(">" ); 
+
 		}
 
 	}
 	/*-----------------------------------------*/
-	private void readAttachedProperties(String TreeDescription, MesquiteInteger stringLoc){
-		readAttachments(TreeDescription, stringLoc);
+	private void processAttachedProperties(){
 		Object or = getAttachment("unrooted");
 		Object ob = getAttachment("polytomiesHard");
 
@@ -3930,58 +3927,66 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 	}
 
-	public void readExtras(String assocString, MesquiteInteger pos){
-		//assumes already past "<";
+	public boolean readAttachment(String assocString, MesquiteInteger pos){
+		//assumes already past "<", and we're about to read a key
+		int oldPos = pos.getValue();  //just in case fails
 		String key=ParseUtil.getToken(assocString, pos);
-		while (!">".equals(key)) {
-			if (StringUtil.blank(key))
-				return;
-			String tok = ParseUtil.getToken(assocString, pos); //eating up equals
-			int oldPos = pos.getValue();
-			String value = ParseUtil.getToken(assocString, pos); //finding value
-			if (StringUtil.blank(value))
-				return;
-			if (key.equalsIgnoreCase("appliesToBranches")){
-				if (value.equals("{")){
-					String value2 = ParseUtil.getToken(assocString, pos); //finding value
-					while (StringUtil.notEmpty(value2) && !value2.equals("}")){
-						readAppliesToBranches(value2);
-						value2 = ParseUtil.getToken(assocString, pos); //finding value
-					}
-				}
-				else {
-					readAppliesToBranches(value);
-				}
-			}
-			else if (key.equalsIgnoreCase("setBetweenBits")) {
-				NameReference nRef = NameReference.getNameReference(value);
-				Bits b = getWhichAssociatedBits(nRef);
-				if (b != null)
-					b.setBetweenness(true);
-			}
-			else if (key.equalsIgnoreCase("setBetweenLong")) {
-				NameReference nRef = NameReference.getNameReference(value);
-				LongArray b = getWhichAssociatedLong(nRef);
-				if (b != null)
-					b.setBetweenness(true);
-			}
-			else if (key.equalsIgnoreCase("setBetweenDouble")) {
-				NameReference nRef = NameReference.getNameReference(value);
-				DoubleArray b = getWhichAssociatedDouble(nRef);
-				if (b != null)
-					b.setBetweenness(true);
-			}
-			else if (key.equalsIgnoreCase("setBetweenObject")) {
-				NameReference nRef = NameReference.getNameReference(value);
-				ObjectArray b = getWhichAssociatedObject(nRef);
-				if (b != null)
-					b.setBetweenness(true);
-			}
-			key=ParseUtil.getToken(assocString, pos);
-			if (",".equals(key)) //eating up "," separating subcommands
-				key=ParseUtil.getToken(assocString, pos);
+		if (StringUtil.blank(key))
+			return false;
+		if (key.equals(";")){
+			pos.decrement(); //go back to leave the semicolon to be read
+			return false;
 		}
+		ParseUtil.getToken(assocString, pos); //eating up equals
+		String value = ParseUtil.getToken(assocString, pos); //finding value
+		if (StringUtil.blank(value))
+			return false;
+
+		if (key.equalsIgnoreCase("appliesToBranches")){
+			if (value.equals("{")){
+				String value2 = ParseUtil.getToken(assocString, pos); //finding value
+				while (StringUtil.notEmpty(value2) && !value2.equals("}")){
+					readAppliesToBranches(value2);
+					value2 = ParseUtil.getToken(assocString, pos); //finding value
+				}
+			}
+			else {
+				readAppliesToBranches(value);
+			}
+		}
+		else if (key.equalsIgnoreCase("treeProperties")) {
+		}
+		else if (key.equalsIgnoreCase("setBetweenBits")) {
+			NameReference nRef = NameReference.getNameReference(value);
+			Bits b = getWhichAssociatedBits(nRef);
+			if (b != null)
+				b.setBetweenness(true);
+		}
+		else if (key.equalsIgnoreCase("setBetweenLong")) {
+			NameReference nRef = NameReference.getNameReference(value);
+			LongArray b = getWhichAssociatedLong(nRef);
+			if (b != null)
+				b.setBetweenness(true);
+		}
+		else if (key.equalsIgnoreCase("setBetweenDouble")) {
+			NameReference nRef = NameReference.getNameReference(value);
+			DoubleArray b = getWhichAssociatedDouble(nRef);
+			if (b != null)
+				b.setBetweenness(true);
+		}
+		else if (key.equalsIgnoreCase("setBetweenObject")) {
+			NameReference nRef = NameReference.getNameReference(value);
+			ObjectArray b = getWhichAssociatedObject(nRef);
+			if (b != null)
+				b.setBetweenness(true);
+		}
+		else { //can't read it, so go back!
+			pos.setValue(oldPos);
+			return super.readAttachment(assocString, pos);
+		}
+		return true;
 	}
+
 	/*-----------------------------------------*/
 	/** Branches a terminal node off taxon number taxonNum, and assigns it taxon newNumber.  If newNumber < 0, then assign next available taxon not in tree  */
 	public synchronized void splitTerminal(int taxonNum, int newNumber, boolean notify) {
@@ -5118,7 +5123,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 	static final String[] betweenLongs = new String[]{"color"};
 	static final String[] betweenDoubles = new String[]{"width", "bootstrapFrequency", "consensusFrequency", "posteriorProbability"};
-	static final String[] betweenObjects = new String[]{};
+	static final String[] betweenObjects = new String[]{"!color"};
 	static final String[] betweenBits = new String[]{};
 	/*
 	public void setAssociatedBit(NameReference nRef, int index, boolean value){
@@ -5134,7 +5139,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		setAssociatedObject(nRef, index, value, StringArray.indexOfIgnoreCase(betweenObjects, nRef.getValue())>=0);
 	}
 	 */
-	private void checkAssociated(){   //for old data files that don't have betweenness recorded
+	private void checkAssociatedBetweenness(){   //default betweenness recorded
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
@@ -5166,7 +5171,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					b.setBetweenness(true);
 			}
 
-
+		
 	}
 
 	private String writeAssociatedBetweenness(){
@@ -5223,7 +5228,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return "";
 		if (count ==1)
 			return " appliesToBranches = " + s;
-		
+
 		return " appliesToBranches = {" + s + " }";
 	}
 	/*-----------------------------------------*/

@@ -112,18 +112,20 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 		if (ic>=0 && ic<associatedInfo.size()){
 			ObjectContainer objContainer = (ObjectContainer)associatedInfo.elementAt(ic);
 			Object obj = objContainer.getObject();
+			boolean between = false;
 			if (obj instanceof DoubleArray)
-				return nodeOrBranch(((DoubleArray)obj).isBetween());
+				between = ((DoubleArray)obj).isBetween();
 			else if (obj instanceof LongArray)
-				return nodeOrBranch(((LongArray)obj).isBetween());
+				between = ((LongArray)obj).isBetween();
 			else if (obj instanceof ObjectArray)
-				return nodeOrBranch(((ObjectArray)obj).isBetween());
+				between = ((ObjectArray)obj).isBetween();
 			else if (obj instanceof Bits)
-				return nodeOrBranch(((Bits)obj).isBetween());
+				between = ((Bits)obj).isBetween();
 			else if (obj instanceof Tree && "Branch lengths".equalsIgnoreCase(objContainer.getName()))
-				return nodeOrBranch(true);
+				between = true;
 			else
 				return "?";
+			return nodeOrBranch(between); //objContainer.getName() + " " + obj.getClass() + " " + between;
 		}
 		return "—";
 	}

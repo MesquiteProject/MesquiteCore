@@ -2359,7 +2359,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		resetMenuTime.start();
 		MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); 
 		if (ownerModule==null) {
-			MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@@@null ownerModule in window");
+			MesquiteMessage.printStackTrace("################# null ownerModule in window");
 			return;
 		}
 		else {

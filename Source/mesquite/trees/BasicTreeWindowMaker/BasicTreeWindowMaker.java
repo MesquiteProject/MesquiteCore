@@ -16,63 +16,19 @@ package mesquite.trees.BasicTreeWindowMaker;
 /*~~  */
 
 import java.util.*;
+
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-
-import mesquite.categ.lib.CategDataEditorInitD;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
-import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.Tree;
-import mesquite.lib.tree.TreeContext;
-import mesquite.lib.tree.TreeContextListener;
-import mesquite.lib.tree.TreeDisplay;
-import mesquite.lib.tree.TreeDisplayActive;
-import mesquite.lib.tree.TreeDisplayDrawnExtra;
-import mesquite.lib.tree.TreeDisplayExtra;
-import mesquite.lib.tree.TreeDrawing;
-import mesquite.lib.tree.TreeReference;
-import mesquite.lib.tree.TreeTool;
-import mesquite.lib.tree.TreeVector;
-import mesquite.lib.ui.ClosablePanel;
-import mesquite.lib.ui.ClosablePanelContainer;
-import mesquite.lib.ui.ColorDistribution;
-import mesquite.lib.ui.ColorTheme;
-import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.lib.ui.GraphicsUtil;
-import mesquite.lib.ui.Legend;
-import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MQPanel;
-import mesquite.lib.ui.MesquiteButton;
-import mesquite.lib.ui.MesquiteCMenuItemSpec;
-import mesquite.lib.ui.MesquiteCheckMenuItem;
-import mesquite.lib.ui.MesquiteImage;
-import mesquite.lib.ui.MesquiteMenuItem;
-import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.lib.ui.MesquiteMenuSpec;
-import mesquite.lib.ui.MesquitePDFFile;
-import mesquite.lib.ui.MesquitePanel;
-import mesquite.lib.ui.MesquitePopup;
-import mesquite.lib.ui.MesquitePrintJob;
-import mesquite.lib.ui.MesquiteScrollbar;
-import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.lib.ui.MesquiteTool;
-import mesquite.lib.ui.MesquiteWindow;
-import mesquite.lib.ui.MiniScroll;
-import mesquite.lib.ui.MousePanel;
-import mesquite.lib.ui.RadioButtons;
-import mesquite.lib.ui.StringInABox;
-import mesquite.lib.ui.ToolPalette;
+import mesquite.lib.tree.*;
+import mesquite.lib.ui.*;
 
 import java.awt.datatransfer.*;
 
-import mesquite.tol.lib.TaxonOnWebServer;
 import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
@@ -147,6 +103,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	MesquiteString treeSourceName;
 	MagnifyExtra magnifyExtra;
 	MesquiteString xmlPrefs = new MesquiteString();
+	MesquiteMenuSpec alterMenu = null;
 	boolean useXORForBranchMoves = true;
 	String xmlPrefsString = null;
 	static {
@@ -157,6 +114,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		loadPreferences(xmlPrefs);
 		xmlPrefsString = xmlPrefs.getValue();
 		makeMenu("Tree");
+		alterMenu = addAuxiliaryMenuHighPriority("Alter");
+		//alterMenuHolder.getAlterMenu();
 		if (condition != null && condition instanceof Taxa) {
 			taxa = (Taxa) condition;
 		}
@@ -1008,9 +967,39 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		this.taxa = taxa;
 
 		// 1
+		//STORE ETC CURRENT TREE =============
+		storeTreeMenuItem = ownerModule.addMenuItem("Store Tree", ownerModule.makeCommand("storeTree", this));
+		storeTreeAsMenuItem = ownerModule.addMenuItem("Store Tree As...", ownerModule.makeCommand("storeTreeAs", this));
+		storeTreeAsOtherMenuItem = ownerModule.addMenuItem("Store Tree In Tree Block As...", ownerModule.makeCommand("storeTreeAsOther", this));
+
+		ownerModule.addMenuSeparator();
+		saveTreeAsPDFMenuItem = ownerModule.addMenuItem("Save Tree as PDF...", ownerModule.makeCommand("saveTreeAsPDF", this));
+		ownerModule.addMenuSeparator();				
+		recoverEditedMenuItem = ownerModule.addMenuItem("Recover Last Edited Tree", ownerModule.makeCommand("recoverLastEditedTree", this));
+		ownerModule.addMenuItem("Edited Tree Handling Options...", ownerModule.makeCommand("queryEditedTreeMode", this));
+		ownerModule.addMenuSeparator();
+
+		ownerModule.addMenuItem("Choose Tree...", ownerModule.makeCommand("chooseTree", this));
+		MesquiteMenuItemSpec mm = ownerModule.addMenuItem("Next Tree", ownerModule.makeCommand("nextTree", this)); // DOES THIS WORK??
+		mm.setShortcut(KeyEvent.VK_UP); // right
+		mm = ownerModule.addMenuItem("Previous Tree", ownerModule.makeCommand("previousTree", this));
+		mm.setShortcut(KeyEvent.VK_DOWN); // right
+		ownerModule.addMenuItem("Step Through Trees...", ownerModule.makeCommand("stepThroughTrees", this));
+		ownerModule.addMenuSeparator();
+
+		
+		//Display =============
 		treeDrawCoordTask = windowModule.hireTreeDrawCoordTask(); // do this here to ensure that any modules hired by the task have a window into which to put things
 		if (treeDrawCoordTask == null)
 			return;
+		treeDrawCoordTask.addCheckMenuItem(treeDrawCoordTask.findMenu("Text"), "Add Tree Name when Printing", treeDrawCoordTask.makeCommand("togglePrintName", this), ownerModule.printNameOnTree);
+	
+
+		infoPanelOn = new MesquiteBoolean(false);
+		ownerModule.addCheckMenuItem(null, "Show Tree Info Panel", ownerModule.makeCommand("toggleInfoPanel", this), infoPanelOn);
+		ownerModule.addMenuSeparator();
+
+		
 		windowModule.moveEmployeeToFirst(treeDrawCoordTask);
 		setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/tree.gif");
 
@@ -1018,7 +1007,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		this.ownerModule = ownerModule;
 		this.treeSourceTask = tsT;
 		// useSuggestedSize = new MesquiteBoolean(true);
-		infoPanelOn = new MesquiteBoolean(false);
 		// sizeToFit = new MesquiteBoolean(true);
 		floatLegends = new MesquiteBoolean(true);
 		ownerModule.printNameOnTree = new MesquiteBoolean(TreeDisplay.printTreeNameByDefault);
@@ -1040,11 +1028,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		// infoBar.addExtraButton(MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", MesquiteModule.makeCommand("toggleInfoPanel", this));
 		nodeInfoButton.setUseWaitThread(false);
 		nodeInfoButton.setShowBackground(false);
-		nodeInfoButton.setButtonExplanation("Show Information At Nodes Window");
+		nodeInfoButton.setButtonExplanation("Show Node/Branch Properties Window");
 		controlStrip.addButton(nodeInfoButton);
 		addToWindow(controlStrip);
-		ownerModule.addCheckMenuItem(null, "Show Tree Info Panel", ownerModule.makeCommand("toggleInfoPanel", this), infoPanelOn);
-		treeDrawCoordTask.addCheckMenuItem(treeDrawCoordTask.findMenu("Text"), "Add Tree Name when Printing", treeDrawCoordTask.makeCommand("togglePrintName", this), ownerModule.printNameOnTree);
+		
+		
 		tree = null;
 		if (originalTree != null && originalTree instanceof MesquiteTree)
 			taxa.removeListener((MesquiteTree) originalTree);
@@ -1114,28 +1102,24 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		palette.setUpBirdsEye();
 		// setSuggestedSize(false, false);
 
-		storeTreeMenuItem = ownerModule.addMenuItem("Store Tree", ownerModule.makeCommand("storeTree", this));
-		storeTreeAsMenuItem = ownerModule.addMenuItem("Store Tree As...", ownerModule.makeCommand("storeTreeAs", this));
-		storeTreeAsOtherMenuItem = ownerModule.addMenuItem("Store Tree In Tree Block As...", ownerModule.makeCommand("storeTreeAsOther", this));
+
 		setStoreTreeAsMenuItems(editMode);
 
-		ownerModule.addMenuSeparator();
-		saveTreeAsPDFMenuItem = ownerModule.addMenuItem("Save Tree as PDF...", ownerModule.makeCommand("saveTreeAsPDF", this));
-		ownerModule.addMenuSeparator();				
-		recoverEditedMenuItem = ownerModule.addMenuItem("Recover Last Edited Tree", ownerModule.makeCommand("recoverLastEditedTree", this));
-		ownerModule.addMenuItem("Edited Tree Handling Options...", ownerModule.makeCommand("queryEditedTreeMode", this));
-		ownerModule.addMenuSeparator();
-
-		ownerModule.addMenuItem("Choose Tree...", ownerModule.makeCommand("chooseTree", this));
-		MesquiteMenuItemSpec mm = ownerModule.addMenuItem("Next Tree", ownerModule.makeCommand("nextTree", this)); // DOES THIS WORK??
-		mm.setShortcut(KeyEvent.VK_UP); // right
-		mm = ownerModule.addMenuItem("Previous Tree", ownerModule.makeCommand("previousTree", this));
-		mm.setShortcut(KeyEvent.VK_DOWN); // right
-		ownerModule.addMenuItem("Step Through Trees...", ownerModule.makeCommand("stepThroughTrees", this));
-		ownerModule.addMenuSeparator();
-		ownerModule.addSubmenu(null, "Alter Tree", ownerModule.makeCommand("alterTree", this), TreeAlterer.class);
+		
+		//ALTER CURRENT TREE =============/*
+		MesquiteMenuSpec alterMenu = ownerModule.alterMenu;
+		ownerModule.addMenuItem(alterMenu, "Topology/Relationships", null);
+		ownerModule.addModuleMenuItems(alterMenu, ownerModule.makeCommand("alterTree", this), TreeAlterer.class);
+		ownerModule.addMenuItem(alterMenu, "-", null);
+		ownerModule.addMenuItem(alterMenu, "Branch Lengths", null);
+		ownerModule.addModuleMenuItems(alterMenu, ownerModule.makeCommand("alterBranchLengths", this), BranchLengthsAlterer.class);
+		
+		
+	/*old
+	 * 	ownerModule.addSubmenu(null, "Alter Tree", ownerModule.makeCommand("alterTree", this), TreeAlterer.class);
 		ownerModule.addSubmenu(null, "Alter/Transform Branch Lengths", ownerModule.makeCommand("alterBranchLengths", this), BranchLengthsAlterer.class);
-		ownerModule.addMenuItem("Cut Selected Taxa", ownerModule.makeCommand("cutSelectedTaxa", this));
+		*/
+		//ownerModule.addMenuItem("Cut Selected Taxa", ownerModule.makeCommand("cutSelectedTaxa", this));
 		ownerModule.addMenuSeparator();
 		ownerModule.addModuleMenuItems(null, ownerModule.makeCommand("newWindowAssistant", this), TreeWindowAssistantN.class);
 		ownerModule.addModuleMenuItems(null, ownerModule.makeCommand("newAssistant", this), TreeDisplayAssistantD.class);
@@ -3071,7 +3055,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				}
 			}
 		}
-		else if (checker.compare(this.getClass(), "Cuts selected taxa from the tree", null, commandName, "cutSelectedTaxa")) {
+		/*else if (checker.compare(this.getClass(), "Cuts selected taxa from the tree", null, commandName, "cutSelectedTaxa")) {
 			boolean changed = false;
 			for (int i = 0; i < taxa.getNumTaxa(); i++) {
 				int node = tree.nodeOfTaxonNumber(i);
@@ -3084,7 +3068,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				tree.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 				treeEdited(false);
 			}
-		}
+		}*/
 		else if (checker.compare(this.getClass(), "Shows the list of taxa", null, commandName, "showTaxaList")) {
 			tree.getTaxa().showMe();
 		}

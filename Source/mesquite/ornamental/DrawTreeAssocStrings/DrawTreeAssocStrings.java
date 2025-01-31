@@ -32,6 +32,9 @@ import mesquite.lib.ui.StringInABox;
 
 /* ======================================================================== */
 public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
+	public boolean loadModule(){
+		return false;
+	}   	 
 	public Vector extras;
 	public boolean first = true;
 	MesquiteBoolean on, horizontal, centred, showOnTerminals;

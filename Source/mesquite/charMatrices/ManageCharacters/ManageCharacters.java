@@ -835,7 +835,7 @@ public class ManageCharacters extends CharactersManager {
 
 				MesquiteInteger buttonPressed = new MesquiteInteger(1);
 				ExtensibleExplDialog makeLinkedDialog = new ExtensibleExplDialog(containerOfModule(), "Make Linked Matrix",buttonPressed);
-				makeLinkedDialog.setExplainable(new MesquiteString("With this you create a new character matrix that is linked to an existing one.  By being linked, the two matrices are constrained to have the same number of characters.  If characters are deleted from or added to one matrix, the corresponding characters will be deleted from or added to the other.")); 
+				makeLinkedDialog.setExplainable(new MesquiteStringExplainable("With this you create a new character matrix that is linked to an existing one.  By being linked, the two matrices are constrained to have the same number of characters.  If characters are deleted from or added to one matrix, the corresponding characters will be deleted from or added to the other.")); 
 				java.awt.List types = makeLinkedDialog.addList(dataClassesAvailable(), new MesquiteInteger(0), "Make new character matrix of what type?");
 				SingleLineTextField nameTaxa = makeLinkedDialog.addTextField("Name of new matrix", "Character Matrix", 30);
 				java.awt.List linkTo = makeLinkedDialog.addList(getProject().getCharacterMatrices(), new MesquiteInteger(0), "Link new matrix to which matrix?");
@@ -2116,7 +2116,7 @@ public class ManageCharacters extends CharactersManager {
 				 }
 			 }
 			 else if (commandName.equalsIgnoreCase("MATRIX")) {
-				 if (NEXUSFileParser.verbose)  Debugg.println("@@@@@@@@  MATRIX");
+				 if (NEXUSFileParser.verbose)  Debugg.println("###############  MATRIX");
 				 if (data==null) {
 					 alert("Error in NEXUS file:  Matrix without FORMAT statement");
 				 }
@@ -2177,12 +2177,12 @@ public class ManageCharacters extends CharactersManager {
 				 boolean success = false;
 				 
 				 if (NEXUSFileParser.verbose)
-					 Debugg.println("@@@@@@@@<<<  " + commandParser.getFilePosition());
+					 Debugg.println("###############<<<  " + commandParser.getFilePosition());
 				 String commandString = commandParser.getNextCommand();
 				 if (NEXUSFileParser.verbose)
-					 Debugg.println("@@@@@@@@>>>>>  " + commandParser.getFilePosition() + " " + commandString);
+					 Debugg.println("###############>>>>>  " + commandParser.getFilePosition() + " " + commandString);
 				 if (NEXUSFileParser.verbose)
-					 Debugg.println("@@@@@@ (next is  " + commandParser.getNextCommandNameWithoutConsuming() + " ");
+					 Debugg.println("############ (next is  " + commandParser.getNextCommandNameWithoutConsuming() + " ");
 				 if (data !=null && data.getMatrixManager()!=null)
 					 success = data.getMatrixManager().processCommand(data, commandName, commandString);
 				 if (!success && b != null) {

@@ -24,6 +24,7 @@ import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.table.*;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
@@ -37,8 +38,8 @@ public class NodeAssociatesList extends ListModule {
 	NodesAssociatesListWindow myWindow = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		findEmployerWithDuty(TreeWindowMaker.class).addMenuItem("List of Information at Nodes", MesquiteModule.makeCommand("showWindow",  this));
-		return true;
+	findEmployerWithDuty(TreeWindowMaker.class).addMenuItem("List of Node/Branch Properties", MesquiteModule.makeCommand("showWindow",  this));
+	return true;
 	}
 	
 	/*.................................................................................................................*/
@@ -121,6 +122,7 @@ public class NodeAssociatesList extends ListModule {
 			if (myWindow == null || !myWindow.isVisible())
 				showListWindow();
 			else {
+				myWindow.setVisible(false);
 				myWindow.popIn();
 				myWindow.hide();
 			}
@@ -161,10 +163,10 @@ public class NodeAssociatesList extends ListModule {
 		return NodeAssociatesListAssistant.class;
 	}
 	public String getItemTypeName(){
-		return "Information at Nodes";
+		return "Node/Branch Properties";
 	}
 	public String getItemTypeNamePlural(){
-		return "Information at Nodes";
+		return "Node/Branch Properties";
 	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
@@ -230,7 +232,7 @@ public class NodeAssociatesList extends ListModule {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "List of Information at Nodes Maker";
+		return "List of Node/Branch Properties Maker";
 	}
 	public String getExplanation() {
 		return "Makes windows listing information stored at the nodes of the tree." ;
@@ -255,6 +257,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		MesquiteTable t = getTable();
 		if (t!=null)
 			t.setAutoEditable(false, false, false, false);
+		setIcon(MesquiteModule.getRootImageDirectoryPath() + "showNodeAssoc.gif");
 	}
 
 	private void makeAssociatesList(){
@@ -287,7 +290,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 	/*.................................................................................................................*/
 
 	public void resetTitle(){
-		setTitle("Information at Nodes"); 
+		setTitle("Node/Branch Properties"); 
 	}
 	/*.................................................................................................................*/
 	public Object getCurrentObject(){

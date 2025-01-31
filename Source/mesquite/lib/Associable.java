@@ -326,7 +326,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				temp.addLine("setSelected " + list);
 			if (saveSnapOrd)
 				temp.addLine("setDefaultOrder " + getDefaultOrderNEXUS());
-			temp.addLine("attachments "+ writeAttachments(false));
+			temp.addLine("attachments "+ "<" + writeAttachments() +">");
 			return temp;
 		}
 		return null;
@@ -462,7 +462,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			s += "Bits " + '\n';
 			for (int i=0; i<bits.size(); i++) {
 				Listable b = (Listable)bits.elementAt(i);
-				s += "   " + b.getName()+ "\n";	
+				s += "   " + b.getName()+ " (is between? " + ((Bits)b).isBetween() + ")\n";	
 			}
 		}
 		if (longs!=null) {
@@ -470,14 +470,14 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			for (int i=0; i<longs.size(); i++) {
 				Object obj = longs.elementAt(i);
 				Listable b = (Listable)longs.elementAt(i);
-				s += "   " + b.getName()+ "\n";	
+				s += "   " + b.getName()+ " (is between? " + ((LongArray)b).isBetween() + ")\n";	
 			}
 		}
 		if (doubles!=null){
 			s += "Doubles " + '\n';
 			for (int i=0; i<doubles.size(); i++) {
 				Listable b = (Listable)doubles.elementAt(i);
-				s += "   " + b.getName()+ "\n";	
+				s += "   " + b.getName()+ " (is between? " + ((DoubleArray)b).isBetween() + ")\n";	
 			}
 		}
 		if (objects!=null) {
@@ -497,6 +497,12 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 						s += " [" + st[k] + "]";
 					s += "\n";	
 				}
+				else if (obj instanceof ObjectArray){
+					s += "  ObjectArray:  " + ((ObjectArray)obj).getName()+ " (is between? " + ((ObjectArray)obj).isBetween() + ")\n";	
+				}
+			else if (obj instanceof StringArray){
+					s += "  StringArray:  " + ((StringArray)obj).getName()+ "\n";	
+				}	
 				else if (obj instanceof Listable){
 					Listable b = (Listable)obj;
 					s += "   " + b.getName()+ " " + b.getClass() + "\n";	
@@ -507,7 +513,40 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		return s;
 	}
-	
+	public String[] getAssociatesNames(){ 
+		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedObjects();
+		if (total == 0)
+			return null;
+		String[] names = new String[total];
+		int count = 0;
+		if (bits!=null) {
+			for (int i=0; i<bits.size(); i++) {
+				Listable b = (Listable)bits.elementAt(i);
+				names[count++] = b.getName();
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i<longs.size(); i++) {
+				Object obj = longs.elementAt(i);
+				Listable b = (Listable)longs.elementAt(i);
+				names[count++] = b.getName();
+			}
+		}
+		if (doubles!=null){
+			for (int i=0; i<doubles.size(); i++) {
+				Listable b = (Listable)doubles.elementAt(i);
+				names[count++] = b.getName();
+			}
+		}
+		if (objects!=null) {
+			for (int i=0; i<objects.size(); i++) {
+				Listable b = (Listable)objects.elementAt(i);
+				names[count++] = b.getName();
+			}
+		}
+		return names;
+	}
+
 	public void deassignAllColor(){
 		zeroAllAssociatedObjects(ColorDistribution.colorRGBNameReference);
 	}
@@ -559,7 +598,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (longs!=null)
 			for (int i=0; i<longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
-				
+
 				if (b.getValue(node)!=MesquiteLong.unassigned) {
 					if (!first)
 						s += ", ";
@@ -677,21 +716,43 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				ObjectArray bb = getWhichAssociatedObject(nr);		
 				//	bb.setValue(node, value.substring(7, value.length()));
 			}
-			else if (value.indexOf("{") == 0) { //treat as String bounded by {}; added to read BEAST results
-				DoubleArray values = new DoubleArray(1);
-				String s="";
-				int count = 1;
-				while (!"}".equals(s)) {
-					double v = MesquiteDouble.fromString(assocString, pos);
-					values.resetSize(count);
-					values.setValue(count-1, v);
-					count++;
-					s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); //comma or }
-				}
+			else if (value.indexOf("{") == 0) { //treat as String bounded by {}; e.g., added to read BEAST results
+				int pPos = pos.getValue();
+				double vn = MesquiteDouble.fromString(assocString, pos);
+				if (MesquiteDouble.isCombinable(vn)){
+					pos.setValue(pPos);
+					DoubleArray values = new DoubleArray(1);
+					String s="";
+					int count = 1;
+					while (!"}".equals(s)) {
+						double v = MesquiteDouble.fromString(assocString, pos);
+						values.resetSize(count);
+						values.setValue(count-1, v);
+						count++;
+						s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); //comma or }
+					}
 
-				NameReference nr = makeAssociatedObjects(key);
-				ObjectArray bb = getWhichAssociatedObject(nr);
-				bb.setValue(node, values);
+					NameReference nr = makeAssociatedObjects(key);
+					ObjectArray bb = getWhichAssociatedObject(nr);
+					bb.setValue(node, values);
+				}
+				else {
+					pos.setValue(pPos);
+					StringArray values = new StringArray(1);
+					String s="";
+					int count = 1;
+					while (!"}".equals(s)) {
+						s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); 
+						values.resetSize(count);
+						values.setValue(count-1, s);
+						count++;
+						s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); //comma or }
+					}
+
+					NameReference nr = makeAssociatedObjects(key);
+					ObjectArray bb = getWhichAssociatedObject(nr);
+					bb.setValue(node, values);
+				}
 			}
 			else if ((forceNumberToDouble && MesquiteNumber.isNumber(value)) || ((value.indexOf(".")>=0) && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos))) { //treat as double 
 				NameReference nrEx= NameReference.getNameReference(key);   // fixed in 3.01

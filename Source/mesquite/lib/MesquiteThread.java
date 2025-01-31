@@ -640,7 +640,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			cr = ((CommandRecordHolder)mt).getCommandRecord(); // 
 		if (cr == null) {
 			if (MesquiteTrunk.debugMode && mt != MesquiteTrunk.startupShutdownThread && (MesquiteTrunk.isMacOSX() &&mesquite.trunk.EAWTHandler.openFileThreads.indexOf(mt)<0) && defaultIfNull == CommandRecord.nonscriptingRecord)
-				MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@\nNS CommandRecord used because none is attached to thread");
+				MesquiteMessage.printStackTrace("###############@\nNS CommandRecord used because none is attached to thread");
 			return defaultIfNull;
 		}
 		return cr;

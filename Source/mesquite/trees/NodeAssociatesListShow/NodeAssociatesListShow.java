@@ -32,6 +32,7 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
+import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
 import mesquite.trees.lib.NodeAssociatesListAssistant;
 
 /* ======================================================================== */
@@ -39,9 +40,11 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
 	ListableVector associatedInfo = null;
+	NodeAssociatesZDisplayControl displayModule;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		//addMenuItem("Set Color...", makeCommand("setColor", this));
+		displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -68,30 +71,6 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 		parametersChanged();
 	}
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(Graphics g, int ic, int x, int y, boolean doubleClick, int modifiers){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
-		Debugg.println("arrow touched in row " + ic);
-		return true;
-	}
-
-/*
- * 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
-		Color c = getBackgroundColorOfCell(ic,selected);
-		Color oldColor = g.getColor();
-		Color highlightColor = Color.black;
-		if (c!=null)
-			highlightColor = ColorDistribution.getContrastingTextColor(c);
-		if (c!=null){ 
-			g.setColor(c);
-			g.fillRect(x+1, y+1, w-1, h-1);
-		}
-		if (selected) {
-			g.setColor(highlightColor);
-			g.drawRect(x+1, y+1, w-2, h-2);
-			g.drawRect(x+2, y+2, w-4,h-4);
-		}
-		g.setColor(oldColor);
-	}
-	Color newColor = null;
 	
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -127,6 +106,12 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 		return false;  
 	}
 	public String getStringForRow(int ic) {
+		if (displayModule!= null){
+			if (displayModule.isShowing(associatedInfo.elementAt(ic).getName()))
+					return "Yes";
+			else
+				return "No";
+		}
 		return "?";
 	}
 	/*.................................................................................................................*/

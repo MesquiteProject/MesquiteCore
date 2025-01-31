@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -24,17 +24,17 @@ import mesquite.lib.ui.HTMLDescribable;
 public abstract class Attachable extends Listened implements HTMLDescribable { 
 	Vector attachments;
 	//this should separately accept longs, doubles, & objects (e.g. strings) and be made more parallel to the associable system
-	
+
 	public Attachable (){
 		super();
 	}
-  	/** Disposes this attachable */
+	/** Disposes this attachable */
 	public void dispose(){
 		if (attachments!=null)
 			attachments.removeAllElements();
 		super.dispose();
 	}
-	
+
 	public String toHTMLStringDescription(){
 		if (!anyAttachments())
 			return "";
@@ -107,7 +107,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 	}
 	public void setAttachments(Attachable at){
 		Vector atat = at.attachments;
-		
+
 		if (attachments !=null)
 			attachments.removeAllElements();
 		if (atat == null)
@@ -178,94 +178,125 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 		}
 		return s;
 	}
-	public String writeAttachments(boolean useComments){
-		String s = null;
-		if (useComments)
-			s = "[" + Parser.substantiveCommentMark;
-		else
-			s = "<";
+	public String writeAttachments(){
+		String s = "";
+		boolean first = true;
 		if (attachments!=null)
 			for (int i=0; i<attachments.size(); i++) {
 				Object obj = attachments.elementAt(i);
 				if (obj instanceof Listable && ((Listable)obj).getName()!=null){
 					if (obj instanceof MesquiteDouble){
+						if (!first)
+							s += ", ";
+						first = false;
 						s += ParseUtil.tokenize(((Listable)obj).getName()) + " = " + ((MesquiteDouble)obj).getValue() + " ";
 					}
 					else if (obj instanceof MesquiteLong){
+						if (!first)
+							s += ", ";
+						first = false;
 						s += ParseUtil.tokenize(((Listable)obj).getName()) + " = " + obj + " ";
 					}
 					else if (obj instanceof MesquiteBoolean){
+						if (!first)
+							s += ", ";
+						first = false;
 						s += ParseUtil.tokenize(((MesquiteBoolean)obj).getName()) + " = " + ((MesquiteBoolean)obj).toOffOnString() + " ";
 					}
 					else if (obj instanceof MesquiteString){
-						s += ParseUtil.tokenize(((MesquiteString)obj).getName()) + " = " + ParseUtil.tokenize("string:" + ((MesquiteString)obj).getValue())+ " ";
+						if (!first)
+							s += ", ";
+						first = false;
+						s += ParseUtil.tokenize(((MesquiteString)obj).getName()) + " = " + ParseUtil.tokenize(((MesquiteString)obj).getValue())+ " ";
 					}
 				}
 			}
-		if ((useComments && s.equals("[" + Parser.substantiveCommentMark)) || (!useComments && s.equals("<")))
-			return "";
-		else if (useComments)
-			return s+ "]";
-		else
-			return s + ">";
+		if (StringUtil.blank(s))
+			return null;
+		return s;
 	}
 	/** Reading and writing of attachments is not fully supported.  Below are the methods for comment-saving, e.g. for trees.
 	 * Other classes such as CharacterData may have their managing modules store the attachments as supplemental notes (see SUCM
 	 * in ManageCharacters).
 	 */
+	public boolean readAttachment(String assocString, MesquiteInteger pos){
+		//assumes already past "<", and we're about to read a key
+		String key=ParseUtil.getToken(assocString, pos);
+		if (StringUtil.blank(key))
+			return false;
+		String tok = ParseUtil.getToken(assocString, pos); //eating up equals
+		int oldPos = pos.getValue();
+		String value = ParseUtil.getToken(assocString, pos); //finding value
+		if (StringUtil.blank(value))
+			return false;
+		if (value.equalsIgnoreCase("on")) {
+			MesquiteBoolean mb = new MesquiteBoolean(true);
+			mb.setName(key);
+			attachIfUniqueName(mb);
+		}
+		else if (value.equalsIgnoreCase("off")) {
+			MesquiteBoolean mb = new MesquiteBoolean(false);
+			mb.setName(key);
+			attachIfUniqueName(mb);
+		}
+		else if (value.indexOf("string:") == 0) { //treat as String 
+			MesquiteString mb = new MesquiteString();
+			mb.setValue(value.substring(7, value.length()));
+			mb.setName(key);
+			attachIfUniqueName(mb);
+		}
+		else {
+			
+			pos.setValue(oldPos);
+			double d = MesquiteDouble.fromString(assocString, pos);
+			
+			if (!MesquiteDouble.isCombinable(d)){ //not a number; treat as string
+				MesquiteString mb = new MesquiteString();
+				mb.setValue(value);
+				mb.setName(key);
+				attachIfUniqueName(mb);
+			}
+			else {
+				if (value.indexOf(".")>=0) { //treat as double 
+					//TODO:  there is a problem here; if some cases use ., others not, should be double; but will be treated as mixed
+					MesquiteDouble mb = new MesquiteDouble();
+					pos.setValue(oldPos);
+					mb.setValue(MesquiteDouble.fromString(assocString, pos));
+					mb.setName(key);
+					attachIfUniqueName(mb);
+				}
+				else {  //treat as long
+					MesquiteLong mb = new MesquiteLong();
+					pos.setValue(oldPos);
+					mb.setValue(MesquiteLong.fromString(assocString, pos));
+					if (mb.isCombinable())
+						return false;
+					mb.setName(key);
+					attachIfUniqueName(mb);
+				}
+			}
+		}
+		return true;
+	}
+
 	public void readAttachments(String assocString, MesquiteInteger pos){
 		//assumes already past "<";
-		String s=ParseUtil.getToken(assocString, pos);
-		if (StringUtil.blank(s))
-			return;
-		
-		while (!">".equals(s) && !"}".equals(s)) {
-			if (StringUtil.blank(s))
-				return;
-			String tok = ParseUtil.getToken(assocString, pos); //eating up equals
+		String s="<"; //just so it enters the loop
+		while (!">".equals(s) && !"]".equals(s) && !";".equals(s) && StringUtil.notEmpty(s)) {
 			int oldPos = pos.getValue();
-			String value = ParseUtil.getToken(assocString, pos); //finding value
-			if (StringUtil.blank(value))
-				return;
-			if (value.equalsIgnoreCase("on")) {
-				MesquiteBoolean mb = new MesquiteBoolean(true);
-				mb.setName(s);
-				attachIfUniqueName(mb);
-			}
-			else if (value.equalsIgnoreCase("off")) {
-				MesquiteBoolean mb = new MesquiteBoolean(false);
-				mb.setName(s);
-				attachIfUniqueName(mb);
-			}
-			else if (value.indexOf("string:") == 0) { //treat as String 
-				MesquiteString mb = new MesquiteString();
-				mb.setValue(value.substring(7, value.length()));
-				mb.setName(s);
-				attachIfUniqueName(mb);
-			}
-			else if (value.indexOf(".")>=0) { //treat as double 
-				//TODO:  there is a problem here; if some cases use ., others not, should be double; but will be treated as mixed
-				MesquiteDouble mb = new MesquiteDouble();
-				pos.setValue(oldPos);
-				mb.setValue(MesquiteDouble.fromString(assocString, pos));
-				mb.setName(s);
-				attachIfUniqueName(mb);
-			}
-			else {  //treat as long
-				MesquiteLong mb = new MesquiteLong();
-				pos.setValue(oldPos);
-				mb.setValue(MesquiteLong.fromString(assocString, pos));
-				mb.setName(s);
-				attachIfUniqueName(mb);
-			}
-			s=ParseUtil.getToken(assocString, pos);
-			if (",".equals(s)) //eating up "," separating subcommands
-				s=ParseUtil.getToken(assocString, pos);
+			boolean success = readAttachment(assocString, pos);
+			s=ParseUtil.getToken(assocString, pos);  //eating up "," separating subcommands, or hit the end
 		}
+		if (StringUtil.blank(s))
+			pos.setValue(assocString.length()-1);
+		else if (s.equals(";"))
+			pos.decrement();
+		else if (!s.equals(">"))
+			ParseUtil.getToken(assocString, pos); //eating up >
 	}
-	
 
-	
+
+
 }
 
 

@@ -483,7 +483,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (name != null)
 				temp.addLine("setName " + ParseUtil.tokenize(name));
 			if (saveSnapAttach)
-				temp.addLine("attachments "+ writeAttachments(false));
+				temp.addLine("attachments <"+ writeAttachments() +">");
 			return temp;
 		}
 		return null;

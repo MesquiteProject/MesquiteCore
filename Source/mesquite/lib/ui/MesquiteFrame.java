@@ -398,7 +398,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		return "==============================\n" + getTitle() +"\n" + listComponentsRec(this, "   ");
 	}
 	public static String listComponentsAllWindows() {
-		String list = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+		String list = "##################################\n";
 		Vector frames = new Vector();
 	 for (int i = 0; i<MesquiteTrunk.windowVector.size(); i++) {
 		 MesquiteWindow window = (MesquiteWindow)MesquiteTrunk.windowVector.elementAt(i);
@@ -1005,6 +1005,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		if (tabs !=null)
 			tabs.repaint();
 	}
+	
 	public void OLDsetAsFrontWindow(MesquiteWindow w){
 		//	frontWindow = null;
 		if (w != null && windows.indexOf(w)>=0) {

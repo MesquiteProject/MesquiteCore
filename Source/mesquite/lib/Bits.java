@@ -47,7 +47,7 @@ public class Bits implements Listable {
 	boolean between = false;
 
 	public void setBetweenness(boolean b) {
-		between = true;
+		between = b;
 	}
 
 	public boolean isBetween() {
@@ -77,6 +77,12 @@ public class Bits implements Listable {
 		for (int i = 0; i < numInts && i < b.getNumInts(); i++)
 			b.array[i] = array[i];
 	}
+	public boolean[] getAsArray() {
+		boolean[] bools = new boolean[getSize()];
+		for (int i=0; i<bools.length; i++)
+			bools[i] = isBitOn(i);
+		return bools;
+}
 
 	public void setBits(Bits b) {
 		if (b == null)
