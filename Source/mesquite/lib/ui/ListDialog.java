@@ -832,6 +832,9 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 	/*.................................................................................................................*/
 	public void buttonHit(String buttonLabel, Button button) {
 		if (buttonLabel!=null)
+			if (buttonPressed!=null) {
+				buttonPressed.setValue(getButtonNumber(buttonLabel));
+			}
 			if (buttonLabel.equalsIgnoreCase(getMainButton().getLabel())){
 				try {
 					if (selected!=null) {
@@ -849,8 +852,13 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 					selected.setValue(-i-1); //if nothing selected do not respond!
 				dispose();
 			}
-			else if (buttonLabel.equalsIgnoreCase(thirdButton)){
-				selected.setValue(-1); 
+			else if (buttonLabel.equalsIgnoreCase(thirdButton)){ //ZQ: what was this for?
+				if (selected != null)
+					selected.setValue(-1); 
+				for (int i = 0; i<list.getRows(); i++)
+					list.deselect(i);
+				if (indicesSelected != null)
+				indicesSelected.setValues(translateIndicesUsedToOriginal(list.getSelectedIndexes()));
 			}
 			else {
 				if (selected!=null)

@@ -944,7 +944,7 @@ public class Taxa extends FileElement {
 		int row = numTaxa-1;
 		int firstInBlockDeleted = -1;
 		int lastInBlockDeleted = -1;
-		Debugg.printStackTrace("@@@@@@@@@@ deleteTaxaFlag not tested and not efficient @@@@@@@@@@@@@@@@");
+		Debugg.printStackTrace("########### deleteTaxaFlag not tested and not efficient ###########");
 
 		//Note that this method is overridden in CharacterList so as to be able to use the deletePartsFlagged system
 		while(row>=0) {

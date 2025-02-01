@@ -41,6 +41,9 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 	ListableVector associatedInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addMenuItem("Ressign Selected to Branch", makeCommand("branch", this));
+		addMenuItem("Ressign Selected to Node", makeCommand("hide", this));
+		addMenuItem("Explanation...", makeCommand("explain", this));
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -71,13 +74,58 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets the color", null, commandName, "setColor")) {
-			
+		if (checker.compare(this.getClass(), "Reassigns the selected to the branch", null, commandName, "branch")) {
+			reassign(true);
+		}
+		else if (checker.compare(this.getClass(), "Reassigns the selected to the node", null, commandName, "node")) {
+			reassign(false);
+		}
+		else if (checker.compare(this.getClass(), "Explains", null, commandName, "explain")) {
+			discreetAlert("A property is assigned either to a node or the branch just below it. "
+					+"\n\nThis is important when the tree is rerooted. A property assigned to the branch may appear to flip to a different node on rerooting, "
+					+" while a property assigned to the node will appear to flip to a different branch on rerooting."
+					+"\n\nFor instance, branch length, color, and clade confidence measures should belong to the branch, but some others should belong the node.");
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+	/*.................................................................................................................*/
+	void reassign(boolean toBranch){
+		if (table == null)
+			return;
+		if (!table.anyRowSelected()){
+			discreetAlert("Please selected rows before attempting to reassign them here");
+			return;
+		}
+		MesquiteInteger[] mis = new MesquiteInteger[table.numRowsSelected()];
+		int count = 0;
+		for (int ir = 0; ir<table.getNumRows(); ir++){
+			if (table.isRowSelected(ir) && !associateInListIsBuiltIn(ir)){
+				setBetweenness(ir, toBranch);
+			}
+		}
+		parametersChanged();
+		
+	}
+	void setBetweenness(int ic, boolean between) {
+		if (associatedInfo == null)
+			return;
+		if (ic>=0 && ic<associatedInfo.size()){
+			ObjectContainer objContainer = (ObjectContainer)associatedInfo.elementAt(ic);
+			Object obj = objContainer.getObject();
+			if (obj instanceof DoubleArray)
+				((DoubleArray)obj).setBetweenness(between);
+			else if (obj instanceof LongArray)
+				((LongArray)obj).setBetweenness(between);
+			else if (obj instanceof ObjectArray)
+				((ObjectArray)obj).setBetweenness(between);
+			else if (obj instanceof Bits)
+				((Bits)obj).setBetweenness(between);
+		}
+	}
+
 	/*.................................................................................................................*/
 	
 	public String getWidestString(){
@@ -121,8 +169,10 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 				between = ((ObjectArray)obj).isBetween();
 			else if (obj instanceof Bits)
 				between = ((Bits)obj).isBetween();
-			else if (obj instanceof Tree && "Branch lengths".equalsIgnoreCase(objContainer.getName()))
+			else if (obj instanceof Tree && "Branch length".equalsIgnoreCase(objContainer.getName()))
 				between = true;
+			else if (obj instanceof Tree && "Node label".equalsIgnoreCase(objContainer.getName()))
+				between = false;
 			else
 				return "?";
 			return nodeOrBranch(between); //objContainer.getName() + " " + obj.getClass() + " " + between;

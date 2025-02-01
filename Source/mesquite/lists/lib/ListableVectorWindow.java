@@ -61,8 +61,8 @@ public class ListableVectorWindow extends ListWindow implements MesquiteListener
 	}
 	public void setRowName(int row, String name){
 		Listable item = getListable(row);
-		if (item!=null && item instanceof Renamable){
-			((Renamable)item).setName(name);
+		if (item!=null && item instanceof Nameable){
+			((Nameable)item).setName(name);
 			if (listModule.resetMenusOnNameChange()){
 				resetAllTitles();
 				listModule.resetAllMenuBars();

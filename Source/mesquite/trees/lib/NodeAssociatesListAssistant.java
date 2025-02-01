@@ -1,11 +1,17 @@
 package mesquite.trees.lib;
 
 import mesquite.lib.Debugg;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lists.lib.ListAssistant;
+import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
+import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
 
 /* ======================================================================== */
 public abstract class NodeAssociatesListAssistant extends ListAssistant  {
+	//It's a bit risky (and unorthodox) sto store direct references to some of the other moduels, but too bad
+	NodeAssociatesZDisplayControl displayModule;
+	NodeAssociatesList listModule;
 
    	 public Class getDutyClass() {
    	 	return NodeAssociatesListAssistant.class;
@@ -22,6 +28,39 @@ public abstract class NodeAssociatesListAssistant extends ListAssistant  {
 	}
 	public void cursorMove(MesquiteTree tree){
 	}
-
+	protected boolean isShowingOnTree(MesquiteInteger property){
+		if (displayModule == null)
+			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+		if (displayModule != null)
+			return displayModule.isShowing(property);
+		return false;
+	}
+	
+	protected boolean associateInListIsBuiltIn(int row){
+		if (listModule == null)
+			listModule = (NodeAssociatesList)findEmployerWithDuty(NodeAssociatesList.class);
+		if (listModule != null)
+			return listModule.associateIsBuiltIn(row);
+		return false;
+	}
+	protected MesquiteInteger getNameKindOfRow(int row){
+		if (listModule == null)
+			listModule = (NodeAssociatesList)findEmployerWithDuty(NodeAssociatesList.class);
+		if (listModule != null)
+			return listModule.getNameKindOfRow(row);
+		return null;
+	}
+	protected void pleaseShowHideOnTree(MesquiteInteger[] properties, boolean show){
+		if (displayModule == null)
+			displayModule = (NodeAssociatesZDisplayControl)findEmployerWithDuty(NodeAssociatesZDisplayControl.class);
+		if (displayModule != null)
+			displayModule.pleaseShowHide(properties, show);
+	}
+	protected void pleaseDeleteRow(int row, boolean notify){
+		if (listModule == null)
+			listModule = (NodeAssociatesList)findEmployerWithDuty(NodeAssociatesList.class);
+		if (listModule != null)
+			 listModule.internalDeleteRow(row, notify);
+	}
 }
 

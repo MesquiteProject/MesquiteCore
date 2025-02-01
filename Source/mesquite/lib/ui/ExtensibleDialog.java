@@ -2022,9 +2022,9 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public void buttonHit(String buttonLabel, Button button) {
+		
 		if (buttonPressed!=null) {
 			buttonPressed.setValue(getButtonNumber(buttonLabel));
-
 		}
 		if (textEdgeCompensationDetector!= null){
 			Dimension d = textEdgeCompensationDetector.getSize();
@@ -2062,10 +2062,11 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			if (e.getComponent().getBounds().contains(e.getComponent().getBounds().x+e.getX(),e.getComponent().getBounds().y+e.getY())) {
 				String label = ((Button)e.getComponent()).getLabel();
 				if (getButtonNumber(label)>=0) {
-					if ((getButtonNumber(label)==checkValuesAcceptableButton()) && !dialogValuesAcceptable())
+					if ((getButtonNumber(label)==checkValuesAcceptableButton()) && !dialogValuesAcceptable()){
 						dialogValuesNotAcceptableWarning();
+					}
 					else {
-						buttonHit(label, (Button)e.getComponent());
+					buttonHit(label, (Button)e.getComponent());
 						if (autoDispose)
 							dispose();
 					}

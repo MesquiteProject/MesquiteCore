@@ -19,7 +19,7 @@ import mesquite.lib.misc.MesquiteCollator;
 
 
 /* ======================================================================== */
-public class StringArray implements StringLister, Listable {
+public class StringArray implements StringLister, Listable, Nameable {
 	String[] values;
 	int maxFilled = -1;
 	NameReference name=null;

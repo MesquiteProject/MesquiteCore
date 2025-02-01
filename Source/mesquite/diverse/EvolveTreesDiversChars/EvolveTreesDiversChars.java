@@ -106,8 +106,8 @@ public TreeCharSimulate simulator;
 	       tree.resetTaxaInfo();
 	        CharacterHistory ch = (CharacterHistory)c;
 	        harvestStates(tree, tree.getRoot(), i, ch, data, cs);
-	        if (tree instanceof Renamable && !tree.hasName())
-	            ((Renamable)tree).setName("Simulated Tree (with character) " + (i+1));
+	        if (tree instanceof Nameable && !tree.hasName())
+	            ((Nameable)tree).setName("Simulated Tree (with character) " + (i+1));
 	        MesquiteTree clone = tree.cloneTree();
 		       clone.resetTaxaInfo();
 	        trees.addElement(clone, false);

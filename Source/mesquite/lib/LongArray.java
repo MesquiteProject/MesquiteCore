@@ -22,7 +22,7 @@ import java.awt.*;
 
 /* ======================================================================== */
 
-public class LongArray implements Listable {
+public class LongArray implements Listable, Nameable {
 	long[] values;
 	NameReference name=null;
 	int autoExpandAmount = 0;
@@ -411,6 +411,9 @@ public class LongArray implements Listable {
 			return name.getValue();
 		else
 			return "";
+	}
+	public void setName(String n){
+		name = NameReference.getNameReference(n);
 	}
 	/*...........................................................*/
 	public void setNameReference(NameReference nr){

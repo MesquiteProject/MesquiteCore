@@ -17,8 +17,8 @@ import java.awt.*;
 import java.text.*;
 
 /* ======================================================================== */
-/**Interface for object to claim it is renameable*/
-public interface Renamable {
+/**Interface for object to claim it can be named, e.g. in List windows*/
+public interface Nameable {
  	public void setName(String name);
 }
 

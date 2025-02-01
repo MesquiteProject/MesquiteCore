@@ -41,6 +41,12 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 	ListableVector associatedInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addMenuItem("Move selected To Text", makeCommand("transformToText", this));
+		addMenuItem("Copy selected To Text", makeCommand("copyToText", this));
+		addMenuItem("Move selected To Decimal Number", makeCommand("transformToDecimal", this));
+		addMenuItem("Copy selected To Decimal Number", makeCommand("copyToDecimal", this));
+		addMenuItem("Move selected To Node Labels", makeCommand("transformToNodeLabel", this));
+		addMenuItem("Copy selected To Node Labels", makeCommand("copyToNodeLabel", this));
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -62,22 +68,324 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 
 	}
 
- 	public void setTree(MesquiteTree tree){
- 		this.tree = tree;
+	public void setTree(MesquiteTree tree){
+		this.tree = tree;
 		parametersChanged();
 	}
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets the color", null, commandName, "setColor")) {
-			
+		if (checker.compare(this.getClass(), "Transforms the information to text", null, commandName, "transformToText")) {
+			copyToText(true);
+		}
+		else if (checker.compare(this.getClass(), "Copies the information to a new text property", null, commandName, "copyToText")) {
+			copyToText(false);
+		}
+		else if (checker.compare(this.getClass(), "Transforms the information to doubles", null, commandName, "transformToDecimal")) {
+			copyToDoubles(true);
+		}
+		else if (checker.compare(this.getClass(), "Copies the information to a new number property", null, commandName, "copyToDecimal")) {
+			copyToDoubles(false);
+		}
+		else	if (checker.compare(this.getClass(), "Transforms the information to node labels", null, commandName, "transformToNodeLabel")) {
+			copyToNodeLabels(true);
+		}
+		else if (checker.compare(this.getClass(), "Copies the information to node labels", null, commandName, "copyToNodeLabel")) {
+			copyToNodeLabels(false);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	/*.................................................................................................................*/
-	
+	/*.................................................................................................................*/
+	void copyToText(boolean deleteOriginal){
+		if (table == null)
+			return;
+		if (!table.anyRowSelected()){
+			discreetAlert("Please select rows before attempting to copy them here");
+			return;
+		}
+		int[] rows = new int[table.numRowsSelected()];
+		for (int i= 0; i<rows.length; i++)
+			rows[i] = -1;
+		int count = 0;
+		for (int ir = 0; ir<table.getNumRows(); ir++){
+			if (table.isRowSelected(ir)){
+				MesquiteInteger mi = getNameKindOfRow(ir);
+				String currentName = mi.getName();
+				String textName = currentName+".text";
+				String candidateName =textName;
+				int nameCount = 2;
+				while (tree.getWhichAssociatedObject(NameReference.getNameReference(candidateName)) != null)
+					candidateName = textName + (nameCount++);
+				NameReference tnRef = NameReference.getNameReference(candidateName);
+				NameReference currentRef = NameReference.getNameReference(currentName);
+				tree.makeAssociatedObjects(candidateName);
+				ObjectArray textArray = tree.getWhichAssociatedObject(tnRef);
+				if (mi.getValue() == Associable.BUILTIN){
+					if (mi.getName().equalsIgnoreCase("Branch length")){
+						for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
+							textArray.setValue(node, MesquiteDouble.toString(tree.getBranchLength(node)));
+						rows[count++] =ir;  //in case needs to be deleted later
+					}
+					else if (mi.getName().equalsIgnoreCase("Node label")){
+						for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
+							textArray.setValue(node, tree.getNodeLabel(node));
+						rows[count++] =ir;  //in case needs to be deleted later
+					}
+
+				}
+				else {if (mi.getValue() == Associable.BITS){
+					for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
+						textArray.setValue(node, MesquiteBoolean.toTrueFalseString(tree.getAssociatedBit(currentRef, node)));
+					rows[count++] =ir;  //in case needs to be deleted later
+				}
+				else if (mi.getValue() == Associable.LONGS) {
+					for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
+						textArray.setValue(node, MesquiteLong.toString(tree.getAssociatedLong(currentRef, node)));
+					rows[count++] =ir;  //in case needs to be deleted later
+				}
+				else if (mi.getValue() == Associable.DOUBLES){
+					for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
+						textArray.setValue(node, MesquiteDouble.toString(tree.getAssociatedDouble(currentRef, node)));
+					rows[count++] =ir;  //in case needs to be deleted later
+				}
+				else if (mi.getValue() == Associable.OBJECTS){
+					for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) {
+						Object obj = tree.getAssociatedObject(currentRef, node);
+						if (obj!=null ){
+							String s ="";
+							if (obj instanceof DoubleArray){
+								DoubleArray doubles = (DoubleArray)obj;
+								s+= "{";
+								boolean firstD = true;
+								for (int k = 0; k<doubles.getSize(); k++){
+									if (!firstD)
+										s += ", ";
+									firstD = false;
+									s += MesquiteDouble.toString(doubles.getValue(k));
+								}
+								s+=  "} ";
+							}
+							else if (obj instanceof StringArray){
+								StringArray words = (StringArray)obj;
+								s+= "{";
+								boolean firstD = true;
+								for (int k = 0; k<words.getSize(); k++){
+									if (!firstD)
+										s += ", ";
+									firstD = false;
+									s += words.getValue(k);
+								}
+								s+=  "} ";
+							}
+							else if (obj instanceof Listable)
+								s+= ((Listable)obj).getName() + " = " + obj;
+							else if (obj instanceof String){
+								s+= (String)obj;
+							}
+							else if (obj instanceof String[] && ((String[])obj).length>0){
+								String[] words = (String[])obj;
+								s+= "{";
+								boolean firstD = true;
+								for (int k = 0; k<words.length; k++){
+									if (!firstD)
+										s += ", ";
+									firstD = false;
+									s += words[k];
+								}
+								s+=  "} ";
+							}
+							textArray.setValue(node, s);
+						}
+					}
+					rows[count++] =ir;  //in case needs to be deleted later
+				}
+				}
+			}
+		}
+
+		if (deleteOriginal){
+			for (int ir = rows.length-1; ir>=0; ir--) 
+					pleaseDeleteRow(rows[ir], false);
+		}
+		tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+		parametersChanged();
+	}
+	/*.................................................................................................................*/
+	void copyToDoubles(boolean deleteOriginal){
+		if (table == null)
+			return;
+		if (!table.anyRowSelected()){
+			discreetAlert("Please select rows before attempting to copy them here");
+			return;
+		}
+		int[] rows = new int[table.numRowsSelected()];
+		for (int i= 0; i<rows.length; i++)
+			rows[i] = -1;
+		int count = 0;
+		for (int ir = 0; ir<table.getNumRows(); ir++){
+			if (table.isRowSelected(ir)){
+				MesquiteInteger mi = getNameKindOfRow(ir);
+				String currentName = mi.getName();
+				String doubleName = currentName+".num";
+				String candidateName =doubleName;
+				int nameCount = 2;
+				while (tree.getWhichAssociatedDouble(NameReference.getNameReference(candidateName)) != null)
+					candidateName = doubleName + (nameCount++);
+				NameReference tnRef = NameReference.getNameReference(candidateName);
+				NameReference currentRef = NameReference.getNameReference(currentName);
+				tree.makeAssociatedDoubles(candidateName);
+				DoubleArray doublesArray = tree.getWhichAssociatedDouble(tnRef);
+				if (mi.getValue() == Associable.BUILTIN){
+					if (mi.getName().equalsIgnoreCase("Branch length")){
+						for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
+							doublesArray.setValue(node, tree.getBranchLength(node));
+						rows[count++] =ir;  //in case needs to be deleted later
+					}
+					else if (mi.getName().equalsIgnoreCase("Node label")){
+						for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
+							doublesArray.setValue(node, fromString(tree.getNodeLabel(node)));
+						rows[count++] =ir;  //in case needs to be deleted later
+					}
+
+				}
+				else if (mi.getValue() == Associable.LONGS) {
+					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
+						doublesArray.setValue(node, tree.getAssociatedLong(currentRef, node));
+					rows[count++] =ir;  //in case needs to be deleted later
+				}
+				else if (mi.getValue() == Associable.DOUBLES){
+					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
+						doublesArray.setValue(node, tree.getAssociatedDouble(currentRef, node));
+					rows[count++] =ir;  //in case needs to be deleted later
+				}
+				else if (mi.getValue() == Associable.OBJECTS){
+					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) {
+						Object obj = tree.getAssociatedObject(currentRef, node);
+						if (obj!=null ){
+							String s ="";
+							if (obj instanceof String){
+								s+= (String)obj;
+							}
+							doublesArray.setValue(node, fromString(s));
+						}
+					}
+					rows[count++] =ir;  //in case needs to be deleted later
+				
+				}
+			}
+		}
+
+		if (deleteOriginal){
+			for (int ir = rows.length-1; ir>=0; ir--) 
+					pleaseDeleteRow(rows[ir], false);
+		}
+		tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+		parametersChanged();
+	}	
+	double fromString(String s){
+		double d = MesquiteDouble.fromString(s);
+		if (!MesquiteDouble.isCombinable(d) && d != MesquiteDouble.unassigned)
+			d = MesquiteDouble.unassigned;
+		return d;
+	}
+	/*.................................................................................................................*/
+	void copyToNodeLabels(boolean deleteOriginal){
+		if (table == null)
+			return;
+		if (table.numRowsSelected()!=1){
+			discreetAlert("Please select exactly one row before attempting to copy them here");
+			return;
+		}
+		int ir = table.firstRowSelected();
+				MesquiteInteger mi = getNameKindOfRow(ir);
+				String currentName = mi.getName();
+				NameReference currentRef = NameReference.getNameReference(currentName);
+				if (mi.getValue() == Associable.BUILTIN){
+					if (mi.getName().equalsIgnoreCase("Branch length")){
+						for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+							tree.setNodeLabel(MesquiteDouble.toString(tree.getBranchLength(node)), node);
+					}
+					else if (mi.getName().equalsIgnoreCase("Node label")){
+					}
+
+				}
+				else {if (mi.getValue() == Associable.BITS){
+					for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+						tree.setNodeLabel(MesquiteBoolean.toTrueFalseString(tree.getAssociatedBit(currentRef, node)), node);
+				}
+				else if (mi.getValue() == Associable.LONGS) {
+					for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+						tree.setNodeLabel(MesquiteLong.toString(tree.getAssociatedLong(currentRef, node)), node);
+				}
+				else if (mi.getValue() == Associable.DOUBLES){
+					for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+						tree.setNodeLabel(MesquiteDouble.toString(tree.getAssociatedDouble(currentRef, node)), node);
+				}
+				else if (mi.getValue() == Associable.OBJECTS){
+					for (int node = 0; node<tree.getNumNodeSpaces(); node++) {
+						Object obj = tree.getAssociatedObject(currentRef, node);
+						if (obj!=null ){
+							String s ="";
+							if (obj instanceof DoubleArray){
+								DoubleArray doubles = (DoubleArray)obj;
+								s+= "{";
+								boolean firstD = true;
+								for (int k = 0; k<doubles.getSize(); k++){
+									if (!firstD)
+										s += ", ";
+									firstD = false;
+									s += MesquiteDouble.toString(doubles.getValue(k));
+								}
+								s+=  "} ";
+							}
+							else if (obj instanceof StringArray){
+								StringArray words = (StringArray)obj;
+								s+= "{";
+								boolean firstD = true;
+								for (int k = 0; k<words.getSize(); k++){
+									if (!firstD)
+										s += ", ";
+									firstD = false;
+									s += words.getValue(k);
+								}
+								s+=  "} ";
+							}
+							else if (obj instanceof Listable)
+								s+= ((Listable)obj).getName() + " = " + obj;
+							else if (obj instanceof String){
+								s+= (String)obj;
+							}
+							else if (obj instanceof String[] && ((String[])obj).length>0){
+								String[] words = (String[])obj;
+								s+= "{";
+								boolean firstD = true;
+								for (int k = 0; k<words.length; k++){
+									if (!firstD)
+										s += ", ";
+									firstD = false;
+									s += words[k];
+								}
+								s+=  "} ";
+							}
+							tree.setNodeLabel(s, node);
+						}
+					}
+				}
+				}
+
+
+
+		if (deleteOriginal){
+					pleaseDeleteRow(ir, false);
+		}
+		tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+		tree.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
+		parametersChanged();
+	}	/*.................................................................................................................*/
+
 	public String getWidestString(){
 		return "88888888888888";
 	}
@@ -106,31 +414,36 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 			ObjectContainer objContainer = (ObjectContainer)associatedInfo.elementAt(ic);
 			Object obj = objContainer.getObject();
 			if (obj instanceof DoubleArray)
-				return "Number";
+				return "Decimal";
 			else if (obj instanceof LongArray)
-				return "Number";
+				return "Integer";
 			else if (obj instanceof StringArray)
 				return "Text";
+			else if (obj instanceof Bits) {
+				return "Boolean";
+			}
 			else if (obj instanceof ObjectArray) {
 				ObjectArray oa = (ObjectArray)obj;
-				Class commonClass = oa.getCommonClassOfObjects();
-				if (commonClass != null){
+
+				if (oa.oneKindOfObject()){
+					Class commonClass = oa.getCommonClass();
 					if (commonClass == DoubleArray.class)
-						return "Numbers";
+						return "Decimals";
 					else if (commonClass == LongArray.class)
-						return "Numbers";
+						return "Integers";
 					else if (commonClass == StringArray.class)
 						return "Text";
 					else if (commonClass == String.class)
 						return "Text";
+					else if (commonClass == null)
+						return "(empty)";
 				}
 				return "Objects";
 			}
-			else if (obj instanceof Bits) {
-				return "Boolean";
-			}
-			else if (obj instanceof Tree && "Branch lengths".equalsIgnoreCase(objContainer.getName()))
-				return "Branch lengths";
+			else if (obj instanceof Tree && "Branch length".equalsIgnoreCase(objContainer.getName()))
+				return "Branch length";
+			else if (obj instanceof Tree && "Node label".equalsIgnoreCase(objContainer.getName()))
+				return "Node label";
 			else
 				return "?";
 		}

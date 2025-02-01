@@ -41,6 +41,7 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 	ListableVector associatedInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addMenuItem("How to Edit Values...", makeCommand("howToEdit", this));
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -71,8 +72,8 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets the color", null, commandName, "setColor")) {
-			
+		if (checker.compare(this.getClass(), "Explains how to edit", null, commandName, "howToEdit")) {
+			alert("Some of these values can be edited for a node/branch by right-clicking on the branch, then choosing the item in the drop down menu that appears.");
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -174,8 +175,11 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 				boolean oan = oa.isBitOn(node);
 				return MesquiteBoolean.toTrueFalseString(oan); //Debugg.println temporary?
 			}
-			else if (obj instanceof Tree && "Branch lengths".equalsIgnoreCase(objContainer.getName()))
+			else if (obj instanceof Tree && "Branch length".equalsIgnoreCase(objContainer.getName()))
 				return MesquiteDouble.toString(tree.getBranchLength(node));
+			else if (obj instanceof Tree && "Node label".equalsIgnoreCase(objContainer.getName())){
+				return tree.getNodeLabel(node);
+			}
 			else
 				return "?";
 		}

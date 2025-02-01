@@ -19,7 +19,7 @@ import java.util.Vector;
 
 
 /* ======================================================================== */
-public class ObjectArray implements Listable {
+public class ObjectArray implements Listable, Nameable {
 	Object[] values;
 	NameReference name=null;
 	public ObjectArray(int num){
@@ -43,6 +43,9 @@ public class ObjectArray implements Listable {
 		else
 			return "";
 	}
+	public void setName(String n){
+		name = NameReference.getNameReference(n);
+	}
 	/*...........................................................*/
 	public void setNameReference(NameReference nr){
 		name = nr;
@@ -55,25 +58,31 @@ public class ObjectArray implements Listable {
 		for (int i=0; i<values.length; i++)
 			values[i] =  null;
 	}
-	
-	public Vector getClassesOfObjects(){ 
-		Vector classes = new Vector();
+
+
+	public boolean oneKindOfObject(){ //returns null if they vary; must be exact match
+		Class classFound =null;
 		for (int i=0; i<values.length; i++) {
 			if (values[i] != null){
-				Class vC = values[i].getClass();
-				if (classes.indexOf(vC)<0)
-					classes.addElement(vC);
+				if (classFound == null)
+					classFound = values[i].getClass();
+				else if (classFound != values[i].getClass())
+					return false;
 			}
 		}
-		return classes;
-		
+		return true;
 	}
-
-	public Class getCommonClassOfObjects(){ //returns null if they vary; must be exact match
-		Vector v = getClassesOfObjects();
-		if (v == null || v.size()>1)
-			return null;
-		return (Class)v.elementAt(0);
+	public Class getCommonClass(){ //returns null if they vary; must be exact match
+		Class classFound =null;
+		for (int i=0; i<values.length; i++) {
+			if (values[i] != null){
+				if (classFound == null)
+					classFound = values[i].getClass();
+				else if (classFound != values[i].getClass())
+					return null;
+			}
+		}
+		return classFound;
 	}
 	/*...........................................................*/
 	public void copyTo(ObjectArray d){

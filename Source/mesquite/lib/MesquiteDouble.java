@@ -26,7 +26,7 @@ import mesquite.lib.ui.TwoStringsDialog;
 /* ======================================================================== */
 /** This double wrapper class is used to be able to pass doubles by reference and have the
 	original change as needed*/
-public class MesquiteDouble implements Listable {
+public class MesquiteDouble implements Listable, Nameable {
 	public static final double unassigned = Double.MAX_VALUE * 0.9999;
 	public static final double inapplicable = Double.MAX_VALUE * 0.99999;
 	public static final double infinite = Double.POSITIVE_INFINITY;

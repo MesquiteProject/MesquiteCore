@@ -25,7 +25,7 @@ import mesquite.lib.ui.TwoIntegersDialog;
 /* ======================================================================== */
 /**This int wrapper class is used to be able to pass integers by reference and have the
 	original change as needed*/
-public class MesquiteInteger implements Listable{
+public class MesquiteInteger implements Listable, Nameable{
 	public static final int unassigned = Integer.MIN_VALUE+1;
 	public static final int impossible = Integer.MAX_VALUE - 1;
 	public static final int finite = Integer.MAX_VALUE-3;
@@ -448,6 +448,10 @@ public class MesquiteInteger implements Listable{
 		if (name == null)
 		return toString();
 		else return name;
+	}
+	/** Sets value */
+	public void setName(String name) {
+		this.name=name;
 	}
 	/** Returns string version of this value.  Returns "unassigned" etc. if needed*/
 	public String toString() {

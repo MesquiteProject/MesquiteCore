@@ -257,7 +257,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		return table.cellsEditableByDefault();
 	}
 	/*...............................................................................................................*/
-	/** returns whether or not a row name of table is editable.*/
+	/** returns whether or not a row name of table is editable. Received in setRowName*/
 	public boolean isRowNameEditable(int row){
 		return table.checkRowNameEditable(row);
 	}

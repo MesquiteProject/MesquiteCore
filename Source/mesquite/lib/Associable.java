@@ -546,7 +546,46 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		return names;
 	}
+	
+	public static final int BUILTIN = 0;
+	public static final int BITS = 1;
+	public static final int DOUBLES = 2;
+	public static final int LONGS = 3;
+	public static final int OBJECTS = 4;
 
+	public MesquiteInteger[] getAssociatesNamesWithKinds(){ 
+		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedObjects();
+		if (total == 0)
+			return null;
+		MesquiteInteger[] names = new MesquiteInteger[total];
+		int count = 0;
+		if (bits!=null) {
+			for (int i=0; i<bits.size(); i++) {
+				Listable b = (Listable)bits.elementAt(i);
+				names[count++] = new MesquiteInteger(b.getName(), Associable.BITS);
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i<longs.size(); i++) {
+				Object obj = longs.elementAt(i);
+				Listable b = (Listable)longs.elementAt(i);
+				names[count++] = new MesquiteInteger(b.getName(), Associable.LONGS);
+			}
+		}
+		if (doubles!=null){
+			for (int i=0; i<doubles.size(); i++) {
+				Listable b = (Listable)doubles.elementAt(i);
+				names[count++] = new MesquiteInteger(b.getName(), Associable.DOUBLES);
+			}
+		}
+		if (objects!=null) {
+			for (int i=0; i<objects.size(); i++) {
+				Listable b = (Listable)objects.elementAt(i);
+				names[count++] = new MesquiteInteger(b.getName(), Associable.OBJECTS);
+			}
+		}
+		return names;
+	}
 	public void deassignAllColor(){
 		zeroAllAssociatedObjects(ColorDistribution.colorRGBNameReference);
 	}
@@ -651,11 +690,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					}
 					else if (obj instanceof String[] && ((String[])obj).length>0){
 						MesquiteMessage.warnProgrammer("String[] saving in associables not yet working!");
-						/*s += b.getName() + " = strings ( ";
-						String[] st = (String[])obj;
-						for (int k = 0; k<st.length; k++)
-							s += " " + ParseUtil.tokenize(st[k]);
-						s += ") ";*/	
 					}
 				}
 			}

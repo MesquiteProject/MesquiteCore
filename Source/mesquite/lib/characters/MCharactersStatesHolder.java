@@ -23,7 +23,7 @@ import mesquite.lib.*;
 /**Stores the character states for multiple characters at a series of terminal taxa or nodes in a tree.  The class on which both
 MCharactersDistribution and MCharactersHistory are based.
   See general discussion of character storage classes under CharacterState*/
-public interface MCharactersStatesHolder extends Listable, Renamable   {
+public interface MCharactersStatesHolder extends Listable, Nameable   {
 	/*.................................................................................................................*/
 	/**returns the corresponding CharacterData subclass*/
 	public Class getCharacterDataClass ();

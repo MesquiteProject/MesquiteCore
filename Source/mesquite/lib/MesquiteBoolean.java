@@ -27,7 +27,7 @@ import mesquite.lib.ui.MesquiteWindow;
 /* ======================================================================== */
 /** This boolean wrapper class is used to be able to pass integers by reference and have the
 	original change as needed.*/
-public class MesquiteBoolean implements Listable {
+public class MesquiteBoolean implements Listable, Nameable {
 	private boolean value;
 	private MesquiteCMenuItemSpec cmis = null;
 	public static MesquiteBoolean TRUE, FALSE;

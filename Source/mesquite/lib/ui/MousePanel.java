@@ -489,7 +489,6 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 		currentY = e.getY();
 		MesquiteException.lastLocation = 108;
 		
-		Debugg.println("@@@mouse clicked " + MesquiteEvent.getModifiers(e));
 		clickedCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " " +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteException.lastLocation = 0;
 	}

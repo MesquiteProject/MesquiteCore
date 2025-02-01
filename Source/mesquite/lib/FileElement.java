@@ -34,7 +34,7 @@ import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 /** A class for file elements.  It must remember the file to which it is associated.*/
-public class FileElement extends AssociableWithSpecs implements Identifiable, Listable, Renamable, FileDirtier, HNode, Explainable, Annotatable, Doomable, Disposable, Showable  {
+public class FileElement extends AssociableWithSpecs implements Identifiable, Listable, Nameable, FileDirtier, HNode, Explainable, Annotatable, Doomable, Disposable, Showable  {
 	/** Element was disposed (returned by close()).*/
 	public static final int OK = 0;
 	/** Element is in use (returned by close()).*/

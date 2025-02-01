@@ -17,6 +17,7 @@ Modified:
 package mesquite.lib.tree;
 
 import java.awt.*;
+
 import java.math.*;
 import java.util.*;
 
@@ -45,12 +46,12 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
+import mesquite.lib.Nameable;
 import mesquite.lib.Notification;
 import mesquite.lib.ObjectArray;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
 import mesquite.lib.RandomBetween;
-import mesquite.lib.Renamable;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.ElementManager;
@@ -106,7 +107,7 @@ should be built to include the mother node.)  Tree reading of reticulate nodes i
 <li>Truly unrooted trees, with node-rings storage and recursion used by PHYLIP:  not yet supported.  There are some special methods whose names end in
 UR that allow access to the tree as if unrooted.
 </ul>*/
-public class MesquiteTree extends Associable implements AdjustableTree, Listable, Renamable, Commandable, MesquiteListener, CompatibilityChecker, Identifiable {
+public class MesquiteTree extends Associable implements AdjustableTree, Listable, Nameable, Commandable, MesquiteListener, CompatibilityChecker, Identifiable {
 	/** The set of taxa to which terminal nodes refer. */
 	protected Taxa taxa;
 	/** The tree vector to which this Tree belongs.  The tree does not need to belong to a TreeVector, but if it is, then it is stored here
@@ -2661,6 +2662,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		for (int i=0; i<numNodeSpaces; i++)
 			if (nodeExists(i) && !branchLengthUnassigned(i))
 				setBranchLength(i, getBranchLength(i)*factor, false);
+		incrementVersion(BRANCHLENGTHS_CHANGED, notify);
+	}
+	/*-----------------------------------------*/
+	/** Sets the branch length of all nodes to unassigned.*/
+	public  void deassignAllBranchLengths(boolean notify) { 
+		if (branchLength==null) {
+			return;
+		}
+		for (int i=0; i<numNodeSpaces; i++)
+			if (nodeExists(i))
+				setBranchLength(i, MesquiteDouble.unassigned, false);
 		incrementVersion(BRANCHLENGTHS_CHANGED, notify);
 	}
 	/*-----------------------------------------*/

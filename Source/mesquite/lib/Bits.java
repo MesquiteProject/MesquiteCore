@@ -21,7 +21,7 @@ import java.util.Random;
  * Bits - an object to contain and manage a field of booleans. This was invented
  * before the Java Bitfield was discovered. Perhaps not needed.
  */
-public class Bits implements Listable {
+public class Bits implements Listable, Nameable {
 	int[] array;
 	int numBits;
 	int numInts;
@@ -105,6 +105,9 @@ public class Bits implements Listable {
 
 	public NameReference getNameReference() {
 		return nr;
+	}
+	public void setName(String n){
+		nr = NameReference.getNameReference(n);
 	}
 
 	public String getName() {

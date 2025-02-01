@@ -17,7 +17,7 @@ import java.awt.*;
 
 /*Last documented:  August 1999 */
 /* ======================================================================== */
-public class DoubleArray implements Listable  {
+public class DoubleArray implements Listable, Nameable  {
 	double[] values;
 	NameReference name=null;
 	int autoExpandAmount = 0;
@@ -476,6 +476,10 @@ public class DoubleArray implements Listable  {
 			return name.getValue();
 		else
 			return "";
+	}
+	/*...........................................................*/
+	public void setName(String n){
+		name = NameReference.getNameReference(n);
 	}
 	/*...........................................................*/
 	public void setNameReference(NameReference nr){

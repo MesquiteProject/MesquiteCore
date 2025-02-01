@@ -32,6 +32,7 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
+import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
 import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
 import mesquite.trees.lib.NodeAssociatesListAssistant;
 
@@ -40,11 +41,11 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
 	ListableVector associatedInfo = null;
-	NodeAssociatesZDisplayControl displayModule;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		//addMenuItem("Set Color...", makeCommand("setColor", this));
-		displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+		addMenuItem("Show Selected", makeCommand("show", this));
+		addMenuItem("Hide Selected", makeCommand("hide", this));
+		addMenuItem("Explanation...", makeCommand("explain", this));
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -52,7 +53,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 		return "Information Showing on Tree?";
 	}
 	public String getVeryShortName() {
-		return "Showing?";
+		return "Showing on Tree?";
 	}
 	public String getExplanation() {
 		return "Shows whether attached information is shown in the tree window." ;
@@ -66,30 +67,69 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 
 	}
 
- 	public void setTree(MesquiteTree tree){
- 		this.tree = tree;
+	public void setTree(MesquiteTree tree){
+		this.tree = tree;
 		parametersChanged();
 	}
 	/*.................................................................................................................*/
-	
-	/*.................................................................................................................*/
+
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets the color", null, commandName, "setColor")) {
-		
+		if (checker.compare(this.getClass(), "Shows the items", null, commandName, "show")) {
+				showHideInTree(true);
 		}
+		else if (checker.compare(this.getClass(), "Shows the items", null, commandName, "hide")) {
+			showHideInTree(false);
+	}
+		else if (checker.compare(this.getClass(), "Explain", null, commandName, "explain")) {
+			discreetAlert("This column shows which values are shown on the branches of the tree in the tree window. You can control them here, or by the menu item \"Display Node/Branch Properties\" in the Tree menu. "
+					+"\n\nThat menu item also allows you to control the font and placement on the tree."
+					+ "\n\nWhether node labels or branch lengths are shown is not controlled here, but by items in the Text menu.");
+	}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	
+	/*.................................................................................................................*/
+	void showHideInTree(boolean show){
+		if (table == null)
+			return;
+		if (!table.anyRowSelected()){
+			discreetAlert("Please selected rows before attempting to show or hide them here");
+			return;
+		}
+		MesquiteInteger[] mis = new MesquiteInteger[table.numRowsSelected()];
+		int count = 0;
+		for (int ir = 0; ir<table.getNumRows(); ir++){
+			if (table.isRowSelected(ir) && !associateInListIsBuiltIn(ir)){
+				mis[count++] = getNameKindOfRow(ir);
+			}
+		}
+		pleaseShowHideOnTree(mis, show);
+	}
 	
+	/*.................................................................................................................*
+	boolean canShowHide(int row) {
+		MesquiteInteger mi = getNameKindOfRow(row);
+		if (mi == null)
+			return false;
+			if (mi.getValue() == Associable.BUILTIN)
+				return false;
+			else if (mi.getName().equalsIgnoreCase("!color") && mi.getValue() == Associable.OBJECTS)
+				return false;
+			else 
+				return true;
+		
+	}
+
+
+	/*.................................................................................................................*/
 	public String getWidestString(){
-	
-		return "88888888";
+		return "Showing on Tree?";
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
-		return "Showing?";
+		return "Showing on Tree?";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -105,14 +145,15 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	public boolean isPrerelease(){
 		return false;  
 	}
+	/*.................................................................................................................*/
 	public String getStringForRow(int ic) {
-		if (displayModule!= null){
-			if (displayModule.isShowing(associatedInfo.elementAt(ic).getName()))
-					return "Yes";
+			if (associateInListIsBuiltIn(ic))
+				return "—";
+			else 	if (isShowingOnTree(getNameKindOfRow(ic)))
+			return "Yes";
 			else
 				return "No";
-		}
-		return "?";
+
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

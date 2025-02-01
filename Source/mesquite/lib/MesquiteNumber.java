@@ -28,7 +28,7 @@ Most of the methods in MesquiteNumber use the incoming parameter
 	as a guide to how the data should be stored.  Thus there are int, long, and
 	double versions of many methods.  Calculations involving mixed types automatically
 	upgrade the storage to the bigger type. */
-public class MesquiteNumber implements Listable, WithStringDetails{
+public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 	private int intValue=0;
 	private long longValue=0;
 	private double doubleValue=0;
