@@ -1468,7 +1468,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 }
 
 
-class NodeLocsUnrootedExtra extends TreeDisplayBkgdExtra {
+class NodeLocsUnrootedExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	NodeLocsUnrootedBasic locsModule;
 
 	public NodeLocsUnrootedExtra (NodeLocsUnrootedBasic ownerModule, TreeDisplay treeDisplay) {
@@ -1480,15 +1480,18 @@ class NodeLocsUnrootedExtra extends TreeDisplayBkgdExtra {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
 		if (locsModule.showScale.getValue() && locsModule.showBranchLengths.getValue())
 			locsModule.drawGrid(tree.tallestPathAboveNode(drawnRoot, 1.0), treeDisplay.fixedDepthScale, locsModule.scaling, tree, drawnRoot, treeDisplay, g);
-		//g.setColor(Color.green);
-		//g.fillOval(locsModule.centerx-8, locsModule.centery-8, 16, 16);
 	}
 	/*.................................................................................................................*/
+	public   void printUnderTree(Tree tree, int drawnRoot, Graphics g) {
+		drawUnderTree(tree, drawnRoot, g);
+	}
+	/*.................................................................................................................*/
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		drawOnTree(tree, drawnRoot, g);
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {

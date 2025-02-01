@@ -168,7 +168,6 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI {
 	}
 	/*...............................................................................*/
 	public void pleaseShowHide(MesquiteInteger[] list, boolean show){
-		writeList();
 		if (list == null)
 			return;
 

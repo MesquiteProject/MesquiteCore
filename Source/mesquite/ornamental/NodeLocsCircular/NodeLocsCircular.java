@@ -434,7 +434,7 @@ class PolarCoord {
 }
 
 
-class NodeLocsCircularExtra extends TreeDisplayBkgdExtra {
+class NodeLocsCircularExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	NodeLocsCircular locsModule;
 	
 	public NodeLocsCircularExtra (NodeLocsCircular ownerModule, TreeDisplay treeDisplay) {
@@ -446,15 +446,18 @@ class NodeLocsCircularExtra extends TreeDisplayBkgdExtra {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
 		if (locsModule.showScale.getValue() && locsModule.showBranchLengths.getValue())
 			locsModule.drawGrid(g, tree.tallestPathAboveNode(drawnRoot, 1.0), locsModule.scaling, locsModule.treeCenter);
-		//g.setColor(Color.green);
-		//g.fillOval(locsModule.centerx-8, locsModule.centery-8, 16, 16);
 	}
 	/*.................................................................................................................*/
+	public   void printUnderTree(Tree tree, int drawnRoot, Graphics g) {
+		drawUnderTree(tree, drawnRoot, g);
+	}
+	/*.................................................................................................................*/
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		drawOnTree(tree, drawnRoot, g);
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {

@@ -412,7 +412,7 @@ public class NodeLocsOval extends NodeLocsFree {
 class DoublePt {
 	public double x, y;
 }
-class NodeLocsOvalExtra extends TreeDisplayBkgdExtra {
+class NodeLocsOvalExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	NodeLocsOval locsModule;
 
 	public NodeLocsOvalExtra (NodeLocsOval ownerModule, TreeDisplay treeDisplay) {
@@ -424,15 +424,20 @@ class NodeLocsOvalExtra extends TreeDisplayBkgdExtra {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
 		if (locsModule.showScale.getValue() && locsModule.showBranchLengths.getValue())
 			locsModule.drawGrid(g, tree.tallestPathAboveNodeUR(locsModule.centralRoot, locsModule.centralRoot, 1.0), locsModule.scaling, locsModule.treeCenter);
 	}
 	/*.................................................................................................................*/
-	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		drawOnTree(tree, drawnRoot, g);
+	public   void printUnderTree(Tree tree, int drawnRoot, Graphics g) {
+		drawUnderTree(tree, drawnRoot, g);
 	}
 	/*.................................................................................................................*/
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
+	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
+/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 	}
 	

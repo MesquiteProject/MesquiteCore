@@ -922,7 +922,7 @@ public class NodeLocs3DPlot extends NodeLocsPlot3D {
 
 
 
-class NodeLocs3DPlotExtra extends TreeDisplayBkgdExtra {
+class NodeLocs3DPlotExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	public NodeLocs3DPlotLegend legend;
 	NodeLocs3DPlot locsModule;
 	public String parameters = "";
@@ -950,7 +950,7 @@ class NodeLocs3DPlotExtra extends TreeDisplayBkgdExtra {
 	}
 	/*.................................................................................................................*/
 	boolean legendMade = false;
-	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
 		locsModule.drawAxes(g, this);
 		if (legend!=null){
 			legend.adjustLocation();
@@ -964,10 +964,16 @@ class NodeLocs3DPlotExtra extends TreeDisplayBkgdExtra {
 		}
 	}
 	/*.................................................................................................................*/
-	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		drawOnTree(tree, drawnRoot, g);
+	public   void printUnderTree(Tree tree, int drawnRoot, Graphics g) {
+		drawUnderTree(tree, drawnRoot, g);
 	}
 
+	/*.................................................................................................................*/
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
+	/*.................................................................................................................*/
+	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 		if (!legendMade && legend == null) {

@@ -16,6 +16,7 @@ package mesquite.lib.tree;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteLong;
@@ -78,6 +79,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public double fixedDepthScale = 1.0;
 	/**  Records whether fixed depth scale is in use.*/
 	public boolean fixedScalingOn = false;
+	/**  Records whether to show the scale bar.*/
+	public boolean inhibitDefaultScaleBar = false;
 	/**  If true, then in text version draw the extra information directly on the tree; otherwise use node lists*/
 	public boolean textVersionDrawOnTree = false;
 	private int dist=8;
@@ -128,7 +131,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		branchColor = Color.black;
 		branchColorDimmed = Color.gray;
 	}
-	
+
 	public static final int DRAWULTRAMETRIC = 0; //	
 	public static final int AUTOSHOWLENGTHS = 1;
 	public static final int DRAWUNASSIGNEDASONE = 2; //if a branch has unassigned length, treat as length 1
@@ -213,11 +216,11 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	int paleComponent(int c, double palenessMultiplier) {
 		c = (int)(255 - palenessMultiplier*(255-c));
 		if (c<0) {
-		//	Debugg.println("--------------------colour " + c);
+			//	Debugg.println("--------------------colour " + c);
 			return 0;
 		}
 		if (c>255) {
-		// Debugg.println("++++++++++++++colour " + c);
+			// Debugg.println("++++++++++++++colour " + c);
 			return 255;
 		}
 		return c;
@@ -410,6 +413,29 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			}
 		}
 	}
+	public int[] getBordersFromExtras(Tree tree) {
+		if (tree == null || tree.getTaxa().isDoomed())
+			return null;
+		if (extras != null) {
+			int[] overallBorder = new int[]{0, 0, 0, 0};
+			Enumeration e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ownerModule==null || ownerModule.isDoomed()) 
+					return null;
+				int[] borderRequest = ex.getRequestedExtraBorders(tree, treeDrawing);
+				if (borderRequest != null && borderRequest.length == 4){
+					for (int i=0;i<4; i++)
+						if (borderRequest[i]>overallBorder[i])
+							overallBorder[i] = borderRequest[i];
+				}
+
+			}
+			return overallBorder;
+		}
+		return null;
+	}
 	public void drawAllBackgroundExtrasOfPlacement(Tree tree, int drawnRoot, Graphics g, int placement) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
@@ -421,7 +447,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 				if (ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
-					ex.drawOnTree(tree, drawnRoot, g);
+					((TreeDisplayBkgdExtra)ex).drawUnderTree(tree, drawnRoot, g);
 				}
 			}
 		}
@@ -439,11 +465,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (!(ex instanceof TreeDisplayBkgdExtra)) {
-					if (ownerModule==null || ownerModule.isDoomed()) 
-						return;
-					ex.drawOnTree(tree, drawnRoot, g);
-				}
+				if (ownerModule==null || ownerModule.isDoomed()) 
+					return;
+				ex.drawOnTree(tree, drawnRoot, g);
+
 			}
 		}
 		if (notice!=null)
@@ -462,7 +487,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 				if (ex instanceof TreeDisplayBkgdExtra) {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
-					ex.printOnTree(tree, drawnRoot, g);
+					((TreeDisplayBkgdExtra)ex).printUnderTree(tree, drawnRoot, g);
 				}
 			}
 		}
@@ -475,12 +500,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (!(ex instanceof TreeDisplayBkgdExtra)) {
 
-					if (ownerModule==null || ownerModule.isDoomed()) 
-						return;
-					ex.printOnTree(tree, drawnRoot, g);
-				}
+				if (ownerModule==null || ownerModule.isDoomed()) 
+					return;
+				ex.printOnTree(tree, drawnRoot, g);
 			}
 		}
 	}

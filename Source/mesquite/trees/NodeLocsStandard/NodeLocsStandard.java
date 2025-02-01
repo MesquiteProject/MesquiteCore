@@ -135,6 +135,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		offFixedScalingMenuItem = null;
 	}
 
+
 	public void endJob(){
 		storePreferences();
 		if (extras!=null) {
@@ -1283,6 +1284,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	public void drawGrid(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, Graphics g) {
 		if (g == null)
 			return;
+		if (treeDisplay.inhibitDefaultScaleBar)
+			return;
 		boolean narrowScaleOnly = !broadScale.getValue();
 		boolean rulerOnly = false;
 		int rulerWidth = 8;
@@ -1423,7 +1426,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 }
 
 
-class NodeLocsExtra extends TreeDisplayBkgdExtra implements Commandable {
+class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Commandable {
 	NodeLocsStandard locsModule;
 	TreeTool stretchTool;
 	MesquiteWindow window = null;
@@ -1449,13 +1452,18 @@ class NodeLocsExtra extends TreeDisplayBkgdExtra implements Commandable {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
 		if (locsModule.showScale.getValue() && locsModule.showBranchLengths.getValue()!= TreeDisplay.DRAWULTRAMETRIC && (tree.hasBranchLengths() || treeDisplay.fixedScalingOn))
 			locsModule.drawGrid(treeDisplay.nodeLocsParameters[locsModule.totalHeight], treeDisplay.fixedDepthScale, treeDisplay.nodeLocsParameters[locsModule.scaling], tree, drawnRoot, treeDisplay, g);
 	}
 	/*.................................................................................................................*/
+	public   void printUnderTree(Tree tree, int drawnRoot, Graphics g) {
+		drawUnderTree(tree, drawnRoot, g);
+	}
+	/*.................................................................................................................*/
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		drawOnTree(tree, drawnRoot, g);
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {

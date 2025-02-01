@@ -534,7 +534,7 @@ public class NodeLocs2DPlot extends NodeLocsPlot {
 
 
 
-class NodeLocs2DPlotExtra extends TreeDisplayBkgdExtra {
+class NodeLocs2DPlotExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	public NodeLocs2DPlotLegend legend;
 	NodeLocs2DPlot locsModule;
 	public boolean pleaseAdjustScrolls = false;
@@ -562,7 +562,7 @@ class NodeLocs2DPlotExtra extends TreeDisplayBkgdExtra {
 	}
 	/*.................................................................................................................*/
 	boolean legendMade = false;
-	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
 		locsModule.drawGrid(g, locsModule.margin/*+rect.x*/, locsModule.margin/*+rect.y*/, locsModule.rectWidth-2*locsModule.margin, locsModule.rectHeight-2*locsModule.margin, treeDisplay);
 		if (!legendMade && legend == null) {
 			legendMade= true;
@@ -580,8 +580,14 @@ class NodeLocs2DPlotExtra extends TreeDisplayBkgdExtra {
 			legend.adjustLocation();
 	}
 	/*.................................................................................................................*/
+	public   void printUnderTree(Tree tree, int drawnRoot, Graphics g) {
+		drawUnderTree(tree, drawnRoot, g);
+	}
+	/*.................................................................................................................*/
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
+	/*.................................................................................................................*/
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		drawOnTree(tree, drawnRoot, g);
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {

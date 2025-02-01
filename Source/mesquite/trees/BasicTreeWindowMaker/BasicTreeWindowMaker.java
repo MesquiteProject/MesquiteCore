@@ -1837,6 +1837,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 	/* ................................................................................................................. */
 	int countSizes = 0;
+	int[] noExtraBorders = new int[]{0, 0, 0, 0};
 
 	void sizeDisplay() {
 		if (palette == null || treeDisplay == null || messagePanel == null)
@@ -1850,6 +1851,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		palette.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
 		if (drawingSizeMode == SCALETOFIT) {
 			togglePane(false, true);
+			int[] extraBordersRequested = treeDisplay.getBordersFromExtras(tree);
+			if (extraBordersRequested == null)
+				extraBordersRequested =noExtraBorders;
 			treeDisplay.setSize(getWidth(), getHeight() - scrollWidth);
 			treeDisplay.setFieldSize(getWidth(), getHeight() - scrollWidth);
 			treeDisplay.autoStretchIfNeeded = true;
