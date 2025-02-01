@@ -169,9 +169,9 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 				between = ((ObjectArray)obj).isBetween();
 			else if (obj instanceof Bits)
 				between = ((Bits)obj).isBetween();
-			else if (obj instanceof Tree && "Branch length".equalsIgnoreCase(objContainer.getName()))
+			else if (obj instanceof Tree && MesquiteTree.branchLengthName.equalsIgnoreCase(objContainer.getName()))
 				between = true;
-			else if (obj instanceof Tree && "Node label".equalsIgnoreCase(objContainer.getName()))
+			else if (obj instanceof Tree && MesquiteTree.nodeLabelName.equalsIgnoreCase(objContainer.getName()))
 				between = false;
 			else
 				return "?";

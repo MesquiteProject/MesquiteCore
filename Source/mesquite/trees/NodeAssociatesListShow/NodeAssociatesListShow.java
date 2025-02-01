@@ -45,6 +45,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Show Selected", makeCommand("show", this));
 		addMenuItem("Hide Selected", makeCommand("hide", this));
+		addMenuItem("Control Appearance on Tree...", makeCommand("controlAppearance", this));
 		addMenuItem("Explanation...", makeCommand("explain", this));
 		return true;
 	}
@@ -80,10 +81,14 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 		else if (checker.compare(this.getClass(), "Shows the items", null, commandName, "hide")) {
 			showHideInTree(false);
 	}
+		else if (checker.compare(this.getClass(), "Shows the items", null, commandName, "controlAppearance")) {
+			controlAppearanceOnTree();
+	}
 		else if (checker.compare(this.getClass(), "Explain", null, commandName, "explain")) {
-			discreetAlert("This column shows which values are shown on the branches of the tree in the tree window. You can control them here, or by the menu item \"Display Node/Branch Properties\" in the Tree menu. "
+			discreetAlert("This column shows which values are shown on the branches of the tree in the tree window. "
+					+"You can control them here, or by the menu item \"Display Node/Branch Properties\" in the Tree menu. "
 					+"\n\nThat menu item also allows you to control the font and placement on the tree."
-					+ "\n\nWhether node labels or branch lengths are shown is not controlled here, but by items in the Text menu.");
+					+ "\n\nNode labels and branch lengths can also be shown on the tree in other ways, using items in the Text menu.");
 	}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -101,28 +106,14 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 		MesquiteInteger[] mis = new MesquiteInteger[table.numRowsSelected()];
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
-			if (table.isRowSelected(ir) && !associateInListIsBuiltIn(ir)){
+			if (table.isRowSelected(ir)){
 				mis[count++] = getNameKindOfRow(ir);
 			}
 		}
 		pleaseShowHideOnTree(mis, show);
 	}
 	
-	/*.................................................................................................................*
-	boolean canShowHide(int row) {
-		MesquiteInteger mi = getNameKindOfRow(row);
-		if (mi == null)
-			return false;
-			if (mi.getValue() == Associable.BUILTIN)
-				return false;
-			else if (mi.getName().equalsIgnoreCase("!color") && mi.getValue() == Associable.OBJECTS)
-				return false;
-			else 
-				return true;
-		
-	}
-
-
+	
 	/*.................................................................................................................*/
 	public String getWidestString(){
 		return "Showing on Tree?";
@@ -147,9 +138,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	}
 	/*.................................................................................................................*/
 	public String getStringForRow(int ic) {
-			if (associateInListIsBuiltIn(ic))
-				return "—";
-			else 	if (isShowingOnTree(getNameKindOfRow(ic)))
+			if (isShowingOnTree(getNameKindOfRow(ic)))
 			return "Yes";
 			else
 				return "No";

@@ -478,7 +478,7 @@ public class ManageTaxa extends TaxaManager {
 
 					for (int v = 0; v<numBits; v++){  //added September 2011
 						Bits array = taxa.getAssociatedBits(v);
-						if (!array.getNameReference().getValue().equals("selected")){
+						if (!array.getNameReference().getValue().equalsIgnoreCase("selected")){
 							s.append("\tTAXABITS  "+ taxonReference);
 							s.append(" NAME = ");
 							s.append( ParseUtil.tokenize(array.getNameReference().getValue()));

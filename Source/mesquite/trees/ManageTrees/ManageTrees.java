@@ -441,6 +441,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 		else if (checker.compare(this.getClass(), "Shows a tree window showing a particular trees block", "[number of tree block to show]", commandName, "showTreesInWindow")) {
 			int t = MesquiteInteger.fromFirstToken(arguments, pos);
+			parser.setString(arguments);
+			parser.setPosition(pos.getValue());
+			String commandToTreeWindowMaker = parser.getNextToken();
 			if (MesquiteInteger.isCombinable(t) && t<getProject().getNumberOfFileElements(TreeVector.class)) {
 				MesquiteModule fCoord = getFileCoordinator();
 				MesquiteModule treeWindowCoord = null;
@@ -480,7 +483,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					CommandRecord scr = new CommandRecord(true);
 					MesquiteThread.setCurrentCommandRecord(scr);
 					String commands = "makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It; setTreeSource  #StoredTrees;";
-					commands += " tell It; setTaxa " + getProject().getTaxaReferenceInternal(taxa) + " ;  setTreeBlock " + TreeVector.toExternal(whichTreeBlock)  + "; endTell; getWindow; tell It; setSize 400 300; endTell; showWindowForce; endTell; ";
+					commands += " tell It; setTaxa " + getProject().getTaxaReferenceInternal(taxa) + " ;  setTreeBlock " + TreeVector.toExternal(whichTreeBlock)  + "; endTell; "
+							+"getWindow; tell It; setSize 1200 500; endTell; "
+							+ commandToTreeWindowMaker + " showWindowForce; endTell; ";
 					MesquiteInteger pos = new MesquiteInteger(0);
 					Puppeteer p = new Puppeteer(this);
 					p.execute(treeWindowCoord, commands, pos, null, false);

@@ -55,13 +55,10 @@ public class NodeAssociatesListStarter extends TreeDisplayAssistantI  {
 		NodeAssociatesExtra extra = new NodeAssociatesExtra(this, treeDisplay, nodeAssocListModule);
 		return extra;
 	}
-
-	
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Node/Branch Properties List Starter";
 	}
-
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
@@ -99,14 +96,6 @@ class NodeAssociatesExtra extends TreeDisplayExtra {
 	public void cursorTouchBranch(Tree tree, int N, Graphics g){
 		nodeAssocListModule.cursorTouchBranch((MesquiteTree)tree, N);
 	}
-	/**to inform TreeDisplayExtra that cursor has just touched the field (not in a branch or taxon)*/
-	public void cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers){}
-	/**to inform TreeDisplayExtra that cursor has just entered name of terminal taxon M*/
-	public void cursorEnterTaxon(Tree tree, int M, Graphics g){}
-	/**to inform TreeDisplayExtra that cursor has just exited name of terminal taxon M*/
-	public void cursorExitTaxon(Tree tree, int M, Graphics g){}
-	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*/
-	public void cursorTouchTaxon(Tree tree, int M, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just moved OUTSIDE of taxa or branches*/
 	public void cursorMove(Tree tree, int x, int y, Graphics g){
 		nodeAssocListModule.cursorMove((MesquiteTree)tree);

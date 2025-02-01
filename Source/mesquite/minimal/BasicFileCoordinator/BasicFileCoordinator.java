@@ -22,6 +22,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ChartWindow;
 import mesquite.lib.ui.ColorTheme;
@@ -668,11 +669,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		MesquiteWindow mw = getModuleWindow();
 		if (mw != null)
 			mw.setWindowSize(1000, 800);
-		//	if (getProject().getNumberTaxas()>0){
+
 		MesquiteModule mbb = (MesquiteModule)findElementManager(Taxa.class);
 		if (mbb != null)
 			mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
-		//	}
+	
 		if (getProject().getNumberCharMatrices()>3){
 			mbb = findEmployeeWithName("#ManageCharacters");
 			if (mbb != null)
@@ -686,10 +687,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			}
 		}
 		else {
-			mbb = (MesquiteModule)findElementManager(TreesManager.class);
+			mbb = (MesquiteModule)findElementManager(TreeVector.class);
 			if (mbb != null) {
 				if (getProject().getNumberTreeVectors()==1) {
-					mbb.doCommand("showTreesInWindow", "" + 0, CommandChecker.defaultChecker);
+					mbb.doCommand("showTreesInWindow", "" + 0 + " \'autoShowPropertiesList;\'", CommandChecker.defaultChecker);
 				}
 				else if (getProject().getNumberTreeVectors()>1) {
 					mbb.doCommand("showTreeBlocks", null, CommandChecker.defaultChecker);
@@ -964,6 +965,22 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (employee!=null){
 				employee.fileAboutToBeWritten(f);
 				broadcastFileAboutToBeSaved(employee, f);
+			}
+		}
+	}
+	/*.................................................................................................................*/
+	/** A method called immediately before a file is to be written.*/
+	void broadcastFileSavingFinished(MesquiteModule module, MesquiteFile f) {
+		if (module==null)
+			return;
+		EmployeeVector e = module.getEmployeeVector();
+		if (e==null)
+			return;
+		for (int i = 0; i<e.size(); i++) {
+			MesquiteModule employee = (MesquiteModule)e.elementAt(i);
+			if (employee!=null){
+				employee.fileWritingFinished(f);
+				broadcastFileSavingFinished(employee, f);
 			}
 		}
 	}
@@ -1280,10 +1297,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 		NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
 		if (nfi!=null) {
+			
 			nfi.writeFile(getProject(), nMF);
 		}
 		else 
 			MesquiteMessage.println("File interpreter not found to write file " + nMF.getName());
+		broadcastFileSavingFinished(this, nMF);
 	}
 	/*.................................................................................................................*/
 	/** Finds the first employee in the heirarchy that manages a particular subclass of FileElement */

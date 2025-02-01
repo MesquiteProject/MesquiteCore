@@ -197,6 +197,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** The id number of this Tree (each tree during a run receives its own number */
 	private long id=0;
 
+	public static final String branchLengthName = "Branch length";
+	public static final String nodeLabelName = "Node label";
+
 	/** If this tree is read in from a file, this is the number of this tree within the file */
 	private int fileIndex = MesquiteInteger.unassigned;
 
@@ -819,7 +822,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public String getName() {
 		if (name==null)
 			return "Untitled Tree";
-		if (modifiedSinceNamed)
+		if (modifiedSinceNamed && !name.endsWith("+"))
 			return name + '+';
 		return name;
 	}
@@ -3043,7 +3046,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return false;
 	}
 	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
-		if (readingMrBayesConTree) {
+		if (readingMrBayesConTree) {  //ZQ why this kludge?
 			String c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">", false) + ">";  //get next token
 			c = retokenizeMrBayesConTreeNodeInfo(c);
 			readAssociated(c, node, new MesquiteInteger(0), null, ",=>{}", predefinedDouble(TreeDescription, stringLoc));
@@ -3415,7 +3418,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 							}
 							oldPos = stringLoc.getValue();
 							c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip >
-							if (";".equals(c))
+							if (":".equals(c))
+								readLength(TreeDescription, getRoot(), stringLoc);
+							else
+								stringLoc.setValue(oldPos);
+								
+							c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip >
+						if (";".equals(c))
 								done = true;
 							else if (!"<".equals(c))
 								stringLoc.setValue(oldPos);

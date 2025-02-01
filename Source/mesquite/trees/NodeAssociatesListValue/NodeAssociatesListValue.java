@@ -175,9 +175,9 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 				boolean oan = oa.isBitOn(node);
 				return MesquiteBoolean.toTrueFalseString(oan); //Debugg.println temporary?
 			}
-			else if (obj instanceof Tree && "Branch length".equalsIgnoreCase(objContainer.getName()))
+			else if (obj instanceof Tree && MesquiteTree.branchLengthName.equalsIgnoreCase(objContainer.getName()))
 				return MesquiteDouble.toString(tree.getBranchLength(node));
-			else if (obj instanceof Tree && "Node label".equalsIgnoreCase(objContainer.getName())){
+			else if (obj instanceof Tree && MesquiteTree.nodeLabelName.equalsIgnoreCase(objContainer.getName())){
 				return tree.getNodeLabel(node);
 			}
 			else

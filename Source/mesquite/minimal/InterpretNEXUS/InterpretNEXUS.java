@@ -676,6 +676,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			}
 			checkIntegrityForWriting(getFileCoordinator(), mNF);
 			mNF.setIsNexus(true);
+			
 			ListableVector blocks = getProject().getNexusBlocks();
 			MesquiteTimer time = new MesquiteTimer();
 			time.start();

@@ -28,6 +28,17 @@ public abstract class NodeAssociatesListAssistant extends ListAssistant  {
 	}
 	public void cursorMove(MesquiteTree tree){
 	}
+	
+	/* This arrangement is quite unorthodox in Mesquite, where this list assistants ask of their mother (NodeAssociatesList) 
+	 * but also of their aunt (NodeAssociatesZDisplayControl). Normally the latter is discouraged. The mother and the aunt
+	 * should probably have been one module (managing and controlling display of tree associates) but it would have been quite big.
+	 * */
+	protected void controlAppearanceOnTree(){
+		if (displayModule == null)
+			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+		if (displayModule != null)
+			 displayModule.queryDialog();
+	}
 	protected boolean isShowingOnTree(MesquiteInteger property){
 		if (displayModule == null)
 			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);

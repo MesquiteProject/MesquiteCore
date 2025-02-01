@@ -708,7 +708,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		readAssociated(assocString, node, pos, whitespace, punctuation, false);
 	}
 	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation, boolean forceNumberToDouble){
-
 		if (pos==null || node>numParts || node<0 || StringUtil.blank(assocString))
 			return;
 		String key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);

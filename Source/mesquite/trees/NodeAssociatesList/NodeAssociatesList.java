@@ -73,11 +73,11 @@ public class NodeAssociatesList extends ListModule {
 		}
 		setTree((MesquiteTree)obj);
 		displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
-		showListWindow();
+		showListWindow(false);
 	}
 
 	/*.................................................................................................................*/
-	public void showListWindow(){
+	public void showListWindow(boolean hireAssistantsRegardless){
 		if (myWindow != null){
 			myWindow.show();
 			myWindow.setVisible(true);
@@ -91,7 +91,7 @@ public class NodeAssociatesList extends ListModule {
 		myWindow.setPopAsTile(true);
 		myWindow.popOut(true);
 		makeMenu("List");
-		if (!MesquiteThread.isScripting()){
+		if (hireAssistantsRegardless || !MesquiteThread.isScripting()){
 			hireAssistant("#NodeAssociatesListValue");
 			hireAssistant("#NodeAssociatesListShow");
 			hireAssistant("#NodeAssociatesListKind");
@@ -127,11 +127,14 @@ public class NodeAssociatesList extends ListModule {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows the window", "[]", commandName, "showWindow")) {
-			showListWindow();
+			showListWindow(false);
+		}
+		else if (checker.compare(this.getClass(), "Shows the window", "[]", commandName, "showWindowWithAssistants")) {
+			showListWindow(true);
 		}
 		else if (checker.compare(this.getClass(), "Shows the window", "[]", commandName, "toggleWindow")) {
 			if (myWindow == null || !myWindow.isVisible())
-				showListWindow();
+				showListWindow(false);
 			else {
 				myWindow.setVisible(false);
 				myWindow.popIn();
@@ -190,11 +193,11 @@ public class NodeAssociatesList extends ListModule {
 			else
 				name = objContainer.getName();
 			int kind = Associable.BUILTIN;
-			if (objContainer.getName().equalsIgnoreCase("Branch length"))
+			if (objContainer.getName().equalsIgnoreCase(MesquiteTree.branchLengthName))
 				kind = Associable.BUILTIN;
 			else if (name.equalsIgnoreCase("!color"))
 				kind = Associable.OBJECTS;
-			else if (objContainer.getName().equalsIgnoreCase("Node label"))
+			else if (objContainer.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName))
 				kind = Associable.BUILTIN;
 			else if (obj instanceof DoubleArray)
 				kind = Associable.DOUBLES;
@@ -214,9 +217,9 @@ public class NodeAssociatesList extends ListModule {
 		if (myWindow != null && row>=0 && row<myWindow.associatesList.size()){
 			ObjectContainer objContainer = (ObjectContainer)myWindow.associatesList.elementAt(row);
 			boolean builtIn = false;
-			if (objContainer.getName().equalsIgnoreCase("Branch length"))
+			if (objContainer.getName().equalsIgnoreCase(MesquiteTree.branchLengthName))
 				builtIn = true;
-			else if (objContainer.getName().equalsIgnoreCase("Node label"))
+			else if (objContainer.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName))
 				builtIn = true;
 			if (row <2 && !builtIn && MesquiteTrunk.developmentMode)
 				System.err.println("Row doesn't match built-in in " + getClass());
@@ -242,9 +245,9 @@ public class NodeAssociatesList extends ListModule {
 		MesquiteInteger mi = getNameKindOfRow(row);
 
 		if (mi.getValue() == Associable.BUILTIN){
-			if (mi.getName().equalsIgnoreCase("Branch length"))
+			if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName))
 				tree.deassignAllBranchLengths(notify);
-			else if (mi.getName().equalsIgnoreCase("Node label")){
+			else if (mi.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName)){
 				tree.removeAllInternalNodeLabels(tree.getRoot());
 				if (notify)
 					tree.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
@@ -353,14 +356,15 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		associatesList.removeAllElements(false);
 		if (tree == null) 
 			return;
-		ObjectContainer branchLengths = new ObjectContainer("Branch length", tree);
+		ObjectContainer branchLengths = new ObjectContainer(MesquiteTree.branchLengthName, tree);
 		associatesList.addElement(branchLengths, false);
-		ObjectContainer nodeLabels = new ObjectContainer("Node label", tree);
+		ObjectContainer nodeLabels = new ObjectContainer(MesquiteTree.nodeLabelName, tree);
 		associatesList.addElement(nodeLabels, false);
 		int numBitsAssocs = tree.getNumberAssociatedBits();
 		for (int i= 0; i<numBitsAssocs; i++){
 			Bits bits = tree.getAssociatedBits(i);
-			associatesList.addElement(new ObjectContainer(bits.getName(), bits), false);
+			if (!"selected".equalsIgnoreCase(bits.getName()))
+				associatesList.addElement(new ObjectContainer(bits.getName(), bits), false);
 		}
 		int numDoubleAssocs = tree.getNumberAssociatedDoubles();
 		for (int i= 0; i<numDoubleAssocs; i++){

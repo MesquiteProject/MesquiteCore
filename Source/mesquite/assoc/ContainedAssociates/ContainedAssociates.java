@@ -1221,7 +1221,7 @@ class WideTreeDrawing extends TreeDrawing  {
 						scaling = (Math.abs(minimumYOfContained(tree, tree.getRoot())-y[tree.getRoot()])/(tree.tallestPathAboveNode(tree.getRoot(), 1.0)));
 					
 					//if this is the root and branch lengths are not being shown for the containing tree, don't scale
-					if (tree.hasBranchLengths() && (treeDisplay.showBranchLengths || (true|| containingNode!=tree.getRoot()))){
+					if (tree.hasBranchLengths() && (treeDisplay.branchLengthDisplay != TreeDisplay.DRAWULTRAMETRIC || (true|| containingNode!=tree.getRoot()))){
 						miniScaleInternalLocs (containedTree, aNodes[i], terminals,  top, cladeTop, containingNode, aNodes[i], scaling);
 					}
 

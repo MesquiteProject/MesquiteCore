@@ -1314,11 +1314,15 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				}
 			}
 
-			if (resetShowBranchLengths)
-				treeDisplay.showBranchLengths=showBranchLengths.getValue();
+			if (resetShowBranchLengths){
+				if (showBranchLengths.getValue())
+					treeDisplay.branchLengthDisplay=TreeDisplay.DRAWUNASSIGNEDASONE;
+				else
+					treeDisplay.branchLengthDisplay=TreeDisplay.DRAWULTRAMETRIC;
+			}
 			else {
-				if (treeDisplay.showBranchLengths != showBranchLengths.getValue()) {
-					showBranchLengths.setValue(treeDisplay.showBranchLengths);
+				if (treeDisplay.showBranchLengths() != showBranchLengths.getValue()) {
+					showBranchLengths.setValue(treeDisplay.showBranchLengths());
 					if (showBranchLengths.getValue()) 
 						showScaleItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
 					else

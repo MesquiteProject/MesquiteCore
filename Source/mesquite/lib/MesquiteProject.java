@@ -301,6 +301,18 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		}
 		return null;
 	}
+	/*.................................................................................................................*/
+	/** returns the Trees with given name */
+	public TreeVector getTreesByName(String name) {
+		if (name == null)
+			return null;
+		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
+			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
+			if (name.equals(trees.getName()))
+				return trees;
+		}
+		return null;
+	}
 
 	/*.................................................................................................................*/
 	/** returns the number of Tree Vectors */

@@ -72,8 +72,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	/**  The margin from the tips to the edge of the drawing field*/
 	public int tipsMargin = -1;
-	/**  If true, then branches are drawn proportional to their lengths*/
-	public boolean showBranchLengths = false;
 	/**  Scaling of the tree drawing*/
 	public double scaling = 1.0;
 	/**  If tree drawn with fixed depth, this is the depth.*/
@@ -130,6 +128,16 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		branchColor = Color.black;
 		branchColorDimmed = Color.gray;
 	}
+	
+	public static final int DRAWULTRAMETRIC = 0; //	
+	public static final int AUTOSHOWLENGTHS = 1;
+	public static final int DRAWUNASSIGNEDASONE = 2; //if a branch has unassigned length, treat as length 1
+	public int branchLengthDisplay = DRAWULTRAMETRIC;
+	/**  If true, then branches are drawn proportional to their lengths*/
+	public boolean showBranchLengths(){
+		return branchLengthDisplay != DRAWULTRAMETRIC;
+	}
+
 	public int getMouseX(){
 		return super.getMouseX();
 	}

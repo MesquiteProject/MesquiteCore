@@ -124,12 +124,12 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 				tree.makeAssociatedObjects(candidateName);
 				ObjectArray textArray = tree.getWhichAssociatedObject(tnRef);
 				if (mi.getValue() == Associable.BUILTIN){
-					if (mi.getName().equalsIgnoreCase("Branch length")){
+					if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){
 						for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
 							textArray.setValue(node, MesquiteDouble.toString(tree.getBranchLength(node)));
 						rows[count++] =ir;  //in case needs to be deleted later
 					}
-					else if (mi.getName().equalsIgnoreCase("Node label")){
+					else if (mi.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName)){
 						for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
 							textArray.setValue(node, tree.getNodeLabel(node));
 						rows[count++] =ir;  //in case needs to be deleted later
@@ -239,12 +239,12 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 				tree.makeAssociatedDoubles(candidateName);
 				DoubleArray doublesArray = tree.getWhichAssociatedDouble(tnRef);
 				if (mi.getValue() == Associable.BUILTIN){
-					if (mi.getName().equalsIgnoreCase("Branch length")){
+					if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){
 						for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
 							doublesArray.setValue(node, tree.getBranchLength(node));
 						rows[count++] =ir;  //in case needs to be deleted later
 					}
-					else if (mi.getName().equalsIgnoreCase("Node label")){
+					else if (mi.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName)){
 						for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
 							doublesArray.setValue(node, fromString(tree.getNodeLabel(node)));
 						rows[count++] =ir;  //in case needs to be deleted later
@@ -304,11 +304,11 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 				String currentName = mi.getName();
 				NameReference currentRef = NameReference.getNameReference(currentName);
 				if (mi.getValue() == Associable.BUILTIN){
-					if (mi.getName().equalsIgnoreCase("Branch length")){
+					if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){
 						for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
 							tree.setNodeLabel(MesquiteDouble.toString(tree.getBranchLength(node)), node);
 					}
-					else if (mi.getName().equalsIgnoreCase("Node label")){
+					else if (mi.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName)){
 					}
 
 				}
@@ -440,10 +440,10 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 				}
 				return "Objects";
 			}
-			else if (obj instanceof Tree && "Branch length".equalsIgnoreCase(objContainer.getName()))
-				return "Branch length";
-			else if (obj instanceof Tree && "Node label".equalsIgnoreCase(objContainer.getName()))
-				return "Node label";
+			else if (obj instanceof Tree && MesquiteTree.branchLengthName.equalsIgnoreCase(objContainer.getName()))
+				return MesquiteTree.branchLengthName;
+			else if (obj instanceof Tree && MesquiteTree.nodeLabelName.equalsIgnoreCase(objContainer.getName()))
+				return MesquiteTree.nodeLabelName;
 			else
 				return "?";
 		}

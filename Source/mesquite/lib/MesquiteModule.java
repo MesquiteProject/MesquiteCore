@@ -558,6 +558,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public void fileAboutToBeWritten(MesquiteFile f) {
 	}
 	/*.................................................................................................................*/
+	/** A method called immediately before a file is to be saved.*/
+	public void fileWritingFinished(MesquiteFile f) {
+	}
+	/*.................................................................................................................*/
 	/** A method called when a FileElement added to the project; module can respond as needed (e.g., 
  	InitializeParsimony can add default model set to a CharacterData.  (currently only called for Taxa and CharacterData additions).*/
 	public void fileElementAdded(FileElement element) {

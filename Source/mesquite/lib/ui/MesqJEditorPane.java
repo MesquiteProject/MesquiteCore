@@ -46,19 +46,21 @@ public class MesqJEditorPane extends JEditorPane implements MQComponent{
 	 *  The following overrides were built to handle (hide) the frequent StackOverflowErrors on Linux Java post-1.8, 
 	 *  but were extended in part to other OSs
 	 */
-
+static boolean warned = false;
 	/*getPreferredSize -------------------------*/
 	public Dimension getPreferredSize() {
 		try {
 			return super.getPreferredSize();
 		}
 		catch (Exception e) {
-			if (MesquiteTrunk.developmentMode)
+			if (MesquiteTrunk.developmentMode && !warned)
 				System.err.println("Exception in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+			warned = true;
 		}
 		catch (Error e) {
-			if (MesquiteTrunk.developmentMode)
+			if (MesquiteTrunk.developmentMode && !warned)
 				System.err.println("Error in " + getClass() + " (" + e.getClass() + ") (getPreferredSize)"); 
+			warned = true;
 		}
 		return new Dimension(400, 400);
 	}
