@@ -527,7 +527,9 @@ public class Taxa extends FileElement {
 			if (forgivingOfSpaceUnderscore) {
 				String taxonNameSp = taxonName.replace("_"," ");
 				for (int i = 0; i < numTaxa; i++) {
-					String tNiSp = taxon[i].getName().replace("_"," ");
+					String tNiSp = taxon[i].getName();
+					if (tNiSp != null)
+						tNiSp = tNiSp.replace("_"," ");
 					if (taxonNameSp.equalsIgnoreCase(tNiSp))
 						return i;
 				}

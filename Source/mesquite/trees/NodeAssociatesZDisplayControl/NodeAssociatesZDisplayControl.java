@@ -20,6 +20,7 @@ import java.awt.Color;
 
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Shape;
 import java.awt.event.InputEvent;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -32,6 +33,7 @@ import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.DoubleField;
@@ -789,6 +791,14 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable {
 		}
 		return null;
 	}
+	
+	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){ //must return null or int[4], left, top, right, bottom
+		String stringAtRoot = stringAtNode((MesquiteTree)tree, tree.getRoot(), false, false, false);
+		if (StringUtil.blank(stringAtRoot))
+			return null;
+		return new int[]{500, 0, 0, 0};
+	}
+
 	/*.................................................................................................................*/
 	void myDraw(MesquiteTree tree, int node, Graphics g) {
 		if (!controlModule.showOnTerminals.getValue() && tree.nodeIsTerminal(node))
@@ -821,11 +831,13 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable {
 			x= treeDisplay.getTreeDrawing().getNodeValueTextBaseX(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth, controlModule.fontSize, controlModule.horizontal.getValue()) + controlModule.xOffset;
 			y = treeDisplay.getTreeDrawing().getNodeValueTextBaseY(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth,controlModule.fontSize,controlModule.horizontal.getValue()) + controlModule.yOffset;
 		}
-
+		Shape ss = g.getClip();
+		g.setClip(null);
 		if (controlModule.horizontal.getValue())
 			box.draw(g,  x, y);
 		else
 			box.draw(g,  x, y, 0, 1500, treeDisplay, false, false);
+		g.setClip(ss);
 
 	}
 	/*.................................................................................................................*/

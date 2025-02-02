@@ -147,8 +147,8 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public boolean hasPreferredSize(){
 		return treeDrawTask.hasPreferredSize();
 	}
-	public Dimension getPreferredSize(){
-		return treeDrawTask.getPreferredSize();
+	public Dimension getPreferredSize(){  
+		return  treeDrawTask.getPreferredSize();
 	}
 	/*.................................................................................................................*/
 	MesquiteModule getTreeWindowMaker() {

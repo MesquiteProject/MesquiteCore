@@ -363,6 +363,17 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			return false;
 		return (extras.indexOf(extra) >= 0);
 	}
+	
+	int locationSetX = 0;
+	int locationSetY = 0;
+	public void adjustLocation(int x, int y){
+		super.setLocation(locationSetX + x, locationSetY + y);
+	}
+	public void setLocation(int x, int y){
+		locationSetX = x;
+		locationSetY = y;
+		super.setLocation(x, y);
+	}
 	public void moveExtraToFront(TreeDisplayExtra extra){
 		if (extra == null)
 			return;
@@ -413,6 +424,16 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			}
 		}
 	}
+	
+	int[] borders = new int[]{0, 0, 0, 0};
+	public int[]  getBorders(){
+		return borders;
+	}
+	public void setBordersFromExtras(Tree tree) {
+		int[] bordersTemp = getBordersFromExtras(tree);
+		if (bordersTemp != null && bordersTemp.length == 4)
+			borders = bordersTemp;
+	}
 	public int[] getBordersFromExtras(Tree tree) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return null;
@@ -460,6 +481,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void drawAllExtras(Tree tree, int drawnRoot, Graphics g) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
+		
 		if (extras != null) {
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {
@@ -467,8 +489,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
 				if (ownerModule==null || ownerModule.isDoomed()) 
 					return;
+				Shape clip = g.getClip();
+				g.setClip(null);
 				ex.drawOnTree(tree, drawnRoot, g);
-
+				g.setClip(clip);
 			}
 		}
 		if (notice!=null)

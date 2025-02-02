@@ -324,16 +324,15 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	TreeVector temporaryTrees = null;
 	/** A method called immediately before a file is to be saved.*/
 	public void fileAboutToBeWritten(MesquiteFile f) {
-		Debugg.println("@@@ fileAboutToBeWritten");
 		if (f != getProject().getHomeFile())
 			return;
 		TreesManager manager = (TreesManager)findElementManager(TreeVector.class);
-		Debugg.println("@@@ fileAboutToBeWritten");
 
 		if ((basicTreeWindow.treeEdited || editMode) && basicTreeWindow.tree != null) {
 			temporaryTrees = manager.makeNewTreeBlock(taxa, getTempTreeblockName(), getProject().getHomeFile());
 			MesquiteTree tempTree = basicTreeWindow.tree.cloneTree();
 			temporaryTrees.addElement(tempTree, false);
+			temporaryTrees.setAnnotation("This  \"temporary\" tree block was written by Mesquite to hold the modified tree being edited in a tree window.", false);
 			manager.elementAdded(temporaryTrees);
 		}
 	}
@@ -343,6 +342,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	public void fileWritingFinished(MesquiteFile f) {
 		if (f != getProject().getHomeFile())
 			return;
+		if (temporaryTrees != null)
 		temporaryTrees.deleteMe(false);
 		temporaryTrees = null;
 	}
@@ -1642,7 +1642,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	Rectangle getTreeViewport() {
 		if (usingPane && hScroll != null) {
 			if (!isFauxScrollPane() && MesquiteTrunk.isMacOSX())
-				return new Rectangle(0, 0, treeDisplay.getWidth(), treeDisplay.getHeight());
+				return new Rectangle(0, 0, treeDisplay.getWidth(), treeDisplay.getHeight());  
 			hScroll = treePane.getHAdjustable();
 			vScroll = treePane.getVAdjustable();
 			return new Rectangle(hScroll.getValue(), vScroll.getValue(), treePane.getContentsWidth(), treePane.getContentsHeight());
@@ -1851,9 +1851,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		palette.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
 		if (drawingSizeMode == SCALETOFIT) {
 			togglePane(false, true);
-			int[] extraBordersRequested = treeDisplay.getBordersFromExtras(tree);
-			if (extraBordersRequested == null)
-				extraBordersRequested =noExtraBorders;
 			treeDisplay.setSize(getWidth(), getHeight() - scrollWidth);
 			treeDisplay.setFieldSize(getWidth(), getHeight() - scrollWidth);
 			treeDisplay.autoStretchIfNeeded = true;
@@ -1863,6 +1860,28 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else if (drawingSizeMode == AUTOSIZE) {
 			int w = getWidth() - scrollWidth;
 			int h = getHeight() - scrollWidth - scrollWidth;
+			
+			
+			/*
+			treeDisplay.setBordersFromExtras(tree);
+			int[] borders = treeDisplay.getBorders();
+			if (borders != null && borders.length == 4){
+				treeDisplay.setLocation(borders[0], borders[1]);
+				w = w - (borders[0]+borders[2]);
+				h = h - (borders[1]+borders[3]);
+				if (treePane != null)
+				treePane.setBackground(Color.yellow);
+				treeDisplay.setBackground(Color.cyan);
+				Graphics gg = treeDisplay.getGraphics();
+				if (gg != null){
+					Debugg.println("filling");
+					
+				gg.setClip(null);
+					gg.setColor(Color.blue);
+					gg.fillOval(200, 200, 500, 500);
+				}
+			} 
+			/*	*/
 			Dimension s = treeDrawCoordTask.getPreferredSize();
 			if (s != null) {
 				togglePane(true, false);
@@ -1912,7 +1931,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					if (canFit && scale <= 0) {
 						treeDisplay.setSize(w, h);
 
-						treeDisplay.setFieldSize(w, h);
+						treeDisplay.setFieldSize(w, h); 
 						treeDisplay.redoCalculations(8813);
 						togglePane(false, false);
 					}
