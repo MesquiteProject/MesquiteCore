@@ -24,6 +24,7 @@ import java.net.*;
 
 import javax.imageio.ImageIO;
 
+import mesquite.io.InterpretPhylipTreesBasic.InterpretPhylipTreesBasic;
 import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -32,6 +33,7 @@ import mesquite.lib.misc.HPanel;
 import mesquite.lib.simplicity.*;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.NewickDialect;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ChecklistDialog;
@@ -214,12 +216,12 @@ public class Mesquite extends MesquiteTrunk
 		 */
 
 		if (verboseStartup) System.out.println("main init 2");
-		
+
 		// [Search for MQLINUX]
-	if (isLinux()) {
-		linuxGWAThread = new LinuxGWAThread();
-		linuxGWAThread.start();
-	}
+		if (isLinux()) {
+			linuxGWAThread = new LinuxGWAThread();
+			linuxGWAThread.start();
+		}
 
 
 		String sep = MesquiteFile.fileSeparator;
@@ -416,7 +418,7 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteFile.rename(logPath, supportFilesPath + sep + MesquiteTrunk.logFileName + "_(Previous#1)");
 		}
 		if (verboseStartup) System.out.println("main init 10");
-	
+
 
 		/**/
 		/*
@@ -1763,6 +1765,92 @@ public class Mesquite extends MesquiteTrunk
 		return f;
 	}
 	/*.................................................................................................................*/
+	public MesquiteProject readTreeFile(){
+		ExtensibleDialog dialog = null; //to be formed later
+		// === the file chosen
+		String path = MesquiteFile.openFileDialog( "Choose Tree File",  null, null);
+		if (path == null)
+			return null;
+		String startOfFile = MesquiteFile.getFileContentsAsString(path, 200); 
+		String token = parser.getFirstToken(startOfFile);
+		boolean isNexus = "#NEXUS".equalsIgnoreCase(token);
+
+		//Is there a project into which the file could be included?
+		boolean isProjectAvailable = projects.getNumProjects()>0;
+
+		//Make list of available Newick dialects
+		String dialectName = null;
+		String[] dialectHumanNames = null;
+		String[] dialectInternalNames = null;
+		MesquiteInteger selectedInDialog = new MesquiteInteger(0);
+		if (MesquiteTree.dialects.size()>0){
+			dialectHumanNames = new String[MesquiteTree.dialects.size()];
+			dialectInternalNames = new String[MesquiteTree.dialects.size()];
+			for (int i=0; i<dialectHumanNames.length; i++){
+				NewickDialect dialect = (NewickDialect)MesquiteTree.dialects.elementAt(i);
+				dialectHumanNames[i] = dialect.getHumanName();
+				dialectInternalNames[i] = dialect.getName();
+			}
+			dialog = new ListDialog(containerOfModule(), "Reading file with trees", "In which dialect of Newick are the trees described?", false,null, dialectHumanNames, 8, selectedInDialog, "OK", null, false, true);
+		}
+		else if (!isNexus || isProjectAvailable)
+			dialog = new ExtensibleDialog(containerOfModule(), "Reading file with trees");
+		
+		//Completing the dialog with extra items
+		String autoSaveString = "";
+		boolean include = false;
+		if (dialog != null){
+			Checkbox autoSaveB = null;
+			Checkbox includeB = null;
+			if (!isNexus)
+				autoSaveB = dialog.addCheckBox("Auto-save converted NEXUS file", true); //NOTE THESE INTERACT; if include, dont' autosave!
+			if (isProjectAvailable && isNexus)
+				includeB = dialog.addCheckBox("Include in project already open", false);
+
+			dialog.completeAndShowDialog(true);
+			if (dialog.buttonPressed.getValue() == 0)  {
+				//DIALECT
+				if (dialog instanceof ListDialog){
+					int result = selectedInDialog.getValue();
+					dialectName = "@newickDialect.";
+					if (result <0)
+						return null;
+					else if (result== 0)
+						dialectName += "Mesquite";
+					else
+						dialectName += dialectInternalNames[result];
+				}
+				if (autoSaveB != null && autoSaveB.getState())
+					autoSaveString = " @autosaveImported";
+				if (includeB!= null)
+					include = includeB.getState();
+			}
+			else return null;
+		}
+		
+		//Acting on UI
+		if (include && projects.getNumProjects()>0){
+			MesquiteProject cproj;
+			if (projects.getNumProjects()>1){
+				Listable[] ps = projects.getProjectsArray();
+			Listable choice = ListDialog.queryList(containerOfModule(), "Include in which project?", "Choose the project into which you want to include the contents of the tree file", null, ps, 0);
+			if (choice == null)
+				return null;
+			 cproj = (MesquiteProject)choice;
+			}
+			else
+				cproj = projects.getProject(0);
+			if (isNexus)
+				cproj.getCoordinatorModule().includeFile(path, NexusFileInterpreter.class, ParseUtil.tokenize(dialectName) + autoSaveString + " @autodeleteDuplicateOrSubsetTaxa", 0, null);
+			else
+				cproj.getCoordinatorModule().includeFile(path, InterpretPhylipTreesBasic.class, ParseUtil.tokenize(dialectName) + autoSaveString + " @autodeleteDuplicateOrSubsetTaxa", 0, null);
+			return null;
+		}
+		
+		return openOrImportFileHandler(path, ParseUtil.tokenize(dialectName) + autoSaveString, TryNexusFirstTreeFileInterpreter.class);
+
+	}
+	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
 	String noticeLocation = "http://"; //before release, change URL to "http://"
 	/*.................................................................................................................*/
@@ -1953,27 +2041,7 @@ public class Mesquite extends MesquiteTrunk
 
 		}
 		else if (checker.compare(this.getClass(), "Opens tree file on disk with user-specified Newick dialect.  It could be opened as a separate project, or included into an existing one.", "[name and path of file].", commandName, "readTreeFile")) {
-			/*String path = ParseUtil.getFirstToken(arguments, stringPos);
-			String completeArguments = arguments; //Debugg.println
-			dialog with:
-			include/independent (only if another file is open)
-			dialect
-			sends these plus phylip/nexus only */
-			String path = MesquiteFile.openFileDialog( "Choose Tree File",  null, null);
-			if (path == null)
-				return null;
-			String[] dialects = new String[]{"Default/BEAST/Mesquite", "MrBayes", "IQ-TREE", "ASTRAL", "DELINEATE", "Mesquite3"};
-			int result = ListDialog.queryList(containerOfModule(), "Treefile format (Newick dialect)", "In which dialect of Newick are the trees described?", null, dialects, 0, "OK", "Cancel");
-			String dialect = "@newickDialect.";
-			if (result <0)
-				return null;
-			else if (result== 0)
-				dialect += "Mesquite";
-			else
-				dialect += dialects[result];
-			Debugg.println("dialect " + dialect);
-			return openOrImportFileHandler(path, ParseUtil.tokenize(dialect), TryNexusFirstTreeFileInterpreter.class);
-
+			return readTreeFile();
 		}
 		else if (checker.compare(this.getClass(), "Opens recent file.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file]", commandName, "openRecent")) {
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
@@ -2733,7 +2801,7 @@ public class Mesquite extends MesquiteTrunk
 				for ( int i = 0; i < args.length; i++ ) {
 					if (!MesquiteTrunk.startedFromFlex2 || (args[i]!=null && args[i].startsWith("-"))){
 						if (!args[i].equalsIgnoreCase("-null"))
-						s += " [ " + args[i] + " ]";
+							s += " [ " + args[i] + " ]";
 					}
 				}
 				MesquiteTrunk.mesquiteTrunk.logln(s);
@@ -2742,10 +2810,10 @@ public class Mesquite extends MesquiteTrunk
 
 				for ( int i = 0; i < args.length; i++ ) {
 					if (args[i]!=null && !args[i].startsWith("-")) {
-					if (MesquiteTrunk.startedFromFlex2) { //the argument is not a file to open, but rather the encapsulatedpath of the app on macOS to find the list of files to open
+						if (MesquiteTrunk.startedFromFlex2) { //the argument is not a file to open, but rather the encapsulatedpath of the app on macOS to find the list of files to open
 							if (MesquiteTrunk.debugMode)
 								MesquiteTrunk.mesquiteTrunk.logln("Encapsulated path to me: "+ args[i]);
-								
+
 							MesquiteTrunk.encapsulatedPathOfExecutable= args[i];
 							//record the encapsulated path to the filesToOpen so that ConsoleThread can find any list of files
 						}

@@ -25,6 +25,7 @@ import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
@@ -72,7 +73,8 @@ public class TreeUtil {
 	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String arguments, String treeNameBase) {
 		Parser parser = new Parser(arguments);
 		String dialect = parser.getFileReadingArgumentSubtype(arguments, "newickDialect");
-		Debugg.println("@Dialect " + dialect);
+		if (dialect != null)
+			MesquiteMessage.println("Trees read assuming Newick dialect: " + dialect);
 		Parser treeParser = new Parser();
 		treeParser.setQuoteCharacter((char)0);
 		int numTrees = MesquiteInteger.infinite;

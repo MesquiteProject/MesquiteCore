@@ -845,16 +845,18 @@ public class ManageTaxa extends TaxaManager {
 		}
 		return false;
 	}
-	//NameReference importSourceRef = NameReference.getNameReference("importsource");
-	//NameReference origIndexRef = NameReference.getNameReference("OrigIndex");
+
 	/*.................................................................................................................*/
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
-
+		
 		if (parser.hasFileReadingArgument(fileReadingArguments, "readOneTaxaBlockOnly") && getProject().getNumberTaxas(file)>0){
 			logln("Taxa block skipped");
-			
 			return skipNexusBlock(file, name, block, null, fileReadingArguments);
-			}
+		}
+		boolean autodeleteDuplicateOrSubsetTaxa = false;
+		if (parser.hasFileReadingArgument(fileReadingArguments, "autodeleteDuplicateOrSubsetTaxa"))
+			autodeleteDuplicateOrSubsetTaxa = true;
+		Debugg.println(" arguments " + fileReadingArguments + "   " + parser.hasFileReadingArgument(fileReadingArguments, "autodeleteDuplicateOrSubsetTaxa"));
 		Parser commandParser = new Parser();
 
 		commandParser.setString(block.toString());
@@ -934,12 +936,6 @@ public class ManageTaxa extends TaxaManager {
 				if (fuse){
 					translationTable = new IntegerArray(newTaxa.getNumTaxa() - firstNewTaxon);  
 					translationTable.setNameReference(NameReference.getNameReference("OrigIndex" + file.getFileName()));
-					/*for (int it = 0; it<firstNewTaxon; it++){
-						Object o = newTaxa.getAssociatedObject(importSourceRef, it);
-						if (o == null){
-							newTaxa.setAssociatedObject(importSourceRef, it, newTaxa.getFile().getFileName());
-						}
-					}*/
 				}
 				int itNew = firstNewTaxon;
 				for (int it=firstNewTaxon; it<newTaxa.getNumTaxa() && !(taxonName=parser.getNextToken()).equals(";"); it++) {
@@ -1008,10 +1004,15 @@ public class ManageTaxa extends TaxaManager {
 		}
 		CommandRecord.tick("TAXA block read; checking");
 		if (newTaxa!=null) {
-
-			Taxa eT = existsInOtherFile(newTaxa, file, true, false);
+			boolean considerSubsetAsSame = false;
+			if (autodeleteDuplicateOrSubsetTaxa) //this is a silly construction, except that it makes the principle clear. 
+				considerSubsetAsSame = true;
+			Taxa eT = existsInOtherFile(newTaxa, file, true, considerSubsetAsSame);
 			if (eT !=null && !noWarnDupTaxaBlock){  //>>>>>>>>>>>>>>>>>> block of taxa with same names found
-				boolean autoDelete = false;
+				
+				
+				boolean autoDelete = autodeleteDuplicateOrSubsetTaxa;
+				
 				String ftn = "";
 				String helpString ="";
 				if (newTaxa.getTaxon(0)!=null)
@@ -1045,7 +1046,8 @@ public class ManageTaxa extends TaxaManager {
 					}
 				}
 				else {
-					discreetAlert(warning + "\nOnly the first block will be kept.  Any other information (e.g., character matrices) associated with that second block will be reattached to the first block. " +
+					if (!autodeleteDuplicateOrSubsetTaxa)
+						discreetAlert(warning + "\nOnly the first block will be kept.  Any other information (e.g., character matrices) associated with that second block will be reattached to the first block. " +
 							" If you are reading a linked file and do not intend to delete this taxa block from the linked file, then do not save the file!");
 					if (eTOrder == null)
 						setOrder(eT, newTaxa);

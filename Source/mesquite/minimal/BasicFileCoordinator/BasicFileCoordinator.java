@@ -620,8 +620,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					p.openedWithoutMesquiteBlock = false;
 					p.fileSaved(thisFile);  // If used import system, then doesn't add extension or save file if it was some type of NEXUS file 
 					if (importing && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
+						boolean autosaveImported = parser.hasFileReadingArgument(arguments, "autosaveImported");
+
 						thisFile.changeLocation(thisFile.getDirectoryName(), thisFile.getFileName()+".nex");
-						if (MesquiteThread.isScripting() || thisFile.changeLocation("Save imported file as NEXUS file")) {
+						if (MesquiteThread.isScripting() || (autosaveImported || thisFile.changeLocation("Save imported file as NEXUS file"))) {
 							afterProjectRead();
 							writeFile(thisFile); 
 						}
@@ -663,7 +665,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
 	}
-	
+
 	public void showBasicWindows(){
 		MesquiteWindow mw = getModuleWindow();
 		if (mw != null)
@@ -672,7 +674,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		MesquiteModule mbb = (MesquiteModule)findElementManager(Taxa.class);
 		if (mbb != null)
 			mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
-	
+
 		if (getProject().getNumberCharMatrices()>3){
 			mbb = findEmployeeWithName("#ManageCharacters");
 			if (mbb != null)
@@ -732,7 +734,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				p.decrementProjectWindowSuppression();
 			}
 			resetAllMenuBars();
-			
+
 		}
 		decrementMenuResetSuppression();
 		if (p==null){
@@ -744,7 +746,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		if (noWindowsShowing()){
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
 			showBasicWindows();
-			}
+		}
 		if (thisFile != null && thisFile.getCloseAfterReading()){
 			closeFile(thisFile);
 			MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
@@ -790,6 +792,18 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 	}
 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	public void includeFile(String pathName, Class importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
+		FileRead pt = new FileRead(pathName, null, arguments, fileType,   this, 1, null, fileDescriptionText);
+		pt.setFileInterpreter(importer);
+		if (MesquiteThread.isScripting()) {
+			pt.run();
+		}
+		else {
+			MesquiteThread mt = new MesquiteThread(pt);
+			mt.start();
+		}
+	}
 	/*.................................................................................................................*/
 	public void includeFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
 		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null, fileDescriptionText);
@@ -1296,7 +1310,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 		NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
 		if (nfi!=null) {
-			
+
 			nfi.writeFile(getProject(), nMF);
 		}
 		else 
@@ -2046,6 +2060,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 	int category;
 	int fileType;
 	String fileDescriptionText = null;
+	Class fileInterpClass;
 	public FileRead (String path, String importer, String arguments, int fileType,  BasicFileCoordinator ownerModule, int category, ObjectContainer f, String filePurposeText) {
 		this.f = f;
 		this.arguments = arguments;
@@ -2059,11 +2074,9 @@ class FileRead implements CommandRecordHolder, Runnable {
 		this.fileType = fileType;
 		//setCurrent(1);
 	}
-	/*
-	public MesquiteFile getFile(){
-	 	return linkedFile;
+	public void setFileInterpreter(Class fileInterp){
+		this.fileInterpClass =fileInterp;
 	}
-	 */
 	public CommandRecord getCommandRecord(){
 
 		return comRec;
@@ -2137,8 +2150,10 @@ class FileRead implements CommandRecordHolder, Runnable {
 				f.setObject(linkedFile);
 			ownerModule.getProject().addFile(linkedFile);
 			linkedFile.setProject(ownerModule.getProject());
-			FileInterpreter fileInterp =null;
-			if (!StringUtil.blank(importer))
+			FileInterpreter fileInterp = null;
+			if (fileInterpClass != null)
+				fileInterp = (FileInterpreter)ownerModule.findEmployeeWithDuty(fileInterpClass);
+			else if (!StringUtil.blank(importer))
 				fileInterp = (FileInterpreter)ownerModule.findEmployeeWithName(importer);
 			NexusFileInterpreter nfi = (NexusFileInterpreter)ownerModule.findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
 			if (fileInterp!=null) {

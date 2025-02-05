@@ -1592,6 +1592,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		
 		boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 		String dialect = parser.getFileReadingArgumentSubtype(fileReadingArguments, "newickDialect");
+		if (dialect != null)
+			MesquiteMessage.println("Trees read assuming Newick dialect: " + dialect);
 		boolean fuseTreeBlocks = false;
 		int firstTree = 0;
 		int lastTree = MesquiteInteger.infinite;

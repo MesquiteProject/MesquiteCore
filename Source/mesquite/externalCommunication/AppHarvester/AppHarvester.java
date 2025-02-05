@@ -24,7 +24,7 @@ public class AppHarvester extends MesquiteInit {
 	StringBuffer details = new StringBuffer();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Includes a file and optionally fuses taxa/characters block", null, commandName, "showDetails")) {
+		if (checker.compare(this.getClass(), "Shows details of what apps are loaded.", null, commandName, "showDetails")) {
 			logln("\n" + details.toString());
 		}
 		else

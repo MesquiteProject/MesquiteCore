@@ -32,6 +32,7 @@ import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Identifiable;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
 import mesquite.lib.LongArray;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
@@ -162,14 +163,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private boolean nameLock = false;
 	/** Currently not used internally, though a query to isLocked currently does indicate true if the tree is at that moment undergoing modification and thus shouldn't be touched.*/
 	private boolean locked = false;
-	/** A vector to store the MesquiteListeners currently listening for changes in this tree.
-	Vector listeners;
-	/** A count of the listeners remaining, used to try to catch memory leaks.
-	private static int listenersRemaining=0;
-	 */
-	/* True if internal node names are treated as cosmetic 
-	public static boolean cosmeticInternalNames = true;
-	 */
+	/** A ListableVector of the NewickDialects known */
+	public static ListableVector dialects;
 	/** True if internal node names should be converted to annotations */
 	public static boolean convertInternalNames = false;
 	/** True if should warn if reticulations found */
@@ -3360,15 +3355,26 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	String punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 	String whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
 	
-	private String preprocessForDialect(String tD, String dialect){
-		Debugg.println("@ reading tree with dialect " + dialect);
-		if ("MrBayes".equalsIgnoreCase(dialect)){
+	private String preprocessForDialect(String tD, String dialectName){
+		if (dialects.indexOfByNameIgnoreCase(dialectName)>=0){
+			NewickDialect dialect = (NewickDialect)dialects.elementAt(dialects.indexOfByNameIgnoreCase(dialectName));
+			punctuationInNewickComments = dialect.getPunctuation();
+			whitespaceInNewickComments = dialect.getWhitespace();
+			if (punctuationInNewickComments == null)
+				punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
+			if (whitespaceInNewickComments == null)
+				whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
+			tD = dialect.translate(tD);
+			return tD;
+		}
+		
+	/*	if ("MrBayes".equalsIgnoreCase(dialectName)){
 			punctuationInNewickComments = ",=><{}'";
 			whitespaceInNewickComments = null;
-			tD = tD.replace("prob ( percent )", "'prob(percent)'");
-			tD = tD.replace("prob + - sd", "'prob+-sd'");		
-			tD = tD.replace("prob + - sd", "'prob+-sd'");		
-			tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _mean", "'effectivebrlenIgrBrlens{1,2,3,4,5}_mean'");		
+		//	tD = tD.replace("prob ( percent )", "'prob(percent)'");
+		//	tD = tD.replace("prob + - sd", "'prob+-sd'");		
+		//	tD = tD.replace("prob + - sd", "'prob+-sd'");		
+		//	tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _mean", "'effectivebrlenIgrBrlens{1,2,3,4,5}_mean'");		
 			tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _95%HPD", "'effectivebrlenIgrBrlens{1,2,3,4,5}_95%HPD'");		
 			tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _median", "'effectivebrlenIgrBrlens{1,2,3,4,5}_median'");		
 			tD = tD.replace("effectivebrlenIgrBrlens { 6 , 7 , 8 } _mean", "'effectivebrlenIgrBrlens{6,7,8}_mean'");		
@@ -3389,27 +3395,29 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 			tD = tD.replace("\"", "'");		
 			return tD;
 		}
-		else if ("Delineate".equalsIgnoreCase(dialect)){ 
+		
+		else if ("Delineate".equalsIgnoreCase(dialectName)){ 
 			punctuationInNewickComments = ",=><'";
 			whitespaceInNewickComments = ""; //if this, then comment reader will have to strip beginning and ending
 	}
-		else if ("TreeAnnotator".equalsIgnoreCase(dialect) || "Mesquite4".equalsIgnoreCase(dialect) || "Mesquite".equalsIgnoreCase(dialect) || "Default".equalsIgnoreCase(dialect)){ 
+		else if ("TreeAnnotator".equalsIgnoreCase(dialectName) || "Mesquite4".equalsIgnoreCase(dialectName) || "Mesquite".equalsIgnoreCase(dialectName) || "Default".equalsIgnoreCase(dialectName)){ 
 			punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 			whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
 	}
-		else if ("IQ-TREE".equalsIgnoreCase(dialect)){
+
+		else if ("IQ-TREE".equalsIgnoreCase(dialectName)){
 			tD = tD.replace("\"", "'");		
 			tD = tD.replace("gCF / gDF1 / gDF2 / gDFP", "'gCF/gDF1/gDF2/gDFP'");		
-			tD = tD.replace("gCF_N / gDF1_N / gDF2_N / gDFP_N", "'gCF_N/gDF1_N/gDF2_N/_NgDFP_N'");		
+			tD = tD.replace("gCF_N / gDF1_N / gDF2_N / gDFP_N", "'gCF N/gDF1 N/gDF2 N/gDFP N'");		
 			tD = tD.replace("sCF / sDF1 / sDF2", "'sCF/sDF1/sDF2'");		
-			tD = tD.replace("sCF_N / sDF1_N / sDF2_N", "'sCF_N/sDF1_N/sDF2_N'");		
+			tD = tD.replace("sCF_N / sDF1_N / sDF2 N", "'sCF N/sDF1 N/sDF2 N'");		
 			tD = tD.replace("XXXXX", "'XXXXX'");		
 			tD = tD.replace("XXXXX", "'XXXXX'");		
 
 			punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 			whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
 		}
-		else if ("ASTRAL".equalsIgnoreCase(dialect) || "ASTRAL3".equalsIgnoreCase(dialect) || "ASTRAL4".equalsIgnoreCase(dialect)){
+		/*else if ("ASTRAL".equalsIgnoreCase(dialectName) || "ASTRAL3".equalsIgnoreCase(dialectName) || "ASTRAL4".equalsIgnoreCase(dialectName)){
 			tD = tD.replace(";", ",");	
 			int last = tD.lastIndexOf(",");
 			tD = tD.substring(0,last)+';'+tD.substring(last);
@@ -3417,7 +3425,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 			tD = tD.replace("]'", ">");		
 			punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 			whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
-		}
+		}*/
 		return tD;
 	}	
 	
