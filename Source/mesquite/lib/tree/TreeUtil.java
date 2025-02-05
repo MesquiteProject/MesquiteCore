@@ -68,7 +68,11 @@ public class TreeUtil {
 	}
 	
 	/*.................................................................................................................*/
-	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String treeNameBase) {
+	//reading arguments can include dialect hints, e.g. @newickDialect.MrBayes, or @newickDialect.astral
+	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String arguments, String treeNameBase) {
+		Parser parser = new Parser(arguments);
+		String dialect = parser.getFileReadingArgumentSubtype(arguments, "newickDialect");
+		Debugg.println("@Dialect " + dialect);
 		Parser treeParser = new Parser();
 		treeParser.setQuoteCharacter((char)0);
 		int numTrees = MesquiteInteger.infinite;
@@ -90,6 +94,8 @@ public class TreeUtil {
 			}
 			MesquiteTree t = new MesquiteTree(taxa);
 			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
+			if (StringUtil.notEmpty(dialect))
+				t.setDialect(dialect);
 			//t.setTreeVector(treeVector);
 			t.readTree(line,namer, null, "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
 			/*MesquiteInteger pos = new MesquiteInteger(0);

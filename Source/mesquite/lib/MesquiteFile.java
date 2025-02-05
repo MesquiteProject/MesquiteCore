@@ -1902,6 +1902,10 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	If includeEntireCommand is true, then the entire command is returned; if false, the only the first token (command name) is returned.
 	(Returning only part of the command can save time if the commands are long (e.g., a TREE) and not needed. */
 	public String getNextCommand(MesquiteInteger status, StringBuffer commandComments, boolean includeEntireCommand) {
+		return getNextCommand( status,  commandComments,  includeEntireCommand, false);
+	}
+	/*old default was to insert spaces with comment tokens; v4 can be turned off. Used in Nexus comment reading in ManageTrees*/
+	public String getNextCommand(MesquiteInteger status, StringBuffer commandComments, boolean includeEntireCommand, boolean treeCommentRules) {
 		getNextCommandStatusTimer.start();
 		StringBuffer command= new StringBuffer(300);
 		betweenCommandComments.setLength(0);

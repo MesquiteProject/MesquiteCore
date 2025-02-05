@@ -700,6 +700,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		else
 			return s + ">";
 	}
+	/* --#########################################----*/
 	public void readAssociated(String assocString, int node, MesquiteInteger pos){
 		readAssociated(assocString,node,pos, (String)null, (String)null, false);
 
@@ -707,18 +708,29 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation){
 		readAssociated(assocString, node, pos, whitespace, punctuation, false);
 	}
+	
+	boolean reportReading = false;
+	/* Primarily from trees; the punctuation in comments may follow Newick rules */
 	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation, boolean forceNumberToDouble){
 		if (pos==null || node>numParts || node<0 || StringUtil.blank(assocString))
 			return;
 		String key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
+		if (reportReading) Debugg.println("@" + pos.getValue() + " ~~~~~~~~~~~~readAssociated at " + pos.getValue() + "  " + assocString);
 		while (!">".equals(key)) {
 			if (StringUtil.blank(key))
 				return;
+			if (reportReading) Debugg.println("@~~KEY " + key);
 			String eq = ParseUtil.getToken(assocString, pos, whitespace, punctuation); //eating up equals
+			if (reportReading) Debugg.println("     @~~equal " + eq);
 			int oldPos = pos.getValue();
 			String value = ParseUtil.getToken(assocString, pos, whitespace, punctuation); //finding value
 			value=StringUtil.removeFirstCharacterIfMatch(value, '\'');
 			value=StringUtil.removeLastCharacterIfMatch(value, '\'');
+			//if (whitespace != null && whitespace.length() == 0){
+				value = StringUtil.stripLeadingWhitespace(value);
+				value = StringUtil.stripTrailingWhitespace(value);
+				if (reportReading) Debugg.println("     @~~[value] [" + value + "]");
+			//}
 			if (StringUtil.blank(value))
 				return;
 			if (key.equals("color")){ //special case; reading old color possibly
@@ -752,6 +764,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			else if (value.indexOf("{") == 0) { //treat as String bounded by {}; e.g., added to read BEAST results
 				int pPos = pos.getValue();
 				double vn = MesquiteDouble.fromString(assocString, pos);
+				if (reportReading) Debugg.println("    {}~~ vn " + vn);
 				if (MesquiteDouble.isCombinable(vn)){
 					pos.setValue(pPos);
 					DoubleArray values = new DoubleArray(1);
@@ -759,10 +772,13 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					int count = 1;
 					while (!"}".equals(s)) {
 						double v = MesquiteDouble.fromString(assocString, pos);
+						if (reportReading) Debugg.println("    v~~ " + v);
 						values.resetSize(count);
 						values.setValue(count-1, v);
 						count++;
 						s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); //comma or }
+						if (reportReading) Debugg.println("    s{}~~ " + s);
+					
 					}
 
 					NameReference nr = makeAssociatedObjects(key);
@@ -780,6 +796,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 						values.setValue(count-1, s);
 						count++;
 						s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); //comma or }
+						if (reportReading) Debugg.println("    s{}~~ " + s);
 					}
 
 					NameReference nr = makeAssociatedObjects(key);
@@ -788,6 +805,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 			else if ((forceNumberToDouble && MesquiteNumber.isNumber(value)) || ((value.indexOf(".")>=0) && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos))) { //treat as double 
+				if (reportReading) Debugg.println("    {}~~to double " + value);
 				NameReference nrEx= NameReference.getNameReference(key);   // fixed in 3.01
 				DoubleArray bb = getWhichAssociatedDouble(nrEx);       //Finding doubles if they exist
 				if (bb == null) {
@@ -810,12 +828,16 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			}
 			//at this point there are just two alternatives left that are recognized: an undeclared string, and an integer
 			//first check to see if it could be a number
-			else if ("0123456789-".indexOf(value.charAt(0))<0 || !MesquiteLong.interpretableAsLong(assocString, pos, oldPos)) {  //doesn't start as number or starts as number but not interpretable as long
+			else if ("0123456789-+".indexOf(value.charAt(0))<0 || MesquiteLong.fromString(value) == MesquiteLong.impossible) {  //doesn't start as number or starts as number but not interpretable as long
+				if (reportReading) Debugg.println("    ~~to string " + value);
+				if (reportReading) Debugg.println("          ~~\"0123456789-+\".indexOf(value.charAt(0))<0 " + ("0123456789-+".indexOf(value.charAt(0))<0));
+				if (reportReading) Debugg.println("          ~~MesquiteLong.fromString(value) == MesquiteLong.impossible " + (MesquiteLong.fromString(value) == MesquiteLong.impossible));
 				NameReference nr = makeAssociatedObjects(key);
 				ObjectArray bb = getWhichAssociatedObject(nr);
 				bb.setValue(node, value);
 			}
 			else {  //treat as long, unless (fixed in 3.01) same name exists as DoubleArray in which case put there
+				if (reportReading) Debugg.println("    {}~~to long or double " + value );
 				NameReference nrEx= NameReference.getNameReference(key);   // 
 				DoubleArray bbd = getWhichAssociatedDouble(nrEx);       //Finding doubles if they exist; if so, use as doubles instead!!!!!
 				if (bbd != null){
@@ -825,8 +847,8 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				else {
 					NameReference nr = makeAssociatedLongs(key);
 					LongArray bb = getWhichAssociatedLong(nr);
-					pos.setValue(oldPos);
-					bb.setValue(node, MesquiteInteger.fromString(assocString, pos));
+					//pos.setValue(oldPos);
+					bb.setValue(node, MesquiteInteger.fromString(value)); //need to get it this way to keep it moving
 				}
 			}
 			key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
@@ -834,6 +856,8 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
 		}
 	}
+	
+	/* -----------------------------------------------------------------------------------------*/
 	public void setAssociateds(Associable a){
 		if (a==null)
 			return;

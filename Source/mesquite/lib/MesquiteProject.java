@@ -28,6 +28,7 @@ import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.HTMLDescribable;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;

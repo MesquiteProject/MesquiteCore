@@ -25,7 +25,7 @@ import mesquite.io.lib.*;
 
 /* ============  a file interpreter for Phylip trees ============*/
 
-public class InterpretPhylipTreesBasic extends InterpretPhylipTrees {
+public class InterpretPhylipTreesBasic extends InterpretPhylipTrees implements TryNexusFirstTreeFileInterpreter{
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Simple Newick/Phylip Treefile";

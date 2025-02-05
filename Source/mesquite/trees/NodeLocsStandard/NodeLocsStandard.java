@@ -88,7 +88,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		else {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Branch Length Display");
-			addItemToSubmenu(null, mss, "Auto-draw Branch Lengths", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.AUTOSHOWLENGTHS, this));
+			addItemToSubmenu(null, mss, "Automatic", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.AUTOSHOWLENGTHS, this));
 			addItemToSubmenu(null, mss, "Draw as Ultrametric (No branch lengths implied)", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWULTRAMETRIC, this));
 			addItemToSubmenu(null, mss, "Draw with Lengths, Unassigned as One", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWUNASSIGNEDASONE, this));
 		}
@@ -914,6 +914,13 @@ public class NodeLocsStandard extends NodeLocsVH {
 		fmBIG = g.getFontMetrics(big2);
 		fm = g.getFontMetrics(f);
 	}
+	
+	boolean showScaleConsideringAuto(Tree tree, TreeDisplay treeDisplay){
+		return showScale.getValue()
+				&& showBranchLengths.getValue()!= TreeDisplay.DRAWULTRAMETRIC 
+				&& ((tree.hasBranchLengths() || treeDisplay.fixedScalingOn) && (tree.getWhichAssociatedDouble(consensusNR) == null));
+	}
+	NameReference consensusNR = NameReference.getNameReference("consensusFrequency");
 	/*.................................................................................................................*/
 	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { //Graphics g removed as parameter May 02
 		if (MesquiteTree.OK(tree)) {
@@ -995,6 +1002,13 @@ public class NodeLocsStandard extends NodeLocsVH {
 			if (!compatibleWithOrientation(treeDisplay.getOrientation()))
 				setDefaultOrientation(treeDisplay);
 			
+			boolean branchesProportionalToLength = treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || 
+					(treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (treeHasBranchLengths || treeDisplay.fixedScalingOn));
+			branchesProportionalToLength = branchesProportionalToLength & 
+					!((tree.getWhichAssociatedDouble(consensusNR) != null) && (treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS));
+			
+
+			
 			if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
 				if (numTerms == 0)
@@ -1015,7 +1029,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				treeDrawing.y[subRoot] = (treeDrawing.y[root])+effectiveROOTSIZE;
 				treeDrawing.x[subRoot] = (treeDrawing.x[root])-effectiveROOTSIZE;
 				placeSingletons(treeDrawing, tree, root);
-				if (treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || (treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (treeHasBranchLengths ||treeDisplay.fixedScalingOn))) {
+				if (branchesProportionalToLength) {
 					treeDisplay.nodeLocsParameters[totalHeight]= tree.tallestPathAboveNode(root, 1.0);
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
@@ -1026,7 +1040,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						else
 							treeDisplay.nodeLocsParameters[scaling]=((double)(rect.height-treeDisplay.getTipsMargin()-buffer - effectiveROOTSIZE))/(treeDisplay.nodeLocsParameters[totalHeight]); 
 						UPdoAdjustLengths( treeDisplay, treeDrawing, tree, rect.height-effectiveROOTSIZE-buffer, root, 0, root);
-						if (showScale.getValue() && (treeHasBranchLengths || treeDisplay.fixedScalingOn)) {
+						if (showScaleConsideringAuto(tree,  treeDisplay)) {
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 						}
 					}
@@ -1036,7 +1050,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 						treeDisplay.nodeLocsParameters[scaling]=((double)(rect.height-treeDisplay.getTipsMargin()-buffer - effectiveROOTSIZE))/(treeDisplay.fixedDepthScale); 
 						UPdoAdjustLengths( treeDisplay, treeDrawing, tree, rect.height-effectiveROOTSIZE-(int)(treeDisplay.nodeLocsParameters[scaling]*(treeDisplay.fixedDepthScale-treeDisplay.nodeLocsParameters[totalHeight])+buffer), root, 0, root);
-						if (showScale.getValue() && (treeHasBranchLengths || treeDisplay.fixedScalingOn)) {
+						if (showScaleConsideringAuto(tree,  treeDisplay)) {
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.fixedDepthScale, treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 						}
 					}
@@ -1078,7 +1092,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				treeDrawing.y[subRoot] = (treeDrawing.y[root])-effectiveROOTSIZE;
 				treeDrawing.x[subRoot] = (treeDrawing.x[root])-effectiveROOTSIZE;
 				placeSingletons(treeDrawing, tree, root);
-				if (treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || (treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS &&(treeHasBranchLengths ||treeDisplay.fixedScalingOn))) {
+				if (branchesProportionalToLength) {
 					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0);
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
@@ -1088,7 +1102,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						else
 							treeDisplay.nodeLocsParameters[scaling]=((double)(rect.height-treeDisplay.getTipsMargin() -buffer - effectiveROOTSIZE))/(treeDisplay.nodeLocsParameters[totalHeight]); 
 						DOWNdoAdjustLengths(treeDisplay, treeDrawing, tree, effectiveROOTSIZE+ buffer, root, 0, root);
-						if (showScale.getValue() && (treeHasBranchLengths || treeDisplay.fixedScalingOn))
+						if (showScaleConsideringAuto(tree,  treeDisplay)) 
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
 					else {
@@ -1096,7 +1110,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 							treeDisplay.fixedDepthScale = 1;
 						treeDisplay.nodeLocsParameters[scaling]=((double)(rect.height-treeDisplay.getTipsMargin()-buffer - effectiveROOTSIZE))/(treeDisplay.fixedDepthScale); 
 						DOWNdoAdjustLengths(treeDisplay, treeDrawing, tree, effectiveROOTSIZE+(int)(treeDisplay.nodeLocsParameters[scaling]*(treeDisplay.fixedDepthScale-treeDisplay.nodeLocsParameters[totalHeight]) + buffer), root, 0, root);
-						if (showScale.getValue() && (treeHasBranchLengths || treeDisplay.fixedScalingOn))
+						if (showScaleConsideringAuto(tree,  treeDisplay)) 
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.fixedDepthScale, treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
 
@@ -1135,7 +1149,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				treeDrawing.y[subRoot] = (treeDrawing.y[root])-effectiveROOTSIZE;
 				treeDrawing.x[subRoot] = (treeDrawing.x[root])-effectiveROOTSIZE;
 				placeSingletons(treeDrawing, tree, root);
-				if (treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || (treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (treeHasBranchLengths ||treeDisplay.fixedScalingOn))) {
+				if (branchesProportionalToLength) {
 					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0);
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
@@ -1145,7 +1159,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						else
 							treeDisplay.nodeLocsParameters[scaling]=((double)(rect.width-treeDisplay.getTipsMargin()-buffer - effectiveROOTSIZE))/(treeDisplay.nodeLocsParameters[totalHeight]); 
 						RIGHTdoAdjustLengths(treeDisplay, treeDrawing, tree, effectiveROOTSIZE + buffer, root, 0, root);
-						if (showScale.getValue() && (treeHasBranchLengths || treeDisplay.fixedScalingOn))
+						if (showScaleConsideringAuto(tree,  treeDisplay)) 
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
 					else {
@@ -1153,7 +1167,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 							treeDisplay.fixedDepthScale = 1;
 						treeDisplay.nodeLocsParameters[scaling]=((double)(rect.width-treeDisplay.getTipsMargin()-buffer - effectiveROOTSIZE))/(treeDisplay.fixedDepthScale); 
 						RIGHTdoAdjustLengths(treeDisplay, treeDrawing, tree, effectiveROOTSIZE+(int)(treeDisplay.nodeLocsParameters[scaling]*(treeDisplay.fixedDepthScale-treeDisplay.nodeLocsParameters[totalHeight]) + buffer), root, 0, root);
-						if (showScale.getValue() && (treeHasBranchLengths || treeDisplay.fixedScalingOn)) {
+						if (showScaleConsideringAuto(tree,  treeDisplay)) {
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.fixedDepthScale, treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 						}
 					}
@@ -1193,7 +1207,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				treeDrawing.y[subRoot] = (treeDrawing.y[root])+effectiveROOTSIZE;
 				treeDrawing.x[subRoot] = (treeDrawing.x[root])+effectiveROOTSIZE;
 				placeSingletons(treeDrawing, tree, root);
-				if (treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || (treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (treeHasBranchLengths ||treeDisplay.fixedScalingOn))) {
+				if (branchesProportionalToLength) {
 					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0);
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
@@ -1203,7 +1217,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						else
 							treeDisplay.nodeLocsParameters[scaling]=((double)(rect.width-treeDisplay.getTipsMargin()-buffer - effectiveROOTSIZE))/(treeDisplay.nodeLocsParameters[totalHeight]); 
 						LEFTdoAdjustLengths(treeDisplay, treeDrawing, tree, rect.width - effectiveROOTSIZE -buffer, root, 0, root);
-						if (showScale.getValue() && (treeHasBranchLengths || treeDisplay.fixedScalingOn))
+						if (showScaleConsideringAuto(tree,  treeDisplay)) 
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
 					else {
@@ -1211,7 +1225,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 							treeDisplay.fixedDepthScale = 1;
 						treeDisplay.nodeLocsParameters[scaling]=((double)(rect.width-treeDisplay.getTipsMargin()-buffer - effectiveROOTSIZE))/(treeDisplay.fixedDepthScale); 
 						LEFTdoAdjustLengths(treeDisplay, treeDrawing, tree, rect.width - effectiveROOTSIZE-(int)(treeDisplay.nodeLocsParameters[scaling]*(treeDisplay.fixedDepthScale-treeDisplay.nodeLocsParameters[totalHeight])+buffer), root, 0, root);
-						if (showScale.getValue() && (treeHasBranchLengths || treeDisplay.fixedScalingOn))
+						if (showScaleConsideringAuto(tree,  treeDisplay)) 
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.fixedDepthScale, treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
 
@@ -1290,7 +1304,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		boolean rulerOnly = false;
 		int rulerWidth = 8;
 		Color c=g.getColor();
-		if (treeDisplay.getScale()!= null) {
+		if (MesquiteTrunk.developmentMode && treeDisplay.getScale()!= null) {
 			g.setColor(Color.red);
 			int si = 3;
 			GraphicsUtil.drawLine(g,treeDisplay.getScale()[0], treeDisplay.getScale()[1], treeDisplay.getScale()[2], treeDisplay.getScale()[3]);
@@ -1453,7 +1467,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 	}
 	/*.................................................................................................................*/
 	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
-		if (locsModule.showScale.getValue() && locsModule.showBranchLengths.getValue()!= TreeDisplay.DRAWULTRAMETRIC && (tree.hasBranchLengths() || treeDisplay.fixedScalingOn))
+		if (locsModule.showScaleConsideringAuto(tree,  treeDisplay)) 
 			locsModule.drawGrid(treeDisplay.nodeLocsParameters[locsModule.totalHeight], treeDisplay.fixedDepthScale, treeDisplay.nodeLocsParameters[locsModule.scaling], tree, drawnRoot, treeDisplay, g);
 	}
 	/*.................................................................................................................*/

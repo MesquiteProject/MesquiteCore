@@ -24,6 +24,7 @@ import java.net.*;
 
 import javax.imageio.ImageIO;
 
+import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.misc.ClassVector;
@@ -1744,7 +1745,7 @@ public class Mesquite extends MesquiteTrunk
 		MesquiteThread.setCurrentCommandRecord(cr);
 
 		if (StringUtil.blank(path)) {
-			f = openFile(null, importerSubclass); 
+			f = openFile(null, completeArguments, importerSubclass); 
 		}
 		else {
 			String baseN = null;
@@ -1949,6 +1950,29 @@ public class Mesquite extends MesquiteTrunk
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
 			String completeArguments = arguments;
 			return openOrImportFileHandler( path,  completeArguments, null);
+
+		}
+		else if (checker.compare(this.getClass(), "Opens tree file on disk with user-specified Newick dialect.  It could be opened as a separate project, or included into an existing one.", "[name and path of file].", commandName, "readTreeFile")) {
+			/*String path = ParseUtil.getFirstToken(arguments, stringPos);
+			String completeArguments = arguments; //Debugg.println
+			dialog with:
+			include/independent (only if another file is open)
+			dialect
+			sends these plus phylip/nexus only */
+			String path = MesquiteFile.openFileDialog( "Choose Tree File",  null, null);
+			if (path == null)
+				return null;
+			String[] dialects = new String[]{"Default/BEAST/Mesquite", "MrBayes", "IQ-TREE", "ASTRAL", "DELINEATE", "Mesquite3"};
+			int result = ListDialog.queryList(containerOfModule(), "Treefile format (Newick dialect)", "In which dialect of Newick are the trees described?", null, dialects, 0, "OK", "Cancel");
+			String dialect = "@newickDialect.";
+			if (result <0)
+				return null;
+			else if (result== 0)
+				dialect += "Mesquite";
+			else
+				dialect += dialects[result];
+			Debugg.println("dialect " + dialect);
+			return openOrImportFileHandler(path, ParseUtil.tokenize(dialect), TryNexusFirstTreeFileInterpreter.class);
 
 		}
 		else if (checker.compare(this.getClass(), "Opens recent file.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file]", commandName, "openRecent")) {
@@ -2508,6 +2532,7 @@ public class Mesquite extends MesquiteTrunk
 		projects = new Projects();
 		mesquiteTrunk.newFileCommand = makeCommand("newProject",  mesquiteTrunk);
 		mesquiteTrunk.openFileCommand = makeCommand("openFile",  mesquiteTrunk);
+		mesquiteTrunk.readTreeFileCommand = makeCommand("readTreeFile",  mesquiteTrunk);
 		mesquiteTrunk.openRecentCommand = makeCommand("openRecent",  mesquiteTrunk);
 		mesquiteTrunk.clearRecentCommand = makeCommand("clearRecent",  mesquiteTrunk);
 		mesquiteTrunk.openURLCommand = makeCommand("openURL",  mesquiteTrunk);

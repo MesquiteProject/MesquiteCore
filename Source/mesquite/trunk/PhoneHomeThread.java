@@ -25,6 +25,15 @@ import mesquite.tol.lib.BaseHttpRequestMaker;
 
 /* ======================================================================== */
 public class PhoneHomeThread extends Thread {
+
+	/*
+	 * 
+	 * The following are in MesquiteModule:
+	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
+	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
+	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
+
+	 * */
 	Vector beans = new Vector();
 	public PhoneHomeThread () {
 		setPriority(Thread.MIN_PRIORITY);

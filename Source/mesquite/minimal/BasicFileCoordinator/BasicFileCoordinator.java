@@ -18,6 +18,7 @@ import java.util.*;
 import java.awt.*;
 
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
+import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
@@ -566,15 +567,13 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			logln("Location: " + thisFile.getDirectoryName() + thisFile.getFileName());
 			logln("");
 
-			FileInterpreter fileInterp;
-
-
+			FileInterpreter fileInterp= null;
 
 			//first try nexus.  If can't be read, then make list and query user...
 			NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
-			if (importerSubclass== null && nfi!=null && nfi.canReadFile(thisFile))  
+			if ((importerSubclass== null || importerSubclass == TryNexusFirstTreeFileInterpreter.class)  && nfi!=null && nfi.canReadFile(thisFile))  
 				fileInterp = nfi;
-			else {
+			if (fileInterp == null) {
 				importing = true;
 				fileInterp = findImporter(thisFile, 0, importerSubclass, arguments);
 			}
@@ -1389,8 +1388,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			}
 		}
 
-		TextDisplayer fd = displayText(fileContents, fileName);  //TODO: should say if scripting
-
 		MesquiteModule[] fInterpreters = null;
 		if (importerSubclass != null)
 			fInterpreters = getImmediateEmployeesWithDuty(importerSubclass);
@@ -1407,8 +1404,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				count++;
 		}
 		if (count == 0 ){
-			if (fd!=null)
-				fireEmployee(fd);
 			return null;
 		}
 		MesquiteModule[] fInterpretersCanImport = new MesquiteModule[count];
@@ -1418,6 +1413,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
 				fInterpretersCanImport[count++] = fInterpreters[i];
 		}
+		if (fInterpretersCanImport.length == 1)
+			return (FileInterpreterI)fInterpretersCanImport[0];
+		TextDisplayer fd = displayText(fileContents, fileName);  //TODO: should say if scripting
 		fInterpretersCanImport = prioritize(fInterpretersCanImport, FileInterpreterI.class);
 		boolean fuse = parser.hasFileReadingArgument(arguments, "fuseTaxaCharBlocks");
 		String message = "Please choose an interpreter for this file";

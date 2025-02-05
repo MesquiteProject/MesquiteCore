@@ -22,6 +22,7 @@ import java.util.*;
 import mesquite.lib.Annotatable;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.FileDirtier;
 import mesquite.lib.FileElement;
 import mesquite.lib.Fittable;
@@ -1616,7 +1617,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	/*.................................................................................................................*/
 
-	/** Set the text in the explanation area.  This text is not editable */
+	/** Set the text in the explanation area.  This text is sometimes editable */
 	public String getAnnotation(){
 		if (annotationArea!=null) {
 			try {

@@ -166,6 +166,8 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 				Object oan = oa.getValue(node);
 				if (oan == null)
 					return "—";
+				if (oan instanceof String)
+					return "\"" + (String)oan + "\"";
 				return oan.toString(); //Debugg.println temporary?
 			}
 			else if (obj instanceof Bits) {

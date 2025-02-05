@@ -1034,9 +1034,23 @@ public class Parser extends StringUtil {
 		while (!StringUtil.blank(fRA)) {
 			if (fRA.equalsIgnoreCase(StringUtil.argumentMarker + target))
 				return true;
+			if (fRA.startsWith(StringUtil.argumentMarker + target + "."))
+				return true;
 			fRA = getNextToken();
 		}
 		return false;
+	}
+	/*............................................  ....................................................*/
+	public String getFileReadingArgumentSubtype(String arguments, String target){
+		String fRA = getFirstToken(arguments);
+		while (!StringUtil.blank(fRA)) {
+			if (fRA.startsWith(StringUtil.argumentMarker + target + ".")){
+				String subS = fRA.substring(fRA.indexOf(".")+1, fRA.length());
+				return subS;
+			}
+			fRA = getNextToken();
+		}
+		return null;
 	}
 	/*............................................  ....................................................*/
 	/** returns next XML starttag element name.  Returns attributes in MesquiteString attributes.  If it is an empty element (ending in /) or a processing instruction (bounded by ?) that too is returned in the arguments.*/

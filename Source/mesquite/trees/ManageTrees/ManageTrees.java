@@ -1589,7 +1589,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 
 	/*.................................................................................................................*/
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
+		
 		boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
+		String dialect = parser.getFileReadingArgumentSubtype(fileReadingArguments, "newickDialect");
 		boolean fuseTreeBlocks = false;
 		int firstTree = 0;
 		int lastTree = MesquiteInteger.infinite;
@@ -1636,7 +1638,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		boolean nameSet = false;
 		boolean translationTableRead = false;
 		NexusBlock t =trees.addToFile(file, getProject(), this);
-		while (!StringUtil.blank(command=block.getNextFileCommand(comment))) {
+		while (!StringUtil.blank(command=block.getNextFileCommand(comment, true))) {
 			String punc = ",";
 			String commandName = parser.getFirstToken(command);
 			if (commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK")) {
@@ -1745,7 +1747,6 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					rootingStatus =2;
 				else if (commandName.equalsIgnoreCase("RTREE")) 
 					rootingStatus = 1;
-
 				if (rootingStatus > 0 && (!fuse || translationTableRead || (taxa!= null && taxa.getFile() == file))) {
 					//if (fuseTaxaCharBlocks && !translationTableRead)
 					treeNum++;
@@ -1757,16 +1758,6 @@ public class ManageTrees extends TreesManager implements ItemListener {
 							taxa.addToFile(file, getProject(), taxaTask);
 							trees.setTaxa(taxa);
 							permitTaxaBlockEnlargement = true;
-							/*String st = "A block of trees has been read for which the corresponding block of taxa is not identified.  If you would like to attempt to read the block of trees as belonging to one of these taxa blocks, select the taxa.";
-							st+= "  Command: " + s;
-							taxa = getProject().chooseTaxa(containerOfModule(), st);
-							if (taxa == null) {
-								trees.dispose();
-								return null;
-							}
-							else
-								trees.setTaxa(taxa);
-							 */
 						}
 						if (!translationTableRead && file.useStandardizedTaxonNames){
 							for (int it = 0; it<taxa.getNumTaxa(); it++)
@@ -1783,6 +1774,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 						treeDescription=command.substring((int)parser.getPosition(), command.length());
 						MesquiteTree thisTree =new MesquiteTree(taxa);
 						thisTree.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlargement);
+						if (StringUtil.notEmpty(dialect))
+							thisTree.setDialect(dialect);
 						String commentString = comment.getValue();						
 						if (commentString!=null && commentString.length()>1){
 							if (commentString.charAt(0)=='!')
@@ -1841,14 +1834,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			else
 				readUnrecognizedCommand(file, t, name, block, commandName, command, blockComments, comment,  fileReadingArguments);
 		}
-		/*else { 
-				String st = "A block of trees has been read for which no corresponding block of taxa has been found, and no block of taxa could be created for it.";
-				st += "  If you had expected that the trees would have applied to an existing block of taxa, it is possible that the taxa no longer correspond because of changes in names or in which taxa are included.";
-
-				alert(st);
-				trees.dispose();
-				return null;
-			}*/
+		
 	}
 	if (treeRead){
 		//assigning informative name if none or untitled

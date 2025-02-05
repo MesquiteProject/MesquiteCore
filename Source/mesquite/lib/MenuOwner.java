@@ -2577,6 +2577,11 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				}
 
 			}
+			
+			MesquiteMenuItem readTreeFileItem = new MesquiteMenuItem("Read Tree File...", MesquiteModule.mesquiteTrunk,
+					MesquiteModule.mesquiteTrunk.readTreeFileCommand);
+			newMenu.add(readTreeFileItem);
+
 
 			/*-------------- Close submenu TODO: should make this a submenu Close with Project, then list files one by one as in save*/
 			if (proj != null && !MesquiteTrunk.isApplet()) {

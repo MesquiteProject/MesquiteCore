@@ -35,6 +35,7 @@ import mesquite.lib.Listable;
 import mesquite.lib.LongArray;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteLong;
@@ -3024,16 +3025,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return permitT0Names;
 	}
 
-	/** Takes the node information in a file created by a recent version of MrBayes, and retokenizes it as MrBayes does not use standard NEXUS tokenization rules for this. */
-	protected String retokenizeMrBayesConTreeNodeInfo(String nodeInfo) {
-		if (StringUtil.blank(nodeInfo))
-			return nodeInfo;
-		nodeInfo = StringUtil.replace(nodeInfo, " ", "");
-		if (nodeInfo.indexOf('&')<=1)
-			nodeInfo=nodeInfo.replaceFirst("&", " ");
-		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
-		return nodeInfo;
-	}
 
 	private boolean predefinedDouble(String TreeDescription, MesquiteInteger stringLoc){
 		int p = stringLoc.getValue();
@@ -3045,15 +3036,41 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return true;
 		return false;
 	}
-	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
+
+
+	/** Takes the node information in a file created by a recent version of MrBayes, and retokenizes it as MrBayes does not use standard NEXUS tokenization rules for this. */
+	//USE OF THIS SHOULD BE REPLACED WITH NEW DIALECT SYSTEM
+	String retokenizeMrBayesConTreeNodeInfo(String nodeInfo) { //ZQ
+		if (StringUtil.blank(nodeInfo))
+			return nodeInfo;
+		nodeInfo = StringUtil.replace(nodeInfo, " ", "");
+		if (nodeInfo.indexOf('&')<=1)
+			nodeInfo=nodeInfo.replaceFirst("&", " ");
+		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
+		return nodeInfo;
+	}
+private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
 		if (readingMrBayesConTree) {  //ZQ why this kludge?
 			String c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">", false) + ">";  //get next token
-			c = retokenizeMrBayesConTreeNodeInfo(c);
-			readAssociated(c, node, new MesquiteInteger(0), null, ",=>{}", predefinedDouble(TreeDescription, stringLoc));
+			c = retokenizeMrBayesConTreeNodeInfo(c); //what is this?
+			readAssociated(c, node, new MesquiteInteger(0), "", ",=>{}", predefinedDouble(TreeDescription, stringLoc));
 			ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
 		} else
-			readAssociated(TreeDescription, node, stringLoc, null, null, predefinedDouble(TreeDescription, stringLoc));
+			readAssociated(TreeDescription, node, stringLoc,whitespaceInNewickComments, punctuationInNewickComments, predefinedDouble(TreeDescription, stringLoc));
 
+	}
+	/*#######################  READ TREE #######################*/
+	/*-----------------------------------------*/
+	/* reads the branch length; allows exponentials and negative numbers*/
+	private void skipValue (String TreeDescription, int node, MesquiteInteger stringLoc) {
+		double d = MesquiteDouble.fromString(TreeDescription, stringLoc);
+	}
+	/*-----------------------------------------*/
+	/* reads the branch length; allows exponentials and negative numbers*/
+	private void readLength (String TreeDescription, int node, MesquiteInteger stringLoc) {
+		double d = MesquiteDouble.fromString(TreeDescription, stringLoc);
+		if (d!=MesquiteDouble.impossible)
+			setBranchLength(node, d, false);
 	}
 	/*...............................................  read tree ....................................................*/
 	/** Continues reading a tree description, starting at node "node" and the given location on the string*/
@@ -3065,12 +3082,21 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return FAILED;
 
 		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
-		if ("<".equals(c)) {
-			while (!">".equals(c)  && c != null) 
+		//Debugg.println("$$$1 " + c);
+		// ************************* Newick comment -- use Newick tokenizing rules ***************
+		while ("<".equals(c)) {
+			while (!">".equals(c)  && c != null)
+				c=ParseUtil.getToken(TreeDescription, stringLoc, whitespaceInNewickComments, punctuationInNewickComments);
+			//	Debugg.println("$$$2 " + c);
+			if (">".equals(c)) {
 				c=ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
-			c=ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
+				//Debugg.println("$$$3 " + c);
+			}
 		}
+
+		//	Debugg.println("~~~" + c);
 		if ("(".equals(c)){  //internal node
+			// ************************* end Newick  tokenizing rules ***************
 			int sprouted = sproutDaughter(node, false);
 			int result = readClade(TreeDescription, sprouted,stringLoc, namer, whitespaceString, punctuationString);
 			if (result == FAILED)//������������������������
@@ -3097,7 +3123,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					}
 				}
 				else if ("<".equals(c)) {
+					// ************************* Newick comment -- use Newick tokenizing rules ***************
 					readAssociatedInTree(TreeDescription, sprouted, stringLoc);
+					// ************************* end Newick  tokenizing rules ***************
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 3");
@@ -3133,7 +3161,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						}
 					}
 					else if ("<".equals(c)) {
+						// ************************* Newick comment -- use Newick tokenizing rules ***************
 						readAssociatedInTree(TreeDescription, sprouted, stringLoc);
+						// ************************* end Newick  tokenizing rules ***************
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 6");
@@ -3279,7 +3309,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " [permit t0 " + permitT0Names + "] (search for \"ERROR>\" in output in log file) " + path);
 						StringBuffer sb = new StringBuffer(TreeDescription);
 						sb.insert(stringLoc.getValue()-1, "ERROR>");
-						MesquiteTrunk.mesquiteTrunk.logln(sb.toString());
+						MesquiteFile.writeToLog(sb.toString());
 					}
 					else {
 						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " (search for \"ERROR>\" in output in log file) " + path);
@@ -3315,19 +3345,82 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return true;
 	}
-	/*-----------------------------------------*/
-	/* reads the branch length; allows exponentials and negative numbers*/
-	private void skipValue (String TreeDescription, int node, MesquiteInteger stringLoc) {
-		double d = MesquiteDouble.fromString(TreeDescription, stringLoc);
+	/* ####################### Dialect handling ################################## */
+	String dialect = "Mesquite";
+	
+	public void setDialect(String dialect){
+		this.dialect = dialect;
 	}
-	/*-----------------------------------------*/
-	/* reads the branch length; allows exponentials and negative numbers*/
-	private void readLength (String TreeDescription, int node, MesquiteInteger stringLoc) {
-		double d = MesquiteDouble.fromString(TreeDescription, stringLoc);
-		if (d!=MesquiteDouble.impossible)
-			setBranchLength(node, d, false);
+	public String getDialect(){
+		return dialect;
 	}
-	/*-----------------------------------------*/
+	
+	String wellTokenizedNewickCommentPunctuation = ",=><{}'";
+	String wellTokenizedNewickCommentWhitespace = null;	
+	String punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
+	String whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
+	
+	private String preprocessForDialect(String tD, String dialect){
+		Debugg.println("@ reading tree with dialect " + dialect);
+		if ("MrBayes".equalsIgnoreCase(dialect)){
+			punctuationInNewickComments = ",=><{}'";
+			whitespaceInNewickComments = null;
+			tD = tD.replace("prob ( percent )", "'prob(percent)'");
+			tD = tD.replace("prob + - sd", "'prob+-sd'");		
+			tD = tD.replace("prob + - sd", "'prob+-sd'");		
+			tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _mean", "'effectivebrlenIgrBrlens{1,2,3,4,5}_mean'");		
+			tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _95%HPD", "'effectivebrlenIgrBrlens{1,2,3,4,5}_95%HPD'");		
+			tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _median", "'effectivebrlenIgrBrlens{1,2,3,4,5}_median'");		
+			tD = tD.replace("effectivebrlenIgrBrlens { 6 , 7 , 8 } _mean", "'effectivebrlenIgrBrlens{6,7,8}_mean'");		
+			tD = tD.replace("effectivebrlenIgrBrlens { 6 , 7 , 8 } _95%HPD", "'effectivebrlenIgrBrlens{6,7,8}_95%HPD'");		
+			tD = tD.replace("effectivebrlenIgrBrlens { 6 , 7 , 8 } _median", "'effectivebrlenIgrBrlens{6,7,8}_median'");	
+			tD = tD.replace("effectivebrlenIgrBrlens { 9 } _mean", "'effectivebrlenIgrBrlens{9}_mean'");		
+			tD = tD.replace("effectivebrlenIgrBrlens { 9 } _95%HPD", "'effectivebrlenIgrBrlens{9}_95%HPD'");		
+			tD = tD.replace("effectivebrlenIgrBrlens { 9 } _median", "'effectivebrlenIgrBrlens{9}_median'");		
+			tD = tD.replace("rateIgrBrlens { 1 , 2 , 3 , 4 , 5 } _mean", "'rateIgrBrlens{1,2,3,4,5}_mean'");		
+			tD = tD.replace("rateIgrBrlens { 1 , 2 , 3 , 4 , 5 } _95%HPD", "'rateIgrBrlens{1,2,3,4,5}_95%HPD'");		
+			tD = tD.replace("rateIgrBrlens { 1 , 2 , 3 , 4 , 5 } _median", "'rateIgrBrlens{1,2,3,4,5}_median'");		
+			tD = tD.replace("rateIgrBrlens { 6 , 7 , 8 } _mean", "'rateIgrBrlens{6,7,8}_mean'");		
+			tD = tD.replace("rateIgrBrlens { 6 , 7 , 8 } _95%HPD", "'rateIgrBrlens{6,7,8}_95%HPD'");		
+			tD = tD.replace("rateIgrBrlens { 6 , 7 , 8 } _median", "'rateIgrBrlens{6,7,8}_median'");		
+			tD = tD.replace("rateIgrBrlens { 9 } _mean", "'rateIgrBrlens{9}_mean'");		
+			tD = tD.replace("rateIgrBrlens { 9 } _95%HPD", "'rateIgrBrlens{9}_95%HPD'");		
+			tD = tD.replace("rateIgrBrlens { 9 } _median", "'rateIgrBrlens{9}_median'");		
+			tD = tD.replace("\"", "'");		
+			return tD;
+		}
+		else if ("Delineate".equalsIgnoreCase(dialect)){ 
+			punctuationInNewickComments = ",=><'";
+			whitespaceInNewickComments = ""; //if this, then comment reader will have to strip beginning and ending
+	}
+		else if ("TreeAnnotator".equalsIgnoreCase(dialect) || "Mesquite4".equalsIgnoreCase(dialect) || "Mesquite".equalsIgnoreCase(dialect) || "Default".equalsIgnoreCase(dialect)){ 
+			punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
+			whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
+	}
+		else if ("IQ-TREE".equalsIgnoreCase(dialect)){
+			tD = tD.replace("\"", "'");		
+			tD = tD.replace("gCF / gDF1 / gDF2 / gDFP", "'gCF/gDF1/gDF2/gDFP'");		
+			tD = tD.replace("gCF_N / gDF1_N / gDF2_N / gDFP_N", "'gCF_N/gDF1_N/gDF2_N/_NgDFP_N'");		
+			tD = tD.replace("sCF / sDF1 / sDF2", "'sCF/sDF1/sDF2'");		
+			tD = tD.replace("sCF_N / sDF1_N / sDF2_N", "'sCF_N/sDF1_N/sDF2_N'");		
+			tD = tD.replace("XXXXX", "'XXXXX'");		
+			tD = tD.replace("XXXXX", "'XXXXX'");		
+
+			punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
+			whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
+		}
+		else if ("ASTRAL".equalsIgnoreCase(dialect) || "ASTRAL3".equalsIgnoreCase(dialect) || "ASTRAL4".equalsIgnoreCase(dialect)){
+			tD = tD.replace(";", ",");	
+			int last = tD.lastIndexOf(",");
+			tD = tD.substring(0,last)+';'+tD.substring(last);
+			tD = tD.replace("'[", "<");		
+			tD = tD.replace("]'", ">");		
+			punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
+			whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
+		}
+		return tD;
+	}	
+	
 	String lastUnrecognizedName = null;
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription) {
@@ -3343,9 +3436,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString) {
 		return readTree(TreeDescription, namer, whitespaceString, punctuationString, true);
 	}
+
+	/* ########################### READ TREE ################################ */
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
+		//	Debugg.println("@###################################################");
+	//	Debugg.println("@@DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
+		TreeDescription = preprocessForDialect(TreeDescription, getDialect());
+		//Debugg.println("@@#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
+		
+		//QZ: if whitespace or punc passed in, don't override?
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
 		if (readAssociated && TreeDescription.indexOf("[&")>=0){
 			TreeDescription = StringUtil.replace(TreeDescription, "[&", "<");
@@ -3398,13 +3499,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						return false;
 					}
 				}
+				// ************************* Newick comment -- use Newick tokenizing rules ***************
 				else if  ("<".equals(c) && readAssociated) {
 					checkAssociatedBetweenness();
 					boolean done = false;
 					int count = 0;
 					while (!done && stringLoc.getValue()<=TreeDescription.length() && count++<10) {
 						int oldPos = stringLoc.getValue();
-						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  
+						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceInNewickComments, punctuationInNewickComments);  
 						if (c == null)
 							done = true;
 						else {
@@ -3422,15 +3524,16 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 								readLength(TreeDescription, getRoot(), stringLoc);
 							else
 								stringLoc.setValue(oldPos);
-								
+
 							c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip >
-						if (";".equals(c))
+							if (";".equals(c))
 								done = true;
 							else if (!"<".equals(c))
 								stringLoc.setValue(oldPos);
 						}
 					}
 				}
+				// ************************* end Newick  tokenizing rules ***************
 			}
 		}
 		if (readAssociated)
@@ -3869,7 +3972,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	//write attachments to whole tree
 	private void writeTreeProperties(StringBuffer sb, boolean useComments){
 		// no longer writes unrooted here; see prior to v 4
-		
+
 		MesquiteBoolean mb = null;
 		if (polytomiesHard == 0 || polytomiesHard == 1) {  //make sure this is recorded as an attachment
 			mb = new MesquiteBoolean(polytomiesHard==0);
@@ -5143,7 +5246,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	values in ManageTrees.queryAboutNumericalLabelIntepretation() */
 
 	static final String[] betweenLongs = new String[]{"color"};
-	static final String[] betweenDoubles = new String[]{"width", "bootstrapFrequency", "consensusFrequency", "posteriorProbability"};
+	static final String[] betweenDoubles = new String[]{"width", "bootstrapFrequency", "consensusFrequency", "posteriorProbability", "posterior"};
 	static final String[] betweenObjects = new String[]{"!color"};
 	static final String[] betweenBits = new String[]{};
 	/*
@@ -5192,7 +5295,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					b.setBetweenness(true);
 			}
 
-		
+
 	}
 
 	private String writeAssociatedBetweenness(){

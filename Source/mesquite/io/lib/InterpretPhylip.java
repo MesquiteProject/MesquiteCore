@@ -140,8 +140,8 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 
 
 /*.................................................................................................................*/
-	private TreeVector readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa) {
-		TreeVector trees = TreeUtil.readNewickTreeFile(file, line, taxa, false, null, getTreeNameBase());
+	private TreeVector readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa, String arguments) {
+		TreeVector trees = TreeUtil.readNewickTreeFile(file, line, taxa, false, null, arguments, getTreeNameBase());
 		if (trees != null)
 			trees.addToFile(file,mf,(TreesManager)findElementManager(TreeVector.class));
 		return trees;
@@ -174,7 +174,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		//file.linkProgressIndicator(progIndicator);
 		if (file.openReading()) {
 			String line = file.readNextDarkLine();		
-			readPhylipTrees(mf, file, line, null, taxa);
+			readPhylipTrees(mf, file, line, null, taxa, arguments);
 			finishImport(null, file, false );
 		}
 		decrementMenuResetSuppression();
@@ -303,7 +303,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			}
 
 			if (!StringUtil.blank(line)) // then we have trees
-				readPhylipTrees(mf, file, line, progIndicator, taxa);
+				readPhylipTrees(mf, file, line, progIndicator, taxa, arguments);
 			data.saveChangeHistory = wassave;
 			data.resetCellMetadata();
 			finishImport(progIndicator, file, abort);

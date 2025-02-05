@@ -1166,10 +1166,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		//ALTER CURRENT TREE =============/*
 		MesquiteMenuSpec alterMenu = ownerModule.alterMenu;
-		ownerModule.addMenuItem(alterMenu, "Topology/Relationships", null);
+		ownerModule.addMenuItem(alterMenu, "Topology/Relationships", null).setEnabled(false);
 		ownerModule.addModuleMenuItems(alterMenu, ownerModule.makeCommand("alterTree", this), TreeAlterer.class);
 		ownerModule.addMenuItem(alterMenu, "-", null);
-		ownerModule.addMenuItem(alterMenu, "Branch Lengths", null);
+		ownerModule.addMenuItem(alterMenu, "Branch Lengths", null).setEnabled(false);
 		ownerModule.addModuleMenuItems(alterMenu, ownerModule.makeCommand("alterBranchLengths", this), BranchLengthsAlterer.class);
 
 

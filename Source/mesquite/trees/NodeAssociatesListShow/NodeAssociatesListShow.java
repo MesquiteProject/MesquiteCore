@@ -45,7 +45,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Show Selected", makeCommand("show", this));
 		addMenuItem("Hide Selected", makeCommand("hide", this));
-		addMenuItem("Control Appearance on Tree...", makeCommand("controlAppearance", this));
+		addMenuItem("Control Display of Properties on Tree......", makeCommand("controlAppearance", this));
 		addMenuItem("Explanation...", makeCommand("explain", this));
 		return true;
 	}

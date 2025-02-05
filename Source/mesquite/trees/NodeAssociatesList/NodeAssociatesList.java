@@ -29,7 +29,7 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
-public class NodeAssociatesList extends ListModule {
+public class NodeAssociatesList extends ListModule implements Annotatable {
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NodeAssociatesListAssistant.class, "The List of Node Associates window can display columns showing information for each taxon group.",
@@ -51,6 +51,16 @@ public class NodeAssociatesList extends ListModule {
 			myWindow.setTree(tree);
 
 	}
+	
+	public String getAnnotation(){
+		String annot = "Properties of nodes/branches in tree window";
+		TreeWindowMaker twm = (TreeWindowMaker)findEmployerWithDuty(TreeWindowMaker.class);
+		if (twm != null)
+			annot += " \"" + twm.getModuleWindow().getTitle() + "\"";
+		return annot + ".";
+	}
+ 	public void setAnnotation(String note, boolean notify){
+ 	}
 	/*.................................................................................................................*/
 	public boolean showing(Object obj){
 		return (getModuleWindow()!=null && obj == tree);
@@ -350,6 +360,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		if (t!=null)
 			t.setAutoEditable(false, false, false, false);
 		setIcon(MesquiteModule.getRootImageDirectoryPath() + "showNodeAssoc.gif");
+		setDefaultAnnotatable(ownerModule);
 	}
 
 	private void makeAssociatesList(){

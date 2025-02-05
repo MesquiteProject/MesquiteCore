@@ -29,7 +29,7 @@ import mesquite.io.lib.*;
 
 /* ============  a file interpreter for phylip trees ============*/
 
-public abstract class InterpretPhylipTrees extends InterpretPhylip {
+public abstract class InterpretPhylipTrees extends InterpretPhylip  {
 /*.................................................................................................................*/
 	public void setPhylipState(CharacterData data, int ic, int it, char c){
 		//only deals with trees
@@ -93,7 +93,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 			if (StringUtil.notEmpty(arguments) && arguments.indexOf("useStandardizedTaxonNames")>=0)
 				taxonNamer = new SimpleNamesTaxonNamer();
 				
-			TreeVector trees = TreeUtil.readNewickTreeFile(file, null, taxa, enlargeTaxaBlock, taxonNamer,getTreeNameBase());
+			TreeVector trees = TreeUtil.readNewickTreeFile(file, null, taxa, enlargeTaxaBlock, taxonNamer,arguments, getTreeNameBase());
 			if (trees != null)
 				trees.addToFile(file,mf,(TreesManager)findElementManager(TreeVector.class));
 			importExtraFiles(file,taxa, trees);

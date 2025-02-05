@@ -171,6 +171,7 @@ public class ProjectRead implements Runnable {
 			CommandRecord comRec = new CommandRecord(wasScripting);
 			CommandRecord prevRec = MesquiteThread.getCurrentCommandRecord();
 			MesquiteThread.setCurrentCommandRecord(comRec);
+			
 			if (originalArguments == null) //hackathon
 				originalArguments = arguments;
 			mb.readProject(true, pathname, originalArguments, importerSubclass); 

@@ -139,9 +139,12 @@ public class FileBlock {
 		file.readLine(buffer);
 	}
 
-
-	/*.................................................................................................................*/
 public String getNextFileCommand(MesquiteString comment){
+	return getNextFileCommand(comment, false); 
+}
+	/*.................................................................................................................*/
+/*old default was to insert spaces with comment tokens; v4 can be turned off. Used in Nexus comment reading in ManageTrees*/
+public String getNextFileCommand(MesquiteString comment, boolean treeCommentRules){
 		if (!directFromFile)
 			return getNextFileCommandStored(comment);
 		if (empty)
@@ -154,7 +157,7 @@ public String getNextFileCommand(MesquiteString comment){
 		withinCommandComments.setLength(0);
 		betweenCommandComments.setLength(0);
 		//##########################
-		String command = file.getNextCommand(status, withinCommandComments, true);
+		String command = file.getNextCommand(status, withinCommandComments, true, treeCommentRules);
 		if (!StringUtil.blank(unconsumed)){
 			command = unconsumed + " " + command;
 			unconsumed = "";

@@ -489,6 +489,7 @@ public class ListTable extends MesquiteTable {
 	}
 	/*...............................................................................................................*/
 	public void mouseExitedCell(int modifiers, int column,int subColumn,int row, int subRow,MesquiteTool tool){
+		window.setAnnotation(null);
 		if (row == -1 && column>=0){//column names
 				window.setExplanation("");
 		}
