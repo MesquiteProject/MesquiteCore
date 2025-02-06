@@ -23,6 +23,10 @@
 		<before>sCF_N / sDF1_N / sDF2_N</before>
 		<after>'sCF N/sDF1 N/sDF2 N'</after>
 	</replacement> 
+	<replacement> 
+		<before> / </before>
+		<after>/</after>
+	</replacement> 
 
 </mesquite>
 
