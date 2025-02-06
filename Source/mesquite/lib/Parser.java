@@ -1282,8 +1282,8 @@ public class Parser extends StringUtil {
 
 		}
 		else if (closingCommentBracket(c)) {
-			if (comment!=null)
-				comment.append("$1");
+			/*if (comment!=null)
+				comment.append("$1");*/
 			if (debt==0 && pendingPComment) {
 				c = '>';
 				line.setCharAt(posTemp-1, c); //done in case punctuation passed back will cause pos to decrement
@@ -1319,8 +1319,8 @@ public class Parser extends StringUtil {
 				debt++;
 			}
 			else if (closingCommentBracket(c)) {
-				if (comment!=null)
-					comment.append("$2");
+				/*if (comment!=null)
+					comment.append("$2");*/
 				if (debt>0){
 					debt--;
 					storeCharToComment(c, debt, comment, suppressComment);

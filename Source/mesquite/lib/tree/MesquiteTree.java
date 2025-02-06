@@ -3054,7 +3054,6 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 			readAssociated(TreeDescription, node, stringLoc,whitespaceInNewickComments, punctuationInNewickComments, predefinedDouble(TreeDescription, stringLoc));
 
 	}
-	/*#######################  READ TREE #######################*/
 	/*-----------------------------------------*/
 	/* reads the branch length; allows exponentials and negative numbers*/
 	private void skipValue (String TreeDescription, int node, MesquiteInteger stringLoc) {
@@ -3067,7 +3066,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (d!=MesquiteDouble.impossible)
 			setBranchLength(node, d, false);
 	}
-	/*...............................................  read tree ....................................................*/
+	/*#######################  READ CLADE #######################*/
 	/** Continues reading a tree description, starting at node "node" and the given location on the string*/
 	static final int CONTINUE = 0;
 	static final int DONT_SPROUT = 1;
@@ -3077,21 +3076,18 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 			return FAILED;
 
 		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
-		//Debugg.println("$$$1 " + c);
 		// ************************* Newick comment -- use Newick tokenizing rules ***************
+		//comments before nodes aren't accepted
 		while ("<".equals(c)) {
 			while (!">".equals(c)  && c != null)
 				c=ParseUtil.getToken(TreeDescription, stringLoc, whitespaceInNewickComments, punctuationInNewickComments);
-			//	Debugg.println("$$$2 " + c);
 			if (">".equals(c)) {
 				c=ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
-				//Debugg.println("$$$3 " + c);
 			}
 		}
+		// ************************* end Newick  tokenizing rules ***************
 
-		//	Debugg.println("~~~" + c);
 		if ("(".equals(c)){  //internal node
-			// ************************* end Newick  tokenizing rules ***************
 			int sprouted = sproutDaughter(node, false);
 			int result = readClade(TreeDescription, sprouted,stringLoc, namer, whitespaceString, punctuationString);
 			if (result == FAILED)//������������������������
@@ -3367,65 +3363,6 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 			tD = dialect.translate(tD);
 			return tD;
 		}
-		
-	/*	if ("MrBayes".equalsIgnoreCase(dialectName)){
-			punctuationInNewickComments = ",=><{}'";
-			whitespaceInNewickComments = null;
-		//	tD = tD.replace("prob ( percent )", "'prob(percent)'");
-		//	tD = tD.replace("prob + - sd", "'prob+-sd'");		
-		//	tD = tD.replace("prob + - sd", "'prob+-sd'");		
-		//	tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _mean", "'effectivebrlenIgrBrlens{1,2,3,4,5}_mean'");		
-			tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _95%HPD", "'effectivebrlenIgrBrlens{1,2,3,4,5}_95%HPD'");		
-			tD = tD.replace("effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _median", "'effectivebrlenIgrBrlens{1,2,3,4,5}_median'");		
-			tD = tD.replace("effectivebrlenIgrBrlens { 6 , 7 , 8 } _mean", "'effectivebrlenIgrBrlens{6,7,8}_mean'");		
-			tD = tD.replace("effectivebrlenIgrBrlens { 6 , 7 , 8 } _95%HPD", "'effectivebrlenIgrBrlens{6,7,8}_95%HPD'");		
-			tD = tD.replace("effectivebrlenIgrBrlens { 6 , 7 , 8 } _median", "'effectivebrlenIgrBrlens{6,7,8}_median'");	
-			tD = tD.replace("effectivebrlenIgrBrlens { 9 } _mean", "'effectivebrlenIgrBrlens{9}_mean'");		
-			tD = tD.replace("effectivebrlenIgrBrlens { 9 } _95%HPD", "'effectivebrlenIgrBrlens{9}_95%HPD'");		
-			tD = tD.replace("effectivebrlenIgrBrlens { 9 } _median", "'effectivebrlenIgrBrlens{9}_median'");		
-			tD = tD.replace("rateIgrBrlens { 1 , 2 , 3 , 4 , 5 } _mean", "'rateIgrBrlens{1,2,3,4,5}_mean'");		
-			tD = tD.replace("rateIgrBrlens { 1 , 2 , 3 , 4 , 5 } _95%HPD", "'rateIgrBrlens{1,2,3,4,5}_95%HPD'");		
-			tD = tD.replace("rateIgrBrlens { 1 , 2 , 3 , 4 , 5 } _median", "'rateIgrBrlens{1,2,3,4,5}_median'");		
-			tD = tD.replace("rateIgrBrlens { 6 , 7 , 8 } _mean", "'rateIgrBrlens{6,7,8}_mean'");		
-			tD = tD.replace("rateIgrBrlens { 6 , 7 , 8 } _95%HPD", "'rateIgrBrlens{6,7,8}_95%HPD'");		
-			tD = tD.replace("rateIgrBrlens { 6 , 7 , 8 } _median", "'rateIgrBrlens{6,7,8}_median'");		
-			tD = tD.replace("rateIgrBrlens { 9 } _mean", "'rateIgrBrlens{9}_mean'");		
-			tD = tD.replace("rateIgrBrlens { 9 } _95%HPD", "'rateIgrBrlens{9}_95%HPD'");		
-			tD = tD.replace("rateIgrBrlens { 9 } _median", "'rateIgrBrlens{9}_median'");		
-			tD = tD.replace("\"", "'");		
-			return tD;
-		}
-		
-		else if ("Delineate".equalsIgnoreCase(dialectName)){ 
-			punctuationInNewickComments = ",=><'";
-			whitespaceInNewickComments = ""; //if this, then comment reader will have to strip beginning and ending
-	}
-		else if ("TreeAnnotator".equalsIgnoreCase(dialectName) || "Mesquite4".equalsIgnoreCase(dialectName) || "Mesquite".equalsIgnoreCase(dialectName) || "Default".equalsIgnoreCase(dialectName)){ 
-			punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
-			whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
-	}
-
-		else if ("IQ-TREE".equalsIgnoreCase(dialectName)){
-			tD = tD.replace("\"", "'");		
-			tD = tD.replace("gCF / gDF1 / gDF2 / gDFP", "'gCF/gDF1/gDF2/gDFP'");		
-			tD = tD.replace("gCF_N / gDF1_N / gDF2_N / gDFP_N", "'gCF N/gDF1 N/gDF2 N/gDFP N'");		
-			tD = tD.replace("sCF / sDF1 / sDF2", "'sCF/sDF1/sDF2'");		
-			tD = tD.replace("sCF_N / sDF1_N / sDF2 N", "'sCF N/sDF1 N/sDF2 N'");		
-			tD = tD.replace("XXXXX", "'XXXXX'");		
-			tD = tD.replace("XXXXX", "'XXXXX'");		
-
-			punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
-			whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
-		}
-		/*else if ("ASTRAL".equalsIgnoreCase(dialectName) || "ASTRAL3".equalsIgnoreCase(dialectName) || "ASTRAL4".equalsIgnoreCase(dialectName)){
-			tD = tD.replace(";", ",");	
-			int last = tD.lastIndexOf(",");
-			tD = tD.substring(0,last)+';'+tD.substring(last);
-			tD = tD.replace("'[", "<");		
-			tD = tD.replace("]'", ">");		
-			punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
-			whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
-		}*/
 		return tD;
 	}	
 	
@@ -3463,6 +3400,17 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		intializeTree();
 		lastUnrecognizedName = null;
 		try {
+			//Looking for attachment comments before the start of the tree
+			int oldPos = stringLoc.getValue();
+			String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //check for substantive comment early
+			if ("<".equals(c) && readAssociated){ 
+				while ("<".equals(c)){
+					readAttachments(TreeDescription, stringLoc);
+					oldPos = stringLoc.getValue();
+					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
+				}
+			}
+			stringLoc.setValue(oldPos);
 			if (readClade(TreeDescription, root, stringLoc, namer, whitespaceString, punctuationString) == FAILED){
 				if (lastUnrecognizedName != null)
 					MesquiteMessage.warnProgrammer("read clade failed; taxon name unrecognized: " + lastUnrecognizedName);
@@ -3475,6 +3423,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 
 				return false;
 			}
+
 		}
 		catch (Throwable e){
 			MesquiteTrunk.mesquiteTrunk.logln("Problem reading tree " + TreeDescription);
@@ -4068,6 +4017,33 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (key.equals(";")){
 			pos.decrement(); //go back to leave the semicolon to be read
 			return false;
+		}
+		if (key.equals("U")){
+			setRooted(false, false);
+			return true;
+		}
+		else if (key.equals("R")){
+			setRooted(true, false);
+			return true;
+		}
+		else if (key.equals("W")){
+			double numerator = MesquiteDouble.fromString(assocString, pos);
+			int justBeforeSlash = pos.getValue();
+			String slash = ParseUtil.getToken(assocString, pos);
+			double denominator = MesquiteDouble.fromString(assocString, pos);
+			double w = 0;
+			if (slash !=null && "/".equals(slash))
+				w = numerator/denominator;
+			else {
+				w = numerator;
+				pos.setValue(justBeforeSlash);
+			}
+			if (MesquiteDouble.isCombinable(w)) {
+				MesquiteDouble d = new MesquiteDouble(w);
+				d.setName(TreesManager.WEIGHT);
+				attachIfUniqueName(d);
+			}
+			return true;
 		}
 		ParseUtil.getToken(assocString, pos); //eating up equals
 		String value = ParseUtil.getToken(assocString, pos); //finding value

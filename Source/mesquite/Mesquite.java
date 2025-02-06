@@ -1768,7 +1768,7 @@ public class Mesquite extends MesquiteTrunk
 	public MesquiteProject readTreeFile(){
 		ExtensibleDialog dialog = null; //to be formed later
 		// === the file chosen
-		String path = MesquiteFile.openFileDialog( "Choose Tree File",  null, null);
+		String path = MesquiteFile.openFileDialog( "Choose NEXUS or Phylip/Newick File",  null, null);
 		if (path == null)
 			return null;
 		String startOfFile = MesquiteFile.getFileContentsAsString(path, 200); 
@@ -1791,10 +1791,10 @@ public class Mesquite extends MesquiteTrunk
 				dialectHumanNames[i] = dialect.getHumanName();
 				dialectInternalNames[i] = dialect.getName();
 			}
-			dialog = new ListDialog(containerOfModule(), "Reading file with trees", "In which dialect of Newick are the trees described?", false,null, dialectHumanNames, 8, selectedInDialog, "OK", null, false, true);
+			dialog = new ListDialog(containerOfModule(), "Reading NEXUS or Phylip/Newick file with trees", "In which dialect of Newick are the trees described?", false,null, dialectHumanNames, 8, selectedInDialog, "OK", null, false, true);
 		}
 		else if (!isNexus || isProjectAvailable)
-			dialog = new ExtensibleDialog(containerOfModule(), "Reading file with trees");
+			dialog = new ExtensibleDialog(containerOfModule(), "Reading NEXUS or Phylip/Newick file with trees");
 		
 		//Completing the dialog with extra items
 		String autoSaveString = "";

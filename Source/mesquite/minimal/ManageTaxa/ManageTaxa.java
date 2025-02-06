@@ -856,7 +856,6 @@ public class ManageTaxa extends TaxaManager {
 		boolean autodeleteDuplicateOrSubsetTaxa = false;
 		if (parser.hasFileReadingArgument(fileReadingArguments, "autodeleteDuplicateOrSubsetTaxa"))
 			autodeleteDuplicateOrSubsetTaxa = true;
-		Debugg.println(" arguments " + fileReadingArguments + "   " + parser.hasFileReadingArgument(fileReadingArguments, "autodeleteDuplicateOrSubsetTaxa"));
 		Parser commandParser = new Parser();
 
 		commandParser.setString(block.toString());

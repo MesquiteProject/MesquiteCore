@@ -1640,7 +1640,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		boolean nameSet = false;
 		boolean translationTableRead = false;
 		NexusBlock t =trees.addToFile(file, getProject(), this);
-		while (!StringUtil.blank(command=block.getNextFileCommand(comment, true))) {
+		while (!StringUtil.blank(command=block.getNextFileCommand(comment))) {
 			String punc = ",";
 			String commandName = parser.getFirstToken(command);
 			if (commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK")) {
@@ -1778,13 +1778,12 @@ public class ManageTrees extends TreesManager implements ItemListener {
 						thisTree.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlargement);
 						if (StringUtil.notEmpty(dialect))
 							thisTree.setDialect(dialect);
-						String commentString = comment.getValue();						
+						String commentString = comment.getValue();	
 						if (commentString!=null && commentString.length()>1){
 							if (commentString.charAt(0)=='!')
 								thisTree.setAnnotation(commentString.substring(1, commentString.length()), false);
 						}
 						Parser tempParser = new Parser(treeDescription);
-
 						if ("<".equals(tempParser.getFirstToken())){ 
 							String token = "";
 							while (!(">".equals(token=tempParser.getNextToken())) && StringUtil.notEmpty(token)){

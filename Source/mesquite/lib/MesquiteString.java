@@ -70,7 +70,7 @@ public class MesquiteString extends Listened implements Listable, Identifiable {
 	}
 	public String toString() {
 		if (isNull)
-			return "null";
+			return "NULL";
 		return sb.toString();
 	}
 	public boolean isBlank() {

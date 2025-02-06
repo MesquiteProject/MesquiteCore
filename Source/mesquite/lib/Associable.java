@@ -739,6 +739,24 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					value =ColorDistribution.hexFromColor(oldColor);
 				setAssociatedObject(ColorDistribution.colorRGBNameReference, node, value);
 			}
+			else if (key.equalsIgnoreCase("setBetweenLong")) { //note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
+				NameReference nRef = NameReference.getNameReference(value);
+				LongArray b = getWhichAssociatedLong(nRef);
+				if (b != null)
+					b.setBetweenness(true);
+			}
+			else if (key.equalsIgnoreCase("setBetweenDouble")) {//note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
+				NameReference nRef = NameReference.getNameReference(value);
+				DoubleArray b = getWhichAssociatedDouble(nRef);
+				if (b != null)
+					b.setBetweenness(true);
+			}
+			else if (key.equalsIgnoreCase("setBetweenObject")) {//note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
+				NameReference nRef = NameReference.getNameReference(value);
+				ObjectArray b = getWhichAssociatedObject(nRef);
+				if (b != null)
+					b.setBetweenness(true);
+			}
 			else if (value.equalsIgnoreCase("on")) {
 				NameReference nr = makeAssociatedBits(key);
 				Bits bb = getWhichAssociatedBits(nr);

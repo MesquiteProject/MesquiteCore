@@ -219,16 +219,19 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 	 * Other classes such as CharacterData may have their managing modules store the attachments as supplemental notes (see SUCM
 	 * in ManageCharacters).
 	 */
+	boolean reportReading = false;
 	public boolean readAttachment(String assocString, MesquiteInteger pos){
 		//assumes already past "<", and we're about to read a key
 		String key=ParseUtil.getToken(assocString, pos);
 		if (StringUtil.blank(key))
 			return false;
+		int posBeforeEquals = pos.getValue();
 		String tok = ParseUtil.getToken(assocString, pos); //eating up equals
-		int oldPos = pos.getValue();
+		int posBeforeValue = pos.getValue();
 		String value = ParseUtil.getToken(assocString, pos); //finding value
 		if (StringUtil.blank(value))
 			return false;
+		if (reportReading) Debugg.println("@~~KEY " + key + " VALUE " + value + " pos " + pos.getValue());
 		if (value.equalsIgnoreCase("on")) {
 			MesquiteBoolean mb = new MesquiteBoolean(true);
 			mb.setName(key);
@@ -247,10 +250,13 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 		}
 		else {
 			
-			pos.setValue(oldPos);
+			pos.setValue(posBeforeValue);
 			double d = MesquiteDouble.fromString(assocString, pos);
-			
+			if (reportReading) Debugg.println("  d " +  MesquiteDouble.toString(d) + " pos " + pos.getValue());
+
 			if (!MesquiteDouble.isCombinable(d)){ //not a number; treat as string
+				pos.setValue(posBeforeValue);
+				ParseUtil.getToken(assocString, pos); //eating up value again
 				MesquiteString mb = new MesquiteString();
 				mb.setValue(value);
 				mb.setName(key);
@@ -260,14 +266,14 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 				if (value.indexOf(".")>=0) { //treat as double 
 					//TODO:  there is a problem here; if some cases use ., others not, should be double; but will be treated as mixed
 					MesquiteDouble mb = new MesquiteDouble();
-					pos.setValue(oldPos);
+					pos.setValue(posBeforeValue);
 					mb.setValue(MesquiteDouble.fromString(assocString, pos));
 					mb.setName(key);
 					attachIfUniqueName(mb);
 				}
 				else {  //treat as long
 					MesquiteLong mb = new MesquiteLong();
-					pos.setValue(oldPos);
+					pos.setValue(posBeforeValue);
 					mb.setValue(MesquiteLong.fromString(assocString, pos));
 					if (mb.isCombinable())
 						return false;
@@ -286,6 +292,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			int oldPos = pos.getValue();
 			boolean success = readAttachment(assocString, pos);
 			s=ParseUtil.getToken(assocString, pos);  //eating up "," separating subcommands, or hit the end
+			if (reportReading) Debugg.println("  s " +  s + " pos " + pos.getValue());
 		}
 		if (StringUtil.blank(s))
 			pos.setValue(assocString.length()-1);
