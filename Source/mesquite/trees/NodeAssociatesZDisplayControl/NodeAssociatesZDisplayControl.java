@@ -825,7 +825,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable {
 
 	/*.................................................................................................................*/
 	void myDraw(MesquiteTree tree, int node, Graphics g) {
-		if (!controlModule.showOnTerminals.getValue() && tree.nodeIsTerminal(node))
+		if (tree.withinCollapsedClade(node) || (!controlModule.showOnTerminals.getValue() && tree.nodeIsTerminal(node)))
 			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			myDraw(tree, d, g);

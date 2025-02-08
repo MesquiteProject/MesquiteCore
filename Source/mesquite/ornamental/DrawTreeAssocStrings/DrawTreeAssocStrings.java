@@ -273,6 +273,8 @@ class NodeAssocTextExtra extends TreeDisplayExtra  {
 	}
 	/*.................................................................................................................*/
 	public   void myDraw(Tree tree, int node, Graphics g, ObjectArray[] arrays) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (!assocTextModule.showOnTerminals.getValue() && tree.nodeIsTerminal(node))
 			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))

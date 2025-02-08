@@ -235,6 +235,8 @@ class ShadeNumbersDecorator extends TreeDecorator {
 	}
 	/*.................................................................................................................*/
 	private void shadeNode(int N, Tree tree, NumberArray numbers, MesquiteNumber min, MesquiteNumber max, Graphics g) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				shadeNode(d, tree, numbers, min, max, g);
 				

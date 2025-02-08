@@ -306,6 +306,8 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 	/*.................................................................................................................*/
 	public   void drawNodes(MesquiteTree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawNodes(tree, d, g);
 

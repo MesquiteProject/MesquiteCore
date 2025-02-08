@@ -65,6 +65,7 @@ import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.taxa.TaxonNamer;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
 
 /* ======================================================================== */
 /** The basic Tree class of Mesquite.  Nodes are represented by integers (Object representation of nodes is too
@@ -660,6 +661,78 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return true;
 	}
+	
+	/*_________________________________________________*/
+	//COLLAPSED CLADES
+	NameReference collapsedNR = NameReference.getNameReference("collapsed");
+	public void setCollapsedClade(int node, boolean collapse){
+		setAssociatedBit(collapsedNR, node, collapse);
+	}
+	public void decollapseClade(int node){
+		setCollapsedClade(node, false);
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+			decollapseClade(d);
+	
+	}
+	public boolean isCollapsedClade(int node){
+		return getAssociatedBit(collapsedNR, node);
+	}
+	public boolean withinCollapsedClade(int node){
+		int mother;
+		while (nodeExists(mother = motherOfNode(node))){
+			if (isCollapsedClade(mother))
+				return true;
+			node = mother;
+		}
+		return false;
+	}
+	public int shallowestCollapsedAncestor(int node) {
+		if (!nodeExists(node))
+			return 0;
+		if (isCollapsedClade(motherOfNode(node)))
+			return motherOfNode(node);
+		if (getRoot() == node || getSubRoot() == node)
+			return 0;
+		return shallowestCollapsedAncestor(motherOfNode(node));
+	}
+	public int deepestCollapsedAncestor(int node) {
+		if (!nodeExists(node))
+			return 0;
+		if (isCollapsedClade(motherOfNode(node)) && !nodeExists(shallowestCollapsedAncestor(motherOfNode(node))))
+			return motherOfNode(node);
+		if (getRoot() == node || getSubRoot() == node)
+			return 0;
+		return deepestCollapsedAncestor(motherOfNode(node));
+	}
+	/*_________________________________________________*/
+	public boolean isLeftmostTerminalOfCollapsedClade(int node) {  
+		if (nodeIsTerminal(node) && withinCollapsedClade(node)){
+			int dCA = deepestCollapsedAncestor(node);
+			if (leftmostTerminalOfNode(dCA)==node)
+				return true;
+		}
+		return false;
+	}
+	/*_________________________________________________*/
+	public boolean isVisibleEvenIfInCollapsed(int node) {  
+		return !withinCollapsedClade(node) || isLeftmostTerminalOfCollapsedClade(node);
+	}
+	/*_________________________________________________*/
+	public String uniformColorInClade(int node){
+		if (nodeIsTerminal(node))
+			return getColorAsHexString(node);
+		String cladeColor = null;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)){
+			String dsColor = uniformColorInClade(d);
+			if (cladeColor == null)
+				cladeColor = dsColor;
+			else if (dsColor == null || !cladeColor.equalsIgnoreCase(dsColor))
+				return null;
+		}
+		return cladeColor;
+	}
+
+	/*_________________________________________________*/
 	/** Copies associated from other tree. Assumes topology identicial, so check first! kind 1 = long, 2 = double, 3 = object. */
 	public void transferAssociated(Tree tree, int kind, NameReference nRef){
 		if (kind == 0) {
@@ -1878,6 +1951,20 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 	}
 	/*-----------------------------------------*/
+	/** Returns number of terminal taxa in clade, counting collapsed clades as terminals.*/
+	public  int numberOfVisibleTerminalsInClade(int node) {
+		if (!inBounds(node))
+			return 0;
+		if (nodeIsTerminal(node) && isCollapsedClade(node))
+			return 1; //count node itself
+		else{
+			int count = 0;
+			for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+				count += numberOfTerminalsInClade(d);
+			return count;
+		}
+	}
+	/*-----------------------------------------*/
 	/** Returns number of internal nodes in clade.*/
 	public  int numberOfInternalsInClade(int node) {
 		if (!inBounds(node))
@@ -3044,7 +3131,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
 		return nodeInfo;
 	}
-private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
+	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
 		if (readingMrBayesConTree) {  //ZQ why this kludge?
 			String c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">", false) + ">";  //get next token
 			c = retokenizeMrBayesConTreeNodeInfo(c); //what is this?
@@ -3074,7 +3161,6 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	private int readClade(String TreeDescription, int node, MesquiteInteger stringLoc, TaxonNamer namer,  String whitespaceString, String punctuationString) {
 		if (StringUtil.blank(TreeDescription))
 			return FAILED;
-
 		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
 		// ************************* Newick comment -- use Newick tokenizing rules ***************
 		//comments before nodes aren't accepted
@@ -3381,10 +3467,14 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString) {
 		return readTree(TreeDescription, namer, whitespaceString, punctuationString, true);
 	}
+	/** Reads the tree description string and sets the tree object to store the tree described.*/
+	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
+		return readTree(TreeDescription, null, namer, whitespaceString, punctuationString, readAssociated);
+	}
 
 	/* ########################### READ TREE ################################ */
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
-	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
+	public boolean readTree(String TreeDescription, MesquiteInteger startingPos, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
 		//	Debugg.println("@###################################################");
 	//	Debugg.println("@@DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
@@ -3393,6 +3483,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		
 		//QZ: if whitespace or punc passed in, don't override?
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
+		if (startingPos !=null)
+			stringLoc.setValue(startingPos.getValue());
 		if (readAssociated && TreeDescription.indexOf("[&")>=0){
 			TreeDescription = StringUtil.replace(TreeDescription, "[&", "<");
 			TreeDescription = StringUtil.replace(TreeDescription, "]", ">");
@@ -3420,6 +3512,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 					MesquiteMessage.discreetNotifyUser("\nTree description: \n"+TreeDescription +"\n");
 
 				intializeTree();
+				if (startingPos !=null)
+					startingPos.setValue(stringLoc.getValue());
 
 				return false;
 			}
@@ -3429,6 +3523,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 			MesquiteTrunk.mesquiteTrunk.logln("Problem reading tree " + TreeDescription);
 
 			MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, "Problem reading tree");
+			if (startingPos !=null)
+				startingPos.setValue(stringLoc.getValue());
 			return false;
 		}
 
@@ -3444,6 +3540,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 					if (!expectedPunctuation(c)) {
 						intializeTree();
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 7");
+						if (startingPos !=null)
+							startingPos.setValue(stringLoc.getValue());
 						return false;
 					}
 				}
@@ -3453,6 +3551,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 					if (!expectedPunctuation(c)) {
 						intializeTree();
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 8");
+						if (startingPos !=null)
+							startingPos.setValue(stringLoc.getValue());
 						return false;
 					}
 				}
@@ -3500,9 +3600,13 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (!checkTreeIntegrity(root)) {
 			intializeTree();
 			MesquiteMessage.warnProgrammer("tree failed integrity check");
+			if (startingPos !=null)
+				startingPos.setValue(stringLoc.getValue());
 			return false;
 		}
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
+		if (startingPos !=null)
+			startingPos.setValue(stringLoc.getValue());
 		return true;
 	}
 	/*-----------------------------------------*/
@@ -6171,6 +6275,18 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	}
 	/*-----------------------------------------*/
 	/** SelectsAllNodes in the clade */
+	public void selectAllInClade( int node, boolean select) {
+		if (!inBounds(node))
+			return;
+		if (selected==null)
+			return;
+		setSelected(node, select);
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
+			selectAllInClade(d, select);
+		}
+	}
+	/*-----------------------------------------*/
+	/** SelectsAllNodes in the clade */
 	public void selectAllInClade( int node) {
 		if (!inBounds(node))
 			return;
@@ -6625,26 +6741,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	public void setFileIndex(int index){
 		fileIndex =index;
 	}
-	/*_________________________________________________*/
-	public boolean ancestorHasNameReference(NameReference nameRef, int node) {
-		if (!nodeExists(node))
-			return false;
-		if (getAssociatedBit(nameRef, motherOfNode(node)))
-			return true;
-		if (getRoot() == node || getSubRoot() == node)
-			return false;
-		return ancestorHasNameReference(nameRef, motherOfNode(node));
-	}
-	/*_________________________________________________*/
-	public int ancestorWithNameReference(NameReference nameRef, int node) {
-		if (!nodeExists(node))
-			return 0;
-		if (getAssociatedBit(nameRef, motherOfNode(node)))
-			return motherOfNode(node);
-		if (getRoot() == node || getSubRoot() == node)
-			return 0;
-		return ancestorWithNameReference(nameRef, motherOfNode(node));
-	}
+
 
 }
 

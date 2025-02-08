@@ -95,6 +95,7 @@ public class BallsNSticks extends DrawTree {
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		BallsNSticksDrawing treeDrawing =  new BallsNSticksDrawing (treeDisplay, numTaxa, this);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		if (legalOrientation(treeDisplay.getOrientation())){
 			orientationName.setValue(orient(treeDisplay.getOrientation()));
 			ornt = treeDisplay.getOrientation();
@@ -314,12 +315,12 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	private boolean ready=false;
 
 	private int foundBranch;
-	NameReference triangleNameRef;
+	
 	BasicStroke defaultStroke;
 
 	public BallsNSticksDrawing (TreeDisplay treeDisplay, int numTaxa, BallsNSticks ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
-		triangleNameRef = NameReference.getNameReference("triangled");
+		
 		this.ownerModule = ownerModule;
 		spotSize = ownerModule.oldSpotSize;
 		edgeWidth = ownerModule.oldEdgeWidth;
@@ -374,7 +375,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void UPCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcBranchPolys(tree, d, polys, width);
 		if (ownerModule.style == BallsNSticks.DIAGONAL)
@@ -385,7 +385,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void DOWNCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcBranchPolys(tree, d, polys, width);
 		//DOWNdefinePoly(polys[node], width, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
@@ -397,7 +396,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void RIGHTCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcBranchPolys(tree, d, polys, width);
 		if (ownerModule.style == BallsNSticks.DIAGONAL)
@@ -408,7 +406,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void LEFTCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcBranchPolys(tree, d, polys, width);
 		if (ownerModule.style == BallsNSticks.DIAGONAL)
@@ -544,7 +541,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				GraphicsUtil.fill(g,touchPoly[node]); 
 				g.setColor(prev);
 			}
-
+			
 			GraphicsUtil.fill(g,branchPoly[node]);  //TODO: no longer supports cosmic!
 		}
 		else if (ownerModule.style == BallsNSticks.CURVED)
@@ -557,6 +554,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				GraphicsUtil.fill(g,touchPoly[node]); 
 				g.setColor(prev);
 			}
+			GraphicsUtil.drawLine(g,x[node],y[node], x[tree.motherOfNode(node)],y[tree.motherOfNode(node)]); //if branch poly has zero width or height, won't be drawn, so this is a backup
 			GraphicsUtil.fill(g,branchPoly[node]);  //TODO: no longer supports cosmic!
 
 			// if (drawnRoot==node && tree.getRoot()!=node)
@@ -572,22 +570,21 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				}
 			}
 		}
-		if (tree.getAssociatedBit(triangleNameRef,node)) {
+	/*	if (tree.isCollapsedClade(node)) {
 			for (int j=0; j<2; j++)
 				for (int i=0; i<2; i++) {
 					GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
 					GraphicsUtil.drawLine(g,x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 					GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 				}
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	private   void drawBranches(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
-			if (!tree.getAssociatedBit(triangleNameRef,node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawBranches( tree, g, d);
-			if (tree.getRooted() || tree.getRoot()!=node) {
+			if ((tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 				drawJustOneBranch(tree,g,node);
 				if (!tree.nodeIsInternal(node) || ownerModule.ballsInternal.getValue()){
 					drawSpot( g, node);
@@ -646,21 +643,11 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		fillBranchWithColors(tree, node, colors, g);
 	}
-	/*_________________________________________________*/
-	private boolean ancestorIsTriangled(Tree tree, int node) {
-		if (!tree.nodeExists(node))
-			return false;
-		if (tree.getAssociatedBit(triangleNameRef, tree.motherOfNode(node)))
-			return true;
-		if (tree.getRoot() == node || tree.getSubRoot() == node)
-			return false;
-		return ancestorIsTriangled(tree, tree.motherOfNode(node));
-	}
 
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
 		
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node)) {
 			Color c = g.getColor();
 			if (g instanceof Graphics2D){
 				Graphics2D g2 = (Graphics2D)g;
@@ -674,7 +661,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			Color c = g.getColor();
 			int numColors = colors.getNumColors();
 			if (numColors==1){
@@ -686,13 +673,18 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				double startAngle=90;//was 270
 				double totalFreq=0;
 				for (int i=0; i<numColors; i++) totalFreq += colors.getWeight(i);
+				double suppl = 0;
+				if (totalFreq == 0){
+					totalFreq = 1.0;
+					suppl = 1.0/numColors;
+				}
 				double arcAngle = 0;
 				for (int i=0; i<numColors; i++) {
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
 
-					arcAngle = ((colors.getWeight(i)/totalFreq)*360.0);
+					arcAngle = (((colors.getWeight(i)+suppl)/totalFreq)*360.0);
 					//GraphicsUtil.fillArc(g, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4, spotSize - 4, startAngle, arcAngle, ownerModule.cosmic.getValue());
 					GraphicsUtil.fillArc(g, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4.0, spotSize - 4.0, startAngle, arcAngle, ownerModule.cosmic.getValue());
 					startAngle+=arcAngle; 
@@ -719,7 +711,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			//drawJustOneBranch(tree,g,node);
 			if (!tree.nodeIsInternal(node) || ownerModule.ballsInternal.getValue())
 				fillSpot(g,node);
@@ -747,19 +739,22 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		if (foundBranch==0) {
 			if (inBranch(tree,polys,node,x,y) || inNode(node, x, y)) {
 				foundBranch = node;
+				if (tree.withinCollapsedClade(node))
+					foundBranch = tree.deepestCollapsedAncestor(node);
+
 				if (fraction!=null)
-					if (inNode(node,x,y))
+					if (inNode(foundBranch,x,y))
 						fraction.setValue(ATNODE);
 					else {
-						int motherNode = tree.motherOfNode(node);
+						int motherNode = tree.motherOfNode(foundBranch);
 						fraction.setValue(EDGESTART);  //TODO: this is just temporary: need to calculate value along branch.
 						if (tree.nodeExists(motherNode)) {
-							fraction.setValue(GraphicsUtil.fractionAlongLine(x, y, this.x[motherNode], this.y[motherNode], this.x[node], this.y[node],isRIGHT()||isLEFT(), isUP()||isDOWN()));
+							fraction.setValue(GraphicsUtil.fractionAlongLine(x, y, this.x[motherNode], this.y[motherNode], this.x[foundBranch], this.y[foundBranch],isRIGHT()||isLEFT(), isUP()||isDOWN()));
 						}
 					}
-
+				return;
 			}
-			if (!tree.getAssociatedBit(triangleNameRef, node)) {
+			if (!tree.isCollapsedClade(node)) {
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, polys, d, x, y, fraction);
 			}

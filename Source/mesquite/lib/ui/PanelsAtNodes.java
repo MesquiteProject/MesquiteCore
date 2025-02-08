@@ -178,6 +178,8 @@ public abstract class PanelsAtNodes  {
 	}
 	/*.................................................................................................................*/
 	private void recShowPanels(Tree tree, int N) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				recShowPanels(tree, d);
 		inTree[N]=true;
@@ -203,6 +205,8 @@ public abstract class PanelsAtNodes  {
 	}
 	/*.................................................................................................................*/
 	public   void locatePanels(Tree tree, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				locatePanels(tree, d);
 				

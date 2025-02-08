@@ -16,6 +16,7 @@ package mesquite.lib.tree;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
@@ -107,6 +108,9 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/**  The width of the drawn edges (branches)*/
 	private int edgewidth;
 
+	/**  whether the taxon name drawer should put the name of a collapsed clade at its leftmost ancestor (e.g. for Square Line tree) or at its MRCA (e.g., for plot tree)*/
+	public boolean collapsedCladeNameAtLeftmostAncestor = false;
+
 	/**  Spacing in pixels between taxa*/
 	private int taxonSpacing;
 
@@ -122,8 +126,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	private boolean allowReorient = true;
 	private MesquiteInteger highlightedBranch  = new MesquiteInteger(0);
 
-	/**  whether "triangled" clades are shown as simple triangles or not*/
-	private boolean simpleTriangle=true;
 
 
 	public TreeDisplay (MesquiteModule ownerModule, Taxa taxa) { 
@@ -173,11 +175,14 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	NameReference 	oldColourNameRef = NameReference.getNameReference("color");
 	MesquiteInteger pos = new MesquiteInteger(0);
 	public Color getBranchColor(int N){
-		if (!showBranchColors)
+		if (!showBranchColors || tree == null)
 			return branchColor;
 		Color color = null;
 		String cRGB = null;
-		if (tree != null)
+		if (tree.withinCollapsedClade(N)){
+			cRGB = ((MesquiteTree)tree).uniformColorInClade(tree.deepestCollapsedAncestor(N));
+		}
+		if (cRGB == null)
 			cRGB = (String)((MesquiteTree)tree).getColorAsHexString(N);
 		if (cRGB != null) {
 			pos.setValue(0);
@@ -537,14 +542,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void setOrientation(int orient) {
 		if (allowReorient)
 			treeOrientation = orient;
-	}
-	/*_________________________________________________*/
-	public void setSimpleTriangle(boolean simpleTriangle) {
-		this.simpleTriangle=simpleTriangle;
-	}
-	/*_________________________________________________*/
-	public boolean getSimpleTriangle() {
-		return simpleTriangle;
 	}
 	/*.................................................................................................................*/
 	public int getOrientation() {

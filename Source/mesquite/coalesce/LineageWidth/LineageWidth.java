@@ -115,6 +115,8 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 	}
 	/*....................................................................................................*/
 	private void drawWidths (Tree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		double w =widths.getValue(node);
 		if (MesquiteDouble.isCombinable(w)) {
 			double nodeX = treeDisplay.getTreeDrawing().x[node];

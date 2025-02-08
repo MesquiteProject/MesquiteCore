@@ -51,9 +51,9 @@ public class ColorDistribution {
 	//	public static Color[] projectLight, projectDark; //pale, light, medium, dark, project, 
 	public final static int numColorSchemes = 4;
 	public static Color burlyWood, navajoWhite, bisque, sienna, paleGoldenRod, veryPaleGoldenRod;
-	
+
 	public static NameReference colorRGBNameReference;
-	
+
 	public static StringArray standardColorNames;
 	static ObjectArray standardColors, standardColorsDimmed, standardColorsAsHex;
 	public static double dimmingConstant = 0.3;
@@ -157,9 +157,9 @@ public class ColorDistribution {
 		standardColorsAsHex = new ObjectArray(18);
 		for (int i=0; i<standardColorsAsHex.getSize(); i++)
 			standardColorsAsHex.setValue(i, hexFromColor((Color)standardColors.getValue(i)));
-		
 
-//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
+
+		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorNames = new StringArray(18);
 		standardColorNames.setValue(0, "Black");
 		standardColorNames.setValue(1, "Dark Gray");
@@ -474,6 +474,37 @@ public class ColorDistribution {
 					dimmed = ColorDistribution.brighter(color, dimmingConstant);
 			}
 			colorsDimmed[i] = dimmed;
+		}
+	}
+	/** add a color to an available slot.*/
+	public void addColor(Color color) {
+		if (color == null || colors == null)
+			return;
+		for (int i=0; i<colors.length; i++){
+			if (colors[i] == null) {
+				setColor(i, color);
+				return;
+			}
+		}
+	}
+	/** whether a color is already in the distribution.*/
+	public boolean colorPresent(Color color) {
+		if (colors == null || color == null)
+			return false;
+		for (int i=0; i<colors.length; i++){
+			if (colors[i] !=null)
+			if (color.getRed() == colors[i].getRed() && color.getGreen() == colors[i].getGreen() && color.getBlue() == colors[i].getBlue())
+				return true;
+		}
+		return false;
+	}
+	/** set color for state (or other unit) i to the given color.*/
+	public void concatenate(ColorDistribution other) {
+		if (other == null)
+			return;
+		for (int k = 0; k<other.numColors && numColors <MAXCOLORS; k++) {
+			if (other.colors[k]!=null && !colorPresent(other.colors[k]))
+				addColor(other.colors[k]);
 		}
 	}
 

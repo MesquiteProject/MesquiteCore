@@ -379,6 +379,8 @@ class NodeAssocValuesExtra extends TreeDisplayExtra  {
 	}
 	/*.................................................................................................................*/
 	public   void myDraw(Tree tree, int node, Graphics g, DoubleArray[] arrays) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (!assocDoublesModule.showOnTerminals.getValue() && tree.nodeIsTerminal(node))
 			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))

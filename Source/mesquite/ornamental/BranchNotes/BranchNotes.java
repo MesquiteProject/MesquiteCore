@@ -122,6 +122,8 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 	StringInABox box = new StringInABox( "", treeDisplay.getFont(),150);
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawOnTree(tree, d, g);
 		if (getNote(tree, node)!=null) {

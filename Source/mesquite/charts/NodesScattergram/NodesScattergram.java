@@ -510,6 +510,8 @@ class NodeLabeller extends TreeDisplayExtra {
 	}
 	/*.................................................................................................................*/
 	private void drawLabels(int N, Tree tree, Graphics g) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawLabels(d, tree, g);
 		drawOneLabel(N, tree, g);

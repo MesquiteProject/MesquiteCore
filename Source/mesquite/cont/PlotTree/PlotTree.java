@@ -86,6 +86,7 @@ public class PlotTree extends AnalyticalDrawTree {
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		PlotTreeDrawing treeDrawing =  new PlotTreeDrawing (treeDisplay, numTaxa, this, spotSize);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
@@ -267,6 +268,8 @@ class PlotTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawLines(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			Composite composite = 	treeDisplay.setBranchTransparency(g, node);
@@ -314,6 +317,8 @@ class PlotTreeDrawing extends TreeDrawing  {
 	
 	/*_________________________________________________*/
 	private   void drawSpots(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			Composite composite = 	treeDisplay.setBranchTransparency(g, node);

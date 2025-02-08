@@ -94,6 +94,7 @@ public class SquareTree extends DrawTree {
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		SquareTreeDrawing treeDrawing =  new SquareTreeDrawing (treeDisplay, numTaxa, this);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		if (legalOrientation(treeDisplay.getOrientation())){
 			orientationName.setValue(orient(treeDisplay.getOrientation()));
 			ornt = treeDisplay.getOrientation();
@@ -279,7 +280,7 @@ public class SquareTree extends DrawTree {
 			orientationName.setValue(orient(ornt));
 			parametersChanged();
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to draw triangled clades as simple triangles or not.", "", commandName, "toggleSimpleTriangle")) {
+	/*	else if (checker.compare(this.getClass(), "Sets whether to draw triangled clades as simple triangles or not.", "", commandName, "toggleSimpleTriangle")) {
 			boolean current = simpleTriangle.getValue();
 			simpleTriangle.toggleValue(parser.getFirstToken(arguments));
 			if (current!=simpleTriangle.getValue()) {
@@ -287,11 +288,11 @@ public class SquareTree extends DrawTree {
 				while (e.hasMoreElements()) {
 					Object obj = e.nextElement();
 					SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
-					treeDrawing.setSimpleTriangle(simpleTriangle.getValue());
 				}
 				parametersChanged();
 			}
 		}
+		*/
 		else return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
@@ -333,7 +334,6 @@ class SquareTreeDrawing extends TreeDrawing   {
 	private int foundBranch;
 	private boolean ready=false;
 	private static final int  inset=1;
-	NameReference triangleNameRef;
 	int cornerMode;
 	BasicStroke defaultStroke;
 
@@ -343,7 +343,6 @@ class SquareTreeDrawing extends TreeDrawing   {
 		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 5); //better if only did this if tracing on
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
-		triangleNameRef = NameReference.getNameReference("triangled");
 		try{
 			defaultStroke = new BasicStroke();
 		}
@@ -464,22 +463,23 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void UPCalcFillBranchPolys(Tree tree, int node, double nShortcut)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
 			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcFillBranchPolys(tree, d, dShortcut);
-		}
-		UPdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0, nShortcut, true);
+
+		if (tree.isVisibleEvenIfInCollapsed(node))
+			UPdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0, nShortcut, true);
 	}
 
 	/*_________________________________________________*/
 	private void UPCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
+
 			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcBranchPolys(tree, d, dShortcut, polys, width);
-		}
+	
+if (tree.isVisibleEvenIfInCollapsed(node))
 		DrawTreeUtil.UPdefineSquarePoly(this,polys[node], width, (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], nShortcut);
 	}
 	/*_________________________________________________*/
@@ -538,21 +538,21 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void DOWNCalcFillBranchPolys(Tree tree, int node, double nShortcut)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
 			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcFillBranchPolys(tree, d, dShortcut);
-		}
+		
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		DOWNdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0, nShortcut, true);
 	}
 	/*_________________________________________________*/
 	private void DOWNCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
 			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcBranchPolys(tree, d, dShortcut, polys, width);
-		}
+		
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		DrawTreeUtil.DOWNdefineSquarePoly(this,polys[node], width, (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)],  nShortcut);
 	}
 	/*_________________________________________________*/
@@ -611,21 +611,21 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void RIGHTCalcFillBranchPolys(Tree tree, int node, double nShortcut)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
 			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcFillBranchPolys(tree, d, dShortcut);
-		}
+		
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		RIGHTdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0,  nShortcut, true);
 	}
 	/*_________________________________________________*/
 	private void RIGHTCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()){
 			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcBranchPolys(tree, d, dShortcut, polys, width);
-		}
+		
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		DrawTreeUtil.RIGHTdefineSquarePoly(this,polys[node], width, (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)],  nShortcut);
 	}
 	/*_________________________________________________*/
@@ -682,21 +682,21 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void LEFTCalcFillBranchPolys(Tree tree, int node, double nShortcut)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
 			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcFillBranchPolys(tree, d, dShortcut);
-		}
+		
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		LEFTdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0,  nShortcut, true);
 	}
 	/*_________________________________________________*/
 	private void LEFTCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()){
 			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcBranchPolys(tree, d, dShortcut, polys, width);
-		}
+		
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		DrawTreeUtil.LEFTdefineSquarePoly(this,polys[node], width, (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)],  nShortcut);
 	}
 	/*_________________________________________________*/
@@ -836,7 +836,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	private   void drawOneBranch(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
 			//g.setColor(Color.black);//for testing
-			boolean draw = branchIsVisible(node);
+			boolean draw = branchIsVisible(tree, node);
 			if (draw){
 				g.setColor(treeDisplay.getBranchColor(node));
 				if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node] != null){
@@ -859,19 +859,8 @@ class SquareTreeDrawing extends TreeDrawing   {
 						}
 					}
 				}
-				if (tree.getAssociatedBit(triangleNameRef,node)) 
-					if (treeDisplay.getSimpleTriangle()) {
-						for (int j=0; j<2; j++)
-							for (int i=0; i<2; i++) {
-								GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
-								GraphicsUtil.drawLine(g,x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-								GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-							}
-					} else {
-						//	drawLeftSideOfClade(tree, g, node);
-					}
+				
 			}
-			if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle())
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawOneBranch(tree, g, d);
 			//g.setColor(Color.green);//for testing
@@ -1072,10 +1061,9 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*
 	/*_________________________________________________*/
-	private boolean ancestorIsTriangled(Tree tree, int node) {
-		return tree.ancestorHasNameReference(triangleNameRef, node);
-	}
-	public boolean branchIsVisible(int node){
+	boolean branchIsVisible(Tree tree, int node){
+		if (!tree.isVisibleEvenIfInCollapsed(node))
+			return false;
 		try {
 			if (node >=0 && node <  branchPoly.length)
 				return treeDisplay.getVisRect() == null || branchPoly[node].intersects(treeDisplay.getVisRect());
@@ -1086,14 +1074,14 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && node<fillBranchPoly.length && branchIsVisible(node)){
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)  && node<fillBranchPoly.length && branchIsVisible(tree, node)){
 			fillOneBranch(tree, g, fillBranchPoly[node], node, false);  
 		}
 	}
 
 	/** Fill branch N with indicated set of colors as a sequence, e.g. for stochastic character mapping.  This is not abstract because many tree drawers would have difficulty implementing it */
 	public void fillBranchWithColorSequence(Tree tree, int node, ColorEventVector colors, Graphics g){
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)  && branchIsVisible(tree, node)) {
 			Color c = g.getColor();
 			int numEvents = colors.size();
 			double nShortcut = getShortcutOfDaughters(tree, tree.motherOfNode(node));
@@ -1205,7 +1193,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
 
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)  && branchIsVisible(node)) {
 			Color c = g.getColor();
 			if (g instanceof Graphics2D){
 				Graphics2D g2 = (Graphics2D)g;
@@ -1233,7 +1221,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && branchIsVisible(tree, node)) {
 			Color c = g.getColor();
 			int numColors = colors.getNumColors();
 			double nShortcut = getShortcutOfDaughters(tree, tree.motherOfNode(node));
@@ -1334,7 +1322,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 						}
 					}
 			}
-			if (!tree.getAssociatedBit(triangleNameRef, node) || !treeDisplay.getSimpleTriangle()) 
+			if (!tree.isCollapsedClade(node)) 
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, polys, d, x, y, fraction);
 
@@ -1360,13 +1348,6 @@ class SquareTreeDrawing extends TreeDrawing   {
 		if (treeDisplay == null)
 			return;
 		treeDisplay.setOrientation(orientation);
-		treeDisplay.pleaseUpdate(true);
-	}
-	/*_________________________________________________*/
-	public void setSimpleTriangle(boolean simpleTriangle) {
-		if (treeDisplay == null)
-			return;
-		treeDisplay.setSimpleTriangle(simpleTriangle);
 		treeDisplay.pleaseUpdate(true);
 	}
 	/*_________________________________________________*/

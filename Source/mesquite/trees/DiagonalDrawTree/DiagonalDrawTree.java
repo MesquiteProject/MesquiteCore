@@ -71,7 +71,8 @@ public class DiagonalDrawTree extends DrawTree {
 
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		DiagonalTreeDrawing treeDrawing =  new DiagonalTreeDrawing (treeDisplay, numTaxa, this);
-		if (legalOrientation(treeDisplay.getOrientation())){
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
+	if (legalOrientation(treeDisplay.getOrientation())){
 			orientationName.setValue(orient(treeDisplay.getOrientation()));
 			ornt = treeDisplay.getOrientation();
 		}
@@ -246,7 +247,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	private boolean ready=false;
 
 	private int foundBranch;
-	NameReference triangleNameRef;
+	
 	NameReference widthNameReference;
 	DoubleArray widths = null;
 	double maxWidth = 0;
@@ -254,7 +255,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		widthNameReference = NameReference.getNameReference("width");
 		treeDisplay.setMinimumTaxonNameDistance(edgeWidth, 5); //better if only did this if tracing on
-		triangleNameRef = NameReference.getNameReference("triangled");
+		
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
@@ -358,9 +359,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private void UPCalcFillBranchPolys(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcFillBranchPolys(tree, d);
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		UPdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
@@ -389,12 +390,12 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void UPCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcBranchPolys(tree, d, polys, isTouch);
+			if (tree.isVisibleEvenIfInCollapsed(node))
 			UPdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node), x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
-		}
-		else {
+		
+		/*else {
 			Path2D.Double poly = polys[node];
 			int mN = tree.motherOfNode(node);
 			int leftN = tree.leftmostTerminalOfNode(node);
@@ -407,7 +408,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			poly.lineTo(x[mN]+branchEdgeWidth(node, isTouch), y[mN]);
 			poly.lineTo(x[mN], y[mN]);
 			poly.lineTo(x[node], y[node]);
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	/*_________________________________________________*/
@@ -465,9 +466,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private void DOWNCalcFillBranchPolys(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcFillBranchPolys(tree, d);
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		DOWNdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
@@ -498,12 +499,12 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void DOWNCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcBranchPolys(tree, d, polys, isTouch);
+			if (tree.isVisibleEvenIfInCollapsed(node))
 			DOWNdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
-		}
-		else {
+		
+		/*else {
 			Path2D.Double poly = polys[node];
 			int mN = tree.motherOfNode(node);
 			int leftN = tree.leftmostTerminalOfNode(node);
@@ -516,7 +517,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			poly.lineTo(x[mN]+branchEdgeWidth(node, isTouch), y[mN]);
 			poly.lineTo(x[mN], y[mN]);
 			poly.lineTo(x[node], y[node]);
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	/*_________________________________________________*/
@@ -573,9 +574,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private void RIGHTCalcFillBranchPolys(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcFillBranchPolys(tree, d);
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		RIGHTdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
@@ -606,11 +607,12 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void RIGHTCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
+	//	if (!tree.isCollapsedClade(node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcBranchPolys(tree, d, polys, isTouch);
+			if (tree.isVisibleEvenIfInCollapsed(node))
 			RIGHTdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
-		}
+	/*	}
 		else {
 			Path2D.Double poly = polys[node];
 			int mN = tree.motherOfNode(node);
@@ -624,7 +626,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			poly.lineTo(x[mN], y[mN]+branchEdgeWidth(node, isTouch));
 			poly.lineTo(x[mN], y[mN]);
 			poly.lineTo(x[node], y[node]);
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	/*_________________________________________________*/
@@ -681,9 +683,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private void LEFTCalcFillBranchPolys(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcFillBranchPolys(tree, d);
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		LEFTdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
@@ -714,11 +716,12 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void LEFTCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
+//		if (!tree.isCollapsedClade(node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcBranchPolys(tree, d, polys, isTouch);
+			if (tree.isVisibleEvenIfInCollapsed(node))
 			LEFTdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
-		}
+/*		}
 		else {
 			Path2D poly = polys[node];
 			int mN = tree.motherOfNode(node);
@@ -732,7 +735,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			poly.lineTo(x[mN], y[mN]+branchEdgeWidth(node, isTouch));
 			poly.lineTo(x[mN], y[mN]);
 			poly.lineTo(x[node], y[node]);
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	private void calculateLines(Tree tree, int node) {
@@ -801,15 +804,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		g.setColor(tC);
 	}
 	/*_________________________________________________*/
-	private boolean ancestorIsTriangled(Tree tree, int node) {
-		if (!tree.nodeExists(node))
-			return false;
-		if (tree.getAssociatedBit(triangleNameRef, tree.motherOfNode(node)))
-			return true;
-		if (tree.getRoot() == node || tree.getSubRoot() == node)
-			return false;
-		return ancestorIsTriangled(tree, tree.motherOfNode(node));
-	}
+
 	Color tC;
 	public boolean branchIsVisible(int node){
 		try {
@@ -822,6 +817,8 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawBranches(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			//g.setColor(Color.black);//for testing
 			boolean draw = branchIsVisible(node);
@@ -847,39 +844,8 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 					}
 				}
 			}
-			if (tree.getAssociatedBit(triangleNameRef,node)) {
-				if (isUP()) {
-					/*g.setColor(Color.red);
-					for (int i=0; i<edgeWidth; i++) 
-						g.drawLine(x[node]+i,y[node], x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]);
 
-					g.setColor(Color.blue);
-					for (int i=0; i<edgeWidth; i++)
-						g.drawLine(x[node]+i,y[node], x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]);
-
-						g.setColor(Color.green);
-					for (int i=0; i<edgeWidth*0.71; i++) {
-						g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+i, x[tree.rightmostTerminalOfNode(node)]-i,y[tree.rightmostTerminalOfNode(node)]+i);
-					}*/
-				}
-				else if (isDOWN()) {
-					/*g.setColor(Color.blue);
-					for (int i=0; i<edgeWidth; i++) {
-						g.drawLine(x[node]+i,y[node], x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]);
-						g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]-i, x[tree.rightmostTerminalOfNode(node)]-i,y[tree.rightmostTerminalOfNode(node)]-i);
-						g.drawLine(x[node]+i,y[node], x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]);
-					}
-					 */
-				}
-				/*	for (int j=0; j<2; j++)
-				for (int i=0; i<2; i++) {
-					g.drawLine(x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
-					g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-					g.drawLine(x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-				}*/
 			}
-			}
-			if (!tree.getAssociatedBit(triangleNameRef,node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawBranches( tree, g, d);
 			if (draw && emphasizeNodes()) {
@@ -893,16 +859,14 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private double findMaxWidth(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
-			if (tree.nodeIsTerminal(node))
+			if (tree.nodeIsTerminal(node) && tree.isVisibleEvenIfInCollapsed(node))
 				return widths.getValue(node);
 
 			double mw = MesquiteDouble.unassigned;
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				mw = MesquiteDouble.maximum(mw, findMaxWidth(tree, d));
 			return mw;
-		}
-		return (MesquiteDouble.unassigned);
+		
 	}
 	public void getSingletonLocation(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue){
 		if(tree==null || xValue==null || yValue==null)
@@ -1016,7 +980,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
 
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node) && branchIsVisible(node)) {
 			Color c = g.getColor();
 			if (g instanceof Graphics2D){
 				Graphics2D g2 = (Graphics2D)g;
@@ -1041,7 +1005,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node) && branchIsVisible(node)) {
 			int numColors = colors.getNumColors();
 			if (isUP()) {
 				for (int i=0; i<numColors; i++) {
@@ -1084,7 +1048,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
-		if (fillBranchPoly[node] !=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if (fillBranchPoly[node] !=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node) && branchIsVisible(node)) {
 			GraphicsUtil.fill(g,fillBranchPoly[node]);
 		}
 	}
@@ -1134,7 +1098,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 						}
 					}
 			}
-			if (!tree.getAssociatedBit(triangleNameRef, node)) 
+			if (!tree.isCollapsedClade(node)) 
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, polys, d, x, y, fraction);
 

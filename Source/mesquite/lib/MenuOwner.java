@@ -2533,6 +2533,10 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 						MesquiteModule.mesquiteTrunk.openFileCommand);
 				openItem.setShortcut(openShortcut);
 				newMenu.add(openItem);
+				
+				MesquiteMenuItem readTreeFileItem = new MesquiteMenuItem("Open File (Specify Tree Dialect)...", MesquiteModule.mesquiteTrunk,
+						MesquiteModule.mesquiteTrunk.readTreeFileCommand);
+				newMenu.add(readTreeFileItem);
 
 				boolean enableRecent = false;
 				MesquiteSubmenu openRecentSubmenu = MesquiteSubmenu.getSubmenu("Open Recent", newMenu, 
@@ -2578,9 +2582,6 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 			}
 			
-			MesquiteMenuItem readTreeFileItem = new MesquiteMenuItem("Open File (Tree Dialect Specified)...", MesquiteModule.mesquiteTrunk,
-					MesquiteModule.mesquiteTrunk.readTreeFileCommand);
-			newMenu.add(readTreeFileItem);
 
 
 			/*-------------- Close submenu TODO: should make this a submenu Close with Project, then list files one by one as in save*/

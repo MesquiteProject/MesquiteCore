@@ -614,7 +614,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		return null;
 	}
-
 	public String writeAssociated(int node, boolean associatedUseComments){
 		String s = null;
 		if (associatedUseComments)
@@ -756,6 +755,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				ObjectArray b = getWhichAssociatedObject(nRef);
 				if (b != null)
 					b.setBetweenness(true);
+			}
+			else if (key.equalsIgnoreCase("triangled")) { //note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
+				NameReference nr = makeAssociatedBits("collapsed");
+				Bits bb = getWhichAssociatedBits(nr);
+				bb.setBit(node, true);
 			}
 			else if (value.equalsIgnoreCase("on")) {
 				NameReference nr = makeAssociatedBits(key);
@@ -1497,6 +1501,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (selected==null)
 			return false;
 		return selected.isBitOn(part);
+	}
+	/*-----------------------------------------*/
+	/** Returns whether the part is selected */
+	public boolean isSelected(int part) {
+		return getSelected(part);
 	}
 	/*-----------------------------------------*/
 	/** Deselects all parts */

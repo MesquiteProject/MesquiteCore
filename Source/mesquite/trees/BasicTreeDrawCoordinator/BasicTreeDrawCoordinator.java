@@ -335,6 +335,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplay.setTreeDrawing(null);
 					treeDrawName.setValue(treeDrawTask.getName());
 					treeDrawTask.setHiringCommand(tdC);
+					treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
 					treeDisplay.setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplay, treeDisplay.getTaxa().getNumTaxa()));
 					treeDisplay.suppressDrawing(suppression);
 					if (temp.allowsReorientation())
@@ -373,6 +374,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDrawTask.setHiringCommand(tdC);
 				}
 				for (int i=0; i<numDisplays; i++) {
+					treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
 					treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], treeDisplays[i].getTaxa().getNumTaxa()));
 				}
 				for (int i=0; i<numDisplays; i++) {
@@ -906,6 +908,8 @@ class BasicTreeDisplay extends TreeDisplay  {
 	private int spotsize = 18;
 	/*_________________________________________________*/
 	private   void drawSpot(TreeDisplay treeDisplay, Tree tree, Graphics g, int N) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		if (tree.nodeExists(N)) {
 			if (treeDisplay.getVisRect() == null || treeDisplay.getVisRect().contains(treeDisplay.getTreeDrawing().x[N], treeDisplay.getTreeDrawing().y[N])){
 				if (tree.nodeIsInternal(N) || true){  //replace true by show terminal

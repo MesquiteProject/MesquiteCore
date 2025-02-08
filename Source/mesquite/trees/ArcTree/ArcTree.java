@@ -77,6 +77,7 @@ public class ArcTree extends DrawTree {
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		ArcTreeDrawing treeDrawing =  new ArcTreeDrawing (treeDisplay, numTaxa, this);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		if (legalOrientation(treeDisplay.getOrientation())){
 			orientationName.setValue(orient(treeDisplay.getOrientation()));
 			ornt = treeDisplay.getOrientation();
@@ -314,7 +315,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawClade(Tree tree, Graphics g, int node) {
-		if (tree.nodeExists(node)) {
+		if (tree.nodeExists(node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			if (tree.getRooted() || tree.getRoot()!=node) {
 				DrawTreeUtil.drawOneCurvedBranch(treeDisplay, x, y, getEdgeWidth(), tree, g, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), defaultStroke);
@@ -509,21 +510,24 @@ class ArcTreeDrawing extends TreeDrawing  {
 		if (foundBranch==0) {
 			if (DrawTreeUtil.inBranch(treeDisplay, this.x, this.y, getEdgeWidth(), tree, node, x,y) || inNode(node,x,y)){
 				foundBranch = node;
+				if (tree.withinCollapsedClade(node))
+					foundBranch = tree.deepestCollapsedAncestor(node);
 				if (fraction!=null)
-					if (inNode(node,x,y))
+					if (inNode(foundBranch,x,y))
 						fraction.setValue(ATNODE);
 					else {
-						int motherNode = tree.motherOfNode(node);
+						int motherNode = tree.motherOfNode(foundBranch);
 						fraction.setValue(EDGESTART);  //TODO: this is just temporary: need to calculate value along branch.
 						if (tree.nodeExists(motherNode)) {
 							if (treeDisplay.getOrientation()==TreeDisplay.UP|| treeDisplay.getOrientation()==TreeDisplay.DOWN)  {
-								fraction.setValue( Math.abs(1.0*(y-this.y[motherNode])/(this.y[node]-this.y[motherNode])));
+								fraction.setValue( Math.abs(1.0*(y-this.y[motherNode])/(this.y[foundBranch]-this.y[motherNode])));
 							}
 							else if (treeDisplay.getOrientation()==TreeDisplay.LEFT || treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-								fraction.setValue( Math.abs(1.0*(x-this.x[motherNode])/(this.x[node]-this.x[motherNode])));
+								fraction.setValue( Math.abs(1.0*(x-this.x[motherNode])/(this.x[foundBranch]-this.x[motherNode])));
 							}
 						}
 					}
+				return;
 			}
 
 			int thisSister = tree.firstDaughterOfNode(node);

@@ -54,6 +54,10 @@ public abstract class TreeDrawing  {
 	public double[] lineBaseY; 
 	public double[] lineTipX; //tip of line on which to draw labels etc.
 	public double[] lineTipY; 
+	public double[] xDashed; //supplemental; used for dashed lines in collapsed clades
+	public double[] yDashed; //
+	public double[] xSolid; //
+	public double[] ySolid; //
 	/**labelOrientation indicates where label is to be drawn w.r.t. node, in degrees. 0 = normal horizontal 
 	writing to right of node, as would be done for a tree with orientation RIGHT.
 	This does not represent simple rotation, i.e. 180 is on left side, but the writing is not upside down.  Thus
@@ -87,6 +91,10 @@ public abstract class TreeDrawing  {
 		x = new double[numNodes];
 		y = new double[numNodes];
 		z = new double[numNodes];
+		xDashed = new double[numNodes];
+		yDashed = new double[numNodes];
+		xSolid = new double[numNodes];
+		ySolid = new double[numNodes];
 		labelOrientation = new int[numNodes];
 		lineBaseX = new double[numNodes];
 		lineBaseY = new double[numNodes];

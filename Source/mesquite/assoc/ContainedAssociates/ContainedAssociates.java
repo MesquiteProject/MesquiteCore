@@ -179,6 +179,7 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 	}
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) { //TODO: should be passed scripting
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
 		if (treeDisplay.getEdgeWidth()<minimalEdgeWidth) {
 			treeDisplay.setEdgeWidth(minimalEdgeWidth);
 		}
@@ -539,7 +540,6 @@ class WideTreeDrawing extends TreeDrawing  {
 	private boolean ready=false;
 	private int boxHeight;
 	private int foundBranch;
-	NameReference triangleNameRef;
 	NameReference widthNameReference;
 	DoubleArray widths = null;
 	double maxWidth = 0;
@@ -569,7 +569,6 @@ class WideTreeDrawing extends TreeDrawing  {
 		treeDisplay.setMinimumTaxonNameDistance(boxHeight,  4); 
 		treeDisplay.setOrientation(TreeDisplay.UP);
 
-		triangleNameRef = NameReference.getNameReference("triangled");
 		widthNameReference = NameReference.getNameReference("width");
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
@@ -787,6 +786,8 @@ class WideTreeDrawing extends TreeDrawing  {
 	Color tC;
 	/*_________________________________________________*/
 	private   void drawBranches(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node]!=null) {
 				GraphicsUtil.fill(g,branchPoly[node]);
@@ -799,6 +800,8 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void whiteBranches(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			if (treeDisplay.getBranchColor(node)!=null)
 				g.setColor(treeDisplay.getBranchColor(node));
@@ -1234,6 +1237,8 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawContained(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			//if (contained[node]!=null) {
 			if ( history.getNumberContainedNodes(node) !=0) {
@@ -1371,7 +1376,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private double findMaxWidth(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
+		if (!tree.isCollapsedClade(node)) {
 			if (tree.nodeIsTerminal(node))
 				return widths.getValue(node);
 
@@ -1595,7 +1600,7 @@ class WideTreeDrawing extends TreeDrawing  {
 						}
 					}
 			}
-			if (!tree.getAssociatedBit(triangleNameRef, node)) 
+			if (!tree.isCollapsedClade(node)) 
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, d, x, y, fraction);
 

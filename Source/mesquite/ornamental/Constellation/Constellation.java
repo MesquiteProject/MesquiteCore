@@ -53,6 +53,7 @@ public class Constellation extends DrawTree {
  	 }
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		ConstellationDrawing treeDrawing=  new ConstellationDrawing (treeDisplay, numTaxa, this);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
@@ -172,6 +173,8 @@ class ConstellationDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawOneBranch(Tree tree, Graphics g, int node, int drawnRoot) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			//g.setColor(Color.black);//for testing
 			g.setColor(treeDisplay.getBranchColor(node));

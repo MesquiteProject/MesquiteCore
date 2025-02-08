@@ -58,6 +58,7 @@ public class CircularTree extends DrawTree {
 	/*----------------------------------------------------------------------------*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		CircleTreeDrawing treeDrawing =  new CircleTreeDrawing (treeDisplay, numTaxa, this);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
@@ -131,7 +132,6 @@ class CircleTreeDrawing extends TreeDrawing  {
 	BasicStroke defaultStroke;
 
 	private int foundBranch;
-	NameReference triangleNameRef;
 
 	public CircleTreeDrawing (TreeDisplay treeDisplay, int numTaxa, CircularTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
@@ -140,7 +140,6 @@ class CircleTreeDrawing extends TreeDrawing  {
 		}
 		catch (Throwable t){
 		}
-		triangleNameRef = NameReference.getNameReference("triangled");
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		treeDisplay.setOrientation(TreeDisplay.CIRCULAR);
@@ -245,7 +244,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 		drawArc(g, polarLength, angle, node, motherN, 0);
 
 
-		if (tree.getAssociatedBit(triangleNameRef,node)) {
+		if (tree.isCollapsedClade(node)) {
 			double highestTerminal = findHighest(tree, node, polarLength);
 			R = ownerModule.nodeLocsTask.treeCenter.getX() + highestTerminal;
 			L = ownerModule.nodeLocsTask.treeCenter.getX() - highestTerminal;
@@ -361,12 +360,14 @@ class CircleTreeDrawing extends TreeDrawing  {
 	}
 	/*----------------------------------------------------------------------------*/
 	private   void drawClade(Tree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			if (tree.getRooted() || tree.getRoot()!=node)
 				drawOneBranch(tree, node, g);
 
-			if (!tree.getAssociatedBit(triangleNameRef,node))
+			if (!tree.isCollapsedClade(node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawClade( tree, d, g);
 		}
@@ -502,19 +503,9 @@ class CircleTreeDrawing extends TreeDrawing  {
 		Shape box = getTerminalBox(tree,node,g,1,1);
 		GraphicsUtil.draw(g, box);
 	}
-	/*_________________________________________________*/
-	private boolean ancestorIsTriangled(Tree tree, int node) {
-		if (!tree.nodeExists(node))
-			return false;
-		if (tree.getAssociatedBit(triangleNameRef, tree.motherOfNode(node)))
-			return true;
-		if (tree.getRoot() == node || tree.getSubRoot() == node)
-			return false;
-		return ancestorIsTriangled(tree, tree.motherOfNode(node));
-	}
 	/*----------------------------------------------------------------------------*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node)) {
 			Color c = g.getColor();
 			if (treeDisplay.getOrientation()==TreeDisplay.CIRCULAR) {
 				int numColors = colors.getNumColors();
@@ -544,7 +535,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node)) {
 			GraphicsUtil.fill(g,fillBranchPoly[node]);
 			int motherN= tree.motherOfNode(node);
 			double[] polarLength= ownerModule.nodeLocsTask.polarLength;
@@ -629,7 +620,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 					}
 			}
 
-			if (!tree.getAssociatedBit(triangleNameRef,node))
+			if (!tree.isCollapsedClade(node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, d, x, y, fraction);
 

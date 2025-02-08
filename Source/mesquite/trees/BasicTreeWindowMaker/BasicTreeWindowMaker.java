@@ -1285,7 +1285,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		tool7.setOptionImageFileName("reverseLadderize.gif", 13, 13);
 		addTool(tool7);
 
-		TreeTool tool8 = new TreeTool(this, "triangle", ownerModule.getPath(), "triangle.gif", 7, 13, "Draw clade as triangle", "This tool designates the clade of the node touched to be drawn in compact form, for instance as a triangle.  This affects only drawing; it does not affect calculations, as the clade (with its phylogenetic structure) is still present in the tree.  This can be used for large trees to hide temporarily details within some clades.");
+		TreeTool tool8 = new TreeTool(this, "triangle", ownerModule.getPath(), "triangle.gif", 7, 7, "Show clade as single tip", "This tool designates the clade of the node touched to be drawn in compact form, as if a single terminal taxon.  This affects only drawing; it does not affect calculations, as the clade (with its phylogenetic structure) is still present in the tree.  This can be used for large trees to hide temporarily details within some clades.");
 		tool8.setTouchedCommand(MesquiteModule.makeCommand("drawAsTriangle", this));
 		addTool(tool8);
 		TreeTool tool9 = new TreeTool(this, "magnify", ownerModule.getPath(), "magnify.gif", 4, 4, "Magnify Clade", "This tool fills the tree window with the clade of the node touched.  The rest of the tree is present, but not shown.  This can be use for large trees to focus on individual clades");
@@ -3140,20 +3140,17 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			int branchFound = MesquiteInteger.fromFirstToken(arguments, pos);
 			boolean isRoot = tree.getRoot() == branchFound;
 			if (branchFound > 0 && tree.nodeIsInternal(branchFound)) {
-				NameReference triangleNameRef = NameReference.getNameReference("triangled");
-				if (isRoot) {
-					if (tree.getWhichAssociatedBits(triangleNameRef) != null && tree.getAssociatedBit(triangleNameRef, branchFound)) {
-						tree.setAssociatedBit(triangleNameRef, branchFound, false);
-						treeDisplay.pleaseUpdate(true);
-					}
-				}
+				if (isRoot) 
+					tree.decollapseClade(branchFound);
 				else {
-					if (tree.getWhichAssociatedBits(triangleNameRef) == null)
-						tree.makeAssociatedBits("triangled");
-
-					tree.setAssociatedBit(triangleNameRef, branchFound, !(tree.getAssociatedBit(triangleNameRef, branchFound)));
-					treeDisplay.pleaseUpdate(true);
+					boolean isSelected = tree.isSelected(branchFound);
+					boolean wasCollapsed = tree.isCollapsedClade(branchFound);
+					tree.setCollapsedClade(branchFound, !wasCollapsed);
+					if (!wasCollapsed)
+						tree.selectAllInClade(branchFound, isSelected);
 				}
+
+				tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 			}
 		}
 		else if (checker.compare(this.getClass(), "Cut clade descendant from node", "[node number]", commandName, "cutClade")) {
@@ -3460,6 +3457,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 
 		Tree treeT = treeSourceTask.getTree(taxa, index);
+
 		if (disposing)
 			return null;
 		if (treeT == null) { // source may have not known how many trees; ask if it would revise its current number of trees
@@ -3467,7 +3465,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (currentTreeNumber >= numTrees && MesquiteInteger.isCombinable(numTrees)) {
 				currentTreeNumber = numTrees - 1;
 				treeT = treeSourceTask.getTree(taxa, currentTreeNumber);
-				palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
+			palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
 
 			}
 		}
@@ -3828,8 +3826,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				if (taxonFound == -1) {
 					int wasHighlighted = highlightedTaxon;
 					RevertTaxon(g, highlightedTaxon);
-					notifyExtrasOfTaxonExit(g, wasHighlighted);
+					resetBaseExplanation();
 					setExplanation(baseExplanation, false);
+					notifyExtrasOfTaxonExit(g, wasHighlighted);
 				}
 				else if (taxonFound != highlightedTaxon) {
 					int wasHighlighted = highlightedTaxon;
@@ -3846,6 +3845,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				setExplanation(getTaxonExplanation(taxa, taxonFound)); //TaxonExplanation
 			}
 			else {
+				resetBaseExplanation();
+				setExplanation(baseExplanation, false);
 				currentTreeTool.moved(x, y, tree, modifiers);
 				notifyExtrasOfCursorMove(g, x, y);
 				// notify extras?
@@ -4279,6 +4280,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			tree.deselectAll();
 		if (commandDown)
 			tree.setSelected(node, !tree.getSelected(node));
+		else if (tree.isCollapsedClade(node))
+			tree.selectAllInClade(node);
 		else
 			tree.setSelected(node, true);
 		if (shiftDown)
@@ -4553,8 +4556,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (treeAnnotationShown && !StringUtil.blank(tree.getAnnotation()))
 				td = "Footnote above refers to the current tree. \nTree has " + tree.numberOfTerminalsInClade(tree.getRoot()) + " terminal taxa.";
 			else
-				td = "The current tree has " + tree.numberOfTerminalsInClade(tree.getRoot()) + " terminal taxa.";
-
+				td = "The tree has " + tree.numberOfTerminalsInClade(tree.getRoot()) + " terminal taxa.";
+			
 			if (tree.hasPolytomies(tree.getRoot())) {
 				if (tree.getPolytomiesAssumption() == 0)
 					td += " Polytomies in this tree are assumed hard.";
@@ -4563,6 +4566,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			if (!tree.getRooted())
 				td += " This tree is unrooted.";
+			String attachments =  tree.writeAttachments();
+			if (attachments != null) 
+				td += " Properties: " + attachments;
 			if (tree.anySelectedInClade(tree.getRoot()))
 				td += " " + tree.numberSelectedInClade(tree.getRoot()) + " branch(es) selected.";
 			td += "\n";

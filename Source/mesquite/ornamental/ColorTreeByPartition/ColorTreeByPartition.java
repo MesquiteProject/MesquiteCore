@@ -41,7 +41,7 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 		MesquiteMenuSpec colorMenu = findMenuAmongEmployers("Color");
 		MesquiteModule mb = this;
 		if (colorMenu != null && colorMenu.getOwnerModule() != null)
-				mb = colorMenu.getOwnerModule();
+			mb = colorMenu.getOwnerModule();
 		mb.addCheckMenuItem(colorMenu, "Color Branches by Partition", makeCommand("colorByPartition",  this), colorByPartition);
 		return true;
 	} 
@@ -117,8 +117,24 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 		branchNotesModule = ownerModule;
 		showColors = branchNotesModule.colorByPartition.getValue();
 	}
+	/*_________________________________________________*/
+	public ColorDistribution colorsInClade(Tree tree, int node){
+		if (tree.nodeIsTerminal(node))
+			return colors[node];
+		ColorDistribution cladeColor = null;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+			ColorDistribution dsColor = colorsInClade(tree, d);
+			if (cladeColor == null)
+				cladeColor = dsColor;
+			else
+				cladeColor.concatenate(dsColor);
+		}
+		return cladeColor;
+	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
+		if (!tree.isVisibleEvenIfInCollapsed(node))
+			return;
 		if (showColors) {
 			if (needsReharvesting)
 				reharvest(tree);
@@ -126,7 +142,12 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 			if (partitions != null){
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawOnTree(tree, d, g);
-				if (colors[node].anyColors())
+				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
+					ColorDistribution cladeColors = colorsInClade(tree, tree.deepestCollapsedAncestor(node));
+					if (cladeColors != null && cladeColors.anyColors())
+						treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, cladeColors, g);
+				}
+				else if (colors[node].anyColors())
 					treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, colors[node], g);
 			}
 		}
