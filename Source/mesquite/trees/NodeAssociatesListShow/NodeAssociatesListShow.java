@@ -86,7 +86,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	}
 		else if (checker.compare(this.getClass(), "Explain", null, commandName, "explain")) {
 			discreetAlert("This column shows which values are shown on the branches of the tree in the tree window. "
-					+"You can control them here, or by the menu item \"Display Node/Branch Properties\" in the Tree menu. "
+					+"You can control them here, or by the menu item \"Display Branch/Node Properties\" in the Tree menu. "
 					+"\n\nThat menu item also allows you to control the font and placement on the tree."
 					+ "\n\nNode labels and branch lengths can also be shown on the tree in other ways, using items in the Text menu.");
 	}

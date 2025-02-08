@@ -111,7 +111,20 @@ public abstract class TreeDrawing  {
 			labelOrientation[i] = MesquiteInteger.unassigned;
 		}
 	}
-
+	public void translateAll(int shiftX, int shiftY){
+		for (int i= 0; i<numNodes; i++){
+			x[i] += shiftX; 
+			lineBaseX[i] += shiftX;
+			lineTipX[i] += shiftX; 
+			xDashed[i] += shiftX; 
+			xSolid[i] += shiftX; 
+			y[i] += shiftY; 
+			lineBaseY[i] += shiftY;
+			lineTipY[i] += shiftY; 
+			yDashed[i] += shiftY; 
+			ySolid[i] += shiftY; 
+		}
+	}
 	public double getX(int node){
 		return x[node];
 	}

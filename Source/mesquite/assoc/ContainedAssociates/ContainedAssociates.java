@@ -728,7 +728,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		if (tree==null) { ownerModule.logln("tree null"); return;}
 		edgeWidth = treeDisplay.getEdgeWidth();
 
-		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot,  treeDisplay.getField()); //Graphics g removed as parameter May 02
+		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot); //Graphics g removed as parameter May 02
 		calculateLines(tree, drawnRoot);
 		if (treeDisplay.getTaxonSpacing()<edgeWidth+2) {
 			edgeWidth= treeDisplay.getTaxonSpacing()-2;

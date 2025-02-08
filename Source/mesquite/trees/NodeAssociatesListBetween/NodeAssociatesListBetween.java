@@ -48,13 +48,13 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Information Applies to Node or Branch?";
+		return "Information Applies to Branch or Node?";
 	}
 	public String getNameForMenuItem() {
-		return "For Node or Branch?";
+		return "For Branch or Node?";
 	}
 	public String getVeryShortName() {
-		return "At Node/Branch?";
+		return "At Branch/Node?";
 	}
 	public String getExplanation() {
 		return "Shows whether the associated information applies to the node or branch." ;

@@ -57,7 +57,7 @@ public class NodeAssociatesListStarter extends TreeDisplayAssistantI  {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Node/Branch Properties List Starter";
+		return "Branch/Node Properties List Starter";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

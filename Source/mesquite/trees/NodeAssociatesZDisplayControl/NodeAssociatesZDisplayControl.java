@@ -74,7 +74,9 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI {
 	MesquiteTree tree;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		findEmployerWithDuty(TreeWindowMaker.class).addMenuItem(null, "Display Node/Branch Properties on Tree...", makeCommand("showDialog", this));
+		MesquiteModule twMB = findEmployerWithDuty(TreeWindowMaker.class);
+		if (twMB!= null)
+			twMB.addMenuItem(null, "Display Branch/Node Properties on Tree...", makeCommand("showDialog", this));
 		extras = new Vector();
 		propertyNames = new ListableVector();
 		propertyNames.addElement(new MesquiteInteger(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
@@ -249,7 +251,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI {
 				listWithTwoMore[i] = namesAsArray[i];
 		}
 		String helpString = "xxxx";  //add here notes on threashold
-		ListDialog dialog = new ListDialog(containerOfModule(), "Node/Branch properties", "What properties to show and how to show them?", false,helpString, namesAsArray, 6, null, "OK", "Deselect", false, true);
+		ListDialog dialog = new ListDialog(containerOfModule(), "Branch/Node Properties", "What properties to show and how to show them?", false,helpString, namesAsArray, 6, null, "OK", "Deselect", false, true);
 		//		if (okButton!=null)
 		//		id.ok.setLabel(okButton);
 		dialog.getList().setMultipleMode(true);
@@ -460,10 +462,10 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Show Node/Branch Properties on Tree";
+		return "Show Branch/Node Properties on Tree";
 	}
 	public String getExplanation() {
-		return "Controls display of Node/Branch properties on the tree." ;
+		return "Controls display of Branch/Node properties on the tree." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -631,7 +633,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable {
 			DoubleArray da = tree.getAssociatedDoubles(i);
 			if (showingAll || controlModule.isShowing(da.getName(), Associable.DOUBLES)){
 				double d = tree.getAssociatedDouble(NameReference.getNameReference(da.getName()), node); 
-				if (MesquiteDouble.isCombinable(d) && (!controlModule.thresholdValueToShow.isCombinable() || (d>=controlModule.thresholdValueToShow.getValue()))){
+				if (showingAll || (MesquiteDouble.isCombinable(d) && (!controlModule.thresholdValueToShow.isCombinable() || (d>=controlModule.thresholdValueToShow.getValue())))){
 					if (controlModule.percentage.getValue())
 						d *= 100;
 					String nodeString = "";
@@ -652,15 +654,17 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable {
 			ObjectArray da = tree.getAssociatedObjects(i);
 			if (showingAll || controlModule.isShowing(da.getName(), Associable.OBJECTS)){
 				Object d = tree.getAssociatedObject(NameReference.getNameReference(da.getName()), node);  //Debugg.println save vector
-				if (d!= null){
 					String nodeString = "";
 					if (showNames)
 						nodeString += da.getName()+ ": ";
-					nodeString += d.toString();
+					if (d == null)
+						nodeString += "[none]";
+					else
+						nodeString += d.toString();
 					nodeStrings.addElement(nodeString);
 					if (nameCodes != null)
 						nameCodes.addElement(new MesquiteInteger(da.getName(), Associable.OBJECTS));
-				}
+				
 			}
 		}
 		String[] strings = new String[nodeStrings.size()];
@@ -815,12 +819,12 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable {
 		return null;
 	}
 	
-	//Debugg.println("@@@
+	/*
 	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){ //must return null or int[4], left, top, right, bottom
-		String stringAtRoot = stringAtNode((MesquiteTree)tree, tree.getRoot(), false, false, false);
-		if (StringUtil.blank(stringAtRoot))
-			return null;
-		return new int[]{500, 0, 0, 0};
+	//	String stringAtRoot = stringAtNode((MesquiteTree)tree, tree.getRoot(), false, false, false);
+	//	if (StringUtil.blank(stringAtRoot))
+		//return new int[]{0, 0, 0, 0};
+		return new int[]{100, 80, 50, 150};
 	}
 
 	/*.................................................................................................................*/
@@ -866,24 +870,12 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
+//Debugg.println(testing borders system
+	//	g.drawRect(2, 2, getRequestedExtraBorders(tree, treeDisplay.getTreeDrawing())[0], getRequestedExtraBorders(tree, treeDisplay.getTreeDrawing())[1]);
+	//	g.drawRect(treeDisplay.getField().width -getRequestedExtraBorders(tree, treeDisplay.getTreeDrawing())[2]-2, treeDisplay.getField().height -getRequestedExtraBorders(tree, treeDisplay.getTreeDrawing())[3]-2, getRequestedExtraBorders(tree, treeDisplay.getTreeDrawing())[2], getRequestedExtraBorders(tree, treeDisplay.getTreeDrawing())[3]);
 		if (!controlModule.anyShowing())
 			return;
-		/*
-		int num = tree.getNumberAssociatedDoubles();
-		int total = 0;
-		for (int i = 0; i< num; i++){
-			DoubleArray da = tree.getAssociatedDoubles(i);
-			if (controlModule.isShowing(da.getName()))
-				total++;
-		}
-		DoubleArray[] arrays = new DoubleArray[total];
-		int count = 0;
-		for (int i = 0; i< num; i++){
-			DoubleArray da = tree.getAssociatedDoubles(i);
-			if (controlModule.isShowing(da.getName()))
-				arrays[count++] = da;
-		}
-		 */
+		
 		myDraw((MesquiteTree)tree, node, g);
 
 	}
@@ -903,7 +895,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable {
 	public String textAtNode(Tree tree, int node){
 		if (!controlModule.anyShowing())
 			return "";
-		return stringAtNode((MesquiteTree) tree,  node, false, true, false);
+		return stringAtNode((MesquiteTree) tree,  node, true, true, false);
 	}
 	/*.................................................................................................................*/
 	/**return a text version of information on tree, displayed on a text version of the tree*/

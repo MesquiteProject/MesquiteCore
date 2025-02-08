@@ -3476,10 +3476,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, MesquiteInteger startingPos, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
-		//	Debugg.println("@###################################################");
-	//	Debugg.println("@@DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
+		//	Debugg.println("###################################################");
+	//	Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
 		TreeDescription = preprocessForDialect(TreeDescription, getDialect());
-		//Debugg.println("@@#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
+		//Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
 		
 		//QZ: if whitespace or punc passed in, don't override?
 		MesquiteInteger stringLoc = new MesquiteInteger(0);

@@ -992,7 +992,7 @@ class NotesPanel extends ProjPanelPanel {
 	String text = null;
 	String heading = null;
 	public NotesPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w){
-		super(bfc, container, w, null, bfc);
+		super(bfc, container, w, "Notes", bfc);
 		headingBox =  new StringInABox("", new Font("SansSerif", Font.BOLD, MesquiteFrame.resourcesFontSize), getWidth());
 		textBox =  new StringInABox("", new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), getWidth());
 		setText(null, null);

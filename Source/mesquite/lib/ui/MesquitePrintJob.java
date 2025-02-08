@@ -113,7 +113,7 @@ public class MesquitePrintJob {
 			}
 		}
 		job2.validatePage(pf);
-		job2.setPrintable(p2, pf);  
+		job2.setPrintable(p2, pf);   //Debugg.println this crashes
 		if (MesquiteThread.isScripting())
 			return true;
 		else

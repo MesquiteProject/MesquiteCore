@@ -276,7 +276,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 		if (treeDisplay==null) {ownerModule.logln("treeDisplay null"); return;}
 		if (tree==null) { ownerModule.logln("tree null"); return;}
 
-		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot,  treeDisplay.getField()); //Graphics g removed as parameter May 02
+		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot); //Graphics g removed as parameter May 02
 		calculateLines(tree, drawnRoot);
 		edgewidth = preferredEdgeWidth;
 		if (treeDisplay.getTaxonSpacing()<edgewidth+2) {

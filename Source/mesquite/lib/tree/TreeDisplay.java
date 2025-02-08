@@ -115,7 +115,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	private int taxonSpacing;
 
 	/**  Spacing in pixels between taxa as set by user*/
-	private int fixedTaxonSpacing;
+	private int fixedTaxonSpacing = 0;
 	/**  Orientaton of the tree*/
 	private int treeOrientation = NOTYETSET;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree drawer*/
@@ -317,6 +317,32 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		else
 			return dist;
 	}
+	public int effectiveFieldWidth(){
+		return getField().width-effectiveFieldLeftMargin()-effectiveFieldRightMargin();
+	}
+	public int effectiveFieldHeight(){
+		return getField().height-effectiveFieldTopMargin()-effectiveFieldBottomMargin();
+	}
+	public int effectiveFieldLeftMargin(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras[0];
+	}
+	public int effectiveFieldRightMargin(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras[2];
+	}
+	public int effectiveFieldTopMargin(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras[1];
+	}
+	public int effectiveFieldBottomMargin(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras[3];
+	}
 	public void setTipsMargin(int margin) {
 		tipsMargin = margin;
 	}
@@ -427,19 +453,20 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					return;
 				ex.setTree(tree);
 			}
+			accumulateBordersFromExtras(tree);
 		}
 	}
 	
-	int[] borders = new int[]{0, 0, 0, 0};
-	public int[]  getBorders(){
-		return borders;
+	int[] bordersRequestedByExtras = new int[]{0, 0, 0, 0};  //left top right bottom
+	public int[] getRequestedBorders(){
+		return bordersRequestedByExtras;
 	}
-	public void setBordersFromExtras(Tree tree) {
+	void accumulateBordersFromExtras(Tree tree) {
 		int[] bordersTemp = getBordersFromExtras(tree);
 		if (bordersTemp != null && bordersTemp.length == 4)
-			borders = bordersTemp;
+			bordersRequestedByExtras = bordersTemp;
 	}
-	public int[] getBordersFromExtras(Tree tree) {
+	int[] getBordersFromExtras(Tree tree) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return null;
 		if (extras != null) {

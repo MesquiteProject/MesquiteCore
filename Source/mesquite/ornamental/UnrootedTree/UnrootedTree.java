@@ -426,7 +426,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 				resetNumNodes(tree.getNumNodeSpaces());
 			if (!tree.nodeExists(getDrawnRoot()))
 				setDrawnRoot(tree.getRoot());
-			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot(),  treeDisplay.getField()); //Graphics g removed as parameter May 02
+			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot()); //Graphics g removed as parameter May 02
 			calcBranchPolys(tree, getDrawnRoot());
 		}
 	}

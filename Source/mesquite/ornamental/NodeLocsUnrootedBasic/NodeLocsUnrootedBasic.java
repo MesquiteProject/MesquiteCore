@@ -1277,7 +1277,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 
 	/*_________________________________________________*/
-	public synchronized void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { 
+	public synchronized void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot) { 
 		if (MesquiteTree.OK(tree)) {
 			this.tree = tree;
 			this.treeDisplay = treeDisplay;
@@ -1336,7 +1336,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			emptyRootSlices=1;
 			anglePerTerminalTaxon=(2 * Math.PI) / tree.numberOfTerminalsInClade(drawnRoot);  // the angle allotted to each terminal
 
-			treeRectangle = rect;
+			treeRectangle = treeDisplay.getField();
 			scaling = 100;
 
 

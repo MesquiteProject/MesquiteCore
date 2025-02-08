@@ -294,7 +294,7 @@ public class NodeLocsOval extends NodeLocsFree {
 		return 0;
 	}
 	/*_________________________________________________*/
-	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { //Graphics g removed as parameter May 02
+	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot) { //Graphics g removed as parameter May 02
 		if (MesquiteTree.OK(tree)) {
 			this.tree = tree;
 			this.treeDisplay = treeDisplay;
@@ -348,7 +348,7 @@ public class NodeLocsOval extends NodeLocsFree {
 
 			emptyRootSlices=1;
 			angleBetweenTaxa=2 * Math.PI / tree.numberOfTerminalsInClade(drawnRoot); //TODO: should deal with other centerings
-			treeRectangle = rect;
+			treeRectangle = treeDisplay.getField();
 			if (treeRectangle.width<treeRectangle.height)
 				radius=(treeRectangle.width * 3 )/ 8;
 			else

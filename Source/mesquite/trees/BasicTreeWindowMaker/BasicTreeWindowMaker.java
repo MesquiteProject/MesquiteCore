@@ -343,7 +343,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (f != getProject().getHomeFile())
 			return;
 		if (temporaryTrees != null)
-		temporaryTrees.deleteMe(false);
+			temporaryTrees.deleteMe(false);
 		temporaryTrees = null;
 	}
 
@@ -582,6 +582,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (basicTreeWindow == null)
 			return;
 		if (employee instanceof DrawTreeCoordinator) {
+
 			if (source instanceof DrawNamesTreeDisplay && Notification.getCode(notification) == TreeDisplay.FONTSIZECHANGED) {
 				basicTreeWindow.sizeDisplay();
 				basicTreeWindow.treeDisplay.pleaseUpdate(true);
@@ -1086,7 +1087,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		// infoBar.addExtraButton(MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", MesquiteModule.makeCommand("toggleInfoPanel", this));
 		nodeInfoButton.setUseWaitThread(false);
 		nodeInfoButton.setShowBackground(false);
-		nodeInfoButton.setButtonExplanation("Show Node/Branch Properties Window");
+		nodeInfoButton.setButtonExplanation("Show Branch/Node Properties Window");
 		controlStrip.addButton(nodeInfoButton);
 		addToWindow(controlStrip);
 
@@ -1858,30 +1859,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			treeDisplay.redoCalculations(8813);
 		}
 		else if (drawingSizeMode == AUTOSIZE) {
-			int w = getWidth() - scrollWidth;
-			int h = getHeight() - scrollWidth - scrollWidth;
-			
-			
-			/*
-			treeDisplay.setBordersFromExtras(tree);
-			int[] borders = treeDisplay.getBorders();
-			if (borders != null && borders.length == 4){
-				treeDisplay.setLocation(borders[0], borders[1]);
-				w = w - (borders[0]+borders[2]);
-				h = h - (borders[1]+borders[3]);
-				if (treePane != null)
-				treePane.setBackground(Color.yellow);
-				treeDisplay.setBackground(Color.cyan);
-				Graphics gg = treeDisplay.getGraphics();
-				if (gg != null){
-					Debugg.println("filling");
-					
-				gg.setClip(null);
-					gg.setColor(Color.blue);
-					gg.fillOval(200, 200, 500, 500);
-				}
-			} 
-			/*	*/
+			int width = getWidth() - scrollWidth;
+			int height = getHeight() - scrollWidth - scrollWidth;
+
 			Dimension s = treeDrawCoordTask.getPreferredSize();
 			if (s != null) {
 				togglePane(true, false);
@@ -1895,19 +1875,34 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else {
 
 				if (taxa == null) {
-					treeDisplay.setSize(w, h);
+					treeDisplay.setSize(width, height);
 
-					treeDisplay.setFieldSize(w, h);
+					treeDisplay.setFieldSize(width, height);
 					treeDisplay.redoCalculations(28813);
 					togglePane(false, false);
 				}
 				else {
+					int borderWidth = 0;
+					int borderHeight = 0;
+
+					int[] requestedBorders = treeDisplay.getRequestedBorders();
+					if (requestedBorders != null && requestedBorders.length == 4){
+						int wUsed= requestedBorders[0] + requestedBorders[2];
+						int hUsed= requestedBorders[1] + requestedBorders[3];
+						borderWidth = wUsed;
+						borderHeight =  hUsed;
+					}
 					int basicMinSpacing = 12;
-					Graphics g = treeDisplay.getGraphics();
-					if (g != null) {
-						FontMetrics fm = g.getFontMetrics(treeDisplay.getTaxonNamesFont());
-						if (fm != null) {
-							basicMinSpacing = fm.getMaxAscent() + fm.getMaxDescent();
+					if (treeDisplay.getFixedTaxonSpacing() >0){
+						basicMinSpacing = treeDisplay.getFixedTaxonSpacing();
+					}
+					else {
+						Graphics g = treeDisplay.getGraphics();
+						if (g != null) {
+							FontMetrics fm = g.getFontMetrics(treeDisplay.getTaxonNamesFont());
+							if (fm != null) {
+								basicMinSpacing = fm.getMaxAscent() + fm.getMaxDescent();
+							}
 						}
 					}
 					boolean canFit = true;
@@ -1917,33 +1912,34 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						numTaxa = tree.numberOfTerminalsInClade(tree.getRoot());
 					else
 						numTaxa = taxa.getNumTaxa();
-					// canFit = numTaxa<50;
+
+					numTaxa +=1; //for good measure;
 
 					// if (!canFit){
 					if (treeDisplay.getOrientation() == TreeDisplay.UP || treeDisplay.getOrientation() == TreeDisplay.DOWN)
-						canFit = numTaxa * basicMinSpacing < w;
+						canFit = numTaxa * basicMinSpacing < width-borderWidth;
 					else if (treeDisplay.getOrientation() == TreeDisplay.RIGHT || treeDisplay.getOrientation() == TreeDisplay.LEFT)
-						canFit = numTaxa * basicMinSpacing < h;
+						canFit = numTaxa * basicMinSpacing < height-borderHeight;
 					else
-						canFit = numTaxa * 6 < (w + h) / 2;
+						canFit = numTaxa * 6 < (width-borderWidth + height-borderHeight) / 2;
 					// }
 
 					if (canFit && scale <= 0) {
-						treeDisplay.setSize(w, h);
+						treeDisplay.setSize(width, height);
 
-						treeDisplay.setFieldSize(w, h); 
+						treeDisplay.setFieldSize(width, height); 
 						treeDisplay.redoCalculations(8813);
 						togglePane(false, false);
 					}
 					else {
 						treeDisplay.autoStretchIfNeeded = true;
 						if (treeDisplay.getOrientation() == TreeDisplay.UP || treeDisplay.getOrientation() == TreeDisplay.DOWN) {
-							totalTreeFieldWidth = numTaxa * basicMinSpacing;
-							totalTreeFieldHeight = h - scrollWidth - 4;
+							totalTreeFieldWidth = numTaxa * basicMinSpacing + borderWidth;
+							totalTreeFieldHeight = height - scrollWidth - 4;
 						}
 						else if (treeDisplay.getOrientation() == TreeDisplay.RIGHT || treeDisplay.getOrientation() == TreeDisplay.LEFT) {
-							totalTreeFieldWidth = w - scrollWidth - 4;
-							totalTreeFieldHeight = numTaxa * basicMinSpacing;
+							totalTreeFieldWidth = width - scrollWidth - 4;
+							totalTreeFieldHeight = numTaxa * basicMinSpacing + borderHeight;
 						}
 						else {
 							totalTreeFieldWidth = numTaxa * 8;
@@ -3465,7 +3461,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (currentTreeNumber >= numTrees && MesquiteInteger.isCombinable(numTrees)) {
 				currentTreeNumber = numTrees - 1;
 				treeT = treeSourceTask.getTree(taxa, currentTreeNumber);
-			palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
+				palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
 
 			}
 		}
@@ -3641,7 +3637,18 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		int drawnRoot = treeDisplay.getTreeDrawing().getDrawnRoot(); // TODO: remember drawnRoot!!!
 		if (!tree.nodeExists(drawnRoot))
 			drawnRoot = tree.getRoot();
-		return treeDisplay.getTreeDrawing().findBranch(tree, drawnRoot, x, y, fraction); // check that still in branch
+		int branchFound =  treeDisplay.getTreeDrawing().findBranch(tree, drawnRoot, x, y, fraction); // check that still in branch
+		if (branchFound>0)
+			return branchFound;
+		//in case it's in a terminal that is actually within a collapsed clade, in which case treat as if at that ancestor
+		int taxonFound = findTaxon(x, y);
+		if (taxonFound>= 0) {
+			branchFound = tree.nodeOfTaxonNumber(taxonFound);
+			if (branchFound>0 && tree.withinCollapsedClade(branchFound)){
+				return tree.deepestCollapsedAncestor(branchFound);
+			}
+		}
+		return 0;
 	}
 
 	private int findTaxon(int x, int y) {
@@ -4557,7 +4564,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				td = "Footnote above refers to the current tree. \nTree has " + tree.numberOfTerminalsInClade(tree.getRoot()) + " terminal taxa.";
 			else
 				td = "The tree has " + tree.numberOfTerminalsInClade(tree.getRoot()) + " terminal taxa.";
-			
+
 			if (tree.hasPolytomies(tree.getRoot())) {
 				if (tree.getPolytomiesAssumption() == 0)
 					td += " Polytomies in this tree are assumed hard.";

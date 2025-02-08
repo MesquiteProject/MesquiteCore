@@ -441,9 +441,11 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 		else if (checker.compare(this.getClass(), "Shows a tree window showing a particular trees block", "[number of tree block to show]", commandName, "showTreesInWindow")) {
 			int t = MesquiteInteger.fromFirstToken(arguments, pos);
-			parser.setString(arguments);
+		parser.setString(arguments);
 			parser.setPosition(pos.getValue());
 			String commandToTreeWindowMaker = parser.getNextToken();
+			if (commandToTreeWindowMaker == null)
+				commandToTreeWindowMaker = "";
 			if (MesquiteInteger.isCombinable(t) && t<getProject().getNumberOfFileElements(TreeVector.class)) {
 				MesquiteModule fCoord = getFileCoordinator();
 				MesquiteModule treeWindowCoord = null;

@@ -69,8 +69,7 @@ public class TreeUtil {
 	}
 
 	/*.................................................................................................................*/
-	//reading arguments can include dialect hints, e.g. @newickDialect.MrBayes, @newickDialect.ASTRAL, @newickDialect.DELINEATE, etc.
-	/*Old version that couldn't read multiline trees*/
+	/*Old version 3.81 that couldn't read multiline trees*/
 	/*public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String arguments, String treeNameBase) {
 		Parser parser = new Parser(arguments);
 		String dialect = parser.getFileReadingArgumentSubtype(arguments, "newickDialect");
@@ -166,17 +165,11 @@ public class TreeUtil {
 			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
 			if (StringUtil.notEmpty(dialect))
 				t.setDialect(dialect);
-			//t.setTreeVector(treeVector);
 			t.readTree(line,stringLoc, namer, StringUtil.defaultWhitespace + "\n\r", "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
 
 			t.setName(treeNameBase + (iTree+1));
 			trees.addElement(t, false);
-
-
 			iTree++;
-			//	line = file.readNextDarkLine();		
-			//	if (file.getFileAborted())
-			//		abort = true;
 		}
 
 

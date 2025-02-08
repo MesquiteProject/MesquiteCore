@@ -590,7 +590,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (MesquiteThread.isScripting())
 			return;
-		if (source instanceof DrawNamesTreeDisplay && Notification.getCode(notification) == TreeDisplay.FONTSIZECHANGED ){
+		if (Notification.getCode(notification) == TREE_DRAWING_SIZING_CHANGED || (source instanceof DrawNamesTreeDisplay && Notification.getCode(notification) == TreeDisplay.FONTSIZECHANGED) ){
 			MesquiteWindow w = null;
 			if (treeDisplay != null) {
 				w =MesquiteWindow.windowOfItem(treeDisplay);
@@ -611,6 +611,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 				((BasicTreeDisplay)treeDisplays[i]).pleaseUpdate(true);
 			}
 		}
+		
 	}
 	/*.................................................................................................................*/
 	public String getName() {

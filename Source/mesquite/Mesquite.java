@@ -2815,6 +2815,7 @@ public class Mesquite extends MesquiteTrunk
 				MesquiteTrunk.mesquiteTrunk.logln(s);
 				if (MesquiteTrunk.developmentMode)
 					MesquiteTrunk.mesquiteTrunk.logln("Development mode enabled.");
+				// get the total memory for my app
 
 				for ( int i = 0; i < args.length; i++ ) {
 					if (args[i]!=null && !args[i].startsWith("-")) {
