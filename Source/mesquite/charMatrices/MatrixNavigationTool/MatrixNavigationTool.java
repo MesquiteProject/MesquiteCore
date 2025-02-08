@@ -42,6 +42,7 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 	MesquiteCommand respondCommand, moveToPrevCommand, moveToNextCommand;
 	MesquiteCommand moveToFirstDataCommand, moveToLastDataCommand;
 	MesquiteCommand moveToFirstRowCommand, moveToLastRowCommand;
+	MesquiteCommand scrollToCharacterCommand, scrollToBaseNumberCommand;
 	
 
 
@@ -62,6 +63,8 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 			moveToLastDataCommand = makeCommand("moveToLastData", this);
 			moveToFirstRowCommand = makeCommand("moveToFirstRow", this);
 			moveToLastRowCommand = makeCommand("moveToLastRow", this);
+			scrollToCharacterCommand = makeCommand("scrollToCharacter", this);
+			scrollToBaseNumberCommand = makeCommand("scrollToBaseNumber", this);
 		}
 		else return sorry(getName() + " couldn't start because the window with which it would be associated is not a tool container.");
 		return true;
@@ -88,6 +91,26 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 		if (popup==null)
 			return;
 		popup.addItem(s, this, command, Integer.toString(response));
+	}
+	/*.................................................................................................................*/
+	public void moveToBaseInSequence() { 
+		if (data == null || table ==null || !MesquiteInteger.isCombinable(column) || !MesquiteInteger.isCombinable(row))
+			return;
+		int num = MesquiteInteger.queryInteger(table.getWindow(), "Base within sequence to move to", "Base within sequence to move to", 1, 1, data.getNumberApplicableInTaxon(row, false));
+		if (!MesquiteInteger.isCombinable(num)) 	
+				return;
+		int count=0;
+		for (int ic=0; ic<data.getNumChars(); ic++) {
+			if (!data.isInapplicable(ic, row)){
+				count++;
+				if (count>num) {
+					table.scrollToColumn(ic);
+					break;
+				}
+			}
+		}
+		column = MesquiteInteger.unassigned;
+		row = MesquiteInteger.unassigned;
 	}
 	/*.................................................................................................................*/
 	public void moveToNext(boolean next) { 
@@ -165,6 +188,11 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 			addToPopup("Taxon: " + taxa.getTaxonName(row)+", character: " + (column+1), responseNumber++);
 			addToPopup("-", responseNumber++);
 
+			addToPopup("Scroll to character...", scrollToCharacterCommand, responseNumber++);
+			if (data instanceof MolecularData)
+				addToPopup("Scroll to base number in sequence...", scrollToBaseNumberCommand, responseNumber++);
+			addToPopup("-", responseNumber++);
+
 			addToPopup("Scroll to start of data", moveToFirstDataCommand, responseNumber++);
 			addToPopup("Scroll to end of data", moveToLastDataCommand, responseNumber++);
 			addToPopup("Scroll to previous data", moveToPrevCommand, responseNumber++);
@@ -181,6 +209,18 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 			makePopupMenu(arguments);
 		}
 		else if (checker.compare(this.getClass(), "Responds to choice of popup menu", "[choice number]", commandName, "respond")) {
+		}
+		else if (checker.compare(this.getClass(), "Move to Character", "", commandName, "scrollToCharacter")) {
+			if (data!=null && table!=null) {
+				int num = MesquiteInteger.queryInteger(table.getWindow(), "Number of character to move to", "Number of character to move to", 1, 1, data.getNumChars());
+				if (MesquiteInteger.isCombinable(num))
+					table.scrollToColumn(num);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Move to base in sequence", "", commandName, "scrollToBaseNumber")) {
+			if (data!=null && table!=null) {
+					moveToBaseInSequence();
+			}
 		}
 		else if (checker.compare(this.getClass(), "Move to Previous Data", "", commandName, "moveToPrev")) {
 			moveToNext(false);
