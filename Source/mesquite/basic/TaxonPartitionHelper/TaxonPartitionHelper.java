@@ -42,26 +42,20 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 	public String getExplanation() {
 		return "Controls adjustments to taxa partitions (e.g., in List of Taxa, Groups column)." ;
 	}
-	public Class getDutyClass() {
-		return getClass();
-	}/*.................................................................................................................*/
+
+	/*.................................................................................................................*/
 	Taxa taxa;
 	TaxaGroupVector groups;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-		groups.addListener(this);
-		if (nameParser==null)
-			nameParser = new NameParser(this, "taxon");
 		loadPreferences();
 		return true;
 	}
-	public void endJob(){
-		if (taxa != null)
-			taxa.removeListener(this);
-		if (groups != null)
-			groups.removeListener(this);
-		super.endJob();
+	int touchedTaxon = -1;
+	public void taxonTouched(int it){//an additional possibility for setting
+		touchedTaxon = it;
 	}
 	private void setGroup(TaxaGroup group, String name, Bits bits, boolean notify){
 		if (selectionInformer !=null && taxa!=null) {
@@ -69,7 +63,7 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 			if (group == null && StringUtil.blank(name))
 				return;
 			TaxaPartition partition = (TaxaPartition) taxa.getOrMakeCurrentSpecsSet(TaxaPartition.class);
-		/*	if (partition==null){
+			/*	if (partition==null){
 				partition= new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);
 				partition.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaPartition.class));
 				taxa.setCurrentSpecsSet(partition, TaxaPartition.class);
@@ -81,47 +75,60 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 			}
 
 			if (group != null && partition != null) {
-					if (bits!=null) {
-						for (int i=0; i<taxa.getNumTaxa(); i++) {
-							if (bits.isBitOn(i)) {
-								partition.setProperty(group, i);
-								if (!changed)
-									outputInvalid();
-								changed = true;
-							}
+				if (bits!=null) {
+					for (int i=0; i<taxa.getNumTaxa(); i++) {
+						if (bits.isBitOn(i)) {
+							partition.setProperty(group, i);
+							if (!changed)
+								outputInvalid();
+							changed = true;
 						}
-					} else {
-						for (int i=0; i<taxa.getNumTaxa(); i++) {
-							if (selectionInformer.isItemSelected(i, this)) {
-								partition.setProperty(group, i);
-								if (!changed)
-									outputInvalid();
-								changed = true;
-							}
+					}
+				} else {
+					for (int i=0; i<taxa.getNumTaxa(); i++) {
+						if (selectionInformer.isItemSelected(i, this)) {
+							partition.setProperty(group, i);
+							if (!changed)
+								outputInvalid();
+							changed = true;
 						}
+					}
+					if (!changed && touchedTaxon>=0){
+						partition.setProperty(group, touchedTaxon);
+						taxonTouched(-1);
+						outputInvalid();
+						changed = true;
 				}
-					
+
 				}
-				if (changed && notify)
-					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
-				parametersChanged();
+
 			}
-		
+			if (changed && notify)
+				taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
+			parametersChanged();
+		}
+
 	}
 	private void removeGroupDesigation(){
 		if (selectionInformer !=null && taxa!=null) {
 			boolean changed=false;
 			TaxaPartition partition = (TaxaPartition) taxa.getCurrentSpecsSet(TaxaPartition.class);
 			if (partition!=null){
-					for (int i=0; i<taxa.getNumTaxa(); i++) {
-						if (selectionInformer.isItemSelected(i, this)) {
-							partition.setProperty(null, i);
-							if (!changed)
-								outputInvalid();
-							changed = true;
-						}
+				for (int i=0; i<taxa.getNumTaxa(); i++) {
+					if (selectionInformer.isItemSelected(i, this)) {
+						partition.setProperty(null, i);
+						if (!changed)
+							outputInvalid();
+						changed = true;
 					}
-				
+				}
+				if (!changed && touchedTaxon>=0){
+					partition.setProperty(null, touchedTaxon);
+					taxonTouched(-1);
+					outputInvalid();
+					changed = true;
+			}
+
 
 				if (changed)
 					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???
@@ -195,7 +202,7 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 					nameParser.setExamples(new String[]{taxa.getTaxonName(0), taxa.getTaxonName(taxa.getNumTaxa()/2), taxa.getTaxonName(taxa.getNumTaxa()-1)});
 				else if (taxa.getNumTaxa()>0)
 					nameParser.setExamples(new String[]{taxa.getTaxonName(0)});
-					
+
 				if (nameParser.queryOptions("Options for Creating Groups", "Group names will be extracted from taxon names.", "In constructing the name of the group from the taxon name,", helpString)) {
 					storePreferences();
 				}
@@ -403,21 +410,21 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 		if (taxa !=null) {
 			addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));
 		}
-		if (taxa != this.taxa){
+		/*if (taxa != this.taxa){
 			if (this.taxa != null)
 				this.taxa.removeListener(this);
 			taxa.addListener(this);
-		}
+		}*/
 		this.taxa = taxa;
 		this.selectionInformer = informer;
 	}
+	/*
 	public void changed(Object caller, Object obj, Notification notification){
 		if (caller == this)
 			return;
-		outputInvalid();
 		parametersChanged(notification);
 	}
-	
+
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return true;  

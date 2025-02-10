@@ -3589,7 +3589,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		if (sbUsed)
 			lineCount++;
 		boolean taxNamesChanged = false;
-		boolean atLeastOneFullRowSelected = isAnyRowSelected();
+		boolean atLeastOneFullRowSelected = anyRowSelected();
 		for (int j = 0; j < numRowsTotal && lineCount < lines.length; j++) {
 			if (sbUsed)
 				sb = new StringBuffer(lines[lineCount]);

@@ -4523,7 +4523,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 
 	/* ............................................................................................................... */
-	/** returns whether any column is selected. */
+	/** returns whether any column is selected.*/
 	public boolean anyColumnSelected() {
 		return columnsSelected[0].anyBitsOn();
 	}
@@ -5098,6 +5098,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 
 	/* ............................................................................................................... */
+	/** returns whether a cell in a row is selected. */
+	public boolean anyCellsInRowSelectedAnyWay(int row) {
+		if (isRowSelected(row))
+			return true;
+		for (int column=0; column<numColumnsTotal; column++)
+			if (isColumnSelected(column) || isCellBitOn(column, row))
+					return true;
+		return false;
+	}
+	/* ............................................................................................................... */
 	/** returns whether a cell in a column is selected. */
 	public boolean anyCellsInColumnSelectedAnyWay(int column) {
 		if (isColumnSelected(column))
@@ -5227,12 +5237,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		if (rowLegal(row))
 			return rowsSelected[0].isBitOn(row);
 		return false;
-	}
-
-	/* ............................................................................................................... */
-	/** is any row selected. */
-	public boolean isAnyRowSelected() {
-		return rowsSelected[0].anyBitsOn();
 	}
 
 	/* ............................................................................................................... */

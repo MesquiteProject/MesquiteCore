@@ -13,25 +13,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
 import mesquite.lib.*;
-import mesquite.lib.misc.HPanel;
-import mesquite.lib.taxa.Taxa;
+import mesquite.lib.characters.CharacterData;
 
 
 /* ======================================================================== */
 /***/
 
-public abstract class TaxaSelectedUtility extends MesquiteModule  {
+public abstract class CharactersSelectedUtility extends MesquiteModule  {
 
    	 public Class getDutyClass() {
-   	 	return TaxaSelectedUtility.class;
+   	 	return CharactersSelectedUtility.class;
    	 }
  	public String getDutyName() {
- 		return "Utility to act give selected taxa";
+ 		return "Utility to act give selected characters";
    	}
- 	public abstract void setTaxaAndSelectionInformer(Taxa taxa, SelectionInformer informer);
- 	public abstract void taxonTouched(int it);
+ 	public abstract void setDataAndSelectionInformer(CharacterData data, SelectionInformer informer);
+ 	public abstract void characterTouched(int ic);
 
 }
 
