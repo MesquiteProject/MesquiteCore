@@ -311,7 +311,7 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 		public void turningOff(){
 		}
 
-		public void cursorInCell(int modifiers, int column, int row, int regionInCellH, int regionInCellV, EditorPanel panel){
+		public void cursorInCell(int modifiers, int column, int row, EditorPanel editorPanel, int x, int y){
 			if (table.isCellSelected(column, row))  {
 				setCurrentStandardCursor(null);
 			}

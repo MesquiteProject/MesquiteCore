@@ -101,7 +101,7 @@ public class MesquiteListTable extends MesquiteTable {
 			rN="<no name>";
 		g.drawString(rN, x+getNameStartOffset(), StringUtil.getStringVertPosition(g,y,h, null));
 	}
-	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV,int modifiers, int clickCount) {
+	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y,int modifiers, int clickCount) {
 		System.out.println(" Item " + Integer.toString(row) + " and feature " + Integer.toString(column) + " touched");
 	}
 }

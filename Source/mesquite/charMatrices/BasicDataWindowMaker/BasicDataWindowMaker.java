@@ -4685,19 +4685,17 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
-
-	//	Debugg.println("@column " + column + " row " + row + " regionInCellH " + regionInCellH + " rightClick " + MesquiteEvent.rightClick(modifiers));
+	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if ((window.getCurrentTool() == window.arrowTool) && (clickCount > 1) && window.ibeamTool != null) {
 			window.setCurrentTool(window.ibeamTool);
 			window.getPalette().setCurrentTool(window.ibeamTool);
-			((TableTool) window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
 		else if (((TableTool) window.getCurrentTool()).useTableTouchRules()) {
-			super.cellTouched(column, row, regionInCellH, regionInCellV, modifiers, clickCount);
+			super.cellTouched(column, row, editorPanel, x, y, modifiers, clickCount);
 		}
 		else {
-			((TableTool) window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate() || ((TableTool) window.getCurrentTool()).useTableTouchRules()) {
 			setFocusedCell(column, row);
@@ -4709,19 +4707,19 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void cellDrag(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDrag(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules())
-			super.cellDrag(column, row, regionInCellH, regionInCellV, modifiers);
+			super.cellDrag(column, row, editorPanel, x, y, modifiers);
 		else
-			((TableTool) window.getCurrentTool()).cellDrag(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellDrag(column, row, editorPanel, x, y, modifiers);
 	}
 
 	/* ............................................................................................................... */
-	public void cellDropped(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDropped(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules())
-			super.cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+			super.cellDropped(column, row, editorPanel, x, y, modifiers);
 		else
-			((TableTool) window.getCurrentTool()).cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellDropped(column, row, editorPanel, x, y, modifiers);
 
 	}
 
@@ -4731,7 +4729,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (singleTableCellSelected()) {
 				Dimension sel = getFirstTableCellSelected();
 				if (oldColumn != sel.width || oldRow != sel.height) {
-					((TableTool) window.getCurrentTool()).cellTouched(sel.width, sel.height, 50, 50, 0);
+					((TableTool) window.getCurrentTool()).cellTouched(sel.width, sel.height, getMatrixPanel(), 50, 50, 0);
 				}
 			}
 		}
@@ -4766,8 +4764,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void rowNameTouched(int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
-	//	Debugg.println("@ row " + row + " regionInCellH " + regionInCellH + " rightClick " + MesquiteEvent.rightClick(modifiers));
+	public void rowNameTouched(int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate()) {
 			cellAnnotated.setCell(-1, row);
 			window.setAnnotation(cellAnnotated);
@@ -4779,34 +4776,33 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (clickCount > 1 && window.ibeamTool != null) {
 				window.setCurrentTool(window.ibeamTool);
 				window.getPalette().setCurrentTool(window.ibeamTool);
-				((TableTool) window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+				((TableTool) window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 			}
 			else
-				super.rowNameTouched(row, regionInCellH, regionInCellV, modifiers, clickCount);
+				super.rowNameTouched(row, editorPanel, x, y, modifiers, clickCount);
 		else
-			((TableTool) window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 		broadcastFocusInCell(-1, row);
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(-1, row);
 	}
 
 	/* ............................................................................................................... */
-	public void rowTouched(boolean isArrowEquivalent, int row, int regionInCellH, int regionInCellV, int modifiers) {
-		//Group dropdown Debugg.println("@ rowTouched " + row + " regionInCellH " + regionInCellH + " rightClick " + MesquiteEvent.rightClick(modifiers));
+	public void rowTouched(boolean isArrowEquivalent, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules() || isArrowEquivalent){
 			Enumeration enumeration = window.ownerModule.getEmployeeVector().elements();
 			while (enumeration.hasMoreElements()) {
 				Object obj = enumeration.nextElement();
 				if (obj instanceof DataWindowAssistant) {
 					DataWindowAssistant assistant = (DataWindowAssistant) obj;
-					if (assistant.rowTouched(isArrowEquivalent, row, getRowNamesPanel(), regionInCellH, regionInCellV,modifiers))
-							return;  //BOOLEANDebugg.println aboutr consumption!
+					if (assistant.rowTouched(isArrowEquivalent, row, getRowNamesPanel(), x, y,modifiers))
+							return;  // touch consumed!
 				}
 			}
-			super.rowTouched(isArrowEquivalent, row, regionInCellH, regionInCellV, modifiers);
+			super.rowTouched(isArrowEquivalent, row, editorPanel, x, y, modifiers);
 		}
 		else
-			((TableTool) window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(-1, row);
 	}
@@ -4898,7 +4894,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void columnNameTouched(int column, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate()) {
 			cellAnnotated.setCell(column, -1);
 			window.setAnnotation(cellAnnotated);
@@ -4911,13 +4907,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (clickCount > 1 && window.ibeamTool != null) {
 				window.setCurrentTool(window.ibeamTool);
 				window.getPalette().setCurrentTool(window.ibeamTool);
-				((TableTool) window.getCurrentTool()).cellTouched(column, -1, regionInCellH, regionInCellV, modifiers);
+				((TableTool) window.getCurrentTool()).cellTouched(column, -1, editorPanel, x, y, modifiers);
 			}
 			else
-				super.columnNameTouched(column, regionInCellH, regionInCellV, modifiers, clickCount);
+				super.columnNameTouched(column, editorPanel, x, y, modifiers, clickCount);
 		}
 		else {
-			((TableTool) window.getCurrentTool()).cellTouched(column, -1, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, -1, editorPanel, x, y, modifiers);
 		}
 		broadcastFocusInCell(column, -1);
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
@@ -4925,7 +4921,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void subRowTouched(int subRow, int column, int regionInCellH, int regionInCellV, int x, int y, int modifiers) {
+	public void subRowTouched(int subRow, int column, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (!columnLegal(column))
 			return;
 		if (column >= 0) {
@@ -4933,7 +4929,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (assistant != null){
 				assistant.setColumnTouched(column);
 				if (((TableTool) window.getCurrentTool()).getSpecialToolForColumnNamesInfoStrips())
-					((TableTool) window.getCurrentTool()).cellTouched(column, subRow, regionInCellH, regionInCellV, modifiers);
+					((TableTool) window.getCurrentTool()).cellTouched(column, subRow, editorPanel, x, y, modifiers);
 				else
 					assistant.showPopUp(columnNames, x + 5, y + 5);
 			}
@@ -4941,21 +4937,21 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void columnTouched(boolean isArrowEquivalent, int column, int regionInCellH, int regionInCellV, int modifiers) {
+	public void columnTouched(boolean isArrowEquivalent, int column, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules() || isArrowEquivalent) {
 			Enumeration enumeration = window.ownerModule.getEmployeeVector().elements();
 			while (enumeration.hasMoreElements()) {
 				Object obj = enumeration.nextElement();
 				if (obj instanceof DataWindowAssistant) {
 					DataWindowAssistant assistant = (DataWindowAssistant) obj;
-					if (assistant.columnTouched(isArrowEquivalent, column, getColumnNamesPanel(), regionInCellH, regionInCellV,modifiers))
+					if (assistant.columnTouched(isArrowEquivalent, column, getColumnNamesPanel(), x, y,modifiers))
 						return;
 				}
 			}
-			super.columnTouched(isArrowEquivalent, column, regionInCellH, regionInCellV, modifiers);
+			super.columnTouched(isArrowEquivalent, column, editorPanel, x, y, modifiers);
 		}
 		else {
-			((TableTool) window.getCurrentTool()).cellTouched(column, -1, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, -1, editorPanel, x, y, modifiers);
 		}
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(column, -1);

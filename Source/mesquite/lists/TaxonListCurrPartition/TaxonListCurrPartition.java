@@ -50,7 +50,6 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-	//	Debugg.println("@#@#@#@#@Groups started");
 		groups.addListener(this);
 		if (nameParser==null)
 			nameParser = new NameParser(this, "taxon");

@@ -275,7 +275,7 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 		}
 		return null;
 	}
-	public boolean interceptRowNameTouch(int row, int regionInCellH, int regionInCellV, int modifiers){
+	public boolean interceptRowNameTouch(int row, EditorPanel editorPanel, int x, int y, int modifiers){
 		TaxaGroup group = getTaxonGroup(row);
 		if (group!=null){
 			getTable().editRowNameCell(row);

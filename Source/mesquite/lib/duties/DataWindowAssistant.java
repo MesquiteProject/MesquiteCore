@@ -58,10 +58,10 @@ public abstract class DataWindowAssistant extends MesquiteModule  {
 	}
   	public void focusInCell(int ic, int it){
 	}
-	public boolean rowTouched(boolean isArrowEquivalent, int row, MousePanel panel, int x, int y, int modifiers) {
+	public boolean rowTouched(boolean isArrowEquivalent, int row, EditorPanel panel, int x, int y, int modifiers) {
 		return false;
 	}
-	public boolean columnTouched(boolean isArrowEquivalent, int column, MousePanel panel, int x, int y,  int modifiers) {
+	public boolean columnTouched(boolean isArrowEquivalent, int column, EditorPanel panel, int x, int y,  int modifiers) {
 		return false;
 	}
 	public void setActive(boolean a){

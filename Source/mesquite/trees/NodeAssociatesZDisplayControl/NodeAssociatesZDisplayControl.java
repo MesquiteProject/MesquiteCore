@@ -372,6 +372,9 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI {
 		else if (checker.compare(this.getClass(), "Sets whether to show a node or branch associated value", "[on or off]", commandName, "showAssociate")) {
 			String name = parser.getFirstToken(arguments);
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
+			MesquiteBoolean onOrOff =new MesquiteBoolean(false);
+			onOrOff.toggleValue(parser.getNextToken());
+			if (onOrOff.getValue())
 			addAssociateName(name, kind,  true);
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to write the values as percentage", "[on or off]", commandName, "writeAsPercentage")) {

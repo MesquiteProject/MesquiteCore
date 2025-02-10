@@ -459,8 +459,8 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			((MultiBlockSplitter)initiator).clearBetweenSelection();
 		}
 
-		public void cursorInCell(int modifiers, int column, int row, int regionInCellH, int regionInCellV, EditorPanel panel){
-			if (table.inBetweenSelection(column, row, regionInCellH, regionInCellV))  {
+		public void cursorInCell(int modifiers, int column, int row, EditorPanel editorPanel, int x, int y){
+			if (table.inBetweenSelection(column, row, editorPanel, x, y))  {
 				setCurrentStandardCursor(null);
 				if (optionBetweenSelectionCursor!=null && MesquiteEvent.optionKeyDown(modifiers)) {
 					setCurrentOptionCursor(optionBetweenSelectionCursor);

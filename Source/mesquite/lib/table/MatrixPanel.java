@@ -570,9 +570,6 @@ timer6.end();
 		mouseDownInField = false;
 		mouseDownInPanel = true;
 
-		int regionInCellH = findRegionInCellH(x);
-		int regionInCellV = findRegionInCellV(y);
-
 		//((TableTool)tool).getWorksOnColumnNames();
 
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
@@ -581,7 +578,7 @@ timer6.end();
 				column = findColumnBeforeBetween(x, y);
 				row = findRowBeforeBetween(x, y);  //this was findColumnBeforeBetween
 			}
-			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
+			table.cellTouched(column, row, this, x, y,modifiers, clickCount);
 			if (((TableTool)tool).getEmphasizeRowsOnMouseDown()){
 				table.emphasizeRow(-1,firstRowTouched, -1, false, Color.blue);
 			}
@@ -591,9 +588,9 @@ timer6.end();
 //			}
 		}
 		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
-			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
+			table.cellTouched(column, row, this, x, y,modifiers, clickCount);
 		else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())
-			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
+			table.cellTouched(column, row, this, x, y,modifiers, clickCount);
 		else {
 			table.outOfBoundsTouched(modifiers, clickCount);
 			setWindowAnnotation("", null);
@@ -609,12 +606,10 @@ timer6.end();
 		try {
 		int column = findColumn(x, y);
 		int row = findRow(x, y);
-		int regionInCellH = findRegionInCellH(x);
-		int regionInCellV =  findRegionInCellV(y);
 
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 			table.checkForAutoScroll(this,x,y);
-			table.cellDrag(column, row, regionInCellH,  regionInCellV,modifiers);
+			table.cellDrag(column, row, this, x, y,modifiers);
 			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
 				table.emphasizeRow(previousRowDragged,row, firstRowTouched, false, Color.blue);
 				previousRowDragged = row;
@@ -636,8 +631,6 @@ timer6.end();
 		table.stopAutoScrollThread();
 		int column = findColumn(x, y);
 		int row = findRow(x, y);
-		int regionInCellH = findRegionInCellH(x);
-		int regionInCellV =  findRegionInCellV(y);
 
 		if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
 			table.redrawFullRow(previousRowDragged);
@@ -651,12 +644,12 @@ timer6.end();
 		if (((TableTool)tool).acceptsOutsideDrops() || (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal)) {
 			if (((TableTool)tool).getIsBetweenRowColumnTool())
 				column = findColumnBeforeBetween(x, y);
-			table.cellDropped(column, row, regionInCellH, regionInCellV,modifiers);
+			table.cellDropped(column, row, this, x, y,modifiers);
 		}
 		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
-			table.cellDropped(column, row, regionInCellH, regionInCellV,modifiers);
+			table.cellDropped(column, row, this, x, y,modifiers);
 		else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())
-			table.cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+			table.cellDropped(column, row, this, x, y, modifiers);
 		else if (!mouseDownInField && ((TableTool)tool).getDeselectIfOutsideOfCells()) {
 
 			table.offAllEdits();

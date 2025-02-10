@@ -17,37 +17,37 @@ package mesquite.basic.TaxonPartitionHelper;
 import mesquite.lists.lib.*;
 
 
-import java.util.*;
 import java.awt.*;
 
 import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteSymbol;
 
 /* ======================================================================== */
-public class TaxonPartitionHelper  extends MesquiteModule{
+public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 	NameParser nameParser;
+	SelectionInformer selectionInformer;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Taxon Partition Helper";
 	}
 	public String getExplanation() {
-		return "Controls adjustments to taxa partitions." ;
+		return "Controls adjustments to taxa partitions (e.g., in List of Taxa, Groups column)." ;
 	}
-	/*.................................................................................................................*/
+	public Class getDutyClass() {
+		return getClass();
+	}/*.................................................................................................................*/
 	Taxa taxa;
 	TaxaGroupVector groups;
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 		groups.addListener(this);
@@ -64,7 +64,7 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 		super.endJob();
 	}
 	private void setGroup(TaxaGroup group, String name, Bits bits, boolean notify){
-		if (table !=null && taxa!=null) {
+		if (selectionInformer !=null && taxa!=null) {
 			boolean changed=false;
 			if (group == null && StringUtil.blank(name))
 				return;
@@ -73,15 +73,14 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 				partition= new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);
 				partition.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaPartition.class));
 				taxa.setCurrentSpecsSet(partition, TaxaPartition.class);
-			}*
+			}*/
 			if (group == null){
 				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 				Object obj = groups.getElement(name);
 				group = (TaxaGroup)obj;
 			}
 
-			if (group != null) {
-				if (partition != null) {
+			if (group != null && partition != null) {
 					if (bits!=null) {
 						for (int i=0; i<taxa.getNumTaxa(); i++) {
 							if (bits.isBitOn(i)) {
@@ -91,40 +90,38 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 								changed = true;
 							}
 						}
-					} else if (employer!=null && employer instanceof ListModule) {
-						int c = ((ListModule)employer).getMyColumn(this);
+					} else {
 						for (int i=0; i<taxa.getNumTaxa(); i++) {
-							if (table.isCellSelectedAnyWay(c, i)) {
+							if (selectionInformer.isItemSelected(i, this)) {
 								partition.setProperty(group, i);
 								if (!changed)
 									outputInvalid();
 								changed = true;
 							}
 						}
-					}
+				}
+					
 				}
 				if (changed && notify)
 					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
 				parametersChanged();
 			}
-		}
+		
 	}
 	private void removeGroupDesigation(){
-		if (table !=null && taxa!=null) {
+		if (selectionInformer !=null && taxa!=null) {
 			boolean changed=false;
 			TaxaPartition partition = (TaxaPartition) taxa.getCurrentSpecsSet(TaxaPartition.class);
 			if (partition!=null){
-				if (employer!=null && employer instanceof ListModule) {
-					int c = ((ListModule)employer).getMyColumn(this);
 					for (int i=0; i<taxa.getNumTaxa(); i++) {
-						if (table.isCellSelectedAnyWay(c, i)) {
+						if (selectionInformer.isItemSelected(i, this)) {
 							partition.setProperty(null, i);
 							if (!changed)
 								outputInvalid();
 							changed = true;
 						}
 					}
-				}
+				
 
 				if (changed)
 					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???
@@ -135,7 +132,7 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 	}
 
 
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public  static TaxaGroup createNewTaxonGroup(MesquiteModule module, MesquiteFile file) {
 		String n = "Untitled Group";
 		if (file==null)
@@ -182,7 +179,7 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 			nameParser.processSingleXMLPreference(tag,content);
 	}
 
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 
 	private void createPartitionBasedOnNames() {
 		if (taxa!=null){
@@ -205,12 +202,11 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 				else
 					return;
 			}
-			int c = ((ListModule)employer).getMyColumn(this);
 
-			boolean anySelected= table.anyCellsInColumnSelectedAnyWay(c);;
+			boolean anySelected= selectionInformer.anyItemsSelected(this); 
 
 			for (int it=0; it<taxa.getNumTaxa(); it++) {
-				if (!taxonProcessed.isBitOn(it)  && (!anySelected || table.isCellSelectedAnyWay(c, it))) {
+				if (!taxonProcessed.isBitOn(it)  && (!anySelected || selectionInformer.isItemSelected(it, this))) {
 					groupName = nameParser.extractPart(taxa.getTaxonName(it));
 					TaxaGroup group = TaxaGroup.makeGroupIfNovel(this, groupName,taxa,groups);
 					taxonProcessed.setBit(it, true);
@@ -237,7 +233,7 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 
 
 	MesquiteInteger pos = new MesquiteInteger(0);
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets to which group a taxon belongs in the current taxa partition", "[name of group]", commandName, "setPartition")) {
 			setGroup(null, parser.getFirstToken(arguments),null, true);
@@ -380,9 +376,8 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 		return null;
 	}
 
-	/*.................................................................................................................*
-	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
-		/* hire employees here *
+	/*.................................................................................................................*/
+	public void setTaxaAndSelectionInformer(Taxa taxa, SelectionInformer informer){
 		deleteAllMenuItems();
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
@@ -414,7 +409,7 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 			taxa.addListener(this);
 		}
 		this.taxa = taxa;
-		this.table = table;
+		this.selectionInformer = informer;
 	}
 	public void changed(Object caller, Object obj, Notification notification){
 		if (caller == this)
@@ -422,118 +417,17 @@ public class TaxonPartitionHelper  extends MesquiteModule{
 		outputInvalid();
 		parametersChanged(notification);
 	}
-	public String getTitle() {
-		return "Group";
-	}
-	public String getStringForTaxon(int ic){
-		if (taxa!=null) {
-			TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
-			if (part==null)
-				return "?";
-			TaxaGroup tg = part.getTaxaGroup(ic);
-			if (tg==null)
-				return "?";
-			return tg.getName();
-		}
-		return "?";
-	}
-	public boolean useString(int ic){
-		return false;
-	}
-	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
-		if (taxa==null || g==null)
-			return;
-		TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
-		Color c = g.getColor();
-		MesquiteSymbol symbol = null;
-		boolean colored = false;
-		Color backgroundColor = null;
-		if (part!=null) {
-			TaxaGroup tg = part.getTaxaGroup(ic);
-			if (tg!=null){
-				backgroundColor= tg.getColor();
-				if (backgroundColor!=null){
-					g.setColor(backgroundColor);
-					g.fillRect(x+1,y+1,w-1,h-1);
-					colored = true;
-				}
-				symbol = tg.getSymbol();
-			}
-		}
-		if (!colored){ 
-			if (selected)
-				g.setColor(Color.black);
-			else
-				g.setColor(Color.white);
-			g.fillRect(x+1,y+1,w-1,h-1);
-		}
-		if (symbol!=null) {
-			symbol.drawSymbol(g,x+w-h/2,y+h/2,w-3,h/2-3,true);
-		}
-
-		String s = getStringForRow(ic);
-		if (s!=null){
-			FontMetrics fm = g.getFontMetrics(g.getFont());
-			if (fm==null)
-				return;
-			int sw = fm.stringWidth(s);
-			int sh = fm.getMaxAscent()+ fm.getMaxDescent();
-			if (backgroundColor==null) {
-				if (selected)
-					g.setColor(Color.white);
-				else
-					g.setColor(Color.black);
-			} else {  // background is color; choose contrasting color
-				Color contrast = ColorDistribution.getContrastingTextColor(backgroundColor);
-				g.setColor(contrast);
-			}
-			g.drawString(s, x+(w-sw)/2, y+h-(h-sh)/2);
-			if (c!=null) g.setColor(c);
-		}
-
-	}
-
-	public String getWidestString(){
-		if (taxa != null) {
-			TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
-			if (part != null) {
-				int max = 12;
-				for (int it = 0; it<taxa.getNumTaxa(); it++) {
-					TaxaGroup tg = part.getTaxaGroup(it);
-					if (tg != null) {
-						String name = tg.getName();
-						if (StringUtil.notEmpty(name)) {
-							if (name.length()>max)
-								max = name.length();
-						}
-					}
-				}
-				if (max>50)
-					max = 60;
-				return "888888888 888888888 888888888 888888888 888888888 888888888 ".substring(0, max);
-			}
-		}
-		return "88888888888  ";
-	}
+	
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;  
+		return true;  
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return true;  
 	}
-	@Override
-	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public Class getDutyClass() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	/*.................................................................................................................*/
 }

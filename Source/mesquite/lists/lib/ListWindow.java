@@ -975,7 +975,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	public boolean interceptCellTouch(int  column, int row, int modifiers){
 		return false;
 	}
-	public boolean interceptRowNameTouch(int row, int regionInCellH, int regionInCellV, int modifiers){
+	public boolean interceptRowNameTouch(int row, EditorPanel editorPanel, int x, int y, int modifiers){
 		return false;
 	}
 	public void deleteSelectedColumns() {

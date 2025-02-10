@@ -70,8 +70,8 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 		this.data = data;
 		taxa = data.getTaxa();
 	}
-	/*
-	public boolean rowTouched(boolean isArrowEquivalent, int row, MousePanel panel, int x, int y, int modifiers) {
+	/**
+	public boolean rowTouched(boolean isArrowEquivalent, int row, EditorPanel panel, int x, int y, int modifiers) {
 		//Debugg.printStackTrace("@ MatrixInfoTool rowTouched " + row + " regionInCellH " + regionInCellH + " rightClick " + MesquiteEvent.rightClick(modifiers));
 		if (MesquiteEvent.rightClick(modifiers)){
 			MesquitePopup popup = new MesquitePopup(panel);
@@ -83,7 +83,7 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 		}
 		return false;
 	}
-	public boolean columnTouched(boolean isArrowEquivalent, int column, MousePanel panel, int x, int y,  int modifiers) {
+	public boolean columnTouched(boolean isArrowEquivalent, int column, EditorPanel panel, int x, int y,  int modifiers) {
 		if (MesquiteEvent.rightClick(modifiers)){
 			MesquitePopup popup = new MesquitePopup(panel);
 		popup.addItem("one", new MesquiteCommand("go", this), null);

@@ -69,20 +69,22 @@ public class TableTool extends MesquiteTool {
 		dragCommand=null;
 		super.dispose();
 	}
-	//can be overridden to, for instance, change the cursor
 	public void cursorInPanel(int modifiers, int x, int y, MousePanel panel, boolean in){
-		if (in && panel instanceof EditorPanel){
-			EditorPanel ePanel = ((EditorPanel)panel);
-			int column = ePanel.findColumn(x, y);
-			int row = ePanel.findRow(x, y);
-	   		int regionInCellH = ePanel.findRegionInCellH(x);
-	   		int regionInCellV = ePanel.findRegionInCellV(y);
-	   		cursorInCell(modifiers, column, row, regionInCellH, regionInCellV, ePanel);
+		if (panel instanceof EditorPanel)
+			cursorInPanel(modifiers, x, y, (EditorPanel)panel, in);
+	}
+	
+	//can be overridden to, for instance, change the cursor
+	public void cursorInPanel(int modifiers, int x, int y, EditorPanel editorPanel, boolean in){
+		if (in){
+			int column = editorPanel.findColumn(x, y);
+			int row = editorPanel.findRow(x, y);
+	   		cursorInCell(modifiers, column, row, editorPanel, x, y);
 		}
 	}
 	
 	//tools can override this to find out when cursor is moved into a cell and a region of the cell
-	public void cursorInCell(int modifiers, int column, int row, int regionInCellH, int regionInCellV, EditorPanel panel){
+	public void cursorInCell(int modifiers, int column, int row, EditorPanel editorPanel, int x, int y){
 		
 		//here can call panel.setCursor(cursor); to set current cursor of panel
 	}
@@ -187,17 +189,17 @@ public class TableTool extends MesquiteTool {
 		return super.isArrowTool() || (getWorksAsArrowOnRowColumnNumbers() && table.showRowGrabbers  && x<=table.getRowGrabberWidth());
 	}
 
-	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (touchedCommand!=null)
-			touchedCommand.doItMainThread(Integer.toString(column) + " " + row + " "  + regionInCellH + " " + regionInCellV + " " + MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", touchedCommand, this), false, false);  
+			touchedCommand.doItMainThread(Integer.toString(column) + " " + row + " "  + x + " " + y + " " + MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", touchedCommand, this), false, false);  
 	}
-	public void cellDrag(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDrag(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (dragCommand!=null)
-			dragCommand.doItMainThread(Integer.toString(column) + " " + row + " " + regionInCellH + " " + regionInCellV + " " +  MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", dragCommand, this), false, false);  
+			dragCommand.doItMainThread(Integer.toString(column) + " " + row + " " + x + " " + y + " " +  MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", dragCommand, this), false, false);  
 	}
-	public void cellDropped(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDropped(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (droppedCommand!=null)
-			droppedCommand.doItMainThread(Integer.toString(column) + " " + row + " " + regionInCellH + " " + regionInCellV + " " + MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", droppedCommand, this), false, false);  
+			droppedCommand.doItMainThread(Integer.toString(column) + " " + row + " " + x + " " + y + " " + MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", droppedCommand, this), false, false);  
 	}
 
 
