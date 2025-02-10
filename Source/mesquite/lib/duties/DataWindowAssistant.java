@@ -16,6 +16,7 @@ package mesquite.lib.duties;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MousePanel;
 import mesquite.lib.characters.*;
 
 
@@ -56,9 +57,14 @@ public abstract class DataWindowAssistant extends MesquiteModule  {
   		return null;
 	}
   	public void focusInCell(int ic, int it){
-  		
 	}
- 	public void setActive(boolean a){
+	public boolean rowTouched(boolean isArrowEquivalent, int row, MousePanel panel, int x, int y, int modifiers) {
+		return false;
+	}
+	public boolean columnTouched(boolean isArrowEquivalent, int column, MousePanel panel, int x, int y,  int modifiers) {
+		return false;
+	}
+	public void setActive(boolean a){
    		active = a;
    	}
    	public boolean isActive(){

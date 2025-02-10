@@ -55,7 +55,7 @@ public class ReinterpretBranchLabels extends TreeAltererMult {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Reinterpret Node Labels",  buttonPressed);
 		queryDialog.addLargeOrSmallTextLabel("Some programs write information as node labels; e.g. MrBayes writes posterior probabilities as if they were the names of clades (= node labels)." +
-		"\nHere you can reintepret such information. (Note: these changes can also be made for individual trees in the tree window, using the List of Node/Branch Properties window.)");
+		"\nHere you can reintepret such information. (Note: these changes can also be made for individual trees in the tree window, using the List of Branch/Node Properties window.)");
 		//name for information (e.g., "posteriorProbability", "bootstrapFrequency")
 		queryDialog.addLabel("Name for information? (e.g., \"posteriorProbability\", \"bootstrapFrequency\")", Label.LEFT);
 		TextField nameField = queryDialog.addTextField(name, 30);

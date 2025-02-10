@@ -228,7 +228,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			if (newDistance>=0 && newDistance<100 && newDistance!=fixedTaxonDistance) {
 				fixedTaxonDistance=newDistance;
 				setFixedTaxonSpacings(fixedTaxonDistance);
-				Debugg.println("@========== " + MesquiteThread.isScripting());
+			//	Debugg.println("@========== " + MesquiteThread.isScripting());
 				if ( !MesquiteThread.isScripting()) parametersChanged(new Notification(TREE_DRAWING_SIZING_CHANGED));
 			}
 
@@ -1002,7 +1002,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	boolean showScaleConsideringAuto(Tree tree, TreeDisplay treeDisplay){
 		return showScale.getValue()
 				&& showBranchLengths.getValue()!= TreeDisplay.DRAWULTRAMETRIC 
-				&& ((tree.hasBranchLengths() || treeDisplay.fixedScalingOn) && (tree.getWhichAssociatedDouble(consensusNR) == null));
+				&& ((tree.hasBranchLengths() || treeDisplay.fixedScalingOn) && (tree.getAssociatedDoubles(consensusNR) == null));
 	}
 	NameReference consensusNR = NameReference.getNameReference("consensusFrequency");
 	
@@ -1092,7 +1092,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			boolean branchesProportionalToLength = treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || 
 					(treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (treeHasBranchLengths || treeDisplay.fixedScalingOn));
 			branchesProportionalToLength = branchesProportionalToLength & 
-					!((tree.getWhichAssociatedDouble(consensusNR) != null) && (treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS));
+					!((tree.getAssociatedDoubles(consensusNR) != null) && (treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS));
 			
 
 			
@@ -1154,7 +1154,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 					if (!inhibitStretch.getValue() && (treeDisplay.autoStretchIfNeeded )) { //&& treeDrawing.y[subRoot]>treeDisplay.effectiveFieldHeight()
 						treeDisplay.nodeLocsParameters[stretchfactor]=((double)(treeDisplay.effectiveFieldHeight()-treeDisplay.getTipsMargin())) / (treeDrawing.y[subRoot] - (int)treeDisplay.getTipsMargin());
 						UPstretchNodeLocs(treeDisplay, treeDrawing, tree, root);
-						treeDrawing.y[subRoot]=treeDisplay.effectiveFieldHeight()-5;
+						treeDrawing.y[subRoot]=treeDisplay.getField().height-5;
 					}
 				}
 
@@ -1213,7 +1213,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 					if (!inhibitStretch.getValue() && treeDisplay.autoStretchIfNeeded) {  //&& treeDrawing.y[subRoot]>0)
 						treeDisplay.nodeLocsParameters[stretchfactor]=((double)(treeDisplay.effectiveFieldHeight()-treeDisplay.getTipsMargin())) / (treeDisplay.effectiveFieldHeight() - treeDrawing.y[subRoot] - treeDisplay.getTipsMargin());
 						DOWNstretchNodeLocs(treeDisplay, treeDrawing, tree, root, treeDisplay.effectiveFieldHeight()-treeDisplay.getTipsMargin());
-						treeDrawing.y[subRoot]=5+treeDisplay.effectiveFieldTopMargin();
+						treeDrawing.y[subRoot]=5;
 					}
 				}
 		}
@@ -1271,7 +1271,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 					if (!inhibitStretch.getValue() && treeDisplay.autoStretchIfNeeded) { //&& treeDrawing.x[subRoot]>0
 						treeDisplay.nodeLocsParameters[stretchfactor]=((double)(treeDisplay.effectiveFieldWidth()-treeDisplay.getTipsMargin())) / (treeDisplay.effectiveFieldWidth() - treeDrawing.x[subRoot] -treeDisplay.getTipsMargin());
 						RIGHTstretchNodeLocs(treeDisplay,treeDrawing, tree, root,treeDisplay.effectiveFieldWidth()-treeDisplay.getTipsMargin());
-						treeDrawing.x[subRoot]=5 + treeDisplay.effectiveFieldLeftMargin();
+						treeDrawing.x[subRoot]=5;
 					}
 				}
 			}
@@ -1328,7 +1328,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 					if (!inhibitStretch.getValue() && (treeDisplay.autoStretchIfNeeded )) {  //&& treeDrawing.x[subRoot]>treeDisplay.effectiveFieldWidth()
 						treeDisplay.nodeLocsParameters[stretchfactor]=((double)(treeDisplay.effectiveFieldWidth()-treeDisplay.getTipsMargin())) / (treeDrawing.x[subRoot] - (int)treeDisplay.getTipsMargin());
 						LEFTstretchNodeLocs(treeDisplay, treeDrawing, tree, root);
-						treeDrawing.x[subRoot]=treeDisplay.effectiveFieldRightMargin()-5;
+						treeDrawing.x[subRoot]=treeDisplay.getField().width-5;
 					}
 				}
 			}

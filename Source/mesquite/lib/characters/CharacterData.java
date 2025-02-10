@@ -165,7 +165,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public CharacterData(CharMatrixManager matrixManager, int numTaxa, int numChars, Taxa taxa){
 		super(numChars); // for Associable
 		NameReference sN = makeAssociatedBits("selected"); //this won't make new Bits if not needed, just return reference
-		selected = getWhichAssociatedBits(sN);
+		selected = getAssociatedBits(sN);
 		this.matrixManager = matrixManager;
 		this.numChars=numChars;
 		this.numTaxa = numTaxa;

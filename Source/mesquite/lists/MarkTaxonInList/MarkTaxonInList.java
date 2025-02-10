@@ -82,7 +82,7 @@ public class MarkTaxonInList extends TaxonListAssistant {
 	}
 	boolean isMarked(int ic){
 		boolean c = taxa.getAssociatedBit(nameReference, ic);
-		if (!c && taxa.getWhichAssociatedBits(nameReference) == null){  //need to reset!  Mark has been deleted
+		if (!c && taxa.getAssociatedBits(nameReference) == null){  //need to reset!  Mark has been deleted
 			markName = "+";
 			markCode = codeFromName(markName);
 			nameReference = NameReference.getNameReference(markCode);
@@ -140,7 +140,7 @@ public class MarkTaxonInList extends TaxonListAssistant {
 			}
 		}
 		
-		Bits bits = taxa.getWhichAssociatedBits(nameReference);  //see if there is already one linked here; if so, just rename;
+		Bits bits = taxa.getAssociatedBits(nameReference);  //see if there is already one linked here; if so, just rename;
 		if (bits == null){  //choosing which mark to show
 			selectMark(true, false, true, "show");
 
@@ -219,7 +219,7 @@ public class MarkTaxonInList extends TaxonListAssistant {
 					if (name != null){
 						markCode = codeFromName(name);
 						markName = name;
-						Bits bits = taxa.getWhichAssociatedBits(nameReference);  //see if there is already one linked here; if so, just rename;
+						Bits bits = taxa.getAssociatedBits(nameReference);  //see if there is already one linked here; if so, just rename;
 						nameReference = NameReference.getNameReference(markCode);
 						if (bits != null)
 							bits.setNameReference(nameReference);

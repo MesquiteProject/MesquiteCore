@@ -457,7 +457,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 		if (tree.anySelectedInClade(tree.getRoot())){
 			NameReference sN = makeAssociatedBits("selected"); //this won't make new Bits if not needed, just return reference
-			selected = getWhichAssociatedBits(sN);
+			selected = getAssociatedBits(sN);
 		}
 		else
 			selected = null;
@@ -736,19 +736,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** Copies associated from other tree. Assumes topology identicial, so check first! kind 1 = long, 2 = double, 3 = object. */
 	public void transferAssociated(Tree tree, int kind, NameReference nRef){
 		if (kind == 0) {
-			if (tree.getWhichAssociatedLong(nRef)==null) {
+			if (tree.getAssociatedLongs(nRef)==null) {
 				removeAssociatedLongs(nRef);
 				return;
 			}
 		}
 		else if (kind == 1) {
-			if (tree.getWhichAssociatedDouble(nRef)==null) {
+			if (tree.getAssociatedDoubles(nRef)==null) {
 				removeAssociatedDoubles(nRef);
 				return;
 			}
 		}
 		else if (kind == 2) {
-			if (tree.getWhichAssociatedObject(nRef)==null) {
+			if (tree.getAssociatedObjects(nRef)==null) {
 				removeAssociatedObjects(nRef);
 				return;
 			}
@@ -3595,7 +3595,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		if (readAssociated)
 			processAttachedProperties();
-		selected = getWhichAssociatedBits(NameReference.getNameReference("selected"));
+		selected = getAssociatedBits(NameReference.getNameReference("selected"));
 		exists=true;
 		if (!checkTreeIntegrity(root)) {
 			intializeTree();
@@ -4092,19 +4092,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 	void readAppliesToBranches(String toWhom){
 		NameReference nRef = NameReference.getNameReference(toWhom);
-		Bits b = getWhichAssociatedBits(nRef);
+		Bits b = getAssociatedBits(nRef);
 		if (b != null)
 			b.setBetweenness(true);
 		else {
-			LongArray bL = getWhichAssociatedLong(nRef);
+			LongArray bL = getAssociatedLongs(nRef);
 			if (bL != null)
 				bL.setBetweenness(true);
 			else {
-				DoubleArray bD = getWhichAssociatedDouble(nRef);
+				DoubleArray bD = getAssociatedDoubles(nRef);
 				if (bD != null)
 					bD.setBetweenness(true);
 				else {
-					ObjectArray bO = getWhichAssociatedObject(nRef);
+					ObjectArray bO = getAssociatedObjects(nRef);
 					if (bO != null)
 						bO.setBetweenness(true);
 				}
@@ -4170,25 +4170,25 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		else if (key.equalsIgnoreCase("setBetweenBits")) {
 			NameReference nRef = NameReference.getNameReference(value);
-			Bits b = getWhichAssociatedBits(nRef);
+			Bits b = getAssociatedBits(nRef);
 			if (b != null)
 				b.setBetweenness(true);
 		}
 		else if (key.equalsIgnoreCase("setBetweenLong")) {
 			NameReference nRef = NameReference.getNameReference(value);
-			LongArray b = getWhichAssociatedLong(nRef);
+			LongArray b = getAssociatedLongs(nRef);
 			if (b != null)
 				b.setBetweenness(true);
 		}
 		else if (key.equalsIgnoreCase("setBetweenDouble")) {
 			NameReference nRef = NameReference.getNameReference(value);
-			DoubleArray b = getWhichAssociatedDouble(nRef);
+			DoubleArray b = getAssociatedDoubles(nRef);
 			if (b != null)
 				b.setBetweenness(true);
 		}
 		else if (key.equalsIgnoreCase("setBetweenObject")) {
 			NameReference nRef = NameReference.getNameReference(value);
-			ObjectArray b = getWhichAssociatedObject(nRef);
+			ObjectArray b = getAssociatedObjects(nRef);
 			if (b != null)
 				b.setBetweenness(true);
 		}
@@ -5335,7 +5335,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 	static final String[] betweenLongs = new String[]{"color"};
 	static final String[] betweenDoubles = new String[]{"width", "bootstrapFrequency", "consensusFrequency", "posteriorProbability", "posterior"};
-	static final String[] betweenObjects = new String[]{"!color"};
+	static final String[] betweenObjects = new String[]{}; //println("$ println("@ 
+	static final String[] betweenStrings = new String[]{"!color"};
 	static final String[] betweenBits = new String[]{};
 	/*
 	public void setAssociatedBit(NameReference nRef, int index, boolean value){

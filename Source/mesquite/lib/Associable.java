@@ -25,9 +25,17 @@ a CharacterData contains characters, and so on.  The purpose of this class is to
 this attached ("associated") information.  Subclasses include FileElement (and thus CharacterData
 and Taxa) and Tree.  */
 public abstract class Associable extends Attachable implements Commandable, Annotatable, Selectionable {
+	public static final int BUILTIN = 0;
+	public static final int BITS = 1;
+	public static final int DOUBLES = 2;
+	public static final int LONGS = 3;
+	public static final int STRINGS = 4;
+	public static final int OBJECTS = 5;
+
 	protected Vector bits;
 	protected Vector longs;
 	protected Vector doubles;
+	protected Vector strings;
 	protected Vector objects;
 	int[] defaultOrder;
 	int[] currentOrder;
@@ -59,6 +67,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		bits = new Vector();
 		longs = new Vector();
 		doubles = new Vector();
+		strings = new Vector();
 		objects = new Vector();
 	}
 	public Associable (){
@@ -81,17 +90,20 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			doubles.removeAllElements();
 		if (objects!=null)
 			objects.removeAllElements();
+		if (strings!=null)
+			strings.removeAllElements();
 		bits = null;
 		longs = null;
 		doubles = null;
 		objects = null;
+		strings = null;
 		defaultOrder = null;
 		numParts = 0;
 		super.dispose();
 	}
 	public String toHTMLStringDescription(){
 		String sT = super.toHTMLStringDescription();
-		if (bits == null && longs == null && doubles == null && objects == null)
+		if (bits == null && longs == null && doubles == null && objects == null && strings == null)
 			return sT;
 		String s = "";
 		if (bits!=null) {
@@ -113,6 +125,12 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				s += "<li>Double array: " + b.getName()+  "</li>";	
 			}
 		}
+		if (strings!=null){
+			for (int i=0; i<strings.size(); i++) {
+				Listable b = (Listable)strings.elementAt(i);
+				s += "<li>String array: " + b.getName()+  "</li>";	
+			}
+		}
 		if (objects!=null) {
 			for (int i=0; i<objects.size(); i++) {
 				Object obj = objects.elementAt(i);
@@ -123,8 +141,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				else if (obj instanceof String){
 					s += "<li>String:  " + obj+ " </li>";	
 				}
+				else if (obj instanceof StringArray){
+					s += "<li>StringArray as ObjectArray: </li>";	
+				}
 				else if (obj instanceof String[]){
-					s += "<li>String array</li>";	
+					s += "<li>String[]: </li>";	
 				}
 				else
 					s += "<li>Object of class " + obj.getClass().getName()+ "</li>";	
@@ -139,7 +160,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 
 
 	public String getTextVersionAssociates(String nameOfPart){
-		if (bits == null && longs == null && doubles == null && objects == null)
+		if (bits == null && longs == null && doubles == null && objects == null && strings == null)
 			return "";
 		String s = "";
 		for (int i=0; i<numParts; i++){
@@ -151,7 +172,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public String toString(int part){
 		String s = "";
 		String add = "";
-		if (bits == null && longs == null && doubles == null && objects == null)
+		if (bits == null && longs == null && doubles == null && objects == null && strings == null)
 			return s;
 		if (bits!=null) {
 			for (int i=0; i<bits.size(); i++) {
@@ -176,6 +197,13 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			for (int i=0; i<doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
 				s += add + "" + b.getName()+ ": " + MesquiteDouble.toString(b.getValue(part));	
+				add = "; ";
+			}
+		}
+		if (strings!=null){
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				s += add + "" + b.getName()+ ": " + b.getValue(part);	
 				add = "; ";
 			}
 		}
@@ -227,21 +255,28 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			for (int i=0; i<other.bits.size(); i++) {
 				Bits b1 = (Bits)other.bits.elementAt(i);
 				NameReference nr = makeAssociatedBits(b1.getNameReference().getValue());
-				Bits b = getWhichAssociatedBits(nr);
+				Bits b = getAssociatedBits(nr);
 				b.setBit(part, b1.isBitOn(otherPart));
 			}
 		if (other.longs!=null)
 			for (int i=0; i<other.longs.size(); i++) {
 				LongArray b1 = (LongArray)other.longs.elementAt(i);
 				NameReference nr = makeAssociatedLongs(b1.getNameReference().getValue());
-				LongArray b = getWhichAssociatedLong(nr);
+				LongArray b = getAssociatedLongs(nr);
 				b.setValue(part, b1.getValue(otherPart));
 			}
 		if (other.doubles!=null)
 			for (int i=0; i<other.doubles.size(); i++) {
 				DoubleArray b1 = (DoubleArray)other.doubles.elementAt(i);
 				NameReference nr = makeAssociatedDoubles(b1.getNameReference().getValue());
-				DoubleArray b = getWhichAssociatedDouble(nr);
+				DoubleArray b = getAssociatedDoubles(nr);
+				b.setValue(part, b1.getValue(otherPart));
+			}
+		if (other.strings!=null)
+			for (int i=0; i<other.strings.size(); i++) {
+				StringArray b1 = (StringArray)other.strings.elementAt(i);
+				NameReference nr = makeAssociatedStrings(b1.getNameReference().getValue());
+				StringArray b = getAssociatedStrings(nr);
 				b.setValue(part, b1.getValue(otherPart));
 			}
 		if (other.objects!=null)
@@ -249,7 +284,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 
 				ObjectArray b1 = (ObjectArray)other.objects.elementAt(i);
 				NameReference nr = makeAssociatedObjects(b1.getNameReference().getValue());
-				ObjectArray b = getWhichAssociatedObject(nr);
+				ObjectArray b = getAssociatedObjects(nr);
 				b.setValue(part, b1.getValue(otherPart));
 			}
 	}
@@ -448,6 +483,8 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return true;
 		if (doubles != null && doubles.size()>0)
 			return true;
+		if (strings != null && strings.size()>0)
+			return true;
 		if (objects != null && objects.size()>0)
 			return true;
 		return false;
@@ -480,6 +517,14 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				s += "   " + b.getName()+ " (is between? " + ((DoubleArray)b).isBetween() + ")\n";	
 			}
 		}
+		if (strings!=null){
+			s += "Strings " + '\n';
+			for (int i=0; i<strings.size(); i++) {
+				Listable b = (Listable)strings.elementAt(i);
+				s += "   " + b.getName()+ " (is between? " + ((StringArray)b).isBetween() + ")\n";	
+			}
+		}
+		
 		if (objects!=null) {
 			s += "Objects (" + objects.size() + ")\n";
 			for (int i=0; i<objects.size(); i++) {
@@ -501,7 +546,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					s += "  ObjectArray:  " + ((ObjectArray)obj).getName()+ " (is between? " + ((ObjectArray)obj).isBetween() + ")\n";	
 				}
 			else if (obj instanceof StringArray){
-					s += "  StringArray:  " + ((StringArray)obj).getName()+ "\n";	
+					s += "  StringArray as ObjectArray:  " + ((StringArray)obj).getName()+ "\n";	
 				}	
 				else if (obj instanceof Listable){
 					Listable b = (Listable)obj;
@@ -513,8 +558,9 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		return s;
 	}
+
 	public String[] getAssociatesNames(){ 
-		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedObjects();
+		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
 		if (total == 0)
 			return null;
 		String[] names = new String[total];
@@ -538,6 +584,12 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				names[count++] = b.getName();
 			}
 		}
+		if (strings!=null){
+			for (int i=0; i<strings.size(); i++) {
+				Listable b = (Listable)strings.elementAt(i);
+				names[count++] = b.getName();
+			}
+		}
 		if (objects!=null) {
 			for (int i=0; i<objects.size(); i++) {
 				Listable b = (Listable)objects.elementAt(i);
@@ -547,14 +599,8 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		return names;
 	}
 	
-	public static final int BUILTIN = 0;
-	public static final int BITS = 1;
-	public static final int DOUBLES = 2;
-	public static final int LONGS = 3;
-	public static final int OBJECTS = 4;
-
 	public MesquiteInteger[] getAssociatesNamesWithKinds(){ 
-		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedObjects();
+		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
 		if (total == 0)
 			return null;
 		MesquiteInteger[] names = new MesquiteInteger[total];
@@ -578,6 +624,12 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				names[count++] = new MesquiteInteger(b.getName(), Associable.DOUBLES);
 			}
 		}
+		if (strings!=null){
+			for (int i=0; i<strings.size(); i++) {
+				Listable b = (Listable)strings.elementAt(i);
+				names[count++] = new MesquiteInteger(b.getName(), Associable.STRINGS);
+			}
+		}
 		if (objects!=null) {
 			for (int i=0; i<objects.size(); i++) {
 				Listable b = (Listable)objects.elementAt(i);
@@ -587,28 +639,28 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		return names;
 	}
 	public void deassignAllColor(){
-		zeroAllAssociatedObjects(ColorDistribution.colorRGBNameReference);
+		deassignAllAssociatedStrings(ColorDistribution.colorRGBNameReference);
 	}
 	public void setColor(int node, String hex){
-		setAssociatedObject(ColorDistribution.colorRGBNameReference, node, hex);
+		setAssociatedString(ColorDistribution.colorRGBNameReference, node, hex);
 	}
 	public void setColor(int node, Color c){
 		String hex = ColorDistribution.hexFromColor(c);
-		setAssociatedObject(ColorDistribution.colorRGBNameReference, node, hex);
+		setAssociatedString(ColorDistribution.colorRGBNameReference, node, hex);
 	}
 	public void setColor(int node, int standardColorNumber){
 		String hex = ColorDistribution.hexFromColor(standardColorNumber);
-		setAssociatedObject(ColorDistribution.colorRGBNameReference, node, hex);
+		setAssociatedString(ColorDistribution.colorRGBNameReference, node, hex);
 	}
 	public Color getColor(int node){
-		Object c = getAssociatedObject(ColorDistribution.colorRGBNameReference, node);
+		Object c = getAssociatedString(ColorDistribution.colorRGBNameReference, node);
 		if (c instanceof String){
 			return ColorDistribution.colorFromHex((String)c);
 		}
 		return Color.black;
 	}
 	public String getColorAsHexString(int node){
-		Object c = getAssociatedObject(ColorDistribution.colorRGBNameReference, node);
+		Object c = getAssociatedString(ColorDistribution.colorRGBNameReference, node);
 		if (c instanceof String){
 			return (String)c;
 		}
@@ -659,6 +711,17 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					s+= StringUtil.tokenize(b.getName()) + " = " + MesquiteDouble.toString(b.getValue(node)) + " ";
 				}
 			}
+		if (strings!=null)
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				String sNode = b.getValue(node);
+				if (sNode!=null && sNode.length()>0){
+					if (!first)
+						s += ", ";
+					first = false;
+					s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize(sNode) + " ";
+				}
+			}
 		if (objects!=null)
 			for (int i=0; i<objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
@@ -668,27 +731,37 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 						s += ", ";
 					first = false;
 					if (obj instanceof DoubleArray){
-						DoubleArray doubles = (DoubleArray)obj;
+						DoubleArray ddoubles = (DoubleArray)obj;
 						s+= StringUtil.tokenize(b.getName()) + " = {";
 						boolean firstD = true;
-						for (int k = 0; k<doubles.getSize(); k++){
+						for (int k = 0; k<ddoubles.getSize(); k++){
 							if (!firstD)
 								s += ", ";
 							firstD = false;
-							s += MesquiteDouble.toString(doubles.getValue(k));
+							s += MesquiteDouble.toString(ddoubles.getValue(k));
 						}
 						s+=  "} ";
 					}
-					else if (obj instanceof Listable)
-						s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize(((Listable)obj).getName()) + " ";
-					else if (obj instanceof String){
-						if (associatedUseComments) //v. 4
-							s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize((String)obj) + " ";
-						else
-							s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize("string:" + (String)obj) + " ";
+					else if (obj instanceof StringArray){
+						StringArray sstrings = (StringArray)obj;
+						s+= StringUtil.tokenize(b.getName()) + " = {";
+						boolean firstD = true;
+						for (int k = 0; k<sstrings.getSize(); k++){
+							if (!firstD)
+								s += ", ";
+							firstD = false;
+							s += ParseUtil.tokenize(sstrings.getValue(k));
+						}
+						s+=  "} ";
 					}
-					else if (obj instanceof String[] && ((String[])obj).length>0){
-						MesquiteMessage.warnProgrammer("String[] saving in associables not yet working!");
+					else if (obj instanceof String){
+						Debugg.printStackTrace("Associable: writing string in objectarray!");
+							s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize((String)obj) + " ";
+					}
+					else {
+						MesquiteMessage.warnProgrammer("Warning: Saving of objects of type " + obj.getClass() +" in Associables not yet working!");
+						if (MesquiteTrunk.developmentMode)
+							Debugg.printStackTrace();
 					}
 				}
 			}
@@ -736,58 +809,58 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				int oldColor = MesquiteInteger.fromString(value);
 				if (value.length()<=2 && oldColor>=0 && oldColor<20) //old color; convert
 					value =ColorDistribution.hexFromColor(oldColor);
-				setAssociatedObject(ColorDistribution.colorRGBNameReference, node, value);
+				setAssociatedString(ColorDistribution.colorRGBNameReference, node, value);
 			}
 			else if (key.equalsIgnoreCase("setBetweenLong")) { //note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
 				NameReference nRef = NameReference.getNameReference(value);
-				LongArray b = getWhichAssociatedLong(nRef);
+				LongArray b = getAssociatedLongs(nRef);
 				if (b != null)
 					b.setBetweenness(true);
 			}
 			else if (key.equalsIgnoreCase("setBetweenDouble")) {//note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
 				NameReference nRef = NameReference.getNameReference(value);
-				DoubleArray b = getWhichAssociatedDouble(nRef);
+				DoubleArray b = getAssociatedDoubles(nRef);
 				if (b != null)
 					b.setBetweenness(true);
 			}
 			else if (key.equalsIgnoreCase("setBetweenObject")) {//note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
 				NameReference nRef = NameReference.getNameReference(value);
-				ObjectArray b = getWhichAssociatedObject(nRef);
+				ObjectArray b = getAssociatedObjects(nRef);
 				if (b != null)
 					b.setBetweenness(true);
 			}
 			else if (key.equalsIgnoreCase("triangled")) { //note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
 				NameReference nr = makeAssociatedBits("collapsed");
-				Bits bb = getWhichAssociatedBits(nr);
+				Bits bb = getAssociatedBits(nr);
 				bb.setBit(node, true);
 			}
 			else if (value.equalsIgnoreCase("on")) {
 				NameReference nr = makeAssociatedBits(key);
-				Bits bb = getWhichAssociatedBits(nr);
+				Bits bb = getAssociatedBits(nr);
 				bb.setBit(node, true);
 			}
 			else if (value.equalsIgnoreCase("off")) {
 				NameReference nr = makeAssociatedBits(key);
-				Bits bb = getWhichAssociatedBits(nr);
+				Bits bb = getAssociatedBits(nr);
 				bb.setBit(node, false);
 			}
 			else if (value.indexOf("string:") == 0) { //treat as String 
 
-				NameReference nr = makeAssociatedObjects(key);
-				ObjectArray bb = getWhichAssociatedObject(nr);
+				NameReference nr = makeAssociatedStrings(key);
+				StringArray bb = getAssociatedStrings(nr);
 				bb.setValue(node, value.substring(7, value.length()));
 			}
 			else if (value.indexOf("strings") == 0) { //treat as String[] 
 
 				NameReference nr = makeAssociatedObjects(key);
-				ObjectArray bb = getWhichAssociatedObject(nr);		
+				ObjectArray bb = getAssociatedObjects(nr);		
 				//	bb.setValue(node, value.substring(7, value.length()));
 			}
-			else if (value.indexOf("{") == 0) { //treat as String bounded by {}; e.g., added to read BEAST results
+			else if (value.indexOf("{") == 0) { //treat as Objects (DoubleArray or StringArray) bounded by {}; e.g., added to read BEAST results
 				int pPos = pos.getValue();
 				double vn = MesquiteDouble.fromString(assocString, pos);
 				if (reportReading) Debugg.println("    {}~~ vn " + vn);
-				if (MesquiteDouble.isCombinable(vn)){
+				if (MesquiteDouble.isCombinable(vn)){ //Objects: DoubleArrays
 					pos.setValue(pPos);
 					DoubleArray values = new DoubleArray(1);
 					String s="";
@@ -804,10 +877,10 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					}
 
 					NameReference nr = makeAssociatedObjects(key);
-					ObjectArray bb = getWhichAssociatedObject(nr);
+					ObjectArray bb = getAssociatedObjects(nr);
 					bb.setValue(node, values);
 				}
-				else {
+				else { //Objects: StringArrays 
 					pos.setValue(pPos);
 					StringArray values = new StringArray(1);
 					String s="";
@@ -822,22 +895,22 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					}
 
 					NameReference nr = makeAssociatedObjects(key);
-					ObjectArray bb = getWhichAssociatedObject(nr);
+					ObjectArray bb = getAssociatedObjects(nr);
 					bb.setValue(node, values);
 				}
 			}
 			else if ((forceNumberToDouble && MesquiteNumber.isNumber(value)) || ((value.indexOf(".")>=0) && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos))) { //treat as double 
 				if (reportReading) Debugg.println("    {}~~to double " + value);
 				NameReference nrEx= NameReference.getNameReference(key);   // fixed in 3.01
-				DoubleArray bb = getWhichAssociatedDouble(nrEx);       //Finding doubles if they exist
+				DoubleArray bb = getAssociatedDoubles(nrEx);       //Finding doubles if they exist
 				if (bb == null) {
 					//Making doubles to be filled
 					NameReference nr = makeAssociatedDoubles(key);
-					bb = getWhichAssociatedDouble(nr);
+					bb = getAssociatedDoubles(nr);
 
 					//but first check to see if there are longs.  If so, and if doubles hadn't existed before, then transfer
 					NameReference nrExL= NameReference.getNameReference(key);
-					LongArray longs = getWhichAssociatedLong(nrExL);
+					LongArray longs = getAssociatedLongs(nrExL);
 					if (longs != null){
 						//There is an array of longs of the same name.  It's therefore assumed that they should all be upgraded to doubles!
 						longs.copyTo(bb);
@@ -848,27 +921,27 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				pos.setValue(oldPos);
 				bb.setValue(node, MesquiteDouble.fromString(assocString, pos));
 			}
-			//at this point there are just two alternatives left that are recognized: an undeclared string, and an integer
+			//at this point there are just two alternatives left that are recognized: a string, and an integer
 			//first check to see if it could be a number
 			else if ("0123456789-+".indexOf(value.charAt(0))<0 || MesquiteLong.fromString(value) == MesquiteLong.impossible) {  //doesn't start as number or starts as number but not interpretable as long
 				if (reportReading) Debugg.println("    ~~to string " + value);
 				if (reportReading) Debugg.println("          ~~\"0123456789-+\".indexOf(value.charAt(0))<0 " + ("0123456789-+".indexOf(value.charAt(0))<0));
 				if (reportReading) Debugg.println("          ~~MesquiteLong.fromString(value) == MesquiteLong.impossible " + (MesquiteLong.fromString(value) == MesquiteLong.impossible));
-				NameReference nr = makeAssociatedObjects(key);
-				ObjectArray bb = getWhichAssociatedObject(nr);
+				NameReference nr = makeAssociatedStrings(key);
+				StringArray bb = getAssociatedStrings(nr);
 				bb.setValue(node, value);
 			}
 			else {  //treat as long, unless (fixed in 3.01) same name exists as DoubleArray in which case put there
 				if (reportReading) Debugg.println("    {}~~to long or double " + value );
 				NameReference nrEx= NameReference.getNameReference(key);   // 
-				DoubleArray bbd = getWhichAssociatedDouble(nrEx);       //Finding doubles if they exist; if so, use as doubles instead!!!!!
+				DoubleArray bbd = getAssociatedDoubles(nrEx);       //Finding doubles if they exist; if so, use as doubles instead!!!!!
 				if (bbd != null){
 					pos.setValue(oldPos);
 					bbd.setValue(node, MesquiteInteger.fromString(assocString, pos));
 				} 
 				else {
 					NameReference nr = makeAssociatedLongs(key);
-					LongArray bb = getWhichAssociatedLong(nr);
+					LongArray bb = getAssociatedLongs(nr);
 					//pos.setValue(oldPos);
 					bb.setValue(node, MesquiteInteger.fromString(value)); //need to get it this way to keep it moving
 				}
@@ -886,14 +959,14 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		setNumberOfParts(a.getNumberOfParts());
 		bits.removeAllElements();
 		longs.removeAllElements();
-		//xxxxx
+		strings.removeAllElements();
 		doubles.removeAllElements();
 		objects.removeAllElements();
 		if (a.bits!=null)
 			for (int i=0; i<a.bits.size(); i++) {
 				Bits b1 = (Bits)a.bits.elementAt(i);
 				NameReference nr = makeAssociatedBits(b1.getNameReference().getValue());
-				Bits b = getWhichAssociatedBits(nr);
+				Bits b = getAssociatedBits(nr);
 				b1.copyBits(b);
 				b.setBetweenness(b1.isBetween());
 			}
@@ -901,7 +974,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			for (int i=0; i<a.longs.size(); i++) {
 				LongArray b1 = (LongArray)a.longs.elementAt(i);
 				NameReference nr = makeAssociatedLongs(b1.getNameReference().getValue());
-				LongArray b = getWhichAssociatedLong(nr);
+				LongArray b = getAssociatedLongs(nr);
 				b1.copyTo(b);
 				b.setBetweenness(b1.isBetween());
 			}
@@ -909,7 +982,15 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			for (int i=0; i<a.doubles.size(); i++) {
 				DoubleArray b1 = (DoubleArray)a.doubles.elementAt(i);
 				NameReference nr = makeAssociatedDoubles(b1.getNameReference().getValue());
-				DoubleArray b = getWhichAssociatedDouble(nr);
+				DoubleArray b = getAssociatedDoubles(nr);
+				b1.copyTo(b);
+				b.setBetweenness(b1.isBetween());
+			}
+		if (a.strings!=null)
+			for (int i=0; i<a.strings.size(); i++) {
+				StringArray b1 = (StringArray)a.strings.elementAt(i);
+				NameReference nr = makeAssociatedStrings(b1.getNameReference().getValue());
+				StringArray b = getAssociatedStrings(nr);
 				b1.copyTo(b);
 				b.setBetweenness(b1.isBetween());
 			}
@@ -918,7 +999,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 
 				ObjectArray b1 = (ObjectArray)a.objects.elementAt(i);
 				NameReference nr = makeAssociatedObjects(b1.getNameReference().getValue());
-				ObjectArray b = getWhichAssociatedObject(nr);
+				ObjectArray b = getAssociatedObjects(nr);
 				b1.copyTo(b);
 				b.setBetweenness(b1.isBetween());
 			}
@@ -938,6 +1019,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (doubles!=null)
 			for (int i=0; i<doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				b.setValue(toNode, b.getValue(fromNode));
+			}
+		if (strings!=null)
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
 				b.setValue(toNode, b.getValue(fromNode));
 			}
 		if (objects!=null)
@@ -969,6 +1055,13 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				b.setValue(node1, b.getValue(node2));
 				b.setValue(node2, n1);
 			}
+		if (strings!=null)
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				String n1 = b.getValue(node1);
+				b.setValue(node1, b.getValue(node2));
+				b.setValue(node2, n1);
+			}
 		if (objects!=null)
 			for (int i=0; i<objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
@@ -993,6 +1086,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
 				b.setValue(node, MesquiteDouble.unassigned);
 			}
+		if (strings!=null)
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				b.setValue(node, null);
+			}
 		if (objects!=null)
 			for (int i=0; i<objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
@@ -1006,10 +1104,12 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			longs.removeAllElements();
 		if (doubles!=null)
 			doubles.removeAllElements();
+		if (strings!=null)
+			strings.removeAllElements();
 		if (objects!=null)
 			objects.removeAllElements();
 	}
-
+/*--============================================================================-*/
 	/** Set the number of parts to given number.  THIS MUST BE CALLED whenever the number of
 	parts (characters, nodes, etc.) changes.*/
 	public void setNumberOfParts(int num){
@@ -1034,6 +1134,12 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
 				b.resetSize(numParts);
 			}
+		if (strings!=null) {
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				b.resetSize(numParts);
+			}
+		}
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
@@ -1097,6 +1203,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		r += " previousOrder " + previousOrder + "\n";
 		return r;
 	}
+	/*-----------------------------------------*/
 	public static long totalPartsAdded = 0;
 	public boolean addParts(int starting, int num){
 		if (num==0)
@@ -1120,6 +1227,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			if (doubles!=null)
 				for (int i=0; i< doubles.size(); i++) {
 					DoubleArray b = (DoubleArray)doubles.elementAt(i);
+					b.addParts(starting, num);
+				}
+			if (strings!=null)
+				for (int i=0; i< strings.size(); i++) {
+					StringArray b = (StringArray)strings.elementAt(i);
 					b.addParts(starting, num);
 				}
 			if (objects!=null)
@@ -1174,6 +1286,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
 				b.deleteParts(starting, num);
 			}
+		if (strings!=null)
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				b.deleteParts(starting, num);
+			}
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
@@ -1210,6 +1327,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (doubles!=null)
 			for (int i=0; i< doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				b.deletePartsFlagged(toDelete);
+			}
+		if (strings!=null)
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
 				b.deletePartsFlagged(toDelete);
 			}
 		if (objects!=null)
@@ -1306,6 +1428,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
 				b.moveParts(starting, num, justAfter);
 			}
+		if (strings!=null)
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				b.moveParts(starting, num, justAfter);
+			}
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
@@ -1374,6 +1501,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
 				b.swapParts(first, second);
 			}
+		if (strings!=null)
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				b.swapParts(first, second);
+			}
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
@@ -1438,7 +1570,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return;
 		if (comments==null) {
 			NameReference sN = makeAssociatedObjects("comments");
-			comments = getWhichAssociatedObject(sN);
+			comments = getAssociatedObjects(sN);
 		}
 		comments.setValue(part, comment);
 		setDirty(true);
@@ -1472,7 +1604,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return;
 		if (selected==null) {
 			NameReference sN = makeAssociatedBits("selected");
-			selected = getWhichAssociatedBits(sN);
+			selected = getAssociatedBits(sN);
 		}
 		if (select)
 			selected.setBit(part);
@@ -1519,7 +1651,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public void selectAll(){
 		if (selected==null) {
 			NameReference sN = makeAssociatedBits("selected");
-			selected = getWhichAssociatedBits(sN);
+			selected = getAssociatedBits(sN);
 		}
 		if (selected!=null)
 			selected.setAllBits();
@@ -1608,7 +1740,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 	public NameReference makeAssociatedBits(String name){
 		NameReference nr = NameReference.getNameReference(name);
-		Bits b = (getWhichAssociatedBits(nr));
+		Bits b = (getAssociatedBits(nr));
 		if (b==null) {
 			b = new Bits(numParts);
 			b.setNameReference(nr);
@@ -1630,7 +1762,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		setDirty(true);
 	}
-	public Bits getWhichAssociatedBits(NameReference nRef){
+	public Bits getAssociatedBits(NameReference nRef){
 		if (bits!=null && nRef!=null) {
 			for (int i=0; i<bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
@@ -1676,7 +1808,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 			makeAssociatedBits(nRef.getValue());
-			Bits b = getWhichAssociatedBits(nRef);
+			Bits b = getAssociatedBits(nRef);
 			if (b==null)
 				return;
 			if (value)
@@ -1715,7 +1847,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 	public NameReference makeAssociatedLongs(String name){
 		NameReference nr = NameReference.getNameReference(name);
-		LongArray d = getWhichAssociatedLong(nr);
+		LongArray d = getAssociatedLongs(nr);
 		if (d==null){
 			d = new LongArray(numParts);
 			d.setNameReference(nr);
@@ -1737,7 +1869,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		setDirty(true);
 	}
-	public LongArray getWhichAssociatedLong(NameReference nRef){
+	public LongArray getAssociatedLongs(NameReference nRef){
 		if (longs!=null && nRef!=null) {
 			for (int i=0; i<longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
@@ -1792,7 +1924,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 			makeAssociatedLongs(nRef.getValue());
-			LongArray b = getWhichAssociatedLong(nRef);
+			LongArray b = getAssociatedLongs(nRef);
 			if (b==null)
 				return;
 			if (setAsBetween) 
@@ -1827,7 +1959,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 	public NameReference makeAssociatedDoubles(String name){
 		NameReference nr = NameReference.getNameReference(name);
-		DoubleArray d = getWhichAssociatedDouble(nr);
+		DoubleArray d = getAssociatedDoubles(nr);
 		if (d==null){
 			d = new DoubleArray(numParts);
 			d.setNameReference(nr);
@@ -1849,7 +1981,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		setDirty(true);
 	}
-	public DoubleArray getWhichAssociatedDouble(NameReference nRef){
+	public DoubleArray getAssociatedDoubles(NameReference nRef){
 		if (doubles!=null && nRef!=null) {
 			for (int i=0; i<doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
@@ -1891,7 +2023,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 			makeAssociatedDoubles(nRef.getValue());
-			DoubleArray b = getWhichAssociatedDouble(nRef);
+			DoubleArray b = getAssociatedDoubles(nRef);
 			if (b==null)
 				return;
 			if (setAsBetween)
@@ -1911,6 +2043,107 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		return MesquiteDouble.unassigned;
 	}
+	/* ---------------------STRING------------------------*/
+	public int getNumberAssociatedStrings(){
+		if (strings==null)
+			return 0;
+		else
+			return strings.size();
+	}
+	public StringArray getAssociatedStrings(int index){
+		if (strings!=null && index>=0 && index<strings.size()) {
+			return (StringArray)strings.elementAt(index);
+		}
+		return null;
+	}
+	public NameReference makeAssociatedStrings(String name){
+		NameReference nr = NameReference.getNameReference(name);
+		StringArray d = getAssociatedStrings(nr);
+		if (d==null){
+			d = new StringArray(numParts);
+			d.setNameReference(nr);
+			strings.addElement(d);
+		}
+		setDirty(true);
+		return nr;
+	}
+	public void removeAssociatedStrings(NameReference nRef){
+		boolean found = false;
+		if (strings!=null && nRef!=null) {
+			for (int i=0; i<strings.size() && !found; i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b !=null && nRef.equals(b.getNameReference())) {
+					strings.removeElement(b);
+					found = true;
+				}
+			}
+		}
+		setDirty(true);
+	}
+	public StringArray getAssociatedStrings(NameReference nRef){
+		if (strings!=null && nRef!=null) {
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b !=null && nRef.equals(b.getNameReference())) {
+					return b; 
+				}
+			}
+		}
+		return null;
+	}
+	public void deassignAllAssociatedStrings(NameReference nRef){
+		boolean found = false;
+		if (strings!=null && nRef!=null) {
+			for (int i=0; i<strings.size() && !found; i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b !=null && nRef.equals(b.getNameReference())) {
+					b.deassignArray(); 
+					found = true;
+				}
+			}
+		}
+		setDirty(true);
+	}
+	
+	public void setAssociatedString(NameReference nRef, int index, String value){
+		setAssociatedString(nRef, index, value, false);
+	}
+	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
+	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
+	public void setAssociatedString(NameReference nRef, int index, String value, boolean setAsBetween){
+		if (strings!=null && nRef!=null) {
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b !=null && nRef.equals(b.getNameReference())) {
+					if (setAsBetween) 
+						b.setBetweenness(true);
+					b.setValue(index, value); 
+					setDirty(true);
+					return;
+				}
+			}
+			makeAssociatedStrings(nRef.getValue());
+			StringArray b = getAssociatedStrings(nRef);
+			if (b==null)
+				return;
+			if (setAsBetween) 
+				b.setBetweenness(true);
+			b.setValue(index, value);
+			setDirty(true);
+		}
+	}
+	public String getAssociatedString(NameReference nRef, int index){
+		if (strings==null || nRef==null)
+			return null;
+		for (int i=0; i<strings.size(); i++) {
+			StringArray b = (StringArray)strings.elementAt(i);
+			if (b !=null && nRef.equals(b.getNameReference())) {
+				return b.getValue(index); 
+			}
+		}
+		return null;
+	}
+
 	/* ---------------------OBJECT------------------------*/
 	public int getNumberAssociatedObjects(){
 		if (objects==null)
@@ -1926,7 +2159,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 	public NameReference makeAssociatedObjects(String name){
 		NameReference nr = NameReference.getNameReference(name);
-		ObjectArray d = getWhichAssociatedObject(nr);
+		ObjectArray d = getAssociatedObjects(nr);
 		if (d==null){
 			d = new ObjectArray(numParts);
 			d.setNameReference(nr);
@@ -1948,7 +2181,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		setDirty(true);
 	}
-	public ObjectArray getWhichAssociatedObject(NameReference nRef){
+	public ObjectArray getAssociatedObjects(NameReference nRef){
 		if (objects!=null && nRef!=null) {
 			for (int i=0; i<objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
@@ -1981,6 +2214,9 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
 	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
 	public void setAssociatedObject(NameReference nRef, int index, Object value, boolean setAsBetween){
+		if (value instanceof String && MesquiteTrunk.developmentMode)
+				Debugg.printStackTrace("String saved in Associable as object; Associable: " + getClass());
+		
 		if (value instanceof String && value != null && ((String)value).equals(""))  // a filter so a blank string is not saved
 			value = null;
 		if (objects!=null && nRef!=null) {
@@ -1995,7 +2231,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 			makeAssociatedObjects(nRef.getValue());
-			ObjectArray b = getWhichAssociatedObject(nRef);
+			ObjectArray b = getAssociatedObjects(nRef);
 			if (b==null)
 				return;
 			if (setAsBetween)
@@ -2010,6 +2246,8 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		for (int i=0; i<objects.size(); i++) {
 			ObjectArray b = (ObjectArray)objects.elementAt(i);
 			if (b !=null && nRef.equals(b.getNameReference())) {
+				if (b.getValue(index) instanceof String && MesquiteTrunk.developmentMode)
+					Debugg.printStackTrace("String saved in Associable as object; Associable: " + getClass());
 				return b.getValue(index); 
 			}
 		}
@@ -2030,22 +2268,27 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 
 	public void setAssociatedBitsBetweenness(NameReference nref, boolean between){
-		Bits b = getWhichAssociatedBits(nref);
+		Bits b = getAssociatedBits(nref);
 		if (b != null)
 			b.setBetweenness(between);
 	}
 	public void setAssociatedLongBetweenness(NameReference nref, boolean between){
-		LongArray b = getWhichAssociatedLong(nref);
+		LongArray b = getAssociatedLongs(nref);
 		if (b != null)
 			b.setBetweenness(between);
 	}
 	public void setAssociatedDoubleBetweenness(NameReference nref, boolean between){
-		DoubleArray b = getWhichAssociatedDouble(nref);
+		DoubleArray b = getAssociatedDoubles(nref);
+		if (b != null)
+			b.setBetweenness(between);
+	}
+	public void setAssociatedStringBetweenness(NameReference nref, boolean between){
+		StringArray b = getAssociatedStrings(nref);
 		if (b != null)
 			b.setBetweenness(between);
 	}
 	public void setAssociatedObjectBetweenness(NameReference nref, boolean between){
-		ObjectArray b = getWhichAssociatedObject(nref);
+		ObjectArray b = getAssociatedObjects(nref);
 		if (b != null)
 			b.setBetweenness(between);
 	}

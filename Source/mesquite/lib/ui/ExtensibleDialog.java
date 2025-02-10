@@ -1810,6 +1810,31 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return textFields;
 	}
 
+	/*.................................................................................................................*/
+	public Checkbox[] addCheckboxRow(String[] labels, boolean[] initialValues) {
+		if (labels == null || initialValues == null || labels.length != initialValues.length || labels.length == 0)
+			return null;
+		Checkbox[] boxes = new Checkbox [labels.length]; 
+
+		GridBagLayout gridBag = new GridBagLayout();
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridwidth=1;
+		constraints.gridheight=1;
+		constraints.fill=GridBagConstraints.BOTH;
+
+		Panel newPanel = new MQPanel();
+		newPanel.setLayout(gridBag);
+		gridBag.setConstraints(newPanel,constraints);
+		constraints.gridy = 1;
+
+			for (int i = 0; i<labels.length; i++) {
+				constraints.gridx=i+2;
+				newPanel.add(boxes[i]=new Checkbox(labels[i], null, initialValues[i]),constraints);
+			}
+	
+		addNewDialogPanel(newPanel);
+		return boxes;
+	}
 
 	/*.................................................................................................................*/
 	public Checkbox[][] addCheckboxMatrix(int numColumns, int numRows, String[] columnLabels, String[] rowLabels) {

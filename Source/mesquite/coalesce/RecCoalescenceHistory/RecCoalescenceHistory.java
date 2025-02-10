@@ -230,7 +230,7 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 		else {  //treating contained tree as rooted; look for its stored placement in containing tree (stored in "location" stored inside contained tree.  NOT AVAILABLE as option
 			AssociationHistory history = new AssociationHistory();
 			history.setTrees(containing, contained);
-			LongArray locations =contained.getWhichAssociatedLong(NameReference.getNameReference("location"));
+			LongArray locations =contained.getAssociatedLongs(NameReference.getNameReference("location"));
 			if (locations!=null) {
 				recoverContainedNodes(history, locations, contained, contained.getRoot());
 				reconnect(history, containing,contained, association, containing.getRoot());

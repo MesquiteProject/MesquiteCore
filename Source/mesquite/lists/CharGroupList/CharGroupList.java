@@ -280,8 +280,9 @@ class CharGroupListWindow extends ListWindow implements MesquiteListener {
 		CharactersGroup group = getCharGroup(row);
 		if (group!=null){
 			getTable().editRowNameCell(row);
+			return true;
 		}
-		return true;
+		return false;
 	}
 	public void setRowName(int row, String name){
 		CharactersGroup group = getCharGroup(row);

@@ -11,10 +11,11 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.TaxonListCurrPartition;
+package mesquite.basic.TaxonPartitionHelper;
 /*~~  */
 
 import mesquite.lists.lib.*;
+
 
 import java.util.*;
 import java.awt.*;
@@ -34,23 +35,21 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteSymbol;
 
 /* ======================================================================== */
-public class TaxonListCurrPartition extends TaxonListAssistant {
+public class TaxonPartitionHelper  extends MesquiteModule{
 	NameParser nameParser;
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Group Membership (taxa)";
+		return "Taxon Partition Helper";
 	}
 	public String getExplanation() {
-		return "Lists and allows changes to group membership in the current partition of taxa, for List of Taxa window." ;
+		return "Controls adjustments to taxa partitions." ;
 	}
 	/*.................................................................................................................*/
 	Taxa taxa;
-	MesquiteTable table=null;
 	TaxaGroupVector groups;
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-	//	Debugg.println("@#@#@#@#@Groups started");
 		groups.addListener(this);
 		if (nameParser==null)
 			nameParser = new NameParser(this, "taxon");
@@ -74,7 +73,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 				partition= new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);
 				partition.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaPartition.class));
 				taxa.setCurrentSpecsSet(partition, TaxaPartition.class);
-			}*/
+			}*
 			if (group == null){
 				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 				Object obj = groups.getElement(name);
@@ -136,7 +135,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	}
 
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public  static TaxaGroup createNewTaxonGroup(MesquiteModule module, MesquiteFile file) {
 		String n = "Untitled Group";
 		if (file==null)
@@ -183,7 +182,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			nameParser.processSingleXMLPreference(tag,content);
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 
 	private void createPartitionBasedOnNames() {
 		if (taxa!=null){
@@ -238,7 +237,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 
 
 	MesquiteInteger pos = new MesquiteInteger(0);
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets to which group a taxon belongs in the current taxa partition", "[name of group]", commandName, "setPartition")) {
 			setGroup(null, parser.getFirstToken(arguments),null, true);
@@ -381,9 +380,9 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		return null;
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
-		/* hire employees here */
+		/* hire employees here *
 		deleteAllMenuItems();
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
 		mss.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
@@ -524,6 +523,16 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return true;  
+	}
+	@Override
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public Class getDutyClass() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/*.................................................................................................................*/

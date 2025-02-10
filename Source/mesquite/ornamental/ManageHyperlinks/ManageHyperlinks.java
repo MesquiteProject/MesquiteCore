@@ -171,7 +171,7 @@ public class ManageHyperlinks extends FileInit /*implements ElementManager*/ {
 									}
 								}
 								else {
-									if (taxa.getWhichAssociatedObject(linkNameRef)==null)
+									if (taxa.getAssociatedObjects(linkNameRef)==null)
 										taxa.makeAssociatedObjects("hyperlink");
 									taxa.setAssociatedObject(linkNameRef, taxonNumber, pathName);
 								}

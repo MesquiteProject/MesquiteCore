@@ -26,6 +26,7 @@ import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayEarlyExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteMenuSpec;
@@ -106,7 +107,7 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 }
 
 /* ======================================================================== */
-class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener   {
+class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener, TreeDisplayEarlyExtra   {
 	ColorTreeByPartition branchNotesModule;
 	TaxaPartition partitions = null;
 	ColorDistribution[] colors;

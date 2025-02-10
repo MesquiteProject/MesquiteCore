@@ -889,7 +889,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 				setDrawnRoot(tree.getRoot());
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
-			widths = tree.getWhichAssociatedDouble(widthNameReference);
+			widths = tree.getAssociatedDoubles(widthNameReference);
 			if (widths!=null)
 				maxWidth = findMaxWidth(tree, getDrawnRoot());
 			calcBranchPolys(tree, getDrawnRoot());

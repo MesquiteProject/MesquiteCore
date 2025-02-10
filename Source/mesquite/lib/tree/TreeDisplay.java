@@ -394,7 +394,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			return false;
 		return (extras.indexOf(extra) >= 0);
 	}
-	
+
 	int locationSetX = 0;
 	int locationSetY = 0;
 	public void adjustLocation(int x, int y){
@@ -456,12 +456,12 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			accumulateBordersFromExtras(tree);
 		}
 	}
-	
+
 	int[] bordersRequestedByExtras = new int[]{0, 0, 0, 0};  //left top right bottom
 	public int[] getRequestedBorders(){
 		return bordersRequestedByExtras;
 	}
-	void accumulateBordersFromExtras(Tree tree) {
+	public void accumulateBordersFromExtras(Tree tree) {
 		int[] bordersTemp = getBordersFromExtras(tree);
 		if (bordersTemp != null && bordersTemp.length == 4)
 			bordersRequestedByExtras = bordersTemp;
@@ -493,11 +493,34 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
 		if (extras != null) {
+			//EARLY
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
+				if (ex instanceof TreeDisplayEarlyExtra && ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					((TreeDisplayBkgdExtra)ex).drawUnderTree(tree, drawnRoot, g);
+				}
+			}
+			//DEFAULT
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (!(ex instanceof TreeDisplayEarlyExtra || ex instanceof TreeDisplayLateExtra) && ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					((TreeDisplayBkgdExtra)ex).drawUnderTree(tree, drawnRoot, g);
+				}
+			}
+			//LATE
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ex instanceof TreeDisplayLateExtra && ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					((TreeDisplayBkgdExtra)ex).drawUnderTree(tree, drawnRoot, g);
@@ -513,18 +536,49 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void drawAllExtras(Tree tree, int drawnRoot, Graphics g) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
-		
+
 		if (extras != null) {
 			Enumeration e = extras.elements();
+			//EARLY
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (ownerModule==null || ownerModule.isDoomed()) 
-					return;
-				Shape clip = g.getClip();
-				g.setClip(null);
-				ex.drawOnTree(tree, drawnRoot, g);
-				g.setClip(clip);
+				if (ex instanceof TreeDisplayEarlyExtra){
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					Shape clip = g.getClip();
+					g.setClip(null);
+					ex.drawOnTree(tree, drawnRoot, g);
+					g.setClip(clip);
+				}
+			}
+			//DEFAULT
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (!(ex instanceof TreeDisplayEarlyExtra || ex instanceof TreeDisplayLateExtra)){
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					Shape clip = g.getClip();
+					g.setClip(null);
+					ex.drawOnTree(tree, drawnRoot, g);
+					g.setClip(clip);
+				}
+			}
+			//LATE
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ex instanceof TreeDisplayLateExtra){
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					Shape clip = g.getClip();
+					g.setClip(null);
+					ex.drawOnTree(tree, drawnRoot, g);
+					g.setClip(clip);
+				}
 			}
 		}
 		if (notice!=null)
@@ -535,12 +589,36 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void printAllBackgroundExtras(Tree tree, int drawnRoot, Graphics g) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
+
 		if (extras != null) {
+			//EARLY
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (ex instanceof TreeDisplayBkgdExtra) {
+				if (ex instanceof TreeDisplayEarlyExtra && ex instanceof TreeDisplayBkgdExtra) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					((TreeDisplayBkgdExtra)ex).printUnderTree(tree, drawnRoot, g);
+				}
+			}
+			//DEFAULT
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (!(ex instanceof TreeDisplayEarlyExtra || ex instanceof TreeDisplayLateExtra) && ex instanceof TreeDisplayBkgdExtra) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					((TreeDisplayBkgdExtra)ex).printUnderTree(tree, drawnRoot, g);
+				}
+			}
+			//LATE
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ex instanceof TreeDisplayLateExtra && ex instanceof TreeDisplayBkgdExtra) {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					((TreeDisplayBkgdExtra)ex).printUnderTree(tree, drawnRoot, g);

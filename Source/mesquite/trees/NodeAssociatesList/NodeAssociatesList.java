@@ -165,7 +165,7 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 			MesquiteInteger selectedInDialog = new MesquiteInteger(0);
 			ListDialog dialog = new ListDialog(containerOfModule(), "New Property for Nodes/Branches", "What kind of property?", false,null, kinds, 8, selectedInDialog, "OK", null, false, true);
 			SingleLineTextField nameF = dialog.addTextField("Name of Property:", "", 30);
-			dialog.addLargeOrSmallTextLabel("You can edit the values at branches/nodes by right-clicking on the branch with the arrow tool, or by clicking with the node information tool (\"?\".");
+			dialog.addLargeOrSmallTextLabel("You can edit the values at branches/nodes by right-clicking on the branch with the arrow tool, or by clicking with the branch information tool (\"?\").");
 			dialog.completeAndShowDialog(true);
 			if (dialog.buttonPressed.getValue() == 0)  {
 				int result = selectedInDialog.getValue();
@@ -179,7 +179,7 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 					else if (result == 1)
 						kind = Associable.LONGS;
 					else if (result == 2)
-						kind = Associable.OBJECTS;
+						kind = Associable.STRINGS;
 					myWindow.makeNewProperty(kind, name);
 				}
 			}
@@ -235,7 +235,7 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 			if (objContainer.getName().equalsIgnoreCase(MesquiteTree.branchLengthName))
 				kind = Associable.BUILTIN;
 			else if (name.equalsIgnoreCase("!color"))
-				kind = Associable.OBJECTS;
+				kind = Associable.STRINGS;
 			else if (objContainer.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName))
 				kind = Associable.BUILTIN;
 			else if (obj instanceof DoubleArray)
@@ -243,11 +243,11 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 			else if (obj instanceof LongArray)
 				kind = Associable.LONGS;
 			else if (obj instanceof StringArray)
-				kind = Associable.OBJECTS;
+				kind = Associable.STRINGS;
 			else if (obj instanceof ObjectArray) 
 				kind = Associable.OBJECTS;
 			else if (obj instanceof Bits) 
-				kind = Associable.OBJECTS;
+				kind = Associable.BITS;
 			return new MesquiteInteger(name, kind);
 		}
 		return null;
@@ -299,6 +299,8 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 			tree.removeAssociatedLongs(NameReference.getNameReference(mi.getName()));
 		else if (mi.getValue() == Associable.DOUBLES)
 			tree.removeAssociatedDoubles(NameReference.getNameReference(mi.getName()));
+		else if (mi.getValue() == Associable.STRINGS)
+			tree.removeAssociatedStrings(NameReference.getNameReference(mi.getName()));
 		else if (mi.getValue() == Associable.OBJECTS)
 			tree.removeAssociatedObjects(NameReference.getNameReference(mi.getName()));
 		if (notify)
@@ -396,10 +398,10 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		associatesList.removeAllElements(false);
 		if (tree == null) 
 			return;
-		ObjectContainer branchLengths = new ObjectContainer(MesquiteTree.branchLengthName, tree);
-		associatesList.addElement(branchLengths, false);
 		ObjectContainer nodeLabels = new ObjectContainer(MesquiteTree.nodeLabelName, tree);
 		associatesList.addElement(nodeLabels, false);
+		ObjectContainer branchLengths = new ObjectContainer(MesquiteTree.branchLengthName, tree);
+		associatesList.addElement(branchLengths, false);
 		int numBitsAssocs = tree.getNumberAssociatedBits();
 		for (int i= 0; i<numBitsAssocs; i++){
 			Bits bits = tree.getAssociatedBits(i);
@@ -416,6 +418,11 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 			LongArray array = tree.getAssociatedLongs(i);
 			associatesList.addElement(new ObjectContainer(array.getName(), array), false);
 		}
+		int numStringAssocs = tree.getNumberAssociatedStrings();
+		for (int i= 0; i<numStringAssocs; i++){
+			StringArray array = tree.getAssociatedStrings(i);
+			associatesList.addElement(new ObjectContainer(array.getName(), array), false);
+		}
 		int numObjectAssocs = tree.getNumberAssociatedObjects();
 		for (int i= 0; i<numObjectAssocs; i++){
 			ObjectArray array = tree.getAssociatedObjects(i);
@@ -430,7 +437,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		if (kind == Associable.DOUBLES){
 			String candidateName = name;
 			int nameCount = 2;
-			while (tree.getWhichAssociatedDouble(NameReference.getNameReference(candidateName)) != null)
+			while (tree.getAssociatedDoubles(NameReference.getNameReference(candidateName)) != null)
 				candidateName = name + (nameCount++);
 			tree.makeAssociatedDoubles(candidateName);
 			tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
@@ -438,17 +445,17 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		else if (kind == Associable.LONGS){
 			String candidateName = name;
 			int nameCount = 2;
-			while (tree.getWhichAssociatedLong(NameReference.getNameReference(candidateName)) != null)
+			while (tree.getAssociatedLongs(NameReference.getNameReference(candidateName)) != null)
 				candidateName = name + (nameCount++);
 			tree.makeAssociatedLongs(candidateName);
 			tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		}
-		else if (kind == Associable.OBJECTS){
+		else if (kind == Associable.STRINGS){
 			String candidateName = name;
 			int nameCount = 2;
-			while (tree.getWhichAssociatedObject(NameReference.getNameReference(candidateName)) != null)
+			while (tree.getAssociatedStrings(NameReference.getNameReference(candidateName)) != null)
 				candidateName = name + (nameCount++);
-			tree.makeAssociatedObjects(candidateName);
+			tree.makeAssociatedStrings(candidateName);
 			tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		}
 		resetAssociatesList();
@@ -525,7 +532,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		if (group!=null){
 			getTable().editRowNameCell(row);
 		}*/
-		return true;
+		return false;
 	}
 	public String getRowName(int row){
 		if (associatesList!=null){

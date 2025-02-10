@@ -117,12 +117,12 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 				String textName = currentName+".text";
 				String candidateName =textName;
 				int nameCount = 2;
-				while (tree.getWhichAssociatedObject(NameReference.getNameReference(candidateName)) != null)
+				while (tree.getAssociatedObjects(NameReference.getNameReference(candidateName)) != null)
 					candidateName = textName + (nameCount++);
 				NameReference tnRef = NameReference.getNameReference(candidateName);
 				NameReference currentRef = NameReference.getNameReference(currentName);
 				tree.makeAssociatedObjects(candidateName);
-				ObjectArray textArray = tree.getWhichAssociatedObject(tnRef);
+				ObjectArray textArray = tree.getAssociatedObjects(tnRef);
 				if (mi.getValue() == Associable.BUILTIN){
 					if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){
 						for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
@@ -232,12 +232,12 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 				String doubleName = currentName+".num";
 				String candidateName =doubleName;
 				int nameCount = 2;
-				while (tree.getWhichAssociatedDouble(NameReference.getNameReference(candidateName)) != null)
+				while (tree.getAssociatedDoubles(NameReference.getNameReference(candidateName)) != null)
 					candidateName = doubleName + (nameCount++);
 				NameReference tnRef = NameReference.getNameReference(candidateName);
 				NameReference currentRef = NameReference.getNameReference(currentName);
 				tree.makeAssociatedDoubles(candidateName);
-				DoubleArray doublesArray = tree.getWhichAssociatedDouble(tnRef);
+				DoubleArray doublesArray = tree.getAssociatedDoubles(tnRef);
 				if (mi.getValue() == Associable.BUILTIN){
 					if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){
 						for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
@@ -260,6 +260,14 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
 						doublesArray.setValue(node, tree.getAssociatedDouble(currentRef, node));
 					rows[count++] =ir;  //in case needs to be deleted later
+				}
+				else if (mi.getValue() == Associable.STRINGS){
+					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) {
+						String s = tree.getAssociatedString(currentRef, node);
+							doublesArray.setValue(node, fromString(s));
+					}
+					rows[count++] =ir;  //in case needs to be deleted later
+				
 				}
 				else if (mi.getValue() == Associable.OBJECTS){
 					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) {
@@ -323,6 +331,10 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 				else if (mi.getValue() == Associable.DOUBLES){
 					for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
 						tree.setNodeLabel(MesquiteDouble.toString(tree.getAssociatedDouble(currentRef, node)), node);
+				}
+				else if (mi.getValue() == Associable.STRINGS){
+					for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+						tree.setNodeLabel(tree.getAssociatedString(currentRef, node), node);
 				}
 				else if (mi.getValue() == Associable.OBJECTS){
 					for (int node = 0; node<tree.getNumNodeSpaces(); node++) {

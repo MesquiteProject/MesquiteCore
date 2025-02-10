@@ -108,7 +108,7 @@ class DepCTreeWindow extends SimpleTreeWindow   {
 		if (tree != null) {
 			s += "Tree: " + tree.writeTree() + "\n";
 			s += "  " + treeDisplay.getTextVersion();
-			ObjectArray migrated = ((Associable)tree).getWhichAssociatedObject(migrRef);
+			ObjectArray migrated = ((Associable)tree).getAssociatedObjects(migrRef);
 			if (migrated != null)
 				s += findMigrationEvents(tree, tree.getRoot(), migrated);
 		}
@@ -140,7 +140,7 @@ class DepTreeExtra extends TreeDisplayExtra {
 			return;
 		if (ownerModule.isDoomed())
 			return;
-		ObjectArray migrated = ((Associable)tree).getWhichAssociatedObject(migrRef);
+		ObjectArray migrated = ((Associable)tree).getAssociatedObjects(migrRef);
 		if (migrated != null){
 			Object mig = migrated.getValue(node);
 			if (mig != null){

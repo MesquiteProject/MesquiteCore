@@ -222,8 +222,9 @@ class ModelsListWindow extends ListWindow implements MesquiteListener {
 			}
 			else
 				getTable().editRowNameCell(row);
+			return true;
 		}
-		return true;
+		return false;
 	}
 	public void setRowName(int row, String name){
 		CharacterModel model = getModel(row);

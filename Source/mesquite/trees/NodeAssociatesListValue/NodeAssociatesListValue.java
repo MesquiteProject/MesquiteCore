@@ -73,7 +73,7 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Explains how to edit", null, commandName, "howToEdit")) {
-			alert("Some of these values can be edited for a node/branch by right-clicking on the branch, then choosing the item in the drop down menu that appears.");
+			alert("Some of these values can be edited for a branch/node by right-clicking on the branch, then choosing the item in the drop down menu that appears.");
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

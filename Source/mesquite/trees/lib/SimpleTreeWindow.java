@@ -89,6 +89,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 			return;
 		tce.setTree(tree);
 		treeDisplay.addExtra(tce);
+		treeDisplay.accumulateBordersFromExtras(tree);
 		treeDisplay.pleaseUpdate(false);
 		if (getMode()>0)
 			updateTextPage();

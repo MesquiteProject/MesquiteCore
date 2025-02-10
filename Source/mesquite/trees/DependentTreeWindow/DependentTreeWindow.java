@@ -276,7 +276,9 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 
 				TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplay);
 				tce.setTree(treeDisplay.getTree());
+
 				treeDisplay.addExtra(tce);
+				treeDisplay.accumulateBordersFromExtras(treeDisplay.getTree());
 				treeDisplay.repaint();
 				return tda;
 			}

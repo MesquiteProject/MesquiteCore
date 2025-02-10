@@ -434,9 +434,9 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				Tree tempTree = treeSourceTask.getTree(taxa, 0);
 				if (tempTree instanceof MesquiteTree){
 					int total = tempTree.getNumberAssociatedBits() +tempTree.getNumberAssociatedLongs() + tempTree.getNumberAssociatedDoubles() + tempTree.getNumberAssociatedObjects();
-					if (tempTree.getWhichAssociatedBits(NameReference.getNameReference("selected"))!= null)
+					if (tempTree.getAssociatedBits(NameReference.getNameReference("selected"))!= null)
 						total--;
-					if (tempTree.getWhichAssociatedObject(NameReference.getNameReference("!color"))!= null)
+					if (tempTree.getAssociatedStrings(NameReference.getNameReference("!color"))!= null)
 						total--;
 					if (total>0)
 						mb.doCommand("showWindowWithAssistants", null);
@@ -2270,7 +2270,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return;
 		if (tree != null)
 			tce.setTree(tree);
+			
 		treeDisplay.addExtra(tce);
+		if (tree != null)
+			treeDisplay.accumulateBordersFromExtras(tree);
 		checkPanelPositionsLegal();
 		treeDisplay.pleaseUpdate(false);
 		if (getMode() > 0)

@@ -83,7 +83,7 @@ public class NumForNodesAttached extends NumbersForNodes {
 	   	clearResultAndLastResult(result);
 		rememberChoices(tree);
 	   	if (tree != null) {
-			DoubleArray da = tree.getWhichAssociatedDouble(NameReference.getNameReference(valueName.getValue()));
+			DoubleArray da = tree.getAssociatedDoubles(NameReference.getNameReference(valueName.getValue()));
 			if (da == null)
 				return;
 			result.resetSize(da.getSize());

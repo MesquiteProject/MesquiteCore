@@ -1405,7 +1405,7 @@ class WideTreeDrawing extends TreeDrawing  {
 
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
-			widths = tree.getWhichAssociatedDouble(widthNameReference);
+			widths = tree.getAssociatedDoubles(widthNameReference);
 			if (widths!=null)
 				maxWidth = findMaxWidth(tree, tree.getRoot());
 

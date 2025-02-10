@@ -724,6 +724,8 @@ public class Taxa extends FileElement {
 		}
 	}
 
+	
+	
 	/* ................................................................................................................. */
 	public String getName() {
 		if (name == null)
@@ -733,6 +735,16 @@ public class Taxa extends FileElement {
 	/** returns true if this has name equivalent to default name*/
 	public boolean hasDefaultName() {
 		return  (name==null) || name.equals("Taxa");
+	}
+	/* ................................................................................................................. */
+	public Color getDefaultTaxonColor(int it){
+		TaxaPartition part = (TaxaPartition)getCurrentSpecsSet(TaxaPartition.class);
+		if (part == null)
+			return null;
+		TaxaGroup group = part.getTaxaGroup(it);
+		if (group == null)
+			return null;
+		return group.getColor();
 	}
 
 	/* ................................................................................................................. */

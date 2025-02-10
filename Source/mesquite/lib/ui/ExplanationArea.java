@@ -205,7 +205,8 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		}
 	}
 	public void textValueChanged(TextEvent e){
-		if (explTextArea !=null && annotatable != null) {
+		try {
+			if (explTextArea !=null && annotatable != null) {
 			if (suppressNotify>0){
 				suppressNotify--;
 			}
@@ -221,6 +222,9 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 				explTextArea.setSelectionEnd(end);
 			}
 
+		}
+		}
+		catch (Exception q){
 		}
 	}
 	public void setFocusSuppression(boolean suppress){

@@ -355,7 +355,7 @@ class NodeAssocTextExtra extends TreeDisplayExtra  {
 	public String textAtNode(Tree tree, int node){
 		if (!on)
 			return null;
-		if (tree.getNumberAssociatedObjects() == 0 || tree.getWhichAssociatedObject(assocValueRef)==null)
+		if (tree.getNumberAssociatedObjects() == 0 || tree.getAssociatedObjects(assocValueRef)==null)
 			return "";
 		return getValue(tree, node);
 	}

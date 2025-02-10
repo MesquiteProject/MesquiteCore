@@ -239,7 +239,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 				if (StringUtil.blank(url))
 					return null;
 				Taxa taxa = tree.getTaxa();
-				if (taxa.getWhichAssociatedObject(linkNameRef)==null)
+				if (taxa.getAssociatedObjects(linkNameRef)==null)
 					taxa.makeAssociatedObjects("hyperlink");
 				taxa.setAssociatedObject(linkNameRef, M, url);
 				ownerModule.outputInvalid();
@@ -250,7 +250,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 				if (chosen==null)
 					return null;
 				Taxa taxa = tree.getTaxa();
-				if (taxa.getWhichAssociatedObject(linkNameRef)==null)
+				if (taxa.getAssociatedObjects(linkNameRef)==null)
 					taxa.makeAssociatedObjects("hyperlink");
 				taxa.setAssociatedObject(linkNameRef, M, MesquiteFile.decomposePath(ownerModule.getProject().getHomeDirectoryName(), chosen));
 				ownerModule.outputInvalid();

@@ -279,8 +279,9 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 		TaxaGroup group = getTaxonGroup(row);
 		if (group!=null){
 			getTable().editRowNameCell(row);
+			return true;
 		}
-		return true;
+		return false;
 	}
 	public void setRowName(int row, String name){
 		TaxaGroup group = getTaxonGroup(row);
