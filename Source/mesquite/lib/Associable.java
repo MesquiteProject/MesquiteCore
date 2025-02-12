@@ -2321,8 +2321,10 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		for (int i=0; i<objects.size(); i++) {
 			ObjectArray b = (ObjectArray)objects.elementAt(i);
 			if (b !=null && nRef.equals(b.getNameReference())) {
-				if (b.getValue(index) instanceof String && MesquiteTrunk.developmentMode)
-					Debugg.printStackTrace("String saved in Associable as object; Associable: " + getClass());
+				if (b.getValue(index) instanceof String && MesquiteTrunk.developmentMode && !assocStringObjectWarned){
+					System.err.println("String saved in Associable as object; Associable: " + getClass());
+					assocStringObjectWarned = true;
+				}
 				return b.getValue(index); 
 			}
 		}
