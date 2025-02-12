@@ -556,6 +556,10 @@ public class StringInABox {
 		int increment = fm.getMaxAscent() + fm.getMaxDescent() + buffer;
 		return (strings.length) * increment + buffer;	
 	}
+	public int getLineHeight( ){
+		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
+		return fm.getMaxAscent() + fm.getMaxDescent();	
+	}
 	/* ----------------------------------------------- */
 	public int getRemainingHeight(int usedSoFar){
 		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);

@@ -15,6 +15,10 @@ package mesquite.lib.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.Method;
+
+import javax.accessibility.AccessibleContext;
+
 import mesquite.lib.*;
 
 
@@ -41,6 +45,8 @@ public class DoubleClickList extends List implements MouseListener {
 		super();
 		addMouseListener(this);
 	}
+	
+
 	/*...............................................................................................................*/
 	public void setEnableDoubleClicks(boolean enabled) {
 		if (MesquiteTrunk.isMacOSXAfterJaguarRunning33())
@@ -61,15 +67,45 @@ public class DoubleClickList extends List implements MouseListener {
 		this.obj = obj;
 	}
 	/*...............................................................................................................*/
+	int minWidth = 360;
+	public void setMinimumWidth(int width) {
+		this.minWidth = width;
+	}
+	/*...............................................................................................................*/
 	public Dimension getPreferredSize() {
 		if (forceSize) {
 			int width = (int)super.getPreferredSize().width;
-			return new Dimension(MesquiteInteger.maximum(width,360), (int)super.getPreferredSize().height);
+			return new Dimension(MesquiteInteger.maximum(width,minWidth), (int)super.getPreferredSize().height);
 		}
 		else
 			return super.getPreferredSize();
 		
 	}
+	
+	/*...............................................................................................................*/
+	Method findSelectAllMethod(AccessibleContext context){
+		Method[] methods = context.getClass().getMethods();
+		for (int q = 0; q<methods.length; q++) {
+			if (methods[q].getName().equalsIgnoreCase("selectAllAccessibleSelection"))
+				return methods[q];
+		}
+		return null;
+	}
+	/*...............................................................................................................*/
+	//this doesn't seem to work :-(
+	public boolean selectAll(){
+		AccessibleContext context = getAccessibleContext();
+		try {
+			Method method = findSelectAllMethod(context);
+			if (method != null)
+				method.invoke(context);
+			return true;
+		}
+		catch(Exception e){
+		}
+		return false;
+	}
+
 	/*...............................................................................................................*/
 	public void setForceSize(boolean forceSize) {
 		this.forceSize = forceSize;

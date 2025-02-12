@@ -16,6 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.ui.ColorDistribution;
 
 /*.................................................................................................................*/
@@ -524,7 +525,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				s += "   " + b.getName()+ " (is between? " + ((StringArray)b).isBetween() + ")\n";	
 			}
 		}
-		
+
 		if (objects!=null) {
 			s += "Objects (" + objects.size() + ")\n";
 			for (int i=0; i<objects.size(); i++) {
@@ -545,7 +546,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				else if (obj instanceof ObjectArray){
 					s += "  ObjectArray:  " + ((ObjectArray)obj).getName()+ " (is between? " + ((ObjectArray)obj).isBetween() + ")\n";	
 				}
-			else if (obj instanceof StringArray){
+				else if (obj instanceof StringArray){
 					s += "  StringArray as ObjectArray:  " + ((StringArray)obj).getName()+ "\n";	
 				}	
 				else if (obj instanceof Listable){
@@ -598,42 +599,114 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		return names;
 	}
-	
-	public MesquiteInteger[] getAssociatesNamesWithKinds(){ 
+
+	/*-----------------------------------------*/
+	public void renameAssociated(PropertyRecord property, String newName, boolean notify){
+		Nameable d = null;
+		if (property.kind == Associable.BITS)
+			d = getAssociatedBits(property.getNameReference());
+		else if (property.kind == Associable.DOUBLES)
+			d = getAssociatedDoubles(property.getNameReference());
+		else if (property.kind == Associable.LONGS)
+			d =  getAssociatedLongs(property.getNameReference());
+		else if (property.kind == Associable.STRINGS)
+			d =  getAssociatedStrings(property.getNameReference());
+		else if (property.kind == Associable.OBJECTS)
+			d =  getAssociatedObjects(property.getNameReference());
+		if (d != null){
+			d.setName(newName);
+			property.setName(newName);
+			if (notify)
+				notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+		}
+	}
+	public boolean isPropertyAssociated(PropertyRecord property){
+		if (property.kind == Associable.BUILTIN)
+			return this instanceof MesquiteTree && (property.getNameReference().equals(MesquiteTree.branchLengthNameRef) || property.getNameReference().equals(MesquiteTree.nodeLabelNameRef));
+		if (property.kind == Associable.BITS)
+			return getAssociatedBits(property.getNameReference())!= null;
+		if (property.kind == Associable.DOUBLES)
+			return getAssociatedDoubles(property.getNameReference())!= null;
+		if (property.kind == Associable.LONGS)
+			return getAssociatedLongs(property.getNameReference())!= null;
+		if (property.kind == Associable.STRINGS)
+			return getAssociatedStrings(property.getNameReference())!= null;
+		if (property.kind == Associable.OBJECTS)
+			return getAssociatedObjects(property.getNameReference())!= null;
+		return false;
+	}
+	public boolean propertyIsBetween(PropertyRecord property){
+		if (property.kind == Associable.BUILTIN){
+			if (this instanceof MesquiteTree){
+				if (property.getNameReference().equals(MesquiteTree.branchLengthNameRef))
+					return true;
+				if ( property.getNameReference().equals(MesquiteTree.nodeLabelNameRef))
+					return false;
+			}
+		}
+		if (property.kind == Associable.BITS){
+			Bits d = getAssociatedBits(property.getNameReference());
+			if (d!= null)
+				return d.isBetween();
+		}
+		if (property.kind == Associable.DOUBLES){
+			DoubleArray d = getAssociatedDoubles(property.getNameReference());
+			if (d!= null)
+				return d.isBetween();
+		}
+		if (property.kind == Associable.LONGS){
+			LongArray d = getAssociatedLongs(property.getNameReference());
+			if (d!= null)
+				return d.isBetween();
+		}
+		if (property.kind == Associable.STRINGS){
+			StringArray d = getAssociatedStrings(property.getNameReference());
+			if (d!= null)
+				return d.isBetween();
+		}
+		if (property.kind == Associable.OBJECTS){
+			ObjectArray d = getAssociatedObjects(property.getNameReference());
+			if (d!= null)
+				return d.isBetween();
+		}
+		return false;
+	}
+
+	public PropertyRecord[] getPropertyRecords(){ 
 		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
 		if (total == 0)
 			return null;
-		MesquiteInteger[] names = new MesquiteInteger[total];
+		PropertyRecord[] names = new PropertyRecord[total];
 		int count = 0;
 		if (bits!=null) {
 			for (int i=0; i<bits.size(); i++) {
 				Listable b = (Listable)bits.elementAt(i);
-				names[count++] = new MesquiteInteger(b.getName(), Associable.BITS);
+				names[count++] = new PropertyRecord(b.getName(), Associable.BITS);
 			}
 		}
 		if (longs!=null) {
 			for (int i=0; i<longs.size(); i++) {
 				Object obj = longs.elementAt(i);
 				Listable b = (Listable)longs.elementAt(i);
-				names[count++] = new MesquiteInteger(b.getName(), Associable.LONGS);
+				names[count++] = new PropertyRecord(b.getName(), Associable.LONGS);
 			}
 		}
 		if (doubles!=null){
 			for (int i=0; i<doubles.size(); i++) {
 				Listable b = (Listable)doubles.elementAt(i);
-				names[count++] = new MesquiteInteger(b.getName(), Associable.DOUBLES);
+				names[count++] = new PropertyRecord(b.getName(), Associable.DOUBLES);
 			}
 		}
 		if (strings!=null){
 			for (int i=0; i<strings.size(); i++) {
 				Listable b = (Listable)strings.elementAt(i);
-				names[count++] = new MesquiteInteger(b.getName(), Associable.STRINGS);
+				names[count++] = new PropertyRecord(b.getName(), Associable.STRINGS);
 			}
 		}
 		if (objects!=null) {
 			for (int i=0; i<objects.size(); i++) {
 				Listable b = (Listable)objects.elementAt(i);
-				names[count++] = new MesquiteInteger(b.getName(), Associable.OBJECTS);
+				names[count++] = new PropertyRecord(b.getName(), Associable.OBJECTS);
 			}
 		}
 		return names;
@@ -756,7 +829,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					}
 					else if (obj instanceof String){
 						Debugg.printStackTrace("Associable: writing string in objectarray!");
-							s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize((String)obj) + " ";
+						s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize((String)obj) + " ";
 					}
 					else {
 						MesquiteMessage.warnProgrammer("Warning: Saving of objects of type " + obj.getClass() +" in Associables not yet working!");
@@ -780,7 +853,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation){
 		readAssociated(assocString, node, pos, whitespace, punctuation, false);
 	}
-	
+
 	boolean reportReading = false;
 	/* Primarily from trees; the punctuation in comments may follow Newick rules */
 	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation, boolean forceNumberToDouble){
@@ -799,9 +872,9 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			value=StringUtil.removeFirstCharacterIfMatch(value, '\'');
 			value=StringUtil.removeLastCharacterIfMatch(value, '\'');
 			//if (whitespace != null && whitespace.length() == 0){
-				value = StringUtil.stripLeadingWhitespace(value);
-				value = StringUtil.stripTrailingWhitespace(value);
-				if (reportReading) Debugg.println("     @~~[value] [" + value + "]");
+			value = StringUtil.stripLeadingWhitespace(value);
+			value = StringUtil.stripTrailingWhitespace(value);
+			if (reportReading) Debugg.println("     @~~[value] [" + value + "]");
 			//}
 			if (StringUtil.blank(value))
 				return;
@@ -873,7 +946,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 						count++;
 						s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); //comma or }
 						if (reportReading) Debugg.println("    s{}~~ " + s);
-					
+
 					}
 
 					NameReference nr = makeAssociatedObjects(key);
@@ -951,7 +1024,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
 		}
 	}
-	
+
 	/* -----------------------------------------------------------------------------------------*/
 	public void setAssociateds(Associable a){
 		if (a==null)
@@ -1109,7 +1182,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (objects!=null)
 			objects.removeAllElements();
 	}
-/*--============================================================================-*/
+	/*--============================================================================-*/
 	/** Set the number of parts to given number.  THIS MUST BE CALLED whenever the number of
 	parts (characters, nodes, etc.) changes.*/
 	public void setNumberOfParts(int num){
@@ -2104,7 +2177,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		setDirty(true);
 	}
-	
+
 	public void setAssociatedString(NameReference nRef, int index, String value){
 		setAssociatedString(nRef, index, value, false);
 	}
@@ -2210,13 +2283,15 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		setAssociatedObject(nRef, index, value, false);
 	}
 
-
+	static boolean assocStringObjectWarned = false;
 	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
 	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
 	public void setAssociatedObject(NameReference nRef, int index, Object value, boolean setAsBetween){
-		if (value instanceof String && MesquiteTrunk.developmentMode)
-				Debugg.printStackTrace("String saved in Associable as object; Associable: " + getClass());
-		
+		if (value instanceof String && MesquiteTrunk.developmentMode && !assocStringObjectWarned){
+			System.err.println("String saved in Associable as object; Associable: " + getClass());
+			assocStringObjectWarned = true;
+		}
+
 		if (value instanceof String && value != null && ((String)value).equals(""))  // a filter so a blank string is not saved
 			value = null;
 		if (objects!=null && nRef!=null) {

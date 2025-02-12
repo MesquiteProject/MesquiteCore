@@ -401,6 +401,9 @@ public class ColorDistribution {
 		int blue = (255-backgroundColor.getBlue());
 		return new Color(red,green,blue);
 	}
+	public static int getNumStandardColors(){
+		return standardColors.getSize();
+	}
 	public static int getStandardColorNumber(String name){
 		int ci = standardColorNames.indexOf(name);
 		return ci;
@@ -425,12 +428,12 @@ public class ColorDistribution {
 			return null;
 	}
 	public static String getStandardColorName(int ci){
-		if (ci<0)
+		if (ci<0 || ci>=standardColorNames.getSize())
 			return null;
 		return (String)standardColorNames.getValue(ci);
 	}
 	public static Color getStandardColor(int ci){
-		if (ci<0)
+		if (ci<0 || ci>=standardColors.getSize())
 			return null;
 		return (Color)standardColors.getValue(ci);
 	}
@@ -440,7 +443,7 @@ public class ColorDistribution {
 		return (String)standardColorsAsHex.getValue(ci);
 	}
 	public static Color getStandardColorDimmed(int ci){
-		if (ci<0)
+		if (ci<0 || ci>=standardColorsDimmed.getSize())
 			return null;
 		return (Color)standardColorsDimmed.getValue(ci);
 	}

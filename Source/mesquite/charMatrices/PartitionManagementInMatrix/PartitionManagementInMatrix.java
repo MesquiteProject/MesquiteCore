@@ -33,6 +33,7 @@ public class PartitionManagementInMatrix extends DataWindowAssistantI implements
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		taxaHelperTask = (TaxaSelectedUtility)hireNamedEmployee(TaxaSelectedUtility.class, "#TaxonPartitionHelper");
 		charsHelperTask = (CharactersSelectedUtility)hireNamedEmployee(CharactersSelectedUtility.class, "#CharPartitionHelper");
+		setUseMenubar(false);
 		return true;
 	}
 	/*.................................................................................................................*/

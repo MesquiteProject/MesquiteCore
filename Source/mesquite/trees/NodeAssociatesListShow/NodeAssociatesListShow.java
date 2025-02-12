@@ -40,7 +40,6 @@ import mesquite.trees.lib.NodeAssociatesListAssistant;
 public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
-	ListableVector associatedInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Show Selected", makeCommand("show", this));
@@ -63,9 +62,6 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 
 	public void setTableAndObject(MesquiteTable table, Object object) {
 		this.table = table;
-		if (object instanceof ListableVector)
-			associatedInfo = (ListableVector)object;
-
 	}
 
 	public void setTree(MesquiteTree tree){
@@ -103,11 +99,11 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 			discreetAlert("Please selected rows before attempting to show or hide them here");
 			return;
 		}
-		MesquiteInteger[] mis = new MesquiteInteger[table.numRowsSelected()];
+		PropertyRecord[] mis = new PropertyRecord[table.numRowsSelected()];
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				mis[count++] = getNameKindOfRow(ir);
+				mis[count++] = getPropertyAtRow(ir);
 			}
 		}
 		pleaseShowHideOnTree(mis, show);
@@ -138,10 +134,10 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	}
 	/*.................................................................................................................*/
 	public String getStringForRow(int ic) {
-			if (isShowingOnTree(getNameKindOfRow(ic)))
-			return "Yes";
+			if (isShowingOnTree(getPropertyAtRow(ic)))
+			return "Showing";
 			else
-				return "No";
+				return "Hidden";
 
 	}
 	/*.................................................................................................................*/

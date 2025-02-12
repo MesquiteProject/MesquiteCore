@@ -38,11 +38,9 @@ import mesquite.trees.lib.NodeAssociatesListAssistant;
 public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
-	ListableVector associatedInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		addMenuItem("Ressign Selected to Branch", makeCommand("branch", this));
-		addMenuItem("Ressign Selected to Node", makeCommand("hide", this));
+		addMenuItem("Ressign Branch vs. Node", makeCommand("reassign", this));
 		addMenuItem("Explanation...", makeCommand("explain", this));
 		return true;
 	}
@@ -63,9 +61,6 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 
 	public void setTableAndObject(MesquiteTable table, Object object) {
 		this.table = table;
-		if (object instanceof ListableVector)
-			associatedInfo = (ListableVector)object;
-
 	}
 
  	public void setTree(MesquiteTree tree){
@@ -74,11 +69,8 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Reassigns the selected to the branch", null, commandName, "branch")) {
-			reassign(true);
-		}
-		else if (checker.compare(this.getClass(), "Reassigns the selected to the node", null, commandName, "node")) {
-			reassign(false);
+		if (checker.compare(this.getClass(), "Reassigns the selected to the branch", null, commandName, "reassign")) {
+			discreetAlert("Sorry, designation of properties as assigned to branch vs. node is a system-level setting that can be edited only by changing the file properties.xml in Mesquite_Folder/settings/basic/AssociatesInit"); //Debugg.println
 		}
 		else if (checker.compare(this.getClass(), "Explains", null, commandName, "explain")) {
 			discreetAlert("A property is assigned either to a node or the branch just below it. "
@@ -91,7 +83,7 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 		return null;
 	}
 	
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	void reassign(boolean toBranch){
 		if (table == null)
 			return;
@@ -99,7 +91,7 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 			discreetAlert("Please selected rows before attempting to reassign them here");
 			return;
 		}
-		MesquiteInteger[] mis = new MesquiteInteger[table.numRowsSelected()];
+		PropertyRecord[] mis = new PropertyRecord[table.numRowsSelected()];
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir) && !associateInListIsBuiltIn(ir)){
@@ -107,7 +99,6 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 			}
 		}
 		parametersChanged();
-		
 	}
 	void setBetweenness(int ic, boolean between) {
 		if (associatedInfo == null)
@@ -155,28 +146,9 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 		return "Branch";
 	}
 	public String getStringForRow(int ic) {
-		if (associatedInfo == null)
-			return "—";
-		if (ic>=0 && ic<associatedInfo.size()){
-			ObjectContainer objContainer = (ObjectContainer)associatedInfo.elementAt(ic);
-			Object obj = objContainer.getObject();
-			boolean between = false;
-			if (obj instanceof DoubleArray)
-				between = ((DoubleArray)obj).isBetween();
-			else if (obj instanceof LongArray)
-				between = ((LongArray)obj).isBetween();
-			else if (obj instanceof ObjectArray)
-				between = ((ObjectArray)obj).isBetween();
-			else if (obj instanceof Bits)
-				between = ((Bits)obj).isBetween();
-			else if (obj instanceof Tree && MesquiteTree.branchLengthName.equalsIgnoreCase(objContainer.getName()))
-				between = true;
-			else if (obj instanceof Tree && MesquiteTree.nodeLabelName.equalsIgnoreCase(objContainer.getName()))
-				between = false;
-			else
-				return "?";
-			return nodeOrBranch(between); //objContainer.getName() + " " + obj.getClass() + " " + between;
-		}
+		PropertyRecord property = getPropertyAtRow(ic);
+		if (property != null)
+			return nodeOrBranch(property.belongsToBranch);
 		return "—";
 	}
 	/*.................................................................................................................*/

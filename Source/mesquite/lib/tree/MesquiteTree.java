@@ -22,6 +22,7 @@ import java.math.*;
 import java.util.*;
 
 import mesquite.lib.Associable;
+import mesquite.lib.PropertyRecord;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
@@ -195,7 +196,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private long id=0;
 
 	public static final String branchLengthName = "Branch length";
+	public static NameReference branchLengthNameRef = NameReference.getNameReference(branchLengthName);
 	public static final String nodeLabelName = "Node label";
+	public static NameReference nodeLabelNameRef = NameReference.getNameReference(nodeLabelName);
 
 	/** If this tree is read in from a file, this is the number of this tree within the file */
 	private int fileIndex = MesquiteInteger.unassigned;
@@ -3688,7 +3691,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
 		setName("Default Symmetrical Tree");
 	}
-	/*-----------------------------------------*/
 	/*.........................................Write tree.................................................*/
 	/** Writes a tree description into the StringBuffer using taxon numbers instead of labels or taxon names */
 	private void writeTreeByNumbersGeneral(int node, StringBuffer treeDescription, boolean includeAssociated, boolean includeBranchLengths, boolean includeNodeLabels, boolean zeroBased, String delimiter) {

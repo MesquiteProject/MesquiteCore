@@ -34,7 +34,8 @@ public class MesquiteInteger implements Listable, Nameable{
 	public static final int inapplicable = Integer.MAX_VALUE -2;
 	private int value;
 	public static long totalCreated = 0;
-	
+	private boolean unanimous = true;
+
 	public MesquiteInteger (String name, int value) {
 		this.name = name;
 		this.value=value;
@@ -89,6 +90,33 @@ public class MesquiteInteger implements Listable, Nameable{
 	public void decrement(int decrementValue) {
 		value-= decrementValue;
 	}
+	
+	public void resetVote(){ //should only be called before use of vote
+		setToUnassigned();
+		unanimous = true;
+}
+	/** if unassigned, assign it the incoming. If incoming is different from previous assigned, unanimous is set to false and keep it there. Thus know if there is disagreemnt in a set */
+	public void vote(int value) {
+		if (value == unassigned)
+			return;
+		if (!unanimous)
+			return;
+		if (this.value == unassigned)
+			this.value = value;
+		else if (this.value != value)
+			unanimous = false;
+	}
+	public boolean isUnanimous(){ //should only be called after a good use of vote
+		return unanimous;
+	}
+	public int unanimousValue(){ //should only be called after a good use of vote
+		if (unanimous)
+			return value;
+		else
+			return unassigned;
+	}
+
+	
 	/** Sets value to unassigned */
 	public void setToUnassigned() {
 		value=unassigned;
