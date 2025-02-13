@@ -108,7 +108,7 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				PropertyRecord mi = getPropertyAtRow(ir);
+				PropertyDisplayRecord mi = getPropertyAtRow(ir);
 				String currentName = mi.getName();
 				String textName = currentName+".text";
 				String candidateName =textName;
@@ -223,7 +223,7 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				PropertyRecord mi = getPropertyAtRow(ir);
+				PropertyDisplayRecord mi = getPropertyAtRow(ir);
 				String currentName = mi.getName();
 				String doubleName = currentName+".num";
 				String candidateName =doubleName;
@@ -304,7 +304,7 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 			return;
 		}
 		int ir = table.firstRowSelected();
-		PropertyRecord mi = getPropertyAtRow(ir);
+		PropertyDisplayRecord mi = getPropertyAtRow(ir);
 		String currentName = mi.getName();
 		NameReference currentRef = NameReference.getNameReference(currentName);
 		if (mi.kind == Associable.BUILTIN){
@@ -416,7 +416,7 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 		return false;  
 	}
 	public String getStringForRow(int ic) {
-		PropertyRecord property = getPropertyAtRow(ic);
+		PropertyDisplayRecord property = getPropertyAtRow(ic);
 		if (property != null){
 			if (property.kind == Associable.BITS)
 				return "Boolean";

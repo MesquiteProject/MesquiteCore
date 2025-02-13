@@ -148,7 +148,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 			if (mb != null){
 				mb.doCommand("setBooleansAllDoubles",  " false false false false false true false ", checker);
-				mb.doCommand("setNumbersAllDoubles",  " x -2 9  0 x x ?  ", checker);
+				mb.doCommand("setNumbersAllDoubles",  " x -2 9  0 x ?  ", checker);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets offset of label from nodes", "[offsetX] [offsetY]", commandName, "setOffset")) {//forwarded

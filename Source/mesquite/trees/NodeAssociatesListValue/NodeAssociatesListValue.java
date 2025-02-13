@@ -138,7 +138,7 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 	public String getStringForRow(int ic) {
 		if (tree == null || node<0)
 			return "—";
-		PropertyRecord property = getPropertyAtRow(ic);
+		PropertyDisplayRecord property = getPropertyAtRow(ic);
 		if (property != null){
 			return property.getStringAtNode(tree, node, false, true, true);
 		}

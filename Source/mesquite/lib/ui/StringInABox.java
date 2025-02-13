@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MainThread;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.StringUtil;
@@ -480,6 +481,8 @@ public class StringInABox {
 								
 								
 								if (!drawn) {
+									if (textColor != null)
+										g.setColor(textColor);
 									GraphicsUtil.drawString(g,strings[i], x, y + heightOnThisPage); 
 								}
 							}
@@ -555,6 +558,10 @@ public class StringInABox {
 		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
 		int increment = fm.getMaxAscent() + fm.getMaxDescent() + buffer;
 		return (strings.length) * increment + buffer;	
+	}
+	public int getLineAscent( ){
+		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
+		return fm.getMaxAscent();	
 	}
 	public int getLineHeight( ){
 		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);

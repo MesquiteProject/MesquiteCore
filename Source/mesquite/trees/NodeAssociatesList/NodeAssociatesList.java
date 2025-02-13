@@ -216,9 +216,9 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 		return "Branch/Node Properties";
 	}
 	/*.................................................................................................................*/
-	public PropertyRecord getPropertyAtRow(int row){
+	public PropertyDisplayRecord getPropertyAtRow(int row){
 		if (myWindow != null && row>=0 && row<myWindow.associatesList.size()){
-			return (PropertyRecord)myWindow.associatesList.elementAt(row);
+			return (PropertyDisplayRecord)myWindow.associatesList.elementAt(row);
 			/*
 			ObjectContainer objContainer = (ObjectContainer)myWindow.associatesList.elementAt(row);
 			Object obj = objContainer.getObject();
@@ -250,7 +250,7 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 		return null;
 	}
 	public boolean associateIsBuiltIn(int row){
-		PropertyRecord p = getPropertyAtRow(row);
+		PropertyDisplayRecord p = getPropertyAtRow(row);
 		if (p != null)
 			return p.kind == Associable.BUILTIN;
 		/*
@@ -282,7 +282,7 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 	}
 
 	public boolean internalDeleteRow(int row, boolean notify){
-		PropertyRecord mi = getPropertyAtRow(row);
+		PropertyDisplayRecord mi = getPropertyAtRow(row);
 
 		if (mi.kind == Associable.BUILTIN){
 			if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName))
@@ -403,7 +403,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		TreeWindowMaker twMB = (TreeWindowMaker)ownerModule.findEmployerWithDuty(TreeWindowMaker.class);
 		ListableVector mainPropertiesList = twMB.getBranchPropertiesList();
 		for (int i = 0; i<mainPropertiesList.size(); i++){
-			PropertyRecord property = (PropertyRecord)mainPropertiesList.elementAt(i);
+			PropertyDisplayRecord property = (PropertyDisplayRecord)mainPropertiesList.elementAt(i);
 			if (MesquiteTrunk.developmentMode){ //Debugg.println delete before release
 				if (tree.isPropertyAssociated(property) != property.inCurrentTree)
 					Debugg.printStackTrace("property.inCurrentTree not up to date!");
@@ -490,7 +490,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		if (ownerModule.associateIsBuiltIn(row)){
 		}
 		else if (row>=0 && row<associatesList.size()){
-			PropertyRecord mi = ownerModule.getPropertyAtRow(row);
+			PropertyDisplayRecord mi = ownerModule.getPropertyAtRow(row);
 			if (mi != null)
 				tree.renameAssociated(mi, name, true);
 		}

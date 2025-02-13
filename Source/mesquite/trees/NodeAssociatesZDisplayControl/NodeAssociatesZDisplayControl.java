@@ -76,7 +76,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 	ListableVector propertyList;
 	static boolean asked= false;
 
-	boolean moduleIsNaive = true; //hasn't yet received script or user input; therefore display consensusFrequency automatically and without label
+	boolean moduleIsNaive = true; //so as not to save the snapshot
 
 
 	MesquiteTree tree;
@@ -88,12 +88,13 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			propertyList = twMB.getBranchPropertiesList();
 		}
 		extras = new Vector();
-		propertyList.addElement(new PropertyRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
-		propertyList.addElement(new PropertyRecord(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
+		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
+		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
 
 		return true;
 	}
 	public void endJob(){
+			
 		if (this.tree != null)
 			this.tree.removeListener(this);
 
@@ -116,76 +117,46 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 	/*.========================================================..*/
 
-	public void writeList(){
+	public void writeList(ListableVector list){
 		System.out.println("Properties on record & to show");
 
-		for (int i=0; i<propertyList.size(); i++){
-			PropertyRecord mi = (PropertyRecord)propertyList.elementAt(i);
+		for (int i=0; i<list.size(); i++){
+			PropertyDisplayRecord mi = (PropertyDisplayRecord)list.elementAt(i);
 			System.out.println(mi.getName() + "\t" + mi.kind + " showing " + mi.showing);
 		}
 	}
-	PropertyRecord findInList(NameReference nr, int kind){
-		for (int i=0; i<propertyList.size(); i++){
-			PropertyRecord mi = (PropertyRecord)propertyList.elementAt(i);
-			if (mi.getNameReference().equals(nr) && mi.kind ==kind)
-				return mi;
-		}
-		return null;
+	PropertyDisplayRecord findInList(NameReference nr, int kind){
+		return PropertyDisplayRecord.findInList(propertyList, nr, kind);
 	}
-	PropertyRecord findInList(String s, int kind){
+	PropertyDisplayRecord findInList(String s, int kind){
 		if (propertyList.indexOfByName(s)<0)
 			return null;
 		for (int i=0; i<propertyList.size(); i++){
-			PropertyRecord mi = (PropertyRecord)propertyList.elementAt(i);
+			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
 			if (mi.getName().equalsIgnoreCase(s) && mi.kind ==kind)
 				return mi;
 		}
 		return null;
 	}
-	int indexInList(String s, int kind){
-		if (propertyList.indexOfByName(s)<0)
-			return -1;
-		for (int i=0; i<propertyList.size(); i++){
-			PropertyRecord mi = (PropertyRecord)propertyList.elementAt(i);
-			if (mi.getName().equalsIgnoreCase(s) && mi.kind ==kind)
-				return i;
-		}
-		return -1;
-	}
 	/*...............................................................................*/
-	int indexInList(PropertyRecord property){
+	int indexInList(PropertyDisplayRecord property){
 		for (int i=0; i<propertyList.size(); i++){
-			PropertyRecord mi = (PropertyRecord)propertyList.elementAt(i);
+			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
 			if (mi.equals(property))
 				return i;
 		}
 		return propertyList.indexOf(property);  //just in case?
 	}
 	/*...............................................................................*/
-	boolean inList(PropertyRecord property){
+	boolean inList(PropertyDisplayRecord property){
 		return indexInList(property)>=0;
 	}
 	/*...............................................................................*/
-	boolean inList(String name, int kind){
-		return indexInList(name, kind)>=0;
+	public boolean isBuiltIn(PropertyDisplayRecord mi){
+		return mi.kind== Associable.BUILTIN;
 	}
 	/*...............................................................................*/
-	public boolean isShowing(String name, int kind){
-		PropertyRecord mi = findInList(name, kind);
-		if (mi == null)
-			return false;
-		return mi.showing;
-	}
-	/*...............................................................................*/
-	public boolean isBuiltIn(PropertyRecord mi){
-		return isBuiltIn(mi.getName(), mi.kind);
-	}
-	/*...............................................................................*/
-	public boolean isBuiltIn(String name, int kind){
-		return (kind == Associable.BUILTIN);
-	}
-	/*...............................................................................*/
-	public void pleaseShowHide(PropertyRecord[] list, boolean show){
+	public void pleaseShowHide(PropertyDisplayRecord[] list, boolean show){
 		if (list == null)
 			return;
 
@@ -201,7 +172,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		parametersChanged();
 	}
 	/*...............................................................................*/
-	public boolean isShowing(PropertyRecord mi){
+	public boolean isShowing(PropertyDisplayRecord mi){
 		if (mi == null)
 			return false;
 		return mi.showing;
@@ -210,7 +181,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 	boolean anyShowing(){
 
 		for (int i=0; i<propertyList.size(); i++){
-			PropertyRecord mi = (PropertyRecord)propertyList.elementAt(i);
+			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
 			if (mi.showing)
 				return true;
 		}
@@ -222,22 +193,14 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			return;
 		if (name.equalsIgnoreCase("selected") && kind == Associable.BITS)
 			return;
-		PropertyRecord mi = null;
-		if (!inList(name, kind)){  //color is not available to be shown in this way
-			mi = new PropertyRecord(name, kind);
+		PropertyDisplayRecord mi = findInList(name, kind);
+		if (mi==null){  //color is not available to be shown in this way
+			mi = new PropertyDisplayRecord(name, kind);
 			mi.showing = show;
-			if (moduleIsNaive && name.equalsIgnoreCase("consensusFrequency")){
-				mi.showing = true;
-				mi.showName = false;
-				mi.percentage = true;
-			}
 			propertyList.addElement(mi, false);
 		}
-		else{
-			mi = findInList(name, kind);
-			if (mi != null)
+		else
 				mi.showing = show;
-		}
 		if (mi != null && tree != null)
 			mi.inCurrentTree = tree.isPropertyAssociated(mi);
 	}
@@ -247,11 +210,11 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		if (tree == null)
 			return;
 		for (int i=0; i<propertyList.size(); i++){
-			PropertyRecord property = (PropertyRecord)propertyList.elementAt(i);
+			PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
 			property.inCurrentTree = tree.isPropertyAssociated(property);
 			property.belongsToBranch = tree.propertyIsBetween(property);
 		}
-		PropertyRecord[] properties = tree.getPropertyRecords();
+		PropertyDisplayRecord[] properties = tree.getPropertyRecords();
 		if (properties == null)
 			return;
 		for (int i=0; i<properties.length; i++){
@@ -261,10 +224,6 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			if (toBeAdded){  //color is not available to be shown in this way
 				propertyList.addElement(properties[i], false);
 				properties[i].inCurrentTree = true;
-				if (moduleIsNaive && properties[i].getName().equalsIgnoreCase("consensusFrequency")){
-					properties[i].showing = true;
-					properties[i].showName = false;
-				}
 			}
 		}
 	}
@@ -288,7 +247,6 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 	IntegerField digitsF;
 	Checkbox percentageF;
 	DoubleField thresholdValueToShowF;
-	Button setStyleButton;
 
 	void resetCheckbox(Checkbox cb, MesquiteBoolean cbBoolean, String baseName){
 		if (cbBoolean.isUnanimous()) {
@@ -346,7 +304,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 		IntegerArray indicesSelected = dialog.getIndicesCurrentlySelected();
 		for (int i= 0; i<queryPropertiesList.length; i++){
-			PropertyRecord property = (PropertyRecord)queryPropertiesList[i];
+			PropertyDisplayRecord property = (PropertyDisplayRecord)queryPropertiesList[i];
 			if (indicesSelected == null || indicesSelected.getSize() == 0 || indicesSelected.indexOf(i)>=0){
 				showNameConsensus.vote(property.showName);
 				centeredConsensus.vote(property.centered);
@@ -391,7 +349,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			return;
 		}
 		for (int i= 0; i<queryPropertiesList.length; i++){
-			PropertyRecord property = (PropertyRecord)queryPropertiesList[i];
+			PropertyDisplayRecord property = (PropertyDisplayRecord)queryPropertiesList[i];
 			String before = "";
 			if (property.showing)
 				before =  "✓\t"; 
@@ -399,29 +357,28 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 				before =   "  \t"; 
 			String after = "        [";
 			if (property.showName)
-				after += "Name";
-			else
-				after += "No name";
+				after += "Name, ";
 			if (property.centered)
-				after += ", centered";
+				after += "centered, ";
 			if (property.color>=0 && property.color<ColorDistribution.standardColorNames.getSize())
-				after += ", " + ColorDistribution.standardColorNames.getValue(property.color);
+				after += ColorDistribution.standardColorNames.getValue(property.color) + ", ";
 			if (property.whiteEdges)
-				after += ", white edges";
+				after += "white edges, ";
 			if (property.vertical)
-				after += ", vertical";
+				after += "vertical, ";
 			if (!property.showOnTerminals)
-				after += ", ✗ terminals";
-			after += ", font " + property.fontSize;
+				after += "✗ terminals, ";
+			after += "font " + property.fontSize + ", ";
 			if (property.xOffset != 0 && property.yOffset != 0)
-				after += ", offset x " + property.xOffset +", y " + property.yOffset;
+				after += "offset x " + property.xOffset +", y " + property.yOffset + ", ";
 			if (property.kind == Associable.DOUBLES){
-				after += ", digits " + property.digits;
+				after += "digits " + property.digits + ", ";
 				if (property.percentage)
-					after += ", percentage";
+					after += "percentage, ";
 				if (MesquiteDouble.isCombinable(property.thresholdValueToShow))
-					after += ", threshold " + MesquiteDouble.toString(property.thresholdValueToShow);				
+					after += "threshold " + MesquiteDouble.toString(property.thresholdValueToShow) + ", ";				
 			}
+			after = StringUtil.stripTrailingWhitespaceAndPunctuation(after);
 			after += "]";
 			((MesquiteString)queryNamesArray[i]).setName(before + ((MesquiteString)queryNamesArray[i]).getValue() + after);
 		}
@@ -449,16 +406,18 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		rePrefaceList();
 		dialog.getList().setMultipleMode(true);
 		dialog.getList().addItemListener(this);
-		dialog.getList().setMinimumWidth(500);
+		dialog.getList().setMinimumWidth(600);
 		selectOrHide = dialog.addButtonRow("✓ Show Selected", "Hide Selected", null, this);
 		selectOrHide[0].setActionCommand("showSelected");
 		selectOrHide[1].setActionCommand("hideSelected");
 		dialog.addHorizontalLine(1);
 
 		//DISPLAY STYLES
-		setStyleButton = dialog.addButton("Set Style of Selected Properties");
-		setStyleButton.addActionListener(this);
-		setStyleButton.setActionCommand("setStyle");
+		Button[] stylesButtons = dialog.addButtonRow("Set Style of Selected Properties", "Set Styles as Defaults", null, this);
+		stylesButtons[0].addActionListener(this);
+		stylesButtons[0].setActionCommand("setStyle");
+		stylesButtons[1].addActionListener(this);
+		stylesButtons[1].setActionCommand("saveStylesAsDefaults");
 
 
 		Checkbox[] boxes = dialog.addCheckboxRow( new String[] {"Show Names", "Centered", "White Edges", "Vertical"}, 
@@ -538,19 +497,19 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		boolean actionTaken = false;
 		if (e.getActionCommand().equalsIgnoreCase("showSelected")) {
 			for (int k = 0; k<indicesSelected.getSize(); k++){
-				((PropertyRecord)queryPropertiesList[indicesSelected.getValue(k)]).showing = true;	
+				((PropertyDisplayRecord)queryPropertiesList[indicesSelected.getValue(k)]).showing = true;	
 			}
 			actionTaken = true;
 		}
 		else if (e.getActionCommand().equalsIgnoreCase("hideSelected")) {
 			for (int k = 0; k<indicesSelected.getSize(); k++){
-				((PropertyRecord)queryPropertiesList[indicesSelected.getValue(k)]).showing = false;
+				((PropertyDisplayRecord)queryPropertiesList[indicesSelected.getValue(k)]).showing = false;
 			}
 			actionTaken = true;
 		}
 		else if (e.getActionCommand().equalsIgnoreCase("setStyle")) {
 			for (int k = 0; k<indicesSelected.getSize(); k++){
-				PropertyRecord property = (PropertyRecord)queryPropertiesList[indicesSelected.getValue(k)];
+				PropertyDisplayRecord property = (PropertyDisplayRecord)queryPropertiesList[indicesSelected.getValue(k)];
 				if (MesquiteInteger.isCombinable(fontSizeF.getValue()))
 					property.fontSize = fontSizeF.getValue();
 				if (MesquiteInteger.isCombinable(digitsF.getValue()))
@@ -575,58 +534,35 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			}
 			actionTaken = true;
 		}
-
+		else if (e.getActionCommand().equalsIgnoreCase("saveStylesAsDefaults")) {
+				PropertyDisplayRecord.mergeIntoPreferences(propertyList); 
+		}
 		if (actionTaken){
 			rePrefaceList();
 			resetStyleWidgets();
 			settingsChanged();
-			/*
-			DoubleClickList list = dialog.getList();
-			list.selectAll();
-			IntegerArray indicesSelected2 = dialog.getIndicesCurrentlySelected();
-			Debugg.println(" after " + indicesSelected2);
-			for (int i= 0; i<indicesSelected.getSize(); i++){
-			//	list.deselect(indicesSelected.getValue(i));//	addToSelection(context, indicesSelected.getValue(i));  //grrr this only lets one be selected
-			}*/
+		
 		}
 
 	}
-	/*
-	String getBooleanSpecs(PropertyRecord n){
-		return "setBooleans "  + StringUtil.tokenize(n.getName()) + " " + n.kind 
-				+ " " + n.showName + " " + n.centered + " " + n.whiteEdges + " " + n.showOnTerminals
-				+ " " + n.showIfUnassigned + " " + n.percentage + " " + n.vertical;
-	}
-	MesquiteString getBooleanSpecs(PropertyRecord n){
-		MesquiteString ms = new MesquiteString( "setBooleans "  + StringUtil.tokenize(n.getName()) + " " + n.kind 
-				+ " " + n.showName + " " + n.centered + " " + n.whiteEdges + " " + n.showOnTerminals
-				+ " " + n.showIfUnassigned + " " + n.percentage + " " + n.vertical);
-		ms.setName(n.getName());
-	}
+
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		if (moduleIsNaive)
 			return null;
 		Snapshot temp = new Snapshot();
 		for (int i=0; i< propertyList.size(); i++) {
-			PropertyRecord n = (PropertyRecord)propertyList.elementAt(i);
+			PropertyDisplayRecord n = (PropertyDisplayRecord)propertyList.elementAt(i);
 			temp.addLine("showAssociate " + StringUtil.tokenize(n.getName()) + " " + n.kind + " " + n.showing);
+
+			// sequence: showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical
 			temp.addLine("setBooleans "  + StringUtil.tokenize(n.getName()) + " " + n.kind 
-					+ " " + n.showName + " " + n.centered + " " + n.whiteEdges + " " + n.showOnTerminals
-					+ " " + n.showIfUnassigned + " " + n.percentage + " " + n.vertical); 
+					+ " " + n.getBooleansString()); 
+
+			// sequence fontSize, xOffset, yOffset, digits, color, thresholdValueToShow
 			temp.addLine("setNumbers "  + StringUtil.tokenize(n.getName()) + " " + n.kind 
-					+ " " + MesquiteInteger.toString(n.fontSize) + " " + MesquiteInteger.toString(n.xOffset) 
-					+ " " + MesquiteInteger.toString(n.yOffset) + " " + MesquiteInteger.toString(n.digits)
-					+ " " + MesquiteInteger.toString(n.color)
-					+ " " + MesquiteDouble.toString(n.thresholdValueToShow)); 
-			
-			/*
-				mb.doCommand("setBooleans",  StringUtil.tokenize("NAME) + " " + kind + " showName centred whiteEdges showOnTerminals showIfUnassigned showPercentage vertical ", checker);
-				mb.doCommand("setBooleans",  StringUtil.tokenize("NAME) + " " + kind + " ? ? ? ? ? ? ? ", checker);
-				mb.doCommand("setNumbers",  StringUtil.tokenize("NAME) + " " + kind + " fontSize xOffset yOffset digits color thresholdValue ", checker);
-				mb.doCommand("setNumbers",  StringUtil.tokenize("NAME) + " " + kind + " ? ? ? ? ? ?  ", checker);
-			 */		
-			
+					+ " " + n.getNumbersString()); 
+
 		}
 		return temp;
 	}
@@ -648,81 +584,50 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			//use "x" to ignore
 			String name = parser.getFirstToken(arguments);
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
-			PropertyRecord property = findInList(name, kind);
+			PropertyDisplayRecord property = findInList(name, kind);
 			if (property!= null){
-				String b;
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.showName = MesquiteBoolean.fromTrueFalseString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.centered = MesquiteBoolean.fromTrueFalseString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.whiteEdges = MesquiteBoolean.fromTrueFalseString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.showOnTerminals = MesquiteBoolean.fromTrueFalseString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.showIfUnassigned = MesquiteBoolean.fromTrueFalseString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.percentage = MesquiteBoolean.fromTrueFalseString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.vertical = MesquiteBoolean.fromTrueFalseString(b);
-				 
+				property.setBooleans(parser);				 
 			if (!MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets numbers", "[name][kind][5 integers & 1 double]", commandName, "setNumbers")) {
-			// sequence fontSize, xOffset, yOffset, digits, thresholdValueToShow
+			// sequence fontSize, xOffset, yOffset, digits, color, thresholdValueToShow
 			String name = parser.getFirstToken(arguments);
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
-			PropertyRecord property = findInList(name, kind);
+			PropertyDisplayRecord property = findInList(name, kind);
 			if (property!= null){
-				String b;
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.fontSize = MesquiteInteger.fromString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.xOffset = MesquiteInteger.fromString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.yOffset = MesquiteInteger.fromString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.digits = MesquiteInteger.fromString(b);
-				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
-					property.color = MesquiteInteger.fromString(b);
-				double dd = MesquiteDouble.fromString(parser);
-				if (MesquiteDouble.isCombinable(dd) || MesquiteDouble.isUnassigned(dd))
-					property.thresholdValueToShow = dd;
+				property.setNumbers(parser);				 
 				if (!MesquiteThread.isScripting()) parametersChanged();
 		}
 	}
 
 		else if (checker.compare(this.getClass(), "Sets booleans for all double properties. For reading of 3.x scripts", "[on or off for 7 booleans]", commandName, "setBooleansAllDoubles")) {
 			for (int i= 0; i< propertyList.size(); i++){
-				PropertyRecord property = (PropertyRecord)propertyList.elementAt(i);
+				PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
 				if (property.kind == Associable.DOUBLES)
 					doCommand("setBooleans", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets booleans for all string properties. For reading of 3.x scripts", "[on or off for 7 booleans]", commandName, "setBooleansAllStrings")) {
 			for (int i= 0; i< propertyList.size(); i++){
-				PropertyRecord property = (PropertyRecord)propertyList.elementAt(i);
+				PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
 				if (property.kind == Associable.STRINGS)
 					doCommand("setBooleans", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets numbers for all double properties. For reading of 3.x scripts", "[numbers for 7 values]", commandName, "setNumbersAllDoubles")) {
 			for (int i= 0; i< propertyList.size(); i++){
-				PropertyRecord property = (PropertyRecord)propertyList.elementAt(i);
+				PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
 				if (property.kind == Associable.DOUBLES)
 					doCommand("setNumbers", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets booleans for all string properties. For reading of 3.x scripts", "[numbers for 7 values]", commandName, "setNumbersAllStrings")) {
 			for (int i= 0; i< propertyList.size(); i++){
-				PropertyRecord property = (PropertyRecord)propertyList.elementAt(i);
+				PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
 				if (property.kind == Associable.STRINGS)
 					doCommand("setNumbers", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
-		}
-		else if (checker.compare(this.getClass(), "Sets the color of the value in the display", "[hex string]", commandName, "setColor")) {
-			System.err.println("@setColor " + arguments);
 		}
 		/*
 		else if (checker.compare(this.getClass(), "Set's to David's style", "", commandName, "setCorvallisStyle")) {
@@ -797,7 +702,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		treeDisplay.redoCalculations(319283);
 	}
 	/*.................................................................................................................*/
-	String stringAtNodeForPropertyExplanation(MesquiteTree tree, int node, PropertyRecord property, boolean showNames){
+	String stringAtNodeForPropertyExplanation(MesquiteTree tree, int node, PropertyDisplayRecord property, boolean showNames){
 		String nodeString  = property.getStringAtNode(tree, node, showNames, !showNames, false);
 		return nodeString;
 	}
@@ -826,7 +731,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 	String[] stringsAtNode(MesquiteTree tree, int node, boolean showingAll, boolean showNamesRegardless, Vector nameCodes, int forWhere){ //0 elsewhere; 1 = screen display; 2 = popup
 		Vector nodeStrings = new Vector();
 		for (int p = 0; p< controlModule.propertyList.size(); p++){
-			PropertyRecord property = (PropertyRecord)controlModule.propertyList.elementAt(p);
+			PropertyDisplayRecord property = (PropertyDisplayRecord)controlModule.propertyList.elementAt(p);
 			if (property.inCurrentTree){
 				String nodeString = null;
 				if ((showingAll || property.showing) && (tree.nodeIsInternal(node) || property.showOnTerminals)){
@@ -874,13 +779,13 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 			nL +=  "[none]";
 		else
 			nL += myTree.getNodeLabel(branchFound);
-		popupKeys.addElement(new PropertyRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN));
+		popupKeys.addElement(new PropertyDisplayRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN));
 		addToPopup(nL, branchFound, responseNumber++);
 
 		addToPopup("Branch/node number: " + branchFound, branchFound, responseNumber++);
-		popupKeys.addElement(new PropertyRecord("nodenumber", Associable.BUILTIN));
+		popupKeys.addElement(new PropertyDisplayRecord("nodenumber", Associable.BUILTIN));
 		addToPopup("-", branchFound, responseNumber++);
-		popupKeys.addElement(new PropertyRecord("dash", Associable.BUILTIN));
+		popupKeys.addElement(new PropertyDisplayRecord("dash", Associable.BUILTIN));
 		String[] strings = stringsAtNode(myTree, branchFound, true, true, popupKeys, 2);
 		if (strings != null)
 			for (int i = 0; i<strings.length; i++)
@@ -906,7 +811,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 			int responseNumber= MesquiteInteger.fromString(arguments, pos);
 			if (responseNumber>=0 && branchFound >0 && MesquiteInteger.isCombinable(branchFound) && MesquiteInteger.isCombinable(responseNumber) ) {
 				if (responseNumber<popupKeys.size()){
-					PropertyRecord property = (PropertyRecord)popupKeys.elementAt(responseNumber);
+					PropertyDisplayRecord property = (PropertyDisplayRecord)popupKeys.elementAt(responseNumber);
 					String name = property.getName();
 					NameReference nameRef = NameReference.getNameReference(name);
 					MesquiteWindow container = controlModule.containerOfModule();
@@ -1032,9 +937,26 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			myDraw(tree, d, g);
 
-		int offsetFromStart = 0;
+		int offsetY = 0;
+		int offsetX = 0;
+		if (treeDisplay.getOrientation() == TreeDisplay.RIGHT) {
+			offsetY = treeDisplay.getTreeDrawing().getEdgeWidth()+2;
+			offsetX = -2;
+		}
+		else if (treeDisplay.getOrientation() == TreeDisplay.LEFT){
+			offsetY = treeDisplay.getTreeDrawing().getEdgeWidth()+2;
+			offsetX = 2;
+		}
+		else if (treeDisplay.getOrientation() == TreeDisplay.UP){
+			offsetX = treeDisplay.getTreeDrawing().getEdgeWidth()+4;
+		}
+		else if (treeDisplay.getOrientation() == TreeDisplay.DOWN){
+			offsetX = treeDisplay.getTreeDrawing().getEdgeWidth()+4;
+			offsetY = -8;
+		}
+		
 		for (int p = 0; p< controlModule.propertyList.size(); p++){
-			PropertyRecord property = (PropertyRecord)controlModule.propertyList.elementAt(p);
+			PropertyDisplayRecord property = (PropertyDisplayRecord)controlModule.propertyList.elementAt(p);
 			if (property.inCurrentTree && property.showing && (tree.nodeIsInternal(node) || property.showOnTerminals)){
 				String nodeString = property.getStringAtNode(tree, node);
 				if (StringUtil.notEmpty(nodeString)){
@@ -1049,11 +971,22 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 					else
 						box.setColors(textColor, null);
 					box.setString(nodeString);
-
 					double x, y;
+					int propertyOffsetX = offsetX;
+					int propertyOffsetY = offsetY;
+					if (treeDisplay.getOrientation() == TreeDisplay.RIGHT || treeDisplay.getOrientation() == TreeDisplay.LEFT){
+						propertyOffsetX += property.xOffset;
+						propertyOffsetY += property.yOffset + (box.getLineAscent()/2);
+					}
+					else {
+						if (!property.vertical)
+							propertyOffsetX += property.xOffset + (box.getLineAscent()/2);
+						propertyOffsetY += property.xOffset;
+						
+					}
 					if (property.centered){   // center on branch
-						double centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + property.xOffset;
-						double centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ property.yOffset;
+						double centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + propertyOffsetX;
+						double centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ propertyOffsetY;
 						int stringWidth = box.getMaxWidthMunched();
 						if (!property.vertical){
 							x = centreBranchX - stringWidth/2;
@@ -1066,16 +999,23 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 					}
 					else {
 						int stringWidth = box.getMaxWidthMunched();
-						x= treeDisplay.getTreeDrawing().getNodeValueTextBaseX(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth, property.fontSize, !property.vertical) + property.xOffset;
-						y = treeDisplay.getTreeDrawing().getNodeValueTextBaseY(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth,property.fontSize,!property.vertical) + property.yOffset;
+						x= treeDisplay.getTreeDrawing().getNodeValueTextBaseX(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth, property.fontSize, !property.vertical) + propertyOffsetX;
+						y = treeDisplay.getTreeDrawing().getNodeValueTextBaseY(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth,property.fontSize,!property.vertical) + propertyOffsetY;
 					}
 					Shape ss = g.getClip();
 					g.setClip(null);
 					if (!property.vertical)
-						box.draw(g,  x, y+offsetFromStart);
+						box.draw(g,  x, y);
 					else
-						box.draw(g,  x+offsetFromStart, y, 0, 1500, treeDisplay, false, false);
-					offsetFromStart += box.getLineHeight();
+						box.draw(g,  x, y, 0, 1500, treeDisplay, false, false);  //Debugg.println fix
+
+					if (property.vertical){
+						offsetX += box.getLineHeight();
+					}
+					else {
+						offsetY += box.getLineHeight();
+					}
+				
 					g.setClip(ss);	
 				}
 			}

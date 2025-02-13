@@ -13,7 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.Color;
 import java.awt.Font;
 
 import mesquite.lib.tree.MesquiteTree;
@@ -22,36 +21,38 @@ import mesquite.lib.tree.Tree;
 /* ======================================================================== */
 /*represents the bits, longs, doubles, strings and objects belonging to parts of an Associable.
  *  Not permanently in an Associable, but for temporary use, e.g. for display in tree window, hence the graphics parameters*/
-public class PropertyRecord implements Listable, Nameable  {
+public class PropertyDisplayRecord implements Listable, Nameable  {
 	private String name = null;
 	private NameReference nRef;
 	public int kind = -1;
 	public boolean showing = false;
 	public boolean showName = true;
 	public boolean centered = false;
-	public boolean whiteEdges = true;
+	public boolean whiteEdges = false;
 	public boolean showOnTerminals = true;
 	public boolean vertical = false;
 	public boolean showIfUnassigned = true;
 	public boolean percentage = false;
 	public double thresholdValueToShow = MesquiteDouble.unassigned;
 	public int digits = 4;
-	public int yOffset = 0;
-	public int xOffset = 0;
+	public int yOffset = 0;  //NOTE: this is in RIGHT orientation. It gets translated as the orientation shifts
+	public int xOffset = 0;//NOTE: this is in RIGHT orientation. It gets translated as the orientation shifts
 	public int fontSize = 12;
 	public int color = 0; //standard Mesquite colors in ColorDistribution
+	public boolean belongsToBranch = true; //Is this settable, or only from a prefs setting?
 	
 	public boolean inCurrentTree = false;  //depends on current tree; used by NodeAssociatesZ and Node Associates List system
-	public boolean belongsToBranch = true;  //from current tree; whether it is considered associated with node vs. branch
 
-	public PropertyRecord(String name,int kind){
+	public static ListableVector preferenceRecords = new ListableVector();
+	
+	public PropertyDisplayRecord(String name,int kind){
 		this.name = name;
 		nRef = NameReference.getNameReference(name);
 		this.kind = kind;
-		if (nRef == MesquiteTree.nodeLabelNameRef && kind == Associable.BUILTIN){
-			showOnTerminals = false;
-			showName = false;
-		}
+		PropertyDisplayRecord prefRecord = findInList(preferenceRecords, nRef, kind);
+		if (prefRecord != null)
+			cloneFrom(prefRecord);
+		//see mesquite.trees.PropertyDisplayRecordInit for defaults setting and management
 	}
 	public void setName(String name){
 		this.name = name;
@@ -63,10 +64,102 @@ public class PropertyRecord implements Listable, Nameable  {
 	public NameReference getNameReference(){
 		return nRef;
 	}
-	public boolean equals(PropertyRecord other){  //style doesn't matter; just name and kind
+	
+	public void cloneFrom(PropertyDisplayRecord other){
+		showing = other.showing;
+		showName = other.showName;
+		centered = other.centered;
+		whiteEdges = other.whiteEdges;
+		showOnTerminals = other.showOnTerminals;
+		vertical = other.vertical;
+		showIfUnassigned = other.showIfUnassigned;
+		percentage = other.percentage;
+		thresholdValueToShow = other.thresholdValueToShow;
+		digits = other.digits;
+		yOffset = other.yOffset;
+		xOffset = other.xOffset;
+		fontSize = other.fontSize;
+		color = other.color;
+		belongsToBranch = other.belongsToBranch;
+	}
+	
+	public void setBooleans(Parser parser){//parser already with string and set to right position
+		// sequence: showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical, showing
+		//use "x" to ignore
+		String b;
+		if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+			showName = MesquiteBoolean.fromTrueFalseString(b);
+		if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+			centered = MesquiteBoolean.fromTrueFalseString(b);
+		if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+			whiteEdges = MesquiteBoolean.fromTrueFalseString(b);
+		if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+			showOnTerminals = MesquiteBoolean.fromTrueFalseString(b);
+		if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+			showIfUnassigned = MesquiteBoolean.fromTrueFalseString(b);
+		if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+			percentage = MesquiteBoolean.fromTrueFalseString(b);
+		if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+			vertical = MesquiteBoolean.fromTrueFalseString(b);
+		if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+			showing = MesquiteBoolean.fromTrueFalseString(b);
+	}
+	public String getBooleansString(){ 
+		return " " + showName + " " + centered + " " + whiteEdges + " " + showOnTerminals
+				+ " " + showIfUnassigned + " " + percentage + " " + vertical + " " + showing;
+	}
+	public void setNumbers(Parser parser){//parser already with string and set to right position
+		// sequence: fontSize, xOffset, yOffset, digits, color, thresholdValueToShow
+		String b;
+		int num;
+		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))
+			fontSize = num;
+		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))
+			xOffset = num;
+		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))
+			yOffset = num;
+		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))
+			digits = num;
+		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))
+			color = num;
+		double dd = MesquiteDouble.fromString(parser);
+		if (MesquiteDouble.isCombinable(dd) || MesquiteDouble.isUnassigned(dd))
+			thresholdValueToShow = dd;
+	}
+		
+	public String getNumbersString(){
+		return " " + MesquiteInteger.toString(fontSize) + " " + MesquiteInteger.toString(xOffset) 
+				+ " " + MesquiteInteger.toString(yOffset) + " " + MesquiteInteger.toString(digits)
+				+ " " + MesquiteInteger.toString(color)
+				+ " " + MesquiteDouble.toString(thresholdValueToShow); 
+	}
+	
+	public static void mergeIntoPreferences(ListableVector propertyList){
+		for (int i = 0; i< propertyList.size(); i++){
+			PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
+			PropertyDisplayRecord prefRecord = findInList(preferenceRecords, property.getNameReference(), property.kind);
+			if (prefRecord == null) {
+				prefRecord = new PropertyDisplayRecord(property.getName(), property.kind);
+				preferenceRecords.addElement(prefRecord, false);
+			}
+			prefRecord.cloneFrom(property);
+		}
+		preferenceRecords.notifyListeners(PropertyDisplayRecord.class, new Notification(MesquiteListener.PARTS_ADDED));
+	}
+	
+	
+	public boolean equals(PropertyDisplayRecord other){  //style doesn't matter; just name and kind
 		if (other ==null)
 			return false;
 		return nRef.equals(other.nRef) && kind == other.kind;
+	}
+	public static PropertyDisplayRecord findInList(ListableVector pList, NameReference nr, int kind){
+		for (int i=0; i<pList.size(); i++){
+			PropertyDisplayRecord mi = (PropertyDisplayRecord)pList.elementAt(i);
+			if (mi.getNameReference().equals(nr) && mi.kind ==kind)
+				return mi;
+		}
+		return null;
 	}
 	
 	Font baseFont = null;

@@ -1,6 +1,6 @@
 package mesquite.trees.lib;
 
-import mesquite.lib.PropertyRecord;
+import mesquite.lib.PropertyDisplayRecord;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lists.lib.ListAssistant;
 import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
@@ -38,7 +38,7 @@ public abstract class NodeAssociatesListAssistant extends ListAssistant  {
 		if (displayModule != null)
 			 displayModule.queryDialog();
 	}
-	protected boolean isShowingOnTree(PropertyRecord property){
+	protected boolean isShowingOnTree(PropertyDisplayRecord property){
 		if (displayModule == null)
 			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 		if (displayModule != null)
@@ -53,14 +53,14 @@ public abstract class NodeAssociatesListAssistant extends ListAssistant  {
 			return listModule.associateIsBuiltIn(row);
 		return false;
 	}
-	protected PropertyRecord getPropertyAtRow(int row){
+	protected PropertyDisplayRecord getPropertyAtRow(int row){
 		if (listModule == null)
 			listModule = (NodeAssociatesList)findEmployerWithDuty(NodeAssociatesList.class);
 		if (listModule != null)
 			return listModule.getPropertyAtRow(row);
 		return null;
 	}
-	protected void pleaseShowHideOnTree(PropertyRecord[] properties, boolean show){
+	protected void pleaseShowHideOnTree(PropertyDisplayRecord[] properties, boolean show){
 		if (displayModule == null)
 			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 		if (displayModule != null)

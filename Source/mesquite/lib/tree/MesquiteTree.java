@@ -22,7 +22,7 @@ import java.math.*;
 import java.util.*;
 
 import mesquite.lib.Associable;
-import mesquite.lib.PropertyRecord;
+import mesquite.lib.PropertyDisplayRecord;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;

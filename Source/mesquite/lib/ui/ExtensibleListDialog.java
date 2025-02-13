@@ -363,7 +363,6 @@ public abstract class ExtensibleListDialog extends ExtensibleDialog implements I
 /*.................................................................................................................*/
 /**  If you override this to add more buttons, make sure you call super.actonPerformed()  */
 	public void actionPerformed(ActionEvent e){
-		Debugg.println("@e extensibleLISTdialog " + e.getActionCommand());
 		currentItem =list.getSelectedIndex();
 		if (getEditButtonLabel().equals(e.getActionCommand()))
 			editNumberedElement(list.getSelectedIndex());

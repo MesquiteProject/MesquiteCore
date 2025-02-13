@@ -146,7 +146,7 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 		return "Branch";
 	}
 	public String getStringForRow(int ic) {
-		PropertyRecord property = getPropertyAtRow(ic);
+		PropertyDisplayRecord property = getPropertyAtRow(ic);
 		if (property != null)
 			return nodeOrBranch(property.belongsToBranch);
 		return "—";

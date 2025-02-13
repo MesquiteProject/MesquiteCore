@@ -99,7 +99,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 			discreetAlert("Please selected rows before attempting to show or hide them here");
 			return;
 		}
-		PropertyRecord[] mis = new PropertyRecord[table.numRowsSelected()];
+		PropertyDisplayRecord[] mis = new PropertyDisplayRecord[table.numRowsSelected()];
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){

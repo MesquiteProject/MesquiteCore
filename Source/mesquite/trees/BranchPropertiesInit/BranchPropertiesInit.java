@@ -1,0 +1,144 @@
+package mesquite.trees.BranchPropertiesInit;
+
+import mesquite.lib.Associable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Parser;
+import mesquite.lib.PropertyDisplayRecord;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.MesquiteInit;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.NewickDialect;
+
+import java.io.File;
+import java.util.Vector;
+
+import mesquite.externalCommunication.lib.*;
+
+public class BranchPropertiesInit extends MesquiteInit implements MesquiteListener {
+
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		initiatePrefsList();
+		return true;
+	}
+	/*.................................................................................................................*/
+	Parser parser = new Parser();
+
+	public void initiatePrefsList(){
+		ListableVector prefsList = PropertyDisplayRecord.preferenceRecords;
+		PropertyDisplayRecord nL = new PropertyDisplayRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN);
+		nL.showOnTerminals = false;
+		nL.showName = false;
+		prefsList.addElement(nL, false);
+		PropertyDisplayRecord bL = new PropertyDisplayRecord(MesquiteTree.branchLengthName, Associable.BUILTIN);
+		prefsList.addElement(bL, false);
+		PropertyDisplayRecord cF = new PropertyDisplayRecord("consensusFrequency", Associable.DOUBLES);
+		prefsList.addElement(cF, false);
+		// booleans sequence: showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical
+		parser.setString(" false false false false false true false true ");
+		cF.setBooleans(parser);
+		// numbers sequence: fontSize, xOffset, yOffset, digits, color, thresholdValueToShow
+		parser.setString(" x 0 0  0 x ?  ");
+		cF.setNumbers(parser);
+		PropertyDisplayRecord bF = new PropertyDisplayRecord("bootstrapFrequency", Associable.DOUBLES);
+		prefsList.addElement(bF, false);
+		bF.cloneFrom(cF);
+		loadPreferences();
+		PropertyDisplayRecord.mergeIntoPreferences(temp);
+		PropertyDisplayRecord.preferenceRecords.addListener(this);
+		temp.removeAllElements(false);
+	}
+
+	ListableVector temp = new ListableVector();
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		for (int k = 0; k< PropertyDisplayRecord.preferenceRecords.size(); k++){
+			PropertyDisplayRecord property = (PropertyDisplayRecord)PropertyDisplayRecord.preferenceRecords.elementAt(k);
+			StringUtil.appendXMLTag(buffer, 2, "addRecord", StringUtil.tokenize(property.getName()) + " " + property.kind);  
+			StringUtil.appendXMLTag(buffer, 2, "setBooleans", StringUtil.tokenize(property.getName()) + " " + property.kind + " " + property.getBooleansString());  
+			StringUtil.appendXMLTag(buffer, 2, "setNumbers", StringUtil.tokenize(property.getName()) + " " + property.kind + " " + property.getNumbersString());  
+		
+		}
+		return buffer.toString();
+	}
+	public void processSingleXMLPreference (String tag, String flavor, String content){
+		processSingleXMLPreference(tag, null, content);
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("addRecord".equalsIgnoreCase(tag)){
+			String name = parser.getFirstToken(content);
+			NameReference nr = NameReference.getNameReference(name);
+			int kind = MesquiteInteger.fromString(parser);
+			PropertyDisplayRecord nL = new PropertyDisplayRecord(name, kind);
+			PropertyDisplayRecord property = PropertyDisplayRecord.findInList(temp, nr, kind);
+			if (property == null) {
+				property = new PropertyDisplayRecord(name, kind);
+				temp.addElement(nL, false);			
+			}
+		}
+		else if ("setBooleans".equalsIgnoreCase(tag)){
+			String name = parser.getFirstToken(content);
+			NameReference nr = NameReference.getNameReference(name);
+			int kind = MesquiteInteger.fromString(parser);
+			PropertyDisplayRecord property = PropertyDisplayRecord.findInList(temp, nr, kind);
+			if (property != null)
+				property.setBooleans(parser);
+		}
+		else if ("setNumbers".equalsIgnoreCase(tag)){
+			String name = parser.getFirstToken(content);
+			NameReference nr = NameReference.getNameReference(name);
+			int kind = MesquiteInteger.fromString(parser);
+			PropertyDisplayRecord property = PropertyDisplayRecord.findInList(temp, nr, kind);
+			if (property != null)
+				property.setNumbers(parser);
+		}
+
+	}
+	/*.................................................................................................................*/
+	public void harvestPropertySettings(){
+		String settingsDirPath = getInstallationSettingsPath();
+		File settingsDir = new File(settingsDirPath);
+		StringBuffer sb = new StringBuffer();
+		if (settingsDir.exists() && settingsDir.isDirectory()) {
+			MesquiteTree.dialects = new ListableVector();
+			String[] settingFiles = settingsDir.list();
+			ListableVector.sort(settingFiles);
+			for (int i=0; i<settingFiles.length; i++) {
+				if (settingFiles[i]!=null && !settingFiles[i].equalsIgnoreCase("example.xml") && settingFiles[i].endsWith("xml")&& !settingFiles[i].startsWith(".")) {
+					String dialectFilePath = settingFiles + MesquiteFile.fileSeparator + settingFiles[i];
+					NewickDialect dialect = new NewickDialect(dialectFilePath);
+					boolean success = dialect.isReady();
+					if (success) 
+						MesquiteTree.dialects.addElement(dialect, false);
+				}
+			}
+		}
+	}
+    /** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
+	public void changed(Object caller, Object obj, Notification notification){
+		int code = Notification.getCode(notification); 
+		if (obj == PropertyDisplayRecord.preferenceRecords){
+			MesquiteMessage.println("Branch/node property display preferences saved.");
+			storePreferences();
+		}
+				
+	}
+
+	public String getName() {
+		return "Branch/Node Properties INIT";
+	}
+
+}

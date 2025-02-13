@@ -601,7 +601,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 
 	/*-----------------------------------------*/
-	public void renameAssociated(PropertyRecord property, String newName, boolean notify){
+	public void renameAssociated(PropertyDisplayRecord property, String newName, boolean notify){
 		Nameable d = null;
 		if (property.kind == Associable.BITS)
 			d = getAssociatedBits(property.getNameReference());
@@ -620,7 +620,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		}
 	}
-	public boolean isPropertyAssociated(PropertyRecord property){
+	public boolean isPropertyAssociated(PropertyDisplayRecord property){
 		if (property.kind == Associable.BUILTIN)
 			return this instanceof MesquiteTree && (property.getNameReference().equals(MesquiteTree.branchLengthNameRef) || property.getNameReference().equals(MesquiteTree.nodeLabelNameRef));
 		if (property.kind == Associable.BITS)
@@ -635,7 +635,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return getAssociatedObjects(property.getNameReference())!= null;
 		return false;
 	}
-	public boolean propertyIsBetween(PropertyRecord property){
+	public boolean propertyIsBetween(PropertyDisplayRecord property){
 		if (property.kind == Associable.BUILTIN){
 			if (this instanceof MesquiteTree){
 				if (property.getNameReference().equals(MesquiteTree.branchLengthNameRef))
@@ -672,41 +672,41 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		return false;
 	}
 
-	public PropertyRecord[] getPropertyRecords(){ 
+	public PropertyDisplayRecord[] getPropertyRecords(){ 
 		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
 		if (total == 0)
 			return null;
-		PropertyRecord[] names = new PropertyRecord[total];
+		PropertyDisplayRecord[] names = new PropertyDisplayRecord[total];
 		int count = 0;
 		if (bits!=null) {
 			for (int i=0; i<bits.size(); i++) {
 				Listable b = (Listable)bits.elementAt(i);
-				names[count++] = new PropertyRecord(b.getName(), Associable.BITS);
+				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.BITS);
 			}
 		}
 		if (longs!=null) {
 			for (int i=0; i<longs.size(); i++) {
 				Object obj = longs.elementAt(i);
 				Listable b = (Listable)longs.elementAt(i);
-				names[count++] = new PropertyRecord(b.getName(), Associable.LONGS);
+				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.LONGS);
 			}
 		}
 		if (doubles!=null){
 			for (int i=0; i<doubles.size(); i++) {
 				Listable b = (Listable)doubles.elementAt(i);
-				names[count++] = new PropertyRecord(b.getName(), Associable.DOUBLES);
+				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.DOUBLES);
 			}
 		}
 		if (strings!=null){
 			for (int i=0; i<strings.size(); i++) {
 				Listable b = (Listable)strings.elementAt(i);
-				names[count++] = new PropertyRecord(b.getName(), Associable.STRINGS);
+				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.STRINGS);
 			}
 		}
 		if (objects!=null) {
 			for (int i=0; i<objects.size(); i++) {
 				Listable b = (Listable)objects.elementAt(i);
-				names[count++] = new PropertyRecord(b.getName(), Associable.OBJECTS);
+				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.OBJECTS);
 			}
 		}
 		return names;
@@ -730,7 +730,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (c instanceof String){
 			return ColorDistribution.colorFromHex((String)c);
 		}
-		return Color.black;
+		return null;
 	}
 	public String getColorAsHexString(int node){
 		Object c = getAssociatedString(ColorDistribution.colorRGBNameReference, node);
