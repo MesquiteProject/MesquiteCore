@@ -119,7 +119,7 @@ public class ReinterpretBranchLabels extends TreeAltererMult {
 						tree.setAssociatedDouble(nameRef, node, d, appliesToBranch);
 				}
 				else {
-					tree.setAssociatedObject(nameRef, node, label, appliesToBranch);
+					tree.setAssociatedString(nameRef, node, label, appliesToBranch);
 				}
 				if (deleteAfter)
 					tree.setNodeLabel(null, node);

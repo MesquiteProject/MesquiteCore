@@ -528,20 +528,32 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		}
 		//BRANCH LENGTH DISPLAY -- has been moved to NodeAssociatesZDisplayControl, so here just passing along old scripting
 		else if (checker.compare(this.getClass(), "Shows branch lengths on tree", "[on or off]", commandName, "labelBranchLengths")) {
+			String token = parser.getFirstToken(arguments);
+			if (token != null && token.equalsIgnoreCase("off"))
+				return null;
 			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 			if (mb != null)
-				mb.doCommand("showAssociate", StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " " + StringUtil.blankIfNull(arguments), checker);
+				mb.doCommand("showAssociate",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " true", checker);
 		}
+		//" showName centred whiteEdges showOnTerminals showIfUnassigned showPercentage vertical "
 		else if (checker.compare(this.getClass(), "Specifies whether or not branch length labels, if shown, are centered along a branch", "[on or off]", commandName, "centerBrLenLabels")) {
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off"))
+				B = false;
 			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 			if (mb != null)
-				mb.doCommand("toggleCentred",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " " + StringUtil.blankIfNull(arguments), checker);
+				mb.doCommand("setBooleans",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x " + B +" x x x x x ", checker);
 	}
 
 		else if (checker.compare(this.getClass(), "Specifies whether or not ? is shown or not for branches whose length is unspecified", "[on or off]", commandName, "showBrLensUnspecified")) {
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off"))
+				B = false;
 			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 			if (mb != null)
-				mb.doCommand("showUnassigned",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " " + StringUtil.blankIfNull(arguments), checker);
+				mb.doCommand("setBooleans",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x x x x " + B + " x x ", checker);
 		}
 		else if (checker.compare(this.getClass(), "Allows user to choose the color for branch length labels", "[on or off]", commandName, "chooseBrLenLabelColor")) {
 			if (!MesquiteThread.isScripting()) {
@@ -551,21 +563,32 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Specifies the color", "[on or off]", commandName, "setBrLenLabelColor")) {
+			int num = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (!MesquiteInteger.isCombinable(num))
+				return null;
 			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 			if (mb != null)
-				mb.doCommand("setColor",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " " + StringUtil.blankIfNull(arguments), checker);
+				mb.doCommand("setNumbers",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x x x x " + num + " x  ", checker);
 		}
 
 
 		else if (checker.compare(this.getClass(), "Specifies whether or not branch length labels, if shown, are also shown on terminal branches of tree", "[on or off]", commandName, "showBrLenLabelsOnTerminals")) {
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off"))
+				B = false;
 			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 			if (mb != null)
-				mb.doCommand("toggleShowOnTerminals",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " " + StringUtil.blankIfNull(arguments), checker);
-		}
+				mb.doCommand("setBooleans",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x x x " + B + " x x x ", checker);
+	}
+		//" fontSize xOffset yOffset digits color thresholdValue "
 		else if (checker.compare(this.getClass(), "Sets the number of decimals in the branch length label", "[number]", commandName, "setNumBrLenDecimals")) {
+			int num = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (!MesquiteInteger.isCombinable(num))
+				return null;
 			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 			if (mb != null)
-				mb.doCommand("setDigits",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " " + StringUtil.blankIfNull(arguments), checker);
+				mb.doCommand("setNumbers",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x x x " +num+ " x x  ", checker);
 		}
 		else if (checker.compare(this.getClass(), "Shows branch lengths on tree", "", commandName, "controlPropertiesDisplay")) {
 			if (!MesquiteThread.isScripting()) {

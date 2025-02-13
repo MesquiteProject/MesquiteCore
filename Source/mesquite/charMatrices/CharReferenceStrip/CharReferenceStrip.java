@@ -188,9 +188,9 @@ public class CharReferenceStrip extends DataWindowAssistantID {
 		lastShown = column;
 		//	String s = Integer.toString(column+1) + ". " + data.getCharacterName(column);
 //		data.setCellObject(refRef, ic, it, null);
-		Object obj  = data.getAssociatedObject(refRef, column);
-		if (obj != null && obj instanceof String)
-			return (String)obj;
+		String obj  = data.getAssociatedString(refRef, column);
+		if (obj != null)
+			return obj;
 
 
 
@@ -202,7 +202,7 @@ public class CharReferenceStrip extends DataWindowAssistantID {
 			return;
 		if (StringUtil.blank(refString))
 			refString = null;
-		data.setAssociatedObject(refRef, column, refString);
+		data.setAssociatedString(refRef, column, refString);
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 

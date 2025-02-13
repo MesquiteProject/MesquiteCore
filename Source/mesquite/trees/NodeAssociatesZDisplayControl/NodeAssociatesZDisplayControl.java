@@ -105,7 +105,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			this.tree.removeListener(this);
 		this.tree = tree;
 		this.tree.addListener(this);
-		
+
 		addPropertiesToList(tree);
 	}
 	public void changed(Object caller, Object obj, Notification notification){
@@ -229,6 +229,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			if (moduleIsNaive && name.equalsIgnoreCase("consensusFrequency")){
 				mi.showing = true;
 				mi.showName = false;
+				mi.percentage = true;
 			}
 			propertyList.addElement(mi, false);
 		}
@@ -449,10 +450,10 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		dialog.getList().setMultipleMode(true);
 		dialog.getList().addItemListener(this);
 		dialog.getList().setMinimumWidth(500);
-		selectOrHide = dialog.addButtonRow("Show Selected", "Hide Selected", null, this);
+		selectOrHide = dialog.addButtonRow("✓ Show Selected", "Hide Selected", null, this);
 		selectOrHide[0].setActionCommand("showSelected");
 		selectOrHide[1].setActionCommand("hideSelected");
-		dialog.addHorizontalLine(2);
+		dialog.addHorizontalLine(1);
 
 		//DISPLAY STYLES
 		setStyleButton = dialog.addButton("Set Style of Selected Properties");
@@ -525,8 +526,8 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public void itemStateChanged(ItemEvent e) {
-			if (e.getSource() != colorF)
-				resetStyleWidgets();
+		if (e.getSource() != colorF)
+			resetStyleWidgets();
 	}
 	public void textValueChanged(TextEvent e) {
 	}
@@ -590,6 +591,18 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		}
 
 	}
+	/*
+	String getBooleanSpecs(PropertyRecord n){
+		return "setBooleans "  + StringUtil.tokenize(n.getName()) + " " + n.kind 
+				+ " " + n.showName + " " + n.centered + " " + n.whiteEdges + " " + n.showOnTerminals
+				+ " " + n.showIfUnassigned + " " + n.percentage + " " + n.vertical;
+	}
+	MesquiteString getBooleanSpecs(PropertyRecord n){
+		MesquiteString ms = new MesquiteString( "setBooleans "  + StringUtil.tokenize(n.getName()) + " " + n.kind 
+				+ " " + n.showName + " " + n.centered + " " + n.whiteEdges + " " + n.showOnTerminals
+				+ " " + n.showIfUnassigned + " " + n.percentage + " " + n.vertical);
+		ms.setName(n.getName());
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		if (moduleIsNaive)
@@ -606,6 +619,14 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 					+ " " + MesquiteInteger.toString(n.yOffset) + " " + MesquiteInteger.toString(n.digits)
 					+ " " + MesquiteInteger.toString(n.color)
 					+ " " + MesquiteDouble.toString(n.thresholdValueToShow)); 
+			
+			/*
+				mb.doCommand("setBooleans",  StringUtil.tokenize("NAME) + " " + kind + " showName centred whiteEdges showOnTerminals showIfUnassigned showPercentage vertical ", checker);
+				mb.doCommand("setBooleans",  StringUtil.tokenize("NAME) + " " + kind + " ? ? ? ? ? ? ? ", checker);
+				mb.doCommand("setNumbers",  StringUtil.tokenize("NAME) + " " + kind + " fontSize xOffset yOffset digits color thresholdValue ", checker);
+				mb.doCommand("setNumbers",  StringUtil.tokenize("NAME) + " " + kind + " ? ? ? ? ? ?  ", checker);
+			 */		
+			
 		}
 		return temp;
 	}
@@ -623,19 +644,29 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			addPropertyFromScript(name, kind,  show);
 		}
 		else if (checker.compare(this.getClass(), "Sets booleans", "[name][kind][on or off for 7 booleans]", commandName, "setBooleans")) {
-			// sequence showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical
+			// sequence: showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical
+			//use "x" to ignore
 			String name = parser.getFirstToken(arguments);
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
 			PropertyRecord property = findInList(name, kind);
 			if (property!= null){
-				property.showName = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
-				property.centered = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
-				property.whiteEdges = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
-				property.showOnTerminals = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
-				property.showIfUnassigned = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
-				property.percentage = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
-				property.vertical = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
-				if (!MesquiteThread.isScripting()) parametersChanged();
+				String b;
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.showName = MesquiteBoolean.fromTrueFalseString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.centered = MesquiteBoolean.fromTrueFalseString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.whiteEdges = MesquiteBoolean.fromTrueFalseString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.showOnTerminals = MesquiteBoolean.fromTrueFalseString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.showIfUnassigned = MesquiteBoolean.fromTrueFalseString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.percentage = MesquiteBoolean.fromTrueFalseString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.vertical = MesquiteBoolean.fromTrueFalseString(b);
+				 
+			if (!MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets numbers", "[name][kind][5 integers & 1 double]", commandName, "setNumbers")) {
@@ -644,16 +675,52 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
 			PropertyRecord property = findInList(name, kind);
 			if (property!= null){
-				property.fontSize = MesquiteInteger.fromString(parser.getNextToken());
-				property.xOffset = MesquiteInteger.fromString(parser.getNextToken());
-				property.yOffset = MesquiteInteger.fromString(parser.getNextToken());
-				property.digits = MesquiteInteger.fromString(parser.getNextToken());
-				property.color = MesquiteInteger.fromString(parser.getNextToken());
-				property.thresholdValueToShow = MesquiteDouble.fromString(parser);
+				String b;
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.fontSize = MesquiteInteger.fromString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.xOffset = MesquiteInteger.fromString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.yOffset = MesquiteInteger.fromString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.digits = MesquiteInteger.fromString(b);
+				if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
+					property.color = MesquiteInteger.fromString(b);
+				double dd = MesquiteDouble.fromString(parser);
+				if (MesquiteDouble.isCombinable(dd) || MesquiteDouble.isUnassigned(dd))
+					property.thresholdValueToShow = dd;
 				if (!MesquiteThread.isScripting()) parametersChanged();
+		}
+	}
+
+		else if (checker.compare(this.getClass(), "Sets booleans for all double properties. For reading of 3.x scripts", "[on or off for 7 booleans]", commandName, "setBooleansAllDoubles")) {
+			for (int i= 0; i< propertyList.size(); i++){
+				PropertyRecord property = (PropertyRecord)propertyList.elementAt(i);
+				if (property.kind == Associable.DOUBLES)
+					doCommand("setBooleans", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
 		}
-
+		else if (checker.compare(this.getClass(), "Sets booleans for all string properties. For reading of 3.x scripts", "[on or off for 7 booleans]", commandName, "setBooleansAllStrings")) {
+			for (int i= 0; i< propertyList.size(); i++){
+				PropertyRecord property = (PropertyRecord)propertyList.elementAt(i);
+				if (property.kind == Associable.STRINGS)
+					doCommand("setBooleans", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets numbers for all double properties. For reading of 3.x scripts", "[numbers for 7 values]", commandName, "setNumbersAllDoubles")) {
+			for (int i= 0; i< propertyList.size(); i++){
+				PropertyRecord property = (PropertyRecord)propertyList.elementAt(i);
+				if (property.kind == Associable.DOUBLES)
+					doCommand("setNumbers", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets booleans for all string properties. For reading of 3.x scripts", "[numbers for 7 values]", commandName, "setNumbersAllStrings")) {
+			for (int i= 0; i< propertyList.size(); i++){
+				PropertyRecord property = (PropertyRecord)propertyList.elementAt(i);
+				if (property.kind == Associable.STRINGS)
+					doCommand("setNumbers", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
+			}
+		}
 		else if (checker.compare(this.getClass(), "Sets the color of the value in the display", "[hex string]", commandName, "setColor")) {
 			System.err.println("@setColor " + arguments);
 		}
@@ -839,11 +906,11 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 			int responseNumber= MesquiteInteger.fromString(arguments, pos);
 			if (responseNumber>=0 && branchFound >0 && MesquiteInteger.isCombinable(branchFound) && MesquiteInteger.isCombinable(responseNumber) ) {
 				if (responseNumber<popupKeys.size()){
-					PropertyRecord mi = (PropertyRecord)popupKeys.elementAt(responseNumber);
-					String name = mi.getName();
+					PropertyRecord property = (PropertyRecord)popupKeys.elementAt(responseNumber);
+					String name = property.getName();
 					NameReference nameRef = NameReference.getNameReference(name);
 					MesquiteWindow container = controlModule.containerOfModule();
-					int kind = mi.kind;
+					int kind = property.kind;
 					if (name.equalsIgnoreCase(MesquiteTree.branchLengthName) && kind == Associable.BUILTIN) {
 						controlModule.discreetAlert("This is the length of the branch (stored in the primary branch length storage of the tree). You can adjust it using various tools, or with items in the Alter menu.");
 					}
@@ -858,24 +925,31 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 						String nC = MesquiteString.queryString(container, "Color", "This is the color of the branch (stored in the reserved color storage of the tree). "
 								+"You can change it via the paintbrush tool, or here via hexadecimal color string, which must start with a # and the 6 digits" 
 								+ " consisting of only the characters 0 to 9 or A to F (e.g., #ff0000 is red, #00ff00 is green, #0000ff is blue).", 
-								(String)myTree.getAssociatedObject(nameRef, branchFound), 1);
+								(String)myTree.getAssociatedString(nameRef, branchFound), 1);
 						if (!StringUtil.blank(nC) && nC.length() == 7 && nC.charAt(0) == '#'){
-							myTree.setAssociatedObject(nameRef, branchFound, nC);
+							myTree.setAssociatedString(nameRef, branchFound, nC);
 							myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 							return null;
 						}
 
 					}
 					else  if (kind == Associable.BITS) {
-						controlModule.discreetAlert("This is a boolean (true/false value) attached to the branch of the tree, with name \"" + name + "\" and value \"" + stringAtNodeForPropertyExplanation(myTree, branchFound,  mi, false) + "\".");
-						//boolean check = MesquiteBoolean.queryCheckBox(MesquiteWindow parent, String title, String message, String label, boolean current) {
+						//	controlModule.discreetAlert("This is a boolean (true/false value) attached to the branch of the tree, with name \"" + name + "\" and value \"" + stringAtNodeForPropertyExplanation(myTree, branchFound,  mi, false) + "\".");
+						boolean current = myTree.getAssociatedBit(property.getNameReference(), branchFound);
+						MesquiteBoolean check = MesquiteBoolean.queryCheckBox(controlModule.containerOfModule(), "Boolean value",
+								"This is a boolean (true/false value) attached to the branch of the tree, with name \"" + name 
+								+ "\" and value \"" + stringAtNodeForPropertyExplanation(myTree, branchFound,  property, false) + "\". "
+								+" You can change its value here (checked = true; unchecked = false).", property.getName(), current);
+						if (check != null){
+							myTree.setAssociatedBit(property.getNameReference(), branchFound, check.getValue());
+							myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+						}
 
-					
 					}
 					else  if (kind == Associable.LONGS){
 						long d = myTree.getAssociatedLong(nameRef, branchFound);  
 						long dN = MesquiteLong.queryLong(container, "Integer number", "This is an integral (long) value attached to the branch of the tree, with name \"" + name + "\" "
-								+"and value \"" + stringAtNodeForPropertyExplanation(myTree, branchFound,  mi, false) + "\". You can edit it here, although there may be restrictions on its value.", d);
+								+"and value \"" + stringAtNodeForPropertyExplanation(myTree, branchFound,  property, false) + "\". You can edit it here, although there may be restrictions on its value.", d);
 						if (!MesquiteLong.isUnassigned(dN)){
 							myTree.setAssociatedLong(nameRef, branchFound, dN);  
 							myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
@@ -884,7 +958,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 					else  if (kind == Associable.DOUBLES){
 						double d = myTree.getAssociatedDouble(nameRef, branchFound);  
 						double dN = MesquiteDouble.queryDouble(container, "Decimal number", "This is a decimal number (floating-point) attached to the branch of the tree, with name \"" + name + "\" and value \"" + 
-								stringAtNodeForPropertyExplanation(myTree, branchFound,  mi, false) + "\". You can edit it here, although there may be restrictions on its value.", d);
+								stringAtNodeForPropertyExplanation(myTree, branchFound,  property, false) + "\". You can edit it here, although there may be restrictions on its value.", d);
 						if (!MesquiteDouble.isUnassigned(dN)){
 							myTree.setAssociatedDouble(nameRef, branchFound, dN);  
 							myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));

@@ -54,9 +54,9 @@ public class ManageHyperlinks extends FileInit /*implements ElementManager*/ {
 				Taxa taxa = getProject().getTaxa(i);
 				if (taxa.getFile() == file) {
 					for (int it = 0; it<taxa.getNumTaxa(); it++){
-						Object obj = taxa.getAssociatedObject(linkNameRef, it);
-						if (obj!=null && obj instanceof String){
-							s += "\tHYPERLINK TAXA = " + StringUtil.tokenize(taxa.getName()) + " TAXON = " + it + " URL = " + StringUtil.tokenize((String)obj) + ";" + StringUtil.lineEnding();
+						String obj = taxa.getAssociatedString(linkNameRef, it);
+						if (obj!=null ){
+							s += "\tHYPERLINK TAXA = " + StringUtil.tokenize(taxa.getName()) + " TAXON = " + it + " URL = " + StringUtil.tokenize(obj) + ";" + StringUtil.lineEnding();
 							found = true;
 						}
 					}
@@ -171,9 +171,7 @@ public class ManageHyperlinks extends FileInit /*implements ElementManager*/ {
 									}
 								}
 								else {
-									if (taxa.getAssociatedObjects(linkNameRef)==null)
-										taxa.makeAssociatedObjects("hyperlink");
-									taxa.setAssociatedObject(linkNameRef, taxonNumber, pathName);
+									taxa.setAssociatedString(linkNameRef, taxonNumber, pathName);
 								}
 							}
 						}

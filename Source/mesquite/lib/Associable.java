@@ -2206,15 +2206,44 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 	}
 	public String getAssociatedString(NameReference nRef, int index){
-		if (strings==null || nRef==null)
+		if (nRef==null)
 			return null;
+		if (strings != null)
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b !=null && nRef.equals(b.getNameReference())) {
+					return b.getValue(index); 
+				}
+			}
+
+		//not found among strings. If a string had previously been placed as an object, need to check there. It would have already been warned about!
+		if (assocStringObjectWarned){
+			for (int i=0; i<objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b !=null && nRef.equals(b.getNameReference())) {
+					Object bS = b.getValue(index); 
+					if (bS instanceof String)
+						return (String)bS;
+					else
+						return null;
+				}
+			}
+		}
+
+
+		return null;
+	}
+	/** Returns true iff there is at least one associate string of type nRef */
+	public boolean anyAssociatedString(NameReference nRef){
+		if (strings==null || nRef==null)
+			return false;
 		for (int i=0; i<strings.size(); i++) {
 			StringArray b = (StringArray)strings.elementAt(i);
 			if (b !=null && nRef.equals(b.getNameReference())) {
-				return b.getValue(index); 
+				return true; 
 			}
 		}
-		return null;
+		return false;
 	}
 
 	/* ---------------------OBJECT------------------------*/
@@ -2284,12 +2313,20 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 
 	static boolean assocStringObjectWarned = false;
+	boolean assocStringObjectFound = false;
+	
 	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
 	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
 	public void setAssociatedObject(NameReference nRef, int index, Object value, boolean setAsBetween){
-		if (value instanceof String && MesquiteTrunk.developmentMode && !assocStringObjectWarned){
-			System.err.println("String saved in Associable as object; Associable: " + getClass());
-			assocStringObjectWarned = true;
+		if (value instanceof String){
+			assocStringObjectFound = true;
+			if (MesquiteTrunk.developmentMode && !assocStringObjectWarned){
+				MesquiteMessage.println("String saved in Associable as object (a); Associable: " + getClass() + ". It will be saved instead as a string.");
+				MesquiteMessage.printStackTrace("");
+				assocStringObjectWarned = true;
+			}
+			setAssociatedString(nRef, index, (String)value, setAsBetween);
+			return;
 		}
 
 		if (value instanceof String && value != null && ((String)value).equals(""))  // a filter so a blank string is not saved
@@ -2316,18 +2353,34 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 	}
 	public Object getAssociatedObject(NameReference nRef, int index){
-		if (objects==null || nRef==null)
+		if (nRef==null)
 			return null;
-		for (int i=0; i<objects.size(); i++) {
+		if (objects != null)
+			for (int i=0; i<objects.size(); i++) {
 			ObjectArray b = (ObjectArray)objects.elementAt(i);
 			if (b !=null && nRef.equals(b.getNameReference())) {
 				if (b.getValue(index) instanceof String && MesquiteTrunk.developmentMode && !assocStringObjectWarned){
-					System.err.println("String saved in Associable as object; Associable: " + getClass());
+					MesquiteMessage.println("String found saved in Associable as object (b); Associable: " + getClass() + ".");
+					MesquiteMessage.printStackTrace("");
 					assocStringObjectWarned = true;
 				}
 				return b.getValue(index); 
 			}
 		}
+		//Not found. Checking Strings in case it's an old style request
+		if (strings != null)
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+			if (b !=null && nRef.equals(b.getNameReference())) {
+				if (MesquiteTrunk.developmentMode && !assocStringObjectWarned){
+					MesquiteMessage.println("String found saved in Associable as object (c); Associable: " + getClass() + ".");
+					MesquiteMessage.printStackTrace("");
+					assocStringObjectWarned = true;
+				}
+				return b.getValue(index); 
+			}
+		}
+
 		return null;
 	}
 

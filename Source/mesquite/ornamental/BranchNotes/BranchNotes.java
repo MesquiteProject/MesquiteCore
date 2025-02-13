@@ -175,11 +175,11 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 	}
 	NameReference branchNotesRef = NameReference.getNameReference("note");
 	String getNote(Tree tree, int node){
-		return (String)tree.getAssociatedObject(branchNotesRef, node);
+		return (String)tree.getAssociatedString(branchNotesRef, node);
 	}
 	void setNote(Tree tree, int node, String note){
 		if (tree instanceof Associable){
-			((Associable)tree).setAssociatedObject(branchNotesRef, node, note);
+			((Associable)tree).setAssociatedString(branchNotesRef, node, note);
 			((Associable)tree).notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 
 		}

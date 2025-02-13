@@ -202,7 +202,7 @@ public class TreeUtil {
 			if (t.nodeHasLabel(node)){
 				String label = t.getNodeLabel(node);
 				if (asText) {
-					t.setAssociatedObject(nameRefs[0], node, label, true);
+					t.setAssociatedString(nameRefs[0], node, label, true);
 				} else {
 					Parser parser = new Parser(label);
 					parser.setWhitespaceString(parser.getWhitespaceString()+"/");

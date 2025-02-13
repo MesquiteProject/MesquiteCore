@@ -117,7 +117,7 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 					candidateName = textName + (nameCount++);
 				NameReference tnRef = NameReference.getNameReference(candidateName);
 				NameReference currentRef = NameReference.getNameReference(currentName);
-				tree.makeAssociatedObjects(candidateName);
+				tree.makeAssociatedStrings(candidateName);
 				StringArray textArray = tree.getAssociatedStrings(tnRef);
 				if (mi.kind == Associable.BUILTIN){
 					if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){

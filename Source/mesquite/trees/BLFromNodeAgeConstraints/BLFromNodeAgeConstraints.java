@@ -54,7 +54,7 @@ public class BLFromNodeAgeConstraints extends BranchLengthsAltererMult {
 	void getConstraint(Tree tree, int node, MesquiteDouble min, MesquiteDouble max){
 		min.setToUnassigned();
 		max.setToUnassigned();
-		String constraint = (String)tree.getAssociatedObject(nodeAgeConstrRef, node);
+		String constraint = (String)tree.getAssociatedString(nodeAgeConstrRef, node);
 		// one number: fixed age
 		// 0-max
 		// min+

@@ -565,13 +565,13 @@ public class ManageTaxa extends TaxaManager {
 							}
 						}
 						//look through all attached objects 
-						int numObs = taxa.getNumberAssociatedObjects();
+						int numObs = taxa.getNumberAssociatedStrings();
 						for (int v = 0; v<numObs; v++){
-							ObjectArray array = taxa.getAssociatedObjects(v);
+							StringArray array = taxa.getAssociatedStrings(v);
 							if (!commentsRef.equals(array.getNameReference())){
-								Object c = array.getValue(it);
+								String c = array.getValue(it);
 
-								if (c != null && c instanceof String){
+								if (c != null){
 									s.append("\tSUT  "+ taxonReference);
 									s.append(" TAXON = ");
 									s.append(Integer.toString(it+1));
@@ -786,7 +786,7 @@ public class ManageTaxa extends TaxaManager {
 						return true;
 					}
 					else if (string != null){
-						taxa.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, string);
+						taxa.setAssociatedString(NameReference.getNameReference(name), whichTaxon, string);
 						return true;
 					}
 				}
@@ -962,7 +962,7 @@ public class ManageTaxa extends TaxaManager {
 					}/**/
 					newTaxa.setTaxonNameNoWarnNoNotify(it, taxonName);
 					/*if (fuse){
-						newTaxa.setAssociatedObject(importSourceRef, it, file.getFileName());
+						newTaxa.setAssociatedString(importSourceRef, it, file.getFileName());
 					}*/
 
 				}

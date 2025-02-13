@@ -104,7 +104,7 @@ public class PublicationCode extends TaxonListAssistant {
 		Taxon taxon = data.getTaxa().getTaxon(it);
 		Associable tInfo = data.getTaxaInfo(false);
 		if (tInfo != null && taxon != null) {
-			return (String)tInfo.getAssociatedObject(CharacterData.publicationCodeNameRef, it);
+			return (String)tInfo.getAssociatedString(CharacterData.publicationCodeNameRef, it);
 		}
 		return "-";
 	}
@@ -121,7 +121,7 @@ public class PublicationCode extends TaxonListAssistant {
 		Taxon taxon = data.getTaxa().getTaxon(row);
 		Associable tInfo = data.getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(CharacterData.publicationCodeNameRef, row, s);
+			tInfo.setAssociatedString(CharacterData.publicationCodeNameRef, row, s);
 		}
 	}
 	public boolean useString(int ic){

@@ -153,7 +153,7 @@ public class GenBankNumber extends TaxonListAssistant {
 		Taxon taxon = data.getTaxa().getTaxon(it);
 		Associable tInfo = data.getTaxaInfo(false);
 		if (tInfo != null && taxon != null) {
-			return (String)tInfo.getAssociatedObject(MolecularData.genBankNumberRef, it);
+			return (String)tInfo.getAssociatedString(MolecularData.genBankNumberRef, it);
 		}
 		return "-";
 	}
@@ -170,7 +170,7 @@ public class GenBankNumber extends TaxonListAssistant {
 		Taxon taxon = data.getTaxa().getTaxon(row);
 		Associable tInfo = data.getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, row, s);
+			tInfo.setAssociatedString(MolecularData.genBankNumberRef, row, s);
 		}
 	}
 	public boolean useString(int ic){

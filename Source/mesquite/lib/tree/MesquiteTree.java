@@ -628,11 +628,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*----------------------------------------*/
 	private boolean coTraverseTransfer(int kind, NameReference nRef, MesquiteTree tree, int node, int[] minTerms, Tree tree2, int node2, int[] minTerms2){
-		if (kind == 0)
+		if (kind == Associable.BITS)
+			tree.setAssociatedBit(nRef, node, tree2.getAssociatedBit(nRef, node2));
+		else if (kind == Associable.LONGS)
 			tree.setAssociatedLong(nRef, node, tree2.getAssociatedLong(nRef, node2));
-		else if (kind == 1)
+		else if (kind == Associable.DOUBLES)
 			tree.setAssociatedDouble(nRef, node, tree2.getAssociatedDouble(nRef, node2));
-		else if (kind == 2)
+		else if (kind == Associable.STRINGS)
+			tree.setAssociatedString(nRef, node, tree2.getAssociatedString(nRef, node2));
+		else if (kind == Associable.OBJECTS)
 			tree.setAssociatedObject(nRef, node, tree2.getAssociatedObject(nRef, node2));
 
 		int numD = tree.numberOfDaughtersOfNode(node);
@@ -664,7 +668,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return true;
 	}
-	
+
 	/*_________________________________________________*/
 	//COLLAPSED CLADES
 	NameReference collapsedNR = NameReference.getNameReference("collapsed");
@@ -675,7 +679,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		setCollapsedClade(node, false);
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
 			decollapseClade(d);
-	
+
 	}
 	public boolean isCollapsedClade(int node){
 		return getAssociatedBit(collapsedNR, node);
@@ -738,19 +742,31 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/*_________________________________________________*/
 	/** Copies associated from other tree. Assumes topology identicial, so check first! kind 1 = long, 2 = double, 3 = object. */
 	public void transferAssociated(Tree tree, int kind, NameReference nRef){
-		if (kind == 0) {
+		if (kind == Associable.BITS) {
+			if (tree.getAssociatedBits(nRef)==null) {
+				removeAssociatedBits(nRef);
+				return;
+			}
+		}
+		else if (kind == Associable.LONGS) {
 			if (tree.getAssociatedLongs(nRef)==null) {
 				removeAssociatedLongs(nRef);
 				return;
 			}
 		}
-		else if (kind == 1) {
+		else if (kind == Associable.DOUBLES) {
 			if (tree.getAssociatedDoubles(nRef)==null) {
 				removeAssociatedDoubles(nRef);
 				return;
 			}
 		}
-		else if (kind == 2) {
+		else if (kind == Associable.STRINGS) {
+			if (tree.getAssociatedStrings(nRef)==null) {
+				removeAssociatedStrings(nRef);
+				return;
+			}
+		}
+		else if (kind == Associable.OBJECTS) {
 			if (tree.getAssociatedObjects(nRef)==null) {
 				removeAssociatedObjects(nRef);
 				return;
@@ -3030,7 +3046,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private String readNamedInternal(String TreeDescription, String c, int sN, MesquiteInteger stringLoc){
 
 		if (convertInternalNames){
-			setAssociatedObject(branchNotesRef, sN, c);
+			setAssociatedString(branchNotesRef, sN, c);
 			return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
 		}
 		else {
@@ -3427,19 +3443,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/* ####################### Dialect handling ################################## */
 	String dialect = "Mesquite";
-	
+
 	public void setDialect(String dialect){
 		this.dialect = dialect;
 	}
 	public String getDialect(){
 		return dialect;
 	}
-	
+
 	String wellTokenizedNewickCommentPunctuation = ",=><{}'";
 	String wellTokenizedNewickCommentWhitespace = null;	
 	String punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 	String whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
-	
+
 	private String preprocessForDialect(String tD, String dialectName){
 		if (dialects.indexOfByNameIgnoreCase(dialectName)>=0){
 			NewickDialect dialect = (NewickDialect)dialects.elementAt(dialects.indexOfByNameIgnoreCase(dialectName));
@@ -3454,7 +3470,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return tD;
 	}	
-	
+
 	String lastUnrecognizedName = null;
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription) {
@@ -3480,10 +3496,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean readTree(String TreeDescription, MesquiteInteger startingPos, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
 		//	Debugg.println("###################################################");
-	//	Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
+		//	Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
 		TreeDescription = preprocessForDialect(TreeDescription, getDialect());
 		//Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
-		
+
 		//QZ: if whitespace or punc passed in, don't override?
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
 		if (startingPos !=null)
@@ -4106,9 +4122,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				if (bD != null)
 					bD.setBetweenness(true);
 				else {
-					ObjectArray bO = getAssociatedObjects(nRef);
-					if (bO != null)
-						bO.setBetweenness(true);
+					StringArray bS = getAssociatedStrings(nRef);
+					if (bS != null)
+						bS.setBetweenness(true);
+					else {
+						ObjectArray bO = getAssociatedObjects(nRef);
+						if (bO != null)
+							bO.setBetweenness(true);
+					}
 				}
 			}
 		}
@@ -5340,20 +5361,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	static final String[] betweenObjects = new String[]{}; //println("$ println("@ 
 	static final String[] betweenStrings = new String[]{"!color"};
 	static final String[] betweenBits = new String[]{};
-	/*
-	public void setAssociatedBit(NameReference nRef, int index, boolean value){
-		setAssociatedBit(nRef, index, value, StringArray.indexOfIgnoreCase(betweenBits, nRef.getValue())>=0);
-	}
-	public void setAssociatedLong(NameReference nRef, int index, long value){
-		setAssociatedLong(nRef, index, value, StringArray.indexOfIgnoreCase(betweenLongs, nRef.getValue())>=0);
-	}
-	public void setAssociatedDouble(NameReference nRef, int index, double value){
-		setAssociatedDouble(nRef, index, value, StringArray.indexOfIgnoreCase(betweenDoubles, nRef.getValue())>=0);
-	}
-	public void setAssociatedObject(NameReference nRef, int index, Object value){
-		setAssociatedObject(nRef, index, value, StringArray.indexOfIgnoreCase(betweenObjects, nRef.getValue())>=0);
-	}
-	 */
+
 	private void checkAssociatedBetweenness(){   //default betweenness recorded
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {

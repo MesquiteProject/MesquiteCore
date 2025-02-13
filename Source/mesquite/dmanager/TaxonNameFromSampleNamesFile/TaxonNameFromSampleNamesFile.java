@@ -341,7 +341,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 				return taxa.getTaxonName(ic);
 			}
 			else {
-			String s = (String)taxa.getAssociatedObject(VoucherInfoFromOTUIDDB.voucherCodeRef, ic);
+			String s = (String)taxa.getAssociatedString(VoucherInfoFromOTUIDDB.voucherCodeRef, ic);
 			return s;
 			}
 		}

@@ -3548,6 +3548,12 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 				//	updateChecksum(checksum, array.getValue(ic));
 				updateChecksum(components[CS_CAssocDoubles], array.getValue(ic));
 			}
+			num = getNumberAssociatedStrings();
+			for (int iA = 0; iA<num; iA++){
+				StringArray array = getAssociatedStrings(iA); //CAssocStrings
+				//	updateChecksum(checksum, array.getValue(ic));
+				updateChecksum(components[CS_CAssocObjects], array.getValue(ic));  //Debugg.println change to strings?
+			}
 			num = getNumberAssociatedObjects();
 			for (int iA = 0; iA<num; iA++){
 				ObjectArray array = getAssociatedObjects(iA);
@@ -4381,7 +4387,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		Taxon taxon = getTaxa().getTaxon(it);
 		Associable tInfo = getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(CharacterData.publicationCodeNameRef, it, s);
+			tInfo.setAssociatedString(CharacterData.publicationCodeNameRef, it, s);
 		}
 	}
 	/*...............................................................................................................*/
@@ -4390,7 +4396,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		Associable tInfo = getTaxaInfo(true);
 		if (tInfo == null)
 			return null;
-		Object obj = tInfo.getAssociatedObject(CharacterData.publicationCodeNameRef, it);
+		Object obj = tInfo.getAssociatedString(CharacterData.publicationCodeNameRef, it);
 		if (obj == null || !(obj instanceof String))
 			return null;
 		return (String)obj;

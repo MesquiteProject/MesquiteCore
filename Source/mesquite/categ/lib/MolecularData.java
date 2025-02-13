@@ -544,7 +544,7 @@ public class MolecularData extends CategoricalData {
 		Taxon taxon = getTaxa().getTaxon(it);
 		Associable tInfo = getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, it, s);
+			tInfo.setAssociatedString(MolecularData.genBankNumberRef, it, s);
 		}
 	}
 

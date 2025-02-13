@@ -125,8 +125,14 @@ public class PropertyRecord implements Listable, Nameable  {
 		}
 		else if (kind == Associable.DOUBLES){
 			double d = tree.getAssociatedDouble(getNameReference(), node);
-			if (MesquiteDouble.isCombinable(d) || (showIfUnassigned || showIfUnassignedRegardless))
+			if (MesquiteDouble.isCombinable(d)){
+				if (percentage)
+					d = d*100;
 				nodeString += MesquiteDouble.toStringDigitsSpecified(d, digits);
+			}
+			else if ((showIfUnassigned || showIfUnassignedRegardless)){
+				nodeString += MesquiteDouble.toStringDigitsSpecified(d, digits);
+			}
 			else
 				nodeString = "";
 		}
