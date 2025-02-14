@@ -1,7 +1,7 @@
 package mesquite.trees.lib;
 
-import mesquite.lib.PropertyDisplayRecord;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
 import mesquite.lists.lib.ListAssistant;
 import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
 import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;

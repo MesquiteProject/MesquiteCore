@@ -18,12 +18,14 @@ import mesquite.lists.lib.*;
 import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
 import mesquite.trees.lib.NodeAssociatesListAssistant;
 
+import java.awt.Checkbox;
 import java.awt.Graphics;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.table.*;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
@@ -157,6 +159,7 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 			MesquiteInteger selectedInDialog = new MesquiteInteger(0);
 			ListDialog dialog = new ListDialog(containerOfModule(), "New Property for Nodes/Branches", "What kind of property?", false,null, kinds, 8, selectedInDialog, "OK", null, false, true);
 			SingleLineTextField nameF = dialog.addTextField("Name of Property:", "", 30);
+			Checkbox cb = dialog.addCheckBox("Pertains to Node (rather than branch between nodes)", false);
 			dialog.addLargeOrSmallTextLabel("You can edit the values at branches/nodes by right-clicking on the branch with the arrow tool, or by clicking with the branch information tool (\"?\").");
 			dialog.completeAndShowDialog(true);
 			if (dialog.buttonPressed.getValue() == 0)  {
@@ -175,6 +178,9 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 					else if (result == 3)
 						kind = Associable.BITS;
 					myWindow.makeNewProperty(kind, name);
+					boolean betweenness = !cb.getState();
+					//REMEMBER IN PREFS //Debugg.println BETWEENNESS
+
 				}
 			}
 		}
@@ -406,7 +412,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 			PropertyDisplayRecord property = (PropertyDisplayRecord)mainPropertiesList.elementAt(i);
 			if (MesquiteTrunk.developmentMode){ //Debugg.println delete before release
 				if (tree.isPropertyAssociated(property) != property.inCurrentTree)
-					Debugg.printStackTrace("property.inCurrentTree not up to date!");
+					Debugg.println("@property.inCurrentTree not up to date!");
 			}
 			if (property.inCurrentTree)
 				associatesList.addElement(property, false);
@@ -462,16 +468,17 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		return associatesList;
 	}
 
+	/*.................................................................................................................*/
 	void resetAssociatesList(){
 		makeAssociatesList();
 		table.setNumRows(associatesList.size());
 		table.repaintAll();
 	}
+	/*.................................................................................................................*/
 	public void setTree(MesquiteTree tree){
 		this.tree = tree;
 		setCurrentObject(associatesList);
 		resetAssociatesList();
-
 		for (int i=0; i< ownerModule.getNumberOfEmployees(); i++) {
 			Object obj =  ownerModule.getEmployeeVector().elementAt(i);
 			if (obj instanceof NodeAssociatesListAssistant) {
@@ -494,30 +501,22 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 			if (mi != null)
 				tree.renameAssociated(mi, name, true);
 		}
-
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "New assistant", "[]", commandName, "newAssistant")) {
 			NodeAssociatesListAssistant assistant = (NodeAssociatesListAssistant)super.doCommand(commandName, arguments, checker);
-			//		NodeAssociatesListAssistant assistant = (NodeAssociatesListAssistant)ownerModule.hireNamedEmployee(NodeAssociatesListAssistant.class, arguments);
 			if (assistant!= null){
 				assistant.setTree(tree);
 			}
-
+			return assistant;
 		}
-
 		else
 			return  super.doCommand(commandName, arguments, checker);
-		return null;
 	}
 	/*...............................................................................................................*/
 
 	public boolean interceptRowNameTouch(int row, EditorPanel editorPanel, int x, int y, int modifiers){
-		/*TaxaGroup group = getTaxonGroup(row);
-		if (group!=null){
-			getTable().editRowNameCell(row);
-		}*/
 		return false;
 	}
 	public String getRowName(int row){

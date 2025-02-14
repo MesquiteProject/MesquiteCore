@@ -482,6 +482,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 	 */
 	public void turnOff() {
+		treeDisplay.inhibitDefaultScaleBar = false;
 		ownerModule.extras.removeElement(this);
 		super.turnOff();
 	}
@@ -507,7 +508,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		}
 
 	}
-	@Override
+
 	public void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 		/*if (drawGrayTimeBars) {
 			drawGrayBars(tree,drawnRoot,g);
@@ -516,7 +517,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		double[] scale = treeDisplay.getScale();
 		int top = (int)scale[endY]+gapBetweenScaleAndGeologicalTimeScale;
 		drawEras(top,g);
-
+		
 		Color t = g.getColor();
 		g.setColor(Color.blue);
 		drawNodes((MesquiteTree)tree, drawnRoot, g);

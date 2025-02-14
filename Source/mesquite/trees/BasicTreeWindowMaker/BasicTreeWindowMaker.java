@@ -1224,7 +1224,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		copyCommand = MesquiteModule.makeCommand("copyTree", this);
 		pasteCommand = MesquiteModule.makeCommand("paste", this);
 
-		treeDisplay.setTaxonNameBuffer(30);
+		treeDisplay.setTaxonNameBuffer(20); 
 
 		/*
 		 * lockPanel=new LockPanel(this); addToWindow(lockPanel); lockPanel.setLocation(0, getHeight()-scrollWidth); lockPanel.setVisible(true);

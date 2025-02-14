@@ -115,12 +115,15 @@ public class ReinterpretBranchLabels extends TreeAltererMult {
 				String label = tree.getNodeLabel(node);
 				if (isNumber){
 					double d = MesquiteDouble.fromString(label);
-					if (MesquiteDouble.isCombinable(d))
-						tree.setAssociatedDouble(nameRef, node, d, appliesToBranch);
+					if (MesquiteDouble.isCombinable(d)){
+						tree.setAssociatedDouble(nameRef, node, d);
+					//	tree.setAssociatedDoubleBetweenness(nameRef, appliesToBranch); //not yet settable
+					}
 				}
 				else {
-					tree.setAssociatedString(nameRef, node, label, appliesToBranch);
-				}
+					tree.setAssociatedString(nameRef, node, label);
+					//tree.setAssociatedStringBetweenness(nameRef, appliesToBranch);
+			}
 				if (deleteAfter)
 					tree.setNodeLabel(null, node);
 			}

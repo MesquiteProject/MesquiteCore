@@ -191,15 +191,15 @@ public class TableTool extends MesquiteTool {
 
 	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (touchedCommand!=null)
-			touchedCommand.doItMainThread(Integer.toString(column) + " " + row + " "  + x + " " + y + " " + MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", touchedCommand, this), false, false);  
+			touchedCommand.doItMainThread(Integer.toString(column) + " " + row + " "  + editorPanel.findRegionInCellH(x) + " " + editorPanel.findRegionInCellV(y) + " " + MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", touchedCommand, this), false, false);  
 	}
 	public void cellDrag(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (dragCommand!=null)
-			dragCommand.doItMainThread(Integer.toString(column) + " " + row + " " + x + " " + y + " " +  MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", dragCommand, this), false, false);  
+			dragCommand.doItMainThread(Integer.toString(column) + " " + row + " " + editorPanel.findRegionInCellH(x) + " " + editorPanel.findRegionInCellV(y) + " " +  MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", dragCommand, this), false, false);  
 	}
 	public void cellDropped(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (droppedCommand!=null)
-			droppedCommand.doItMainThread(Integer.toString(column) + " " + row + " " + x + " " + y + " " + MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", droppedCommand, this), false, false);  
+			droppedCommand.doItMainThread(Integer.toString(column) + " " + row + " " + editorPanel.findRegionInCellH(x) + " " + editorPanel.findRegionInCellV(y) + " " + MesquiteEvent.modifiersToString(modifiers), CommandChecker.getQueryModeString("Tool", droppedCommand, this), false, false);  
 	}
 
 

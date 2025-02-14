@@ -28,6 +28,8 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
+import mesquite.lib.tree.PropertyRecord;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
@@ -40,7 +42,8 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		addMenuItem("Ressign Branch vs. Node", makeCommand("reassign", this));
+		addMenuItem("Ressign Selected to Branch", makeCommand("branch", this));
+		addMenuItem("Ressign Selected to Node", makeCommand("hide", this));
 		addMenuItem("Explanation...", makeCommand("explain", this));
 		return true;
 	}
@@ -69,8 +72,14 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Reassigns the selected to the branch", null, commandName, "branch")) {
+			reassign(true);
+		}
+		else if (checker.compare(this.getClass(), "Reassigns the selected to the node", null, commandName, "node")) {
+			reassign(false);
+		}
 		if (checker.compare(this.getClass(), "Reassigns the selected to the branch", null, commandName, "reassign")) {
-			discreetAlert("Sorry, designation of properties as assigned to branch vs. node is a system-level setting that can be edited only by changing the file properties.xml in Mesquite_Folder/settings/basic/AssociatesInit"); //Debugg.println
+			discreetAlert("Sorry, designation of properties as assigned to branch vs. node is a system-level setting that can be edited only by changing the files in Mesquite_Folder/settings/trees/BranchPropertiesInit"); 
 		}
 		else if (checker.compare(this.getClass(), "Explains", null, commandName, "explain")) {
 			discreetAlert("A property is assigned either to a node or the branch just below it. "
@@ -83,9 +92,14 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 		return null;
 	}
 	
-	/*.................................................................................................................*
+	/*Where this can be set: 
+	 * -- Here in list window; 
+	 * -- when new property is made in list window 
+	 * -- when tree is read and has attachment
+	 * -- on startup in reading prefs */
+	/*.................................................................................................................*/
 	void reassign(boolean toBranch){
-		if (table == null)
+		if (table == null || tree == null)
 			return;
 		if (!table.anyRowSelected()){
 			discreetAlert("Please selected rows before attempting to reassign them here");
@@ -93,30 +107,29 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 		}
 		PropertyRecord[] mis = new PropertyRecord[table.numRowsSelected()];
 		int count = 0;
+		boolean prohibited = false;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
-			if (table.isRowSelected(ir) && !associateInListIsBuiltIn(ir)){
-				setBetweenness(ir, toBranch);
+			if (table.isRowSelected(ir)){
+				PropertyRecord pr = getPropertyAtRow(ir);
+				if (!pr.setBelongsToBranch(toBranch, true))
+					prohibited = true;
+				else if (tree.propertyIsBetween(pr) != toBranch) {
+					tree.setPropertyIsBetween(pr, toBranch);
+					//REMEMBER IN PREFS //Debugg.println BETWEENNESS
+					count++;
+				}
 			}
 		}
+		if (prohibited){
+			discreetAlert("Sorry, some properties could not be reassigned to branch vs. node, because their assignment is already set as a system-level setting that can be edited only by changing the files in Mesquite_Folder/settings/trees/BranchPropertiesInit"); 
+		}
+		if (count>0)
+			discreetAlert("The properties that were reassigned to branch versus node for the current tree only"); 
+			
 		parametersChanged();
 	}
-	void setBetweenness(int ic, boolean between) {
-		if (associatedInfo == null)
-			return;
-		if (ic>=0 && ic<associatedInfo.size()){
-			ObjectContainer objContainer = (ObjectContainer)associatedInfo.elementAt(ic);
-			Object obj = objContainer.getObject();
-			if (obj instanceof DoubleArray)
-				((DoubleArray)obj).setBetweenness(between);
-			else if (obj instanceof LongArray)
-				((LongArray)obj).setBetweenness(between);
-			else if (obj instanceof ObjectArray)
-				((ObjectArray)obj).setBetweenness(between);
-			else if (obj instanceof Bits)
-				((Bits)obj).setBetweenness(between);
-		}
-	}
-
+	
+	
 	/*.................................................................................................................*/
 	
 	public String getWidestString(){
@@ -148,7 +161,7 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 	public String getStringForRow(int ic) {
 		PropertyDisplayRecord property = getPropertyAtRow(ic);
 		if (property != null)
-			return nodeOrBranch(property.belongsToBranch);
+			return nodeOrBranch(property.getBelongsToBranch());
 		return "—";
 	}
 	/*.................................................................................................................*/

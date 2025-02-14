@@ -11,20 +11,28 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lib;
+package mesquite.lib.tree;
 
 import java.awt.Font;
 
-import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.Tree;
+import mesquite.lib.Associable;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.NameReference;
+import mesquite.lib.Nameable;
+import mesquite.lib.Notification;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
 
 /* ======================================================================== */
 /*represents the bits, longs, doubles, strings and objects belonging to parts of an Associable.
  *  Not permanently in an Associable, but for temporary use, e.g. for display in tree window, hence the graphics parameters*/
-public class PropertyDisplayRecord implements Listable, Nameable  {
-	private String name = null;
-	private NameReference nRef;
-	public int kind = -1;
+public class PropertyDisplayRecord extends PropertyRecord  {
 	public boolean showing = false;
 	public boolean showName = true;
 	public boolean centered = false;
@@ -39,30 +47,19 @@ public class PropertyDisplayRecord implements Listable, Nameable  {
 	public int xOffset = 0;//NOTE: this is in RIGHT orientation. It gets translated as the orientation shifts
 	public int fontSize = 12;
 	public int color = 0; //standard Mesquite colors in ColorDistribution
-	public boolean belongsToBranch = true; //Is this settable, or only from a prefs setting?
+	
+	
 	
 	public boolean inCurrentTree = false;  //depends on current tree; used by NodeAssociatesZ and Node Associates List system
 
 	public static ListableVector preferenceRecords = new ListableVector();
 	
 	public PropertyDisplayRecord(String name,int kind){
-		this.name = name;
-		nRef = NameReference.getNameReference(name);
-		this.kind = kind;
-		PropertyDisplayRecord prefRecord = findInList(preferenceRecords, nRef, kind);
+		super(name, kind);
+		PropertyDisplayRecord prefRecord = (PropertyDisplayRecord)findInList(preferenceRecords, nRef, kind);
 		if (prefRecord != null)
 			cloneFrom(prefRecord);
 		//see mesquite.trees.PropertyDisplayRecordInit for defaults setting and management
-	}
-	public void setName(String name){
-		this.name = name;
-		nRef = NameReference.getNameReference(name);
-	}
-	public String getName(){
-		return name;
-	}
-	public NameReference getNameReference(){
-		return nRef;
 	}
 	
 	public void cloneFrom(PropertyDisplayRecord other){
@@ -80,7 +77,7 @@ public class PropertyDisplayRecord implements Listable, Nameable  {
 		xOffset = other.xOffset;
 		fontSize = other.fontSize;
 		color = other.color;
-		belongsToBranch = other.belongsToBranch;
+		setBelongsToBranch(other.getBelongsToBranch(), false);
 	}
 	
 	public void setBooleans(Parser parser){//parser already with string and set to right position
@@ -137,7 +134,7 @@ public class PropertyDisplayRecord implements Listable, Nameable  {
 	public static void mergeIntoPreferences(ListableVector propertyList){
 		for (int i = 0; i< propertyList.size(); i++){
 			PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
-			PropertyDisplayRecord prefRecord = findInList(preferenceRecords, property.getNameReference(), property.kind);
+			PropertyDisplayRecord prefRecord = (PropertyDisplayRecord)findInList(preferenceRecords, property.getNameReference(), property.kind);
 			if (prefRecord == null) {
 				prefRecord = new PropertyDisplayRecord(property.getName(), property.kind);
 				preferenceRecords.addElement(prefRecord, false);
@@ -147,20 +144,7 @@ public class PropertyDisplayRecord implements Listable, Nameable  {
 		preferenceRecords.notifyListeners(PropertyDisplayRecord.class, new Notification(MesquiteListener.PARTS_ADDED));
 	}
 	
-	
-	public boolean equals(PropertyDisplayRecord other){  //style doesn't matter; just name and kind
-		if (other ==null)
-			return false;
-		return nRef.equals(other.nRef) && kind == other.kind;
-	}
-	public static PropertyDisplayRecord findInList(ListableVector pList, NameReference nr, int kind){
-		for (int i=0; i<pList.size(); i++){
-			PropertyDisplayRecord mi = (PropertyDisplayRecord)pList.elementAt(i);
-			if (mi.getNameReference().equals(nr) && mi.kind ==kind)
-				return mi;
-		}
-		return null;
-	}
+
 	
 	Font baseFont = null;
 	Font font = null;

@@ -13,12 +13,14 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
 import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
-import mesquite.lib.PropertyDisplayRecord;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.MesquiteInit;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.NewickDialect;
+import mesquite.lib.tree.PropertyDisplayRecord;
+import mesquite.lib.tree.PropertyRecord;
 
 import java.io.File;
 import java.util.Vector;
@@ -29,6 +31,10 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		initiatePrefsList();
+		/*search for Betweenness (Associable, ReintepretBranchLengths, NodeAssoc between (disable resetting one with pref specified), elsewhere.
+		 * allow setting if not in settings file.
+		 * */
+		harvestPropertySettings();
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -68,7 +74,6 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 			StringUtil.appendXMLTag(buffer, 2, "addRecord", StringUtil.tokenize(property.getName()) + " " + property.kind);  
 			StringUtil.appendXMLTag(buffer, 2, "setBooleans", StringUtil.tokenize(property.getName()) + " " + property.kind + " " + property.getBooleansString());  
 			StringUtil.appendXMLTag(buffer, 2, "setNumbers", StringUtil.tokenize(property.getName()) + " " + property.kind + " " + property.getNumbersString());  
-		
 		}
 		return buffer.toString();
 	}
@@ -83,7 +88,7 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 			NameReference nr = NameReference.getNameReference(name);
 			int kind = MesquiteInteger.fromString(parser);
 			PropertyDisplayRecord nL = new PropertyDisplayRecord(name, kind);
-			PropertyDisplayRecord property = PropertyDisplayRecord.findInList(temp, nr, kind);
+			PropertyDisplayRecord property = (PropertyDisplayRecord)PropertyDisplayRecord.findInList(temp, nr, kind);
 			if (property == null) {
 				property = new PropertyDisplayRecord(name, kind);
 				temp.addElement(nL, false);			
@@ -93,7 +98,7 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 			String name = parser.getFirstToken(content);
 			NameReference nr = NameReference.getNameReference(name);
 			int kind = MesquiteInteger.fromString(parser);
-			PropertyDisplayRecord property = PropertyDisplayRecord.findInList(temp, nr, kind);
+			PropertyDisplayRecord property = (PropertyDisplayRecord)PropertyDisplayRecord.findInList(temp, nr, kind);
 			if (property != null)
 				property.setBooleans(parser);
 		}
@@ -101,28 +106,69 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 			String name = parser.getFirstToken(content);
 			NameReference nr = NameReference.getNameReference(name);
 			int kind = MesquiteInteger.fromString(parser);
-			PropertyDisplayRecord property = PropertyDisplayRecord.findInList(temp, nr, kind);
+			PropertyDisplayRecord property = (PropertyDisplayRecord)PropertyDisplayRecord.findInList(temp, nr, kind);
 			if (property != null)
 				property.setNumbers(parser);
 		}
 
 	}
 	/*.................................................................................................................*/
+	//Assignments of properties as being at nodes versus branches are stored in Mesquite_Folder/settings/trees/BranchPropertiesInit
 	public void harvestPropertySettings(){
 		String settingsDirPath = getInstallationSettingsPath();
 		File settingsDir = new File(settingsDirPath);
 		StringBuffer sb = new StringBuffer();
 		if (settingsDir.exists() && settingsDir.isDirectory()) {
-			MesquiteTree.dialects = new ListableVector();
 			String[] settingFiles = settingsDir.list();
 			ListableVector.sort(settingFiles);
 			for (int i=0; i<settingFiles.length; i++) {
-				if (settingFiles[i]!=null && !settingFiles[i].equalsIgnoreCase("example.xml") && settingFiles[i].endsWith("xml")&& !settingFiles[i].startsWith(".")) {
-					String dialectFilePath = settingFiles + MesquiteFile.fileSeparator + settingFiles[i];
-					NewickDialect dialect = new NewickDialect(dialectFilePath);
-					boolean success = dialect.isReady();
-					if (success) 
-						MesquiteTree.dialects.addElement(dialect, false);
+				if (settingFiles[i]!=null && settingFiles[i].endsWith("txt")&& !settingFiles[i].startsWith(".")) {
+					String settingFilePath = settingsDirPath + MesquiteFile.fileSeparator + settingFiles[i];
+					
+					String[] lines = MesquiteFile.getFileContentsAsStrings(settingFilePath);
+					if (lines !=null)
+						for (int k = 0; k<lines.length; k++){
+							String line = lines[k];
+							if (ParseUtil.firstDarkChar(line) != '#'){
+								String[] tokens = StringUtil.tabDelimitedTokensToStrings(line);
+								if (tokens != null && tokens.length>1){
+									String name = tokens[0];
+									int kind = -1;
+									if ("double".equalsIgnoreCase(tokens[1]))
+											kind = Associable.DOUBLES;
+									else if ("long".equalsIgnoreCase(tokens[1]))
+										kind = Associable.LONGS;
+									else if ("String".equalsIgnoreCase(tokens[1]))
+										kind = Associable.STRINGS;
+									else if ("boolean".equalsIgnoreCase(tokens[1]))
+										kind = Associable.BITS;
+									else if ("object".equalsIgnoreCase(tokens[1]))
+										kind = Associable.OBJECTS;
+									boolean belongsToBranches = true;
+									if ("double".equalsIgnoreCase(tokens[1]))
+											kind = Associable.DOUBLES;
+									else if ("long".equalsIgnoreCase(tokens[1]))
+										kind = Associable.LONGS;
+									else if ("String".equalsIgnoreCase(tokens[1]))
+										kind = Associable.STRINGS;
+									else if ("boolean".equalsIgnoreCase(tokens[1]))
+										kind = Associable.BITS;
+									else if ("object".equalsIgnoreCase(tokens[1]))
+										kind = Associable.OBJECTS;
+									
+									NameReference nr = NameReference.getNameReference(name);
+									PropertyRecord pr = PropertyRecord.findInList(MesquiteTree.propertiesSettingsVector, nr, kind);
+									if (pr == null)
+										pr = new PropertyRecord(name, kind);
+									if (tokens.length>2){
+										String assignment = tokens[2];
+										if ("node".equalsIgnoreCase(assignment) || "nodes".equalsIgnoreCase(assignment))
+											pr.setBelongsToBranch(false, false);
+									}
+									MesquiteTree.propertiesSettingsVector.addElement(pr, false);
+								}
+							}
+					}
 				}
 			}
 		}

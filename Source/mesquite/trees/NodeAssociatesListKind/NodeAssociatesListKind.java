@@ -28,6 +28,7 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
@@ -395,7 +396,7 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 	}	/*.................................................................................................................*/
 
 	public String getWidestString(){
-		return "88888888888888";
+		return "888888888";
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {

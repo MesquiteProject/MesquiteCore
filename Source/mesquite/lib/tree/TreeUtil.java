@@ -202,7 +202,7 @@ public class TreeUtil {
 			if (t.nodeHasLabel(node)){
 				String label = t.getNodeLabel(node);
 				if (asText) {
-					t.setAssociatedString(nameRefs[0], node, label, true);
+					t.setAssociatedString(nameRefs[0], node, label);
 				} else {
 					Parser parser = new Parser(label);
 					parser.setWhitespaceString(parser.getWhitespaceString()+"/");
@@ -210,7 +210,7 @@ public class TreeUtil {
 					for (int i=0; i<nameRefs.length; i++) {
 						support[i] = MesquiteDouble.fromString(parser.getNextToken());
 						if (MesquiteDouble.isCombinable(support[i]))
-							t.setAssociatedDouble(nameRefs[i], node, support[i]/divisor, true);
+							t.setAssociatedDouble(nameRefs[i], node, support[i]/divisor);
 					}
 				}
 				t.setNodeLabel(null, node);

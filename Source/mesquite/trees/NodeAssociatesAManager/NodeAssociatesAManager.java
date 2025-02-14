@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodeAssociatesZDisplayControl;
+package mesquite.trees.NodeAssociatesAManager;
 /*~~  */
 
 
@@ -65,34 +65,29 @@ import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.StringInABox;
-import mesquite.trees.NodeAssociatesAManager.NodeAssociatesAManager;
 
 /* ======================================================================== */
-public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI implements ActionListener, ItemListener, TextListener {
-	public Vector extras;
+public class NodeAssociatesAManager extends TreeDisplayAssistantI {
 
-//	MesquiteSubmenuSpec positionSubMenu;
-//	String[] reservedNames = new String[]{"!color"};
-//	String[] builtInNames = new String[]{MesquiteTree.branchLengthName, MesquiteTree.nodeLabelName};
+	String[] reservedNames = new String[]{"!color"};
+	String[] builtInNames = new String[]{MesquiteTree.branchLengthName, MesquiteTree.nodeLabelName};
 
-//	ListableVector propertyList;
+	ListableVector propertyList;
 	static boolean asked= false;
 
 	boolean moduleIsNaive = true; //so as not to save the snapshot
-	ListableVector propertyList;
-	NodeAssociatesAManager managerModule;
+	NAAMDisplayExtra extra;
+
 	MesquiteTree tree;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		TreeWindowMaker twMB = (TreeWindowMaker)findEmployerWithDuty(TreeWindowMaker.class);
 		if (twMB!= null){
-			twMB.addMenuItem(null, "Display Branch/Node Properties on Tree...", makeCommand("showDialog", this));
 			propertyList = twMB.getBranchPropertiesList();
 		}
-		managerModule = (NodeAssociatesAManager)findNearestColleagueWithDuty(NodeAssociatesAManager.class);
-		extras = new Vector();
-//		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
-//		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
+	//	extras = new Vector();
+		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
+		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
 
 		return true;
 	}
@@ -110,15 +105,15 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		this.tree = tree;
 		this.tree.addListener(this);
 
-//		addPropertiesToList(tree);
+		addPropertiesToList(tree);
 	}
 	public void changed(Object caller, Object obj, Notification notification){
 		if (caller == tree || obj == tree){
 			setTree(tree);
 		}
 	}
-	
-	/*.========================================================..*
+
+	/*.========================================================..*/
 
 	public void writeList(ListableVector list){
 		System.out.println("Properties on record & to show");
@@ -131,7 +126,6 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 	PropertyDisplayRecord findInList(NameReference nr, int kind){
 		return (PropertyDisplayRecord)PropertyDisplayRecord.findInList(propertyList, nr, kind);
 	}
-	*/
 	PropertyDisplayRecord findInList(String s, int kind){
 		if (propertyList.indexOfByName(s)<0)
 			return null;
@@ -142,7 +136,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		}
 		return null;
 	}
-	/*...............................................................................*
+	/*...............................................................................*/
 	int indexInList(PropertyDisplayRecord property){
 		for (int i=0; i<propertyList.size(); i++){
 			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
@@ -155,11 +149,11 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 	boolean inList(PropertyDisplayRecord property){
 		return indexInList(property)>=0;
 	}
-	/*...............................................................................*
+	/*...............................................................................*/
 	public boolean isBuiltIn(PropertyDisplayRecord mi){
 		return mi.kind== Associable.BUILTIN;
 	}
-	/*...............................................................................*/
+	/*...............................................................................*
 	public void pleaseShowHide(PropertyDisplayRecord[] list, boolean show){
 		if (list == null)
 			return;
@@ -175,13 +169,13 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		}
 		parametersChanged();
 	}
-	/*...............................................................................*/
+	/*...............................................................................*
 	public boolean isShowing(PropertyDisplayRecord mi){
 		if (mi == null)
 			return false;
 		return mi.showing;
 	}
-	/*...............................................................................*/
+	/*...............................................................................*
 	boolean anyShowing(){
 
 		for (int i=0; i<propertyList.size(); i++){
@@ -191,14 +185,14 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		}
 		return false;
 	}
-	/*.................................................................................................................*
-	private void addPropertyFromScript(String name, int kind, boolean show){
+	/*.................................................................................................................*/
+	public void addPropertyFromScript(String name, int kind, boolean show){
 		if (StringUtil.blank(name) || !MesquiteInteger.isCombinable(kind))
 			return;
 		if (name.equalsIgnoreCase("selected") && kind == Associable.BITS)
 			return;
 		PropertyDisplayRecord mi = findInList(name, kind);
-		if (mi==null){  //color is not available to be shown in this way
+		if (mi==null){  
 			mi = new PropertyDisplayRecord(name, kind);
 			mi.showing = show;
 			propertyList.addElement(mi, false);
@@ -208,8 +202,34 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		if (mi != null && tree != null)
 			mi.inCurrentTree = tree.isPropertyAssociated(mi);
 	}
-
 	/*.................................................................................................................*/
+	NameReference selectedNRef = NameReference.getNameReference("selected");
+	private void addPropertiesToList(MesquiteTree tree){
+		if (tree == null)
+			return;
+		int count = 0;
+		for (int i=0; i<propertyList.size(); i++){
+			PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
+			property.inCurrentTree = tree.isPropertyAssociated(property);
+			count++;
+			property.setBelongsToBranch(tree.propertyIsBetween(property), true);
+		}
+		PropertyDisplayRecord[] properties = tree.getPropertyRecords();
+		if (properties == null)
+			return;
+		for (int i=0; i<properties.length; i++){
+			boolean toBeAdded = indexInList(properties[i])<0;
+			if (selectedNRef.equals(properties[i].getNameReference()) && properties[i].kind == Associable.BITS)
+				toBeAdded = false;
+			if (toBeAdded){  
+				propertyList.addElement(properties[i], false);
+				properties[i].inCurrentTree = true;
+				count++;
+			}
+		}
+	}
+
+	/*.................................................................................................................*
 	Button[] selectOrHide;
 	Listable[] queryPropertiesList;
 	Listable[] queryNamesArray;
@@ -261,7 +281,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		else 
 			cb.select(ColorDistribution.standardColorNames.getSize());
 	}
-	/*.========================================================..*/
+	/*.========================================================..*
 	void resetStyleWidgets(){
 		if (thresholdValueToShowF== null)
 			return;
@@ -324,7 +344,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	void rePrefaceList(){
 		if (queryPropertiesList == null){
 			return;
@@ -372,7 +392,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		settingsChanged = true;
 
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public boolean queryDialog(){
 		if (propertyList==null)
 			return false;
@@ -527,7 +547,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public Snapshot getSnapshot(MesquiteFile file) {
 		if (moduleIsNaive)
 			return null;
@@ -547,7 +567,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		}
 		return temp;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	MesquiteInteger pos = new MesquiteInteger();
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		moduleIsNaive = false;
@@ -558,8 +578,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			String name = parser.getFirstToken(arguments);
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
 			boolean show = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
-			if (managerModule!= null)
-				managerModule.addPropertyFromScript(name, kind,  show);
+			addPropertyFromScript(name, kind,  show);
 		}
 		else if (checker.compare(this.getClass(), "Sets booleans", "[name][kind][on or off for 7 booleans]", commandName, "setBooleans")) {
 			// sequence: showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical
@@ -611,19 +630,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 					doCommand("setNumbers", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
 		}
-		/*
-		else if (checker.compare(this.getClass(), "Set's to David's style", "", commandName, "setCorvallisStyle")) {
-			whiteEdges.setValue(false);
-			percentage.setValue(true);
-			centred.setValue(false);
-			vertical.setValue(false);
-			thresholdValueToShow.setToUnassigned();
-			digits=0;
-			xOffset = -2;
-			yOffset = 9;
-			if (!MesquiteThread.isScripting()) parametersChanged();
-		}
-		 */
+		
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -632,10 +639,10 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Show Branch/Node Properties on Tree";
+		return "Branch/Node Properties Secretary";
 	}
 	public String getExplanation() {
-		return "Controls display of Branch/Node properties on the tree." ;
+		return "Keeps record of Branch/Node properties on the tree." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -646,9 +653,9 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 	}
 
 
+
 	public TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
-		NodeAssocDisplayExtra extra = new NodeAssocDisplayExtra(this, treeDisplay);
-		extras.addElement(extra);
+		extra = new NAAMDisplayExtra(this, treeDisplay);
 		return extra;
 	}
 
@@ -656,413 +663,28 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 
 /* ======================================================================== */
-class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, TreeDisplayLateExtra{
-	NodeAssociatesZDisplayControl controlModule;
-	MesquiteCommand taxonCommand, branchCommand, respondCommand;
+class NAAMDisplayExtra extends TreeDisplayExtra{
+	NodeAssociatesAManager controlModule;
 	MesquiteTree myTree = null;
-	StringInABox box = new StringInABox( "", treeDisplay.getFont(),1500);
-	TreeTool infoTool;
 
 	/*.--------------------------------------------------------------------------------------..*/
-	public NodeAssocDisplayExtra (NodeAssociatesZDisplayControl ownerModule, TreeDisplay treeDisplay) {
+	public NAAMDisplayExtra (NodeAssociatesAManager ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		controlModule = ownerModule;
-		infoTool = new TreeTool(this, "BranchInfo", ownerModule.getPath(), "branchInfo.gif", 5,2,"Branch Info", "This tool is used to show information about a branch.");
-		infoTool.setTouchedCommand(MesquiteModule.makeCommand("showPopup",  this));
-		if (ownerModule.containerOfModule() instanceof MesquiteWindow)
-			((MesquiteWindow)ownerModule.containerOfModule()).addTool(infoTool);
-
-		respondCommand = ownerModule.makeCommand("respondToPopup", this);
 	}
 
-	void changeInShowing(){
-		treeDisplay.accumulateBordersFromExtras(myTree);
-		treeDisplay.redoCalculations(319283);
-	}
-	/*.................................................................................................................*/
-	String stringAtNodeForPropertyExplanation(MesquiteTree tree, int node, PropertyDisplayRecord property, boolean showNames){
-		String nodeString  = property.getStringAtNode(tree, node, showNames, !showNames, false);
-		return nodeString;
-	}
-	/*.................................................................................................................*/
-
-
-	String stringAtNode(MesquiteTree tree, int node, boolean showingAll, boolean showNamesRegardless, boolean includeLineBreaks, int forWhere){
-		String[] strings = stringsAtNode(tree, node, showingAll, showNamesRegardless, null, forWhere);
-		if (strings == null)
-			return "";
-		String singleString = "";
-		String separator = " ";
-		if (includeLineBreaks)
-			separator = "\n";
-		boolean first = true;
-		for (int i = 0; i<strings.length; i++){
-			if (!first)
-				singleString += separator;
-			first = false;
-			singleString += strings[i];
-		}
-		return singleString;
-	}
-
-	/*.................................................................................................................*/
-	String[] stringsAtNode(MesquiteTree tree, int node, boolean showingAll, boolean showNamesRegardless, Vector nameCodes, int forWhere){ //0 elsewhere; 1 = screen display; 2 = popup
-		Vector nodeStrings = new Vector();
-		for (int p = 0; p< controlModule.propertyList.size(); p++){
-			PropertyDisplayRecord property = (PropertyDisplayRecord)controlModule.propertyList.elementAt(p);
-			if (property.inCurrentTree){
-				String nodeString = null;
-				if ((showingAll || property.showing) && (tree.nodeIsInternal(node) || property.showOnTerminals)){
-					if (forWhere == 2){ //popup, don't show node label; shownames regardless; show if in tree but unassigned
-						if (property.kind != Associable.BUILTIN || !property.getNameReference().equals(MesquiteTree.nodeLabelNameRef)){
-							nodeStrings.addElement(property.getStringAtNode(tree, node, showNamesRegardless, true));
-							if (nameCodes != null)
-								nameCodes.addElement(property);
-						}
-					}
-				}
-			}
-		}
-		String[] strings = new String[nodeStrings.size()];
-		for (int i= 0; i<nodeStrings.size(); i++)
-			strings[i] = (String)nodeStrings.elementAt(i);
-		return strings;
-	}
-	/*.................................................................................................................*/
-	/*.................................................................................................................*/
-	public void cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, boolean isArrowTool){
-		if (MesquiteEvent.rightClick(modifiers) && isArrowTool){
-			showPopup(N);
-		}
-	}
-	/*...........................................*/
-	MesquitePopup popup;
-	Vector popupKeys = new Vector();
-	MesquiteInteger pos = new MesquiteInteger();
-	/*...........................................*/
-	void addToPopup(String s, int node, int response){
-		if (popup==null)
-			return;
-		popup.addItem(s, ownerModule, respondCommand, Integer.toString(node) + " " + Integer.toString(response));
-	}
-	/*...........................................*/
-	void showPopup(int branchFound){
-		if (popup==null)
-			popup = new MesquitePopup(treeDisplay);
-		popup.removeAll();
-		popupKeys.removeAllElements();
-		int responseNumber = 0;
-		String nL = "Node Label: ";
-		if (StringUtil.blank(myTree.getNodeLabel(branchFound)))
-			nL +=  "[none]";
-		else
-			nL += myTree.getNodeLabel(branchFound);
-		popupKeys.addElement(new PropertyDisplayRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN));
-		addToPopup(nL, branchFound, responseNumber++);
-
-		addToPopup("Branch/node number: " + branchFound, branchFound, responseNumber++);
-		popupKeys.addElement(new PropertyDisplayRecord("nodenumber", Associable.BUILTIN));
-		addToPopup("-", branchFound, responseNumber++);
-		popupKeys.addElement(new PropertyDisplayRecord("dash", Associable.BUILTIN));
-		String[] strings = stringsAtNode(myTree, branchFound, true, true, popupKeys, 2);
-		if (strings != null)
-			for (int i = 0; i<strings.length; i++)
-				addToPopup(strings[i], branchFound, responseNumber++);
-
-		addToPopup("-", branchFound, -1);
-		popup.addItem("Control Display of Properties on Tree...", ownerModule, new MesquiteCommand("showDialog", ownerModule));
-		popup.showPopup((int)treeDisplay.getTreeDrawing().x[branchFound], (int)treeDisplay.getTreeDrawing().y[branchFound]);
-	}
-
-	Parser parser = new Parser();
-	/*...........................................*/
-	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
-
-		if (checker.compare(this.getClass(), "Shows popup menu with information about the branch", "[branch number]", commandName, "showPopup")) {
-			int branchFound= MesquiteInteger.fromFirstToken(arguments, pos);
-			if (branchFound >0 && MesquiteInteger.isCombinable(branchFound)) {
-				showPopup(branchFound);
-			}	 	
-		}
-		else if (checker.compare(this.getClass(), "Responds to popup choice", "[branch number]", commandName, "respondToPopup")) {
-			int branchFound= MesquiteInteger.fromFirstToken(arguments, pos);
-			int responseNumber= MesquiteInteger.fromString(arguments, pos);
-			if (responseNumber>=0 && branchFound >0 && MesquiteInteger.isCombinable(branchFound) && MesquiteInteger.isCombinable(responseNumber) ) {
-				if (responseNumber<popupKeys.size()){
-					PropertyDisplayRecord property = (PropertyDisplayRecord)popupKeys.elementAt(responseNumber);
-					String name = property.getName();
-					NameReference nameRef = NameReference.getNameReference(name);
-					MesquiteWindow container = controlModule.containerOfModule();
-					int kind = property.kind;
-					if (name.equalsIgnoreCase(MesquiteTree.branchLengthName) && kind == Associable.BUILTIN) {
-						controlModule.discreetAlert("This is the length of the branch (stored in the primary branch length storage of the tree). You can adjust it using various tools, or with items in the Alter menu.");
-					}
-					else  if (name.equalsIgnoreCase(MesquiteTree.nodeLabelName) && kind == Associable.BUILTIN){
-						String nC = MesquiteString.queryString(container, "Name of node", "This is the label of the node/clade/branch. You can edit it with the Name Nodes tool, or here.", myTree.getNodeLabel(branchFound), 1);
-						if (nC != null){
-							myTree.setNodeLabel(nC, branchFound);
-							myTree.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
-						}
-					}
-					else  if (name.equalsIgnoreCase("!color") && kind == Associable.STRINGS){
-						String nC = MesquiteString.queryString(container, "Color", "This is the color of the branch (stored in the reserved color storage of the tree). "
-								+"You can change it via the paintbrush tool, or here via hexadecimal color string, which must start with a # and the 6 digits" 
-								+ " consisting of only the characters 0 to 9 or A to F (e.g., #ff0000 is red, #00ff00 is green, #0000ff is blue).", 
-								(String)myTree.getAssociatedString(nameRef, branchFound), 1);
-						if (!StringUtil.blank(nC) && nC.length() == 7 && nC.charAt(0) == '#'){
-							myTree.setAssociatedString(nameRef, branchFound, nC);
-							myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-							return null;
-						}
-
-					}
-					else  if (kind == Associable.BITS) {
-						//	controlModule.discreetAlert("This is a boolean (true/false value) attached to the branch of the tree, with name \"" + name + "\" and value \"" + stringAtNodeForPropertyExplanation(myTree, branchFound,  mi, false) + "\".");
-						boolean current = myTree.getAssociatedBit(property.getNameReference(), branchFound);
-						MesquiteBoolean check = MesquiteBoolean.queryCheckBox(controlModule.containerOfModule(), "Boolean value",
-								"This is a boolean (true/false value) attached to the branch of the tree, with name \"" + name 
-								+ "\" and value \"" + stringAtNodeForPropertyExplanation(myTree, branchFound,  property, false) + "\". "
-								+" You can change its value here (checked = true; unchecked = false).", property.getName(), current);
-						if (check != null){
-							myTree.setAssociatedBit(property.getNameReference(), branchFound, check.getValue());
-							myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-						}
-
-					}
-					else  if (kind == Associable.LONGS){
-						long d = myTree.getAssociatedLong(nameRef, branchFound);  
-						long dN = MesquiteLong.queryLong(container, "Integer number", "This is an integral (long) value attached to the branch of the tree, with name \"" + name + "\" "
-								+"and value \"" + stringAtNodeForPropertyExplanation(myTree, branchFound,  property, false) + "\". You can edit it here, although there may be restrictions on its value.", d);
-						if (!MesquiteLong.isUnassigned(dN)){
-							myTree.setAssociatedLong(nameRef, branchFound, dN);  
-							myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-						}
-					}
-					else  if (kind == Associable.DOUBLES){
-						double d = myTree.getAssociatedDouble(nameRef, branchFound);  
-						double dN = MesquiteDouble.queryDouble(container, "Decimal number", "This is a decimal number (floating-point) attached to the branch of the tree, with name \"" + name + "\" and value \"" + 
-								stringAtNodeForPropertyExplanation(myTree, branchFound,  property, false) + "\". You can edit it here, although there may be restrictions on its value.", d);
-						if (!MesquiteDouble.isUnassigned(dN)){
-							myTree.setAssociatedDouble(nameRef, branchFound, dN);  
-							myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-						}
-						//controlModule.discreetAlert("This is a floating-point (double) value attached to the branch of the tree, with name \"" + name + "\" and value \"" + stringAtNode(myTree, branchFound,  name,  kind, false) + "\".");
-					}
-					else  if (kind == Associable.STRINGS){
-						String d = myTree.getAssociatedString(nameRef, branchFound);  
-						String nC = MesquiteString.queryString(container,"String at node","This is a string of text, attached to the branch of the tree, with name \"" + name + "\". You can edit it here, "
-								+"although it may have a specific purpose and need to be in a specific format.", (String)d, 2);
-						if (nC != null){
-							myTree.setAssociatedString(nameRef, branchFound, nC);
-							myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-							return null;
-						}
-						//controlModule.discreetAlert("This is a floating-point (double) value attached to the branch of the tree, with name \"" + name + "\" and value \"" + stringAtNode(myTree, branchFound,  name,  kind, false) + "\".");
-					}
-					else  if (kind == Associable.OBJECTS) {
-						Object d = myTree.getAssociatedObject(nameRef, branchFound);  
-						String typeName = "an unspecified object";
-						if (d instanceof DoubleArray)
-							typeName = "an array of floating-point numbers";
-						else if (d instanceof LongArray)
-							typeName = "an array of integer numbers";
-						else if (d instanceof StringArray)
-							typeName = "an array of strings of text";
-						else if (d instanceof ObjectArray)
-							typeName = "an array of unspecified objects";
-						controlModule.discreetAlert("This is " + typeName +  ", attached to the branch of the tree, with name \"" + name + "\". "
-								+ "You can't yet edit properties of this kind in Mesquite.");
-					}
-
-				}
-			}	 	
-		}
-		return null;
-	}
-
-	//must return null or int[4], left, top, right, bottom
-	int[] blank = new int[]{0, 0, 0, 0};
-/*	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){ 
-		return new int[]{100, 40, 130, 60};
-	} 
-	*/
-	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){ 
-
-		if (treeDisplay.getOrientation() != TreeDisplay.LEFT && treeDisplay.getOrientation() != TreeDisplay.RIGHT)
-			return blank;
-		String[] stringsAtRoot = stringsAtNode((MesquiteTree)tree, tree.getRoot(), false, false, null, 1);
-		if (stringsAtRoot == null || stringsAtRoot.length == 0)
-			return blank;
-		String longest  = "";
-		for (int i= 0; i<stringsAtRoot.length; i++)
-			if (stringsAtRoot[i]!= null && stringsAtRoot[i].length()>longest.length())
-				longest = stringsAtRoot[i];
-		Graphics g = treeDisplay.getGraphics();
-		int width = 0;
-		if (g!=null) {
-			FontMetrics fm = g.getFontMetrics(g.getFont());
-			width = fm.stringWidth(longest);
-			g.dispose();
-			//	if (controlModule.centred.getValue()) HERE
-			width = width/2;
-		}
-		else 
-			width = longest.length()*4;
-		if (treeDisplay.getOrientation() == TreeDisplay.LEFT)
-			return new int[]{0, 0, width, 0};
-		else
-			return new int[]{width, 0, 0, 0};
-	}
-	/*.................................................................................................................*/
-	void myDraw(MesquiteTree tree, int node, Graphics g) {
-		if (tree.withinCollapsedClade(node))
-			return;
-		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-			myDraw(tree, d, g);
-
-		int offsetY = 0;
-		int offsetX = 0;
-		if (treeDisplay.getOrientation() == TreeDisplay.RIGHT) {
-			offsetY = treeDisplay.getTreeDrawing().getEdgeWidth()+2;
-			offsetX = -2;
-		}
-		else if (treeDisplay.getOrientation() == TreeDisplay.LEFT){
-			offsetY = treeDisplay.getTreeDrawing().getEdgeWidth()+2;
-			offsetX = 2;
-		}
-		else if (treeDisplay.getOrientation() == TreeDisplay.UP){
-			offsetX = treeDisplay.getTreeDrawing().getEdgeWidth()+4;
-		}
-		else if (treeDisplay.getOrientation() == TreeDisplay.DOWN){
-			offsetX = treeDisplay.getTreeDrawing().getEdgeWidth()+4;
-			offsetY = -8;
-		}
-		
-		for (int p = 0; p< controlModule.propertyList.size(); p++){
-			PropertyDisplayRecord property = (PropertyDisplayRecord)controlModule.propertyList.elementAt(p);
-			if (property.inCurrentTree && property.showing && (tree.nodeIsInternal(node) || property.showOnTerminals)){
-				String nodeString = property.getStringAtNode(tree, node);
-				if (StringUtil.notEmpty(nodeString)){
-					box.setFont(property.getFont(treeDisplay.getFont())); 
-					Color textColor = Color.black;
-					Color color = ColorDistribution.getStandardColor(property.color);
-					if (color != null)
-						textColor = color;
-
-					if (property.whiteEdges)
-						box.setColors(textColor, Color.white);
-					else
-						box.setColors(textColor, null);
-					box.setString(nodeString);
-					double x, y;
-					int propertyOffsetX = offsetX;
-					int propertyOffsetY = offsetY;
-					if (treeDisplay.getOrientation() == TreeDisplay.RIGHT || treeDisplay.getOrientation() == TreeDisplay.LEFT){
-						propertyOffsetX += property.xOffset;
-						propertyOffsetY += property.yOffset + (box.getLineAscent()/2);
-					}
-					else {
-						if (!property.vertical)
-							propertyOffsetX += property.xOffset + (box.getLineAscent()/2);
-						propertyOffsetY += property.xOffset;
-						
-					}
-					if (property.centered){   // center on branch
-						double centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + propertyOffsetX;
-						double centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ propertyOffsetY;
-						int stringWidth = box.getMaxWidthMunched();
-						if (!property.vertical){
-							x = centreBranchX - stringWidth/2;
-							y = centreBranchY - property.fontSize;
-						}
-						else {
-							x = centreBranchX - property.fontSize*2;
-							y = centreBranchY + stringWidth/2;
-						}
-					}
-					else {
-						int stringWidth = box.getMaxWidthMunched();
-						x= treeDisplay.getTreeDrawing().getNodeValueTextBaseX(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth, property.fontSize, !property.vertical) + propertyOffsetX;
-						y = treeDisplay.getTreeDrawing().getNodeValueTextBaseY(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth,property.fontSize,!property.vertical) + propertyOffsetY;
-					}
-					Shape ss = g.getClip();
-					g.setClip(null);
-					if (!property.vertical)
-						box.draw(g,  x, y);
-					else
-						box.draw(g,  x, y, 0, 1500, treeDisplay, false, false);  //Debugg.println fix
-
-					if (property.vertical){
-						offsetX += box.getLineHeight();
-					}
-					else {
-						offsetY += box.getLineHeight();
-					}
-				
-					g.setClip(ss);	
-				}
-			}
-		}
-
-	}
-	/*.................................................................................................................*/
-	public   void drawOnTree(Tree tree, int node, Graphics g) {
-		if (!controlModule.anyShowing())
-			return;
-		myDraw((MesquiteTree)tree, node, g);
-
-	}
-	/*.................................................................................................................*/
-
-	void update(){
-		treeDisplay.pleaseUpdate(false);
-	}
-
-	/*.................................................................................................................*/
-
-	/**return a text version of information at node*/
-	public String textAtNode(Tree tree, int node){
-		if (!controlModule.anyShowing())
-			return "";
-		return stringAtNode((MesquiteTree) tree,  node, true, true, false, 0);
-	}
-	/*.................................................................................................................*/
-	/**return a text version of information on tree, displayed on a text version of the tree*/
-	public String writeOnTree(Tree tree, int node){
-		if (!controlModule.anyShowing() || tree.getNumberAssociatedDoubles() == 0)
-			return null;
-		return super.writeOnTree(tree, node);
-	}
-	/*.................................................................................................................*/
-	/**return a text version of information on tree, displayed as list of nodes with information at each*/
-	public String infoAtNodes(Tree tree, int node){
-		if (!controlModule.anyShowing() || tree.getNumberAssociatedDoubles() == 0)
-			return null;
-		return super.infoAtNodes(tree, node);
-	}
-	/*.................................................................................................................*/
-	/**return a table version of information on tree, displayed as list of nodes with information at each*/
-	public String tableAtNodes(Tree tree, int node){
-		if (!controlModule.anyShowing() || tree.getNumberAssociatedDoubles() == 0)
-			return null;
-		return super.tableAtNodes(tree, node);
-	}
-
-	/*.................................................................................................................*/
-	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		if (!controlModule.anyShowing())
-			return;
-		drawOnTree(tree, drawnRoot, g); //should draw numbered footnotes!
-	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 		myTree = (MesquiteTree)tree;
 		controlModule.setTree((MesquiteTree)tree);
 	}
 
-	public void turnOff() {
-		controlModule.extras.removeElement(this);
-		super.turnOff();
+	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
 	}
+
+	@Override
+	public void printOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
+
 }
 

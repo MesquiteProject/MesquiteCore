@@ -17,6 +17,8 @@ import java.awt.*;
 import java.util.*;
 
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
+import mesquite.lib.tree.PropertyRecord;
 import mesquite.lib.ui.ColorDistribution;
 
 /*.................................................................................................................*/
@@ -620,7 +622,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		}
 	}
-	public boolean isPropertyAssociated(PropertyDisplayRecord property){
+	public boolean isPropertyAssociated(PropertyRecord property){
 		if (property.kind == Associable.BUILTIN)
 			return this instanceof MesquiteTree && (property.getNameReference().equals(MesquiteTree.branchLengthNameRef) || property.getNameReference().equals(MesquiteTree.nodeLabelNameRef));
 		if (property.kind == Associable.BITS)
@@ -635,7 +637,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return getAssociatedObjects(property.getNameReference())!= null;
 		return false;
 	}
-	public boolean propertyIsBetween(PropertyDisplayRecord property){
+	public boolean propertyIsBetween(PropertyRecord property){
 		if (property.kind == Associable.BUILTIN){
 			if (this instanceof MesquiteTree){
 				if (property.getNameReference().equals(MesquiteTree.branchLengthNameRef))
@@ -670,6 +672,33 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				return d.isBetween();
 		}
 		return false;
+	}
+	public void setPropertyIsBetween(PropertyRecord property, boolean isBetween){
+		if (property.kind == Associable.BITS){
+			Bits d = getAssociatedBits(property.getNameReference());
+			if (d!= null)
+				d.setBetweenness(isBetween);
+		}
+		if (property.kind == Associable.DOUBLES){
+			DoubleArray d = getAssociatedDoubles(property.getNameReference());
+			if (d!= null)
+				d.setBetweenness(isBetween);
+		}
+		if (property.kind == Associable.LONGS){
+			LongArray d = getAssociatedLongs(property.getNameReference());
+			if (d!= null)
+				d.setBetweenness(isBetween);
+		}
+		if (property.kind == Associable.STRINGS){
+			StringArray d = getAssociatedStrings(property.getNameReference());
+			if (d!= null)
+				d.setBetweenness(isBetween);
+		}
+		if (property.kind == Associable.OBJECTS){
+			ObjectArray d = getAssociatedObjects(property.getNameReference());
+			if (d!= null)
+				d.setBetweenness(isBetween);
+		}
 	}
 
 	public PropertyDisplayRecord[] getPropertyRecords(){ 
@@ -885,22 +914,28 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				setAssociatedString(ColorDistribution.colorRGBNameReference, node, value);
 			}
 			else if (key.equalsIgnoreCase("setBetweenLong")) { //note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
-				NameReference nRef = NameReference.getNameReference(value);
+				/* disabled as that is now controlled otherwise
+				 NameReference nRef = NameReference.getNameReference(value);
 				LongArray b = getAssociatedLongs(nRef);
 				if (b != null)
 					b.setBetweenness(true);
+					*/
 			}
 			else if (key.equalsIgnoreCase("setBetweenDouble")) {//note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
-				NameReference nRef = NameReference.getNameReference(value);
+				/* disabled as that is now controlled otherwise
+			NameReference nRef = NameReference.getNameReference(value);
 				DoubleArray b = getAssociatedDoubles(nRef);
 				if (b != null)
 					b.setBetweenness(true);
+					*/
 			}
 			else if (key.equalsIgnoreCase("setBetweenObject")) {//note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
+				/* disabled as that is now controlled otherwise
 				NameReference nRef = NameReference.getNameReference(value);
 				ObjectArray b = getAssociatedObjects(nRef);
 				if (b != null)
 					b.setBetweenness(true);
+					*/
 			}
 			else if (key.equalsIgnoreCase("triangled")) { //note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
 				NameReference nr = makeAssociatedBits("collapsed");
@@ -1860,12 +1895,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		setDirty(true);
 	}
 	public void setAssociatedBit(NameReference nRef, int index, boolean value){
-		setAssociatedBit(nRef, index, value, false);
-	}
-
-	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
-	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
-	public void setAssociatedBit(NameReference nRef, int index, boolean value, boolean setAsBetween){
 		if (bits!=null && nRef!=null) {
 			for (int i=0; i<bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
@@ -1874,8 +1903,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 						b.setBit(index); 
 					else
 						b.clearBit(index);
-					if (setAsBetween)
-						b.setBetweenness(true);
 					setDirty(true);
 					return;
 				}
@@ -1888,8 +1915,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				b.setBit(index);
 			else
 				b.clearBit(index);
-			if (setAsBetween)
-				b.setBetweenness(true);
 			setDirty(true);
 		}
 	}
@@ -1980,17 +2005,10 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		setDirty(true);
 	}
 	public void setAssociatedLong(NameReference nRef, int index, long value){
-		setAssociatedLong(nRef, index, value, false);
-	}
-	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
-	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
-	public void setAssociatedLong(NameReference nRef, int index, long value, boolean setAsBetween){
 		if (longs!=null && nRef!=null) {
 			for (int i=0; i<longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
 				if (b !=null && nRef.equals(b.getNameReference())) {
-					if (setAsBetween) 
-						b.setBetweenness(true);
 					b.setValue(index, value); 
 					setDirty(true);
 					return;
@@ -2000,8 +2018,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			LongArray b = getAssociatedLongs(nRef);
 			if (b==null)
 				return;
-			if (setAsBetween) 
-				b.setBetweenness(true);
 			b.setValue(index, value);
 			setDirty(true);
 		}
@@ -2079,18 +2095,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		setDirty(true);
 	}
 	public void setAssociatedDouble(NameReference nRef, int index, double value){
-		setAssociatedDouble(nRef, index, value, false);
-	}
-	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
-	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
-	public void setAssociatedDouble(NameReference nRef, int index, double value, boolean setAsBetween){
 		if (doubles!=null && nRef!=null) {
 			for (int i=0; i<doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
 				if (b !=null && nRef.equals(b.getNameReference())) {
 					b.setValue(index, value); 
-					if (setAsBetween)
-						b.setBetweenness(true);
 					setDirty(true);
 					return;
 				}
@@ -2099,8 +2108,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			DoubleArray b = getAssociatedDoubles(nRef);
 			if (b==null)
 				return;
-			if (setAsBetween)
-				b.setBetweenness(true);
 			b.setValue(index, value);
 			setDirty(true);
 		}
@@ -2179,17 +2186,10 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 
 	public void setAssociatedString(NameReference nRef, int index, String value){
-		setAssociatedString(nRef, index, value, false);
-	}
-	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
-	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
-	public void setAssociatedString(NameReference nRef, int index, String value, boolean setAsBetween){
 		if (strings!=null && nRef!=null) {
 			for (int i=0; i<strings.size(); i++) {
 				StringArray b = (StringArray)strings.elementAt(i);
 				if (b !=null && nRef.equals(b.getNameReference())) {
-					if (setAsBetween) 
-						b.setBetweenness(true);
 					b.setValue(index, value); 
 					setDirty(true);
 					return;
@@ -2199,8 +2199,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			StringArray b = getAssociatedStrings(nRef);
 			if (b==null)
 				return;
-			if (setAsBetween) 
-				b.setBetweenness(true);
 			b.setValue(index, value);
 			setDirty(true);
 		}
@@ -2308,16 +2306,11 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		setDirty(true);
 	}
-	public void setAssociatedObject(NameReference nRef, int index, Object value){
-		setAssociatedObject(nRef, index, value, false);
-	}
 
 	static boolean assocStringObjectWarned = false;
 	boolean assocStringObjectFound = false;
 	
-	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
-	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
-	public void setAssociatedObject(NameReference nRef, int index, Object value, boolean setAsBetween){
+	public void setAssociatedObject(NameReference nRef, int index, Object value){
 		if (value instanceof String){
 			assocStringObjectFound = true;
 			if (MesquiteTrunk.developmentMode && !assocStringObjectWarned){
@@ -2325,7 +2318,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				MesquiteMessage.printStackTrace("");
 				assocStringObjectWarned = true;
 			}
-			setAssociatedString(nRef, index, (String)value, setAsBetween);
+			setAssociatedString(nRef, index, (String)value);
 			return;
 		}
 
@@ -2336,8 +2329,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
 				if (b !=null && nRef.equals(b.getNameReference())) {
 					b.setValue(index, value); 
-					if (setAsBetween)
-						b.setBetweenness(true);
 					setDirty(true);
 					return;
 				}
@@ -2346,8 +2337,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			ObjectArray b = getAssociatedObjects(nRef);
 			if (b==null)
 				return;
-			if (setAsBetween)
-				b.setBetweenness(true);
 			b.setValue(index, value); 
 			setDirty(true);
 		}
@@ -2396,7 +2385,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 		return false;
 	}
-
+/* Disabled until this can be worked via settings also
 	public void setAssociatedBitsBetweenness(NameReference nref, boolean between){
 		Bits b = getAssociatedBits(nref);
 		if (b != null)
@@ -2422,7 +2411,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (b != null)
 			b.setBetweenness(between);
 	}
-
+*/
 }
 
 

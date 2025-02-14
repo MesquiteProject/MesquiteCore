@@ -28,6 +28,7 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
@@ -96,11 +97,11 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 		parametersChanged();
 	}
 	/*.................................................................................................................*/
-	int maxwidest = 20;
+	int maxwidest = 8;
 	public String getWidestString(){
 		int w = maxwidest;
 		if (table == null)
-			return "88888888888888888888";
+			return "888888";
 			
 		for (int ic = 0; ic<table.getNumRows(); ic++){
 			String sIC = getStringForRow(ic);
@@ -117,8 +118,6 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
-		if (node >=0)
-			return "Value at Node " + node;
 		return "Value";
 	}
 	/*.................................................................................................................*/

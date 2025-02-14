@@ -28,6 +28,7 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
@@ -53,7 +54,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 		return "Information Showing on Tree?";
 	}
 	public String getVeryShortName() {
-		return "Showing on Tree?";
+		return "Showing?";
 	}
 	public String getExplanation() {
 		return "Shows whether attached information is shown in the tree window." ;
@@ -112,11 +113,11 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	
 	/*.................................................................................................................*/
 	public String getWidestString(){
-		return "Showing on Tree?";
+		return "Showing?";
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
-		return "Showing on Tree?";
+		return "Showing?";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -135,9 +136,9 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	/*.................................................................................................................*/
 	public String getStringForRow(int ic) {
 			if (isShowingOnTree(getPropertyAtRow(ic)))
-			return "Showing";
+			return "✓";
 			else
-				return "Hidden";
+				return "✗";
 
 	}
 	/*.................................................................................................................*/

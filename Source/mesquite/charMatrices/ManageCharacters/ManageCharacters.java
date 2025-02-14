@@ -1634,7 +1634,7 @@ public class ManageCharacters extends CharactersManager {
 	 * of the GenBank data.
 	 /*...................................................................................................................*/
 	void cleanUpGenBankAssociatedStrings (Associable as, int whichTaxon, String genBankNote){
-		String newNote="";
+		String newNote=null;
 		while (!StringUtil.blank(genBankNote) && genBankNote.indexOf("(")>=0){
 			int start = genBankNote.indexOf("(");
 			int end = genBankNote.indexOf(")");
@@ -1643,9 +1643,16 @@ public class ManageCharacters extends CharactersManager {
 				firstBit = genBankNote.substring(0, start);
 			newNote=genBankNote.substring(start,end+1);
 			genBankNote = firstBit + genBankNote.substring(end+1, genBankNote.length());
+			genBankNote = StringUtil.stripLeadingWhitespace(genBankNote);
+			genBankNote = StringUtil.stripTrailingWhitespace(genBankNote);
 		}
+		if (genBankNote != null){
+			genBankNote = StringUtil.stripLeadingWhitespace(genBankNote);
+			genBankNote = StringUtil.stripTrailingWhitespace(genBankNote);
 		 as.setAssociatedString(MolecularData.genBankNumberRef, whichTaxon, genBankNote);
-		 as.setAssociatedString(CharacterData.taxonMatrixNotesRef, whichTaxon, newNote);
+		}
+		if (newNote != null)
+			as.setAssociatedString(CharacterData.taxonMatrixNotesRef, whichTaxon, newNote);
 	}
 
 	

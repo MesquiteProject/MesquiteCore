@@ -157,7 +157,7 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 
 	/*.................................................................................................................*/
 	private   void setLineageWidths(MesquiteTree tree, int node, double w) {
-		tree.setAssociatedDouble(widthNameReference, node, w, true);
+		tree.setAssociatedDouble(widthNameReference, node, w);
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			setLineageWidths(tree, d, w);
 	}
@@ -180,7 +180,7 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 	private void setWidth(MesquiteTree tree, int node, double w){
 		if (tree.getAssociatedDoubles(widthNameReference)==null)
 			tree.makeAssociatedDoubles("width");
-		tree.setAssociatedDouble(widthNameReference, node, w, true);
+		tree.setAssociatedDouble(widthNameReference, node, w);
 		tree.notifyListeners(this, new Notification(MesquiteListener.UNKNOWN));
 	}
 	/*.................................................................................................................*/

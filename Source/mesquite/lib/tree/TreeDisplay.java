@@ -382,12 +382,20 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		return fixedTaxonSpacing;
 	}
 	public void addExtra(TreeDisplayExtra extra) {
-		if (extras != null)
+		if (extras != null){
 			extras.addElement(extra, false);
+			if (tree != null)
+				accumulateBordersFromExtras(tree);
+			redoCalculations(8122349);
+	}
 	}
 	public void removeExtra(TreeDisplayExtra extra) {
-		if (extras != null)
+		if (extras != null){
 			extras.removeElement(extra, false);
+			if (tree != null)
+				accumulateBordersFromExtras(tree);
+			redoCalculations(817226);
+		}
 	}
 	public boolean findExtra(TreeDisplayExtra extra) {
 		if (extras == null)

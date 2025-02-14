@@ -532,8 +532,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	String getNote(int row, NameReference nameRef){
 		if (tInfo == null)
 			return null;
-		Object obj = tInfo.getAssociatedString(nameRef, row);
-		if (obj == null || !(obj instanceof String))
+		String obj = tInfo.getAssociatedString(nameRef, row);
+		if (obj == null)
 			return null;
 		return (String)obj;
 	}

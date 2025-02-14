@@ -22,7 +22,6 @@ import java.math.*;
 import java.util.*;
 
 import mesquite.lib.Associable;
-import mesquite.lib.PropertyDisplayRecord;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
@@ -464,7 +463,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		else
 			selected = null;
-		checkAssociatedBetweenness();
 		setAnnotation(tree.getAnnotation(), false); 
 		root=tree.root;
 		subRoot=tree.subRoot;
@@ -2244,7 +2242,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (nodeIsInternal(node)) {
 			double bl = getBranchLength(node); 
 			if (MesquiteDouble.isCombinable(bl)){
-				setAssociatedDouble(nameRef, node, 0.01*bl, true);  // value will be a percentage
+				setAssociatedDouble(nameRef, node, 0.01*bl);  // value will be a percentage
 			}
 			for (int d = firstDaughterOfNode(node); nodeExists(d) && !nodeWasFound; d = nextSisterOfNode(d))
 				convertBranchLengthToNodeValue(d, nameRef);
@@ -3577,7 +3575,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				}
 				// ************************* Newick comment -- use Newick tokenizing rules ***************
 				else if  ("<".equals(c) && readAssociated) {
-					checkAssociatedBetweenness();
 					boolean done = false;
 					int count = 0;
 					while (!done && stringLoc.getValue()<=TreeDescription.length() && count++<10) {
@@ -3935,8 +3932,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*20);
 		if (!getRooted())
 			s.append("[&U] ");
-		writeTreeByNumbersWithNodeNumbers(root, s, true);
 		writeTreeProperties(s, true);
+		writeTreeByNumbersWithNodeNumbers(root, s, true);
 
 		s.append(';');
 		return s.toString();
@@ -3948,8 +3945,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
 		if (!getRooted())
 			s.append("[&U] ");
-		writeTreeByNumbers(root, s, true, true);
 		writeTreeProperties(s, true);
+		writeTreeByNumbers(root, s, true, true);
 		s.append(';');
 		return s.toString();
 	}
@@ -4012,9 +4009,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
 		if (includeAssocAndProperties && !getRooted())
 			s.append("[&U] ");
-		writeTreeWithNamer(root, s, namer, includeBranchLengths, includeAssocAndProperties, true);
 		if (includeAssocAndProperties)
 			writeTreeProperties(s, true);
+		writeTreeWithNamer(root, s, namer, includeBranchLengths, includeAssocAndProperties, true);
 		s.append(';');
 		return s.toString();
 	}
@@ -4031,13 +4028,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
 		if (!getRooted())
 			s.append("[&U] ");
+		writeTreeProperties(s, associatedUseComments);
 		if (byWhat == BY_NAMES)
 			writeTreeByNames(node, s, true, true, associatedUseComments);
 		else if (byWhat == BY_NUMBERS)
 			writeTreeByNumbers(node, s, true, associatedUseComments);
 		else if (byWhat == BY_TABLE)
 			writeTreeByLabels(node, s, associatedUseComments);
-		writeTreeProperties(s, associatedUseComments);
 		s.append(';');
 		return s.toString();
 	}
@@ -4062,13 +4059,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (mb !=null) {
 			detach(mb);
 		}
+
 		String betweennesses = writeAssociatedBetweenness();
 
 		if (!StringUtil.blank(attachments) || !StringUtil.blank(betweennesses)){
 			if (useComments)
-				sb.append("[" + Parser.substantiveCommentMark + " treeProperties=true, ");  
+				sb.append("[" + Parser.substantiveCommentMark);  
 			else
-				sb.append("<"  + " treeProperties=true, "); 
+				sb.append("<"); 
 			if (!StringUtil.blank(attachments))
 				sb.append(attachments);
 			if (!StringUtil.blank(betweennesses)) {
@@ -4108,27 +4106,27 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 	}
 
-	void readAppliesToBranches(String toWhom){
+	void readAppliesToNodes(String toWhom){
 		NameReference nRef = NameReference.getNameReference(toWhom);
 		Bits b = getAssociatedBits(nRef);
 		if (b != null)
-			b.setBetweenness(true);
+			b.setBetweenness(false);
 		else {
 			LongArray bL = getAssociatedLongs(nRef);
 			if (bL != null)
-				bL.setBetweenness(true);
+				bL.setBetweenness(false);
 			else {
 				DoubleArray bD = getAssociatedDoubles(nRef);
 				if (bD != null)
-					bD.setBetweenness(true);
+					bD.setBetweenness(false);
 				else {
 					StringArray bS = getAssociatedStrings(nRef);
 					if (bS != null)
-						bS.setBetweenness(true);
+						bS.setBetweenness(false);
 					else {
 						ObjectArray bO = getAssociatedObjects(nRef);
 						if (bO != null)
-							bO.setBetweenness(true);
+							bO.setBetweenness(false);
 					}
 				}
 			}
@@ -4177,19 +4175,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (StringUtil.blank(value))
 			return false;
 
-		if (key.equalsIgnoreCase("appliesToBranches")){
+		if (key.equalsIgnoreCase("appliesToNodes")){
 			if (value.equals("{")){
 				String value2 = ParseUtil.getToken(assocString, pos); //finding value
 				while (StringUtil.notEmpty(value2) && !value2.equals("}")){
-					readAppliesToBranches(value2);
+					readAppliesToNodes(value2);
 					value2 = ParseUtil.getToken(assocString, pos); //finding value
 				}
 			}
 			else {
-				readAppliesToBranches(value);
+				readAppliesToNodes(value);
 			}
 		}
-		else if (key.equalsIgnoreCase("treeProperties")) {
+		else if (key.equalsIgnoreCase("treeProperties")) { //used fleetingly
 		}
 		else if (key.equalsIgnoreCase("setBetweenBits")) {
 			NameReference nRef = NameReference.getNameReference(value);
@@ -5353,49 +5351,61 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return true;
 	}
 
-	/* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
-	values in ManageTrees.queryAboutNumericalLabelIntepretation() */
-
-	static final String[] betweenLongs = new String[]{"color"};
-	static final String[] betweenDoubles = new String[]{"width", "bootstrapFrequency", "consensusFrequency", "posteriorProbability", "posterior"};
-	static final String[] betweenObjects = new String[]{}; //println("$ println("@ 
-	static final String[] betweenStrings = new String[]{"!color"};
-	static final String[] betweenBits = new String[]{};
-
-	private void checkAssociatedBetweenness(){   //default betweenness recorded
-		if (bits!=null) {
-			for (int i=0; i< bits.size(); i++) {
-				Bits b = (Bits)bits.elementAt(i);
-				NameReference nRef = b.getNameReference();
-				if (StringArray.indexOfIgnoreCase(betweenBits, nRef.getValue())>=0)
-					b.setBetweenness(true);
-			}
-		}
-		if (longs!=null) {
-			for (int i=0; i< longs.size(); i++) {
-				LongArray b = (LongArray)longs.elementAt(i);
-				NameReference nRef = b.getNameReference();
-				if (StringArray.indexOfIgnoreCase(betweenLongs, nRef.getValue())>=0)
-					b.setBetweenness(true);
-			}
-		}
-		if (doubles!=null)
-			for (int i=0; i< doubles.size(); i++) {
-				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				NameReference nRef = b.getNameReference();
-				if (StringArray.indexOfIgnoreCase(betweenDoubles, nRef.getValue())>=0)
-					b.setBetweenness(true);
-			}
-		if (objects!=null)
-			for (int i=0; i< objects.size(); i++) {
-				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				NameReference nRef = b.getNameReference();
-				if (StringArray.indexOfIgnoreCase(betweenObjects, nRef.getValue())>=0)
-					b.setBetweenness(true);
-			}
-
-
+	//These from Associable are overrident to set applying to branch ("betweenness") as default, unlike Associables in general,
+	//but also to read the betweenness from the defaults for PropertyRecords stored in settings
+	public NameReference makeAssociatedBits(String n){
+		NameReference nr = super.makeAssociatedBits(n);
+		Bits b = getAssociatedBits(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.BITS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
 	}
+	public NameReference makeAssociatedLongs(String n){
+		NameReference nr = super.makeAssociatedLongs(n);
+		LongArray b = getAssociatedLongs(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.LONGS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
+	}
+	public NameReference makeAssociatedDoubles(String n){
+		NameReference nr = super.makeAssociatedDoubles(n);
+		DoubleArray b = getAssociatedDoubles(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.DOUBLES);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
+	}
+	public NameReference makeAssociatedStrings(String n){
+		NameReference nr = super.makeAssociatedStrings(n);
+		StringArray b = getAssociatedStrings(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.STRINGS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
+	}
+	public NameReference makeAssociatedObjects(String n){
+		NameReference nr = super.makeAssociatedObjects(n);
+		ObjectArray b = getAssociatedObjects(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.OBJECTS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
+	}
+
+	/* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
+	values in ManageTrees.queryAboutNumericalLabelIntepretation() */ //Debugg.println
+	
+	/*This vector records whether branch/node properties are assigned to nodes or branches, according to the settings in Mesquite_Folder/settings/trees/BranchPropertiesInit. 
+	 * This is read by BranchPropertiesInit, and cannot be changed at runtime. It cannot be overrided either.*/
+	public static ListableVector propertiesSettingsVector = new ListableVector(); 
+	
 
 	private String writeAssociatedBetweenness(){
 		String s = "";
@@ -5404,7 +5414,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
-				if (b.isBetween()) {
+				if (!b.isBetween()) {  //writes only if says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;
@@ -5416,7 +5426,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (longs!=null) {
 			for (int i=0; i< longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
-				if (b.isBetween()) {
+				if (!b.isBetween()) {
 					if (!first)
 						s += ",";
 					first = false;
@@ -5428,7 +5438,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (doubles!=null)
 			for (int i=0; i< doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				if (b.isBetween()) {
+				if (!b.isBetween()) {
 					if (!first)
 						s += ",";
 					first = false;
@@ -5439,7 +5449,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				if (b.isBetween()) {
+				if (!b.isBetween()) {
 					if (!first)
 						s += ",";
 					first = false;
@@ -5450,9 +5460,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (count == 0)
 			return "";
 		if (count ==1)
-			return " appliesToBranches = " + s;
+			return " appliesToNodes = " + s;
 
-		return " appliesToBranches = {" + s + " }";
+		return " appliesToNodes = {" + s + " }";
 	}
 	/*-----------------------------------------*/
 	//floatNode and reroot corrected to handle branch lengths 29 Sept 2001
