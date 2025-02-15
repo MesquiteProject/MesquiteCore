@@ -669,7 +669,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		int buff = 2;
 		int regionInCellH = editorPanel.findRegionInCellH(x);
 		int regionInCellV = editorPanel.findRegionInCellV(y);
-		Debugg.println("@ iBS " + regionInCellH);
 		if (selectedBetweenColumns())
 			return (row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection()) && ((regionInCellH>80 && column == getStartBetweenColumnSelection()) || (regionInCellH<20 && column == getStartBetweenColumnSelection()+1)) ;
 		else if (selectedBetweenRows())

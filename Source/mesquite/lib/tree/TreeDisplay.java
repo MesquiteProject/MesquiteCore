@@ -390,12 +390,13 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	}
 	}
 	public void removeExtra(TreeDisplayExtra extra) {
-		if (extras != null){
+	 if (extras != null){
 			extras.removeElement(extra, false);
-			if (tree != null)
+			/*	QZZ		if (tree != null)
 				accumulateBordersFromExtras(tree);
-			redoCalculations(817226);
+			redoCalculations(817226);	*/
 		}
+	
 	}
 	public boolean findExtra(TreeDisplayExtra extra) {
 		if (extras == null)
