@@ -163,7 +163,7 @@ public class SquareTree extends DrawTree {
 					SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
 					if (treeDrawing.treeDisplay != null)
-						treeDrawing.treeDisplay.setMinimumTaxonNameDistance(treeDrawing.edgewidth, 5); //better if only did this if tracing on
+						treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(treeDrawing.edgewidth, 5); //better if only did this if tracing on
 				}
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -340,7 +340,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 
 	public SquareTreeDrawing(TreeDisplay treeDisplay, int numTaxa, SquareTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 5); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 5); //better if only did this if tracing on
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		try{
@@ -732,7 +732,7 @@ if (tree.isVisibleEvenIfInCollapsed(node))
 			if (edgewidth<2)
 				edgewidth=2;
 		}
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 5);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 5);
 		if (isUP()) {
 			UPCalcBranchPolys(tree, drawnRoot, oops, branchPoly, getEdgeWidth());
 			UPCalcBranchPolys(tree, drawnRoot, oops, touchPoly, getNodeWidth());

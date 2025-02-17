@@ -86,7 +86,7 @@ public class CircularTree extends DrawTree {
 					Object obj = e.nextElement();
 					CircleTreeDrawing treeDrawing = (CircleTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(newWidth, 6); 
 				}
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -145,7 +145,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 		treeDisplay.setOrientation(TreeDisplay.CIRCULAR);
 		oldNumTaxa = numTaxa;
 		namesFollowLines = true;
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 		ready = true;
 	}
 	public void resetNumNodes(int numNodes){
@@ -375,7 +375,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	/*----------------------------------------------------------------------------*/
 	public   void drawTree(Tree tree, int drawnRoot, Graphics g) {
 		if (MesquiteTree.OK(tree)) {
-			treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
 			g.setColor(treeDisplay.branchColor);

@@ -16,6 +16,7 @@ package mesquite.lib.tree;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
+import mesquite.lib.CommandChecker;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;

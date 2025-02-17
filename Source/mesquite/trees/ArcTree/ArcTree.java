@@ -143,7 +143,7 @@ public class ArcTree extends DrawTree {
 					Object obj = e.nextElement();
 					ArcTreeDrawing treeDrawing = (ArcTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(newWidth, 6); 
 				}
 				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -232,7 +232,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 
 	public ArcTreeDrawing (TreeDisplay treeDisplay, int numTaxa, ArcTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;

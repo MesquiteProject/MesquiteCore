@@ -3785,7 +3785,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return;
 		MesquiteDouble fraction = new MesquiteDouble();
 		int branchFound = findBranch(x, y, fraction);
-
 		/*
 		 * if (fraction.isCombinable()) if (treeDisplay.getTreeDrawing().isAtNode(fraction)) System.out.println("in node " + branchFound + ", fraction: " + fraction.getValue()); else System.out.println("  " + fraction.getValue() + "   " + branchFound);
 		 */

@@ -43,7 +43,7 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 		MesquiteModule mb = this;
 		if (colorMenu != null && colorMenu.getOwnerModule() != null)
 			mb = colorMenu.getOwnerModule();
-		mb.addCheckMenuItem(colorMenu, "Color Branches by Partition", makeCommand("colorByPartition",  this), colorByPartition);
+		mb.addCheckMenuItem(colorMenu, "Color Branches by Taxon Groups", makeCommand("colorByPartition",  this), colorByPartition);
 		return true;
 	} 
 	/*.................................................................................................................*/
@@ -54,7 +54,7 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Color Branches by Partition";
+		return "Color Branches by Taxon Groups";
 	}
 
 	/*.................................................................................................................*/

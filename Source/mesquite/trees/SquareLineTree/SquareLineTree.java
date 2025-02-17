@@ -142,7 +142,7 @@ public class SquareLineTree extends DrawTree {
 					Object obj = e.nextElement();
 					SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(newWidth, 6); 
 				}
 				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -244,7 +244,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	public SquareLineTreeDrawing (TreeDisplay treeDisplay, int numTaxa, SquareLineTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		edgewidth = ownerModule.oldEdgeWidth;
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 4); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 4); //better if only did this if tracing on
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;

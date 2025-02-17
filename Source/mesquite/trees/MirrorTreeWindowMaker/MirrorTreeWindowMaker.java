@@ -198,13 +198,13 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 		treeDisplays[0].setAllowReorientation(false);
 		treeDisplays[0].setTipsMargin(40);
 		treeDisplays[0].setTaxonNameBuffer(8); ///8
-		treeDisplays[0].setTaxonNameDistance(14); ///absent
+		treeDisplays[0].setTaxonNameDistanceFromTip(14); ///absent
 		treeDisplays[1].setOrientation(TreeDisplay.LEFT);
 		treeDisplays[1].setAllowReorientation(false);
 		treeDisplays[1].suppressNames = true;
 		treeDisplays[1].setTipsMargin(18); //14
 		treeDisplays[1].setTaxonNameBuffer(20); //absent
-		treeDisplays[1].setTaxonNameDistance(14); ///absent
+		treeDisplays[1].setTaxonNameDistanceFromTip(14); ///absent
 		extra = new MirrorExtra(ownerModule, treeDisplays[0], this);
 		treeDisplays[0].addExtra(extra);
 		treeDisplays[0].centerNames = true;

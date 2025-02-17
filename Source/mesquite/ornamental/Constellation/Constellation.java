@@ -81,7 +81,7 @@ public class Constellation extends DrawTree {
 					Object obj = e.nextElement();
 					ConstellationDrawing treeDrawing = (ConstellationDrawing)obj;
     	 				treeDrawing.spotsize=newDiameter;
-    	 				treeDrawing.treeDisplay.setMinimumTaxonNameDistance(treeDrawing.spotsize/2, 4);
+    	 				treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(treeDrawing.spotsize/2, 4);
     	 			}
 	 				parametersChanged();
     	 		}
@@ -124,7 +124,7 @@ class ConstellationDrawing extends TreeDrawing  {
 	
 	public ConstellationDrawing (TreeDisplay treeDisplay, int numTaxa, Constellation ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
-	    	treeDisplay.setMinimumTaxonNameDistance(spotsize/2, 4);
+	    	treeDisplay.setMinimumTaxonNameDistanceFromTip(spotsize/2, 4);
 		treeDisplay.setOrientation(TreeDisplay.FREEFORM);
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;

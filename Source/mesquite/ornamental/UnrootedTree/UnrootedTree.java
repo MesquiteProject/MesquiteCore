@@ -91,7 +91,7 @@ public class UnrootedTree extends DrawTree {
 					Object obj = e.nextElement();
 					UnrootedTreeDrawing treeDrawing = (UnrootedTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(newWidth, 6); 
 				}
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -150,7 +150,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 		treeDisplay.setOrientation(TreeDisplay.UNROOTED);
 		oldNumTaxa = numTaxa;
 		namesFollowLines = true;
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 		ready = true;
 	}
 	public void resetNumNodes(int numNodes){
@@ -340,7 +340,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 		GraphicsUtil.fillRect(g,rect.getX()+inset, rect.getY()+inset, rect.getWidth()-inset*2, rect.getHeight()-inset*2);
 		*/
 		if (MesquiteTree.OK(tree)) {
-			treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
 			g.setColor(treeDisplay.branchColor);

@@ -121,7 +121,7 @@ public class PlotTree extends AnalyticalDrawTree {
 					PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
 		    	 			spotSize = newDiameter;
 		    	 			treeDrawing.spotsize=newDiameter;
-		    	 			treeDrawing.treeDisplay.setMinimumTaxonNameDistance(treeDrawing.spotsize/2, 4);
+		    	 			treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(treeDrawing.spotsize/2, 4);
 		    	 			parametersChanged();
 	    	 		}
     	 		}
@@ -229,7 +229,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		this.spotsize = spotSize;
 
-	    	treeDisplay.setMinimumTaxonNameDistance(spotsize/2, 4);
+	    	treeDisplay.setMinimumTaxonNameDistanceFromTip(spotsize/2, 4);
 		treeDisplay.setOrientation(TreeDisplay.FREEFORM);
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;

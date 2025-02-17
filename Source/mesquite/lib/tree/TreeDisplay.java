@@ -16,14 +16,17 @@ package mesquite.lib.tree;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.CommandChecker;
 import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteLong;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
+import mesquite.lib.ProjectReadThread;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
@@ -125,13 +128,15 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/**  Is the orientation fixed, or can reorientation be done?*/
 	private boolean allowReorient = true;
 	private MesquiteInteger highlightedBranch  = new MesquiteInteger(0);
-
+	MesquiteCommand recalcCommand;
 
 
 	public TreeDisplay (MesquiteModule ownerModule, Taxa taxa) { 
 		super(ownerModule,taxa);
 		branchColor = Color.black;
 		branchColorDimmed = Color.gray;
+		recalcCommand = new MesquiteCommand("redoCalculations", this);
+		recalcCommand.setSuppressLogging(true); 
 	}
 
 	public static final int DRAWULTRAMETRIC = 0; //	
@@ -297,21 +302,21 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		namesTask = dtn;
 	}
 
-
+	//Distance from tip to taxon name
 	boolean tndExplicitlySet = false;
-	public void setMinimumTaxonNameDistance(int minForTerminalBoxes, int min) {
+	public void setMinimumTaxonNameDistanceFromTip(int minForTerminalBoxes, int min) {
 		this.minForTerminalBoxes = minForTerminalBoxes;
 		this.minDist = min;
 		if (!tndExplicitlySet || dist<minDist)
 			dist = minDist;
 	}
-	public void setTaxonNameDistance(int newDist) { 
+	public void setTaxonNameDistanceFromTip(int newDist) { 
 		if (newDist>=minDist) {
 			this.dist = newDist;
 			tndExplicitlySet = true;
 		}
 	}
-	public int getTaxonNameDistance() {
+	public int getTaxonNameDistanceFromTip() {
 		if (treeDrawing != null && treeDrawing.terminalBoxesRequested())
 			return dist + minForTerminalBoxes;
 		else
@@ -363,6 +368,20 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			treeDrawing.recalculatePositions(tree); //to force node locs recalc
 
 	}
+	
+	public void redoCalculationsMainThread(){
+		recalcCommand.doItMainThread(null, null, null); 
+		}
+	
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Recalculates node positions", "[]", commandName, "redoCalculations")) {
+			if (!(Thread.currentThread() instanceof ProjectReadThread))
+				redoCalculations(134618);
+		}
+		else return super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+
 	public void setEdgeWidth(int sp) {
 		this.edgewidth = sp;
 	}
@@ -381,20 +400,40 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public int getFixedTaxonSpacing() {
 		return fixedTaxonSpacing;
 	}
+	
+	boolean rectsEqual(int[] r1, int[] r2){
+		if (r1 == null){
+			if (r2 != null)
+			return false;
+			else
+				return true;
+			}
+		if (r2== null)
+			return false;
+		return r1[0] == r2[0] && r1[1] == r2[1] && r1[2] == r2[2] && r1[3] == r2[3];
+	}
 	public void addExtra(TreeDisplayExtra extra) {
 		if (extras != null){
 			extras.addElement(extra, false);
-			if (tree != null)
+			if (tree != null){
+				int[] rect = getRequestedBorders();
 				accumulateBordersFromExtras(tree);
-			redoCalculations(8122349);
+				int[] rect2 = getRequestedBorders();
+				if (!rectsEqual(rect, rect2))
+					redoCalculationsMainThread();
+			}
 	}
 	}
 	public void removeExtra(TreeDisplayExtra extra) {
 	 if (extras != null){
 			extras.removeElement(extra, false);
-			/*	QZZ		if (tree != null)
+			if (tree != null){
+				int[] rect = getRequestedBorders();
 				accumulateBordersFromExtras(tree);
-			redoCalculations(817226);	*/
+				int[] rect2 = getRequestedBorders();
+				if (!rectsEqual(rect, rect2))
+					redoCalculationsMainThread();
+			}
 		}
 	
 	}
@@ -466,6 +505,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		}
 	}
 
+	int[] zeroBorders = new int[]{0, 0, 0, 0};  //left top right bottom
 	int[] bordersRequestedByExtras = new int[]{0, 0, 0, 0};  //left top right bottom
 	public int[] getRequestedBorders(){
 		return bordersRequestedByExtras;
@@ -477,7 +517,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	}
 	int[] getBordersFromExtras(Tree tree) {
 		if (tree == null || tree.getTaxa().isDoomed())
-			return null;
+			return zeroBorders;
 		if (extras != null) {
 			int[] overallBorder = new int[]{0, 0, 0, 0};
 			Enumeration e = extras.elements();
@@ -485,7 +525,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
 				if (ownerModule==null || ownerModule.isDoomed()) 
-					return null;
+					return zeroBorders;
 				int[] borderRequest = ex.getRequestedExtraBorders(tree, treeDrawing);
 				if (borderRequest != null && borderRequest.length == 4){
 					for (int i=0;i<4; i++)
@@ -496,7 +536,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			}
 			return overallBorder;
 		}
-		return null;
+		return zeroBorders;
 	}
 	public void drawAllBackgroundExtrasOfPlacement(Tree tree, int drawnRoot, Graphics g, int placement) {
 		if (tree == null || tree.getTaxa().isDoomed())

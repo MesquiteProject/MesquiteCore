@@ -294,7 +294,7 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 					WideTreeDrawing treeDrawing = (WideTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
 					treeDrawing.treeDisplay.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(minimalEdgeWidth/4, 4); 
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(minimalEdgeWidth/4, 4); 
 				}
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -566,7 +566,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		this.reconstructTask = reconstructTask;
 		edgeWidth = treeDisplay.getEdgeWidth();
 		boxHeight = ownerModule.minimalEdgeWidth/4;
-		treeDisplay.setMinimumTaxonNameDistance(boxHeight,  4); 
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(boxHeight,  4); 
 		treeDisplay.setOrientation(TreeDisplay.UP);
 
 		widthNameReference = NameReference.getNameReference("width");

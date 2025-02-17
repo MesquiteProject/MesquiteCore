@@ -336,8 +336,9 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (MesquiteWindow.checkDoomed(this))
+		if (MesquiteWindow.checkDoomed(this)){
 			return null;
+		}
 		if (checker.compare(this.getClass(), "Mouse down", "[modifiers as integer][click count][when][x][y]", commandName, "mouseDown")) {
 			int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
 			int clickCount = MesquiteInteger.fromString(arguments, pos);
@@ -378,7 +379,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse moved", "[modifiers as integer][x][y]", commandName, "mouseMoved")) {
-			int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
+int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
 			int x = MesquiteInteger.fromString(arguments, pos);
 			int y = MesquiteInteger.fromString(arguments, pos);
 			MesquiteTool t = getT();

@@ -170,7 +170,7 @@ public class BallsNSticks extends DrawTree {
 					BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
 					treeDrawing.spotSize=newDiameter;
 					treeDrawing.preferredSpotSize = newDiameter;
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(0, treeDrawing.spotSize/2  + 4);
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(0, treeDrawing.spotSize/2  + 4);
 				}
 				parametersChanged();
 			}
@@ -331,7 +331,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		}
 		catch (Throwable t){
 		}
-		treeDisplay.setMinimumTaxonNameDistance(0, spotSize/2+ 4);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(0, spotSize/2+ 4);
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
 		treeDisplay.setOrientation(ownerModule.nodeLocsTask.getDefaultOrientation());
@@ -447,7 +447,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			if (spotSize<2)
 				spotSize=2;
 		}
-		treeDisplay.setMinimumTaxonNameDistance(0, spotSize/2+ 4);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(0, spotSize/2+ 4);
 		if (treeDisplay.getTaxonSpacing()<edgeWidth+2) {
 			edgeWidth = treeDisplay.getTaxonSpacing()-2;
 			if (edgeWidth<2)

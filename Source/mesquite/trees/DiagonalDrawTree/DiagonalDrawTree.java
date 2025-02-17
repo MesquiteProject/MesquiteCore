@@ -144,7 +144,7 @@ public class DiagonalDrawTree extends DrawTree {
 					Object obj = e.nextElement();
 					DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 5); //better if only did this if tracing on
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(newWidth, 5); //better if only did this if tracing on
 				}
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -254,7 +254,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	public DiagonalTreeDrawing (TreeDisplay treeDisplay, int numTaxa, DiagonalDrawTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		widthNameReference = NameReference.getNameReference("width");
-		treeDisplay.setMinimumTaxonNameDistance(edgeWidth, 5); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgeWidth, 5); //better if only did this if tracing on
 		
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
@@ -762,7 +762,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			if (edgeWidth<2)
 				edgeWidth=2;
 		}
-		treeDisplay.setMinimumTaxonNameDistance(edgeWidth, 5);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgeWidth, 5);
 		if (isUP()) {
 			UPCalcBranchPolys(tree, drawnRoot, branchPoly, false);
 			UPCalcBranchPolys(tree, drawnRoot, touchPoly, true);
@@ -1128,7 +1128,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	public void setEdgeWidth(int edw) {
 		preferredEdgeWidth = edw;
 		edgeWidth = edw;
-		treeDisplay.setMinimumTaxonNameDistance(edgeWidth, 5);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgeWidth, 5);
 	}
 	/*New code Feb.22.07 allows eavesdropping on edgewidth by the TreeDrawing oliver*/ //TODO: delete new code comments
 	/*_________________________________________________*/

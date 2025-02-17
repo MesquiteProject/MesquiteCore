@@ -29,6 +29,7 @@ import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
@@ -331,6 +332,8 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 				treeDisplay.setVisible(false);
 				treeDisplay.suppressDrawing(true);
 				int currentOrientation = treeDisplay.getOrientation();
+				TreeDrawing tD = treeDisplay.getTreeDrawing();
+				treeDisplay.setTreeDrawing(null); //just in case, for threading
 				temp = (DrawTree)replaceEmployee(DrawTree.class, arguments, "Form of tree?", treeDrawTask);
 				if (temp!=null) {
 					treeDrawTask = temp;
@@ -351,6 +354,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplay.setVisible(vis);
 				}
 				else {
+					treeDisplay.setTreeDrawing(tD); //just in case, for threading
 					treeDisplay.setVisible(vis);
 					treeDisplay.suppressDrawing(suppression);
 					decrementMenuResetSuppression();

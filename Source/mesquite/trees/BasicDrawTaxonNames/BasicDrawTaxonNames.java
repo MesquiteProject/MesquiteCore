@@ -1086,7 +1086,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				fm=g.getFontMetrics(currentFont);
 				rise= fm.getMaxAscent();
 				descent = fm.getMaxDescent();
-				separation = treeDisplay.getTaxonNameDistance();
+				separation = treeDisplay.getTaxonNameDistanceFromTip();
 
 				TaxaPartition part = null;
 				if (shadePartition.getValue())
