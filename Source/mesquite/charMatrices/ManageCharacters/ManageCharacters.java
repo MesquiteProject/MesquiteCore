@@ -1324,7 +1324,7 @@ public class ManageCharacters extends CharactersManager {
 								StringArray array = as.getAssociatedStrings(v);
 								String c = array.getValue(it);
 
-								if (c != null){
+								if (StringUtil.notEmpty(c)){
 									s.append(suppTMTokenAbbrev);
 									s.append(taxonTokenAbbrev);
 									s.append(Integer.toString(CharacterStates.toExternal(it)));

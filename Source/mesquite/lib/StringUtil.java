@@ -920,6 +920,8 @@ public class StringUtil {
 	public static String tokenize(String token, String punctuationString, StringBuffer sb) {
 		if (token == null)
 			return "";
+		if (token.length() == 0)
+			return "''";
 		if (hasPunctuation(token,punctuationString) || token.indexOf("_")>=0 || hasSpecial(token))  //28Feb05: added "_" so that this forced quoted token to preserve the underscore
 			return quote(token, sb);  
 		if (sb == null)

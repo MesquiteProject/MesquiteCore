@@ -169,6 +169,8 @@ public class GenBankNumber extends TaxonListAssistant {
 			return;
 		Taxon taxon = data.getTaxa().getTaxon(row);
 		Associable tInfo = data.getTaxaInfo(true);
+		if (StringUtil.blank(s))
+			s = null;
 		if (tInfo != null && taxon != null) {
 			tInfo.setAssociatedString(MolecularData.genBankNumberRef, row, s);
 		}

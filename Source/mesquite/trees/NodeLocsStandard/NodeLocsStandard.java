@@ -18,6 +18,7 @@ import java.util.*;
 
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -109,6 +110,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 				stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch Tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
 			evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);
 		}
+		
+		MesquiteMenuItemSpec mRC = addMenuItem("Rotate Clockwise", makeCommand("rotateClockwise", this));
+		mRC.setShortcut(KeyEvent.VK_R);
+		MesquiteMenuItemSpec mLC = addMenuItem("Rotate Counterclockwise", makeCommand("rotateCounterClockwise", this));
+		mLC.setShortcut(KeyEvent.VK_L);
+
 		addMenuItem( "Fixed Distance Between Taxa...", makeCommand("setFixedTaxonDistance",  this));
 		addCheckMenuItem(null, "Centered Branches", makeCommand("toggleCenter", this), center);
 		if (employerAllowsReorientation())

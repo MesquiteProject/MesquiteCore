@@ -571,7 +571,7 @@ public class ManageTaxa extends TaxaManager {
 							if (!commentsRef.equals(array.getNameReference())){
 								String c = array.getValue(it);
 
-								if (c != null){
+								if (StringUtil.notEmpty(c)){
 									s.append("\tSUT  "+ taxonReference);
 									s.append(" TAXON = ");
 									s.append(Integer.toString(it+1));
