@@ -101,8 +101,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	/**  What is the mode for highlighting collapsed clades in tree displays? */
 	public static final int cCHM_BOLD = 1;
-	public static final int cCHM_UNDERLINE = 2;
-	public static final int cCHM_BIGNAME = 4; 
+	public static final int cCHM_ITALICS = 2;
+	public static final int cCHM_BIG = 4; 
 	public static int cCHM_DEFAULT = 3;
 	public int collapsedCladeHighlightMode = cCHM_DEFAULT;
 
@@ -705,8 +705,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	/*.................................................................................................................*/
 	public void setOrientation(int orient) {
-		if (orient == 0)
-			Debugg.printStackTrace();
 		if (allowReorient)
 			treeOrientation = orient;
 	}

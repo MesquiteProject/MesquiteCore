@@ -72,9 +72,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected Font currentFont = null;
 	protected Font currentFontBOLD = null;
 	protected Font currentFontBOLDITALIC = null;
-	
+
 	protected Font[] currentFontsCollapsed= new Font[8]; //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
-	
+
 	protected Font currentFontBIG = null;
 	protected Font currentFontBIGBOLD = null;
 	protected int bigFontChoice = TreeDisplay.sTHM_BIGNAME;
@@ -175,7 +175,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		currentFontsCollapsed[6] =new Font(currentFont.getName(), Font.ITALIC, (int)(currentFont.getSize()*1.25)); //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
 		currentFontsCollapsed[7] =new Font(currentFont.getName(), Font.BOLD+Font.ITALIC, (int)(currentFont.getSize()*1.25)); //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
 	}
-	
+
 	public void endJob(){
 		treeDisplay = null;
 		treeDrawing = null;
@@ -234,7 +234,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				parametersChanged();
 			}
 		}
-	
+
 		else if (checker.compare(this.getClass(), "Toggles whether to show taxon names colored by partition", "[on or off]", commandName, "toggleColorPartition")) { //for backwards compatibility
 			String s = parser.getFirstToken(arguments);
 			if (s != null){
@@ -577,28 +577,34 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			if (tempColor != null){
 				taxonColor = tempColor;
 			}
-			boolean useBold = true;
-			if (!tree.isLeftmostTerminalOfCollapsedClade(N))
-				useBold = colorerTask.getTaxonNameBoldness(taxa, taxonNumber);
 			Font previousFont = gL.getFont();
-			if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX){
-				if (bigFontChoice!= treeDisplay.selectedTaxonHighlightMode){ //there's been a shift
-					bigFontChoice = treeDisplay.selectedTaxonHighlightMode;
-					currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
-					currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
+			
+			if (tree.isLeftmostTerminalOfCollapsedClade(N)){
+				gL.setFont(currentFontsCollapsed[treeDisplay.collapsedCladeHighlightMode]);
+			}
+			else {
+				boolean useBold = colorerTask.getTaxonNameBoldness(taxa, taxonNumber);
+				if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX){
+					if (bigFontChoice!= treeDisplay.selectedTaxonHighlightMode){ //there's been a shift
+						bigFontChoice = treeDisplay.selectedTaxonHighlightMode;
+						currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
+						currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
+					}
 				}
-			}
-			if (useBold){
-				if (selected && treeDisplay.selectedTaxonHighlightMode >TreeDisplay.sTHM_GREYBOX)
-					gL.setFont(currentFontBIGBOLD);
+				if (useBold){
+					if (selected && treeDisplay.selectedTaxonHighlightMode >TreeDisplay.sTHM_GREYBOX)
+						gL.setFont(currentFontBIGBOLD);
+					else
+						gL.setFont(currentFontBOLD);
+				}
+				else if (selected && treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX){
+					gL.setFont(currentFontBIG);
+				}
 				else
-					gL.setFont(currentFontBOLD);
+					gL.setFont(currentFont);
 			}
-			else if (selected && treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX){
-				gL.setFont(currentFontBIG);
-			}
-			else
-				gL.setFont(currentFont);
+
+
 			if (!tree.isLeftmostTerminalOfCollapsedClade(N)) {
 				if (partitions!=null && shadePartition.getValue()){
 					TaxaGroup mi = (TaxaGroup)partitions.getProperty(taxonNumber);
@@ -867,7 +873,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, namePolys[taxonNumber]);
 			}
 
-			if (useBold)
 				gL.setFont(previousFont);
 		}
 		else {
