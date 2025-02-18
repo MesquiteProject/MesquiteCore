@@ -157,6 +157,9 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 		suppressed = MesquiteThread.isScripting();
 		return true;
 	}
+	public Vector getDrawings(){
+		return drawings;
+	}
 	public void endJob(){
 		suppressed = true;
 		depWindowMaker = null;

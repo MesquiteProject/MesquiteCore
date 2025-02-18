@@ -42,10 +42,8 @@ public class SquareTree extends DrawTree {
 	}
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
-	MesquiteString orientationName;
 	Vector drawings;
 	int oldEdgeWidth = 6;
-	int ornt;
 	double shortcut = 0.0; //used of for eurogram 
 	double shortcutDegree = 0.4;
 	MesquiteString nodeLocsName;
@@ -76,31 +74,21 @@ public class SquareTree extends DrawTree {
 		cornersSubmenu.setSelected(cornerModeName);
 
 
-		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
-		orientationName = new MesquiteString(orient(ornt));
-		orientationSubmenu.setSelected(orientationName);
-		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this));
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
 		//	addCheckMenuItem(null, "Simple Triangle for Triangled Clades", makeCommand("toggleSimpleTriangle",  this), simpleTriangle);
 		return true;
 	}
 
+	public Vector getDrawings(){
+		return drawings;
+	}
 	public void employeeQuit(MesquiteModule m){
 		iQuit();
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		SquareTreeDrawing treeDrawing =  new SquareTreeDrawing (treeDisplay, numTaxa, this);
 		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
-		if (legalOrientation(treeDisplay.getOrientation())){
-			orientationName.setValue(orient(treeDisplay.getOrientation()));
-			ornt = treeDisplay.getOrientation();
-		}
-		else
-			treeDisplay.setOrientation(ornt);
+	
 		//treeDisplay.inhibitStretchByDefault = true;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
@@ -125,15 +113,7 @@ public class SquareTree extends DrawTree {
 		Snapshot temp = new Snapshot();
 		temp.addLine("setNodeLocs", nodeLocsTask);
 		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
-		if (ornt== TreeDisplay.UP)
-			temp.addLine("orientUp"); 
-		else if (ornt== TreeDisplay.DOWN)
-			temp.addLine("orientDown"); 
-		else if (ornt== TreeDisplay.LEFT)
-			temp.addLine("orientLeft"); 
-		else if (ornt== TreeDisplay.RIGHT)
-			temp.addLine("orientRight"); 
-		//	temp.addLine("toggleCorners " + cutCorners.toOffOnString());
+	
 		temp.addLine("setCornerMode " + ParseUtil.tokenize(cornerModes.getValue(cornerMode)) + "  " + curvature);
 		return temp;
 	}
@@ -228,57 +208,21 @@ public class SquareTree extends DrawTree {
 		else if (checker.compare(this.getClass(), "Returns the module calculating node locations", null, commandName, "getNodeLocsEmployee")) {
 			return nodeLocsTask;
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.UP;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.UP);
-				if (treeDrawing.treeDisplay != null)
-					ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {  //for legacy scripts
+			if (nodeLocsTask != null)
+				nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.DOWN;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.DOWN);
-				if (treeDrawing.treeDisplay != null)
-					ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.RIGHT;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.RIGHT);
-				if (treeDrawing.treeDisplay != null)
-					ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.LEFT;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.LEFT);
-				if (treeDrawing.treeDisplay != null)
-					ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
 	/*	else if (checker.compare(this.getClass(), "Sets whether to draw triangled clades as simple triangles or not.", "", commandName, "toggleSimpleTriangle")) {
 			boolean current = simpleTriangle.getValue();

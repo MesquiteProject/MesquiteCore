@@ -703,6 +703,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	}
 
 	/*.................................................................................................................*/
+	public boolean getAllowReorientation() {
+		return allowReorient;
+	}
+	/*.................................................................................................................*/
 	public void setAllowReorientation(boolean allow) {
 		allowReorient = allow;
 	}

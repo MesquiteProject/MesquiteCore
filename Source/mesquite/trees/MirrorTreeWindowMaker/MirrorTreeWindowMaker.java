@@ -24,13 +24,14 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
 import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.ui.Legend;
 import mesquite.lib.ui.MesquitePDFFile;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
-public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeDisplayActive {
+public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeDisplayActive, TreeDisplayHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTreeCoordinator.class, getName() + "  needs a module to coordinate tree drawing.",
 		"This is arranged automatically");
@@ -55,6 +56,10 @@ public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeD
   	 	if (m == treeDrawCoordTask)
   	 		iQuit();
   	 }
+ 	/** Returns true if other modules can control the orientation */
+ 	public boolean allowsReorientation(){
+ 		return false;
+ 	}
 	/*.................................................................................................................*/
  	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (source instanceof DrawTreeCoordinator){ //ignores since this should have directly called to update tree display

@@ -2412,6 +2412,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 								} else {
 									MesquiteMenuItem mi = null;
 									submenu.add(mi = new MesquiteMenuItem(mmi));
+									if (mmi.getShortcut()!= null)
+										mi.setShortcut(new MenuShortcut(mmi.getShortcut().getValue(), mmi.getShortcutNeedsShift()));
 									mi.setHiddenStatus(hiddenStatus);
 									// MesquiteMenu.add(menu, submenu);
 								}
@@ -2424,6 +2426,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							} else {
 								MesquiteMenuItem mi = null;
 								MesquiteMenu.add(menu, mi = new MesquiteMenuItem(mmi));
+								if (mmi.getShortcut()!= null)
+									mi.setShortcut(new MenuShortcut(mmi.getShortcut().getValue(), mmi.getShortcutNeedsShift()));
 								mi.setHiddenStatus(hiddenStatus);
 							}
 						}

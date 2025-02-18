@@ -22,11 +22,12 @@ import mesquite.lib.tree.TreeContext;
 import mesquite.lib.tree.TreeContextListener;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
-public abstract class SimpleTreeWindowMaker extends TWindowMaker implements TreeContext, TreeDisplayActive {
+public abstract class SimpleTreeWindowMaker extends TWindowMaker implements TreeContext, TreeDisplayActive, TreeDisplayHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(DrawTreeCoordinator.class,  getName() + " needs a module to draw trees.",
 		"The drawing coordinator is arranged automatically");
@@ -61,6 +62,10 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 	}
 	
 
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return true;
+	}
 	protected abstract SimpleTreeWindow makeTreeWindow(SimpleTreeWindowMaker stwm, DrawTreeCoordinator dtwc);
 	protected abstract String getMenuName();
 	protected String getDefaultExplanation(){

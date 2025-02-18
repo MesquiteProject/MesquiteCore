@@ -3,6 +3,7 @@ package mesquite.trees.SquareLineTree;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -12,6 +13,7 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.trees.lib.*;
 
@@ -32,11 +34,9 @@ public class SquareLineTree extends DrawTree {
 
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
-	MesquiteString orientationName;
 	Vector drawings;
 	static int previousEdgeWidth = 4;
 	int oldEdgeWidth = previousEdgeWidth;
-	int ornt;
 	MesquiteString nodeLocsName;
 	MesquiteBoolean showEdgeLines = new MesquiteBoolean(true);  //these needs to be set default true; otherwise Trace Character makes branches disappear in most common cases
 	/*.................................................................................................................*/
@@ -51,17 +51,7 @@ public class SquareLineTree extends DrawTree {
 			mss.setSelected(nodeLocsName);
 		}
 		drawings = new Vector();
-		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
-
-		orientationName = new MesquiteString(orient(ornt));
-		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		orientationSubmenu.setSelected(orientationName);
-		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this));
-
-
+		
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
 		addCheckMenuItem(null,"Show Edge Lines", makeCommand("showEdgeLines",  this), showEdgeLines);
 		return true;
@@ -74,31 +64,18 @@ public class SquareLineTree extends DrawTree {
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		SquareLineTreeDrawing treeDrawing =  new SquareLineTreeDrawing (treeDisplay, numTaxa, this);
 		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
-		if (legalOrientation(treeDisplay.getOrientation())){
-			orientationName.setValue(orient(treeDisplay.getOrientation()));
-			ornt = treeDisplay.getOrientation();
-		}
-		else
-			treeDisplay.setOrientation(ornt);
+		
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
+	}
+	public Vector getDrawings(){
+		return drawings;
 	}
 	public boolean legalOrientation (int orientation){
 		return (orientation == TreeDisplay.UP || orientation == TreeDisplay.DOWN || orientation == TreeDisplay.RIGHT || orientation == TreeDisplay.LEFT);
 	}
 
-	public String orient (int orientation){
-		if (orientation == TreeDisplay.UP)
-			return "Up";
-		else if (orientation == TreeDisplay.DOWN)
-			return "Down";
-		else if (orientation == TreeDisplay.RIGHT)
-			return "Right";
-		else if (orientation == TreeDisplay.LEFT)
-			return "Left";
-		else return "other";
-	}
-	/*.................................................................................................................*/
+	
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
@@ -106,14 +83,6 @@ public class SquareLineTree extends DrawTree {
 		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
 		temp.addLine("showEdgeLines " + showEdgeLines.toOffOnString()); 
 
-		if (ornt== TreeDisplay.UP)
-			temp.addLine("orientUp"); 
-		else if (ornt== TreeDisplay.DOWN)
-			temp.addLine("orientDown"); 
-		else if (ornt== TreeDisplay.LEFT)
-			temp.addLine("orientLeft"); 
-		else if (ornt== TreeDisplay.RIGHT)
-			temp.addLine("orientRight"); 
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -158,54 +127,23 @@ public class SquareLineTree extends DrawTree {
 		else if (checker.compare(this.getClass(), "Returns the employee module that assigns node locations", null, commandName, "getNodeLocsEmployee")) {
 			return nodeLocsTask;
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.UP);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {  //for legacy scripts
+			if (nodeLocsTask != null)
+				nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.DOWN);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.RIGHT);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.LEFT);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
+
 		else {
 			return  super.doCommand(commandName, arguments, checker);
 		}

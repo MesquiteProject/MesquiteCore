@@ -66,6 +66,9 @@ public class PlotTree3D extends AnalyticalDrawTree {
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
+	public Vector getDrawings(){
+		return drawings;
+	}
 
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){

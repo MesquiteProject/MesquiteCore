@@ -34,7 +34,7 @@ import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
 /** Makes and manages a Tree Window for tree editing and visualization */
-public class BasicTreeWindowMaker extends TreeWindowMaker implements CommandableOwner, TreeContext, TreeDisplayActive {
+public class BasicTreeWindowMaker extends TreeWindowMaker implements CommandableOwner, TreeContext, TreeDisplayActive, TreeDisplayHolder {
 
 	public String getName() {
 		return "Tree Window";
@@ -142,6 +142,11 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return true;
 	}
 
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return true;
+	}
+	
 	public Taxa getTaxa() {
 		return taxa;
 	}

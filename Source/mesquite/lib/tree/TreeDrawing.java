@@ -84,6 +84,10 @@ public abstract class TreeDrawing  {
 		totalCreated++;
 		resetNumNodes(numNodes);
 	}
+	
+	public TreeDisplay getTreeDisplay(){
+		return treeDisplay;
+	}
 	public void resetNumNodes(int numNodes){
 		if (this.numNodes == numNodes && x != null)
 			return;

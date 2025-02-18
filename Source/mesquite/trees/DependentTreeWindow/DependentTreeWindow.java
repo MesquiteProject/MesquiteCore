@@ -23,6 +23,7 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
 import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.Legend;
@@ -32,7 +33,7 @@ import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
-public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDisplayActive {
+public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDisplayActive, TreeDisplayHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTreeCoordinator.class, getName() + "  needs a module to coordinate tree drawing.",
 		"This is arranged automatically");
@@ -50,6 +51,10 @@ public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDis
 		return true;
 	}
 
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return true;
+	}
 	public void employeeQuit(MesquiteModule m){
 		if (m==treeDrawCoordTask)
 			iQuit();

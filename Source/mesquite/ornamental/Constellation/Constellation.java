@@ -61,6 +61,9 @@ public class Constellation extends DrawTree {
 	public boolean allowsReorientation(){
 		return false;
 	}
+	public Vector getDrawings(){
+		return drawings;
+	}
 	/*.................................................................................................................*/
   	 public Snapshot getSnapshot(MesquiteFile file) { 
    	 	Snapshot temp = new Snapshot();

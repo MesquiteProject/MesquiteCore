@@ -17,6 +17,7 @@ package mesquite.trees.NodeLocsStandard;
 import java.util.*;
 
 
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -46,7 +47,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	MesquiteBoolean inhibitStretch;
 	MesquiteBoolean showScale;
 	MesquiteBoolean broadScale;
-	MesquiteInteger showBranchLengths;  
+	MesquiteInteger branchLengthsDisplayMode;  
 			
 	boolean resetShowBranchLengths = false;
 	int fixedTaxonDistance = 0;
@@ -67,6 +68,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 	MesquiteBoolean center;
 	boolean[] fixedSettings = null;
 	MesquiteBoolean even;
+//	MesquiteString orientationName;
+	MesquiteBoolean upOn, downOn, rightOn, leftOn, autoOn, ultraOn, blOn;
+
+	//ORIENTATIONS
+	int ornt;
+
 	/*.................................................................................................................*/
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -83,21 +90,39 @@ public class NodeLocsStandard extends NodeLocsVH {
 			center.setValue(true);
 		}
 		
-		showBranchLengths = new MesquiteInteger(lastLengthsDisplayMode);
+		branchLengthsDisplayMode = new MesquiteInteger(lastLengthsDisplayMode);
 		showScale = new MesquiteBoolean(true);
 		broadScale = new MesquiteBoolean(false);
 
+		//really, this should all have been in node locs, but too busy to fix (also in other DrawTree modules that use NodeLocsVH)
+		if (employerAllowsReorientation()) {
+		ornt = NodeLocsVH.defaultOrientation;  
+		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
+		addCheckMenuItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this), upOn = new MesquiteBoolean(ornt == TreeDisplay.UP));
+		addCheckMenuItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this), rightOn = new MesquiteBoolean(ornt == TreeDisplay.RIGHT));
+		addCheckMenuItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this), downOn = new MesquiteBoolean(ornt == TreeDisplay.DOWN));
+		addCheckMenuItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this), leftOn = new MesquiteBoolean(ornt == TreeDisplay.LEFT));
+		addItemToSubmenu(null, orientationSubmenu, "-", null);
+		MesquiteMenuItemSpec mRC = addItemToSubmenu(null, orientationSubmenu, "Rotate Clockwise", makeCommand("rotateClockwise", this));
+		mRC.setShortcut(KeyEvent.VK_R);
+		MesquiteMenuItemSpec mLC = addItemToSubmenu(null, orientationSubmenu, "Rotate Counterclockwise", makeCommand("rotateCounterClockwise", this));
+		mLC.setShortcut(KeyEvent.VK_L);
+		addItemToSubmenu(null, orientationSubmenu, "-", null);
+		addItemToSubmenu(null, orientationSubmenu, "Set Current Orientation as Default", makeCommand("setDefaultOrientation",  this));
+		}
+
+		
 		if (fixedSettings != null && fixedSettings.length>0 && fixedSettings[0]){
-			showBranchLengths.setValue(TreeDisplay.AUTOSHOWLENGTHS);
+			branchLengthsDisplayMode.setValue(TreeDisplay.AUTOSHOWLENGTHS);
 		}
 		else {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Branch Length Display");
-			addItemToSubmenu(null, mss, "Automatic", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.AUTOSHOWLENGTHS, this));
-			addItemToSubmenu(null, mss, "Draw as Ultrametric (No branch lengths implied)", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWULTRAMETRIC, this));
-			addItemToSubmenu(null, mss, "Draw with Lengths, Unassigned as One", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWUNASSIGNEDASONE, this));
+			addCheckMenuItemToSubmenu(null, mss, "Automatic", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.AUTOSHOWLENGTHS, this), autoOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS));
+			addCheckMenuItemToSubmenu(null, mss, "Draw as Ultrametric (No branch lengths implied)", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWULTRAMETRIC, this), ultraOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC));
+			addCheckMenuItemToSubmenu(null, mss, "Draw with Lengths, Unassigned as One", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWUNASSIGNEDASONE, this), blOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE));
 		}
 		
-		if (showBranchLengths.getValue()==TreeDisplay.DRAWUNASSIGNEDASONE || showBranchLengths.getValue()==TreeDisplay.AUTOSHOWLENGTHS) {
+		if (branchLengthsDisplayMode.getValue()==TreeDisplay.DRAWUNASSIGNEDASONE || branchLengthsDisplayMode.getValue()==TreeDisplay.AUTOSHOWLENGTHS) {
 			fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
 			showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
 			broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);
@@ -111,28 +136,33 @@ public class NodeLocsStandard extends NodeLocsVH {
 			evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);
 		}
 		
-		MesquiteMenuItemSpec mRC = addMenuItem("Rotate Clockwise", makeCommand("rotateClockwise", this));
-		mRC.setShortcut(KeyEvent.VK_R);
-		MesquiteMenuItemSpec mLC = addMenuItem("Rotate Counterclockwise", makeCommand("rotateCounterClockwise", this));
-		mLC.setShortcut(KeyEvent.VK_L);
 
 		addMenuItem( "Fixed Distance Between Taxa...", makeCommand("setFixedTaxonDistance",  this));
 		addCheckMenuItem(null, "Centered Branches", makeCommand("toggleCenter", this), center);
-		if (employerAllowsReorientation())
-			addMenuItem("Set Current Orientation as Default", makeCommand("setDefaultOrientation",  this));
 
 		//	addMenuItem("Taxon Name Angle...", makeCommand("namesAngle", this));
 		return true;
 	}
 	/*.................................................................................................................*/
 	private boolean employerAllowsReorientation(){
-		if (getEmployer()== null || !(getEmployer() instanceof DrawTree))
-			return true;
-		DrawTree dt = (DrawTree)getEmployer();
+		DrawTree dt = (DrawTree)findEmployerWithDuty(DrawTree.class);
+		if (dt!= null)
 		return dt.allowsReorientation();
+		return false;
 
 	}
-	
+	public String orient (int orientation){
+		if (orientation == TreeDisplay.UP)
+			return "Up";
+		else if (orientation == TreeDisplay.DOWN)
+			return "Down";
+		else if (orientation == TreeDisplay.RIGHT)
+			return "Right";
+		else if (orientation == TreeDisplay.LEFT)
+			return "Left";
+		else return "other";
+	}
+
 	void deleteMostMenuItems(){
 		deleteMenuItem(stretchMenuItem);
 		stretchMenuItem = null;
@@ -198,7 +228,15 @@ public class NodeLocsStandard extends NodeLocsVH {
 		Snapshot temp = new Snapshot();
 		if (stretchWasSet)
 			temp.addLine("inhibitStretchToggle " + inhibitStretch.toOffOnString());
-		temp.addLine("branchLengthsDisplay " + showBranchLengths.getValue());
+		if (ornt== TreeDisplay.UP)
+			temp.addLine("orientUp"); 
+		else if (ornt== TreeDisplay.DOWN)
+			temp.addLine("orientDown"); 
+		else if (ornt== TreeDisplay.LEFT)
+			temp.addLine("orientLeft"); 
+		else if (ornt== TreeDisplay.RIGHT)
+			temp.addLine("orientRight"); 
+		temp.addLine("branchLengthsDisplay " + branchLengthsDisplayMode.getValue());
 		temp.addLine("toggleScale " + showScale.toOffOnString());
 		temp.addLine("toggleBroadScale " + broadScale.toOffOnString());
 		temp.addLine("toggleCenter " + center.toOffOnString());
@@ -222,6 +260,25 @@ public class NodeLocsStandard extends NodeLocsVH {
 			extras.removeAllElements();
 		}
 	}
+	
+	void resetOrientation(int orientation){
+		DrawTree dt = (DrawTree)findEmployerWithDuty(DrawTree.class);
+		Enumeration e = dt.getDrawings().elements();
+		ornt = orientation;
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			TreeDrawing treeDrawing = (TreeDrawing)obj;
+			treeDrawing.getTreeDisplay().setOrientation(ornt);
+			treeDrawing.getTreeDisplay().pleaseUpdate(true);
+		}
+		upOn.setValue(ornt == TreeDisplay.UP);
+		downOn.setValue(ornt == TreeDisplay.DOWN);
+		rightOn.setValue(ornt == TreeDisplay.RIGHT);
+		leftOn.setValue(ornt == TreeDisplay.LEFT);
+		resetContainingMenuBar();
+		parametersChanged();
+	}
+	
 	boolean stretchWasSet = false;
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
@@ -249,8 +306,48 @@ public class NodeLocsStandard extends NodeLocsVH {
 			stretchWasSet = true;
 			parametersChanged();
 		}
+	else if (checker.compare(this.getClass(), "Sets default orientation", null, commandName, "setDefaultOrientation")) {
+		defaultOrientation = ornt;
+		storePreferences();
+	}
 		else if (checker.compare(this.getClass(), "Here to avoid scripting error; user will need to reset taxon names", null, commandName, "namesAngle")) {
 
+		}
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {
+			resetOrientation(TreeDisplay.UP);
+		}
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {
+			resetOrientation(TreeDisplay.DOWN);
+		}
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
+			resetOrientation(TreeDisplay.RIGHT);
+		}
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
+			resetOrientation(TreeDisplay.LEFT);
+		}
+		else if (checker.compare(this.getClass(), "Rotates the tree drawing clockwise", null, commandName, "rotateClockwise")) {
+			if (ornt == TreeDisplay.UP)
+				ornt = TreeDisplay.RIGHT;
+			else if (ornt == TreeDisplay.RIGHT)
+				ornt = TreeDisplay.DOWN;
+			else if (ornt == TreeDisplay.DOWN)
+				ornt = TreeDisplay.LEFT;
+			else if (ornt == TreeDisplay.LEFT)
+				ornt = TreeDisplay.UP;
+			
+			resetOrientation(ornt);
+		}
+		else if (checker.compare(this.getClass(), "Rotates the tree drawing clockwise", null, commandName, "rotateCounterClockwise")) {
+			if (ornt == TreeDisplay.UP)
+				ornt = TreeDisplay.LEFT;
+			else if (ornt == TreeDisplay.LEFT)
+				ornt = TreeDisplay.DOWN;
+			else if (ornt == TreeDisplay.DOWN)
+				ornt = TreeDisplay.RIGHT;
+			else if (ornt == TreeDisplay.RIGHT)
+				ornt = TreeDisplay.UP;
+			
+			resetOrientation(ornt);
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to center the nodes between the immediate descendents, or the terminal in the clade", "[on = center over immediate; off]", commandName, "toggleCenter")) {
 			center.toggleValue(parser.getFirstToken(arguments));
@@ -260,17 +357,16 @@ public class NodeLocsStandard extends NodeLocsVH {
 			even.toggleValue(parser.getFirstToken(arguments));
 			parametersChanged();
 		}
-		else if (checker.compare(this.getClass(), "Sets the current orientation to be the default", null, commandName, "setDefaultOrientation")) {
-			defaultOrientation = lastOrientation;
-			storePreferences();
-		}
 		else if (checker.compare(this.getClass(), "[no longer available; here to prevent warning given as old scripts are read]", "[]", commandName, "namesAngle")) {
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not the branches are to be shown proportional to their lengths", "[on = proportional; off]", commandName, "branchLengthsToggle")) {
 			if (fixedSettings != null && fixedSettings.length>0 && fixedSettings[0])
 				return null;
 			resetShowBranchLengths=true;
-			showBranchLengths.setValue(TreeDisplay.AUTOSHOWLENGTHS);
+			branchLengthsDisplayMode.setValue(TreeDisplay.AUTOSHOWLENGTHS);
+			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
+			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
+			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
 				deleteAllMenuItems();
 				fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
 				showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
@@ -289,14 +385,17 @@ public class NodeLocsStandard extends NodeLocsVH {
 			int choice = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(choice) || choice <0 || choice >2)
 				return null;
-			showBranchLengths.setValue(choice);
-			lastLengthsDisplayMode = showBranchLengths.getValue();
+			branchLengthsDisplayMode.setValue(choice);
+			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
+			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
+			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
+		lastLengthsDisplayMode = branchLengthsDisplayMode.getValue();
 			/*
 			 * static final int SHOWULTRAMETRIC = 0; //	
 			static final int AUTOSHOWLENGTHS = 1;
 			static final int SHOWUNASSIGNEDASONE = 2; //if a branch has unassigned length, treat as length 1
 			*/
-			if (showBranchLengths.getValue() == TreeDisplay.DRAWULTRAMETRIC) {
+			if (branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC) {
 				deleteMostMenuItems();
 				if (stretchMenuItem == null)
 					stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
@@ -366,10 +465,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 		
 		return (orientation==TreeDisplay.UP || orientation==TreeDisplay.DOWN || orientation==TreeDisplay.RIGHT ||orientation==TreeDisplay.LEFT);
 	}
-	public void setDefaultOrientation(TreeDisplay treeDisplay) {
-		if (employerAllowsReorientation())
-			treeDisplay.setOrientation(defaultOrientation);
-	}
 	public int getDefaultOrientation() {
 		return defaultOrientation;
 	}
@@ -381,12 +476,24 @@ public class NodeLocsStandard extends NodeLocsVH {
 	
 	boolean showScaleConsideringAuto(Tree tree, TreeDisplay treeDisplay){
 		return showScale.getValue()
-				&& showBranchLengths.getValue()!= TreeDisplay.DRAWULTRAMETRIC 
+				&& branchLengthsDisplayMode.getValue()!= TreeDisplay.DRAWULTRAMETRIC 
 				&& ((tree.hasBranchLengths() || treeDisplay.fixedScalingOn) && (tree.getAssociatedDoubles(consensusNR) == null));
 	}
 	NameReference consensusNR = NameReference.getNameReference("consensusFrequency");
 	
 	void checkAndAdjustParameterSettings(TreeDisplay treeDisplay, Tree tree){
+		//Making sure my extra is in the treeDisplay. If not, this is a new connection!
+		if (treeDisplay.getExtras() !=null) {
+			if (treeDisplay.getExtras().myElements(this)==null) {  //todo: need to do one for each treeDisplay!
+				NodeLocsExtra extra = new NodeLocsExtra(this, treeDisplay); 
+				treeDisplay.addExtra(extra); 
+				extras.addElement(extra);
+				if (treeDisplay.getOrientation() == TreeDisplay.NOTYETSET || !compatibleWithOrientation(treeDisplay.getOrientation())){
+					if (employerAllowsReorientation())
+						treeDisplay.setOrientation(defaultOrientation);
+				}
+			}
+		}
 		treeDisplay.setFixedTaxonSpacing(fixedTaxonDistance);
 		lastOrientation = treeDisplay.getOrientation();
 		if (!leaveScaleAlone) {
@@ -394,13 +501,16 @@ public class NodeLocsStandard extends NodeLocsVH {
 			treeDisplay.fixedScalingOn = fixedScale;
 		}
 		if (resetShowBranchLengths){
-			treeDisplay.branchLengthDisplay=showBranchLengths.getValue();
+			treeDisplay.branchLengthDisplay=branchLengthsDisplayMode.getValue();
 			treeDisplay.accumulateBordersFromExtras(tree);
 		}
 		else {
-			if (treeDisplay.branchLengthDisplay != showBranchLengths.getValue()) {
-				showBranchLengths.setValue(treeDisplay.branchLengthDisplay);
-				if (showBranchLengths.getValue() == TreeDisplay.DRAWULTRAMETRIC) {
+			if (treeDisplay.branchLengthDisplay != branchLengthsDisplayMode.getValue()) {
+				branchLengthsDisplayMode.setValue(treeDisplay.branchLengthDisplay);
+				autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
+				ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
+				blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
+				if (branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC) {
 					deleteMostMenuItems();
 					if (stretchMenuItem == null)
 						stretchMenuItem = addCheckMenuItem(null, "Stretch tree to Fit", makeCommand("stretchToggle", this), inhibitStretch);
@@ -416,16 +526,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 					broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);
 				}
 				resetContainingMenuBar();
-			}
-		}
-		if (!compatibleWithOrientation(treeDisplay.getOrientation()))
-			setDefaultOrientation(treeDisplay);		
-		//Making sure my extra is in the 
-		if (treeDisplay.getExtras() !=null) {
-			if (treeDisplay.getExtras().myElements(this)==null) {  //todo: need to do one for each treeDisplay!
-				NodeLocsExtra extra = new NodeLocsExtra(this, treeDisplay); 
-				treeDisplay.addExtra(extra); 
-				extras.addElement(extra);
 			}
 		}
 	}

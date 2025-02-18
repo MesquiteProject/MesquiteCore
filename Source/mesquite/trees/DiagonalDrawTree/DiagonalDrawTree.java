@@ -38,10 +38,8 @@ public class DiagonalDrawTree extends DrawTree {
 
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
-	MesquiteString orientationName;
 	Vector drawings;
 	int oldEdgeWidth =12;
-	int ornt;
 	MesquiteString nodeLocsName;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -54,14 +52,6 @@ public class DiagonalDrawTree extends DrawTree {
 			mss.setSelected(nodeLocsName);
 		}
 		drawings = new Vector();
-		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
-		orientationName = new MesquiteString(orient(ornt));
-		orientationSubmenu.setSelected(orientationName);
-		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this));
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
 		return true;
 	}
@@ -72,15 +62,12 @@ public class DiagonalDrawTree extends DrawTree {
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		DiagonalTreeDrawing treeDrawing =  new DiagonalTreeDrawing (treeDisplay, numTaxa, this);
 		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
-	if (legalOrientation(treeDisplay.getOrientation())){
-			orientationName.setValue(orient(treeDisplay.getOrientation()));
-			ornt = treeDisplay.getOrientation();
-		}
-		else
-			treeDisplay.setOrientation(ornt);
 		drawings.addElement(treeDrawing);
 		//treeDisplay.inhibitStretchByDefault = false;
 		return treeDrawing;
+	}
+	public Vector getDrawings(){
+		return drawings;
 	}
 	public boolean legalOrientation (int orientation){
 		return (orientation == TreeDisplay.UP || orientation == TreeDisplay.DOWN || orientation == TreeDisplay.RIGHT || orientation == TreeDisplay.LEFT);
@@ -93,31 +80,11 @@ public class DiagonalDrawTree extends DrawTree {
 	}
 
 	/*.................................................................................................................*/
-	public String orient (int orientation){
-		if (orientation == TreeDisplay.UP)
-			return "Up";
-		else if (orientation == TreeDisplay.DOWN)
-			return "Down";
-		else if (orientation == TreeDisplay.RIGHT)
-			return "Right";
-		else if (orientation == TreeDisplay.LEFT)
-			return "Left";
-		else return "other";
-	}
-	/*.................................................................................................................*/
-	public Snapshot getSnapshot(MesquiteFile file) { 
+		public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setNodeLocs", nodeLocsTask);
 
 		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
-		if (ornt== TreeDisplay.UP)
-			temp.addLine("orientUp"); 
-		else if (ornt== TreeDisplay.DOWN)
-			temp.addLine("orientDown"); 
-		else if (ornt== TreeDisplay.LEFT)
-			temp.addLine("orientLeft"); 
-		else if (ornt== TreeDisplay.RIGHT)
-			temp.addLine("orientRight"); 
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -153,55 +120,21 @@ public class DiagonalDrawTree extends DrawTree {
 		else if (checker.compare(this.getClass(), "Returns module calculating node locations", null, commandName, "getNodeLocsEmployee")) {
 			return nodeLocsTask;
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.UP;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.UP);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {  //for legacy scripts
+			if (nodeLocsTask != null)
+				nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.DOWN;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.DOWN);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.RIGHT;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.RIGHT);
-				if (treeDrawing.treeDisplay != null)
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
-			Enumeration e = drawings.elements();
-			ornt =TreeDisplay.LEFT;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.LEFT);
-				if (treeDrawing.treeDisplay != null)
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
 		else {
 			return  super.doCommand(commandName, arguments, checker);

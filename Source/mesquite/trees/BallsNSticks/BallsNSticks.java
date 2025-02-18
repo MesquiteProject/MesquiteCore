@@ -45,17 +45,16 @@ public class BallsNSticks extends DrawTree {
 	}
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
-	MesquiteString orientationName, lineStyleName;
+	MesquiteString lineStyleName;
 	Vector drawings;
 	int oldEdgeWidth = 2;
 	int oldSpotSize = 22;
-	int ornt, style;
+	int style;
 	static final int DIAGONAL = 0;
 	static final int SQUARE = 1;
 	static final int CURVED = 2;
 	public MesquiteBoolean cosmic = new MesquiteBoolean(false);
 	public MesquiteBoolean ballsInternal = new MesquiteBoolean(true);
-	MesquiteSubmenuSpec orientationSubmenu;
 	MesquiteSubmenuSpec lineStyleSubmenu;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -65,9 +64,6 @@ public class BallsNSticks extends DrawTree {
 		drawings = new Vector();
 		//addMenuItem("Display", "Edge width...", makeCommand("edgeWidth"));
 		defineMenus(false);
-		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
-		orientationName = new MesquiteString(orient(ornt));
-		orientationSubmenu.setSelected(orientationName);
 		lineStyleName = new MesquiteString("Diagonal");
 		style = DIAGONAL;
 		lineStyleSubmenu.setSelected(lineStyleName);
@@ -78,11 +74,6 @@ public class BallsNSticks extends DrawTree {
 		iQuit();
 	}
 	public void defineMenus(boolean accumulating){
-		orientationSubmenu = addSubmenu(null, "Orientation");
-		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this));
 		lineStyleSubmenu = addSubmenu(null, "Line Style");
 		addItemToSubmenu(null, lineStyleSubmenu, "Diagonal", makeCommand("useDiagonal",  this));
 		addItemToSubmenu(null, lineStyleSubmenu, "Square", makeCommand("useSquare",  this));
@@ -96,17 +87,14 @@ public class BallsNSticks extends DrawTree {
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		BallsNSticksDrawing treeDrawing =  new BallsNSticksDrawing (treeDisplay, numTaxa, this);
 		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
-		if (legalOrientation(treeDisplay.getOrientation())){
-			orientationName.setValue(orient(treeDisplay.getOrientation()));
-			ornt = treeDisplay.getOrientation();
-		}
-		else
-			treeDisplay.setOrientation(ornt);
 		drawings.addElement(treeDrawing);
 		//	treeDisplay.inhibitStretchByDefault = false;
 		return treeDrawing;
 	}
-	public boolean legalOrientation (int orientation){
+	public Vector getDrawings(){
+		return drawings;
+	}
+public boolean legalOrientation (int orientation){
 		return (orientation == TreeDisplay.UP || orientation == TreeDisplay.DOWN || orientation == TreeDisplay.RIGHT || orientation == TreeDisplay.LEFT);
 	}
 	/*.................................................................................................................
@@ -118,31 +106,12 @@ public class BallsNSticks extends DrawTree {
  		nodeLocsTask= null;
    	 }
 
-	/*.................................................................................................................*/
-	public String orient (int orientation){
-		if (orientation == TreeDisplay.UP)
-			return "Up";
-		else if (orientation == TreeDisplay.DOWN)
-			return "Down";
-		else if (orientation == TreeDisplay.RIGHT)
-			return "Right";
-		else if (orientation == TreeDisplay.LEFT)
-			return "Left";
-		else return "other";
-	}
+	
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setSpotDiameter " + oldSpotSize); 
 		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
-		if (ornt== TreeDisplay.UP)
-			temp.addLine("orientUp"); 
-		else if (ornt== TreeDisplay.DOWN)
-			temp.addLine("orientDown"); 
-		else if (ornt== TreeDisplay.LEFT)
-			temp.addLine("orientLeft"); 
-		else if (ornt== TreeDisplay.RIGHT)
-			temp.addLine("orientRight"); 
 		if (style== DIAGONAL)
 			temp.addLine("useDiagonal"); 
 		else if (style== SQUARE)
@@ -238,53 +207,21 @@ public class BallsNSticks extends DrawTree {
 		else if (checker.compare(this.getClass(), "Returns the module employed to set the node locations", null, commandName, "getNodeLocsEmployee")) {
 			return nodeLocsTask;
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree so that the terminals are pointing up", null, commandName, "orientUp")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.UP);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {  //for legacy scripts
+			if (nodeLocsTask != null)
+				nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree so that the terminals are pointing down", null, commandName, "orientDown")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.DOWN);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.RIGHT);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.LEFT);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
 		else {
 			return  super.doCommand(commandName, arguments, checker);

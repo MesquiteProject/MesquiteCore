@@ -1029,7 +1029,7 @@ public class CommandChecker {
 		} else if (item instanceof MesquiteSubmenu) {
 			if (label)
 				ex += "<li><b>" + item.getLabel() + "</b>";
-			MesquiteSubmenu mmi = (MesquiteSubmenu) item;
+		MesquiteSubmenu mmi = (MesquiteSubmenu) item;
 			long id = mmi.getOwnerModuleID();
 			ex += getModuleReference(id);
 			if (mmi.getCommand() != null)
