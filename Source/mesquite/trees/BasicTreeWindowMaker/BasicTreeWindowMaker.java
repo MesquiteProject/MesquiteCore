@@ -1890,7 +1890,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					int borderWidth = 0;
 					int borderHeight = 0;
 
-					int[] requestedBorders = treeDisplay.getRequestedBorders();
+					int[] requestedBorders = treeDisplay.getRequestedBordersPixels();
 					if (requestedBorders != null && requestedBorders.length == 4){
 						int wUsed= requestedBorders[0] + requestedBorders[2];
 						int hUsed= requestedBorders[1] + requestedBorders[3];

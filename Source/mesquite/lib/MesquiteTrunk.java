@@ -354,8 +354,9 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOS(){
-		return !StringUtil.blank(System.getProperty("mrj.version"));
+		return System.getProperty("os.name").startsWith("Mac OS X") ||  !StringUtil.blank(System.getProperty("mrj.version"));
 	}
+	
 	public static boolean isMacOSX(){
 		return System.getProperty("os.name").startsWith("Mac OS X");
 	}

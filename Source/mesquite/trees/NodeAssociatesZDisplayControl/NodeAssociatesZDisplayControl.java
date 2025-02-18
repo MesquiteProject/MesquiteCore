@@ -886,7 +886,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		return new int[]{100, 40, 130, 60};
 	} 
 	*/
-	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){ 
+	public int[] getRequestedExtraBordersPixels(Tree tree, TreeDrawing treeDrawing){ 
 
 		if (treeDisplay.getOrientation() != TreeDisplay.LEFT && treeDisplay.getOrientation() != TreeDisplay.RIGHT)
 			return blank;

@@ -236,7 +236,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 	/*.................................................................................................................*/
 	//in graphics units/pixels; must return null or int[4], left, top, right, bottom
-	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){ 
+	public int[] getRequestedExtraBordersPixels(Tree tree, TreeDrawing treeDrawing){ 
 		return new int[]{80, 0, 0, 100};
 	}
 /*.................................................................................................................*/

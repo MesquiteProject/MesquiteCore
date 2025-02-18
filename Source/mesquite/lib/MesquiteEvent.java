@@ -22,35 +22,34 @@ import java.text.*;
 public class MesquiteEvent {  //DRM
 
 	public static int getModifiers(InputEvent e){
-		int mod = e.getModifiers();
+		int mod = e.getModifiersEx();
 		if (e.isShiftDown())
-			mod |= InputEvent.SHIFT_MASK;
+			mod |= InputEvent.SHIFT_DOWN_MASK;
 		if (e.isAltDown())
 			mod |= InputEvent.ALT_DOWN_MASK;
 		if (e.isControlDown())
-			mod |= InputEvent.CTRL_MASK;
+			mod |= InputEvent.CTRL_DOWN_MASK;
 		if (e.isMetaDown())
-			mod |= InputEvent.META_MASK;
+			mod |= InputEvent.META_DOWN_MASK;
 		return mod;
 	}
 	public static boolean shiftKeyDown(int modifiers) {
-		return ((modifiers & InputEvent.SHIFT_MASK)!=0);
+		return ((modifiers & InputEvent.SHIFT_DOWN_MASK)!=0);
 	}
 	public static boolean optionKeyDown(int modifiers) {
 		return ((modifiers & InputEvent.ALT_DOWN_MASK)!=0);
 	}
 	public static boolean controlKeyDown(int modifiers) {
-		return ((modifiers & InputEvent.CTRL_MASK)!=0 || (modifiers & InputEvent.CTRL_DOWN_MASK)!=0);
+		return (modifiers & InputEvent.CTRL_DOWN_MASK)!=0;
 	}
 	public static boolean rightClick(int modifiers) {
-		return ((modifiers & InputEvent.BUTTON3_MASK)!=0) || ((modifiers & InputEvent.BUTTON3_DOWN_MASK)!=0 || (MesquiteTrunk.isMacOS() && controlKeyDown(modifiers)));
-	//	return ((modifiers & InputEvent.CTRL_MASK)!=0) || ((modifiers & InputEvent.BUTTON2_DOWN_MASK)!=0) || ((modifiers & Event.META_MASK)!=0);
+		return (modifiers & InputEvent.BUTTON3_DOWN_MASK)!=0 || (MesquiteTrunk.isMacOSX() && controlKeyDown(modifiers));
 	}
 	public static boolean commandKeyDown(int modifiers) {
-		return ((modifiers & InputEvent.META_MASK)!=0);
+		return ((modifiers & InputEvent.META_DOWN_MASK)!=0);
 	}
 	public static boolean commandOrControlKeyDown(int modifiers) {
-		return ((modifiers & InputEvent.META_MASK)!=0 || (modifiers & InputEvent.CTRL_MASK)!=0);
+		return ((modifiers & InputEvent.META_DOWN_MASK)!=0 || (modifiers & InputEvent.CTRL_DOWN_MASK)!=0);
 	}
 	public static String modifiersToString(int modifiers){
 			String s = "";

@@ -48,7 +48,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	MesquiteBoolean showScale;
 	MesquiteBoolean broadScale;
 	MesquiteInteger branchLengthsDisplayMode;  
-			
+
 	boolean resetShowBranchLengths = false;
 	int fixedTaxonDistance = 0;
 
@@ -60,15 +60,15 @@ public class NodeLocsStandard extends NodeLocsVH {
 	static int minStarboardBorder = 10;
 	static int minTipwardBorder = 10;
 
-//	double namesAngle = MesquiteDouble.unassigned;
+	//	double namesAngle = MesquiteDouble.unassigned;
 
 	MesquiteMenuItemSpec fixedScalingMenuItem, showScaleMenuItem, broadScaleMenuItem;
 	MesquiteMenuItemSpec offFixedScalingMenuItem, stretchMenuItem, evenMenuItem;
-	
+
 	MesquiteBoolean center;
 	boolean[] fixedSettings = null;
 	MesquiteBoolean even;
-//	MesquiteString orientationName;
+	//	MesquiteString orientationName;
 	MesquiteBoolean upOn, downOn, rightOn, leftOn, autoOn, ultraOn, blOn;
 
 	//ORIENTATIONS
@@ -89,29 +89,29 @@ public class NodeLocsStandard extends NodeLocsVH {
 			even.setValue(true);
 			center.setValue(true);
 		}
-		
+
 		branchLengthsDisplayMode = new MesquiteInteger(lastLengthsDisplayMode);
 		showScale = new MesquiteBoolean(true);
 		broadScale = new MesquiteBoolean(false);
 
 		//really, this should all have been in node locs, but too busy to fix (also in other DrawTree modules that use NodeLocsVH)
 		if (employerAllowsReorientation()) {
-		ornt = NodeLocsVH.defaultOrientation;  
-		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		addCheckMenuItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this), upOn = new MesquiteBoolean(ornt == TreeDisplay.UP));
-		addCheckMenuItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this), rightOn = new MesquiteBoolean(ornt == TreeDisplay.RIGHT));
-		addCheckMenuItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this), downOn = new MesquiteBoolean(ornt == TreeDisplay.DOWN));
-		addCheckMenuItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this), leftOn = new MesquiteBoolean(ornt == TreeDisplay.LEFT));
-		addItemToSubmenu(null, orientationSubmenu, "-", null);
-		MesquiteMenuItemSpec mRC = addItemToSubmenu(null, orientationSubmenu, "Rotate Clockwise", makeCommand("rotateClockwise", this));
-		mRC.setShortcut(KeyEvent.VK_R);
-		MesquiteMenuItemSpec mLC = addItemToSubmenu(null, orientationSubmenu, "Rotate Counterclockwise", makeCommand("rotateCounterClockwise", this));
-		mLC.setShortcut(KeyEvent.VK_L);
-		addItemToSubmenu(null, orientationSubmenu, "-", null);
-		addItemToSubmenu(null, orientationSubmenu, "Set Current Orientation as Default", makeCommand("setDefaultOrientation",  this));
+			ornt = NodeLocsVH.defaultOrientation;  
+			MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
+			addCheckMenuItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this), upOn = new MesquiteBoolean(ornt == TreeDisplay.UP));
+			addCheckMenuItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this), rightOn = new MesquiteBoolean(ornt == TreeDisplay.RIGHT));
+			addCheckMenuItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this), downOn = new MesquiteBoolean(ornt == TreeDisplay.DOWN));
+			addCheckMenuItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this), leftOn = new MesquiteBoolean(ornt == TreeDisplay.LEFT));
+			addItemToSubmenu(null, orientationSubmenu, "-", null);
+			MesquiteMenuItemSpec mRC = addItemToSubmenu(null, orientationSubmenu, "Rotate Clockwise", makeCommand("rotateClockwise", this));
+			mRC.setShortcut(KeyEvent.VK_R);
+			MesquiteMenuItemSpec mLC = addItemToSubmenu(null, orientationSubmenu, "Rotate Counterclockwise", makeCommand("rotateCounterClockwise", this));
+			mLC.setShortcut(KeyEvent.VK_L);
+			addItemToSubmenu(null, orientationSubmenu, "-", null);
+			addItemToSubmenu(null, orientationSubmenu, "Set Current Orientation as Default", makeCommand("setDefaultOrientation",  this));
 		}
 
-		
+
 		if (fixedSettings != null && fixedSettings.length>0 && fixedSettings[0]){
 			branchLengthsDisplayMode.setValue(TreeDisplay.AUTOSHOWLENGTHS);
 		}
@@ -121,7 +121,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			addCheckMenuItemToSubmenu(null, mss, "Draw as Ultrametric (No branch lengths implied)", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWULTRAMETRIC, this), ultraOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC));
 			addCheckMenuItemToSubmenu(null, mss, "Draw with Lengths, Unassigned as One", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWUNASSIGNEDASONE, this), blOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE));
 		}
-		
+
 		if (branchLengthsDisplayMode.getValue()==TreeDisplay.DRAWUNASSIGNEDASONE || branchLengthsDisplayMode.getValue()==TreeDisplay.AUTOSHOWLENGTHS) {
 			fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
 			showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
@@ -129,13 +129,13 @@ public class NodeLocsStandard extends NodeLocsVH {
 			resetShowBranchLengths=true;
 		}
 		else {
-		/*Debugg.println: if ultrametric, just add menu and use. If AUTO, add menu but rename as "Inhibit stretch if no BL".
-		 * 	if (showBranchLengths.getValue()==TreeDisplay.DRAWULTRAMETRIC || showBranchLengths.getValue()==TreeDisplay.AUTOSHOWLENGTHS)
-				*/
-				stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch Tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
+			/*Debugg.println: if ultrametric, just add menu and use. If AUTO, add menu but rename as "Inhibit stretch if no BL".
+			 * 	if (showBranchLengths.getValue()==TreeDisplay.DRAWULTRAMETRIC || showBranchLengths.getValue()==TreeDisplay.AUTOSHOWLENGTHS)
+			 */
+			stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch Tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
 			evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);
 		}
-		
+
 
 		addMenuItem( "Fixed Distance Between Taxa...", makeCommand("setFixedTaxonDistance",  this));
 		addCheckMenuItem(null, "Centered Branches", makeCommand("toggleCenter", this), center);
@@ -147,7 +147,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	private boolean employerAllowsReorientation(){
 		DrawTree dt = (DrawTree)findEmployerWithDuty(DrawTree.class);
 		if (dt!= null)
-		return dt.allowsReorientation();
+			return dt.allowsReorientation();
 		return false;
 
 	}
@@ -260,7 +260,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			extras.removeAllElements();
 		}
 	}
-	
+
 	void resetOrientation(int orientation){
 		DrawTree dt = (DrawTree)findEmployerWithDuty(DrawTree.class);
 		Enumeration e = dt.getDrawings().elements();
@@ -278,7 +278,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		resetContainingMenuBar();
 		parametersChanged();
 	}
-	
+
 	boolean stretchWasSet = false;
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
@@ -290,7 +290,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			parametersChanged();
 		}
 		else 	if (checker.compare(this.getClass(), "Sets a fixed distance between taxa for drawing the tree", "[distance in pixels]", commandName, "setFixedTaxonDistance")) {
-			
+
 			int newDistance= MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newDistance))
 				newDistance = MesquiteInteger.queryInteger(containerOfModule(), "Set taxon distance", "Distance between taxa:", "(Use a value of 0 to tell Mesquite to calculate the distance itself.)", "", fixedTaxonDistance, 0, 99, true);
@@ -301,15 +301,15 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 
 		}
-	else if (checker.compare(this.getClass(), "Sets whether or not to inhibit automatic stretching the tree to fit the drawing area", "[on =inihibit stretch; off]", commandName, "inhibitStretchToggle")) {
+		else if (checker.compare(this.getClass(), "Sets whether or not to inhibit automatic stretching the tree to fit the drawing area", "[on =inihibit stretch; off]", commandName, "inhibitStretchToggle")) {
 			inhibitStretch.toggleValue(parser.getFirstToken(arguments));
 			stretchWasSet = true;
 			parametersChanged();
 		}
-	else if (checker.compare(this.getClass(), "Sets default orientation", null, commandName, "setDefaultOrientation")) {
-		defaultOrientation = ornt;
-		storePreferences();
-	}
+		else if (checker.compare(this.getClass(), "Sets default orientation", null, commandName, "setDefaultOrientation")) {
+			defaultOrientation = ornt;
+			storePreferences();
+		}
 		else if (checker.compare(this.getClass(), "Here to avoid scripting error; user will need to reset taxon names", null, commandName, "namesAngle")) {
 
 		}
@@ -334,7 +334,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				ornt = TreeDisplay.LEFT;
 			else if (ornt == TreeDisplay.LEFT)
 				ornt = TreeDisplay.UP;
-			
+
 			resetOrientation(ornt);
 		}
 		else if (checker.compare(this.getClass(), "Rotates the tree drawing clockwise", null, commandName, "rotateCounterClockwise")) {
@@ -346,7 +346,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				ornt = TreeDisplay.RIGHT;
 			else if (ornt == TreeDisplay.RIGHT)
 				ornt = TreeDisplay.UP;
-			
+
 			resetOrientation(ornt);
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to center the nodes between the immediate descendents, or the terminal in the clade", "[on = center over immediate; off]", commandName, "toggleCenter")) {
@@ -367,14 +367,14 @@ public class NodeLocsStandard extends NodeLocsVH {
 			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
 			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
 			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
-				deleteAllMenuItems();
-				fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
-				showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
-				broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);
-				deleteMenuItem(stretchMenuItem);
-				stretchMenuItem = null;
-				deleteMenuItem(evenMenuItem);
-				evenMenuItem = null;
+			deleteAllMenuItems();
+			fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
+			showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
+			broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);
+			deleteMenuItem(stretchMenuItem);
+			stretchMenuItem = null;
+			deleteMenuItem(evenMenuItem);
+			evenMenuItem = null;
 			resetContainingMenuBar();
 			parametersChanged();
 		}
@@ -389,12 +389,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
 			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
 			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
-		lastLengthsDisplayMode = branchLengthsDisplayMode.getValue();
+			lastLengthsDisplayMode = branchLengthsDisplayMode.getValue();
 			/*
 			 * static final int SHOWULTRAMETRIC = 0; //	
 			static final int AUTOSHOWLENGTHS = 1;
 			static final int SHOWUNASSIGNEDASONE = 2; //if a branch has unassigned length, treat as length 1
-			*/
+			 */
 			if (branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC) {
 				deleteMostMenuItems();
 				if (stretchMenuItem == null)
@@ -462,7 +462,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		return "Calculates the node locations in a tree drawing, for use with vertical or horizontal tree drawers (e.g., the standard diagnonal or square trees)." ;
 	}
 	public boolean compatibleWithOrientation(int orientation) {
-		
+
 		return (orientation==TreeDisplay.UP || orientation==TreeDisplay.DOWN || orientation==TreeDisplay.RIGHT ||orientation==TreeDisplay.LEFT);
 	}
 	public int getDefaultOrientation() {
@@ -473,14 +473,14 @@ public class NodeLocsStandard extends NodeLocsVH {
 		fmBIG = g.getFontMetrics(big2);
 		fm = g.getFontMetrics(f);
 	}
-	
+
 	boolean showScaleConsideringAuto(Tree tree, TreeDisplay treeDisplay){
 		return showScale.getValue()
 				&& branchLengthsDisplayMode.getValue()!= TreeDisplay.DRAWULTRAMETRIC 
 				&& ((tree.hasBranchLengths() || treeDisplay.fixedScalingOn) && (tree.getAssociatedDoubles(consensusNR) == null));
 	}
 	NameReference consensusNR = NameReference.getNameReference("consensusFrequency");
-	
+
 	void checkAndAdjustParameterSettings(TreeDisplay treeDisplay, Tree tree){
 		//Making sure my extra is in the treeDisplay. If not, this is a new connection!
 		if (treeDisplay.getExtras() !=null) {
@@ -488,10 +488,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 				NodeLocsExtra extra = new NodeLocsExtra(this, treeDisplay); 
 				treeDisplay.addExtra(extra); 
 				extras.addElement(extra);
-				if (treeDisplay.getOrientation() == TreeDisplay.NOTYETSET || !compatibleWithOrientation(treeDisplay.getOrientation())){
-					if (employerAllowsReorientation())
-						treeDisplay.setOrientation(defaultOrientation);
-				}
+			}
+		}
+		if (treeDisplay.getOrientation() == TreeDisplay.NOTYETSET || !compatibleWithOrientation(treeDisplay.getOrientation())){
+			if (employerAllowsReorientation()){
+				treeDisplay.setOrientation(defaultOrientation);
+				ornt = defaultOrientation;
 			}
 		}
 		treeDisplay.setFixedTaxonSpacing(fixedTaxonDistance);
@@ -529,7 +531,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 		}
 	}
-	
+
 	/*_________________________________________________*/
 
 	private double getNonZeroBranchLength(Tree tree, int N) {
@@ -538,7 +540,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		else
 			return tree.getBranchLength(N);
 	}
-	
+
 	/*_________________________________________________*/
 	private double lastleft;
 	/*_________________________________________________*/
@@ -552,7 +554,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				treeDrawing.y[N] = treeDrawing.y[fD];
 				treeDrawing.x[N] =treeDrawing.x[fD];
 			}
-		else {
+			else {
 				double nFDx = treeDrawing.x[fD];
 				double nFDy = treeDrawing.y[fD];
 				double nLDx = treeDrawing.x[lD];
@@ -671,7 +673,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-					DOWNCalcTerminalLocs(treeDisplay, treeDrawing, tree, d, margin);
+				DOWNCalcTerminalLocs(treeDisplay, treeDrawing, tree, d, margin);
 		}
 	}
 	/*....................................................................................................*/
@@ -701,7 +703,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			nH=ancH + (getNonZeroBranchLength(tree, N)*treeDisplay.nodeLocsParameters[scaling]);
 
 		treeDrawing.y[N]=nH;
-	
+
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			DOWNdoAdjustLengths(treeDisplay, treeDrawing, tree, bottom, d, nH, root);
 
@@ -761,7 +763,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-					RIGHTCalcTerminalLocs(treeDisplay, treeDrawing, tree, d, margin);
+				RIGHTCalcTerminalLocs(treeDisplay, treeDrawing, tree, d, margin);
 		}
 	}
 	/*....................................................................................................*/
@@ -845,7 +847,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-					LEFTCalcTerminalLocs(treeDisplay, treeDrawing, tree, d);
+				LEFTCalcTerminalLocs(treeDisplay, treeDrawing, tree, d);
 		}
 	}
 	/*....................................................................................................*/
@@ -933,35 +935,35 @@ public class NodeLocsStandard extends NodeLocsVH {
 			if (tree.leftmostTerminalOfNode(dCA)==N){ //this is leftmost in collapsed clade; therefore take its height from the highest of the descendants of that clade
 				double highest = highestDescendant(treeDrawing, tree, dCA, orientation);
 				double lowest = lowestDescendant(treeDrawing, tree, dCA, orientation);
-					if (orientation==TreeDisplay.UP || orientation==TreeDisplay.DOWN) {
-						treeDrawing.y[N] = highest;
-						/*treeDrawing.yShortestTerminal[dCA] = lowest;
+				if (orientation==TreeDisplay.UP || orientation==TreeDisplay.DOWN) {
+					treeDrawing.y[N] = highest;
+					/*treeDrawing.yShortestTerminal[dCA] = lowest;
 						treeDrawing.xShortestTerminal[dCA] = treeDrawing.x[N] ;*/
-						int mother = tree.motherOfNode(N);
-						treeDrawing.yDashed[mother] = lowest;
-						treeDrawing.xDashed[mother] = treeDrawing.x[N] ;
-						treeDrawing.yDashed[N] = treeDrawing.y[N];
-						treeDrawing.xDashed[N] = treeDrawing.x[N] ;
-						treeDrawing.ySolid[mother] = treeDrawing.y[tree.deepestCollapsedAncestor(N)] ;
-						treeDrawing.xSolid[mother] = treeDrawing.x[tree.deepestCollapsedAncestor(N)] ;
-						treeDrawing.ySolid[N] = lowest;
-						treeDrawing.xSolid[N] = treeDrawing.x[N] ;
-					}
-					else {
-						treeDrawing.x[N] = highest;
+					int mother = tree.motherOfNode(N);
+					treeDrawing.yDashed[mother] = lowest;
+					treeDrawing.xDashed[mother] = treeDrawing.x[N] ;
+					treeDrawing.yDashed[N] = treeDrawing.y[N];
+					treeDrawing.xDashed[N] = treeDrawing.x[N] ;
+					treeDrawing.ySolid[mother] = treeDrawing.y[tree.deepestCollapsedAncestor(N)] ;
+					treeDrawing.xSolid[mother] = treeDrawing.x[tree.deepestCollapsedAncestor(N)] ;
+					treeDrawing.ySolid[N] = lowest;
+					treeDrawing.xSolid[N] = treeDrawing.x[N] ;
+				}
+				else {
+					treeDrawing.x[N] = highest;
 					/*	treeDrawing.xShortestTerminal[dCA] = lowest;
 						treeDrawing.yShortestTerminal[dCA] = treeDrawing.y[N] ;*/
-						int mother = tree.motherOfNode(N);
-						treeDrawing.xDashed[mother] = lowest;
-						treeDrawing.yDashed[mother] = treeDrawing.y[N] ;
-						treeDrawing.yDashed[N] = treeDrawing.y[N];
-						treeDrawing.xDashed[N] = treeDrawing.x[N] ;
-						treeDrawing.ySolid[mother] = treeDrawing.y[tree.deepestCollapsedAncestor(N)] ;
-						treeDrawing.xSolid[mother] = treeDrawing.x[tree.deepestCollapsedAncestor(N)] ;
-						treeDrawing.ySolid[N] = treeDrawing.y[N] ;
-						treeDrawing.xSolid[N] = lowest;
-					}
+					int mother = tree.motherOfNode(N);
+					treeDrawing.xDashed[mother] = lowest;
+					treeDrawing.yDashed[mother] = treeDrawing.y[N] ;
+					treeDrawing.yDashed[N] = treeDrawing.y[N];
+					treeDrawing.xDashed[N] = treeDrawing.x[N] ;
+					treeDrawing.ySolid[mother] = treeDrawing.y[tree.deepestCollapsedAncestor(N)] ;
+					treeDrawing.xSolid[mother] = treeDrawing.x[tree.deepestCollapsedAncestor(N)] ;
+					treeDrawing.ySolid[N] = treeDrawing.y[N] ;
+					treeDrawing.xSolid[N] = lowest;
 				}
+			}
 		}
 		if (tree.nodeIsInternal(N)) { //internal
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -1007,15 +1009,15 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (bA == tree.getRoot() && tree.numberOfDaughtersOfNode(bA)==1)
 					bA = tree.getSubRoot();
 			}
-			
-		
+
+
 			MesquiteNumber xValue=new MesquiteNumber();
 			MesquiteNumber yValue=new MesquiteNumber();
 			treeDrawing.getSingletonLocation(tree, N,  xValue,  yValue);
 			treeDrawing.x[N]=xValue.getDoubleValue();
 			treeDrawing.y[N]=yValue.getDoubleValue();
 
-				
+
 			/*double nA = tree.depthToAncestor(N, bA);
 			double nD = tree.depthToAncestor(bD, N);
 			treeDrawing.x[N]=propAverage(treeDrawing.x[bD], treeDrawing.x[bA], nD, nA+nD);
@@ -1109,7 +1111,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		return num;
 	}
-	
+
 	/*.................................................................................................................*/
 	public double effectiveNumberOfTerminals(Tree tree, int node, TreeDisplay treeDisplay){
 		if (tree.nodeIsTerminal(node)){
@@ -1144,7 +1146,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		zoomFactor = factor;
 		parametersChanged();
 	}
-	
+
 	double getSpacing(TreeDisplay treeDisplay, Tree tree, int node){
 		double baseSpacing =treeDisplay.getTaxonSpacing();
 		if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX  && tree.getTaxa().getSelected(tree.taxonNumberOfNode(node)))
@@ -1166,14 +1168,14 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*.................................................................................................................*/
 	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot) { //Graphics g removed as parameter May 02
 		if (MesquiteTree.OK(tree)) {
-			
+
 			//Making sure treeDisplay and here are in tune about some settings
 			checkAndAdjustParameterSettings(treeDisplay, tree);
 
 			TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 			int root = drawnRoot;
 			int subRoot = tree.motherOfNode(drawnRoot);
-			
+
 			//If it's just a single terminal on the tree, have to make the root size handle the whole tree
 			int effectiveROOTSIZE = 20;
 			if (tree.numberOfVisibleTerminalsInClade(drawnRoot) == 1){  // it is just a single terminal in the tree
@@ -1187,12 +1189,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 					effectiveROOTSIZE = treeDisplay.effectiveFieldBottomMargin();
 				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN)
 					effectiveROOTSIZE = treeDisplay.effectiveFieldTopMargin();
-			else if (treeDisplay.getOrientation()==TreeDisplay.LEFT)
+				else if (treeDisplay.getOrientation()==TreeDisplay.LEFT)
 					effectiveROOTSIZE +=  treeDisplay.effectiveFieldRightMargin();
-			else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT)
-				effectiveROOTSIZE +=  treeDisplay.effectiveFieldLeftMargin();
+				else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT)
+					effectiveROOTSIZE +=  treeDisplay.effectiveFieldLeftMargin();
 			}
-		
+
 			//Resetting tips margin according to length of taxon names
 			Graphics g = treeDisplay.getGraphics();
 			if (g!=null) {
@@ -1216,7 +1218,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 					(treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (tree.hasBranchLengths() || treeDisplay.fixedScalingOn));
 			branchesProportionalToLength = branchesProportionalToLength & 
 					!((tree.getAssociatedDoubles(consensusNR) != null) && (treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS));
-		
+
 
 			if (treeDisplay.getOrientation()==TreeDisplay.UP) {  // ################################  UP #########################
 				double availableTreeHeight = treeDisplay.effectiveFieldHeight()-treeDisplay.getTipsMargin();
@@ -1234,10 +1236,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 				UPCalcInternalLocs( treeDrawing, tree, root);
 				if (center.getValue())
 					UPDOWNCenterInternalLocs( treeDrawing, tree, root);
-				//AdjustForUnbranchedNodes(root, subRoot);
-
 				placeSingletons(treeDrawing, tree, root);
-				if (branchesProportionalToLength) {// //✓✓✓✓✓✓✓✓
+				if (branchesProportionalToLength) {
 					treeDisplay.nodeLocsParameters[totalHeight]= tree.tallestPathAboveNode(root, 1.0);
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
@@ -1252,10 +1252,9 @@ public class NodeLocsStandard extends NodeLocsVH {
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 						}
 					}
-					else {// //✓✓✓✓✓✓✓✓
+					else {
 						if (treeDisplay.fixedDepthScale == 0)
 							treeDisplay.fixedDepthScale = 1;
-
 						treeDisplay.nodeLocsParameters[scaling]=availableTreeHeight/(treeDisplay.fixedDepthScale); 
 						UPdoAdjustLengths( treeDisplay, treeDrawing, tree, treeDisplay.effectiveFieldHeight()-(int)(treeDisplay.nodeLocsParameters[scaling]*(treeDisplay.fixedDepthScale-treeDisplay.nodeLocsParameters[totalHeight])), root, 0, root);
 						if (showScaleConsideringAuto(tree,  treeDisplay)) {
@@ -1263,7 +1262,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						}
 					}
 				}
-				else {// ⭕⭕⭕
+				else {
 					if (even.getValue()){
 						double evenVertSpacing =(treeDrawing.y[root] - treeDisplay.getTipsMargin())/ (tree.mostStepsAboveNode(root) + 1);
 						if (evenVertSpacing > 0)
@@ -1274,7 +1273,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 						UPstretchNodeLocs(treeDisplay, treeDrawing, tree, root);
 					}
 				}
-
 				treeDrawing.y[subRoot] = (treeDrawing.y[root])+effectiveROOTSIZE;
 				treeDrawing.x[subRoot] = (treeDrawing.x[root]);
 			}
@@ -1294,10 +1292,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 				DOWNCalcInternalLocs(treeDrawing, tree, root);
 				if (center.getValue())
 					UPDOWNCenterInternalLocs(treeDrawing, tree, root);
-			//AdjustForUnbranchedNodes(root, subRoot);
-
 				placeSingletons(treeDrawing, tree, root);
-				if (branchesProportionalToLength) {// ✓✓✓✓✓✓✓✓
+				if (branchesProportionalToLength) {
 					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0);
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
@@ -1310,7 +1306,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						if (showScaleConsideringAuto(tree,  treeDisplay)) 
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
-					else {// ✓✓✓✓✓✓✓✓
+					else {
 						if (treeDisplay.fixedDepthScale == 0)
 							treeDisplay.fixedDepthScale = 1;
 						treeDisplay.nodeLocsParameters[scaling]=availableTreeHeight/(treeDisplay.fixedDepthScale); 
@@ -1318,9 +1314,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 						if (showScaleConsideringAuto(tree,  treeDisplay)) 
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.fixedDepthScale, treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
-
 				}
-				else {// ⭕⭕⭕
+				else {
 					if (even.getValue()){
 						double evenVertSpacing = (- treeDrawing.y[subRoot] + edgeNode(treeDrawing, tree, root, false, true))/ (tree.mostStepsAboveNode(root) + 1);
 						if (evenVertSpacing > 0)
@@ -1334,7 +1329,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				}
 				treeDrawing.y[subRoot] = (treeDrawing.y[root])-effectiveROOTSIZE;
 				treeDrawing.x[subRoot] = (treeDrawing.x[root]);
-	}
+			}
 			else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {  // ################################  RIGHT #########################
 				double availableTreeHeight = treeDisplay.effectiveFieldWidth()-treeDisplay.getTipsMargin();
 				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
@@ -1351,11 +1346,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				RIGHTCalcInternalLocs(treeDrawing, tree, root);
 				if (center.getValue())
 					RIGHTLEFTCenterInternalLocs( treeDrawing, tree, root);
-
 				placeSingletons(treeDrawing, tree, root);
 				if (branchesProportionalToLength) {
 					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0);
-					if (!treeDisplay.fixedScalingOn) { //✓✓✓✓✓✓✓✓
+					if (!treeDisplay.fixedScalingOn) { 
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
 						fixedDepth = treeDisplay.fixedDepthScale;
 						if (treeDisplay.nodeLocsParameters[totalHeight]==0)
@@ -1366,7 +1360,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						if (showScaleConsideringAuto(tree,  treeDisplay)) 
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
-					else { //fixed scaling =======//✓✓✓✓✓✓✓✓
+					else {
 						if (treeDisplay.fixedDepthScale == 0)
 							treeDisplay.fixedDepthScale = 1;
 						treeDisplay.nodeLocsParameters[scaling]=availableTreeHeight/treeDisplay.fixedDepthScale; 
@@ -1376,7 +1370,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						}
 					}
 				}
-				else {// ⭕⭕⭕
+				else {
 					if (even.getValue()){
 						double evenVertSpacing =treeDisplay.getTipsMargin()/ (tree.mostStepsAboveNode(root) + 1);
 						if (evenVertSpacing > 0)
@@ -1389,7 +1383,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				}
 				treeDrawing.y[subRoot] = (treeDrawing.y[root]);
 				treeDrawing.x[subRoot] = (treeDrawing.x[root])-effectiveROOTSIZE;
-		}
+			}
 			else if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {  // ################################  LEFT #########################
 				double availableTreeHeight = treeDisplay.effectiveFieldWidth()-treeDisplay.getTipsMargin();
 				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
@@ -1406,10 +1400,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 				LEFTCalcInternalLocs(treeDrawing, tree, root);
 				if (center.getValue())
 					RIGHTLEFTCenterInternalLocs(treeDrawing, tree, root);
-
 				placeSingletons(treeDrawing, tree, root);
-				
-				if (branchesProportionalToLength) {//✓✓✓✓
+				if (branchesProportionalToLength) {
 					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0);
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
@@ -1422,7 +1414,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						if (showScaleConsideringAuto(tree,  treeDisplay)) 
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
-					else { //fixed scaling ====== //✓✓✓✓✓✓✓✓
+					else { 
 						if (treeDisplay.fixedDepthScale == 0)
 							treeDisplay.fixedDepthScale = 1;
 						treeDisplay.nodeLocsParameters[scaling]=availableTreeHeight/(treeDisplay.fixedDepthScale); 
@@ -1431,7 +1423,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 							drawGrid(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.fixedDepthScale, treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, g);
 					}
 				}
-				else {  // ⭕⭕⭕
+				else {  
 					if (even.getValue()){
 						double evenVertSpacing =(treeDrawing.x[root] - treeDisplay.getTipsMargin())/ (tree.mostStepsAboveNode(root) + 1);
 						if (evenVertSpacing > 0)
@@ -1445,10 +1437,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				treeDrawing.y[subRoot] = (treeDrawing.y[root]);
 				treeDrawing.x[subRoot] = (treeDrawing.x[root])+effectiveROOTSIZE;
 			}
-		calcTerminalLocsPushHiddenInCollapsed(treeDrawing, tree, root, treeDisplay.getOrientation());
+			calcTerminalLocsPushHiddenInCollapsed(treeDrawing, tree, root, treeDisplay.getOrientation());
 			calcInternalLocsPushHiddenInCollapsed(treeDrawing, tree, root);
-		treeDisplay.scaling=treeDisplay.nodeLocsParameters[scaling];
-		treeDrawing.translateAll(treeDisplay.effectiveFieldLeftMargin(), treeDisplay.effectiveFieldTopMargin());
+			treeDisplay.scaling=treeDisplay.nodeLocsParameters[scaling];
+			treeDrawing.translateAll(treeDisplay.effectiveFieldLeftMargin(), treeDisplay.effectiveFieldTopMargin());
 		}
 		calculateScale(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay);
 	}
@@ -1467,7 +1459,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 		int buffer = treeDisplay.getTaxonSpacing();
 		double[] scaleValues = null;
-//Debugg.println CHECK FIXED SCALING
+		//Debugg.println CHECK FIXED SCALING
 		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 			double yBase = (totalScaleHeight-totalTreeHeight)*scaling +treeDisplay.getTreeDrawing().y[drawnRoot];
 			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;
@@ -1495,8 +1487,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		if (scaleValues != null)
 			treeDisplay.setScale(scaleValues);
-}
-	
+	}
+
 	/*.................................................................................................................*/
 	public void drawGrid(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, Graphics g) {
 		if (g == null)
@@ -1515,7 +1507,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		Color smallTickColor = Color.lightGray;
 		Color bigTickColor = Color.darkGray;
-		
+
 		g.setColor(smallTickColor);
 		int scaleBuffer = 28;
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
@@ -1666,15 +1658,15 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 			window = ((MesquiteWindow)locsModule.containerOfModule());
 			window.addTool(stretchTool);
 		}
-		*/
+		 */
 	}
 	/*.................................................................................................................*/
 	public   String writeOnTree(Tree tree, int drawnRoot) {
 		return null;
 	}
-	
+
 	//left, top, right, bottom
-	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){
+	public int[] getRequestedExtraBordersPixels(Tree tree, TreeDrawing treeDrawing){
 		if (treeDisplay.getOrientation() == TreeDisplay.UP){
 			return new int[]{NodeLocsStandard.minPortBorder, NodeLocsStandard.minTipwardBorder, NodeLocsStandard.minStarboardBorder, NodeLocsStandard.minRootwardBorder};
 		}
@@ -1688,9 +1680,9 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 			return new int[]{NodeLocsStandard.minTipwardBorder, NodeLocsStandard.minStarboardBorder, NodeLocsStandard.minRootwardBorder, NodeLocsStandard.minPortBorder};
 		}
 		return new int[]{0, 0, 0, 0};
-	//	return null;
+		//	return null;
 	}
-//		return new int[]{50, 100, 30, 80};
+	//		return new int[]{50, 100, 30, 80};
 	void drawTranslatedRect(Graphics g, int x, int y, int w, int h, Color c){
 		g.setColor(c);
 		int offX = treeDisplay.effectiveFieldLeftMargin();
@@ -1702,7 +1694,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 		if (false){  //rectangles
 			drawTranslatedRect(g, 2, 2, treeDisplay.getField().width, treeDisplay.getField().height, Color.green);
 			drawTranslatedRect(g, 2, 2, treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldHeight(), Color.cyan);
-			
+
 			g.setColor(Color.blue);
 			g.drawRect(2, 2, treeDisplay.effectiveFieldLeftMargin()-2, treeDisplay.effectiveFieldTopMargin()-2);
 			g.setColor(Color.red);
@@ -1730,17 +1722,17 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 		if (window == null || window.getCurrentTool() != stretchTool)
 			return;
 		drawCladeBox(N);
-			lastBranch = N;
-			lineOnMove = true;
+		lastBranch = N;
+		lineOnMove = true;
 	}
 	/**to inform TreeDisplayExtra that cursor has just entered branch N*/
 	public void cursorExitBranch(Tree tree, int N, Graphics g){
 		if (window == null || window.getCurrentTool() != stretchTool)
 			return;
-			if (lineOnMove)
-				drawCladeBox(N);
-			lastBranch = -1;
-			lineOnMove = false;
+		if (lineOnMove)
+			drawCladeBox(N);
+		lastBranch = -1;
+		lineOnMove = false;
 	}
 	int findBranch(Tree tree, int x, int y){
 		TreeDrawing drawing = treeDisplay.getTreeDrawing(); 
@@ -1880,7 +1872,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 			tempLeft = cladeLeft;
 			tempWidth = cladeRight - cladeLeft;
 			tempZoomFactor = -1;
-				
+
 			GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
 			g.dispose();
 		}
@@ -1907,7 +1899,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 			double oldHeight =(cladeBottom - cladeTop);
 			double expansionFactor = (oldHeight + (y - touchY))*1.0/oldHeight;
 			if (setTempZoom(treeDisplay, tree, node, expansionFactor)){
-			//	locsModule.setZoom(treeDisplay, node, expansionFactor);
+				//	locsModule.setZoom(treeDisplay, node, expansionFactor);
 				GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
 				tempHeight = (int)(oldHeight * expansionFactor);
 				int newWidth = (int)((cladeRight-cladeLeft) * expansionFactor);

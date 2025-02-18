@@ -65,10 +65,14 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	public void setPlacement(int placement){
 		this.placement = placement;
 	}
-	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){ //must return null or int[4], left, top, right, bottom
+	public int[] getRequestedExtraBordersPixels(Tree tree, TreeDrawing treeDrawing){ //must return null or int[4], left, top, right, bottom
+		return null;
+	}
+	public double[] getRequestedExtraBordersBranchLengths(Tree tree, TreeDrawing treeDrawing){ //must return null or double[4], left, top, right, bottom
 		return null;
 	}
 	
+
 	public TreeDisplay getTreeDisplay(){
 		return treeDisplay;
 	}
