@@ -17,6 +17,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.tree.DiagonalRootDrawer;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.SquareTipDrawer;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDrawing;
@@ -27,7 +28,7 @@ import mesquite.trees.lib.*;
 
 import java.awt.geom.*;
 /* ======================================================================== */
-public class ArcTree extends DrawTree implements DiagonalRootDrawer {
+public class ArcTree extends DrawTree implements DiagonalRootDrawer, SquareTipDrawer {
 	public String getName() {
 		return "Curvogram";
 	}

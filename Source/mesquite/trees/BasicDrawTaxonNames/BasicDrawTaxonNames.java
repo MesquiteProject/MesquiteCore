@@ -30,6 +30,7 @@ import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.SquareTipDrawer;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
@@ -71,6 +72,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected Font currentFont = null;
 	protected Font currentFontBOLD = null;
 	protected Font currentFontBOLDITALIC = null;
+	
+	protected Font[] currentFontsCollapsed= new Font[8]; //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
+	
 	protected Font currentFontBIG = null;
 	protected Font currentFontBIGBOLD = null;
 	protected int bigFontChoice = TreeDisplay.sTHM_BIGNAME;
@@ -105,13 +109,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		currentFont = MesquiteWindow.defaultFont;
-		currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
-		currentFontBOLDITALIC = new Font(currentFont.getName(), Font.BOLD+Font.ITALIC, currentFont.getSize());
-		currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
-		currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
-		fontName = new MesquiteString(MesquiteWindow.defaultFont.getName());
-		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
-
+		resetFonts();
 		MesquiteMenuSpec textMenu = findMenuAmongEmployers("Text");
 		MesquiteMenuSpec colorMenu = findMenuAmongEmployers("Color");
 		MesquiteSubmenuSpec msf = FontUtil.getFontSubmenuSpec(textMenu, "Font", this, this);
@@ -161,7 +159,23 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 
 		return true;
 	}
-
+	void resetFonts(){
+		currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
+		currentFontBOLDITALIC = new Font(currentFont.getName(), Font.BOLD+Font.ITALIC, currentFont.getSize());
+		currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
+		currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
+		fontName = new MesquiteString(MesquiteWindow.defaultFont.getName());
+		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
+		currentFontsCollapsed[0] =currentFont; //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
+		currentFontsCollapsed[1] =currentFontBOLD; //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
+		currentFontsCollapsed[2] =new Font(currentFont.getName(), Font.ITALIC, currentFont.getSize()); //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
+		currentFontsCollapsed[3] =currentFontBOLDITALIC; //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
+		currentFontsCollapsed[4] =new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*1.25)); //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
+		currentFontsCollapsed[5] =new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*1.25)); //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
+		currentFontsCollapsed[6] =new Font(currentFont.getName(), Font.ITALIC, (int)(currentFont.getSize()*1.25)); //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
+		currentFontsCollapsed[7] =new Font(currentFont.getName(), Font.BOLD+Font.ITALIC, (int)(currentFont.getSize()*1.25)); //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
+	}
+	
 	public void endJob(){
 		treeDisplay = null;
 		treeDrawing = null;
@@ -206,40 +220,10 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		/*if (checker.compare(this.getClass(), "Sets module that calculates a number for a taxon by which to shade", "[name of module]", commandName, "shadeByNumber")) {
-			NumberForTaxon temp= (NumberForTaxon)replaceEmployee(NumberForTaxon.class, arguments, "Value by which to shade taxon names", shader);
-			if (temp!=null) {
-				shader = temp;
-				offShadeMI.setEnabled(true);
-				MesquiteTrunk.resetMenuItemEnabling();
-				shades = null;
-				calcShades(tree);
 
-				parametersChanged();
-				return temp;
-			}
-		}
-		else   SUPERSEDED */
 		if (checker.compare(this.getClass(), "Sets the angle names are shown at in default UP orientation", "[angle in degrees clockwise from horizontal; ? = default]", commandName, "namesAngle")) {
 			if (arguments == null && !MesquiteThread.isScripting()){
-				/*vvvvv  old version *
-				double current;
-				if (!MesquiteDouble.isCombinable(namesAngle))
-					current = namesAngle;
-				else
-					current = namesAngle/2/Math.PI*360;
-				MesquiteDouble d = new MesquiteDouble(current);
-				if (!QueryDialogs.queryDouble(containerOfModule(), "Names Angle", "Angle of taxon names, in degrees clockwise from horizontal.  Use \"?\" to indicate default.  Typical settings are between 0 degrees and -90 degrees.  0 = text reads from left to right (like this: —); -90 = text reads from bottom to top (like this: |); -45 = text angled diagonally (like this: /).  This setting applies only when tree is in UP orientation", d))
-					return null;
-				namesAngle = d.getValue();
-				if (MesquiteDouble.isCombinable(namesAngle))
-					namesAngle = namesAngle/360*2*Math.PI;
-
-				Debugg.println("namesAngle " + MesquiteDouble.toString(namesAngle));
-				parametersChanged();
- /*^^^^^^^*/		
-
-				double namesAngle = queryAngleRadians();  //could be unassigned
+				namesAngle = queryAngleRadians();  //could be unassigned
 				parametersChanged();
 				/**/
 			}
@@ -250,15 +234,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				parametersChanged();
 			}
 		}
-		/*else if (checker.compare(this.getClass(), "Turns of shading by number", null, commandName, "offShading")) {
-			if (shader != null)
-				fireEmployee(shader);
-			shader = null;
-			shades = null;
-			offShadeMI.setEnabled(false);
-			MesquiteTrunk.resetMenuItemEnabling();
-			parametersChanged();
-		}*/
+	
 		else if (checker.compare(this.getClass(), "Toggles whether to show taxon names colored by partition", "[on or off]", commandName, "toggleColorPartition")) { //for backwards compatibility
 			String s = parser.getFirstToken(arguments);
 			if (s != null){
@@ -364,10 +340,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					myFont = t;
 					fontName.setValue(t);
 					currentFont = fontToSet;
-					currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
-					currentFontBOLDITALIC = new Font(currentFont.getName(), Font.BOLD+Font.ITALIC, currentFont.getSize());
-					currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
-					currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
+					resetFonts();
 					parametersChanged();
 				}
 			}
@@ -386,10 +359,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						myFont = t;
 						fontName.setValue(t);
 						currentFont = fontToSet;
-						currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
-						currentFontBOLDITALIC = new Font(currentFont.getName(), Font.BOLD+Font.ITALIC, currentFont.getSize());
-						currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
-						currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
+						resetFonts();
 
 						parametersChanged();
 					}
@@ -414,10 +384,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					Font fontToSet = new Font (currentFont.getName(), currentFont.getStyle(), fontSize);
 					if (fontToSet!= null) {
 						currentFont = fontToSet;
-						currentFontBOLD = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize());
-						currentFontBOLDITALIC = new Font(currentFont.getName(), Font.BOLD+Font.ITALIC, currentFont.getSize());
-						currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
-						currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
+						resetFonts();
 						fontSizeName.setValue(Integer.toString(fontSize));
 						parametersChanged(new Notification(TreeDisplay.FONTSIZECHANGED));
 					}
@@ -935,8 +902,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 							s+= es;
 					}
 				}
-				String drawingClass = MesquiteModule.getShortClassName(treeDrawing.getClass()).toString();
-				boolean squareBranches = drawingClass.contains("Square") || drawingClass.contains("ArcTree");
+				boolean squareBranches = treeDisplay.getOwnerModule().findEmployeeWithDuty(DrawTree.class) instanceof SquareTipDrawer;
 
 				int nameDrawLength = StringUtil.getStringDrawLength(gL, s);
 				int nameDrawHeight = StringUtil.getTextLineHeight(gL);

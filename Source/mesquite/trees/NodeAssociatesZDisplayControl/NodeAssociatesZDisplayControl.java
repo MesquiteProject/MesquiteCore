@@ -92,9 +92,6 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		}
 		managerModule = (NodeAssociatesAManager)findNearestColleagueWithDuty(NodeAssociatesAManager.class);
 		extras = new Vector();
-//		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
-//		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
-
 		return true;
 	}
 	public void endJob(){
@@ -119,20 +116,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		}
 	}
 	
-	/*.========================================================..*
-
-	public void writeList(ListableVector list){
-		System.out.println("Properties on record & to show");
-
-		for (int i=0; i<list.size(); i++){
-			PropertyDisplayRecord mi = (PropertyDisplayRecord)list.elementAt(i);
-			System.out.println(mi.getName() + "\t" + mi.kind + " showing " + mi.showing);
-		}
-	}
-	PropertyDisplayRecord findInList(NameReference nr, int kind){
-		return (PropertyDisplayRecord)PropertyDisplayRecord.findInList(propertyList, nr, kind);
-	}
-	*/
+	/*.========================================================..**/
 	PropertyDisplayRecord findInList(String s, int kind){
 		if (propertyList.indexOfByName(s)<0)
 			return null;
@@ -142,23 +126,6 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 				return mi;
 		}
 		return null;
-	}
-	/*...............................................................................*
-	int indexInList(PropertyDisplayRecord property){
-		for (int i=0; i<propertyList.size(); i++){
-			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
-			if (mi.equals(property))
-				return i;
-		}
-		return propertyList.indexOf(property);  //just in case?
-	}
-	/*...............................................................................*
-	boolean inList(PropertyDisplayRecord property){
-		return indexInList(property)>=0;
-	}
-	/*...............................................................................*
-	public boolean isBuiltIn(PropertyDisplayRecord mi){
-		return mi.kind== Associable.BUILTIN;
 	}
 	/*...............................................................................*/
 	public void pleaseShowHide(PropertyDisplayRecord[] list, boolean show){
@@ -192,24 +159,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		}
 		return false;
 	}
-	/*.................................................................................................................*
-	private void addPropertyFromScript(String name, int kind, boolean show){
-		if (StringUtil.blank(name) || !MesquiteInteger.isCombinable(kind))
-			return;
-		if (name.equalsIgnoreCase("selected") && kind == Associable.BITS)
-			return;
-		PropertyDisplayRecord mi = findInList(name, kind);
-		if (mi==null){  //color is not available to be shown in this way
-			mi = new PropertyDisplayRecord(name, kind);
-			mi.showing = show;
-			propertyList.addElement(mi, false);
-		}
-		else
-				mi.showing = show;
-		if (mi != null && tree != null)
-			mi.inCurrentTree = tree.isPropertyAssociated(mi);
-	}
-
+	
 	/*.................................................................................................................*/
 	Button[] selectOrHide;
 	Listable[] queryPropertiesList;

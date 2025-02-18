@@ -22,6 +22,7 @@ import java.awt.geom.Rectangle2D;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.SquareTipDrawer;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDrawing;
@@ -35,7 +36,7 @@ import mesquite.stochchar.lib.MargLikelihoodForModel;
 import mesquite.trees.lib.*;
 
 /* ======================================================================== */
-public class SquareTree extends DrawTree {
+public class SquareTree extends DrawTree implements SquareTipDrawer {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NodeLocsVH.class, getName() + "  needs the locations of nodes to be calculated.",
 				"The calculator for node locations is chosen automatically or initially");
