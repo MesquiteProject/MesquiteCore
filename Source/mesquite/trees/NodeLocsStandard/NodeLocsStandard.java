@@ -28,6 +28,7 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayBkgdExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.GraphicsUtil;
@@ -504,7 +505,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		if (resetShowBranchLengths){
 			treeDisplay.branchLengthDisplay=branchLengthsDisplayMode.getValue();
-			treeDisplay.accumulateBordersFromExtras(tree);
+			treeDisplay.accumulateRequestsFromExtras(tree);
 		}
 		else {
 			if (treeDisplay.branchLengthDisplay != branchLengthsDisplayMode.getValue()) {
@@ -1194,6 +1195,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 				else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT)
 					effectiveROOTSIZE +=  treeDisplay.effectiveFieldLeftMargin();
 			}
+			double extraDepthAtRootRequested = 0.0;
+			TreeDisplayRequests requested = treeDisplay.getExtraTreeDisplayRequests(); //accumulated if needed in checkAndAdjustParameterSettings
+			if (requested != null)
+				extraDepthAtRootRequested = requested.extraDepthAtRoot;
+			
+			
 
 			//Resetting tips margin according to length of taxon names
 			Graphics g = treeDisplay.getGraphics();
@@ -1238,7 +1245,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 					UPDOWNCenterInternalLocs( treeDrawing, tree, root);
 				placeSingletons(treeDrawing, tree, root);
 				if (branchesProportionalToLength) {
-					treeDisplay.nodeLocsParameters[totalHeight]= tree.tallestPathAboveNode(root, 1.0);
+					treeDisplay.nodeLocsParameters[totalHeight]= tree.tallestPathAboveNode(root, 1.0) + extraDepthAtRootRequested;
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
 						fixedDepth = treeDisplay.fixedDepthScale;
@@ -1294,7 +1301,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 					UPDOWNCenterInternalLocs(treeDrawing, tree, root);
 				placeSingletons(treeDrawing, tree, root);
 				if (branchesProportionalToLength) {
-					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0);
+					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0) + extraDepthAtRootRequested;
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
 						fixedDepth = treeDisplay.fixedDepthScale;
@@ -1348,7 +1355,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 					RIGHTLEFTCenterInternalLocs( treeDrawing, tree, root);
 				placeSingletons(treeDrawing, tree, root);
 				if (branchesProportionalToLength) {
-					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0);
+					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0) + extraDepthAtRootRequested;
 					if (!treeDisplay.fixedScalingOn) { 
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
 						fixedDepth = treeDisplay.fixedDepthScale;
@@ -1383,7 +1390,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				}
 				treeDrawing.y[subRoot] = (treeDrawing.y[root]);
 				treeDrawing.x[subRoot] = (treeDrawing.x[root])-effectiveROOTSIZE;
-			}
+		}
 			else if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {  // ################################  LEFT #########################
 				double availableTreeHeight = treeDisplay.effectiveFieldWidth()-treeDisplay.getTipsMargin();
 				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
@@ -1402,7 +1409,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 					RIGHTLEFTCenterInternalLocs(treeDrawing, tree, root);
 				placeSingletons(treeDrawing, tree, root);
 				if (branchesProportionalToLength) {
-					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0);
+					treeDisplay.nodeLocsParameters[totalHeight]=tree.tallestPathAboveNode(root, 1.0) + extraDepthAtRootRequested;
+					Debugg.println("@ totalHeight " + treeDisplay.nodeLocsParameters[totalHeight] + " " + extraDepthAtRootRequested);
 					if (!treeDisplay.fixedScalingOn) {
 						treeDisplay.fixedDepthScale = treeDisplay.nodeLocsParameters[totalHeight];
 						fixedDepth = treeDisplay.fixedDepthScale;
@@ -1440,9 +1448,20 @@ public class NodeLocsStandard extends NodeLocsVH {
 			calcTerminalLocsPushHiddenInCollapsed(treeDrawing, tree, root, treeDisplay.getOrientation());
 			calcInternalLocsPushHiddenInCollapsed(treeDrawing, tree, root);
 			treeDisplay.scaling=treeDisplay.nodeLocsParameters[scaling];
+			if (extraDepthAtRootRequested>0){
+				int scaled = (int)(extraDepthAtRootRequested*treeDisplay.nodeLocsParameters[scaling]);
+				if (treeDisplay.getOrientation()==TreeDisplay.UP)
+				treeDrawing.translateAll(0, -scaled);
+				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN)
+				treeDrawing.translateAll(0, scaled);
+				else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT)
+				treeDrawing.translateAll(scaled, 0);
+				else if (treeDisplay.getOrientation()==TreeDisplay.LEFT)
+				treeDrawing.translateAll(-scaled, 0);
+			}
 			treeDrawing.translateAll(treeDisplay.effectiveFieldLeftMargin(), treeDisplay.effectiveFieldTopMargin());
+			calculateScale(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, extraDepthAtRootRequested);
 		}
-		calculateScale(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay);
 	}
 	private void drawString(Graphics g, String s, double x, double y){
 		if (g == null || StringUtil.blank(s))
@@ -1455,12 +1474,38 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 	}
 	/*.................................................................................................................*/
-	public void calculateScale(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay) {
+	//returned are startingX, starting Y, ending X, ending Y, starting scale value, ending scale value
+	public void calculateScale(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, double extraDepthAtRootRequested) {
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
-		int buffer = treeDisplay.getTaxonSpacing();
+		int buffer = treeDisplay.getTaxonSpacing()/2;
 		double[] scaleValues = null;
 		//Debugg.println CHECK FIXED SCALING
 		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
+			double yBase = (totalScaleHeight-totalTreeHeight+extraDepthAtRootRequested)*scaling +treeDisplay.getTreeDrawing().y[drawnRoot];
+			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;
+			scaleValues = new double[]{xPos, yBase- (totalScaleHeight*scaling), xPos,yBase, 0, totalScaleHeight};
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN) {
+			double yBase = treeDrawing.y[drawnRoot] - extraDepthAtRootRequested*scaling;
+			if (fixedScale)
+				yBase += (totalTreeHeight - fixedDepth)*scaling;
+			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)]+ buffer;
+			scaleValues = new double[]{xPos, yBase+ (totalScaleHeight*scaling), xPos,yBase, 0, totalScaleHeight};
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
+			double yPos = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)]+ buffer;
+			//if fixed then base is centered on root!
+			double xBase = (totalScaleHeight-totalTreeHeight +extraDepthAtRootRequested)*scaling +treeDisplay.getTreeDrawing().x[drawnRoot];
+			scaleValues = new double[]{xBase- (totalScaleHeight*scaling), yPos, xBase,yPos, 0, totalScaleHeight};
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
+			double yPos = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;
+			double xBase = treeDrawing.x[drawnRoot] - extraDepthAtRootRequested*scaling;
+			if (fixedScale)
+				xBase += (totalTreeHeight - fixedDepth)*scaling;
+			scaleValues = new double[]{xBase+ (totalScaleHeight*scaling), yPos, xBase,yPos, 0, totalScaleHeight};
+		}
+/*		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 			double yBase = (totalScaleHeight-totalTreeHeight)*scaling +treeDisplay.getTreeDrawing().y[drawnRoot];
 			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;
 			scaleValues = new double[]{xPos, yBase- (totalScaleHeight*scaling), xPos,yBase, 0, totalScaleHeight};
@@ -1484,7 +1529,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			if (fixedScale)
 				xBase += (totalTreeHeight - fixedDepth)*scaling;
 			scaleValues = new double[]{xBase+ (totalScaleHeight*scaling), yPos, xBase,yPos, 0, totalScaleHeight};
-		}
+		}*/
 		if (scaleValues != null)
 			treeDisplay.setScale(scaleValues);
 	}
@@ -1505,6 +1550,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			GraphicsUtil.drawLine(g,treeDisplay.getScale()[0], treeDisplay.getScale()[1], treeDisplay.getScale()[2], treeDisplay.getScale()[3]);
 			g.fillOval((int)(treeDisplay.getScale()[0]-si), (int)(treeDisplay.getScale()[1]-si), si*2, si*2);
 		}
+		
 		Color smallTickColor = Color.lightGray;
 		Color bigTickColor = Color.darkGray;
 
@@ -1665,24 +1711,26 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 		return null;
 	}
 
-	//left, top, right, bottom
-	public int[] getRequestedExtraBordersPixels(Tree tree, TreeDrawing treeDrawing){
+	TreeDisplayRequests blank = new TreeDisplayRequests();
+	/*.................................................................................................................*/
+	/* The TreeDisplayRequests object has public int fields leftBorder, topBorder, rightBorder, bottomBorder (in pixels and in screen orientation)
+	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
+	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
 		if (treeDisplay.getOrientation() == TreeDisplay.UP){
-			return new int[]{NodeLocsStandard.minPortBorder, NodeLocsStandard.minTipwardBorder, NodeLocsStandard.minStarboardBorder, NodeLocsStandard.minRootwardBorder};
+			return new TreeDisplayRequests(NodeLocsStandard.minPortBorder, NodeLocsStandard.minTipwardBorder, NodeLocsStandard.minStarboardBorder, NodeLocsStandard.minRootwardBorder, 2.5);
 		}
 		else if (treeDisplay.getOrientation() == TreeDisplay.DOWN){
-			return new int[]{NodeLocsStandard.minStarboardBorder, NodeLocsStandard.minRootwardBorder, NodeLocsStandard.minPortBorder, NodeLocsStandard.minTipwardBorder};
+			return new TreeDisplayRequests(NodeLocsStandard.minStarboardBorder, NodeLocsStandard.minRootwardBorder, NodeLocsStandard.minPortBorder, NodeLocsStandard.minTipwardBorder, 2.5);
 		}
 		else if (treeDisplay.getOrientation() == TreeDisplay.RIGHT){
-			return new int[]{NodeLocsStandard.minRootwardBorder, NodeLocsStandard.minPortBorder, NodeLocsStandard.minTipwardBorder, NodeLocsStandard.minStarboardBorder};
+			return new TreeDisplayRequests(NodeLocsStandard.minRootwardBorder, NodeLocsStandard.minPortBorder, NodeLocsStandard.minTipwardBorder, NodeLocsStandard.minStarboardBorder, 2.5);
 		}
 		else if (treeDisplay.getOrientation() == TreeDisplay.LEFT){
-			return new int[]{NodeLocsStandard.minTipwardBorder, NodeLocsStandard.minStarboardBorder, NodeLocsStandard.minRootwardBorder, NodeLocsStandard.minPortBorder};
+			return new TreeDisplayRequests(NodeLocsStandard.minTipwardBorder, NodeLocsStandard.minStarboardBorder, NodeLocsStandard.minRootwardBorder, NodeLocsStandard.minPortBorder, 2.5);
 		}
-		return new int[]{0, 0, 0, 0};
-		//	return null;
+		return new TreeDisplayRequests();
 	}
-	//		return new int[]{50, 100, 30, 80};
+
 	void drawTranslatedRect(Graphics g, int x, int y, int w, int h, Color c){
 		g.setColor(c);
 		int offX = treeDisplay.effectiveFieldLeftMargin();

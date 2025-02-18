@@ -65,13 +65,12 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	public void setPlacement(int placement){
 		this.placement = placement;
 	}
-	public int[] getRequestedExtraBordersPixels(Tree tree, TreeDrawing treeDrawing){ //must return null or int[4], left, top, right, bottom
-		return null;
-	}
-	public double[] getRequestedExtraBordersBranchLengths(Tree tree, TreeDrawing treeDrawing){ //must return null or double[4], left, top, right, bottom
-		return null;
-	}
 	
+	/* The TreeDisplayRequests object has public int fields leftBorder, topBorder, rightBorder, bottomBorder (in pixels and in screen orientation)
+	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
+	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
+		return null;
+	}
 
 	public TreeDisplay getTreeDisplay(){
 		return treeDisplay;

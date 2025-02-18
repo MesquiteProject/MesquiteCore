@@ -329,24 +329,29 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		return getField().height-effectiveFieldTopMargin()-effectiveFieldBottomMargin();
 	}
 	public int effectiveFieldLeftMargin(){
-		if (bordersPixelsRequestedByExtras ==null)
+		if (bordersRequestedByExtras ==null)
 			return 0;
-		return bordersPixelsRequestedByExtras[0];
+		return bordersRequestedByExtras.leftBorder;
 	}
 	public int effectiveFieldRightMargin(){
-		if (bordersPixelsRequestedByExtras ==null)
+		if (bordersRequestedByExtras ==null)
 			return 0;
-		return bordersPixelsRequestedByExtras[2];
+		return bordersRequestedByExtras.rightBorder;
 	}
 	public int effectiveFieldTopMargin(){
-		if (bordersPixelsRequestedByExtras ==null)
+		if (bordersRequestedByExtras ==null)
 			return 0;
-		return bordersPixelsRequestedByExtras[1];
+		return bordersRequestedByExtras.topBorder;
 	}
 	public int effectiveFieldBottomMargin(){
-		if (bordersPixelsRequestedByExtras ==null)
+		if (bordersRequestedByExtras ==null)
 			return 0;
-		return bordersPixelsRequestedByExtras[3];
+		return bordersRequestedByExtras.bottomBorder;
+	}
+	public double extraRequestedDepthAtRoot(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras.extraDepthAtRoot;
 	}
 	public void setTipsMargin(int margin) {
 		tipsMargin = margin;
@@ -416,10 +421,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		if (extras != null){
 			extras.addElement(extra, false);
 			if (tree != null){
-				int[] rect = getRequestedBordersPixels();
-				accumulateBordersFromExtras(tree);
-				int[] rect2 = getRequestedBordersPixels();
-				if (!rectsEqual(rect, rect2))
+				TreeDisplayRequests before = getExtraTreeDisplayRequests();
+				accumulateRequestsFromExtras(tree);
+				TreeDisplayRequests after = getExtraTreeDisplayRequests();
+				if (!TreeDisplayRequests.equal(before, after))
 					redoCalculationsMainThread();
 			}
 	}
@@ -428,10 +433,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	 if (extras != null){
 			extras.removeElement(extra, false);
 			if (tree != null){
-				int[] rect = getRequestedBordersPixels();
-				accumulateBordersFromExtras(tree);
-				int[] rect2 = getRequestedBordersPixels();
-				if (!rectsEqual(rect, rect2))
+				TreeDisplayRequests before = getExtraTreeDisplayRequests();
+				accumulateRequestsFromExtras(tree);
+				TreeDisplayRequests after = getExtraTreeDisplayRequests();
+				if (!TreeDisplayRequests.equal(before, after))
 					redoCalculationsMainThread();
 			}
 		}
@@ -501,75 +506,42 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					return;
 				ex.setTree(tree);
 			}
-			accumulateBordersFromExtras(tree);
+			accumulateRequestsFromExtras(tree);
 		}
 	}
 
-	double[] zeroBordersBranchLengths = new double[]{0, 0, 0, 0};  //left top right bottom
-	double[] bordersBranchLengthsRequestedByExtras = new double[]{0, 0, 0, 0};  //left top right bottom
-	public double[] getRequestedBordersBranchLengths(){
-		return bordersBranchLengthsRequestedByExtras;
-	}
 	
-	int[] zeroBordersPixels = new int[]{0, 0, 0, 0};  //left top right bottom
-	int[] bordersPixelsRequestedByExtras = new int[]{0, 0, 0, 0};  //left top right bottom
-	public int[] getRequestedBordersPixels(){
-		return bordersPixelsRequestedByExtras;
+	TreeDisplayRequests bordersRequestedByExtras = new TreeDisplayRequests();  //left top right bottom
+	public TreeDisplayRequests getExtraTreeDisplayRequests(){
+		return bordersRequestedByExtras;
 	}
-	public void accumulateBordersFromExtras(Tree tree) {
-		int[] bordersPixelsTemp = getBordersPixelsFromExtras(tree);
-		if (bordersPixelsTemp != null && bordersPixelsTemp.length == 4)
-			bordersPixelsRequestedByExtras = bordersPixelsTemp;
-		double[] bordersBranchLengthsTemp = getBordersBranchLengthsFromExtras(tree);
-		if (bordersBranchLengthsTemp != null && bordersBranchLengthsTemp.length == 4)
-			bordersBranchLengthsRequestedByExtras = bordersBranchLengthsTemp;
+	public void accumulateRequestsFromExtras(Tree tree) {
+		TreeDisplayRequests bordersPixelsTemp = getRequestsFromExtras(tree);
+		if (bordersPixelsTemp != null)
+			bordersRequestedByExtras = bordersPixelsTemp;
 	}
-	int[] getBordersPixelsFromExtras(Tree tree) {
+	TreeDisplayRequests getRequestsFromExtras(Tree tree) {
 		if (tree == null || tree.getTaxa().isDoomed())
-			return zeroBordersPixels;
+			return null;
 		if (extras != null) {
-			int[] overallBorder = new int[]{0, 0, 0, 0};
+			TreeDisplayRequests overallBorder = new TreeDisplayRequests();
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
 				if (ownerModule==null || ownerModule.isDoomed()) 
-					return zeroBordersPixels;
-				int[] borderRequest = ex.getRequestedExtraBordersPixels(tree, treeDrawing);
-				if (borderRequest != null && borderRequest.length == 4){
-					for (int i=0;i<4; i++)
-						if (borderRequest[i]>overallBorder[i])
-							overallBorder[i] = borderRequest[i];
+					return null;
+				TreeDisplayRequests borderRequest = ex.getRequestsOfTreeDisplay(tree, treeDrawing);
+				if (borderRequest != null){
+					overallBorder.mergeFrom(borderRequest);
 				}
 
 			}
 			return overallBorder;
 		}
-		return zeroBordersPixels;
+		return null;
 	}
-	double[] getBordersBranchLengthsFromExtras(Tree tree) {
-		if (tree == null || tree.getTaxa().isDoomed())
-			return zeroBordersBranchLengths;
-		if (extras != null) {
-			double[] overallBorder = new double[]{0, 0, 0, 0};
-			Enumeration e = extras.elements();
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (ownerModule==null || ownerModule.isDoomed()) 
-					return zeroBordersBranchLengths;
-				double[] borderRequest = ex.getRequestedExtraBordersBranchLengths(tree, treeDrawing);
-				if (borderRequest != null && borderRequest.length == 4){
-					for (int i=0;i<4; i++)
-						if (borderRequest[i]>overallBorder[i])
-							overallBorder[i] = borderRequest[i];
-				}
 
-			}
-			return overallBorder;
-		}
-		return zeroBordersBranchLengths;
-	}
 	public void drawAllBackgroundExtrasOfPlacement(Tree tree, int drawnRoot, Graphics g, int placement) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;

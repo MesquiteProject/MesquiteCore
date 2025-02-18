@@ -51,6 +51,7 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayEarlyExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeDisplayLateExtra;
+import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.AlertDialog;
@@ -676,7 +677,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 	}
 
 	void changeInShowing(){
-		treeDisplay.accumulateBordersFromExtras(myTree);
+		treeDisplay.accumulateRequestsFromExtras(myTree);
 		treeDisplay.redoCalculations(319283);
 	}
 	/*.................................................................................................................*/
@@ -880,14 +881,11 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		return null;
 	}
 
-	//must return null or int[4], left, top, right, bottom
-	int[] blank = new int[]{0, 0, 0, 0};
-/*	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){ 
-		return new int[]{100, 40, 130, 60};
-	} 
-	*/
-	public int[] getRequestedExtraBordersPixels(Tree tree, TreeDrawing treeDrawing){ 
-
+	TreeDisplayRequests blank = new TreeDisplayRequests();
+	/*.................................................................................................................*/
+	/* The TreeDisplayRequests object has public int fields leftBorder, topBorder, rightBorder, bottomBorder (in pixels and in screen orientation)
+	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
+	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
 		if (treeDisplay.getOrientation() != TreeDisplay.LEFT && treeDisplay.getOrientation() != TreeDisplay.RIGHT)
 			return blank;
 		String[] stringsAtRoot = stringsAtNode((MesquiteTree)tree, tree.getRoot(), false, false, null, 1);
@@ -908,10 +906,12 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		}
 		else 
 			width = longest.length()*4;
+		TreeDisplayRequests requests = new TreeDisplayRequests();
 		if (treeDisplay.getOrientation() == TreeDisplay.LEFT)
-			return new int[]{0, 0, width, 0};
+			requests.rightBorder = width;
 		else
-			return new int[]{width, 0, 0, 0};
+			requests.leftBorder = width;
+		return requests;
 	}
 	/*.................................................................................................................*/
 	void myDraw(MesquiteTree tree, int node, Graphics g) {

@@ -298,7 +298,7 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 				TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplays[0]);
 				tce.setTree(treeDisplays[0].getTree());
 			treeDisplays[0].addExtra(tce);
-			treeDisplays[0].accumulateBordersFromExtras(treeDisplays[0].getTree());
+			treeDisplays[0].accumulateRequestsFromExtras(treeDisplays[0].getTree());
 				treeDisplays[0].repaint();
 				return tda;
 			}
@@ -311,7 +311,7 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 				TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplays[1]);
 				tce.setTree(treeDisplays[1].getTree());
 				treeDisplays[1].addExtra(tce);
-				treeDisplays[1].accumulateBordersFromExtras(treeDisplays[1].getTree());
+				treeDisplays[1].accumulateRequestsFromExtras(treeDisplays[1].getTree());
 				treeDisplays[1].repaint();
 				return tda;
 			}

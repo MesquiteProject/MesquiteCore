@@ -21,6 +21,7 @@ import java.awt.geom.Rectangle2D;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.DiagonalRootDrawer;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
@@ -30,7 +31,7 @@ import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Draws trees in a basic diagonal-branch style.  See SquareTree and others in mesquite.basic and mesquite.ornamental. */
-public class DiagonalDrawTree extends DrawTree {
+public class DiagonalDrawTree extends DrawTree implements DiagonalRootDrawer {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NodeLocsVH.class, getName() + "  needs the locations of nodes to be calculated.",
 		"The calculator for node locations is chosen automatically or initially");

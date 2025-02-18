@@ -28,6 +28,7 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayBkgdExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
@@ -235,9 +236,13 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		startXValue = MesquiteDouble.unassigned;
 	}
 	/*.................................................................................................................*/
-	//in graphics units/pixels; must return null or int[4], left, top, right, bottom
-	public int[] getRequestedExtraBordersPixels(Tree tree, TreeDrawing treeDrawing){ 
-		return new int[]{80, 0, 0, 100};
+	/* The TreeDisplayRequests object has public int fields leftBorder, topBorder, rightBorder, bottomBorder (in pixels and in screen orientation)
+	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
+	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
+		TreeDisplayRequests requests = new TreeDisplayRequests();
+		requests.bottomBorder = 100;
+		requests.extraDepthAtRoot = 50.0;
+		return requests;
 	}
 /*.................................................................................................................*/
 	

@@ -430,7 +430,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 					TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplays[itree]);
 					tce.setTree(treeDisplays[itree].getTree());
 					treeDisplays[itree].addExtra(tce);
-					treeDisplays[itree].accumulateBordersFromExtras(treeDisplays[itree].getTree());
+					treeDisplays[itree].accumulateRequestsFromExtras(treeDisplays[itree].getTree());
 					treeDisplays[itree].repaint();
 				}
 				contentsChanged();
