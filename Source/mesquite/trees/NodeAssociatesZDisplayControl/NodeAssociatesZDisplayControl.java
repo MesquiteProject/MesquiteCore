@@ -284,10 +284,14 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			PropertyDisplayRecord property = (PropertyDisplayRecord)queryPropertiesList[i];
 			String before = "";
 			if (property.showing)
-				before =  "✓\t"; 
+				before =  "✓ "; 
 			else
-				before =   "  \t"; 
-			String after = "        [";
+				before =   "  "; 
+			String propertyName = ((MesquiteString)queryNamesArray[i]).getValue();
+			String spacer = "   ";
+			if (propertyName.length()<22)
+				spacer = "                         ".substring(0, 22-propertyName.length());
+			String after = spacer + "[";
 			if (property.showName)
 				after += "Name, ";
 			if (property.centered)
@@ -312,7 +316,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			}
 			after = StringUtil.stripTrailingWhitespaceAndPunctuation(after);
 			after += "]";
-			((MesquiteString)queryNamesArray[i]).setName(before + ((MesquiteString)queryNamesArray[i]).getValue() + after);
+			((MesquiteString)queryNamesArray[i]).setName(before + propertyName + after);
 		}
 		dialog.resetList(queryNamesArray, true);
 
@@ -334,11 +338,14 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			queryNamesArray[i] = new MesquiteString(queryPropertiesList[i].getName());
 
 		String helpString = "xxxx";  //add here notes on threashold
-		dialog = new ListDialog(containerOfModule(), "Branch/Node Properties", "What properties to show and how to show them?", false,helpString, queryNamesArray, 8, null, null, null, false, true);
+		dialog = new ListDialog(containerOfModule(), "Branch/Node Properties", "What properties to show and their styles?", false,helpString, queryNamesArray, 8, null, null, null, false, true);
 		rePrefaceList();
-		dialog.getList().setMultipleMode(true);
-		dialog.getList().addItemListener(this);
-		dialog.getList().setMinimumWidth(600);
+		DoubleClickList list = dialog.getList();
+		list.setMultipleMode(true);
+		list.addItemListener(this);
+		list.setMinimumWidth(650);
+
+		list.setFont(new Font( "Monospaced", Font.PLAIN, 14 ));
 		selectOrHide = dialog.addButtonRow("✓ Show Selected", "Hide Selected", null, this);
 		selectOrHide[0].setActionCommand("showSelected");
 		selectOrHide[1].setActionCommand("hideSelected");

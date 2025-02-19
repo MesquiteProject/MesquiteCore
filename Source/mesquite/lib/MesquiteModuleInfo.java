@@ -438,6 +438,10 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
  			return c;
  		}
    	}
+	/** returns whether this module requested a primary choice */
+	public boolean primaryChoiceRequested(){
+		return isPrimaryChoice;
+	}
 	/** returns whether this module is one of the primary that appears in first-level choices */
    	public boolean isPrimary(Class dutyClass){
 		if (isPrimaryChoice)

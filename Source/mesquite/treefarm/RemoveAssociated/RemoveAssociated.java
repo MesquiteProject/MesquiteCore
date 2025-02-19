@@ -18,9 +18,15 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
+import mesquite.lib.tree.PropertyRecord;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class RemoveAssociated extends TreeAltererMult {
+	Listable[] toRemove = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -37,7 +43,33 @@ public class RemoveAssociated extends TreeAltererMult {
 	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
 		if (tree instanceof Associable) {
-			((Associable)tree).deassignAssociated();
+			MesquiteTree mTree = (MesquiteTree)tree;
+			if (!MesquiteThread.isScripting() && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")){
+				PropertyDisplayRecord[] properties = mTree.getPropertyRecords();
+				if (properties == null || properties.length == 0)
+					return false;
+				ListableVector lv = new ListableVector();
+				for (int i=0; i<properties.length; i++)
+					lv.addElement(properties[i], false);
+				toRemove = ListDialog.queryListMultiple(containerOfModule(), "Which Properties to remove?", "Which properties to remove from the branches/nodes?", null, lv, null);
+				if (toRemove == null)
+					return false;
+			}
+			if (toRemove != null && toRemove.length>0){
+				for (int i=0; i<toRemove.length; i++){
+					PropertyRecord pr = (PropertyRecord)toRemove[i];
+					if (pr.kind == Associable.BITS)
+						mTree.removeAssociatedBits(pr.getNameReference());
+					else if (pr.kind == Associable.LONGS)
+						mTree.removeAssociatedLongs(pr.getNameReference());
+					if (pr.kind == Associable.DOUBLES)
+						mTree.removeAssociatedDoubles(pr.getNameReference());
+					if (pr.kind == Associable.STRINGS)
+						mTree.removeAssociatedStrings(pr.getNameReference());
+					if (pr.kind == Associable.OBJECTS)
+						mTree.removeAssociatedObjects(pr.getNameReference());
+				}
+			}
 			if (notify && tree instanceof Listened) ((Listened)tree).notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		} //Debugg.println( allow choices of what
 		return true;
@@ -48,12 +80,12 @@ public class RemoveAssociated extends TreeAltererMult {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Remove Associated Info at Nodes";
+		return "Remove Properties of Branches/Nodes";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Deletes associated information from all nodes." ;
+		return "Deletes properties (associated information) from all branches/nodes." ;
 	}
 }
 

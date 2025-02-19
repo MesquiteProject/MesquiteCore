@@ -740,8 +740,10 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 
 	Color tC;
-	public boolean branchIsVisible(int node){
+	public boolean branchIsVisible(Tree tree, int node){
 		try {
+			if (!tree.isVisibleEvenIfInCollapsed(node))
+				return false;
 			if (node >=0 && node <  branchPoly.length)
 				return treeDisplay.getVisRect() == null || branchPoly[node].intersects(treeDisplay.getVisRect());
 		}
@@ -751,11 +753,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawBranches(Tree tree, Graphics g, int node) {
-		if (tree.withinCollapsedClade(node))
-			return;
 		if (tree.nodeExists(node)) {
 			//g.setColor(Color.black);//for testing
-			boolean draw = branchIsVisible(node);
+			boolean draw = branchIsVisible(tree, node);
 			if (draw){
 				g.setColor(treeDisplay.getBranchColor(node));
 			if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node]!=null) {
@@ -939,7 +939,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node) && branchIsVisible(node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && branchIsVisible(tree, node)) {
 			int numColors = colors.getNumColors();
 			if (isUP()) {
 				for (int i=0; i<numColors; i++) {
@@ -982,7 +982,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
-		if (fillBranchPoly[node] !=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node) && branchIsVisible(node)) {
+		if (fillBranchPoly[node] !=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && branchIsVisible(tree, node)) {
 			GraphicsUtil.fill(g,fillBranchPoly[node]);
 		}
 	}
@@ -1032,7 +1032,6 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 						}
 					}
 			}
-			if (!tree.isCollapsedClade(node)) 
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, polys, d, x, y, fraction);
 

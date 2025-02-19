@@ -32,7 +32,7 @@ public class SetToLadderized extends TreeAltererMult {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 	/*.................................................................................................................*/
 	public  boolean  transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){

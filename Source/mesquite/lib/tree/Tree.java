@@ -144,6 +144,7 @@ public interface Tree extends Listable {
 	public boolean withinCollapsedClade(int node);
 	public int shallowestCollapsedAncestor(int node);
 	public int deepestCollapsedAncestor(int node);
+	public boolean isDeepestCollapsedAncestor(int node);
 	public boolean isLeftmostTerminalOfCollapsedClade(int node);
 	public boolean isVisibleEvenIfInCollapsed(int node);
 	

@@ -13,20 +13,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-
-
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.tree.TreeDisplay;
 
 /* ======================================================================== */
-/** This abstract class is for modules that are TreeDisplayAssistants that are INITS.  Used by Basic Tree Window for tool modules.
- * Note: this should be renamed since these permit editing of the tree and thus are not for any tree display. TreeDisplayAssistantDEI*/
-public abstract class TreeDisplayAssistantI extends TreeDisplayAssistant  {
+/** This abstract class is for modules that are hired automatically by BasicTreeDrawCoordinator*/
+public abstract class TreeDrawAssistantI extends MesquiteModule {
 	
    	 public Class getDutyClass() {
-   	 	return TreeDisplayAssistantI.class;
+   	 	return TreeDrawAssistantI.class;
    	 }
  	public String getDutyName() {
- 		return "INIT Assistant for Tree Display";
+ 		return "INIT Assistant for Tree Drawer";
    	 }
+ 	
+ 	public void treeDisplayCreated(TreeDisplay treeDisplay){
+ 	}
 
 }
 

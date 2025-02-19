@@ -259,7 +259,7 @@ public class ConsensusTree extends TreeSource {
 	/*.................................................................................................................*/
 	public String getName() {
 		if (consenser != null && treeSource != null)
-			return consenser.getName() + " from " + treeSource.getParameters();
+			return consenser.getName() + " from " + treeSource.getName();
 		return "Consensus Tree";
 	}
 	/*.................................................................................................................*/

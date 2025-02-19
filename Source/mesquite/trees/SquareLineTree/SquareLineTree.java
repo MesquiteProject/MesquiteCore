@@ -390,7 +390,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		g.setColor(tC);
 	}
 
-	boolean branchVisible(Tree tree, int node){
+/*	boolean branchVisible(Tree tree, int node){
 		if (!tree.getRooted() && tree.getRoot()==node)
 			return false;
 		if (tree.withinCollapsedClade(node)){
@@ -404,7 +404,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	private   void drawClade(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
-			if (branchVisible(tree, node)) {
+			if (tree.isVisibleEvenIfInCollapsed(node)) {
 				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, getEdgeWidth(), tree, g, null, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), defaultStroke);
 					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, getEdgeWidth(), tree, g, null, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), dashedStroke);

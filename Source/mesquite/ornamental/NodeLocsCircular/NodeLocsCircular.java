@@ -16,6 +16,7 @@ package mesquite.ornamental.NodeLocsCircular;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 
 import mesquite.lib.*;
@@ -53,6 +54,8 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	int emptyRootSlices;
 	int oldNumTaxa=0;
 	private MesquiteMenuItemSpec showScaleItem;
+	double zoomFactorMultiplier = 1.25;
+	double zoomFactor = 1.0;
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		showBranchLengths = new MesquiteBoolean(false);
@@ -60,6 +63,10 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		showScale = new MesquiteBoolean(true);
 		addMenuItem("Fraction of Circle...", makeCommand("circleFraction", this));
 		addMenuItem("Start of Circle...", makeCommand("circleStart", this));
+		MesquiteMenuItemSpec mmis = addMenuItem("Zoom In", makeCommand("zoomIn", this));
+		mmis.setShortcut(KeyEvent.VK_CLOSE_BRACKET);
+		mmis = addMenuItem("Zoom Out", makeCommand("zoomOut", this));
+		mmis.setShortcut(KeyEvent.VK_OPEN_BRACKET); 
 		addCheckMenuItem(null, "Branches Proportional to Lengths", makeCommand("branchLengthsToggle", this), showBranchLengths);
 		if (showBranchLengths.getValue()) {
 			showScaleItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
@@ -91,6 +98,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		Snapshot temp = new Snapshot();
 		temp.addLine("branchLengthsToggle " + showBranchLengths.toOffOnString());
 		temp.addLine("toggleScale " + showScale.toOffOnString());
+		temp.addLine("setZoom " + MesquiteDouble.toString(zoomFactor));
 		return temp;
 	}
 	/*.................................................................................................................*/
@@ -107,6 +115,22 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to draw the scale for branch lengths", "[on or off]", commandName, "toggleScale")) {
 			showScale.toggleValue(parser.getFirstToken(arguments));
+			parametersChanged();
+		}
+
+		else if (checker.compare(this.getClass(), "Zooms in (magnifies)", "[]", commandName, "zoomIn")) {
+			zoomFactor *= zoomFactorMultiplier;
+			if (!MesquiteThread.isScripting())
+				parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Zooms out (shrinks)", "[]", commandName, "zoomOut")) {
+			zoomFactor /= zoomFactorMultiplier;
+			if (!MesquiteThread.isScripting())
+			parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Sets zoom factor", "[double]", commandName, "setZoom")) {
+			zoomFactor = MesquiteDouble.fromString(arguments);
+			if (!MesquiteThread.isScripting())
 			parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets the fraction of the circle covered by the tree", "[number between 0 and 1]", commandName, "circleFraction")) {
@@ -235,11 +259,26 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	}
 
 	/*------============= for collapsed clades =============-------*/
+	/*_________________________________________________*/
+	private double highestPolarLength(int N) {
+		if (tree.nodeIsInternal(N)) { //internal
+			double highestInClade = MesquiteDouble.unassigned;
+			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+				double highestInSubclade = highestPolarLength(d);
+				highestInClade = MesquiteDouble.maximum(highestInSubclade, highestInClade);
+			}
+			return highestInClade;
+		}
+		return polarLength[N];
+	}
 
 	private void pushedCollapsed (int node){		//{tree traversal to find locations}
 		if (tree.withinCollapsedClade(node)) {
 			angle[node] = angle[tree.deepestCollapsedAncestor(node)];
-			if (tree.nodeIsInternal(node) || !tree.isLeftmostTerminalOfCollapsedClade(node)){
+			if (tree.isLeftmostTerminalOfCollapsedClade(node)){
+				polarLength[node]  = highestPolarLength(tree.deepestCollapsedAncestor(node));
+			}
+			else {//if (tree.nodeIsInternal(node) || !tree.isLeftmostTerminalOfCollapsedClade(node)){
 				polarLength[node]  = polarLength[tree.deepestCollapsedAncestor(node)];
 			}
 		}
@@ -270,6 +309,16 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	}
 	//	{-----------------------------------------------------------------------------}
 	//	{-----------------------------------------------------------------------------}
+	private void zoom (int node){		//{tree traversal to find locations}
+		if (zoomFactor == 1.0)
+			return;
+		polarLength[node]  = polarLength[node]*zoomFactor;
+
+		if (tree.nodeIsInternal(node)) {
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				zoom(d);
+		}
+	}
 	private void calcInternalNodeLocs (int node){
 		if (tree.nodeIsInternal(node)){
 			double min = MesquiteDouble.unassigned;
@@ -401,7 +450,17 @@ public class NodeLocsCircular extends NodeLocsCircle {
 				radius=(treeRectangle.height) * 3 / 8;
 			circleSlice = radius / (mostNodesToTip(drawnRoot) + emptyRootSlices);  //{v4: have it based upon an ellipse}
 
-			treeCenter.setLocation(treeRectangle.width / 2,treeRectangle.height / 2);
+			int centreX, centreY;
+			if (treeDisplay.getWidth()>treeRectangle.width)
+				centreX = treeDisplay.getWidth()/2;
+			else
+				centreX = treeRectangle.width / 2;
+			if (treeDisplay.getHeight()>treeRectangle.height)
+				centreY = treeDisplay.getHeight()/2;
+			else
+				centreY = treeRectangle.height / 2;
+			treeCenter.setLocation(centreX, centreY);
+
 			//			centerx = treeCenter.x;
 			//			centery = treeCenter.y;
 			location[drawnRoot].setLocation(treeCenter.getX(), treeCenter.getY());
@@ -412,10 +471,12 @@ public class NodeLocsCircular extends NodeLocsCircle {
 			calcInternalNodeLocs (drawnRoot);
 			if (showBranchLengths.getValue()) {
 				adjustForLengths(drawnRoot);
-				//if (showScale.getValue())
-				//	drawGrid(g, tree.tallestPathAboveNode(drawnRoot, 1.0), scaling, treeCenter);
 			}
 			pushedCollapsed(drawnRoot);
+			zoom(drawnRoot);
+			if (showBranchLengths.getValue()) {
+				scaling *= zoomFactor;
+			}
 			polarsToLocs(drawnRoot);
 			for (int i=0; i<numNodes && i<treeDrawing.y.length; i++) {
 				treeDrawing.y[i] = location[i].getY();
@@ -434,10 +495,10 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		double thisHeight = totalHeight + hundredthHeight;
 		while ( thisHeight>=0) {
 			if (countTenths % 10 == 0)
-				g.setColor(Color.blue);
+				g.setColor(Color.darkGray);
 			else
-				g.setColor(Color.cyan);
-			g.setColor(Color.red);
+				g.setColor(Color.lightGray);
+
 			thisHeight -= hundredthHeight;
 			GraphicsUtil.drawOval(g,treeCenter.getX()- (int)(thisHeight*scaling) - rootHeight,treeCenter.getY()- (int)(thisHeight*scaling) - rootHeight, 2*((int)(thisHeight*scaling) + rootHeight),  2*((int)(thisHeight*scaling) + rootHeight));
 			//if (countTenths % 10 == 0)
@@ -475,21 +536,32 @@ class NodeLocsCircularExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		drawUnderTree(tree, drawnRoot, g);
 	}
 	/*.................................................................................................................*/
+	boolean showNodes = false; 
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
-		//Debugg.println("@draw " + node);
-		if (tree.withinCollapsedClade(node)) {
-			if (tree.isLeftmostTerminalOfCollapsedClade(node))
-				g.setColor(Color.blue);
+		if (showNodes){
+			if (tree.withinCollapsedClade(node)) {
+				if (tree.isLeftmostTerminalOfCollapsedClade(node))
+					g.setColor(Color.blue);
+				else if (tree.nodeIsTerminal(node))
+					g.setColor(Color.red);
+				else
+					g.setColor(Color.yellow);
+			}
 			else if (tree.nodeIsTerminal(node))
-				g.setColor(Color.red);
+				g.setColor(Color.green);
 			else
-				g.setColor(Color.yellow);
+				g.setColor(Color.cyan);
+			g.fillOval((int)treeDisplay.getTreeDrawing().x[node], (int)treeDisplay.getTreeDrawing().y[node], 5, 5);
+			if (node == tree.getRoot()){  //just once, rectangles
+				g.setColor(Color.blue);
+				g.drawRect(2, 2, treeDisplay.getField().width-2, treeDisplay.getField().height-2);
+				g.drawRect(2, 2, treeDisplay.effectiveFieldLeftMargin()-2, treeDisplay.effectiveFieldTopMargin()-2);
+				g.setColor(Color.red);
+				g.drawRect(treeDisplay.getField().width - treeDisplay.effectiveFieldRightMargin(), treeDisplay.getField().height - treeDisplay.effectiveFieldBottomMargin(), treeDisplay.effectiveFieldRightMargin()-2, treeDisplay.effectiveFieldBottomMargin()-2);
+				g.setColor(Color.lightGray);
+				g.fillOval((int)locsModule.treeCenter.getX(), (int)locsModule.treeCenter.getY(), 20, 20);
+			}
 		}
-		else if (tree.nodeIsTerminal(node))
-			g.setColor(Color.green);
-		else
-			g.setColor(Color.cyan);
-		g.fillOval((int)treeDisplay.getTreeDrawing().x[node], (int)treeDisplay.getTreeDrawing().y[node], 5, 5);
 
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawOnTree(tree, d, g);

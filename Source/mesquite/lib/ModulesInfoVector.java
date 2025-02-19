@@ -558,6 +558,8 @@ public class ModulesInfoVector extends ListableVector {
 		boolean defaultsExist = false;
 		int num = size();
 		MesquiteModuleInfo mbi;
+
+		//DEFAULT MODULES
 		//first, check to see if there are any more defaults that could be chosen
 		String[] defaultModules =getDutyDefaults(dutyClass); 
 		if (defaultModules!=null &&  defaultModules.length>=1) { //check if there is a subsequent default
@@ -585,9 +587,29 @@ public class ModulesInfoVector extends ListableVector {
 		}
 		else
 			defaultsExist = false;
-
-		for (int i=0; i<num; i++){ //next, go through non-defaults
+		
+		//PRIMARY CHOICES
+		for (int i=0; i<num; i++){ //next, go through non-defaults, but starting with the primary choices
 			mbi = (MesquiteModuleInfo)elementAt(i); //If there are defaults, don't choose if is default (otherwise defaults will be chosen more than once
+			if (mbi.primaryChoiceRequested()){
+				if (chooseNext) {
+				if (mbi.doesDuty(dutyClass) && !mbi.doesADuty(notDutyClasses)){
+					if ((!defaultsExist || whichDefault(defaultModules, mbi)<0)  && mbi.isCompatible(condition, project, prospectiveEmployer)) { //&& mbi.getUserChooseable()
+						return mbi;
+					}
+				}
+			}
+			else {
+				if (mbi.mbClass == previousModule.getModuleClass()) {
+					chooseNext = true;
+				}
+			}
+			}
+		}
+		//SECONDARY CHOICES
+		for (int i=0; i<num; i++){ //next, go through non-defaults, but starting with the primary choices
+			mbi = (MesquiteModuleInfo)elementAt(i); //If there are defaults, don't choose if is default (otherwise defaults will be chosen more than once
+			if (!mbi.primaryChoiceRequested()){
 			if (chooseNext) {
 				if (mbi.doesDuty(dutyClass) && !mbi.doesADuty(notDutyClasses)){
 					if ((!defaultsExist || whichDefault(defaultModules, mbi)<0)  && mbi.isCompatible(condition, project, prospectiveEmployer)) { //&& mbi.getUserChooseable()
@@ -599,6 +621,7 @@ public class ModulesInfoVector extends ListableVector {
 				if (mbi.mbClass == previousModule.getModuleClass()) {
 					chooseNext = true;
 				}
+			}
 			}
 		}
 		return null;

@@ -48,7 +48,7 @@ public class BLFromNodeAgeConstraints extends BranchLengthsAltererMult {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 	NameReference nodeAgeConstrRef = NameReference.getNameReference("nodeAgeConstraints");
 	void getConstraint(Tree tree, int node, MesquiteDouble min, MesquiteDouble max){

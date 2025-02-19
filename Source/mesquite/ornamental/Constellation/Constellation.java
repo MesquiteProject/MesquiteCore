@@ -47,6 +47,10 @@ public class Constellation extends DrawTree {
  		addMenuItem( "Spot Size...", makeCommand("setSpotDiameter",  this));
  		return true;
  	 }
+	
+	public boolean loadModule(){
+		return false;
+	}
   	 
  	 public void employeeQuit(MesquiteModule m){
  	 	iQuit();

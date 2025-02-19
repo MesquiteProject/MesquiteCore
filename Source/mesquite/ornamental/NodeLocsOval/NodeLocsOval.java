@@ -16,6 +16,8 @@ package mesquite.ornamental.NodeLocsOval;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.tree.MesquiteTree;
@@ -54,11 +56,17 @@ public class NodeLocsOval extends NodeLocsFree {
 	public double [] polarLength;
 	/**center of circle about which tree is drawn.*/
 	public Point treeCenter;
+	double zoomFactorMultiplier = 1.25;
+	double zoomFactor = 1.0;
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		showBranchLengths = new MesquiteBoolean(false);
 		showScale = new MesquiteBoolean(true);
 		extras = new Vector();
+		MesquiteMenuItemSpec mmis = addMenuItem("Zoom In", makeCommand("zoomIn", this));
+		mmis.setShortcut(KeyEvent.VK_CLOSE_BRACKET);
+		mmis = addMenuItem("Zoom Out", makeCommand("zoomOut", this));
+		mmis.setShortcut(KeyEvent.VK_OPEN_BRACKET); 
 		addCheckMenuItem(null, "Branches Proportional to Lengths", makeCommand("branchLengthsToggle", this), showBranchLengths);
 		if (showBranchLengths.getValue()) {
 			showScaleItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
@@ -90,6 +98,7 @@ public class NodeLocsOval extends NodeLocsFree {
    	 	Snapshot temp = new Snapshot();
   	 	temp.addLine("branchLengthsToggle " + showBranchLengths.toOffOnString());
   	 	temp.addLine("toggleScale " + showScale.toOffOnString());
+		temp.addLine("setZoom " + MesquiteDouble.toString(zoomFactor));
   	 	return temp;
   	 }
 	/*.................................................................................................................*/
@@ -104,7 +113,22 @@ public class NodeLocsOval extends NodeLocsFree {
 			resetShowBranchLengths=true;
 			parametersChanged();
     	 	}
-    	 	else if (checker.compare(this.getClass(), "Sets whether or not to draw the scale for branch lengths", "[on or off]", commandName, "toggleScale")) {
+    			else if (checker.compare(this.getClass(), "Zooms in (magnifies)", "[]", commandName, "zoomIn")) {
+    				zoomFactor *= zoomFactorMultiplier;
+    				if (!MesquiteThread.isScripting())
+    					parametersChanged();
+    			}
+    			else if (checker.compare(this.getClass(), "Zooms out (shrinks)", "[]", commandName, "zoomOut")) {
+    				zoomFactor /= zoomFactorMultiplier;
+    				if (!MesquiteThread.isScripting())
+    				parametersChanged();
+    			}
+    			else if (checker.compare(this.getClass(), "Sets zoom factor", "[double]", commandName, "setZoom")) {
+    				zoomFactor = MesquiteDouble.fromString(arguments);
+    				if (!MesquiteThread.isScripting())
+    				parametersChanged();
+    			}
+   	 	else if (checker.compare(this.getClass(), "Sets whether or not to draw the scale for branch lengths", "[on or off]", commandName, "toggleScale")) {
     	 		showScale.toggleValue(parser.getFirstToken(arguments));
 			parametersChanged();
     	 	}
@@ -138,6 +162,45 @@ public class NodeLocsOval extends NodeLocsFree {
 		else
 			return tree.getBranchLength(N);
 	}
+	//	{-----------------------------------------------------------------------------}
+	private void zoom (int node){		//{tree traversal to find locations}
+		if (zoomFactor == 1.0)
+			return;
+		polarLength[node]  = polarLength[node]*zoomFactor;
+
+		if (tree.nodeIsInternal(node)) {
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				zoom(d);
+		}
+	}
+	private double highestPolarLength(int N) {
+		if (tree.nodeIsInternal(N)) { //internal
+			double highestInClade = MesquiteDouble.unassigned;
+			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+				double highestInSubclade = highestPolarLength(d);
+				highestInClade = MesquiteDouble.maximum(highestInSubclade, highestInClade);
+			}
+			return highestInClade;
+		}
+		return polarLength[N];
+	}
+	private void pushedCollapsed (int node){		//{tree traversal to find locations}
+		if (tree.withinCollapsedClade(node)) {
+			angle[node] = angle[tree.deepestCollapsedAncestor(node)];
+			if (tree.isLeftmostTerminalOfCollapsedClade(node)){
+				polarLength[node]  = highestPolarLength(tree.deepestCollapsedAncestor(node));
+			}
+			else {//if (tree.nodeIsInternal(node) || !tree.isLeftmostTerminalOfCollapsedClade(node)){
+				polarLength[node]  = polarLength[tree.deepestCollapsedAncestor(node)];
+			}
+		}
+
+		if (tree.nodeIsInternal(node)) {
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				pushedCollapsed(d);
+		}
+	}
+
 /*{-----------------------------------------------------------------------------}*/
 	int numNodes;
 	private int findTaxa (int anc, int node){
@@ -208,8 +271,10 @@ public class NodeLocsOval extends NodeLocsFree {
 //{-----------------------------------------------------------------------------}
 
 	private void termTaxaRec (int anc, int node){		//{tree traversal to find locations}
-		if (tree.nodeIsTerminal(node)) 
+		if (tree.nodeIsTerminal(node)) {
+			if (!tree.withinCollapsedClade(node) || tree.isLeftmostTerminalOfCollapsedClade(node))
 			calcterminalPosition(node);
+		}
 		else {
 			for (int d = tree.firstDaughterOfNodeUR(anc, node); tree.nodeExists(d); d = tree.nextSisterOfNodeUR(anc, node, d))
 				termTaxaRec(node, d);
@@ -222,11 +287,11 @@ public class NodeLocsOval extends NodeLocsFree {
 	}
 //{-----------------------------------------------------------------------------}
 //{-----------------------------------------------------------------------------}
-	private void calcNodeLocs (int anc, int node){
+	private void calcInternalNodeLocs (int anc, int node){
 		if (tree.nodeIsInternal(node)){
 			double min = MesquiteDouble.unassigned;
 			for (int d = tree.firstDaughterOfNodeUR(anc, node); tree.nodeExists(d); d = tree.nextSisterOfNodeUR(anc, node, d)) {
-				calcNodeLocs(node, d);
+				calcInternalNodeLocs(node, d);
 				min = MesquiteDouble.minimum(min, polarLength[d]);
 			}
 			int left = tree.firstDaughterOfNodeUR(anc, node);
@@ -250,13 +315,20 @@ public class NodeLocsOval extends NodeLocsFree {
 		if (polarLength[node] < 0)
 			polarLength[node] = 0;
 		//nodePolarToSingleLoc(polarLength[node], angle[node], sLoc[node]);
-		nodePolarToLoc(polarLength[node], angle[node], location[node]);
 		if (tree.nodeIsInternal(node)) {
 			for (int d = tree.firstDaughterOfNodeUR(anc, node); tree.nodeExists(d); d = tree.nextSisterOfNodeUR(anc, node, d))
 				adjustNodeLocsWithLengths(node, d, polarLength[node], root);
 		}
 	}
-	
+	//	{-----------------------------------------------------------------------------}
+	private void polarsToLocs (int node){
+		nodePolarToLoc(polarLength[node], angle[node], location[node]);
+		if (tree.nodeIsInternal(node)) {
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				polarsToLocs(d);
+		}
+	}
+
 //{-----------------------------------------------------------------------------}
 	private void adjustForLengths (int root){
 		int tpa;
@@ -362,12 +434,18 @@ public class NodeLocsOval extends NodeLocsFree {
 			//location[subRoot].y=treeCenter.y;
 			//location[subRoot].x=treeCenter.x;
 			terminalTaxaLocs(centralRoot, centralRoot);
-			calcNodeLocs (centralRoot, centralRoot);
+			calcInternalNodeLocs (centralRoot, centralRoot);
 			if (showBranchLengths.getValue()) {
 				adjustForLengths(centralRoot);
 				//if (showScale.getValue())
 				//	drawGrid(g, tree.tallestPathAboveNodeUR(centralRoot, centralRoot, 1.0), scaling, treeCenter);
 			}
+			pushedCollapsed(drawnRoot);
+			zoom(drawnRoot);
+			if (showBranchLengths.getValue()) {
+				scaling *= zoomFactor;
+			}
+			polarsToLocs(drawnRoot);
 			for (int i=0; i<numNodes && i<treeDrawing.y.length; i++) {
 				treeDrawing.y[i] = location[i].y;
 				treeDrawing.x[i] = location[i].x;

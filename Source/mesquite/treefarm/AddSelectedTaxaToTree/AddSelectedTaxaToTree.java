@@ -42,7 +42,7 @@ public class AddSelectedTaxaToTree extends TreeAltererMult {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return false;  
+		return true;  
 	}
 	boolean unselectedAlreadyWarned = false;
 	/*.................................................................................................................*/

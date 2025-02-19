@@ -709,7 +709,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return 0;
 		return deepestCollapsedAncestor(motherOfNode(node));
 	}
+	public boolean isDeepestCollapsedAncestor(int node) {
+		if (!nodeExists(node))
+			return false;
+		if (!isCollapsedClade(node))
+			return false;
+		return (node == deepestCollapsedAncestor(leftmostTerminalOfNode(node)));
+	}
 	/*_________________________________________________*/
+	/*For collapsed clades, the leftmost terminal remains visible and is given the length from the collapsed ancestor
+	 * to the highest terminal of its collapsed clade. Except for it and the collapsed ancestor, all of the other nodes
+	 * are made invisible in TreeDisplays. */
 	public boolean isLeftmostTerminalOfCollapsedClade(int node) {  
 		if (nodeIsTerminal(node) && withinCollapsedClade(node)){
 			int dCA = deepestCollapsedAncestor(node);
@@ -720,9 +730,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*_________________________________________________*/
 	public boolean isVisibleEvenIfInCollapsed(int node) {  
+		if (!getRooted() && getRoot()==node)
+			return false;
 		return !withinCollapsedClade(node) || isLeftmostTerminalOfCollapsedClade(node);
+		
+		
 	}
-	/*_________________________________________________*/
+	/*__===============================================___*/
 	public String uniformColorInClade(int node){
 		if (nodeIsTerminal(node))
 			return getColorAsHexString(node);
