@@ -169,9 +169,11 @@ class CircleTreeDrawing extends TreeDrawing  {
 		polar.length = Math.sqrt((loc.x-center.x) *(loc.x-center.x) + (center.y-loc.y)*(center.y-loc.y));
 		polar.angle = Math.asin((loc.x-center.x)/polar.length);
 	}
-	/*----------------------------------------------------------------------------*/
 	//	makeSlantedRectangle(branchPoly[node], loc, polarLength[node]-polarLength[motherN]+edgewidth, angle[node], edgewidth);
 	private void makeBranchPoly(Path2D.Double poly, double[] polarlength, double[] angle, int node, int motherN, int width){
+		poly.reset();
+		if (polarlength[motherN] == polarlength[node] && angle[motherN] == angle[node])
+			return;
 		Point2D.Double loc = new Point2D.Double();
 		Point2D.Double w = new Point2D.Double();
 		nodePolarToLoc (width, angle[node] + Math.PI/2, ownerModule.nodeLocsTask.treeCenter, w);
@@ -187,7 +189,6 @@ class CircleTreeDrawing extends TreeDrawing  {
 		//	wx2p = 1;
 		nodePolarToLoc(polarlength[node], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
 		/**/
-		poly.reset();
 		poly.moveTo(loc.getX() + wx2p, loc.getY() + wy2p);
 		poly.lineTo(loc.getX() + wx2m, loc.getY() + wy2m);
 		nodePolarToLoc(polarlength[motherN], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
@@ -238,6 +239,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 		makeBranchPoly(fillBranchPoly[node],polarLength, angle, node, motherN, edgewidth-2); //TODO: include arc into fillBranchPoly
 
 		//	makeSlantedRectangle(fillBranchPoly[node], loc, polarLength[node]-polarLength[motherN]+edgewidth-2, angle[node], edgewidth-2);
+		
 		GraphicsUtil.fill(g,branchPoly[node]);
 
 

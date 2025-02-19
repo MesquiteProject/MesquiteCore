@@ -1,13 +1,13 @@
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
- 
+
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
- 
+
  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
  Mesquite's web site is http://mesquiteproject.org
- 
+
  This source code and its compiled class files are free and modifiable under the terms of 
  GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
@@ -41,7 +41,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	Vector extras;
 	double angleBetweenTaxa;
 	double fractionCoverage = 0.96;
-	
+
 	double firsttx = 0.02;
 	double centerx, centery;
 	double circleSlice;
@@ -53,7 +53,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	int emptyRootSlices;
 	int oldNumTaxa=0;
 	private MesquiteMenuItemSpec showScaleItem;
-	
+
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		showBranchLengths = new MesquiteBoolean(false);
 		extras = new Vector();
@@ -67,9 +67,9 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		}
 		return true;
 	}
-	
+
 	/*.................................................................................................................*/
-	
+
 	public void endJob(){
 		if (extras!=null) {
 			for (int i=0; i<extras.size(); i++){
@@ -85,7 +85,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		}
 		super.endJob();
 	}
-	
+
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -132,13 +132,13 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	public String getName() {
 		return "Node Locations (circle)";
 	}
-	
+
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Calculates the node locations for a tree drawn in circular fashion, with root at center." ;
 	}
-	
+
 	/*_________________________________________________*/
 	public boolean compatibleWithOrientation(int orientation) {
 		return orientation==TreeDisplay.CIRCULAR;
@@ -148,7 +148,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	}
 	/*_________________________________________________*/
 	double scaling;
-	
+
 	private double getBranchLength (int N) {
 		if (tree.branchLengthUnassigned(N))
 			return 1;
@@ -174,7 +174,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		numNodes = 0;
 		return findTaxa(node);
 	}
-//	{-----------------------------------------------------------------------------*/
+	//	{-----------------------------------------------------------------------------*/
 	private void nodePolarToLoc (double polarlength, double angle, Point2D.Double loc){
 		loc.setLocation(1.0*treeCenter.getX() + polarlength * Math.sin(angle), 1.0*treeCenter.getY() - polarlength * Math.cos(angle));
 	}
@@ -192,9 +192,9 @@ public class NodeLocsCircular extends NodeLocsCircle {
 			polar.angle = Math.PI*2.0+polar.angle;
 		else if (targetAngle>Math.PI/2.0)
 			polar.angle = Math.PI-polar.angle;
-		
+
 	}
-//	{-----------------------------------------------------------------------------}
+	//	{-----------------------------------------------------------------------------}
 	private double nodeAngle (int left, int right){
 		double theAngle;
 		if (angle[left]<= angle[right])
@@ -206,28 +206,18 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		}
 		return theAngle;
 	}
-	boolean massageLoc = false;
-//	{-----------------------------------------------------------------------------}
+	//	{-----------------------------------------------------------------------------}
 	PolarCoord polar = new PolarCoord();
-//	angle 0 = vertical up
+	//	angle 0 = vertical up
 	private void calcterminalPosition (int node){
 		double firstangle;
-		massageLoc = false;
-//		firstangle = Math.PI + angleBetweenTaxa/2; //TODO: {here need to use stored value}
-		
+
 		firstangle = angleBetweenTaxa;
 		angle[node] =firstangle + lasttx; // {angle in radians horizontal from vertical}
 		polarLength[node] =radius;
-		
-		nodePolarToLoc(polarLength[node], angle[node], location[node]);
-		if (massageLoc){
-			nodeLocToPolar(location[node], treeCenter, angle[node], polar);
-			polarLength[node] = polar.length;
-			angle[node] = polar.angle;
-			nodePolarToLoc(polarLength[node], angle[node], location[node]);  //convert back and forth to deal with roundoff
-		}
-		
-//		double degrees = (angle[node]/Math.PI/2*360) % 360;
+
+		//		nodePolarToLoc(polarLength[node], angle[node], location[node]);
+
 		double degrees = (angle[node]/Math.PI/2*360);
 		if (degrees < 45)
 			treeDrawing.labelOrientation[node] = 270;
@@ -239,33 +229,52 @@ public class NodeLocsCircular extends NodeLocsCircle {
 			treeDrawing.labelOrientation[node] = 180;
 		else 
 			treeDrawing.labelOrientation[node] = 270;
-		
-		//nodePolarToSingleLoc(polarLength[node], angle[node], sLoc[node]);
+
 		lasttx = (angleBetweenTaxa + lasttx);
-		
+
 	}
-//	{-----------------------------------------------------------------------------}
-	
+
+	/*------============= for collapsed clades =============-------*/
+
+	private void pushedCollapsed (int node){		//{tree traversal to find locations}
+		if (tree.withinCollapsedClade(node)) {
+			angle[node] = angle[tree.deepestCollapsedAncestor(node)];
+			if (tree.nodeIsInternal(node) || !tree.isLeftmostTerminalOfCollapsedClade(node)){
+				polarLength[node]  = polarLength[tree.deepestCollapsedAncestor(node)];
+			}
+		}
+
+		if (tree.nodeIsInternal(node)) {
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				pushedCollapsed(d);
+		}
+	}
+
+	/*_________________________________________________*/
+
+
 	private void termTaxaRec (int node){		//{tree traversal to find locations}
-		if (tree.nodeIsTerminal(node)) 
-			calcterminalPosition(node);
+		if (tree.nodeIsTerminal(node)) {
+			if (!tree.withinCollapsedClade(node) || tree.isLeftmostTerminalOfCollapsedClade(node))
+				calcterminalPosition(node);
+		}
 		else {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				termTaxaRec(d);
 		}
 	}
-	
+
 	private void terminalTaxaLocs (int node){
 		lasttx = firsttx*Math.PI * 2.0;
 		termTaxaRec(node);
 	}
-//	{-----------------------------------------------------------------------------}
-//	{-----------------------------------------------------------------------------}
-	private void calcNodeLocs (int node){
+	//	{-----------------------------------------------------------------------------}
+	//	{-----------------------------------------------------------------------------}
+	private void calcInternalNodeLocs (int node){
 		if (tree.nodeIsInternal(node)){
 			double min = MesquiteDouble.unassigned;
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
-				calcNodeLocs(d);
+				calcInternalNodeLocs(d);
 				min = MesquiteDouble.minimum(min, polarLength[d]);
 			}
 			int left = tree.firstDaughterOfNode(node);
@@ -274,18 +283,12 @@ public class NodeLocsCircular extends NodeLocsCircle {
 			polarLength[node] = min - circleSlice;
 			if (polarLength[node] < 0) 
 				polarLength[node] = 0;
-			//nodePolarToSingleLoc(polarLength[node], angle[node], sLoc[node]);
-			nodePolarToLoc(polarLength[node], angle[node], location[node]);
-			if (massageLoc){
-				nodeLocToPolar(location[node], treeCenter, angle[node], polar);
-				polarLength[node] = polar.length;
-				angle[node] = polar.angle;
-				nodePolarToLoc(polarLength[node], angle[node], location[node]);  //convert back and forth for 
-			}
+
+			//		nodePolarToLoc(polarLength[node], angle[node], location[node]);
 		}
 	}
-	
-//	{-----------------------------------------------------------------------------}
+
+	//	{-----------------------------------------------------------------------------}
 	private void adjustNodeLocsWithLengths (int node, double polarHeightToAncestor, int root){
 		if (node==root)
 			polarLength[node] = rootHeight;
@@ -294,30 +297,45 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		}
 		if (polarLength[node] < 0)
 			polarLength[node] = 0;
-		//nodePolarToSingleLoc(polarLength[node], angle[node], sLoc[node]);
-		nodePolarToLoc(polarLength[node], angle[node], location[node]);
-		if (massageLoc){
-			nodeLocToPolar(location[node], treeCenter, angle[node],  polar);
-			polarLength[node] = polar.length;
-			angle[node] = polar.angle;
-			nodePolarToLoc(polarLength[node], angle[node], location[node]);  //convert back and forth for
-		}
+
+		//	nodePolarToLoc(polarLength[node], angle[node], location[node]);
 		if (tree.nodeIsInternal(node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				adjustNodeLocsWithLengths(d, polarLength[node], root);
 		}
 	}
-	
-//	{-----------------------------------------------------------------------------}
+
+	//	{-----------------------------------------------------------------------------}
 	private void adjustForLengths (int root){
 		double tpaD = tree.tallestPathAboveNode(root, 1.0);
-		
+
 		if (tpaD>0)
 			scaling=(radius-rootHeight)/tpaD;
 		else // all assigned 0's give arbitrary scaling (not great solution!)
 			scaling=20;
 		adjustNodeLocsWithLengths(root, 0, root);
 	}
+
+	//	{-----------------------------------------------------------------------------}
+	private void polarsToLocs (int node){
+		nodePolarToLoc(polarLength[node], angle[node], location[node]);
+		if (tree.nodeIsInternal(node)) {
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				polarsToLocs(d);
+		}
+	}
+
+	/*.................................................................................................................*/
+	public int effectiveNumberOfTerminalsInClade(Tree tree, int node){
+		if (tree.isCollapsedClade(node) || tree.nodeIsTerminal(node))
+			return 1;
+		int num=0;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+			num += effectiveNumberOfTerminalsInClade(tree, d);
+		}
+		return num;
+	}
+
 	/*_________________________________________________*/
 	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot) { //Graphics g removed as parameter May 02
 		if (MesquiteTree.OK(tree)) {
@@ -355,7 +373,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 					angle[i] = 0;
 				}
 			}
-		if (resetShowBranchLengths){
+			if (resetShowBranchLengths){
 				if (showBranchLengths.getValue())
 					treeDisplay.branchLengthDisplay=TreeDisplay.DRAWUNASSIGNEDASONE;
 				else
@@ -373,37 +391,39 @@ public class NodeLocsCircular extends NodeLocsCircle {
 				}
 			}
 			this.treeDrawing = treeDisplay.getTreeDrawing();
-			
+
 			emptyRootSlices=1;
-			angleBetweenTaxa=(2 * Math.PI*fractionCoverage) / tree.numberOfTerminalsInClade(drawnRoot);
+			angleBetweenTaxa=(2 * Math.PI*fractionCoverage) /effectiveNumberOfTerminalsInClade( tree, drawnRoot);
 			treeRectangle = treeDisplay.getField();
 			if (treeRectangle.width<treeRectangle.height)
 				radius=(treeRectangle.width * 3 )/ 8;
 			else
 				radius=(treeRectangle.height) * 3 / 8;
 			circleSlice = radius / (mostNodesToTip(drawnRoot) + emptyRootSlices);  //{v4: have it based upon an ellipse}
-			
+
 			treeCenter.setLocation(treeRectangle.width / 2,treeRectangle.height / 2);
-//			centerx = treeCenter.x;
-//			centery = treeCenter.y;
+			//			centerx = treeCenter.x;
+			//			centery = treeCenter.y;
 			location[drawnRoot].setLocation(treeCenter.getX(), treeCenter.getY());
 			location[subRoot].setLocation(treeCenter.getX(), treeCenter.getY());
 			polarLength[subRoot] = 0;
 			angle[subRoot] = 0;
 			terminalTaxaLocs(drawnRoot);
-			calcNodeLocs (drawnRoot);
+			calcInternalNodeLocs (drawnRoot);
 			if (showBranchLengths.getValue()) {
 				adjustForLengths(drawnRoot);
 				//if (showScale.getValue())
 				//	drawGrid(g, tree.tallestPathAboveNode(drawnRoot, 1.0), scaling, treeCenter);
 			}
+			pushedCollapsed(drawnRoot);
+			polarsToLocs(drawnRoot);
 			for (int i=0; i<numNodes && i<treeDrawing.y.length; i++) {
 				treeDrawing.y[i] = location[i].getY();
 				treeDrawing.x[i] = location[i].getX();
 			}
 		}
 	}
-	
+
 	public void drawGrid (Graphics g, double totalHeight, double scaling,  Point2D treeCenter) {
 		if (g == null)
 			return;
@@ -424,7 +444,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 			//	g.drawString(MesquiteDouble.toString(totalScaleHeight - thisHeight), rightEdge + buffer, (int)(base- (thisHeight*scaling)));
 			countTenths ++;
 		}
-		
+
 		if (c!=null) g.setColor(c);
 	}
 }
@@ -436,7 +456,7 @@ class PolarCoord {
 
 class NodeLocsCircularExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	NodeLocsCircular locsModule;
-	
+
 	public NodeLocsCircularExtra (NodeLocsCircular ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		locsModule = ownerModule;
@@ -455,14 +475,33 @@ class NodeLocsCircularExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		drawUnderTree(tree, drawnRoot, g);
 	}
 	/*.................................................................................................................*/
-	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	public   void drawOnTree(Tree tree, int node, Graphics g) {
+		//Debugg.println("@draw " + node);
+		if (tree.withinCollapsedClade(node)) {
+			if (tree.isLeftmostTerminalOfCollapsedClade(node))
+				g.setColor(Color.blue);
+			else if (tree.nodeIsTerminal(node))
+				g.setColor(Color.red);
+			else
+				g.setColor(Color.yellow);
+		}
+		else if (tree.nodeIsTerminal(node))
+			g.setColor(Color.green);
+		else
+			g.setColor(Color.cyan);
+		g.fillOval((int)treeDisplay.getTreeDrawing().x[node], (int)treeDisplay.getTreeDrawing().y[node], 5, 5);
+
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+			drawOnTree(tree, d, g);
+
+
 	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 	}
-	
+
 }
 
 
