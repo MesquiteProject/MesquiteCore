@@ -89,7 +89,7 @@ public abstract class InterpretGenBank extends FileInterpreterI implements ReadF
 		Taxon taxon = data.getTaxa().getTaxon(it);
 		Associable tInfo = data.getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, it, s);
+			tInfo.setAssociatedString(MolecularData.genBankNumberRef, it, s);
 		}
 	}
 	/*.................................................................................................................*/

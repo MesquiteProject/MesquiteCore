@@ -25,7 +25,7 @@ of this (e.g., NodeLocsVH, NodeLocsCircle).*/
 
 public abstract class NodeLocs extends MesquiteModule  {
 	/** calculates the locations for a tree drawn within the given rectangle.  Should not be called during paint(); hence Graphics g removed as parameter May 02*/
-	public abstract void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect);
+	public abstract void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot);
 	 public String getFunctionIconPath(){
    		 return getRootImageDirectoryPath() + "functionIcons/treeWindow.gif";
    	 }

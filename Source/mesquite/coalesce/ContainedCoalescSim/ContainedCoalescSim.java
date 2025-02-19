@@ -149,7 +149,7 @@ public class ContainedCoalescSim extends ContainedTreeSim {
 			speciesTreeRef = ((MesquiteTree)speciesTree).getTreeReference(speciesTreeRef);
 		else
 			speciesTreeRef = null;
-		widths = speciesTree.getWhichAssociatedDouble(widthNameReference);
+		widths = speciesTree.getAssociatedDoubles(widthNameReference);
 		MesquiteTree t=null;
 	
 		if (geneTree==null || !(geneTree instanceof MesquiteTree)) 

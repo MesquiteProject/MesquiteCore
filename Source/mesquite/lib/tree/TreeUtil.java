@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.tree;
 
 import java.awt.Checkbox;
@@ -39,10 +39,10 @@ import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
 
 public class TreeUtil {
-	
+
 	public static String translationTableFileName = "taxonNamesTranslationTable.txt";
 
-	
+
 	/*.................................................................................................................*/
 	/** Returns true iff the two trees have the same topologies.  The two trees must use the same block of taxa */
 	public static boolean identicalTopologies (Tree tree1, Tree tree2, boolean checkBranchLengths) {
@@ -59,7 +59,7 @@ public class TreeUtil {
 		if (containedTree==null || containingTree==null || association == null)
 			return false;
 		Taxa containingTaxa = containingTree.getTaxa();
-		
+
 		for (int outer=0;  outer<containingTaxa.getNumTaxa(); outer++) {  
 			Bits associates = association.getAssociatesAsBits(containingTaxa, outer);
 			if (!containedTree.isClade(associates))
@@ -67,10 +67,10 @@ public class TreeUtil {
 		}
 		return true;
 	}
-	
+
 	/*.................................................................................................................*/
-	//reading arguments can include dialect hints, e.g. @newickDialect.MrBayes, or @newickDialect.astral
-	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String arguments, String treeNameBase) {
+	/*Old version 3.81 that couldn't read multiline trees*/
+	/*public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String arguments, String treeNameBase) {
 		Parser parser = new Parser(arguments);
 		String dialect = parser.getFileReadingArgumentSubtype(arguments, "newickDialect");
 		if (dialect != null)
@@ -78,17 +78,21 @@ public class TreeUtil {
 		Parser treeParser = new Parser();
 		treeParser.setQuoteCharacter((char)0);
 		int numTrees = MesquiteInteger.infinite;
+		MesquiteInteger stringLoc = new MesquiteInteger(0);
 		if (line != null){
 			treeParser.setString(line); 
 			String token = treeParser.getNextToken();  // numTaxa
 			numTrees = MesquiteInteger.fromString(token);
+			stringLoc.setValue(line.length());
 		}
 		int iTree = 0;
 		TreeVector trees = null;
 		boolean abort = false;
-		line = file.readNextDarkLine();		
-		while (!StringUtil.blank(line) && !abort && (iTree<numTrees)) {
-			treeParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
+
+		line =file.getFileContentsAsString(2^30);
+		treeParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
+		treeParser.setPosition(stringLoc.getValue());
+		while (stringLoc.getValue()+1<line.length() && !abort && (iTree<numTrees)) {
 
 			if (trees == null) {
 				trees = new TreeVector(taxa);
@@ -99,22 +103,77 @@ public class TreeUtil {
 			if (StringUtil.notEmpty(dialect))
 				t.setDialect(dialect);
 			//t.setTreeVector(treeVector);
-			t.readTree(line,namer, null, "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
-			/*MesquiteInteger pos = new MesquiteInteger(0);
-			treeParser.setString(line);
-			readClade(t, t.getRoot());
-			t.setAsDefined(true);*/
+			t.readTree(line,stringLoc, namer, null, "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
+
 			t.setName(treeNameBase + (iTree+1));
 			trees.addElement(t, false);
 
 
 			iTree++;
-			line = file.readNextDarkLine();		
-			if (file.getFileAborted())
-				abort = true;
+		//	line = file.readNextDarkLine();		
+		//	if (file.getFileAborted())
+		//		abort = true;
 		}
 		return trees;
-		
+
+	}
+	/*.................................................................................................................*/
+	//reading arguments can include dialect hints, e.g. @newickDialect.MrBayes, @newickDialect.ASTRAL, @newickDialect.DELINEATE, etc.
+	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String arguments, String treeNameBase) {
+		TreeVector trees = null;
+
+		Parser parser = new Parser(arguments);
+		String dialect = parser.getFileReadingArgumentSubtype(arguments, "newickDialect");
+		if (dialect != null)
+			MesquiteMessage.println("Trees read assuming Newick dialect: " + dialect);
+		Parser treeParser = new Parser();
+		treeParser.setQuoteCharacter((char)0);
+		int numTrees = MesquiteInteger.infinite;
+		MesquiteInteger stringLoc = new MesquiteInteger(0);
+		if (line != null){
+			treeParser.setString(line); 
+			String token = treeParser.getNextToken();  // numTaxa
+			numTrees = MesquiteInteger.fromString(token);
+		}
+		int iTree = 0;
+		boolean abort = false;
+
+		line =file.getFileContentsAsString(1000000000);
+		if (line == null)
+			return null;
+
+		treeParser.setString(line); 
+		String token = treeParser.getNextToken();  // numTaxa
+		int possibleNumTrees = MesquiteInteger.fromString(token);
+		if (MesquiteInteger.isCombinable(possibleNumTrees)){ //we did read numTrees!
+			stringLoc.setValue(treeParser.getPosition());
+			numTrees = possibleNumTrees;
+		}
+		token = treeParser.getNextToken();  // is there another number?
+		int maybe = MesquiteInteger.fromString(token);
+		if (MesquiteInteger.isCombinable(maybe)){ //we did read some other number. Trees must come after this!
+			stringLoc.setValue(treeParser.getPosition());
+		}
+
+		while (stringLoc.getValue()+1<line.length() && !abort && (iTree<numTrees)) {
+
+			if (trees == null) {
+				trees = new TreeVector(taxa);
+				trees.setName("Imported trees");
+			}
+			MesquiteTree t = new MesquiteTree(taxa);
+			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
+			if (StringUtil.notEmpty(dialect))
+				t.setDialect(dialect);
+			t.readTree(line,stringLoc, namer, StringUtil.defaultWhitespace + "\n\r", "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
+
+			t.setName(treeNameBase + (iTree+1));
+			trees.addElement(t, false);
+			iTree++;
+		}
+
+
+		return trees;
 	}
 	/*.................................................................................................................*
 	public static Tree readPhylipTree (String line, Taxa taxa, boolean permitTaxaBlockEnlarge, boolean permitSpaceUnderscoreEquivalent, TaxonNamer namer) {
@@ -143,7 +202,7 @@ public class TreeUtil {
 			if (t.nodeHasLabel(node)){
 				String label = t.getNodeLabel(node);
 				if (asText) {
-					t.setAssociatedObject(nameRefs[0], node, label, true);
+					t.setAssociatedString(nameRefs[0], node, label);
 				} else {
 					Parser parser = new Parser(label);
 					parser.setWhitespaceString(parser.getWhitespaceString()+"/");
@@ -151,7 +210,7 @@ public class TreeUtil {
 					for (int i=0; i<nameRefs.length; i++) {
 						support[i] = MesquiteDouble.fromString(parser.getNextToken());
 						if (MesquiteDouble.isCombinable(support[i]))
-							t.setAssociatedDouble(nameRefs[i], node, support[i]/divisor, true);
+							t.setAssociatedDouble(nameRefs[i], node, support[i]/divisor);
 					}
 				}
 				t.setNodeLabel(null, node);
@@ -175,8 +234,8 @@ public class TreeUtil {
 			DoubleArray da = tree.getAssociatedDoubles(i);
 			if (da != null){
 				v.addElement(new MesquiteString(da.getName(), ""), false);
-			if (names.indexOfByName(da.getName())>=0)
-				shown[i] = true;
+				if (names.indexOfByName(da.getName())>=0)
+					shown[i] = true;
 			}
 		}
 		for (int i = 0; i<names.size(); i++){
@@ -218,5 +277,5 @@ public class TreeUtil {
 		return false;
 	}
 
-	
+
 }

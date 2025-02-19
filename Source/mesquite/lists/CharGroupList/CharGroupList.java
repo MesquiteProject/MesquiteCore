@@ -276,12 +276,13 @@ class CharGroupListWindow extends ListWindow implements MesquiteListener {
 		}
 		return null;
 	}
-	public boolean interceptRowNameTouch(int row, int regionInCellH, int regionInCellV, int modifiers){
+	public boolean interceptRowNameTouch(int row, EditorPanel editorPanel, int x, int y, int modifiers){
 		CharactersGroup group = getCharGroup(row);
 		if (group!=null){
 			getTable().editRowNameCell(row);
+			return true;
 		}
-		return true;
+		return false;
 	}
 	public void setRowName(int row, String name){
 		CharactersGroup group = getCharGroup(row);

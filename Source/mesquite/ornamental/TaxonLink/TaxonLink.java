@@ -100,7 +100,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 	public boolean getTaxonUnderlined(Taxon taxon){
 		Taxa taxa = taxon.getTaxa();
 		int m = taxa.whichTaxonNumber(taxon);
-		return (taxa.getAssociatedObject(taxonlinkRef, m) !=null);
+		return (taxa.getAssociatedString(taxonlinkRef, m) !=null);
 		//return (taxon.getLink()!=null);
 	}
 	/** Returns the color the extra wants the taxon name colored.*/
@@ -140,7 +140,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 	/**to inform TreeDisplayExtra that cursor has just entered name of terminal taxon M*/
 	public void cursorEnterTaxon(Tree tree, int M, Graphics g){
 		if (taxonLinkTool.getInUse()){
-			String link = (String)tree.getTaxa().getAssociatedObject(linkNameRef, M);
+			String link = (String)tree.getTaxa().getAssociatedString(linkNameRef, M);
 			if (link!=null) {
 
 				showLink(link);
@@ -232,16 +232,14 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 			if (M<0 || !MesquiteInteger.isCombinable(M) || M>=tree.getTaxa().getNumTaxa())
 				return null;
 			if (arguments.indexOf("shift")>=0) {  //url
-				String link = (String)tree.getTaxa().getAssociatedObject(linkNameRef, M);
+				String link = (String)tree.getTaxa().getAssociatedString(linkNameRef, M);
 				if (link == null)
 					link = "";
 				String url = MesquiteString.queryShortString(ownerModule.containerOfModule(), "URL", "URL to which to link taxon", link);
 				if (StringUtil.blank(url))
 					return null;
 				Taxa taxa = tree.getTaxa();
-				if (taxa.getWhichAssociatedObject(linkNameRef)==null)
-					taxa.makeAssociatedObjects("hyperlink");
-				taxa.setAssociatedObject(linkNameRef, M, url);
+				taxa.setAssociatedString(linkNameRef, M, url);
 				ownerModule.outputInvalid();
 				return null;
 			}
@@ -250,14 +248,12 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 				if (chosen==null)
 					return null;
 				Taxa taxa = tree.getTaxa();
-				if (taxa.getWhichAssociatedObject(linkNameRef)==null)
-					taxa.makeAssociatedObjects("hyperlink");
-				taxa.setAssociatedObject(linkNameRef, M, MesquiteFile.decomposePath(ownerModule.getProject().getHomeDirectoryName(), chosen));
+				taxa.setAssociatedString(linkNameRef, M, MesquiteFile.decomposePath(ownerModule.getProject().getHomeDirectoryName(), chosen));
 				ownerModule.outputInvalid();
 				return null;
 			}
 			else {
-				String link = (String)tree.getTaxa().getAssociatedObject(linkNameRef, M);
+				String link = (String)tree.getTaxa().getAssociatedString(linkNameRef, M);
 				if (link!=null) {
 					if (StringUtil.startsWithIgnoreCase(link, "http:") || StringUtil.startsWithIgnoreCase(link, "https:") || link.endsWith(".html") || link.endsWith(".htm") || link.endsWith(".HTML") || link.endsWith(".HTM")) {  //assumed to be web page
 						if (StringUtil.startsWithIgnoreCase(link, "http")) 

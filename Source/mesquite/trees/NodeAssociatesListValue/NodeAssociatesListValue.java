@@ -28,6 +28,7 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
@@ -38,7 +39,6 @@ import mesquite.trees.lib.NodeAssociatesListAssistant;
 public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
-	ListableVector associatedInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("How to Edit Values...", makeCommand("howToEdit", this));
@@ -60,8 +60,6 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 
 	public void setTableAndObject(MesquiteTable table, Object object) {
 		this.table = table;
-		if (object instanceof ListableVector)
-			associatedInfo = (ListableVector)object;
 
 	}
 
@@ -73,7 +71,7 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Explains how to edit", null, commandName, "howToEdit")) {
-			alert("Some of these values can be edited for a node/branch by right-clicking on the branch, then choosing the item in the drop down menu that appears.");
+			alert("Some of these values can be edited for a branch/node by right-clicking on the branch, then choosing the item in the drop down menu that appears.");
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -99,11 +97,11 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 		parametersChanged();
 	}
 	/*.................................................................................................................*/
-	int maxwidest = 20;
+	int maxwidest = 8;
 	public String getWidestString(){
 		int w = maxwidest;
 		if (table == null)
-			return "88888888888888888888";
+			return "888888";
 			
 		for (int ic = 0; ic<table.getNumRows(); ic++){
 			String sIC = getStringForRow(ic);
@@ -120,8 +118,6 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
-		if (node >=0)
-			return "Value at Node " + node;
 		return "Value";
 	}
 	/*.................................................................................................................*/
@@ -139,53 +135,15 @@ public class NodeAssociatesListValue extends NodeAssociatesListAssistant  {
 		return false;  
 	}
 	public String getStringForRow(int ic) {
-		if (associatedInfo == null || tree == null || node<0)
+		if (tree == null || node<0)
 			return "—";
-		if (ic>=0 && ic<associatedInfo.size()){
-			ObjectContainer objContainer = (ObjectContainer)associatedInfo.elementAt(ic);
-			Object obj = objContainer.getObject();
-			if (obj instanceof DoubleArray){
-				DoubleArray d = (DoubleArray)obj;
-				if (node<d.getSize())
-				return MesquiteDouble.toString(d.getValue(node));
-			}
-			else if (obj instanceof LongArray){
-				LongArray d = (LongArray)obj;
-				if (node<d.getSize())
-				return MesquiteLong.toString(d.getValue(node));
-			}
-			else if (obj instanceof StringArray) {
-				StringArray d = (StringArray)obj;
-				if (node<d.getSize())
-				return d.getValue(node);
-			}
-			else if (obj instanceof ObjectArray) {
-				ObjectArray oa = (ObjectArray)obj;
-				if (node>=oa.getSize())
-					return "—";
-				Object oan = oa.getValue(node);
-				if (oan == null)
-					return "—";
-				if (oan instanceof String)
-					return "\"" + (String)oan + "\"";
-				return oan.toString(); //Debugg.println temporary?
-			}
-			else if (obj instanceof Bits) {
-				Bits oa = (Bits)obj;
-				if (node>=oa.getSize())
-					return "—";
-				boolean oan = oa.isBitOn(node);
-				return MesquiteBoolean.toTrueFalseString(oan); //Debugg.println temporary?
-			}
-			else if (obj instanceof Tree && MesquiteTree.branchLengthName.equalsIgnoreCase(objContainer.getName()))
-				return MesquiteDouble.toString(tree.getBranchLength(node));
-			else if (obj instanceof Tree && MesquiteTree.nodeLabelName.equalsIgnoreCase(objContainer.getName())){
-				return tree.getNodeLabel(node);
-			}
-			else
-				return "?";
+		PropertyDisplayRecord property = getPropertyAtRow(ic);
+		if (property != null){
+			return property.getStringAtNode(tree, node, false, true, true);
 		}
-		return "—";
+		
+				return "?";
+
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

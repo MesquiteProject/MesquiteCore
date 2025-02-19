@@ -33,6 +33,7 @@ public class MesquiteBoolean implements Listable, Nameable {
 	public static MesquiteBoolean TRUE, FALSE;
 	private String name = null;
 	private boolean unassigned = true;
+	private boolean unanimous = true;
 	static {
 		TRUE = new MesquiteBoolean(true);
 		FALSE = new MesquiteBoolean(false);
@@ -144,6 +145,31 @@ public class MesquiteBoolean implements Listable, Nameable {
 		if (cmis!=null) {
 			MesquiteTrunk.resetCheckMenuItems();
 		}
+	}
+	public void resetVote(){ //should only be called before use of vote
+		unassigned = true;
+		unanimous = true;
+	}
+	/** if unassigned, assign it the incoming. If incoming is different from previous assigned, set to impossible and keep it there. Thus know if there is disagreemnt in a set */
+	public void vote(boolean value) {
+		if (!unanimous)
+			return;
+		if (unassigned)
+			setValue(value);
+		else if (this.value != value){
+			setValue(false);
+			unanimous = false;
+		}
+	}
+	public boolean isUnanimous(){ //should only be called after a good use of vote
+		return unanimous;
+	}
+
+	public boolean unanimousValue(){ //should only be called after a good use of vote
+		if (unanimous)
+			return value;
+		else
+			return false;
 	}
 	public void bindMenuItem(MesquiteCMenuItemSpec cmis) {
 		this.cmis = cmis;

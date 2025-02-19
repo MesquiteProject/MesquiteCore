@@ -320,11 +320,11 @@ public class NodeLocs2DPlot extends NodeLocsPlot {
 		}
 	}
 	/*_________________________________________________*/
-	private void calcNodeLocs (Tree tree, int node, Rectangle rect, NumberArray numbersX, NumberArray numbersY){
+	private void calcNodeLocs (Tree tree, int node, TreeDisplay treeDisplay, NumberArray numbersX, NumberArray numbersY){
 			if (location==null|| xNumber==null|| yNumber==null)
 				return;
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-				calcNodeLocs(tree, d, rect, numbersX, numbersY);
+				calcNodeLocs(tree, d, treeDisplay, numbersX, numbersY);
 			numbersX.placeValue(node, xNumber);
 			numbersY.placeValue(node, yNumber);
 			if (node>= location.length ||location[node] == null)
@@ -334,8 +334,8 @@ public class NodeLocs2DPlot extends NodeLocsPlot {
 				location[node].y = MesquiteInteger.unassigned;
 			}
 			else {
-				location[node].x = xNumber.setWithinBounds(minX, maxX, rect.width - 2*margin) /*+ rect.x*/+ margin;
-				location[node].y = yNumber.setWithinBounds(minY, maxY, rect.height - 2*margin) /*+ rect.y*/ + margin;
+				location[node].x = xNumber.setWithinBounds(minX, maxX, treeDisplay.getField().width - 2*margin) /*+ rect.x*/+ margin;
+				location[node].y = yNumber.setWithinBounds(minY, maxY, treeDisplay.getField().height - 2*margin) /*+ rect.y*/ + margin;
 			}
 	}
 	
@@ -349,7 +349,7 @@ public class NodeLocs2DPlot extends NodeLocsPlot {
 	}
 	int rectWidth, rectHeight;
 	/*_________________________________________________*/
-	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) {
+	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot) {
 		if (hide || isDoomed())
 			return;
 		if (MesquiteTree.OK(tree)) {
@@ -411,15 +411,15 @@ public class NodeLocs2DPlot extends NodeLocsPlot {
 				}
 				else if (extra!=null)
 					extra.addWarning(false);
-				calcNodeLocs (tree, drawnRoot, rect, numbersX, numbersY);
+				calcNodeLocs (tree, drawnRoot, treeDisplay, numbersX, numbersY);
 				location[subRoot].x = location[drawnRoot].x;
 				location[subRoot].y = location[drawnRoot].y;
 				for (int i=0; i<tree.getNumNodeSpaces() && i<treeDisplay.getTreeDrawing().y.length; i++) {
 					treeDisplay.getTreeDrawing().y[i] = location[i].y;
 					treeDisplay.getTreeDrawing().x[i] = location[i].x;
 				}
-				this.rectWidth = rect.width;
-				this.rectHeight = rect.height;
+				this.rectWidth = treeDisplay.getField().width;
+				this.rectHeight = treeDisplay.getField().height;
 		}
 	}
 	

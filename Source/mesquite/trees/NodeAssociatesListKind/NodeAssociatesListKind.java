@@ -28,6 +28,7 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
@@ -38,7 +39,6 @@ import mesquite.trees.lib.NodeAssociatesListAssistant;
 public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
-	ListableVector associatedInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Move selected To Text", makeCommand("transformToText", this));
@@ -63,9 +63,6 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 
 	public void setTableAndObject(MesquiteTable table, Object object) {
 		this.table = table;
-		if (object instanceof ListableVector)
-			associatedInfo = (ListableVector)object;
-
 	}
 
 	public void setTree(MesquiteTree tree){
@@ -112,18 +109,18 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				MesquiteInteger mi = getNameKindOfRow(ir);
+				PropertyDisplayRecord mi = getPropertyAtRow(ir);
 				String currentName = mi.getName();
 				String textName = currentName+".text";
 				String candidateName =textName;
 				int nameCount = 2;
-				while (tree.getWhichAssociatedObject(NameReference.getNameReference(candidateName)) != null)
+				while (tree.getAssociatedStrings(NameReference.getNameReference(candidateName)) != null)
 					candidateName = textName + (nameCount++);
 				NameReference tnRef = NameReference.getNameReference(candidateName);
 				NameReference currentRef = NameReference.getNameReference(currentName);
-				tree.makeAssociatedObjects(candidateName);
-				ObjectArray textArray = tree.getWhichAssociatedObject(tnRef);
-				if (mi.getValue() == Associable.BUILTIN){
+				tree.makeAssociatedStrings(candidateName);
+				StringArray textArray = tree.getAssociatedStrings(tnRef);
+				if (mi.kind == Associable.BUILTIN){
 					if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){
 						for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
 							textArray.setValue(node, MesquiteDouble.toString(tree.getBranchLength(node)));
@@ -136,22 +133,22 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 					}
 
 				}
-				else {if (mi.getValue() == Associable.BITS){
+				else {if (mi.kind == Associable.BITS){
 					for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
 						textArray.setValue(node, MesquiteBoolean.toTrueFalseString(tree.getAssociatedBit(currentRef, node)));
 					rows[count++] =ir;  //in case needs to be deleted later
 				}
-				else if (mi.getValue() == Associable.LONGS) {
+				else if (mi.kind == Associable.LONGS) {
 					for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
 						textArray.setValue(node, MesquiteLong.toString(tree.getAssociatedLong(currentRef, node)));
 					rows[count++] =ir;  //in case needs to be deleted later
 				}
-				else if (mi.getValue() == Associable.DOUBLES){
+				else if (mi.kind == Associable.DOUBLES){
 					for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) 
 						textArray.setValue(node, MesquiteDouble.toString(tree.getAssociatedDouble(currentRef, node)));
 					rows[count++] =ir;  //in case needs to be deleted later
 				}
-				else if (mi.getValue() == Associable.OBJECTS){
+				else if (mi.kind == Associable.OBJECTS){
 					for (int node = 0; node<tree.getNumNodeSpaces() && node<textArray.getSize(); node++) {
 						Object obj = tree.getAssociatedObject(currentRef, node);
 						if (obj!=null ){
@@ -208,7 +205,7 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 
 		if (deleteOriginal){
 			for (int ir = rows.length-1; ir>=0; ir--) 
-					pleaseDeleteRow(rows[ir], false);
+				pleaseDeleteRow(rows[ir], false);
 		}
 		tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		parametersChanged();
@@ -227,18 +224,18 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				MesquiteInteger mi = getNameKindOfRow(ir);
+				PropertyDisplayRecord mi = getPropertyAtRow(ir);
 				String currentName = mi.getName();
 				String doubleName = currentName+".num";
 				String candidateName =doubleName;
 				int nameCount = 2;
-				while (tree.getWhichAssociatedDouble(NameReference.getNameReference(candidateName)) != null)
+				while (tree.getAssociatedDoubles(NameReference.getNameReference(candidateName)) != null)
 					candidateName = doubleName + (nameCount++);
 				NameReference tnRef = NameReference.getNameReference(candidateName);
 				NameReference currentRef = NameReference.getNameReference(currentName);
 				tree.makeAssociatedDoubles(candidateName);
-				DoubleArray doublesArray = tree.getWhichAssociatedDouble(tnRef);
-				if (mi.getValue() == Associable.BUILTIN){
+				DoubleArray doublesArray = tree.getAssociatedDoubles(tnRef);
+				if (mi.kind == Associable.BUILTIN){
 					if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){
 						for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
 							doublesArray.setValue(node, tree.getBranchLength(node));
@@ -251,17 +248,25 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 					}
 
 				}
-				else if (mi.getValue() == Associable.LONGS) {
+				else if (mi.kind == Associable.LONGS) {
 					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
 						doublesArray.setValue(node, tree.getAssociatedLong(currentRef, node));
 					rows[count++] =ir;  //in case needs to be deleted later
 				}
-				else if (mi.getValue() == Associable.DOUBLES){
+				else if (mi.kind == Associable.DOUBLES){
 					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) 
 						doublesArray.setValue(node, tree.getAssociatedDouble(currentRef, node));
 					rows[count++] =ir;  //in case needs to be deleted later
 				}
-				else if (mi.getValue() == Associable.OBJECTS){
+				else if (mi.kind == Associable.STRINGS){
+					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) {
+						String s = tree.getAssociatedString(currentRef, node);
+						doublesArray.setValue(node, fromString(s));
+					}
+					rows[count++] =ir;  //in case needs to be deleted later
+
+				}
+				else if (mi.kind == Associable.OBJECTS){
 					for (int node = 0; node<tree.getNumNodeSpaces() && node<doublesArray.getSize(); node++) {
 						Object obj = tree.getAssociatedObject(currentRef, node);
 						if (obj!=null ){
@@ -273,14 +278,14 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 						}
 					}
 					rows[count++] =ir;  //in case needs to be deleted later
-				
+
 				}
 			}
 		}
 
 		if (deleteOriginal){
 			for (int ir = rows.length-1; ir>=0; ir--) 
-					pleaseDeleteRow(rows[ir], false);
+				pleaseDeleteRow(rows[ir], false);
 		}
 		tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		parametersChanged();
@@ -300,86 +305,90 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 			return;
 		}
 		int ir = table.firstRowSelected();
-				MesquiteInteger mi = getNameKindOfRow(ir);
-				String currentName = mi.getName();
-				NameReference currentRef = NameReference.getNameReference(currentName);
-				if (mi.getValue() == Associable.BUILTIN){
-					if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){
-						for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
-							tree.setNodeLabel(MesquiteDouble.toString(tree.getBranchLength(node)), node);
-					}
-					else if (mi.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName)){
-					}
+		PropertyDisplayRecord mi = getPropertyAtRow(ir);
+		String currentName = mi.getName();
+		NameReference currentRef = NameReference.getNameReference(currentName);
+		if (mi.kind == Associable.BUILTIN){
+			if (mi.getName().equalsIgnoreCase(MesquiteTree.branchLengthName)){
+				for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+					tree.setNodeLabel(MesquiteDouble.toString(tree.getBranchLength(node)), node);
+			}
+			else if (mi.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName)){
+			}
 
-				}
-				else {if (mi.getValue() == Associable.BITS){
-					for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
-						tree.setNodeLabel(MesquiteBoolean.toTrueFalseString(tree.getAssociatedBit(currentRef, node)), node);
-				}
-				else if (mi.getValue() == Associable.LONGS) {
-					for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
-						tree.setNodeLabel(MesquiteLong.toString(tree.getAssociatedLong(currentRef, node)), node);
-				}
-				else if (mi.getValue() == Associable.DOUBLES){
-					for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
-						tree.setNodeLabel(MesquiteDouble.toString(tree.getAssociatedDouble(currentRef, node)), node);
-				}
-				else if (mi.getValue() == Associable.OBJECTS){
-					for (int node = 0; node<tree.getNumNodeSpaces(); node++) {
-						Object obj = tree.getAssociatedObject(currentRef, node);
-						if (obj!=null ){
-							String s ="";
-							if (obj instanceof DoubleArray){
-								DoubleArray doubles = (DoubleArray)obj;
-								s+= "{";
-								boolean firstD = true;
-								for (int k = 0; k<doubles.getSize(); k++){
-									if (!firstD)
-										s += ", ";
-									firstD = false;
-									s += MesquiteDouble.toString(doubles.getValue(k));
-								}
-								s+=  "} ";
-							}
-							else if (obj instanceof StringArray){
-								StringArray words = (StringArray)obj;
-								s+= "{";
-								boolean firstD = true;
-								for (int k = 0; k<words.getSize(); k++){
-									if (!firstD)
-										s += ", ";
-									firstD = false;
-									s += words.getValue(k);
-								}
-								s+=  "} ";
-							}
-							else if (obj instanceof Listable)
-								s+= ((Listable)obj).getName() + " = " + obj;
-							else if (obj instanceof String){
-								s+= (String)obj;
-							}
-							else if (obj instanceof String[] && ((String[])obj).length>0){
-								String[] words = (String[])obj;
-								s+= "{";
-								boolean firstD = true;
-								for (int k = 0; k<words.length; k++){
-									if (!firstD)
-										s += ", ";
-									firstD = false;
-									s += words[k];
-								}
-								s+=  "} ";
-							}
-							tree.setNodeLabel(s, node);
+		}
+		else {if (mi.kind == Associable.BITS){
+			for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+				tree.setNodeLabel(MesquiteBoolean.toTrueFalseString(tree.getAssociatedBit(currentRef, node)), node);
+		}
+		else if (mi.kind == Associable.LONGS) {
+			for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+				tree.setNodeLabel(MesquiteLong.toString(tree.getAssociatedLong(currentRef, node)), node);
+		}
+		else if (mi.kind == Associable.DOUBLES){
+			for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+				tree.setNodeLabel(MesquiteDouble.toString(tree.getAssociatedDouble(currentRef, node)), node);
+		}
+		else if (mi.kind== Associable.STRINGS){
+			for (int node = 0; node<tree.getNumNodeSpaces(); node++) 
+				tree.setNodeLabel(tree.getAssociatedString(currentRef, node), node);
+		}
+		else if (mi.kind == Associable.OBJECTS){
+			for (int node = 0; node<tree.getNumNodeSpaces(); node++) {
+				Object obj = tree.getAssociatedObject(currentRef, node);
+				if (obj!=null ){
+					String s ="";
+					if (obj instanceof DoubleArray){
+						DoubleArray doubles = (DoubleArray)obj;
+						s+= "{";
+						boolean firstD = true;
+						for (int k = 0; k<doubles.getSize(); k++){
+							if (!firstD)
+								s += ", ";
+							firstD = false;
+							s += MesquiteDouble.toString(doubles.getValue(k));
 						}
+						s+=  "} ";
 					}
+					else if (obj instanceof StringArray){
+						StringArray words = (StringArray)obj;
+						s+= "{";
+						boolean firstD = true;
+						for (int k = 0; k<words.getSize(); k++){
+							if (!firstD)
+								s += ", ";
+							firstD = false;
+							s += words.getValue(k);
+						}
+						s+=  "} ";
+					}
+					else if (obj instanceof Listable)
+						s+= ((Listable)obj).getName() + " = " + obj;
+					else if (obj instanceof String){
+						s+= (String)obj;
+					}
+					else if (obj instanceof String[] && ((String[])obj).length>0){
+						String[] words = (String[])obj;
+						s+= "{";
+						boolean firstD = true;
+						for (int k = 0; k<words.length; k++){
+							if (!firstD)
+								s += ", ";
+							firstD = false;
+							s += words[k];
+						}
+						s+=  "} ";
+					}
+					tree.setNodeLabel(s, node);
 				}
-				}
+			}
+		}
+		}
 
 
 
 		if (deleteOriginal){
-					pleaseDeleteRow(ir, false);
+			pleaseDeleteRow(ir, false);
 		}
 		tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		tree.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
@@ -387,7 +396,7 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 	}	/*.................................................................................................................*/
 
 	public String getWidestString(){
-		return "88888888888888";
+		return "888888888";
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
@@ -408,23 +417,20 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 		return false;  
 	}
 	public String getStringForRow(int ic) {
-		if (associatedInfo == null)
-			return "—";
-		if (ic>=0 && ic<associatedInfo.size()){
-			ObjectContainer objContainer = (ObjectContainer)associatedInfo.elementAt(ic);
-			Object obj = objContainer.getObject();
-			if (obj instanceof DoubleArray)
-				return "Decimal";
-			else if (obj instanceof LongArray)
-				return "Integer";
-			else if (obj instanceof StringArray)
-				return "Text";
-			else if (obj instanceof Bits) {
+		PropertyDisplayRecord property = getPropertyAtRow(ic);
+		if (property != null){
+			if (property.kind == Associable.BITS)
 				return "Boolean";
-			}
-			else if (obj instanceof ObjectArray) {
-				ObjectArray oa = (ObjectArray)obj;
-
+			else if (property.kind == Associable.DOUBLES || (property.kind == Associable.BUILTIN && property.getNameReference().equals(MesquiteTree.branchLengthNameRef)))
+				return "Decimal";
+			else if (property.kind == Associable.LONGS)
+				return "Integer";
+			else if (property.kind == Associable.STRINGS || (property.kind == Associable.BUILTIN && property.getNameReference().equals(MesquiteTree.nodeLabelNameRef)))
+				return "Text";
+			else if (property.kind == Associable.OBJECTS) {
+				if (tree == null)
+					return "Objects";
+				ObjectArray oa = tree.getAssociatedObjects(property.getNameReference());
 				if (oa.oneKindOfObject()){
 					Class commonClass = oa.getCommonClass();
 					if (commonClass == DoubleArray.class)
@@ -439,14 +445,10 @@ public class NodeAssociatesListKind extends NodeAssociatesListAssistant  {
 						return "(empty)";
 				}
 				return "Objects";
+
 			}
-			else if (obj instanceof Tree && MesquiteTree.branchLengthName.equalsIgnoreCase(objContainer.getName()))
-				return MesquiteTree.branchLengthName;
-			else if (obj instanceof Tree && MesquiteTree.nodeLabelName.equalsIgnoreCase(objContainer.getName()))
-				return MesquiteTree.nodeLabelName;
-			else
-				return "?";
 		}
+
 		return "—";
 	}
 	/*.................................................................................................................*/

@@ -23,6 +23,7 @@ import mesquite.lib.table.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
 import mesquite.categ.lib.*;
 
 /* TODO: 
@@ -69,6 +70,7 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 		this.data = data;
 		taxa = data.getTaxa();
 	}
+
 	/*.................................................................................................................*/
 	public int getApplicableNonMissing(int ic, int it, boolean before){
 		int count = 0;

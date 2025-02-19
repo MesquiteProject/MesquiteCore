@@ -56,8 +56,9 @@ public class MainThread extends MesquiteThread {
 			for (int i= 0; i< pendingCommands.size(); i++) {
 				PendingCommand pc =  (PendingCommand)pendingCommands.elementAt(i); 
 				MesquiteCommand mc = pc.getCommand();
-				if (command == mc)
+				if (command == mc) {
 					return true;
+				}
 			}
 		}
 		catch (Exception e){
@@ -107,7 +108,6 @@ public class MainThread extends MesquiteThread {
 				}
 				try {
 					if (pendingCommands.size()>0) {
-
 						PendingCommand pc = (PendingCommand)pendingCommands.elementAt(0);  // get it so that we can set it to busy
 						MesquiteCommand c = pc.getCommand();
 						pc = (PendingCommand)pendingCommands.elementAt(0);  // pluck it off again

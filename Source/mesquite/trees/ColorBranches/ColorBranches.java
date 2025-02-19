@@ -156,7 +156,7 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	private boolean anyColored(MesquiteTree tree, int node, String targetColor){
-		if (tree.getColorAsHexString(node).equals(targetColor))
+		if (tree.getColorAsHexString(node) != null && tree.getColorAsHexString(node).equals(targetColor))
 			return true;
 		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
 			if (anyColored(tree, daughter, targetColor))
@@ -169,7 +169,7 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 		if (coloredBelow)
 			tree.setColor( node, colorModule.branchColor);
 		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
-			wrapColors(tree, daughter, coloredBelow || tree.getColorAsHexString(node).equals(targetColor), targetColor);
+			wrapColors(tree, daughter, coloredBelow || (tree.getColorAsHexString(node) != null && tree.getColorAsHexString(node).equals(targetColor)), targetColor);
 		}
 	}
 	/*.................................................................................................................*/

@@ -28,6 +28,15 @@ public class StringArray implements StringLister, Listable, Nameable {
 		for (int i=0; i<num; i++)
 			values[i] =  null;
 	}
+	//used for Associables that might need to record whether reference is to part or in between part
+	//intially for MesquiteTree to know if info applies to node or branch ancestral to node
+	boolean between = false;
+	public void setBetweenness(boolean b){
+		between = b;  
+	}
+	public boolean isBetween(){
+		return between;
+	}
 	/*...........................................................*/
 	public String[] getStrings(){
 		return values;
@@ -236,6 +245,14 @@ public class StringArray implements StringLister, Listable, Nameable {
 		return values.length;
 	}
 
+	/*...........................................................*/
+	public void copyTo(StringArray d){
+		if (d==null || d.values.length!=values.length)
+			return;
+		for (int i=0; i<values.length; i++)
+			d.values[i] =  values[i];
+	}
+	/*...........................................................*/
 	/** Concatenates the two String arrays together */
 	public static String[] concatenate(String[] d1, String[] d2) {
 		if (d1==null && d2==null)
@@ -462,6 +479,15 @@ public class StringArray implements StringLister, Listable, Nameable {
 	/*...........................................................*/
 	public void moveParts(int starting, int num, int justAfter) {
 		moveParts(values, starting, num, justAfter);
+	}
+	/*...........................................................*/
+	public boolean swapParts(int first, int second) {
+		if (first<0 || first>=values.length || second<0 || second>=values.length) 
+			return false;
+		String temp = values[first];
+		values[first] = values[second];
+		values[second] = temp;
+		return true;
 	}
 	/*...........................................................*/
 	public static void swapParts(String[] d, int first, int second) {

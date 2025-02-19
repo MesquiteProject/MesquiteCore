@@ -74,7 +74,7 @@ public class ManageAttachedNotes extends FileInit /*implements ElementManager*/ 
 				if (taxa.getFile() == file) {
 					if (project.getNumberTaxas()>1) //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
 						context.append("\tTAXA = " +  StringUtil.tokenize(taxa.getName(), null, tokSB) + eL);
-					ObjectArray taxNotes = taxa.getWhichAssociatedObject(ref);
+					ObjectArray taxNotes = taxa.getAssociatedObjects(ref);
 					for (int it = 0; it<taxa.getNumTaxa(); it++){
 						if (taxNotes != null){
 							Object obj = taxNotes.getValue(it);
@@ -113,7 +113,7 @@ public class ManageAttachedNotes extends FileInit /*implements ElementManager*/ 
 						else  //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
 							context.append("\tCHARACTERS = " +  StringUtil.tokenize(data.getName(), null, tokSB) + eL);
 					}
-					ObjectArray charImages = data.getWhichAssociatedObject(ref);
+					ObjectArray charImages = data.getAssociatedObjects(ref);
 					if (charImages !=null){
 						for (int ic = 0; ic<data.getNumChars(); ic++){
 							Object obj = charImages.getValue(ic);

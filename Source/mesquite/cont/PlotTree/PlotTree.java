@@ -86,8 +86,12 @@ public class PlotTree extends AnalyticalDrawTree {
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		PlotTreeDrawing treeDrawing =  new PlotTreeDrawing (treeDisplay, numTaxa, this, spotSize);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
+	}
+	public Vector getDrawings(){
+		return drawings;
 	}
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){
@@ -120,7 +124,7 @@ public class PlotTree extends AnalyticalDrawTree {
 					PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
 		    	 			spotSize = newDiameter;
 		    	 			treeDrawing.spotsize=newDiameter;
-		    	 			treeDrawing.treeDisplay.setMinimumTaxonNameDistance(treeDrawing.spotsize/2, 4);
+		    	 			treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(treeDrawing.spotsize/2, 4);
 		    	 			parametersChanged();
 	    	 		}
     	 		}
@@ -228,7 +232,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		this.spotsize = spotSize;
 
-	    	treeDisplay.setMinimumTaxonNameDistance(spotsize/2, 4);
+	    	treeDisplay.setMinimumTaxonNameDistanceFromTip(spotsize/2, 4);
 		treeDisplay.setOrientation(TreeDisplay.FREEFORM);
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
@@ -267,6 +271,8 @@ class PlotTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawLines(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			Composite composite = 	treeDisplay.setBranchTransparency(g, node);
@@ -314,6 +320,8 @@ class PlotTreeDrawing extends TreeDrawing  {
 	
 	/*_________________________________________________*/
 	private   void drawSpots(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			Composite composite = 	treeDisplay.setBranchTransparency(g, node);
@@ -360,7 +368,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 	        		resetNumNodes(tree.getNumNodeSpaces());
 	        	if (!tree.nodeExists(getDrawnRoot()))
 	        		setDrawnRoot(tree.getRoot());
-			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot(),  treeDisplay.getField()); 
+			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot()); 
 		}
 	}
 	/*_________________________________________________*/

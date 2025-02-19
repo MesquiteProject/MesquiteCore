@@ -45,11 +45,9 @@ public class Bits implements Listable, Nameable {
 	// intially for MesquiteTree to know if info applies to node or branch ancestral
 	// to node
 	boolean between = false;
-
 	public void setBetweenness(boolean b) {
 		between = b;
 	}
-
 	public boolean isBetween() {
 		return between;
 	}

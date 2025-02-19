@@ -25,6 +25,7 @@ import mesquite.lib.MesquiteInteger;
 import mesquite.lib.NameReference;
 import mesquite.lib.ObjectArray;
 import mesquite.lib.RandomBetween;
+import mesquite.lib.StringArray;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxonNamer;
 
@@ -137,6 +138,15 @@ public interface Tree extends Listable {
 	There is currently no method to return whether two nodes share at least one parent.*/
 	public  boolean nodesAreSisters(int branch1, int branch2); 
 	/** Returns whether tree has nodes with more than one parent.*/
+	public void setCollapsedClade(int node, boolean collapse);
+	public void decollapseClade(int node);
+	public boolean isCollapsedClade(int node);
+	public boolean withinCollapsedClade(int node);
+	public int shallowestCollapsedAncestor(int node);
+	public int deepestCollapsedAncestor(int node);
+	public boolean isLeftmostTerminalOfCollapsedClade(int node);
+	public boolean isVisibleEvenIfInCollapsed(int node);
+	
 	public  boolean hasReticulations();
 	/** Returns whether clade has unbranched internal nodes.*/
 	public  boolean hasUnbranchedInternals(int node);
@@ -156,6 +166,8 @@ public interface Tree extends Listable {
 	public  int numberOfNodesInClade(int node);
 	/** Returns number of terminal taxa in clade.*/
 	public  int numberOfTerminalsInClade(int node);
+	/** Returns number of terminal taxa in clade, counting collapsed clades as one terminal.*/
+	public  int numberOfVisibleTerminalsInClade(int node);
 	/** Returns number of internal nodes in clade.*/
 	public  int numberOfInternalsInClade(int node);
 	/** Returns the left-most terminal that is descendant from node.*/
@@ -301,25 +313,27 @@ public interface Tree extends Listable {
 	public int getFirstSelected(int node);
 	public int getNumberAssociatedBits();
 	public Bits getAssociatedBits(int index);
-	public Bits getWhichAssociatedBits(NameReference nRef);
+	public Bits getAssociatedBits(NameReference nRef);
 	public boolean getAssociatedBit(NameReference nRef, int index);
 	public int getNumberAssociatedLongs();
 	public LongArray getAssociatedLongs(int index);
-	public LongArray getWhichAssociatedLong(NameReference nRef);
+	public LongArray getAssociatedLongs(NameReference nRef);
 	public long getAssociatedLong(NameReference nRef, int index);
 	public int getNumberAssociatedDoubles();
-	public DoubleArray getWhichAssociatedDouble(NameReference nRef);
+	public DoubleArray getAssociatedDoubles(NameReference nRef);
 	public DoubleArray getAssociatedDoubles(int index);
 	public double getAssociatedDouble(NameReference nRef, int index);
+	public int getNumberAssociatedStrings();
+	public StringArray getAssociatedStrings(NameReference nRef);
+	public StringArray getAssociatedStrings(int index);
+	public String getAssociatedString(NameReference nRef, int index);
 	public int getNumberAssociatedObjects();
 	public ObjectArray getAssociatedObjects(int index);
-	public ObjectArray getWhichAssociatedObject(NameReference nRef);
+	public ObjectArray getAssociatedObjects(NameReference nRef);
 	public Object getAssociatedObject(NameReference nRef, int index);
 	public boolean hasName();
 	public String writeTree();
 
-	public boolean ancestorHasNameReference(NameReference nameRef, int node);
-	public int ancestorWithNameReference(NameReference nameRef, int node);
 
 	/** Returns a simple string describing the tree in standard parenthesis notation (Newick standard), excluding associated information except branch lengths.
 	To be used for output to user, not internally (as it may lose information).*/

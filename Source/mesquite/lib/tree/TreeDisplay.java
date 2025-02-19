@@ -16,13 +16,17 @@ package mesquite.lib.tree;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteLong;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
+import mesquite.lib.ProjectReadThread;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
@@ -95,6 +99,13 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public static int sTHM_DEFAULT = sTHM_GREYBOX;
 	public int selectedTaxonHighlightMode = sTHM_DEFAULT;
 
+	/**  What is the mode for highlighting collapsed clades in tree displays? */
+	public static final int cCHM_BOLD = 1;
+	public static final int cCHM_ITALICS = 2;
+	public static final int cCHM_BIG = 4; 
+	public static int cCHM_DEFAULT = 3;
+	public int collapsedCladeHighlightMode = cCHM_DEFAULT;
+
 	protected boolean showBranchColors = true;
 	public static boolean printTreeNameByDefault = false;
 
@@ -107,11 +118,14 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/**  The width of the drawn edges (branches)*/
 	private int edgewidth;
 
+	/**  whether the taxon name drawer should put the name of a collapsed clade at its leftmost ancestor (e.g. for Square Line tree) or at its MRCA (e.g., for plot tree)*/
+	public boolean collapsedCladeNameAtLeftmostAncestor = false;
+
 	/**  Spacing in pixels between taxa*/
 	private int taxonSpacing;
 
 	/**  Spacing in pixels between taxa as set by user*/
-	private int fixedTaxonSpacing;
+	private int fixedTaxonSpacing = 0;
 	/**  Orientaton of the tree*/
 	private int treeOrientation = NOTYETSET;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree drawer*/
@@ -121,15 +135,15 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/**  Is the orientation fixed, or can reorientation be done?*/
 	private boolean allowReorient = true;
 	private MesquiteInteger highlightedBranch  = new MesquiteInteger(0);
-
-	/**  whether "triangled" clades are shown as simple triangles or not*/
-	private boolean simpleTriangle=true;
+	MesquiteCommand recalcCommand;
 
 
 	public TreeDisplay (MesquiteModule ownerModule, Taxa taxa) { 
 		super(ownerModule,taxa);
 		branchColor = Color.black;
 		branchColorDimmed = Color.gray;
+		recalcCommand = new MesquiteCommand("redoCalculations", this);
+		recalcCommand.setSuppressLogging(true); 
 	}
 
 	public static final int DRAWULTRAMETRIC = 0; //	
@@ -173,11 +187,14 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	NameReference 	oldColourNameRef = NameReference.getNameReference("color");
 	MesquiteInteger pos = new MesquiteInteger(0);
 	public Color getBranchColor(int N){
-		if (!showBranchColors)
+		if (!showBranchColors || tree == null)
 			return branchColor;
 		Color color = null;
 		String cRGB = null;
-		if (tree != null)
+		if (tree.withinCollapsedClade(N)){
+			cRGB = ((MesquiteTree)tree).uniformColorInClade(tree.deepestCollapsedAncestor(N));
+		}
+		if (cRGB == null)
 			cRGB = (String)((MesquiteTree)tree).getColorAsHexString(N);
 		if (cRGB != null) {
 			pos.setValue(0);
@@ -292,25 +309,56 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		namesTask = dtn;
 	}
 
-
+	//Distance from tip to taxon name
 	boolean tndExplicitlySet = false;
-	public void setMinimumTaxonNameDistance(int minForTerminalBoxes, int min) {
+	public void setMinimumTaxonNameDistanceFromTip(int minForTerminalBoxes, int min) {
 		this.minForTerminalBoxes = minForTerminalBoxes;
 		this.minDist = min;
 		if (!tndExplicitlySet || dist<minDist)
 			dist = minDist;
 	}
-	public void setTaxonNameDistance(int newDist) { 
+	public void setTaxonNameDistanceFromTip(int newDist) { 
 		if (newDist>=minDist) {
 			this.dist = newDist;
 			tndExplicitlySet = true;
 		}
 	}
-	public int getTaxonNameDistance() {
+	public int getTaxonNameDistanceFromTip() {
 		if (treeDrawing != null && treeDrawing.terminalBoxesRequested())
 			return dist + minForTerminalBoxes;
 		else
 			return dist;
+	}
+	public int effectiveFieldWidth(){
+		return getField().width-effectiveFieldLeftMargin()-effectiveFieldRightMargin();
+	}
+	public int effectiveFieldHeight(){
+		return getField().height-effectiveFieldTopMargin()-effectiveFieldBottomMargin();
+	}
+	public int effectiveFieldLeftMargin(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras.leftBorder;
+	}
+	public int effectiveFieldRightMargin(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras.rightBorder;
+	}
+	public int effectiveFieldTopMargin(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras.topBorder;
+	}
+	public int effectiveFieldBottomMargin(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras.bottomBorder;
+	}
+	public double extraRequestedDepthAtRoot(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras.extraDepthAtRoot;
 	}
 	public void setTipsMargin(int margin) {
 		tipsMargin = margin;
@@ -332,6 +380,20 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			treeDrawing.recalculatePositions(tree); //to force node locs recalc
 
 	}
+	
+	public void redoCalculationsMainThread(){
+		recalcCommand.doItMainThread(null, null, null); 
+		}
+	
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Recalculates node positions", "[]", commandName, "redoCalculations")) {
+			if (!(Thread.currentThread() instanceof ProjectReadThread))
+				redoCalculations(134618);
+		}
+		else return super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+
 	public void setEdgeWidth(int sp) {
 		this.edgewidth = sp;
 	}
@@ -350,20 +412,49 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public int getFixedTaxonSpacing() {
 		return fixedTaxonSpacing;
 	}
+	
+	boolean rectsEqual(int[] r1, int[] r2){
+		if (r1 == null){
+			if (r2 != null)
+			return false;
+			else
+				return true;
+			}
+		if (r2== null)
+			return false;
+		return r1[0] == r2[0] && r1[1] == r2[1] && r1[2] == r2[2] && r1[3] == r2[3];
+	}
 	public void addExtra(TreeDisplayExtra extra) {
-		if (extras != null)
+		if (extras != null){
 			extras.addElement(extra, false);
+			if (tree != null){
+				TreeDisplayRequests before = getExtraTreeDisplayRequests();
+				accumulateRequestsFromExtras(tree);
+				TreeDisplayRequests after = getExtraTreeDisplayRequests();
+				if (!TreeDisplayRequests.equal(before, after))
+					redoCalculationsMainThread();
+			}
+	}
 	}
 	public void removeExtra(TreeDisplayExtra extra) {
-		if (extras != null)
+	 if (extras != null){
 			extras.removeElement(extra, false);
+			if (tree != null){
+				TreeDisplayRequests before = getExtraTreeDisplayRequests();
+				accumulateRequestsFromExtras(tree);
+				TreeDisplayRequests after = getExtraTreeDisplayRequests();
+				if (!TreeDisplayRequests.equal(before, after))
+					redoCalculationsMainThread();
+			}
+		}
+	
 	}
 	public boolean findExtra(TreeDisplayExtra extra) {
 		if (extras == null)
 			return false;
 		return (extras.indexOf(extra) >= 0);
 	}
-	
+
 	int locationSetX = 0;
 	int locationSetY = 0;
 	public void adjustLocation(int x, int y){
@@ -422,34 +513,34 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					return;
 				ex.setTree(tree);
 			}
+			accumulateRequestsFromExtras(tree);
 		}
 	}
+
 	
-	int[] borders = new int[]{0, 0, 0, 0};
-	public int[]  getBorders(){
-		return borders;
+	TreeDisplayRequests bordersRequestedByExtras = new TreeDisplayRequests();  //left top right bottom
+	public TreeDisplayRequests getExtraTreeDisplayRequests(){
+		return bordersRequestedByExtras;
 	}
-	public void setBordersFromExtras(Tree tree) {
-		int[] bordersTemp = getBordersFromExtras(tree);
-		if (bordersTemp != null && bordersTemp.length == 4)
-			borders = bordersTemp;
+	public void accumulateRequestsFromExtras(Tree tree) {
+		TreeDisplayRequests bordersPixelsTemp = getRequestsFromExtras(tree);
+		if (bordersPixelsTemp != null)
+			bordersRequestedByExtras = bordersPixelsTemp;
 	}
-	public int[] getBordersFromExtras(Tree tree) {
+	TreeDisplayRequests getRequestsFromExtras(Tree tree) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return null;
 		if (extras != null) {
-			int[] overallBorder = new int[]{0, 0, 0, 0};
+			TreeDisplayRequests overallBorder = new TreeDisplayRequests();
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
 				if (ownerModule==null || ownerModule.isDoomed()) 
 					return null;
-				int[] borderRequest = ex.getRequestedExtraBorders(tree, treeDrawing);
-				if (borderRequest != null && borderRequest.length == 4){
-					for (int i=0;i<4; i++)
-						if (borderRequest[i]>overallBorder[i])
-							overallBorder[i] = borderRequest[i];
+				TreeDisplayRequests borderRequest = ex.getRequestsOfTreeDisplay(tree, treeDrawing);
+				if (borderRequest != null){
+					overallBorder.mergeFrom(borderRequest);
 				}
 
 			}
@@ -457,15 +548,39 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		}
 		return null;
 	}
+
 	public void drawAllBackgroundExtrasOfPlacement(Tree tree, int drawnRoot, Graphics g, int placement) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
 		if (extras != null) {
+			//EARLY
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
+				if (ex instanceof TreeDisplayEarlyExtra && ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					((TreeDisplayBkgdExtra)ex).drawUnderTree(tree, drawnRoot, g);
+				}
+			}
+			//DEFAULT
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (!(ex instanceof TreeDisplayEarlyExtra || ex instanceof TreeDisplayLateExtra) && ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					((TreeDisplayBkgdExtra)ex).drawUnderTree(tree, drawnRoot, g);
+				}
+			}
+			//LATE
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ex instanceof TreeDisplayLateExtra && ex instanceof TreeDisplayBkgdExtra && ex.getPlacement()==placement) {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					((TreeDisplayBkgdExtra)ex).drawUnderTree(tree, drawnRoot, g);
@@ -481,18 +596,49 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void drawAllExtras(Tree tree, int drawnRoot, Graphics g) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
-		
+
 		if (extras != null) {
 			Enumeration e = extras.elements();
+			//EARLY
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (ownerModule==null || ownerModule.isDoomed()) 
-					return;
-				Shape clip = g.getClip();
-				g.setClip(null);
-				ex.drawOnTree(tree, drawnRoot, g);
-				g.setClip(clip);
+				if (ex instanceof TreeDisplayEarlyExtra){
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					Shape clip = g.getClip();
+					g.setClip(null);
+					ex.drawOnTree(tree, drawnRoot, g);
+					g.setClip(clip);
+				}
+			}
+			//DEFAULT
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (!(ex instanceof TreeDisplayEarlyExtra || ex instanceof TreeDisplayLateExtra)){
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					Shape clip = g.getClip();
+					g.setClip(null);
+					ex.drawOnTree(tree, drawnRoot, g);
+					g.setClip(clip);
+				}
+			}
+			//LATE
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ex instanceof TreeDisplayLateExtra){
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					Shape clip = g.getClip();
+					g.setClip(null);
+					ex.drawOnTree(tree, drawnRoot, g);
+					g.setClip(clip);
+				}
 			}
 		}
 		if (notice!=null)
@@ -503,12 +649,36 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void printAllBackgroundExtras(Tree tree, int drawnRoot, Graphics g) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
+
 		if (extras != null) {
+			//EARLY
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (ex instanceof TreeDisplayBkgdExtra) {
+				if (ex instanceof TreeDisplayEarlyExtra && ex instanceof TreeDisplayBkgdExtra) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					((TreeDisplayBkgdExtra)ex).printUnderTree(tree, drawnRoot, g);
+				}
+			}
+			//DEFAULT
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (!(ex instanceof TreeDisplayEarlyExtra || ex instanceof TreeDisplayLateExtra) && ex instanceof TreeDisplayBkgdExtra) {
+					if (ownerModule==null || ownerModule.isDoomed()) 
+						return;
+					((TreeDisplayBkgdExtra)ex).printUnderTree(tree, drawnRoot, g);
+				}
+			}
+			//LATE
+			e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ex instanceof TreeDisplayLateExtra && ex instanceof TreeDisplayBkgdExtra) {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					((TreeDisplayBkgdExtra)ex).printUnderTree(tree, drawnRoot, g);
@@ -538,19 +708,15 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		if (allowReorient)
 			treeOrientation = orient;
 	}
-	/*_________________________________________________*/
-	public void setSimpleTriangle(boolean simpleTriangle) {
-		this.simpleTriangle=simpleTriangle;
-	}
-	/*_________________________________________________*/
-	public boolean getSimpleTriangle() {
-		return simpleTriangle;
-	}
 	/*.................................................................................................................*/
 	public int getOrientation() {
 		return treeOrientation;
 	}
 
+	/*.................................................................................................................*/
+	public boolean getAllowReorientation() {
+		return allowReorient;
+	}
 	/*.................................................................................................................*/
 	public void setAllowReorientation(boolean allow) {
 		allowReorient = allow;

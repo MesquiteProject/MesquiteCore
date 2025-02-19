@@ -38,7 +38,8 @@ public class MesquiteDouble implements Listable, Nameable {
 	static double log10 = Math.log(10.0);
 	public static long totalCreated = 0;
 	public static int defaultDigits = 8; //changed from 6, 17 Dec 01
-	
+	private boolean unanimous = true;
+
 	public MesquiteDouble(double value) {
 		this.value=value;
 		totalCreated++;
@@ -84,6 +85,32 @@ public class MesquiteDouble implements Listable, Nameable {
 	/** Sets value to unassigned */
 	public void setToUnassigned() {
 		value=unassigned;
+	}
+	
+	public void resetVote(){ //should only be called before use of vote
+		setToUnassigned();
+		unanimous = true;
+
+	}
+	/** if unassigned, assign it the incoming. If incoming is different from previous assigned, unanimous is set to false and keep it there. Thus know if there is disagreemnt in a set */
+	public void vote(double value) {
+		if (value == unassigned)
+			return;
+		if (!unanimous)
+			return;
+		if (this.value == unassigned)
+			this.value = value;
+		else if (this.value != value)
+			unanimous = false;
+	}
+	public boolean isUnanimous(){ //should only be called after a good use of vote
+		return unanimous;
+	}
+	public double unanimousValue(){ //should only be called after a good use of vote
+		if (unanimous)
+			return value;
+		else
+			return unassigned;
 	}
 	/*--------------------------------CONVERSION--------------------------*/
 	/** Returns the double conversion of the passed integer, considering

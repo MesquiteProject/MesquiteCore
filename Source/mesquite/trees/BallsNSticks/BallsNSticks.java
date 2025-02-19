@@ -45,17 +45,16 @@ public class BallsNSticks extends DrawTree {
 	}
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
-	MesquiteString orientationName, lineStyleName;
+	MesquiteString lineStyleName;
 	Vector drawings;
 	int oldEdgeWidth = 2;
 	int oldSpotSize = 22;
-	int ornt, style;
+	int style;
 	static final int DIAGONAL = 0;
 	static final int SQUARE = 1;
 	static final int CURVED = 2;
 	public MesquiteBoolean cosmic = new MesquiteBoolean(false);
 	public MesquiteBoolean ballsInternal = new MesquiteBoolean(true);
-	MesquiteSubmenuSpec orientationSubmenu;
 	MesquiteSubmenuSpec lineStyleSubmenu;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -65,9 +64,6 @@ public class BallsNSticks extends DrawTree {
 		drawings = new Vector();
 		//addMenuItem("Display", "Edge width...", makeCommand("edgeWidth"));
 		defineMenus(false);
-		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
-		orientationName = new MesquiteString(orient(ornt));
-		orientationSubmenu.setSelected(orientationName);
 		lineStyleName = new MesquiteString("Diagonal");
 		style = DIAGONAL;
 		lineStyleSubmenu.setSelected(lineStyleName);
@@ -78,11 +74,6 @@ public class BallsNSticks extends DrawTree {
 		iQuit();
 	}
 	public void defineMenus(boolean accumulating){
-		orientationSubmenu = addSubmenu(null, "Orientation");
-		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this));
 		lineStyleSubmenu = addSubmenu(null, "Line Style");
 		addItemToSubmenu(null, lineStyleSubmenu, "Diagonal", makeCommand("useDiagonal",  this));
 		addItemToSubmenu(null, lineStyleSubmenu, "Square", makeCommand("useSquare",  this));
@@ -95,17 +86,15 @@ public class BallsNSticks extends DrawTree {
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		BallsNSticksDrawing treeDrawing =  new BallsNSticksDrawing (treeDisplay, numTaxa, this);
-		if (legalOrientation(treeDisplay.getOrientation())){
-			orientationName.setValue(orient(treeDisplay.getOrientation()));
-			ornt = treeDisplay.getOrientation();
-		}
-		else
-			treeDisplay.setOrientation(ornt);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		drawings.addElement(treeDrawing);
 		//	treeDisplay.inhibitStretchByDefault = false;
 		return treeDrawing;
 	}
-	public boolean legalOrientation (int orientation){
+	public Vector getDrawings(){
+		return drawings;
+	}
+public boolean legalOrientation (int orientation){
 		return (orientation == TreeDisplay.UP || orientation == TreeDisplay.DOWN || orientation == TreeDisplay.RIGHT || orientation == TreeDisplay.LEFT);
 	}
 	/*.................................................................................................................
@@ -117,31 +106,12 @@ public class BallsNSticks extends DrawTree {
  		nodeLocsTask= null;
    	 }
 
-	/*.................................................................................................................*/
-	public String orient (int orientation){
-		if (orientation == TreeDisplay.UP)
-			return "Up";
-		else if (orientation == TreeDisplay.DOWN)
-			return "Down";
-		else if (orientation == TreeDisplay.RIGHT)
-			return "Right";
-		else if (orientation == TreeDisplay.LEFT)
-			return "Left";
-		else return "other";
-	}
+	
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setSpotDiameter " + oldSpotSize); 
 		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
-		if (ornt== TreeDisplay.UP)
-			temp.addLine("orientUp"); 
-		else if (ornt== TreeDisplay.DOWN)
-			temp.addLine("orientDown"); 
-		else if (ornt== TreeDisplay.LEFT)
-			temp.addLine("orientLeft"); 
-		else if (ornt== TreeDisplay.RIGHT)
-			temp.addLine("orientRight"); 
 		if (style== DIAGONAL)
 			temp.addLine("useDiagonal"); 
 		else if (style== SQUARE)
@@ -169,7 +139,7 @@ public class BallsNSticks extends DrawTree {
 					BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
 					treeDrawing.spotSize=newDiameter;
 					treeDrawing.preferredSpotSize = newDiameter;
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(0, treeDrawing.spotSize/2  + 4);
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(0, treeDrawing.spotSize/2  + 4);
 				}
 				parametersChanged();
 			}
@@ -237,53 +207,21 @@ public class BallsNSticks extends DrawTree {
 		else if (checker.compare(this.getClass(), "Returns the module employed to set the node locations", null, commandName, "getNodeLocsEmployee")) {
 			return nodeLocsTask;
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree so that the terminals are pointing up", null, commandName, "orientUp")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.UP);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {  //for legacy scripts
+			if (nodeLocsTask != null)
+				nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree so that the terminals are pointing down", null, commandName, "orientDown")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.DOWN);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.RIGHT);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				BallsNSticksDrawing treeDrawing = (BallsNSticksDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.LEFT);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
 		else {
 			return  super.doCommand(commandName, arguments, checker);
@@ -314,12 +252,12 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	private boolean ready=false;
 
 	private int foundBranch;
-	NameReference triangleNameRef;
+	
 	BasicStroke defaultStroke;
 
 	public BallsNSticksDrawing (TreeDisplay treeDisplay, int numTaxa, BallsNSticks ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
-		triangleNameRef = NameReference.getNameReference("triangled");
+		
 		this.ownerModule = ownerModule;
 		spotSize = ownerModule.oldSpotSize;
 		edgeWidth = ownerModule.oldEdgeWidth;
@@ -330,7 +268,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		}
 		catch (Throwable t){
 		}
-		treeDisplay.setMinimumTaxonNameDistance(0, spotSize/2+ 4);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(0, spotSize/2+ 4);
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
 		treeDisplay.setOrientation(ownerModule.nodeLocsTask.getDefaultOrientation());
@@ -374,7 +312,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void UPCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcBranchPolys(tree, d, polys, width);
 		if (ownerModule.style == BallsNSticks.DIAGONAL)
@@ -385,7 +322,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void DOWNCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcBranchPolys(tree, d, polys, width);
 		//DOWNdefinePoly(polys[node], width, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
@@ -397,7 +333,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void RIGHTCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcBranchPolys(tree, d, polys, width);
 		if (ownerModule.style == BallsNSticks.DIAGONAL)
@@ -408,7 +343,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void LEFTCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcBranchPolys(tree, d, polys, width);
 		if (ownerModule.style == BallsNSticks.DIAGONAL)
@@ -442,7 +376,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		if (treeDisplay==null) {ownerModule.logln("treeDisplay null"); return;}
 		if (tree==null) { ownerModule.logln("tree null"); return;}
 
-		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot,  treeDisplay.getField()); //Graphics g removed as parameter May 02
+		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot); //Graphics g removed as parameter May 02
 		calculateLines(tree, drawnRoot);
 		spotSize = preferredSpotSize;
 		if (treeDisplay.getTaxonSpacing()<spotSize+2) {
@@ -450,7 +384,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			if (spotSize<2)
 				spotSize=2;
 		}
-		treeDisplay.setMinimumTaxonNameDistance(0, spotSize/2+ 4);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(0, spotSize/2+ 4);
 		if (treeDisplay.getTaxonSpacing()<edgeWidth+2) {
 			edgeWidth = treeDisplay.getTaxonSpacing()-2;
 			if (edgeWidth<2)
@@ -544,7 +478,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				GraphicsUtil.fill(g,touchPoly[node]); 
 				g.setColor(prev);
 			}
-
+			
 			GraphicsUtil.fill(g,branchPoly[node]);  //TODO: no longer supports cosmic!
 		}
 		else if (ownerModule.style == BallsNSticks.CURVED)
@@ -557,6 +491,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				GraphicsUtil.fill(g,touchPoly[node]); 
 				g.setColor(prev);
 			}
+			GraphicsUtil.drawLine(g,x[node],y[node], x[tree.motherOfNode(node)],y[tree.motherOfNode(node)]); //if branch poly has zero width or height, won't be drawn, so this is a backup
 			GraphicsUtil.fill(g,branchPoly[node]);  //TODO: no longer supports cosmic!
 
 			// if (drawnRoot==node && tree.getRoot()!=node)
@@ -572,22 +507,21 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				}
 			}
 		}
-		if (tree.getAssociatedBit(triangleNameRef,node)) {
+	/*	if (tree.isCollapsedClade(node)) {
 			for (int j=0; j<2; j++)
 				for (int i=0; i<2; i++) {
 					GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
 					GraphicsUtil.drawLine(g,x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 					GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 				}
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	private   void drawBranches(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
-			if (!tree.getAssociatedBit(triangleNameRef,node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawBranches( tree, g, d);
-			if (tree.getRooted() || tree.getRoot()!=node) {
+			if ((tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 				drawJustOneBranch(tree,g,node);
 				if (!tree.nodeIsInternal(node) || ownerModule.ballsInternal.getValue()){
 					drawSpot( g, node);
@@ -646,21 +580,11 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		fillBranchWithColors(tree, node, colors, g);
 	}
-	/*_________________________________________________*/
-	private boolean ancestorIsTriangled(Tree tree, int node) {
-		if (!tree.nodeExists(node))
-			return false;
-		if (tree.getAssociatedBit(triangleNameRef, tree.motherOfNode(node)))
-			return true;
-		if (tree.getRoot() == node || tree.getSubRoot() == node)
-			return false;
-		return ancestorIsTriangled(tree, tree.motherOfNode(node));
-	}
 
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
 		
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node)) {
 			Color c = g.getColor();
 			if (g instanceof Graphics2D){
 				Graphics2D g2 = (Graphics2D)g;
@@ -674,7 +598,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			Color c = g.getColor();
 			int numColors = colors.getNumColors();
 			if (numColors==1){
@@ -686,13 +610,18 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				double startAngle=90;//was 270
 				double totalFreq=0;
 				for (int i=0; i<numColors; i++) totalFreq += colors.getWeight(i);
+				double suppl = 0;
+				if (totalFreq == 0){
+					totalFreq = 1.0;
+					suppl = 1.0/numColors;
+				}
 				double arcAngle = 0;
 				for (int i=0; i<numColors; i++) {
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
 
-					arcAngle = ((colors.getWeight(i)/totalFreq)*360.0);
+					arcAngle = (((colors.getWeight(i)+suppl)/totalFreq)*360.0);
 					//GraphicsUtil.fillArc(g, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4, spotSize - 4, startAngle, arcAngle, ownerModule.cosmic.getValue());
 					GraphicsUtil.fillArc(g, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4.0, spotSize - 4.0, startAngle, arcAngle, ownerModule.cosmic.getValue());
 					startAngle+=arcAngle; 
@@ -719,7 +648,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			//drawJustOneBranch(tree,g,node);
 			if (!tree.nodeIsInternal(node) || ownerModule.ballsInternal.getValue())
 				fillSpot(g,node);
@@ -747,19 +676,22 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		if (foundBranch==0) {
 			if (inBranch(tree,polys,node,x,y) || inNode(node, x, y)) {
 				foundBranch = node;
+				if (tree.withinCollapsedClade(node))
+					foundBranch = tree.deepestCollapsedAncestor(node);
+
 				if (fraction!=null)
-					if (inNode(node,x,y))
+					if (inNode(foundBranch,x,y))
 						fraction.setValue(ATNODE);
 					else {
-						int motherNode = tree.motherOfNode(node);
+						int motherNode = tree.motherOfNode(foundBranch);
 						fraction.setValue(EDGESTART);  //TODO: this is just temporary: need to calculate value along branch.
 						if (tree.nodeExists(motherNode)) {
-							fraction.setValue(GraphicsUtil.fractionAlongLine(x, y, this.x[motherNode], this.y[motherNode], this.x[node], this.y[node],isRIGHT()||isLEFT(), isUP()||isDOWN()));
+							fraction.setValue(GraphicsUtil.fractionAlongLine(x, y, this.x[motherNode], this.y[motherNode], this.x[foundBranch], this.y[foundBranch],isRIGHT()||isLEFT(), isUP()||isDOWN()));
 						}
 					}
-
+				return;
 			}
-			if (!tree.getAssociatedBit(triangleNameRef, node)) {
+			if (!tree.isCollapsedClade(node)) {
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, polys, d, x, y, fraction);
 			}

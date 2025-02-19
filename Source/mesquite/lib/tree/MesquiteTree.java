@@ -65,6 +65,7 @@ import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.taxa.TaxonNamer;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
 
 /* ======================================================================== */
 /** The basic Tree class of Mesquite.  Nodes are represented by integers (Object representation of nodes is too
@@ -194,7 +195,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private long id=0;
 
 	public static final String branchLengthName = "Branch length";
+	public static NameReference branchLengthNameRef = NameReference.getNameReference(branchLengthName);
 	public static final String nodeLabelName = "Node label";
+	public static NameReference nodeLabelNameRef = NameReference.getNameReference(nodeLabelName);
 
 	/** If this tree is read in from a file, this is the number of this tree within the file */
 	private int fileIndex = MesquiteInteger.unassigned;
@@ -456,11 +459,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 		if (tree.anySelectedInClade(tree.getRoot())){
 			NameReference sN = makeAssociatedBits("selected"); //this won't make new Bits if not needed, just return reference
-			selected = getWhichAssociatedBits(sN);
+			selected = getAssociatedBits(sN);
 		}
 		else
 			selected = null;
-		checkAssociatedBetweenness();
 		setAnnotation(tree.getAnnotation(), false); 
 		root=tree.root;
 		subRoot=tree.subRoot;
@@ -624,11 +626,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*----------------------------------------*/
 	private boolean coTraverseTransfer(int kind, NameReference nRef, MesquiteTree tree, int node, int[] minTerms, Tree tree2, int node2, int[] minTerms2){
-		if (kind == 0)
+		if (kind == Associable.BITS)
+			tree.setAssociatedBit(nRef, node, tree2.getAssociatedBit(nRef, node2));
+		else if (kind == Associable.LONGS)
 			tree.setAssociatedLong(nRef, node, tree2.getAssociatedLong(nRef, node2));
-		else if (kind == 1)
+		else if (kind == Associable.DOUBLES)
 			tree.setAssociatedDouble(nRef, node, tree2.getAssociatedDouble(nRef, node2));
-		else if (kind == 2)
+		else if (kind == Associable.STRINGS)
+			tree.setAssociatedString(nRef, node, tree2.getAssociatedString(nRef, node2));
+		else if (kind == Associable.OBJECTS)
 			tree.setAssociatedObject(nRef, node, tree2.getAssociatedObject(nRef, node2));
 
 		int numD = tree.numberOfDaughtersOfNode(node);
@@ -660,22 +666,106 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return true;
 	}
+
+	/*_________________________________________________*/
+	//COLLAPSED CLADES
+	NameReference collapsedNR = NameReference.getNameReference("collapsed");
+	public void setCollapsedClade(int node, boolean collapse){
+		setAssociatedBit(collapsedNR, node, collapse);
+	}
+	public void decollapseClade(int node){
+		setCollapsedClade(node, false);
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+			decollapseClade(d);
+
+	}
+	public boolean isCollapsedClade(int node){
+		return getAssociatedBit(collapsedNR, node);
+	}
+	public boolean withinCollapsedClade(int node){
+		int mother;
+		while (nodeExists(mother = motherOfNode(node))){
+			if (isCollapsedClade(mother))
+				return true;
+			node = mother;
+		}
+		return false;
+	}
+	public int shallowestCollapsedAncestor(int node) {
+		if (!nodeExists(node))
+			return 0;
+		if (isCollapsedClade(motherOfNode(node)))
+			return motherOfNode(node);
+		if (getRoot() == node || getSubRoot() == node)
+			return 0;
+		return shallowestCollapsedAncestor(motherOfNode(node));
+	}
+	public int deepestCollapsedAncestor(int node) {
+		if (!nodeExists(node))
+			return 0;
+		if (isCollapsedClade(motherOfNode(node)) && !nodeExists(shallowestCollapsedAncestor(motherOfNode(node))))
+			return motherOfNode(node);
+		if (getRoot() == node || getSubRoot() == node)
+			return 0;
+		return deepestCollapsedAncestor(motherOfNode(node));
+	}
+	/*_________________________________________________*/
+	public boolean isLeftmostTerminalOfCollapsedClade(int node) {  
+		if (nodeIsTerminal(node) && withinCollapsedClade(node)){
+			int dCA = deepestCollapsedAncestor(node);
+			if (leftmostTerminalOfNode(dCA)==node)
+				return true;
+		}
+		return false;
+	}
+	/*_________________________________________________*/
+	public boolean isVisibleEvenIfInCollapsed(int node) {  
+		return !withinCollapsedClade(node) || isLeftmostTerminalOfCollapsedClade(node);
+	}
+	/*_________________________________________________*/
+	public String uniformColorInClade(int node){
+		if (nodeIsTerminal(node))
+			return getColorAsHexString(node);
+		String cladeColor = null;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)){
+			String dsColor = uniformColorInClade(d);
+			if (cladeColor == null)
+				cladeColor = dsColor;
+			else if (dsColor == null || !cladeColor.equalsIgnoreCase(dsColor))
+				return null;
+		}
+		return cladeColor;
+	}
+
+	/*_________________________________________________*/
 	/** Copies associated from other tree. Assumes topology identicial, so check first! kind 1 = long, 2 = double, 3 = object. */
 	public void transferAssociated(Tree tree, int kind, NameReference nRef){
-		if (kind == 0) {
-			if (tree.getWhichAssociatedLong(nRef)==null) {
+		if (kind == Associable.BITS) {
+			if (tree.getAssociatedBits(nRef)==null) {
+				removeAssociatedBits(nRef);
+				return;
+			}
+		}
+		else if (kind == Associable.LONGS) {
+			if (tree.getAssociatedLongs(nRef)==null) {
 				removeAssociatedLongs(nRef);
 				return;
 			}
 		}
-		else if (kind == 1) {
-			if (tree.getWhichAssociatedDouble(nRef)==null) {
+		else if (kind == Associable.DOUBLES) {
+			if (tree.getAssociatedDoubles(nRef)==null) {
 				removeAssociatedDoubles(nRef);
 				return;
 			}
 		}
-		else if (kind == 2) {
-			if (tree.getWhichAssociatedObject(nRef)==null) {
+		else if (kind == Associable.STRINGS) {
+			if (tree.getAssociatedStrings(nRef)==null) {
+				removeAssociatedStrings(nRef);
+				return;
+			}
+		}
+		else if (kind == Associable.OBJECTS) {
+			if (tree.getAssociatedObjects(nRef)==null) {
 				removeAssociatedObjects(nRef);
 				return;
 			}
@@ -1878,6 +1968,20 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 	}
 	/*-----------------------------------------*/
+	/** Returns number of terminal taxa in clade, counting collapsed clades as terminals.*/
+	public  int numberOfVisibleTerminalsInClade(int node) {
+		if (!inBounds(node))
+			return 0;
+		if (nodeIsTerminal(node) && isCollapsedClade(node))
+			return 1; //count node itself
+		else{
+			int count = 0;
+			for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+				count += numberOfTerminalsInClade(d);
+			return count;
+		}
+	}
+	/*-----------------------------------------*/
 	/** Returns number of internal nodes in clade.*/
 	public  int numberOfInternalsInClade(int node) {
 		if (!inBounds(node))
@@ -2138,7 +2242,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (nodeIsInternal(node)) {
 			double bl = getBranchLength(node); 
 			if (MesquiteDouble.isCombinable(bl)){
-				setAssociatedDouble(nameRef, node, 0.01*bl, true);  // value will be a percentage
+				setAssociatedDouble(nameRef, node, 0.01*bl);  // value will be a percentage
 			}
 			for (int d = firstDaughterOfNode(node); nodeExists(d) && !nodeWasFound; d = nextSisterOfNode(d))
 				convertBranchLengthToNodeValue(d, nameRef);
@@ -2940,7 +3044,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private String readNamedInternal(String TreeDescription, String c, int sN, MesquiteInteger stringLoc){
 
 		if (convertInternalNames){
-			setAssociatedObject(branchNotesRef, sN, c);
+			setAssociatedString(branchNotesRef, sN, c);
 			return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
 		}
 		else {
@@ -3044,7 +3148,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
 		return nodeInfo;
 	}
-private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
+	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
 		if (readingMrBayesConTree) {  //ZQ why this kludge?
 			String c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">", false) + ">";  //get next token
 			c = retokenizeMrBayesConTreeNodeInfo(c); //what is this?
@@ -3074,7 +3178,6 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	private int readClade(String TreeDescription, int node, MesquiteInteger stringLoc, TaxonNamer namer,  String whitespaceString, String punctuationString) {
 		if (StringUtil.blank(TreeDescription))
 			return FAILED;
-
 		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
 		// ************************* Newick comment -- use Newick tokenizing rules ***************
 		//comments before nodes aren't accepted
@@ -3338,19 +3441,19 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	}
 	/* ####################### Dialect handling ################################## */
 	String dialect = "Mesquite";
-	
+
 	public void setDialect(String dialect){
 		this.dialect = dialect;
 	}
 	public String getDialect(){
 		return dialect;
 	}
-	
+
 	String wellTokenizedNewickCommentPunctuation = ",=><{}'";
 	String wellTokenizedNewickCommentWhitespace = null;	
 	String punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 	String whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
-	
+
 	private String preprocessForDialect(String tD, String dialectName){
 		if (dialects.indexOfByNameIgnoreCase(dialectName)>=0){
 			NewickDialect dialect = (NewickDialect)dialects.elementAt(dialects.indexOfByNameIgnoreCase(dialectName));
@@ -3365,7 +3468,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		}
 		return tD;
 	}	
-	
+
 	String lastUnrecognizedName = null;
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription) {
@@ -3381,18 +3484,24 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString) {
 		return readTree(TreeDescription, namer, whitespaceString, punctuationString, true);
 	}
+	/** Reads the tree description string and sets the tree object to store the tree described.*/
+	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
+		return readTree(TreeDescription, null, namer, whitespaceString, punctuationString, readAssociated);
+	}
 
 	/* ########################### READ TREE ################################ */
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
-	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
+	public boolean readTree(String TreeDescription, MesquiteInteger startingPos, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
-		//	Debugg.println("@###################################################");
-	//	Debugg.println("@@DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
+		//	Debugg.println("###################################################");
+		//	Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
 		TreeDescription = preprocessForDialect(TreeDescription, getDialect());
-		//Debugg.println("@@#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
-		
+		//Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
+
 		//QZ: if whitespace or punc passed in, don't override?
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
+		if (startingPos !=null)
+			stringLoc.setValue(startingPos.getValue());
 		if (readAssociated && TreeDescription.indexOf("[&")>=0){
 			TreeDescription = StringUtil.replace(TreeDescription, "[&", "<");
 			TreeDescription = StringUtil.replace(TreeDescription, "]", ">");
@@ -3420,6 +3529,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 					MesquiteMessage.discreetNotifyUser("\nTree description: \n"+TreeDescription +"\n");
 
 				intializeTree();
+				if (startingPos !=null)
+					startingPos.setValue(stringLoc.getValue());
 
 				return false;
 			}
@@ -3429,6 +3540,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 			MesquiteTrunk.mesquiteTrunk.logln("Problem reading tree " + TreeDescription);
 
 			MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, "Problem reading tree");
+			if (startingPos !=null)
+				startingPos.setValue(stringLoc.getValue());
 			return false;
 		}
 
@@ -3444,6 +3557,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 					if (!expectedPunctuation(c)) {
 						intializeTree();
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 7");
+						if (startingPos !=null)
+							startingPos.setValue(stringLoc.getValue());
 						return false;
 					}
 				}
@@ -3453,12 +3568,13 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 					if (!expectedPunctuation(c)) {
 						intializeTree();
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 8");
+						if (startingPos !=null)
+							startingPos.setValue(stringLoc.getValue());
 						return false;
 					}
 				}
 				// ************************* Newick comment -- use Newick tokenizing rules ***************
 				else if  ("<".equals(c) && readAssociated) {
-					checkAssociatedBetweenness();
 					boolean done = false;
 					int count = 0;
 					while (!done && stringLoc.getValue()<=TreeDescription.length() && count++<10) {
@@ -3495,14 +3611,18 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		}
 		if (readAssociated)
 			processAttachedProperties();
-		selected = getWhichAssociatedBits(NameReference.getNameReference("selected"));
+		selected = getAssociatedBits(NameReference.getNameReference("selected"));
 		exists=true;
 		if (!checkTreeIntegrity(root)) {
 			intializeTree();
 			MesquiteMessage.warnProgrammer("tree failed integrity check");
+			if (startingPos !=null)
+				startingPos.setValue(stringLoc.getValue());
 			return false;
 		}
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
+		if (startingPos !=null)
+			startingPos.setValue(stringLoc.getValue());
 		return true;
 	}
 	/*-----------------------------------------*/
@@ -3584,7 +3704,6 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
 		setName("Default Symmetrical Tree");
 	}
-	/*-----------------------------------------*/
 	/*.........................................Write tree.................................................*/
 	/** Writes a tree description into the StringBuffer using taxon numbers instead of labels or taxon names */
 	private void writeTreeByNumbersGeneral(int node, StringBuffer treeDescription, boolean includeAssociated, boolean includeBranchLengths, boolean includeNodeLabels, boolean zeroBased, String delimiter) {
@@ -3813,8 +3932,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*20);
 		if (!getRooted())
 			s.append("[&U] ");
-		writeTreeByNumbersWithNodeNumbers(root, s, true);
 		writeTreeProperties(s, true);
+		writeTreeByNumbersWithNodeNumbers(root, s, true);
 
 		s.append(';');
 		return s.toString();
@@ -3826,8 +3945,8 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
 		if (!getRooted())
 			s.append("[&U] ");
-		writeTreeByNumbers(root, s, true, true);
 		writeTreeProperties(s, true);
+		writeTreeByNumbers(root, s, true, true);
 		s.append(';');
 		return s.toString();
 	}
@@ -3890,9 +4009,9 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
 		if (includeAssocAndProperties && !getRooted())
 			s.append("[&U] ");
-		writeTreeWithNamer(root, s, namer, includeBranchLengths, includeAssocAndProperties, true);
 		if (includeAssocAndProperties)
 			writeTreeProperties(s, true);
+		writeTreeWithNamer(root, s, namer, includeBranchLengths, includeAssocAndProperties, true);
 		s.append(';');
 		return s.toString();
 	}
@@ -3909,13 +4028,13 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
 		if (!getRooted())
 			s.append("[&U] ");
+		writeTreeProperties(s, associatedUseComments);
 		if (byWhat == BY_NAMES)
 			writeTreeByNames(node, s, true, true, associatedUseComments);
 		else if (byWhat == BY_NUMBERS)
 			writeTreeByNumbers(node, s, true, associatedUseComments);
 		else if (byWhat == BY_TABLE)
 			writeTreeByLabels(node, s, associatedUseComments);
-		writeTreeProperties(s, associatedUseComments);
 		s.append(';');
 		return s.toString();
 	}
@@ -3940,13 +4059,14 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (mb !=null) {
 			detach(mb);
 		}
+
 		String betweennesses = writeAssociatedBetweenness();
 
 		if (!StringUtil.blank(attachments) || !StringUtil.blank(betweennesses)){
 			if (useComments)
-				sb.append("[" + Parser.substantiveCommentMark + " treeProperties=true, ");  
+				sb.append("[" + Parser.substantiveCommentMark);  
 			else
-				sb.append("<"  + " treeProperties=true, "); 
+				sb.append("<"); 
 			if (!StringUtil.blank(attachments))
 				sb.append(attachments);
 			if (!StringUtil.blank(betweennesses)) {
@@ -3986,23 +4106,28 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		}
 	}
 
-	void readAppliesToBranches(String toWhom){
+	void readAppliesToNodes(String toWhom){
 		NameReference nRef = NameReference.getNameReference(toWhom);
-		Bits b = getWhichAssociatedBits(nRef);
+		Bits b = getAssociatedBits(nRef);
 		if (b != null)
-			b.setBetweenness(true);
+			b.setBetweenness(false);
 		else {
-			LongArray bL = getWhichAssociatedLong(nRef);
+			LongArray bL = getAssociatedLongs(nRef);
 			if (bL != null)
-				bL.setBetweenness(true);
+				bL.setBetweenness(false);
 			else {
-				DoubleArray bD = getWhichAssociatedDouble(nRef);
+				DoubleArray bD = getAssociatedDoubles(nRef);
 				if (bD != null)
-					bD.setBetweenness(true);
+					bD.setBetweenness(false);
 				else {
-					ObjectArray bO = getWhichAssociatedObject(nRef);
-					if (bO != null)
-						bO.setBetweenness(true);
+					StringArray bS = getAssociatedStrings(nRef);
+					if (bS != null)
+						bS.setBetweenness(false);
+					else {
+						ObjectArray bO = getAssociatedObjects(nRef);
+						if (bO != null)
+							bO.setBetweenness(false);
+					}
 				}
 			}
 		}
@@ -4050,41 +4175,41 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (StringUtil.blank(value))
 			return false;
 
-		if (key.equalsIgnoreCase("appliesToBranches")){
+		if (key.equalsIgnoreCase("appliesToNodes")){
 			if (value.equals("{")){
 				String value2 = ParseUtil.getToken(assocString, pos); //finding value
 				while (StringUtil.notEmpty(value2) && !value2.equals("}")){
-					readAppliesToBranches(value2);
+					readAppliesToNodes(value2);
 					value2 = ParseUtil.getToken(assocString, pos); //finding value
 				}
 			}
 			else {
-				readAppliesToBranches(value);
+				readAppliesToNodes(value);
 			}
 		}
-		else if (key.equalsIgnoreCase("treeProperties")) {
+		else if (key.equalsIgnoreCase("treeProperties")) { //used fleetingly
 		}
 		else if (key.equalsIgnoreCase("setBetweenBits")) {
 			NameReference nRef = NameReference.getNameReference(value);
-			Bits b = getWhichAssociatedBits(nRef);
+			Bits b = getAssociatedBits(nRef);
 			if (b != null)
 				b.setBetweenness(true);
 		}
 		else if (key.equalsIgnoreCase("setBetweenLong")) {
 			NameReference nRef = NameReference.getNameReference(value);
-			LongArray b = getWhichAssociatedLong(nRef);
+			LongArray b = getAssociatedLongs(nRef);
 			if (b != null)
 				b.setBetweenness(true);
 		}
 		else if (key.equalsIgnoreCase("setBetweenDouble")) {
 			NameReference nRef = NameReference.getNameReference(value);
-			DoubleArray b = getWhichAssociatedDouble(nRef);
+			DoubleArray b = getAssociatedDoubles(nRef);
 			if (b != null)
 				b.setBetweenness(true);
 		}
 		else if (key.equalsIgnoreCase("setBetweenObject")) {
 			NameReference nRef = NameReference.getNameReference(value);
-			ObjectArray b = getWhichAssociatedObject(nRef);
+			ObjectArray b = getAssociatedObjects(nRef);
 			if (b != null)
 				b.setBetweenness(true);
 		}
@@ -5226,61 +5351,61 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		return true;
 	}
 
+	//These from Associable are overrident to set applying to branch ("betweenness") as default, unlike Associables in general,
+	//but also to read the betweenness from the defaults for PropertyRecords stored in settings
+	public NameReference makeAssociatedBits(String n){
+		NameReference nr = super.makeAssociatedBits(n);
+		Bits b = getAssociatedBits(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.BITS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
+	}
+	public NameReference makeAssociatedLongs(String n){
+		NameReference nr = super.makeAssociatedLongs(n);
+		LongArray b = getAssociatedLongs(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.LONGS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
+	}
+	public NameReference makeAssociatedDoubles(String n){
+		NameReference nr = super.makeAssociatedDoubles(n);
+		DoubleArray b = getAssociatedDoubles(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.DOUBLES);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
+	}
+	public NameReference makeAssociatedStrings(String n){
+		NameReference nr = super.makeAssociatedStrings(n);
+		StringArray b = getAssociatedStrings(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.STRINGS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
+	}
+	public NameReference makeAssociatedObjects(String n){
+		NameReference nr = super.makeAssociatedObjects(n);
+		ObjectArray b = getAssociatedObjects(nr);
+		b.setBetweenness(true); //default for trees
+		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.OBJECTS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		return nr;
+	}
+
 	/* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
-	values in ManageTrees.queryAboutNumericalLabelIntepretation() */
-
-	static final String[] betweenLongs = new String[]{"color"};
-	static final String[] betweenDoubles = new String[]{"width", "bootstrapFrequency", "consensusFrequency", "posteriorProbability", "posterior"};
-	static final String[] betweenObjects = new String[]{"!color"};
-	static final String[] betweenBits = new String[]{};
-	/*
-	public void setAssociatedBit(NameReference nRef, int index, boolean value){
-		setAssociatedBit(nRef, index, value, StringArray.indexOfIgnoreCase(betweenBits, nRef.getValue())>=0);
-	}
-	public void setAssociatedLong(NameReference nRef, int index, long value){
-		setAssociatedLong(nRef, index, value, StringArray.indexOfIgnoreCase(betweenLongs, nRef.getValue())>=0);
-	}
-	public void setAssociatedDouble(NameReference nRef, int index, double value){
-		setAssociatedDouble(nRef, index, value, StringArray.indexOfIgnoreCase(betweenDoubles, nRef.getValue())>=0);
-	}
-	public void setAssociatedObject(NameReference nRef, int index, Object value){
-		setAssociatedObject(nRef, index, value, StringArray.indexOfIgnoreCase(betweenObjects, nRef.getValue())>=0);
-	}
-	 */
-	private void checkAssociatedBetweenness(){   //default betweenness recorded
-		if (bits!=null) {
-			for (int i=0; i< bits.size(); i++) {
-				Bits b = (Bits)bits.elementAt(i);
-				NameReference nRef = b.getNameReference();
-				if (StringArray.indexOfIgnoreCase(betweenBits, nRef.getValue())>=0)
-					b.setBetweenness(true);
-			}
-		}
-		if (longs!=null) {
-			for (int i=0; i< longs.size(); i++) {
-				LongArray b = (LongArray)longs.elementAt(i);
-				NameReference nRef = b.getNameReference();
-				if (StringArray.indexOfIgnoreCase(betweenLongs, nRef.getValue())>=0)
-					b.setBetweenness(true);
-			}
-		}
-		if (doubles!=null)
-			for (int i=0; i< doubles.size(); i++) {
-				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				NameReference nRef = b.getNameReference();
-				if (StringArray.indexOfIgnoreCase(betweenDoubles, nRef.getValue())>=0)
-					b.setBetweenness(true);
-			}
-		if (objects!=null)
-			for (int i=0; i< objects.size(); i++) {
-				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				NameReference nRef = b.getNameReference();
-				if (StringArray.indexOfIgnoreCase(betweenObjects, nRef.getValue())>=0)
-					b.setBetweenness(true);
-			}
-
-
-	}
+	values in ManageTrees.queryAboutNumericalLabelIntepretation() */ //Debugg.println
+	
+	/*This vector records whether branch/node properties are assigned to nodes or branches, according to the settings in Mesquite_Folder/settings/trees/BranchPropertiesInit. 
+	 * This is read by BranchPropertiesInit, and cannot be changed at runtime. It cannot be overrided either.*/
+	public static ListableVector propertiesSettingsVector = new ListableVector(); 
+	
 
 	private String writeAssociatedBetweenness(){
 		String s = "";
@@ -5289,7 +5414,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
-				if (b.isBetween()) {
+				if (!b.isBetween()) {  //writes only if says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;
@@ -5301,7 +5426,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (longs!=null) {
 			for (int i=0; i< longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
-				if (b.isBetween()) {
+				if (!b.isBetween()) {
 					if (!first)
 						s += ",";
 					first = false;
@@ -5313,7 +5438,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (doubles!=null)
 			for (int i=0; i< doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				if (b.isBetween()) {
+				if (!b.isBetween()) {
 					if (!first)
 						s += ",";
 					first = false;
@@ -5324,7 +5449,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				if (b.isBetween()) {
+				if (!b.isBetween()) {
 					if (!first)
 						s += ",";
 					first = false;
@@ -5335,9 +5460,9 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 		if (count == 0)
 			return "";
 		if (count ==1)
-			return " appliesToBranches = " + s;
+			return " appliesToNodes = " + s;
 
-		return " appliesToBranches = {" + s + " }";
+		return " appliesToNodes = {" + s + " }";
 	}
 	/*-----------------------------------------*/
 	//floatNode and reroot corrected to handle branch lengths 29 Sept 2001
@@ -6171,6 +6296,18 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	}
 	/*-----------------------------------------*/
 	/** SelectsAllNodes in the clade */
+	public void selectAllInClade( int node, boolean select) {
+		if (!inBounds(node))
+			return;
+		if (selected==null)
+			return;
+		setSelected(node, select);
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
+			selectAllInClade(d, select);
+		}
+	}
+	/*-----------------------------------------*/
+	/** SelectsAllNodes in the clade */
 	public void selectAllInClade( int node) {
 		if (!inBounds(node))
 			return;
@@ -6625,26 +6762,7 @@ private void readAssociatedInTree (String TreeDescription, int node, MesquiteInt
 	public void setFileIndex(int index){
 		fileIndex =index;
 	}
-	/*_________________________________________________*/
-	public boolean ancestorHasNameReference(NameReference nameRef, int node) {
-		if (!nodeExists(node))
-			return false;
-		if (getAssociatedBit(nameRef, motherOfNode(node)))
-			return true;
-		if (getRoot() == node || getSubRoot() == node)
-			return false;
-		return ancestorHasNameReference(nameRef, motherOfNode(node));
-	}
-	/*_________________________________________________*/
-	public int ancestorWithNameReference(NameReference nameRef, int node) {
-		if (!nodeExists(node))
-			return 0;
-		if (getAssociatedBit(nameRef, motherOfNode(node)))
-			return motherOfNode(node);
-		if (getRoot() == node || getSubRoot() == node)
-			return 0;
-		return ancestorWithNameReference(nameRef, motherOfNode(node));
-	}
+
 
 }
 

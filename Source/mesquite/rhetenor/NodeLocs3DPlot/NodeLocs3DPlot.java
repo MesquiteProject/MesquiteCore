@@ -602,7 +602,7 @@ public class NodeLocs3DPlot extends NodeLocsPlot3D {
 
 	}
 	/*_________________________________________________*/
-	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { 
+	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot) { 
 		if (hide ||  isDoomed())
 			return;
 		if (MesquiteTree.OK(tree)) {
@@ -791,7 +791,7 @@ public class NodeLocs3DPlot extends NodeLocsPlot3D {
 			double midY = XrYr[1][numNodes];
 			minY.setValue(midY - (longAxis/2));
 			maxY.setValue(midY + (longAxis/2));
-			pixels = MesquiteInteger.minimum(rect.width, rect.height) - 2*margin;
+			pixels = MesquiteInteger.minimum(treeDisplay.getField().width, treeDisplay.getField().height) - 2*margin;
 			summarizeBad(4);
 			calcNodeLocs(tree, drawnRoot, pixels, numbersH, numbersV, numbersD); //calculate pixel node locations from NumberArrays
 			summarizeBad(5);

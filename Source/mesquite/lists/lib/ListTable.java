@@ -323,7 +323,7 @@ public class ListTable extends MesquiteTable {
 		g.setClip(clip);
 	}
 	/*...............................................................................................................*/
-	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		window.setAnnotation("", null);
 		if (!window.interceptCellTouch(column, row, modifiers)){
 		
@@ -338,37 +338,37 @@ public class ListTable extends MesquiteTable {
 					} else 
 					if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
 						if (assistant.isCellEditable(row)) {
-							super.cellTouched(column, row, regionInCellH,  regionInCellV,  modifiers,  clickCount);
+							super.cellTouched(column, row, editorPanel, x, y,  modifiers,  clickCount);
 						}
 						else
-							rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+							rowTouched(true,row,editorPanel, x, y, modifiers);
 					}
 				}
 				else
-					rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+					rowTouched(true,row,editorPanel, x, y, modifiers);
 
 			}
 			else
-				((TableTool)window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
+				((TableTool)window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
 	}
 	/*...............................................................................................................*/
-	public void cellDrag(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDrag(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (window.getCurrentTool()== window.arrowTool) 
-			super.cellDrag(column, row, regionInCellH,  regionInCellV, modifiers);
+			super.cellDrag(column, row, editorPanel, x, y, modifiers);
 		else
-		((TableTool)window.getCurrentTool()).cellDrag(column, row, regionInCellH,  regionInCellV, modifiers);
+		((TableTool)window.getCurrentTool()).cellDrag(column, row, editorPanel, x, y, modifiers);
 	}
 	/*...............................................................................................................*/
-	public void cellDropped(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDropped(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		/*
 		if (window.getCurrentTool()== window.arrowTool) 
 			rowTouched(row, modifiers);
 		else  */
-		   	((TableTool)window.getCurrentTool()).cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+		   	((TableTool)window.getCurrentTool()).cellDropped(column, row, editorPanel, x, y, modifiers);
 	}
-	public void rowTouched(boolean asArrow, int row, int regionInCellH, int regionInCellV, int modifiers) {
-		super.rowTouched(asArrow,  row, regionInCellH, regionInCellV, modifiers);
+	public void rowTouched(boolean asArrow, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
+		super.rowTouched(asArrow,  row, editorPanel, x, y, modifiers);
 		//if (getRowAssociable() != null) 
 		//	synchronizeRowSelection(getRowAssociable());
 		showAnnotationAndExplanation(row);
@@ -389,10 +389,10 @@ public class ListTable extends MesquiteTable {
 		super.setFocusedCell(column, row);
 	}
 	/*...............................................................................................................*/
-	public void rowNameTouched(int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void rowNameTouched(int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		showAnnotationAndExplanation(row);
 		if (window.getCurrentTool()== window.arrowTool) {
-			if (!window.interceptRowNameTouch(row, regionInCellH, regionInCellV, modifiers)) {
+			if (!window.interceptRowNameTouch(row, editorPanel, x, y, modifiers)) {
 				if (row >= 0 && MesquiteEvent.commandOrControlKeyDown(modifiers)){
 					Object a = ownerModule.getMainObject();
 					if (a instanceof ListableVector){
@@ -419,19 +419,19 @@ public class ListTable extends MesquiteTable {
 				if (clickCount>1 && isRowNameEditable(row)){
 					window.setCurrentTool(window.ibeamTool);
 					window.getPalette().setCurrentTool(window.ibeamTool); 
-					((TableTool)window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+					((TableTool)window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 				}
 				else {
-					super.rowNameTouched(row,  regionInCellH,  regionInCellV, modifiers,clickCount);
+					super.rowNameTouched(row,  editorPanel, x, y, modifiers,clickCount);
 				}
 			}
 		}
 		else
-		   ((TableTool)window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+		   ((TableTool)window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 		 
 	}
-	public void superRowNameTouched(int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount){
-		super.rowNameTouched(row, regionInCellH, regionInCellV, modifiers,clickCount);
+	public void superRowNameTouched(int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount){
+		super.rowNameTouched(row, editorPanel, x, y, modifiers,clickCount);
 	}
 	/*...............................................................................................................*/
 	public boolean getDropDown(int column, int row){
@@ -449,7 +449,7 @@ public class ListTable extends MesquiteTable {
 		return true;
 	}
 	/*...............................................................................................................*/
-	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void columnNameTouched(int column, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		window.setAnnotation("", null);
 		ListAssistant assistant = window.findAssistant(column);
 		if (assistant!=null) {

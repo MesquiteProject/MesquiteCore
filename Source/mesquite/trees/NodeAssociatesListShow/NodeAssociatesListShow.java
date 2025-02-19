@@ -28,6 +28,7 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
@@ -40,7 +41,6 @@ import mesquite.trees.lib.NodeAssociatesListAssistant;
 public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
-	ListableVector associatedInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Show Selected", makeCommand("show", this));
@@ -54,7 +54,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 		return "Information Showing on Tree?";
 	}
 	public String getVeryShortName() {
-		return "Showing on Tree?";
+		return "Showing?";
 	}
 	public String getExplanation() {
 		return "Shows whether attached information is shown in the tree window." ;
@@ -63,9 +63,6 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 
 	public void setTableAndObject(MesquiteTable table, Object object) {
 		this.table = table;
-		if (object instanceof ListableVector)
-			associatedInfo = (ListableVector)object;
-
 	}
 
 	public void setTree(MesquiteTree tree){
@@ -86,7 +83,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	}
 		else if (checker.compare(this.getClass(), "Explain", null, commandName, "explain")) {
 			discreetAlert("This column shows which values are shown on the branches of the tree in the tree window. "
-					+"You can control them here, or by the menu item \"Display Node/Branch Properties\" in the Tree menu. "
+					+"You can control them here, or by the menu item \"Display Branch/Node Properties\" in the Tree menu. "
 					+"\n\nThat menu item also allows you to control the font and placement on the tree."
 					+ "\n\nNode labels and branch lengths can also be shown on the tree in other ways, using items in the Text menu.");
 	}
@@ -103,11 +100,11 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 			discreetAlert("Please selected rows before attempting to show or hide them here");
 			return;
 		}
-		MesquiteInteger[] mis = new MesquiteInteger[table.numRowsSelected()];
+		PropertyDisplayRecord[] mis = new PropertyDisplayRecord[table.numRowsSelected()];
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				mis[count++] = getNameKindOfRow(ir);
+				mis[count++] = getPropertyAtRow(ir);
 			}
 		}
 		pleaseShowHideOnTree(mis, show);
@@ -116,11 +113,11 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	
 	/*.................................................................................................................*/
 	public String getWidestString(){
-		return "Showing on Tree?";
+		return "Showing?";
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
-		return "Showing on Tree?";
+		return "Showing?";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -138,10 +135,10 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 	}
 	/*.................................................................................................................*/
 	public String getStringForRow(int ic) {
-			if (isShowingOnTree(getNameKindOfRow(ic)))
-			return "Yes";
+			if (isShowingOnTree(getPropertyAtRow(ic)))
+			return "✓";
 			else
-				return "No";
+				return "✗";
 
 	}
 	/*.................................................................................................................*/

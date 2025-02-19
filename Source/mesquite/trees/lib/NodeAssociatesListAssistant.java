@@ -1,8 +1,7 @@
 package mesquite.trees.lib;
 
-import mesquite.lib.Debugg;
-import mesquite.lib.MesquiteInteger;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.PropertyDisplayRecord;
 import mesquite.lists.lib.ListAssistant;
 import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
 import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
@@ -39,7 +38,7 @@ public abstract class NodeAssociatesListAssistant extends ListAssistant  {
 		if (displayModule != null)
 			 displayModule.queryDialog();
 	}
-	protected boolean isShowingOnTree(MesquiteInteger property){
+	protected boolean isShowingOnTree(PropertyDisplayRecord property){
 		if (displayModule == null)
 			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 		if (displayModule != null)
@@ -54,16 +53,16 @@ public abstract class NodeAssociatesListAssistant extends ListAssistant  {
 			return listModule.associateIsBuiltIn(row);
 		return false;
 	}
-	protected MesquiteInteger getNameKindOfRow(int row){
+	protected PropertyDisplayRecord getPropertyAtRow(int row){
 		if (listModule == null)
 			listModule = (NodeAssociatesList)findEmployerWithDuty(NodeAssociatesList.class);
 		if (listModule != null)
-			return listModule.getNameKindOfRow(row);
+			return listModule.getPropertyAtRow(row);
 		return null;
 	}
-	protected void pleaseShowHideOnTree(MesquiteInteger[] properties, boolean show){
+	protected void pleaseShowHideOnTree(PropertyDisplayRecord[] properties, boolean show){
 		if (displayModule == null)
-			displayModule = (NodeAssociatesZDisplayControl)findEmployerWithDuty(NodeAssociatesZDisplayControl.class);
+			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
 		if (displayModule != null)
 			displayModule.pleaseShowHide(properties, show);
 	}

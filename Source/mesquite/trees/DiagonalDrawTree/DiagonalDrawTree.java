@@ -21,6 +21,7 @@ import java.awt.geom.Rectangle2D;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.DiagonalRootDrawer;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
@@ -30,7 +31,7 @@ import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Draws trees in a basic diagonal-branch style.  See SquareTree and others in mesquite.basic and mesquite.ornamental. */
-public class DiagonalDrawTree extends DrawTree {
+public class DiagonalDrawTree extends DrawTree implements DiagonalRootDrawer {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NodeLocsVH.class, getName() + "  needs the locations of nodes to be calculated.",
 		"The calculator for node locations is chosen automatically or initially");
@@ -38,10 +39,8 @@ public class DiagonalDrawTree extends DrawTree {
 
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
-	MesquiteString orientationName;
 	Vector drawings;
 	int oldEdgeWidth =12;
-	int ornt;
 	MesquiteString nodeLocsName;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -54,14 +53,6 @@ public class DiagonalDrawTree extends DrawTree {
 			mss.setSelected(nodeLocsName);
 		}
 		drawings = new Vector();
-		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
-		orientationName = new MesquiteString(orient(ornt));
-		orientationSubmenu.setSelected(orientationName);
-		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this));
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
 		return true;
 	}
@@ -71,15 +62,13 @@ public class DiagonalDrawTree extends DrawTree {
 
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		DiagonalTreeDrawing treeDrawing =  new DiagonalTreeDrawing (treeDisplay, numTaxa, this);
-		if (legalOrientation(treeDisplay.getOrientation())){
-			orientationName.setValue(orient(treeDisplay.getOrientation()));
-			ornt = treeDisplay.getOrientation();
-		}
-		else
-			treeDisplay.setOrientation(ornt);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		drawings.addElement(treeDrawing);
 		//treeDisplay.inhibitStretchByDefault = false;
 		return treeDrawing;
+	}
+	public Vector getDrawings(){
+		return drawings;
 	}
 	public boolean legalOrientation (int orientation){
 		return (orientation == TreeDisplay.UP || orientation == TreeDisplay.DOWN || orientation == TreeDisplay.RIGHT || orientation == TreeDisplay.LEFT);
@@ -92,31 +81,11 @@ public class DiagonalDrawTree extends DrawTree {
 	}
 
 	/*.................................................................................................................*/
-	public String orient (int orientation){
-		if (orientation == TreeDisplay.UP)
-			return "Up";
-		else if (orientation == TreeDisplay.DOWN)
-			return "Down";
-		else if (orientation == TreeDisplay.RIGHT)
-			return "Right";
-		else if (orientation == TreeDisplay.LEFT)
-			return "Left";
-		else return "other";
-	}
-	/*.................................................................................................................*/
-	public Snapshot getSnapshot(MesquiteFile file) { 
+		public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setNodeLocs", nodeLocsTask);
 
 		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
-		if (ornt== TreeDisplay.UP)
-			temp.addLine("orientUp"); 
-		else if (ornt== TreeDisplay.DOWN)
-			temp.addLine("orientDown"); 
-		else if (ornt== TreeDisplay.LEFT)
-			temp.addLine("orientLeft"); 
-		else if (ornt== TreeDisplay.RIGHT)
-			temp.addLine("orientRight"); 
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -143,7 +112,7 @@ public class DiagonalDrawTree extends DrawTree {
 					Object obj = e.nextElement();
 					DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 5); //better if only did this if tracing on
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(newWidth, 5); //better if only did this if tracing on
 				}
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -152,55 +121,21 @@ public class DiagonalDrawTree extends DrawTree {
 		else if (checker.compare(this.getClass(), "Returns module calculating node locations", null, commandName, "getNodeLocsEmployee")) {
 			return nodeLocsTask;
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.UP;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.UP);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {  //for legacy scripts
+			if (nodeLocsTask != null)
+				nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.DOWN;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.DOWN);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.RIGHT;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.RIGHT);
-				if (treeDrawing.treeDisplay != null)
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
-			Enumeration e = drawings.elements();
-			ornt =TreeDisplay.LEFT;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				DiagonalTreeDrawing treeDrawing = (DiagonalTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.LEFT);
-				if (treeDrawing.treeDisplay != null)
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
 		else {
 			return  super.doCommand(commandName, arguments, checker);
@@ -246,15 +181,15 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	private boolean ready=false;
 
 	private int foundBranch;
-	NameReference triangleNameRef;
+	
 	NameReference widthNameReference;
 	DoubleArray widths = null;
 	double maxWidth = 0;
 	public DiagonalTreeDrawing (TreeDisplay treeDisplay, int numTaxa, DiagonalDrawTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		widthNameReference = NameReference.getNameReference("width");
-		treeDisplay.setMinimumTaxonNameDistance(edgeWidth, 5); //better if only did this if tracing on
-		triangleNameRef = NameReference.getNameReference("triangled");
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgeWidth, 5); //better if only did this if tracing on
+		
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
@@ -358,9 +293,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private void UPCalcFillBranchPolys(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcFillBranchPolys(tree, d);
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		UPdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
@@ -389,12 +324,12 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void UPCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcBranchPolys(tree, d, polys, isTouch);
+			if (tree.isVisibleEvenIfInCollapsed(node))
 			UPdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node), x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
-		}
-		else {
+		
+		/*else {
 			Path2D.Double poly = polys[node];
 			int mN = tree.motherOfNode(node);
 			int leftN = tree.leftmostTerminalOfNode(node);
@@ -407,7 +342,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			poly.lineTo(x[mN]+branchEdgeWidth(node, isTouch), y[mN]);
 			poly.lineTo(x[mN], y[mN]);
 			poly.lineTo(x[node], y[node]);
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	/*_________________________________________________*/
@@ -465,9 +400,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private void DOWNCalcFillBranchPolys(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcFillBranchPolys(tree, d);
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		DOWNdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
@@ -498,12 +433,12 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void DOWNCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcBranchPolys(tree, d, polys, isTouch);
+			if (tree.isVisibleEvenIfInCollapsed(node))
 			DOWNdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
-		}
-		else {
+		
+		/*else {
 			Path2D.Double poly = polys[node];
 			int mN = tree.motherOfNode(node);
 			int leftN = tree.leftmostTerminalOfNode(node);
@@ -516,7 +451,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			poly.lineTo(x[mN]+branchEdgeWidth(node, isTouch), y[mN]);
 			poly.lineTo(x[mN], y[mN]);
 			poly.lineTo(x[node], y[node]);
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	/*_________________________________________________*/
@@ -573,9 +508,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private void RIGHTCalcFillBranchPolys(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcFillBranchPolys(tree, d);
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		RIGHTdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
@@ -606,11 +541,12 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void RIGHTCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
+	//	if (!tree.isCollapsedClade(node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcBranchPolys(tree, d, polys, isTouch);
+			if (tree.isVisibleEvenIfInCollapsed(node))
 			RIGHTdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
-		}
+	/*	}
 		else {
 			Path2D.Double poly = polys[node];
 			int mN = tree.motherOfNode(node);
@@ -624,7 +560,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			poly.lineTo(x[mN], y[mN]+branchEdgeWidth(node, isTouch));
 			poly.lineTo(x[mN], y[mN]);
 			poly.lineTo(x[node], y[node]);
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	/*_________________________________________________*/
@@ -681,9 +617,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private void LEFTCalcFillBranchPolys(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcFillBranchPolys(tree, d);
+		if (tree.isVisibleEvenIfInCollapsed(node))
 		LEFTdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
@@ -714,11 +650,12 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void LEFTCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
+//		if (!tree.isCollapsedClade(node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcBranchPolys(tree, d, polys, isTouch);
+			if (tree.isVisibleEvenIfInCollapsed(node))
 			LEFTdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
-		}
+/*		}
 		else {
 			Path2D poly = polys[node];
 			int mN = tree.motherOfNode(node);
@@ -732,7 +669,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			poly.lineTo(x[mN], y[mN]+branchEdgeWidth(node, isTouch));
 			poly.lineTo(x[mN], y[mN]);
 			poly.lineTo(x[node], y[node]);
-		}
+		}*/
 	}
 	/*_________________________________________________*/
 	private void calculateLines(Tree tree, int node) {
@@ -750,7 +687,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		if (treeDisplay==null) {ownerModule.logln("treeDisplay null"); return;}
 		if (tree==null) { ownerModule.logln("tree null"); return;}
 
-		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot,  treeDisplay.getField());  //Graphics g removed as parameter May 02
+		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot);  //Graphics g removed as parameter May 02
 
 		calculateLines(tree, drawnRoot);
 		edgeWidth = preferredEdgeWidth;
@@ -759,7 +696,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			if (edgeWidth<2)
 				edgeWidth=2;
 		}
-		treeDisplay.setMinimumTaxonNameDistance(edgeWidth, 5);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgeWidth, 5);
 		if (isUP()) {
 			UPCalcBranchPolys(tree, drawnRoot, branchPoly, false);
 			UPCalcBranchPolys(tree, drawnRoot, touchPoly, true);
@@ -801,15 +738,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		g.setColor(tC);
 	}
 	/*_________________________________________________*/
-	private boolean ancestorIsTriangled(Tree tree, int node) {
-		if (!tree.nodeExists(node))
-			return false;
-		if (tree.getAssociatedBit(triangleNameRef, tree.motherOfNode(node)))
-			return true;
-		if (tree.getRoot() == node || tree.getSubRoot() == node)
-			return false;
-		return ancestorIsTriangled(tree, tree.motherOfNode(node));
-	}
+
 	Color tC;
 	public boolean branchIsVisible(int node){
 		try {
@@ -822,6 +751,8 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawBranches(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			//g.setColor(Color.black);//for testing
 			boolean draw = branchIsVisible(node);
@@ -847,39 +778,8 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 					}
 				}
 			}
-			if (tree.getAssociatedBit(triangleNameRef,node)) {
-				if (isUP()) {
-					/*g.setColor(Color.red);
-					for (int i=0; i<edgeWidth; i++) 
-						g.drawLine(x[node]+i,y[node], x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]);
 
-					g.setColor(Color.blue);
-					for (int i=0; i<edgeWidth; i++)
-						g.drawLine(x[node]+i,y[node], x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]);
-
-						g.setColor(Color.green);
-					for (int i=0; i<edgeWidth*0.71; i++) {
-						g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+i, x[tree.rightmostTerminalOfNode(node)]-i,y[tree.rightmostTerminalOfNode(node)]+i);
-					}*/
-				}
-				else if (isDOWN()) {
-					/*g.setColor(Color.blue);
-					for (int i=0; i<edgeWidth; i++) {
-						g.drawLine(x[node]+i,y[node], x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]);
-						g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]-i, x[tree.rightmostTerminalOfNode(node)]-i,y[tree.rightmostTerminalOfNode(node)]-i);
-						g.drawLine(x[node]+i,y[node], x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]);
-					}
-					 */
-				}
-				/*	for (int j=0; j<2; j++)
-				for (int i=0; i<2; i++) {
-					g.drawLine(x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
-					g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-					g.drawLine(x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-				}*/
 			}
-			}
-			if (!tree.getAssociatedBit(triangleNameRef,node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawBranches( tree, g, d);
 			if (draw && emphasizeNodes()) {
@@ -893,16 +793,14 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private double findMaxWidth(Tree tree, int node) {
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {
-			if (tree.nodeIsTerminal(node))
+			if (tree.nodeIsTerminal(node) && tree.isVisibleEvenIfInCollapsed(node))
 				return widths.getValue(node);
 
 			double mw = MesquiteDouble.unassigned;
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				mw = MesquiteDouble.maximum(mw, findMaxWidth(tree, d));
 			return mw;
-		}
-		return (MesquiteDouble.unassigned);
+		
 	}
 	public void getSingletonLocation(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue){
 		if(tree==null || xValue==null || yValue==null)
@@ -925,7 +823,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 				setDrawnRoot(tree.getRoot());
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
-			widths = tree.getWhichAssociatedDouble(widthNameReference);
+			widths = tree.getAssociatedDoubles(widthNameReference);
 			if (widths!=null)
 				maxWidth = findMaxWidth(tree, getDrawnRoot());
 			calcBranchPolys(tree, getDrawnRoot());
@@ -1016,7 +914,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
 
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node) && branchIsVisible(node)) {
 			Color c = g.getColor();
 			if (g instanceof Graphics2D){
 				Graphics2D g2 = (Graphics2D)g;
@@ -1041,7 +939,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node) && branchIsVisible(node)) {
 			int numColors = colors.getNumColors();
 			if (isUP()) {
 				for (int i=0; i<numColors; i++) {
@@ -1084,7 +982,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
-		if (fillBranchPoly[node] !=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if (fillBranchPoly[node] !=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node) && branchIsVisible(node)) {
 			GraphicsUtil.fill(g,fillBranchPoly[node]);
 		}
 	}
@@ -1134,7 +1032,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 						}
 					}
 			}
-			if (!tree.getAssociatedBit(triangleNameRef, node)) 
+			if (!tree.isCollapsedClade(node)) 
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, polys, d, x, y, fraction);
 
@@ -1164,7 +1062,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	public void setEdgeWidth(int edw) {
 		preferredEdgeWidth = edw;
 		edgeWidth = edw;
-		treeDisplay.setMinimumTaxonNameDistance(edgeWidth, 5);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgeWidth, 5);
 	}
 	/*New code Feb.22.07 allows eavesdropping on edgewidth by the TreeDrawing oliver*/ //TODO: delete new code comments
 	/*_________________________________________________*/

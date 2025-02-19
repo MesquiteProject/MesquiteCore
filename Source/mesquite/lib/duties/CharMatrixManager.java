@@ -424,12 +424,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 	private void markAsOverwritten(CharacterData data, int whichTaxon, MesquiteFile fileBeingRead){
 		Associable tInfo = data.getTaxaInfo(true);
 
-		Object obj = tInfo.getAssociatedObject(orRef, whichTaxon);
+		Object obj = tInfo.getAssociatedString(orRef, whichTaxon);
 		String s = "";
 		if (obj != null && obj instanceof String)
 			s = "; " + (String)obj;
 		s = "Overwritten by states from file " + fileBeingRead.getFileName() + " on " + getDateAndTime() + s;
-		tInfo.setAssociatedObject(orRef, whichTaxon, s);
+		tInfo.setAssociatedString(orRef, whichTaxon, s);
 
 		MesquiteMessage.warnUser("NOTE: Previous states in matrix \"" + data.getName() + "\" for taxon " + (whichTaxon+1) + " (" + data.getTaxa().getTaxonName(whichTaxon) + ") overwritten using states from file " + fileBeingRead.getFileName());
 

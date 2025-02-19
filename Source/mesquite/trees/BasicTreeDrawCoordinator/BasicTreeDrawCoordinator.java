@@ -29,6 +29,7 @@ import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
@@ -36,6 +37,7 @@ import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
 
 import com.lowagie.text.pdf.PdfGraphics2D;
 
@@ -63,9 +65,15 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	MesquiteBoolean showBrLenLabelsOnTerminals = new MesquiteBoolean(true);
 	MesquiteInteger numBrLenDecimals = new MesquiteInteger(6);
 	public Color brLenColor=Color.blue;
+
 	MesquiteString highlightModeName;
 	String[] highlightChoices = new String[]{"No Highlight", "Gray Box", "Enlarge 1.25X", "Enlarge 1.5X", "Enlarge 1.75X", "Enlarge 2X"};
 	int selectedTaxonHighlightMode = TreeDisplay.sTHM_DEFAULT;
+
+	MesquiteBoolean collapsedBold = new MesquiteBoolean(true);
+	MesquiteBoolean collapsedItalics = new MesquiteBoolean(true);
+	MesquiteBoolean collapsedBig = new MesquiteBoolean(true);
+
 	MesquiteMenuSpec displayMenu, colorMenu, textMenu;
 
 	/*.................................................................................................................*/
@@ -75,8 +83,8 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		displayMenu = makeMenu("Form");
 		colorMenu = addAuxiliaryMenu("Color");
 		textMenu = addAuxiliaryMenu("Text");
-	//	textMenu = findEmployerWithDuty(TreeWindowMaker.class).addAuxiliaryMenu("Text");
-		
+		//	textMenu = findEmployerWithDuty(TreeWindowMaker.class).addAuxiliaryMenu("Text");
+
 		if (defaultDrawer !=null && (condition == null || !(condition instanceof MesquiteBoolean) || ((MesquiteBoolean)condition).getValue() )) {
 			treeDrawTask= (DrawTree)hireNamedEmployee(DrawTree.class, defaultDrawer);
 			if (treeDrawTask == null)
@@ -109,9 +117,11 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 
 		showNodeNumbers = new MesquiteBoolean(false);
 		addCheckMenuItem(null, "Show Node Numbers", MesquiteModule.makeCommand("showNodeNumbers",  this), showNodeNumbers);
-		
+
 		//TEXT MENU
-		mmis = addSubmenu(textMenu, "Branch Length Labels");
+
+		addMenuItem(textMenu, "Display of Branch/Node Properties...",  MesquiteModule.makeCommand("controlPropertiesDisplay",  this));
+		/*	mmis = addSubmenu(textMenu, "Branch Length Labels");
 		labelBranchLengths = new MesquiteBoolean(false);
 		addCheckMenuItemToSubmenu(textMenu, mmis, "Show Labels", MesquiteModule.makeCommand("labelBranchLengths",  this), labelBranchLengths);
 		addCheckMenuItemToSubmenu(textMenu, mmis, "Center Labels", MesquiteModule.makeCommand("centerBrLenLabels",  this), centerBrLenLabels);
@@ -119,16 +129,22 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		addItemToSubmenu(textMenu, mmis, "Label Color...", MesquiteModule.makeCommand("chooseBrLenLabelColor",  this));
 		addItemToSubmenu(textMenu, mmis, "Number of Decimal Places...", MesquiteModule.makeCommand("setNumBrLenDecimals",  this));
 		addCheckMenuItemToSubmenu(textMenu, mmis, "Include Missing Values", MesquiteModule.makeCommand("showBrLensUnspecified",  this), showBrLensUnspecified);
-
+		 */
 		highlightModeName = new MesquiteString(highlightChoices[selectedTaxonHighlightMode]);
 		MesquiteSubmenuSpec highlightSubmenu = addSubmenu(textMenu, "Highlight for Selected Taxa");
 		highlightSubmenu.setSelected(highlightModeName);
 		for (int i = 0; i<highlightChoices.length; i++)
 			addItemToSubmenu(textMenu, highlightSubmenu, highlightChoices[i], new MesquiteCommand("setSelectedTaxonHighlightMode",  MesquiteInteger.toString(i), this));
+
+		MesquiteSubmenuSpec collapsedCladeSubmenu = addSubmenu(textMenu, "Highlight for Collapsed Clades");
+		addCheckMenuItemToSubmenu(textMenu, collapsedCladeSubmenu, "Bold", new MesquiteCommand("toggleBoldCollapsed",  null, this), collapsedBold);
+		addCheckMenuItemToSubmenu(textMenu, collapsedCladeSubmenu, "Italics", new MesquiteCommand("toggleItalicsCollapsed",  null, this), collapsedItalics);
+		addCheckMenuItemToSubmenu(textMenu, collapsedCladeSubmenu, "Big", new MesquiteCommand("toggleBigCollapsed",  null, this), collapsedBig);
+
 		addMenuItem(textMenu, "-", null);
 		return true;
 	}
-	
+
 	public boolean getShowBrLensUnspecified(){
 		return showBrLensUnspecified.getValue();
 	}
@@ -175,11 +191,11 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("defaultDrawer".equalsIgnoreCase(tag))
 			defaultDrawer = StringUtil.cleanXMLEscapeCharacters(content);
-		
+
 	}
 
 
-	
+
 	/*.................................................................................................................*/
 	/** return whether or not this module should have snapshot saved when saving a macro given the current snapshot mode.*/
 	public boolean satisfiesSnapshotMode(){
@@ -203,13 +219,17 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		}
 		temp.addLine("showNodeNumbers " + showNodeNumbers.toOffOnString()); 
 		temp.addLine("showBranchColors " + showBranchColors.toOffOnString()); 
-		temp.addLine("labelBranchLengths " + labelBranchLengths.toOffOnString()); 
+		/*temp.addLine("labelBranchLengths " + labelBranchLengths.toOffOnString()); 
 		temp.addLine("centerBrLenLabels " + centerBrLenLabels.toOffOnString()); 
 		temp.addLine("showBrLensUnspecified " + showBrLensUnspecified.toOffOnString());
 		temp.addLine("showBrLenLabelsOnTerminals " + showBrLenLabelsOnTerminals.toOffOnString()); 
 		temp.addLine("setBrLenLabelColor " + ColorDistribution.getColorStringForSnapshot(brLenColor));
 		temp.addLine("setNumBrLenDecimals " + numBrLenDecimals.getValue());
+		 */
 		temp.addLine("setSelectedTaxonHighlightMode " + selectedTaxonHighlightMode);
+		temp.addLine("toggleBoldCollapsed " + collapsedBold.toOffOnString());
+		temp.addLine("toggleItalicsCollapsed " + collapsedItalics.toOffOnString());
+		temp.addLine("toggleBigCollapsed " + collapsedBig.toOffOnString());
 		temp.addLine("desuppress");
 		return temp;
 	}
@@ -236,6 +256,17 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public void setBranchColor(Color c) {
 		brColor = c;
 	}
+	
+	int getCollapsedMode(){
+		int cM = 0;
+		if (collapsedBold.getValue())
+			cM += TreeDisplay.cCHM_BOLD;
+		if (collapsedItalics.getValue())
+			cM += TreeDisplay.cCHM_ITALICS;
+		if (collapsedBig.getValue())
+			cM += TreeDisplay.cCHM_BIG;
+		return cM;
+	}
 	/*.................................................................................................................*/
 	public TreeDisplay createOneTreeDisplay(Taxa taxa, MesquiteWindow window) {
 		treeDisplay = new BasicTreeDisplay(this, taxa);
@@ -243,6 +274,8 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		treeDisplay.setDrawTaxonNames(terminalNamesTask);
 		treeDisplay.suppressDrawing(suppression);
 		treeDisplay.selectedTaxonHighlightMode = selectedTaxonHighlightMode;
+		treeDisplay.collapsedCladeHighlightMode = getCollapsedMode();
+		
 		return treeDisplay;
 	}
 	/*.................................................................................................................*/
@@ -258,6 +291,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], numTaxa));
 			treeDisplays[i].suppressDrawing(suppression);
 			treeDisplays[i].selectedTaxonHighlightMode = selectedTaxonHighlightMode;
+			treeDisplays[i].collapsedCladeHighlightMode = getCollapsedMode();
 		}
 		return treeDisplays;
 	}
@@ -270,6 +304,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], taxas[i].getNumTaxa()));
 			treeDisplays[i].suppressDrawing(suppression);
 			treeDisplays[i].selectedTaxonHighlightMode = selectedTaxonHighlightMode;
+			treeDisplays[i].collapsedCladeHighlightMode = getCollapsedMode();
 		}
 		return treeDisplays;
 	}
@@ -327,6 +362,8 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 				treeDisplay.setVisible(false);
 				treeDisplay.suppressDrawing(true);
 				int currentOrientation = treeDisplay.getOrientation();
+				TreeDrawing tD = treeDisplay.getTreeDrawing();
+				treeDisplay.setTreeDrawing(null); //just in case, for threading
 				temp = (DrawTree)replaceEmployee(DrawTree.class, arguments, "Form of tree?", treeDrawTask);
 				if (temp!=null) {
 					treeDrawTask = temp;
@@ -335,6 +372,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplay.setTreeDrawing(null);
 					treeDrawName.setValue(treeDrawTask.getName());
 					treeDrawTask.setHiringCommand(tdC);
+					treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
 					treeDisplay.setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplay, treeDisplay.getTaxa().getNumTaxa()));
 					treeDisplay.suppressDrawing(suppression);
 					if (temp.allowsReorientation())
@@ -346,6 +384,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplay.setVisible(vis);
 				}
 				else {
+					treeDisplay.setTreeDrawing(tD); //just in case, for threading
 					treeDisplay.setVisible(vis);
 					treeDisplay.suppressDrawing(suppression);
 					decrementMenuResetSuppression();
@@ -373,6 +412,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDrawTask.setHiringCommand(tdC);
 				}
 				for (int i=0; i<numDisplays; i++) {
+					treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
 					treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], treeDisplays[i].getTaxa().getNumTaxa()));
 				}
 				for (int i=0; i<numDisplays; i++) {
@@ -490,7 +530,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		}
 		else if (checker.compare(this.getClass(), "Sets the highlight mode for selected taxa", "[number]", commandName, "setSelectedTaxonHighlightMode")) {
 			int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
-			
+
 			if (!MesquiteInteger.isCombinable(newNum)){
 				pos.setValue(0);
 				String token = ParseUtil.getToken(arguments, pos);
@@ -502,22 +542,89 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 				highlightModeName.setValue(highlightChoices[selectedTaxonHighlightMode]);
 				if (treeDisplay != null) 
 					treeDisplay.selectedTaxonHighlightMode = selectedTaxonHighlightMode;
-				else if (treeDisplays != null) {
-					for (int i=0; i<numDisplays; i++) {
+				else if (treeDisplays != null) 
+					for (int i=0; i<numDisplays; i++) 
 						treeDisplays[i].selectedTaxonHighlightMode = selectedTaxonHighlightMode;
+
+				updateTreeDisplays(true);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Whether collapsed clades are bold", "[on or off]", commandName, "toggleBoldCollapsed")) {
+			boolean was = collapsedBold.getValue();
+			collapsedBold.toggleValue(arguments);
+			if (was != collapsedBold.getValue()){
+				if (collapsedBold.getValue()){ //adding a bit
+					if (treeDisplay != null) 
+						treeDisplay.collapsedCladeHighlightMode = treeDisplay.collapsedCladeHighlightMode | TreeDisplay.cCHM_BOLD;
+					else if (treeDisplays != null) {
+						for (int i=0; i<numDisplays; i++) {
+							treeDisplays[i].collapsedCladeHighlightMode = treeDisplays[i].collapsedCladeHighlightMode | TreeDisplay.cCHM_BOLD;
+						}
+					}
+				}
+				else { //clearing a bit
+					if (treeDisplay != null) 
+						treeDisplay.collapsedCladeHighlightMode = treeDisplay.collapsedCladeHighlightMode & (~TreeDisplay.cCHM_BOLD  & 7);
+					else if (treeDisplays != null) {
+						for (int i=0; i<numDisplays; i++) {
+							treeDisplays[i].collapsedCladeHighlightMode = treeDisplays[i].collapsedCladeHighlightMode & (~TreeDisplay.cCHM_BOLD  & 7);
+						}
 					}
 				}
 
 				updateTreeDisplays(true);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets the number of decimals in the branch length label", "[number]", commandName, "setNumBrLenDecimals")) {
-			int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
-			if (!MesquiteInteger.isCombinable(newNum))
-				newNum = MesquiteInteger.queryInteger(containerOfModule(), "Set Number of Decimal Places Displayed", "Number of decimal places displayed in branch length labels:", numBrLenDecimals.getValue(), 0, 25);
-			if (newNum>=0  && newNum!=numBrLenDecimals.getValue()) {
-				numBrLenDecimals.setValue(newNum);
-				updateTreeDisplays();
+		else if (checker.compare(this.getClass(), "Whether collapsed clades are bold", "[on or off]", commandName, "toggleItalicsCollapsed")) {
+			boolean was = collapsedItalics.getValue();
+			collapsedItalics.toggleValue(arguments);
+			if (was != collapsedItalics.getValue()){
+				if (collapsedItalics.getValue()){ //adding a bit
+					if (treeDisplay != null) 
+						treeDisplay.collapsedCladeHighlightMode = treeDisplay.collapsedCladeHighlightMode | TreeDisplay.cCHM_ITALICS;
+					else if (treeDisplays != null) {
+						for (int i=0; i<numDisplays; i++) {
+							treeDisplays[i].collapsedCladeHighlightMode = treeDisplays[i].collapsedCladeHighlightMode | TreeDisplay.cCHM_ITALICS;
+						}
+					}
+				}
+				else { //clearing a bit
+					if (treeDisplay != null) 
+						treeDisplay.collapsedCladeHighlightMode = treeDisplay.collapsedCladeHighlightMode & (~TreeDisplay.cCHM_ITALICS  & 7);
+					else if (treeDisplays != null) {
+						for (int i=0; i<numDisplays; i++) {
+							treeDisplays[i].collapsedCladeHighlightMode = treeDisplays[i].collapsedCladeHighlightMode & (~TreeDisplay.cCHM_ITALICS  & 7);
+						}
+					}
+				}
+
+				updateTreeDisplays(true);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Whether collapsed clade names are big", "[on or off]", commandName, "toggleBigCollapsed")) {
+			boolean was = collapsedBig.getValue();
+			collapsedBig.toggleValue(arguments);
+			if (was != collapsedBig.getValue()){
+				if (collapsedBig.getValue()){ //adding a bit
+					if (treeDisplay != null) 
+						treeDisplay.collapsedCladeHighlightMode = treeDisplay.collapsedCladeHighlightMode | TreeDisplay.cCHM_BIG;
+					else if (treeDisplays != null) {
+						for (int i=0; i<numDisplays; i++) {
+							treeDisplays[i].collapsedCladeHighlightMode = treeDisplays[i].collapsedCladeHighlightMode | TreeDisplay.cCHM_BIG;
+						}
+					}
+				}
+				else { //clearing a bit
+					if (treeDisplay != null) 
+						treeDisplay.collapsedCladeHighlightMode = treeDisplay.collapsedCladeHighlightMode & (~TreeDisplay.cCHM_BIG  & 7);
+					else if (treeDisplays != null) {
+						for (int i=0; i<numDisplays; i++) {
+							treeDisplays[i].collapsedCladeHighlightMode = treeDisplays[i].collapsedCladeHighlightMode & (~TreeDisplay.cCHM_BIG  & 7);
+						}
+					}
+				}
+
+				updateTreeDisplays(true);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Shows node numbers on tree", "[on or off]", commandName, "showNodeNumbers")) {
@@ -529,40 +636,76 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			showBranchColors.toggleValue(arguments);
 			updateTreeDisplays();
 		}
-
-		else if (checker.compare(this.getClass(), "Specifies whether or not branch length labels, if shown, are centered along a branch", "[on or off]", commandName, "centerBrLenLabels")) {
-			centerBrLenLabels.toggleValue(arguments);
-			updateTreeDisplays();
-
+		//BRANCH LENGTH DISPLAY -- has been moved to NodeAssociatesZDisplayControl, so here just passing along old scripting
+		else if (checker.compare(this.getClass(), "Shows branch lengths on tree", "[on or off]", commandName, "labelBranchLengths")) {
+			String token = parser.getFirstToken(arguments);
+			if (token != null && token.equalsIgnoreCase("off"))
+				return null;
+			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("showAssociate",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " true", checker);
 		}
-		else if (checker.compare(this.getClass(), "Specifies whether or not ? is shown or not for branches whose length is unspecified", "[on or off]", commandName, "showBrLensUnspecified")) {
-			showBrLensUnspecified.toggleValue(arguments);
-			updateTreeDisplays();
+		//" showName centred whiteEdges showOnTerminals showIfUnassigned showPercentage vertical "
+		else if (checker.compare(this.getClass(), "Specifies whether or not branch length labels, if shown, are centered along a branch", "[on or off]", commandName, "centerBrLenLabels")) {
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off"))
+				B = false;
+			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setBooleans",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x " + B +" x x x x x ", checker);
+		}
 
+		else if (checker.compare(this.getClass(), "Specifies whether or not ? is shown or not for branches whose length is unspecified", "[on or off]", commandName, "showBrLensUnspecified")) {
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off"))
+				B = false;
+			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setBooleans",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x x x x " + B + " x x ", checker);
 		}
 		else if (checker.compare(this.getClass(), "Allows user to choose the color for branch length labels", "[on or off]", commandName, "chooseBrLenLabelColor")) {
 			if (!MesquiteThread.isScripting()) {
-				Color color = ColorDialog.queryColor(this.containerOfModule(), "Choose Color", "Color for state", brLenColor);
-				if (color!=null){
-					brLenColor = color;
-					updateTreeDisplays();
-				}
+				MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+				if (mb != null)
+					mb.doCommand("showDialog", null, checker);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Specifies the color", "[on or off]", commandName, "setBrLenLabelColor")) {
-			pos.setValue(0); 
-			brLenColor = ColorDistribution.getColorFromArguments(arguments, pos);
-			updateTreeDisplays();
+			int num = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (!MesquiteInteger.isCombinable(num))
+				return null;
+			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setNumbers",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x x x x " + num + " x  ", checker);
 		}
 
 
 		else if (checker.compare(this.getClass(), "Specifies whether or not branch length labels, if shown, are also shown on terminal branches of tree", "[on or off]", commandName, "showBrLenLabelsOnTerminals")) {
-			showBrLenLabelsOnTerminals.toggleValue(arguments);
-			updateTreeDisplays();
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off"))
+				B = false;
+			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setBooleans",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x x x " + B + " x x x ", checker);
 		}
-		else if (checker.compare(this.getClass(), "Shows branch lengths on tree", "[on or off]", commandName, "labelBranchLengths")) {
-			labelBranchLengths.toggleValue(arguments);
-			updateTreeDisplays();
+		//" fontSize xOffset yOffset digits color thresholdValue "
+		else if (checker.compare(this.getClass(), "Sets the number of decimals in the branch length label", "[number]", commandName, "setNumBrLenDecimals")) {
+			int num = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (!MesquiteInteger.isCombinable(num))
+				return null;
+			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setNumbers",  StringUtil.tokenize(MesquiteTree.branchLengthName) + " " + Associable.BUILTIN + " x x x " +num+ " x x  ", checker);
+		}
+		else if (checker.compare(this.getClass(), "Shows branch lengths on tree", "", commandName, "controlPropertiesDisplay")) {
+			if (!MesquiteThread.isScripting()) {
+				MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+				if (mb != null)
+					mb.doCommand("showDialog", null, checker);
+			}
 		}
 		else if (checker.compare(this.getClass(), "Returns the tree drawing module in use", null, commandName, "getTreeDrawer")) {
 			return treeDrawTask;
@@ -588,7 +731,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (MesquiteThread.isScripting())
 			return;
-		if (source instanceof DrawNamesTreeDisplay && Notification.getCode(notification) == TreeDisplay.FONTSIZECHANGED ){
+		if (Notification.getCode(notification) == TREE_DRAWING_SIZING_CHANGED || (source instanceof DrawNamesTreeDisplay && Notification.getCode(notification) == TreeDisplay.FONTSIZECHANGED) ){
 			MesquiteWindow w = null;
 			if (treeDisplay != null) {
 				w =MesquiteWindow.windowOfItem(treeDisplay);
@@ -609,6 +752,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 				((BasicTreeDisplay)treeDisplays[i]).pleaseUpdate(true);
 			}
 		}
+
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -786,8 +930,8 @@ class BasicTreeDisplay extends TreeDisplay  {
 				drawAllExtras(tree, dRoot, g);
 				if (bailOut(initialPending)) return;
 				stage = 3;
-				if (ownerDrawModule.labelBranchLengths.getValue())
-					drawBranchLengthsOnTree(tree, dRoot, g);
+				//	if (ownerDrawModule.labelBranchLengths.getValue())
+				//		drawBranchLengthsOnTree(tree, dRoot, g);
 				stage = 4;
 				if (ownerDrawModule.showNodeNumbers.getValue())
 					drawNodeNumbersOnTree(tree, dRoot, g);
@@ -879,8 +1023,8 @@ class BasicTreeDisplay extends TreeDisplay  {
 			printAllBackgroundExtras(tree, dRoot, g);
 			getTreeDrawing().drawTree(tree, dRoot, g); //OTHER ROOTS
 			printAllExtras(tree, dRoot, g);
-			if (ownerDrawModule.labelBranchLengths.getValue())
-				drawBranchLengthsOnTree(tree, dRoot, g);
+			//	if (ownerDrawModule.labelBranchLengths.getValue())
+			//		drawBranchLengthsOnTree(tree, dRoot, g);
 			if (ownerDrawModule.showNodeNumbers.getValue())
 				drawNodeNumbersOnTree(tree, dRoot, g);
 			if (!suppressNames && ownerModule!=null && ((DrawTreeCoordinator)ownerModule).getNamesTask()!=null)
@@ -906,6 +1050,8 @@ class BasicTreeDisplay extends TreeDisplay  {
 	private int spotsize = 18;
 	/*_________________________________________________*/
 	private   void drawSpot(TreeDisplay treeDisplay, Tree tree, Graphics g, int N) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		if (tree.nodeExists(N)) {
 			if (treeDisplay.getVisRect() == null || treeDisplay.getVisRect().contains(treeDisplay.getTreeDrawing().x[N], treeDisplay.getTreeDrawing().y[N])){
 				if (tree.nodeIsInternal(N) || true){  //replace true by show terminal
@@ -1026,7 +1172,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 			StringUtil.highlightString(g, sb.toString(), nodeX, nodeY, ownerDrawModule.getBrLenColor(), Color.white);
 		}
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public   void drawBranchLengthsOnTree(Tree tree, int drawnRoot, Graphics g) {
 		if (tree!=null) {
 			g.setColor(Color.blue);

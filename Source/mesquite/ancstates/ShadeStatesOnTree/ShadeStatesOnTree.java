@@ -129,6 +129,8 @@ class ShadeStatesDecorator extends TreeDecorator {
 	}
 	/*.................................................................................................................*/
 	private   void writeStateAtNode(CharacterHistory statesAtNodes,CharacterDistribution observedStates, Graphics g, int N,  Tree tree) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			writeStateAtNode(statesAtNodes, observedStates, g, d, tree);
 		int nodeX = (int)treeDisplay.getTreeDrawing().x[N];  // integer node approximation
@@ -157,6 +159,8 @@ class ShadeStatesDecorator extends TreeDecorator {
 
 	/*.................................................................................................................*/
 	private boolean shadeNode(int N, Tree tree, CharacterHistory statesAtNodes, CharacterDistribution observedStates, MesquiteBoolean showStateWeights, Graphics g) {
+		if (tree.withinCollapsedClade(N))
+			return false;
 		boolean anyDataInClade = ownerModule.showPredictions.getValue();
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 			boolean dataInDaughterClade = shadeNode(d, tree, statesAtNodes, observedStates, showStateWeights, g);

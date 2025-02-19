@@ -140,6 +140,19 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 						else
 							addToPopup(nr.getValue() + ": " + MesquiteDouble.toString(lo.getValue(branchFound)), branchFound, responseNumber++);
 					}
+				num = tree.getNumberAssociatedStrings();
+				if (num>0)
+					for (int i=0; i<num; i++) {
+						StringArray lo = tree.getAssociatedStrings(i);
+						String s = lo.getValue(branchFound);
+						if (s != null){
+							NameReference nr = lo.getNameReference();
+							if (nr==null)
+								addToPopup("?: " + s, branchFound, responseNumber++);
+							else
+								addToPopup(nr.getValue() + ": " + s, branchFound, responseNumber++);
+						}
+					}
 				num = tree.getNumberAssociatedObjects();
 				if (num>0)
 					for (int i=0; i<num; i++) {
@@ -226,7 +239,7 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 										if (AlertDialog.query(ownerModule.containerOfModule(), "String at node", message)){
 											String newString = MesquiteString.queryString(ownerModule.containerOfModule(), "Change String", "Change string to", s);
 											if (newString !=null)
-												((MesquiteTree)tree).setAssociatedObject(nr, branchFound, newString);
+												((MesquiteTree)tree).setAssociatedString(nr, branchFound, newString);
 										}
 									}
 									else {
@@ -274,7 +287,7 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
  	private void transferToStrings(MesquiteTree tree, int node, TreeDisplayExtra ex, NameReference nr){
 		String s = ex.textAtNode(tree, node);
 		if (!StringUtil.blank(s))
-			tree.setAssociatedObject(nr, node, s);
+			tree.setAssociatedString(nr, node, s);
 		
 		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter))
 			transferToStrings(tree, daughter, ex, nr);

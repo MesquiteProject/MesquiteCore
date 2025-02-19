@@ -1317,14 +1317,14 @@ public class ManageCharacters extends CharactersManager {
 									found = true;
 								}
 							}
-							//look through all attached objects
-							int numObs = as.getNumberAssociatedObjects();
+							//look through all attached strings
+							int numStrs = as.getNumberAssociatedStrings();
 
-							for (int v = 0; v<numObs; v++){  
-								ObjectArray array = as.getAssociatedObjects(v);
-								Object c = array.getValue(it);
+							for (int v = 0; v<numStrs; v++){  
+								StringArray array = as.getAssociatedStrings(v);
+								String c = array.getValue(it);
 
-								if (c != null && c instanceof String){
+								if (StringUtil.notEmpty(c)){
 									s.append(suppTMTokenAbbrev);
 									s.append(taxonTokenAbbrev);
 									s.append(Integer.toString(CharacterStates.toExternal(it)));
@@ -1335,7 +1335,16 @@ public class ManageCharacters extends CharactersManager {
 									s.append(eL);
 									found = true;
 								}
-								else if (c != null && c instanceof String[] && ((String[])c).length>0){
+							}
+
+							//look through all attached objects
+							int numObs = as.getNumberAssociatedObjects();
+
+							for (int v = 0; v<numObs; v++){  
+								ObjectArray array = as.getAssociatedObjects(v);
+								Object c = array.getValue(it);
+
+								if (c != null && c instanceof String[] && ((String[])c).length>0){
 									s.append(suppTMTokenAbbrev);
 									s.append(taxonTokenAbbrev);
 									s.append(Integer.toString(CharacterStates.toExternal(it)));
@@ -1350,11 +1359,7 @@ public class ManageCharacters extends CharactersManager {
 									s.append(eL);
 									found = true;
 								}
-
 							}
-
-
-
 						}
 					}
 					for (int ic = 0; ic<data.getNumChars(); ic++){
@@ -1427,14 +1432,14 @@ public class ManageCharacters extends CharactersManager {
 								found = true;
 							}
 						}
-						//look through all attached objects
-						int numObs = data.getNumberAssociatedObjects();
+						//look through all attached Strings
+						int numStrs = data.getNumberAssociatedStrings();
 
-						for (int v = 0; v<numObs; v++){  
-							ObjectArray array = data.getAssociatedObjects(v);
+						for (int v = 0; v<numStrs; v++){  
+							StringArray array = data.getAssociatedStrings(v);
 							if (!commentsRef.equals(array.getNameReference())){
-								Object c = array.getValue(ic);
-								if (c != null && c instanceof String){
+								String c = array.getValue(ic);
+								if (c != null){
 									s.append(suppTokenAbbrev);
 									s.append(characterTokenAbbrev);
 									s.append(Integer.toString(CharacterStates.toExternal(ic)));
@@ -1445,7 +1450,16 @@ public class ManageCharacters extends CharactersManager {
 									s.append(eL);
 									foundForChar = true;
 								}
-								else if (c != null && c instanceof String[] && ((String[])c).length>0){
+							}
+						}
+						//look through all attached objects
+						int numObs = data.getNumberAssociatedObjects();
+
+						for (int v = 0; v<numObs; v++){  
+							ObjectArray array = data.getAssociatedObjects(v);
+							if (!commentsRef.equals(array.getNameReference())){
+								Object c = array.getValue(ic);
+								if (c != null && c instanceof String[] && ((String[])c).length>0){
 									s.append(suppTMTokenAbbrev);
 									s.append(characterTokenAbbrev);
 									s.append(Integer.toString(CharacterStates.toExternal(ic)));
@@ -1619,8 +1633,8 @@ public class ManageCharacters extends CharactersManager {
 	 * TaxonListHadData module. After version 3.1, these were separated into different objects, in order to maintain the veracity
 	 * of the GenBank data.
 	 /*...................................................................................................................*/
-	void cleanUpGenBankAssociatedObject (Associable as, int whichTaxon, String genBankNote){
-		String newNote="";
+	void cleanUpGenBankAssociatedStrings (Associable as, int whichTaxon, String genBankNote){
+		String newNote=null;
 		while (!StringUtil.blank(genBankNote) && genBankNote.indexOf("(")>=0){
 			int start = genBankNote.indexOf("(");
 			int end = genBankNote.indexOf(")");
@@ -1629,9 +1643,16 @@ public class ManageCharacters extends CharactersManager {
 				firstBit = genBankNote.substring(0, start);
 			newNote=genBankNote.substring(start,end+1);
 			genBankNote = firstBit + genBankNote.substring(end+1, genBankNote.length());
+			genBankNote = StringUtil.stripLeadingWhitespace(genBankNote);
+			genBankNote = StringUtil.stripTrailingWhitespace(genBankNote);
 		}
-		 as.setAssociatedObject(MolecularData.genBankNumberRef, whichTaxon, genBankNote);
-		 as.setAssociatedObject(CharacterData.taxonMatrixNotesRef, whichTaxon, newNote);
+		if (genBankNote != null){
+			genBankNote = StringUtil.stripLeadingWhitespace(genBankNote);
+			genBankNote = StringUtil.stripTrailingWhitespace(genBankNote);
+		 as.setAssociatedString(MolecularData.genBankNumberRef, whichTaxon, genBankNote);
+		}
+		if (newNote != null)
+			as.setAssociatedString(CharacterData.taxonMatrixNotesRef, whichTaxon, newNote);
 	}
 
 	
@@ -1913,7 +1934,7 @@ public class ManageCharacters extends CharactersManager {
 									 }
 								 }
 								 else {
-									 String s = (String)data.getAssociatedObject(NameReference.getNameReference(name), whichCharacter);
+									 String s = (String)data.getAssociatedString(NameReference.getNameReference(name), whichCharacter);
 									 if (s != null && !s.equals(string)) {
 										 file.notesBugWarn = true;
 										 file.notesBugVector.addElement("Character " + (whichCharacter+1) + " in taxon " + (whichTaxon+1) + "(*)");
@@ -1926,20 +1947,20 @@ public class ManageCharacters extends CharactersManager {
 								 if (code == 4) {
 									 Associable as = data.getTaxaInfo(true);
 
-									 Object previous = as.getAssociatedObject(NameReference.getNameReference(name), whichTaxon);
+									 String previous = as.getAssociatedString(NameReference.getNameReference(name), whichTaxon);
 									 if (!StringUtil.blank((String)previous))
 										 string = (String)previous + "; " + string;
 									 if (name.equals(MolecularData.genBankNumberName)) {  // let's clean it up because of Mesquite 3.1 and before's confounding of GenBank numbers and other annotations
-											cleanUpGenBankAssociatedObject (as, whichTaxon, string);  
+											cleanUpGenBankAssociatedStrings (as, whichTaxon, string);  
 									 }
 									 else
-										 as.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, string);
+										 as.setAssociatedString(NameReference.getNameReference(name), whichTaxon, string);
 								 }
 								 else
 									 data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, string);
 							 }
 							 else
-								 data.setAssociatedObject(NameReference.getNameReference(name), whichCharacter, string);
+								 data.setAssociatedString(NameReference.getNameReference(name), whichCharacter, string);
 							 return true;
 						 }
 						 else if (strings.size()>0){

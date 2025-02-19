@@ -1768,7 +1768,8 @@ public class Mesquite extends MesquiteTrunk
 	public MesquiteProject readTreeFile(){
 		ExtensibleDialog dialog = null; //to be formed later
 		// === the file chosen
-		String path = MesquiteFile.openFileDialog( "Choose NEXUS or Phylip/Newick File",  null, null);
+		MesquiteString fileName = new MesquiteString();
+		String path = MesquiteFile.openFileDialog( "Choose NEXUS or Phylip/Newick File",  null, fileName);
 		if (path == null)
 			return null;
 		String startOfFile = MesquiteFile.getFileContentsAsString(path, 200); 
@@ -1791,7 +1792,7 @@ public class Mesquite extends MesquiteTrunk
 				dialectHumanNames[i] = dialect.getHumanName();
 				dialectInternalNames[i] = dialect.getName();
 			}
-			dialog = new ListDialog(containerOfModule(), "Reading NEXUS or Phylip/Newick file with trees", "In which dialect of Newick are the trees described?", false,null, dialectHumanNames, 8, selectedInDialog, "OK", null, false, true);
+			dialog = new ListDialog(containerOfModule(), "Reading file \"" + fileName + "\"", "In which dialect of Newick are the trees described?", false,null, dialectHumanNames, 8, selectedInDialog, "OK", null, false, true);
 		}
 		else if (!isNexus || isProjectAvailable)
 			dialog = new ExtensibleDialog(containerOfModule(), "Reading NEXUS or Phylip/Newick file with trees");
@@ -1802,10 +1803,17 @@ public class Mesquite extends MesquiteTrunk
 		if (dialog != null){
 			Checkbox autoSaveB = null;
 			Checkbox includeB = null;
+			//NOTE these two check boxes might seem to interact, but will autosave only if Phylip, 
+			//and will include only if NEXUS. The reason inclusion is allowed only with NEXUS is that 
+			//phylip reading will try to use an existing taxa block, which can cause unrecognized taxon name warnings.
+			//Debugg.println fix this by file reading hint to switch to invent taxa block if taxon name not recognized?!?!
+			//or warn user that only to be used if same taxa block???
 			if (!isNexus)
-				autoSaveB = dialog.addCheckBox("Auto-save converted NEXUS file", true); //NOTE THESE INTERACT; if include, dont' autosave!
+				autoSaveB = dialog.addCheckBox("Auto-save converted NEXUS file", true); 
 			if (isProjectAvailable && isNexus)
 				includeB = dialog.addCheckBox("Include in project already open", false);
+			dialog.addHorizontalLine(1);
+			dialog.addLabel("Note: This file opener can be used only with NEXUS and Phylip/Newick files!"); 
 
 			dialog.completeAndShowDialog(true);
 			if (dialog.buttonPressed.getValue() == 0)  {
@@ -2807,6 +2815,7 @@ public class Mesquite extends MesquiteTrunk
 				MesquiteTrunk.mesquiteTrunk.logln(s);
 				if (MesquiteTrunk.developmentMode)
 					MesquiteTrunk.mesquiteTrunk.logln("Development mode enabled.");
+				// get the total memory for my app
 
 				for ( int i = 0; i < args.length; i++ ) {
 					if (args[i]!=null && !args[i].startsWith("-")) {

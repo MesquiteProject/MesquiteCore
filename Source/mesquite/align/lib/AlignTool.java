@@ -37,8 +37,8 @@ public class AlignTool extends TableTool {
 	public void setOptionEdgeCursor(String extraImageFileName, int extraHotX, int extraHotY) {
 		optionEdgeCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, extraImageFileName, extraHotX, extraHotY);
 	}
-	public void cursorInCell(int modifiers, int column, int row, int regionInCellH, int regionInCellV, EditorPanel panel){
-		if ((regionInCellH<20 ||  regionInCellH>80) && edgeCursor!=null)  {
+	public void cursorInCell(int modifiers, int column, int row, EditorPanel editorPanel, int x, int y){
+		if ((editorPanel.findRegionInCellH(x)<20 ||  editorPanel.findRegionInCellH(x)>80) && edgeCursor!=null)  {
 			setCurrentStandardCursor(edgeCursor);
 			if (optionEdgeCursor!=null)
 				setCurrentOptionCursor(optionEdgeCursor);

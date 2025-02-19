@@ -28,6 +28,7 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayBkgdExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
@@ -52,66 +53,12 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 		addCheckMenuItem(null,"Show Time Bars", makeCommand("showGrayBars",  this), showGrayBars);
 		addMenuItem( "Time Bar Intervals...", makeCommand("grayBarInterval",  this));
 		addCheckMenuItem(null,"Show Geological Time Scale", makeCommand("showGeologicalTimeScale",  this), showGeologicalTimeScale);
-		// adjust interval for gray bars
-		// turn gray bars off and on
 		// show nodeCircles or not
 		// years as Integers or doubles
 		// show geological time scale or not
 		// font sizes for GTS
 
 
-		/*		displayTaskName = new MesquiteString(displayTask.getName());
-
-		htC = makeCommand("setHistorySource",  this);
-		if (numModulesAvailable(CharHistorySource.class)>1) {
-			historyTask.setHiringCommand(htC);
-			MesquiteSubmenuSpec mss = addSubmenu(null, "Character History Source", htC, CharHistorySource.class);
-			mss.setSelected(historyTaskName);
-		}
-		MesquiteMenuItemSpec mm = addMenuItem( "Next " + historyTask.getHistoryTypeName(), makeCommand("nextCharacter",  this));
-		mm.setShortcut(KeyEvent.VK_RIGHT); //right
-		mm = addMenuItem( "Previous " + historyTask.getHistoryTypeName(), makeCommand("previousCharacter",  this));
-		mm.setShortcut(KeyEvent.VK_LEFT); //right
-		addMenuItem( "Choose " + historyTask.getHistoryTypeName() + "...", makeCommand("chooseCharacter",  this));
-		if (enableStore)
-			addMenuItem( "Store History...", makeCommand("storeHistory",  this));
-		addCheckMenuItem(null, "Show Legend", makeCommand("toggleShowLegend",  this), showLegend);
-		MesquiteSubmenuSpec msDT = addSubmenu(null, "Trace Display Mode", dtC, DisplayStatesAtNodes.class); 
-		msDT.setSelected(displayTaskName);
-
-		colorSubmenu = addSubmenu(null, "Colors");
-
-		colorMode = new MesquiteInteger(0);
-		ListableVector f  = new ListableVector();
-		colorModeNames = new String[5];
-		colorModeNames[0] = "Full Colors";
-		colorModeNames[1] = "Grayscale";
-		colorModeNames[2] = "Redscale";
-		colorModeNames[3] = "Greenscale";
-		colorModeNames[4] = "Bluescale";
-		colorSubmenu.setEnabled(false);
-
-		for (int i= 0; i<colorModeNames.length; i++)
-			f.addElement(new MesquiteString(colorModeNames[i]), false);
-		MesquiteSubmenuSpec mcms = addSubmenu(null, "Colors", makeCommand("setColorMode", this), f);
-		colorModeName = new MesquiteString(colorModeNames[colorMode.getValue()]);
-		mcms.setSelected(colorModeName);
-
-		numBinsMenuItem = addMenuItem("Set Number of Bins...", makeCommand("setNumBins", this));
-		numBinsMenuItem.setEnabled(false);
-		binsMenuItem = addMenuItem("Set Bin Boundaries...", makeCommand("setBins", this));
-		binsMenuItem.setEnabled(false);
-		setColorsAsDefaultItem = addMenuItem("Set Custom Colors as Defaults", makeCommand("saveModColors", this));
-		setColorsAsDefaultItem.setEnabled(false);
-		revertColorsItem = addMenuItem("Revert Default Colors to Factory", makeCommand("revertColors", this));
-		revertColorsItem.setEnabled(false);
-		showStateWeights = new MesquiteBoolean(true);
-		propWeight = addCheckMenuItem(null, "Display Proportional to Weight", makeCommand("toggleWeights", this), showStateWeights);
-		propWeight.setEnabled(historyTask.allowsStateWeightChoice());
-		addCheckMenuItem(null, "Show Differences Window", makeCommand("toggleShowWindow",  this), showWindow);
-		addMenuItem(null, "Export Table of Node Differences...", makeCommand("exportDifferences",  this));
-
-		 */
 		addMenuSeparator();
 		addMenuItem( "Close Chronogram", makeCommand("closeChronogram",  this));
 		MesquiteTrunk.resetMenuItemEnabling();
@@ -289,8 +236,13 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		startXValue = MesquiteDouble.unassigned;
 	}
 	/*.................................................................................................................*/
-	public int[] getRequestedExtraBorders(Tree tree, TreeDrawing treeDrawing){ //in graphics units/pixels; must return null or int[4], left, top, right, bottom
-		return null;
+	/* The TreeDisplayRequests object has public int fields leftBorder, topBorder, rightBorder, bottomBorder (in pixels and in screen orientation)
+	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
+	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
+		TreeDisplayRequests requests = new TreeDisplayRequests();
+		requests.bottomBorder = 100;
+		requests.extraDepthAtRoot = 50.0;
+		return requests;
 	}
 /*.................................................................................................................*/
 	
@@ -306,6 +258,8 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 	/*.................................................................................................................*/
 	public   void drawNodes(MesquiteTree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawNodes(tree, d, g);
 
@@ -476,6 +430,8 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 	/*.................................................................................................................*/
 	public   void drawUnderTree(Tree tree, int node, Graphics g) {
+		if (treeDisplay.getOrientation()!=TreeDisplay.RIGHT)
+			return;
 		reset();
 
 		if (drawGrayTimeBars) {
@@ -486,6 +442,8 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
+		if (treeDisplay.getOrientation()!=TreeDisplay.RIGHT)
+			return;
 	/*reset();
 
 		if (drawGrayTimeBars) {
@@ -505,6 +463,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		g.setColor(t);
 	}
 
+	
 	/*.................................................................................................................*/
 	void update(){
 		reset();
@@ -528,6 +487,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 	 */
 	public void turnOff() {
+		treeDisplay.inhibitDefaultScaleBar = false;
 		ownerModule.extras.removeElement(this);
 		super.turnOff();
 	}
@@ -553,7 +513,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		}
 
 	}
-	@Override
+
 	public void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 		/*if (drawGrayTimeBars) {
 			drawGrayBars(tree,drawnRoot,g);
@@ -562,7 +522,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		double[] scale = treeDisplay.getScale();
 		int top = (int)scale[endY]+gapBetweenScaleAndGeologicalTimeScale;
 		drawEras(top,g);
-
+		
 		Color t = g.getColor();
 		g.setColor(Color.blue);
 		drawNodes((MesquiteTree)tree, drawnRoot, g);
