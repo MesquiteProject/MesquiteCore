@@ -40,7 +40,7 @@ public class MesquiteMenuItemSpec implements Listable, Disposable {
 	protected String argument = null;
 	protected MesquiteSubmenuSpec submenu;
 	protected Class dutyClass = null;
-	protected int dutyClassPriority = 0; //0 all priorities; 1, default + primary modules, -1 secondary modules
+	protected int choicePrimarySecondary = 0; //0 all priorities; 1, default + primary modules, -1 secondary modules
 	protected Object compatibilityRestriction = null;
 	protected QualificationsTest qualificationsTest = null;
 	protected ListableVector lVector = null;
@@ -203,11 +203,11 @@ boolean alreadyDisposed = false;
 	public void setList(StringLister s){
 		this.stringLister = s;
 	}
-	public void setDutyClassPriority(int priority){
-		this.dutyClassPriority = priority;
+	public void setChoicePrimarySecondary(int priority){
+		this.choicePrimarySecondary = priority;
 	}
-	public int getDutyClassPriority(){
-		return dutyClassPriority;
+	public int getChoicePrimarySecondary(){
+		return choicePrimarySecondary;
 	}
 
 	public ListableVector getListableVector(){

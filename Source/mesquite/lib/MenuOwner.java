@@ -910,7 +910,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	 * </ol>
 	 */
 
-	public final synchronized void composeMenuBar(MesquiteMenuBar menuBar, MesquiteWindow whichWindow) {
+	public final void composeMenuBar(MesquiteMenuBar menuBar, MesquiteWindow whichWindow) {
 		if (module.isDoomed())
 			return;
 		if (System.getProperty("os.name").indexOf("Mac OS") < 0 && whichWindow.menusMinimal())
@@ -1273,7 +1273,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	 * This recomposes the Windows menu for a MesquiteModule. It is only called for
 	 * modules that own windows (i.e., a frame that can own a menu bar).
 	 */
-	public final synchronized void recomposeWindowsMenu(MesquiteMenuBar menuBar, MesquiteWindow whichWindow) {
+	public final void recomposeWindowsMenu(MesquiteMenuBar menuBar, MesquiteWindow whichWindow) {
 		MesquiteMenu currentWindowsMenu = null;
 		if (menuBar == null)
 			return;
@@ -1737,7 +1737,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					mbi)) != null) {
 				int hiddenStatus = 0;
 				if (moduleIsCompatible(mmi, mbi) && mbi.getUserChooseable()
-						&& (mmi.getDutyClassPriority()==0 || (mmi.getDutyClassPriority() == 1 && mbi.isPrimary(mmi.getDutyClass())) || (mmi.getDutyClassPriority() == -1 && !mbi.isPrimary(mmi.getDutyClass())))
+						&& (mmi.getChoicePrimarySecondary()==0 || (mmi.getChoicePrimarySecondary() == 1 && mbi.primaryChoiceRequested()) || (mmi.getChoicePrimarySecondary() == -1 && !mbi.primaryChoiceRequested()))
 						&& (!InterfaceManager.isFilterable(menu)
 								|| (hiddenStatus = InterfaceManager.isHiddenMenuItem(mmi, mbi.getNameForMenuItem(),
 										StringUtil.tokenize(mbi.getName()), mmi.command, mbi.getModuleClass(),
@@ -2029,7 +2029,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(msms.getDutyClass(),
 					mbi)) != null) {
 				if (moduleIsCompatible(msms, mbi)
-						&& (msms.getDutyClassPriority()==0 || (msms.getDutyClassPriority() == 1 && mbi.isPrimary(msms.getDutyClass())) || (msms.getDutyClassPriority() == -1 && !mbi.isPrimary(msms.getDutyClass())))) {
+						&& (msms.getChoicePrimarySecondary()==0 || (msms.getChoicePrimarySecondary() == 1 && mbi.primaryChoiceRequested()) || (msms.getChoicePrimarySecondary() == -1 && !mbi.primaryChoiceRequested()))) {
 					if (!mbi.getUserChooseable())
 						;
 					else if (mbi.isPrimary(msms.getDutyClass()))
@@ -2038,7 +2038,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 						countOthers++;
 				}
 			}
-			boolean useOthers = EmployerEmployee.useOtherChoices && countOthers > 0 && countPrimary > 0;
+			boolean useOthers = EmployerEmployee.useOtherChoices && countOthers > 0 && countPrimary > 0 && msms.getChoicePrimarySecondary()==0;
 			Listable[] others = null;
 			if (useOthers)
 				others = new Listable[countOthers];
@@ -2050,7 +2050,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				boolean primary = mbi.isPrimary(msms.getDutyClass());
 
 				if (moduleIsCompatible(msms, mbi)
-						&& (msms.getDutyClassPriority()==0 || (msms.getDutyClassPriority() == 1 && mbi.isPrimary(msms.getDutyClass())) || (msms.getDutyClassPriority() == -1 && !mbi.isPrimary(msms.getDutyClass())))) {
+						&& (msms.getChoicePrimarySecondary()==0 || (msms.getChoicePrimarySecondary() == 1 && mbi.primaryChoiceRequested()) || (msms.getChoicePrimarySecondary() == -1 && !mbi.primaryChoiceRequested()))) {
 					int hiddenStatus = 0;
 					if (!mbi.getUserChooseable())
 						;

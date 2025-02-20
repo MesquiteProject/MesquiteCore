@@ -477,7 +477,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 		sizeDisplays(false);
 	}
 	/*.................................................................................................................*/
-	public synchronized void sizeDisplays(boolean hide){
+	public void sizeDisplays(boolean hide){
 		if (treeScroll == null || messagePanel == null || containingPanel == null)
 			return;
 		totalWidth = getWidth()-16;

@@ -158,7 +158,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private long branchLengthsVersion = 0;
 	/** a flag to tell the system the tree description being read is from a MrBayes contree file.*/
 	protected boolean readingMrBayesConTree = false;
-	/** A number recording the last taxa version with which synchronized.*/
+	/** A number recording the last taxa version with which .*/
 	private long taxaVersion = 0;
 	/** Locks name to provoke error messages if name change attempted.*/
 	private boolean nameLock = false;
@@ -2139,7 +2139,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return IntegerArray.subtractArrays(allTerminals,nodeTerminals);
 	}
 	/*-----------------------------------------*/
-	private synchronized void downMarkPathsFromTerminals(Bits terminals, Bits nodes, int node){
+	private  void downMarkPathsFromTerminals(Bits terminals, Bits nodes, int node){
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
 			downMarkPathsFromTerminals(terminals, nodes, d);
 			if (nodeIsTerminal(d) && terminals.isBitOn(taxonNumberOfNode(d))){   // this is a terminal
@@ -2151,7 +2151,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 	}
 	/*-----------------------------------------*/
-	private synchronized void upMarkPathsFromTerminals(Bits nodes, int node){
+	private  void upMarkPathsFromTerminals(Bits nodes, int node){
 		int numLines = 0;
 		int line =-1;
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
@@ -2166,14 +2166,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			upMarkPathsFromTerminals(nodes, line);
 	}
 	/*-----------------------------------------*/
-	private synchronized void markPathsFromTerminals(Bits terminals, Bits nodes, int node) { 
+	private  void markPathsFromTerminals(Bits terminals, Bits nodes, int node) { 
 		if (terminals==null || nodes==null)
 			return;
 		downMarkPathsFromTerminals(terminals, nodes, node);
 		upMarkPathsFromTerminals(nodes,  node);
 	}
 	/*-----------------------------------------*/
-	private synchronized boolean scanForUnmarkedDescendants(Bits terminals, Bits nodes, int node){
+	private  boolean scanForUnmarkedDescendants(Bits terminals, Bits nodes, int node){
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
 			if (scanForUnmarkedDescendants(terminals, nodes, d))
 				return true;
@@ -2213,7 +2213,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return motherOfNode(firstDaughter);
 	}
 	/*-----------------------------------------*/
-	private synchronized void scanForMultipleTransitions(Bits terminals, Bits nodes, int node, MesquiteInteger numTransitions, MesquiteInteger descendantBoundary){
+	private  void scanForMultipleTransitions(Bits terminals, Bits nodes, int node, MesquiteInteger numTransitions, MesquiteInteger descendantBoundary){
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
 			scanForMultipleTransitions(terminals, nodes, d, numTransitions, descendantBoundary);
 			if (numTransitions.getValue()>1)
@@ -2374,7 +2374,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private int countNodes;
 	private int nodeFound;
 	/** goes through the tree returning which node is the nodeNumberTH found in the traversal */
-	private synchronized void findNodeInTraversal(int node, int nodeNumber){
+	private  void findNodeInTraversal(int node, int nodeNumber){
 		countNodes++;
 		if ((countNodes==nodeNumber) && (nodeFound==0))
 			nodeFound=node;
@@ -2504,7 +2504,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return mrca(nodes, ignoreMissing);
 	}
 	/*-----------------------------------------*/
-	private synchronized int getDeepest(int aTerminal, Bits nodes){
+	private  int getDeepest(int aTerminal, Bits nodes){
 		int d = aTerminal;
 		for (int p = aTerminal; nodeExists(p); p = motherOfNode(p)) {
 			if (!nodes.isBitOn(p))
@@ -4236,7 +4236,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 	/*-----------------------------------------*/
 	/** Branches a terminal node off taxon number taxonNum, and assigns it taxon newNumber.  If newNumber < 0, then assign next available taxon not in tree  */
-	public synchronized void splitTerminal(int taxonNum, int newNumber, boolean notify) {
+	public  void splitTerminal(int taxonNum, int newNumber, boolean notify) {
 		int node = nodeOfTaxonNumber(taxonNum);
 		if (nodeExists(node)) {
 			int N1= sproutDaughter(node, notify);
@@ -4258,7 +4258,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Sprouts a new daughter from node and returns it. */
-	public synchronized int sproutDaughter(int node, boolean notify) {
+	public  int sproutDaughter(int node, boolean notify) {
 		if (!nodeExists(node))
 			return 0;
 		int op = openNode();
@@ -4531,7 +4531,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 	}
 
-	private synchronized void sortDescendants(int node, boolean leftToRight){
+	private  void sortDescendants(int node, boolean leftToRight){
 		if (nodeIsTerminal(node))
 			return;
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
@@ -4554,7 +4554,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 
 	/*-----------------------------------------*/
-	private synchronized void randomizeDescendants(int node, Random rng){
+	private  void randomizeDescendants(int node, Random rng){
 		if (nodeIsTerminal(node))
 			return;
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
@@ -4576,7 +4576,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 	/*-----------------------------------------*/
 	/** Puts clade in random arrangement.*/
-	public synchronized boolean randomlyRotateDescendants(int node, Random rng, boolean notify){
+	public  boolean randomlyRotateDescendants(int node, Random rng, boolean notify){
 		randomizeDescendants(node, rng);
 		checkTreeIntegrity(getRoot());
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
@@ -4585,13 +4585,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/*-----------------------------------------*/
 	/** Puts clade in standard arrangement, such that smaller clades to left, 
 	and if sister clades have same number of terminals, then with one with lowest numbered terminal to left.*/
-	public synchronized boolean standardize(int node, boolean notify){
+	public  boolean standardize(int node, boolean notify){
 		return standardize(node, true, notify);
 	}
 	/*-----------------------------------------*/
 	/** Puts clade in standard arrangement, such that smaller clades to left (or right, depending on boolean passed), 
 	and if sister clades have same number of terminals, then with one with lowest numbered terminal to left (or right).*/
-	public synchronized boolean standardize(int node, boolean leftToRight, boolean notify){
+	public  boolean standardize(int node, boolean leftToRight, boolean notify){
 		sortDescendants(node, leftToRight);
 		checkTreeIntegrity(root);
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
@@ -4600,7 +4600,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/*-----------------------------------------*/
 	/** Puts clade in standard arrangement, such that smaller clades to left (or right, depending on boolean passed), 
 	and if sister clades have same number of terminals, then with one with lowest numbered terminal to left (or right).*/
-	public synchronized boolean standardize(TaxaSelectionSet taxonSet, boolean notify){
+	public  boolean standardize(TaxaSelectionSet taxonSet, boolean notify){
 		MesquiteInteger descendantBoundary = new MesquiteInteger();
 		if (taxonSet==null) {
 			for (int i=0; i<getNumTaxa(); i++) { // find lowest number taxon that is in the tree
@@ -4635,7 +4635,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return standardize(getRoot(), true, notify);
 	}
 
-	private synchronized void focalSortDescendants(int node, int focalNode, boolean leftToRight, boolean extremeAlreadySorted){
+	private  void focalSortDescendants(int node, int focalNode, boolean leftToRight, boolean extremeAlreadySorted){
 		if (nodeIsTerminal(node))
 			return;
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
@@ -4657,7 +4657,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Puts clade in standard arrangement, such that focalTaxon is to left (or right, depending on boolean passed). */
-	public synchronized boolean focalStandardize(int focalTaxon, boolean leftToRight, boolean notify){
+	public  boolean focalStandardize(int focalTaxon, boolean leftToRight, boolean notify){
 		int focalNode = nodeOfTaxonNumber(focalTaxon);
 		int node = focalNode;
 		while (node!=getSubRoot() && nodeExists(node)) {
@@ -4678,12 +4678,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Interchanges two branches of tree.*/
-	public synchronized boolean interchangeBranches(int node, int otherNode, boolean notify) {   
+	public  boolean interchangeBranches(int node, int otherNode, boolean notify) {   
 		return interchangeBranches(node, otherNode, false, notify);
 	}
 	/*-----------------------------------------*/
 	/** Interchanges two branches of tree.*/
-	public synchronized boolean interchangeBranches(int node, int otherNode, boolean preserveHeights, boolean notify) {   
+	public  boolean interchangeBranches(int node, int otherNode, boolean preserveHeights, boolean notify) {   
 		if (!nodeExists(node) || !nodeExists(otherNode))
 			return false;
 		if (node==otherNode)
@@ -4748,7 +4748,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Collapses branch to yield polytomy.*/
-	public synchronized boolean collapseBranch(int node, boolean notify) {   
+	public  boolean collapseBranch(int node, boolean notify) {   
 		if (!nodeExists(node))
 			return false;
 		if (nodeIsInternal(node) && (node!=root)) {
@@ -4792,7 +4792,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Collapses all internal branches within clade above node, to yield bush.*/
-	private synchronized void inCollapseAllBranches(int node) {   
+	private  void inCollapseAllBranches(int node) {   
 		int d=firstDaughterOfNode(node);
 		while (nodeExists(d)) {
 			int nNS = nextSisterOfNode(d);
@@ -4804,7 +4804,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Collapses all internal branches within tree BELOW node, to yield bush.*/
-	private synchronized void inCollapseAllBranchesUntilNode(int node, int endNode) {   
+	private  void inCollapseAllBranchesUntilNode(int node, int endNode) {   
 		int d=firstDaughterOfNode(node);
 		while (nodeExists(d)) {
 			int nNS = nextSisterOfNode(d);
@@ -4817,7 +4817,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Collapses all internal branches within clade above node, to yield bush.*/
-	public synchronized boolean collapseAllBranches(int node, boolean below, boolean notify) {   
+	public  boolean collapseAllBranches(int node, boolean below, boolean notify) {   
 		if (!nodeExists(node))
 			return false;
 		if (below)
@@ -4858,7 +4858,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		deassignAssociated(node);
 	}
 	/** Excise node and clade above it from tree, zeroing information at each node in clade.*/
-	public synchronized boolean deleteClade(int node, boolean notify) {   
+	public  boolean deleteClade(int node, boolean notify) {   
 		if (snipClade(node, notify)){
 			zeroClade(node);
 			return true;
@@ -4866,7 +4866,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return false;
 	}
 	/** Excise node and clade above it from tree, zeroing information at each node in clade.*/
-	public synchronized static void pruneTaxaNotInCommon(MesquiteTree tree1, MesquiteTree tree2, boolean notify) {   
+	public  static void pruneTaxaNotInCommon(MesquiteTree tree1, MesquiteTree tree2, boolean notify) {   
 		if (tree1.getTaxa() != tree2.getTaxa())
 			return;
 		for (int it=0; it<tree1.getNumTaxa(); it++) {
@@ -4878,7 +4878,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Excise node and clade above it from tree but leave the clade intact, in case it is to be attached elsewhere.*/
-	public synchronized boolean snipClade(int node, boolean notify) {   
+	public  boolean snipClade(int node, boolean notify) {   
 		if (node==root)
 			return false;
 		else {  // also prohibit if will be left fewer than three??
@@ -4971,7 +4971,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*................................................................................................................*/
 	/** Attach terminal taxon to tree along given branch.*/
-	public synchronized boolean graftTaxon(int taxon, int toN, boolean notify) {   
+	public  boolean graftTaxon(int taxon, int toN, boolean notify) {   
 		if (!nodeInTree(toN)) {
 			MesquiteMessage.warnProgrammer("ATTEMPT TO GRAFT ONTO NODE NOT IN TREE");
 			return false;
@@ -4995,7 +4995,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Attach node fromN (and any clade to attached to it) along node toN.  Returns the new node created to attach fromN*/
-	public synchronized int graftClade(int fromN, int toN, boolean notify) {   
+	public  int graftClade(int fromN, int toN, boolean notify) {   
 		if (!nodeExists(fromN) || !nodeExists(toN))
 			return 0;
 		locked = true;
@@ -5041,7 +5041,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/*-----------------------------------------*/
 	/** Move branch so as to excise branchFrom from its current position, and attach it to branch beneath
 	node branchTo.  If successful, rename as given (to ensure renamed before notified).*/
-	public synchronized boolean moveBranch(int branchFrom, int branchTo, boolean notify) {
+	public  boolean moveBranch(int branchFrom, int branchTo, boolean notify) {
 		return moveBranch(branchFrom, branchTo, notify, false, 0.0);
 	}
 	/*-----------------------------------------*/
@@ -5051,7 +5051,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	Preserve proportion indicates how the branch lengths are distributed; if 0 then new branches are 0 length; 0.5 means the new branch is 
 	half the length of the shortest of the two branches from/to.  preserveProportion is <strong>only</strong> considered when {@code preserveHeights=true};
 	if {@code preserveHeights=false} the branch receiving the new branch is effectively split in half by the newly grafted branch.*/
-	public synchronized boolean moveBranch(int branchFrom, int branchTo, boolean notify, boolean preserveHeights, double preserveProportion) {
+	public  boolean moveBranch(int branchFrom, int branchTo, boolean notify, boolean preserveHeights, double preserveProportion) {
 		if (branchFrom==branchTo)
 			return false;
 		else if (!nodeExists(branchFrom) || !nodeExists(branchTo))
@@ -5110,7 +5110,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Inserts a new node on the branch represented by "node", and returns the number of the inserted node */
-	public synchronized int insertNode(int node, boolean notify){
+	public  int insertNode(int node, boolean notify){
 		if (!nodeExists(node))
 			return -1;
 		int mom = motherOfNode(node);
@@ -5141,7 +5141,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Adds d to be a new daughter of node. */
-	private synchronized void insertDaughter(int node, int d) {
+	private  void insertDaughter(int node, int d) {
 		if (node!= 0){
 			if (!nodeExists(firstDaughterOfNode(node)))
 				firstDaughter[node] = d;
@@ -5152,7 +5152,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Adds d to be a new daughter of node. */
-	private synchronized void flipFirstTwoDaughters(int node) {
+	private  void flipFirstTwoDaughters(int node) {
 		if (node!= 0){
 			int first = firstDaughter[node];
 			int second = nextSister[first];
@@ -5486,7 +5486,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	node on the path from the chosen node.  It then back up to that node, and lets it float upward, making the new clade
 	root to be the previous node on the path.  And so on, letting the clade float upward piece by piece from its root
 	back toward the chosen node. */
-	private synchronized void floatNode(int targetNode, int previousFromAtNode, int cladeRoot){
+	private  void floatNode(int targetNode, int previousFromAtNode, int cladeRoot){
 		if (targetNode!=cladeRoot) {
 			floatNode(motherOfNode(targetNode), targetNode, cladeRoot);  //go down until at the clade root
 		}
@@ -5588,7 +5588,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/*-----------------------------------------*/
 	static boolean warnedUnbranchedReroot = false;
 	/** reroot the clade below node atNode.*/
-	public synchronized boolean reroot(int atNode, int cladeRoot, boolean notify) {
+	public  boolean reroot(int atNode, int cladeRoot, boolean notify) {
 		if (!nodeExists(atNode) || !nodeExists(cladeRoot) ||cladeRoot==atNode || (!nodeIsPolytomous(cladeRoot) && cladeRoot == motherOfNode(atNode)))
 			return false;
 		checkTreeIntegrity(root);
