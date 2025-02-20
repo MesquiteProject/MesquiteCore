@@ -101,6 +101,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	boolean readyToPaint = true;
 	protected Font currentFont;
 	public static Font defaultFont;
+	private String uniqueID; // id's of the window
 
 	boolean suppressExplanationAreaUpdates=false;
 
@@ -180,6 +181,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/** a constructor not to be used except internally!!!  This is used for accumulating commands*/
 	public MesquiteWindow () {
 		id = numWindowsTotal++;
+		setUniqueID(MesquiteTrunk.getUniqueIDBase() + id);
 		if (MesquiteTrunk.checkMemory)
 			countCreated();
 	}
@@ -192,6 +194,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		readyToPaint = false;
 		totalCreated++;
 		id = numWindowsTotal++;
+		setUniqueID(MesquiteTrunk.getUniqueIDBase() + id);
 		this.showInfoBar = showInfoBar;
 		if ((compactWindows || this instanceof SystemWindow) && ownerModule != null){
 			MesquiteProject proj = ownerModule.getProject();
@@ -343,6 +346,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		startingTime.end();
 		closeable = true;
 		windowFinishedBuilding = true;
+	}
+	// setting uniqueID for block
+	public void setUniqueID(String id) {
+		uniqueID = id;
+	}
+
+	// getting uniqueID for block
+	public String getUniqueID() {
+		return uniqueID;
 	}
 
 	public void setPopTileMenuItemNames(){
@@ -2504,6 +2516,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/** Gets basic snapshot for window, including size, location. */
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
+		temp.addLine("setUniqueID " + StringUtil.tokenize(getUniqueID()));
 		if (isPoppedOut() && compactWindows){
 			if (popAsTile)
 				temp.addLine("popAsTile true");
@@ -2523,7 +2536,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		temp.addLine("setAnnotationSize " + annotationHeight);
 		temp.addLine("setFontIncAnnot " + StringUtil.tokenize(Integer.toString(annotationArea.fontIncrement)));
 		temp.addLine("setFontIncExp " + StringUtil.tokenize(Integer.toString(explanationArea.fontIncrement)));
-		temp.addLine("setSize " + getContentsWidth() + " " + getContentsHeight());
+		if (!(isPoppedOut() && popAsTile))  //size of poptile will be set in late snapshot of ProjectWindow
+			temp.addLine("setSize " + getContentsWidth() + " " + getContentsHeight());
 		temp.addLine("setLocation " + getLocation().x + " " + getLocation().y);
 		temp.addLine("setFont " + ParseUtil.tokenize(currentFont.getName())); //fixed to tokenize 12 Oct 01
 		temp.addLine("setFontSize " + currentFont.getSize());
@@ -2645,6 +2659,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				setPopAsTile(true);
 			else
 				setPopAsTile(false);
+		}
+		else if (checker.compare(MesquiteWindow.class, "Lists windows of frame", "[string]", commandName, "setUniqueID")) {
+			setUniqueID(new Parser().getFirstToken(arguments));
 		}
 		else if (checker.compare(MesquiteWindow.class, "Lists windows of frame", null, commandName, "frame")) {
 			parentFrame.diagnose();

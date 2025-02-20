@@ -1505,7 +1505,13 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	public Snapshot getLateSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
+		if (pw != null){
+			temp.addLine("getWindow");
+			temp.addLine("tell It");
+			temp.incorporate(pw.getLateSnapshot(file), true);
+			temp.addLine("endTell");
 
+		}
 
 		return temp;
 	}	/*.................................................................................................................*/

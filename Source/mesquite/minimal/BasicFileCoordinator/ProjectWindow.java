@@ -80,14 +80,48 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		Snapshot temp = new Snapshot();
 		MesquiteFrame f = getParentFrame();
 		temp.addLine("suppress");
-		temp.addLine("setResourcesState " + f.getResourcesFullWindow() + " " + f.getResourcesClosedWhenMinimized() + " "  + f.getResourcesWidth());
-		/*	if (f.getResourcesWidth() != MesquiteFrame.defaultResourcesWidth)
-			temp.addLine("setResourcesWidth " + f.getResourcesWidth());
-		 */
-		temp.addLine("setPopoutState " + f.getPopoutWidth());
 		temp.incorporate(super.getSnapshot(file), false);
+		return temp;
+	}
+	/*.................................................................................................................*/
+	/** Gets basic snapshot for window, including size, location. */
+	public Snapshot getLateSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		MesquiteFrame f = getParentFrame();
+
+		//find the uniqueID of the foremost window in each tile
+		MesquiteWindow main = f.frontMostInLocation(MesquiteFrame.MAIN);
+		MesquiteWindow pop = f.frontMostInLocation(MesquiteFrame.POPTILE);
+		MesquiteWindow either = f.getFrontWindow();
+
+		temp.addLine("setResourcesState " + f.getResourcesFullWindow() + " " + f.getResourcesClosedWhenMinimized() + " "  + f.getResourcesWidth());
+		if (either != null){
+			if (pop == null) //no pop just bring first
+				addToFrontScriptForWindow(temp, main);
+			else {
+				temp.addLine("setPopoutState " + f.getPopoutWidth());
+				if (either == pop){ //pop is frontmost; do main first then pop
+					addToFrontScriptForWindow(temp, main);
+					addToFrontScriptForWindow(temp, pop);
+				}
+				else { //main is frontmost; do pop first then main
+					addToFrontScriptForWindow(temp, pop);
+					addToFrontScriptForWindow(temp, main);
+				}
+			}
+		}
 		temp.addLine("desuppress");
 		return temp;
+	}
+
+	void addToFrontScriptForWindow(Snapshot temp, MesquiteWindow w){
+		if (w == null)
+			return;
+
+		temp.addLine("findWindow " + StringUtil.tokenize(w.getUniqueID()));
+		temp.addLine("tell It");
+		temp.addLine("\tsetAsFront");
+		temp.addLine("endTell");
 	}
 	/*.................................................................................................................*/
 	Parser parser = new Parser();
@@ -138,6 +172,12 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 					}
 				}
 			}
+		}
+		else if (checker.compare(MesquiteWindow.class, "Finds window with uniqueID", null, commandName, "findWindow")) {
+			MesquiteFrame f = getParentFrame();
+			MesquiteWindow w = f.findWindowByUniqueID(parser.getFirstToken(arguments));
+			return w;
+
 		}
 		else if (checker.compare(MesquiteWindow.class, "Explain the incorporation options", null, commandName, "explainIncorporate")) {
 			explainIncorporate();
@@ -1352,7 +1392,7 @@ class TreesRPanel extends ElementPanel {
 		super(bfc, container, w, element);
 
 		addCommand(false, "treeView.gif", "View\nTrees", "View Trees ", new MesquiteCommand("showTreesInWindow", element));
-		
+
 		addCommand(false, null, "View\nConsensus", "View Consensus", new MesquiteCommand("showConsensusInWindow", element));
 		addCommand(false, "trees.gif", "List &\nManage\nTrees", "List & Manage Trees", new MesquiteCommand("showMe", element));
 		addCommand(false, "chart.gif", "Chart\nTrees", "Chart Trees", new MesquiteCommand("chart", this));
@@ -1401,7 +1441,7 @@ class TreesRPanel extends ElementPanel {
 		}
 		else return  super.doCommand(commandName, arguments, checker);
 		return null;
- 
+
 	}
 	/*.................................................................................................................*/
 	public String getElementTypeName(){ 

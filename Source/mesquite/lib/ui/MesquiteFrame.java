@@ -23,6 +23,7 @@ import java.util.*;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteFile;
@@ -562,6 +563,19 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		}
 		return false;
 	}
+	/*.................................................................................................................*/
+	public MesquiteWindow findWindowByUniqueID(String uniqueID){
+		if (uniqueID == null)
+			return null;
+		for (int i = 0; i<windows.size(); i++){
+			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
+			if (uniqueID.equals(w.getUniqueID()))
+				return w;
+		}
+		return null;
+
+	}
+
 	/*.................................................................................................................*/
 	private MesquiteWindow findWindow(String s){
 		for (int i = 0; i<windows.size(); i++){
@@ -1465,6 +1479,8 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 				ProgressWindow.allIndicatorsToFront();
 
 		}
+
+				
 
 	}
 
