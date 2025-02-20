@@ -1503,7 +1503,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		return temp;
 	}
-	/*.................................................................................................................*/
+	public Snapshot getLateSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+
+
+		return temp;
+	}	/*.................................................................................................................*/
 	public void showInitTreeWindow(Taxa taxa, boolean force){
 		MesquiteModule btwc = findEmployeeWithName("#BasicTreeWindowCoord", true);
 		if (btwc !=null) {

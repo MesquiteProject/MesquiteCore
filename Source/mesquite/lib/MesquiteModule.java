@@ -2127,6 +2127,19 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 
 		return temp;
 	}
+	/** For additional snapshot commands that come after employees'. */
+	//these late commands should not expect subsequent commands to an object returned!
+	public Snapshot getLateSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+
+		/* examples
+ 		temp.addLine("toggleMesquiteBoolean " + mesquiteBoolean.toOffOnString());
+		temp.addLine("setPrimerInfoSource " +  StringUtil.tokenize(primerInfoTask.getClassName()));  
+
+		 */
+
+		return temp;
+	}
 
 	/*.................................................................................................................*
 	 * If overriding getObjectComment, we suggest this to recover from descendent employees as well

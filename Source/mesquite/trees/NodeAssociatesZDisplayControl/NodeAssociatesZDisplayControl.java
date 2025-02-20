@@ -346,6 +346,8 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		list.setMinimumWidth(650);
 
 		list.setFont(new Font( "Monospaced", Font.PLAIN, 14 ));
+		
+		dialog.addLargeTextLabel("To change whether and how properties are shown on the tree, select properties in the list above, then hit the Show, Hide, and Set Style buttons below.");
 		selectOrHide = dialog.addButtonRow("✓ Show Selected", "Hide Selected", null, this);
 		selectOrHide[0].setActionCommand("showSelected");
 		selectOrHide[1].setActionCommand("hideSelected");

@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.charMatrices.TaxonGroupColor; 
+package mesquite.charMatrices.TaxonGroupColorZ; 
 
 import java.util.*;
 import java.awt.*;
@@ -26,7 +26,7 @@ import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
-public class TaxonGroupColor extends DataWindowAssistantI implements CellColorer, CellColorerTaxa, CellColorerMatrix {
+public class TaxonGroupColorZ extends DataWindowAssistantI implements CellColorer, CellColorerTaxa, CellColorerMatrix {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;

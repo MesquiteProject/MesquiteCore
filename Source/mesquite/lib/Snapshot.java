@@ -296,6 +296,11 @@ public class Snapshot {
 				}
 			}
 		}
+		Snapshot lateSnapshot = module.getLateSnapshot(file); //these late commands should not expect subsequent commands to an object returned!
+		for (int i = 0; i<lateSnapshot.getNumLines(); i++) {
+			if (snapshot.getLine(i)!=null)
+				sb.append(spacer + snapshot.getLine(i) + StringUtil.lineEnding());
+		}
 		return sb.toString();
 	}
 }
