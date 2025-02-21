@@ -128,9 +128,9 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static MesquiteMenuSpec fileMenu, editMenu, charactersMenu, treesMenu, analysisMenu, windowsMenu, helpMenu, utilitiesMenu;  
 	public static MesquiteSubmenuSpec defaultsSubmenu, setupSubmenu;
 	/** Commands belonging to special menu items owned by the trunk of Mesquite.  */
-	public MesquiteCommand newFileCommand, openFileCommand,  readTreeFileCommand, openRecentCommand, clearRecentCommand, openURLCommand, showLicenseCommand, resetMenusCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
+	public MesquiteCommand newFileCommand, openFileCommand,  readFileWTreeDialectCommand, openRecentCommand, clearRecentCommand, openURLCommand, showLicenseCommand, resetMenusCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
 	//public MesquiteCommand currentCommandCommand;
-	public MesquiteSubmenuSpec openExternalSMS;
+	public MesquiteSubmenuSpec openSpecialSubmenuSpec;
 	/** True if MesquiteModule hiring and firing should be logged.*/
 	public static boolean trackActivity = false;
 	/** The name of the current module set loaded */
@@ -210,6 +210,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	open a new file */
 	public abstract MesquiteProject newProject(String pathname, int code, boolean actAsScriptingRegardless);
 
+	public abstract MesquiteProject readFileWTreeDialect(MesquiteProject project);
 
 	/*.................................................................................................................*/
 	public abstract MesquiteProject openOrImportFileHandler(String path, String completeArguments, Class importerSubclass);

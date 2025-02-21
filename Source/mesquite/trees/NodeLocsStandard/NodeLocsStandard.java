@@ -1039,19 +1039,11 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (bA == tree.getRoot() && tree.numberOfDaughtersOfNode(bA)==1)
 					bA = tree.getSubRoot();
 			}
-
-
 			MesquiteNumber xValue=new MesquiteNumber();
 			MesquiteNumber yValue=new MesquiteNumber();
 			treeDrawing.getSingletonLocation(tree, N,  xValue,  yValue);
 			treeDrawing.x[N]=xValue.getDoubleValue();
 			treeDrawing.y[N]=yValue.getDoubleValue();
-
-
-			/*double nA = tree.depthToAncestor(N, bA);
-			double nD = tree.depthToAncestor(bD, N);
-			treeDrawing.x[N]=propAverage(treeDrawing.x[bD], treeDrawing.x[bA], nD, nA+nD);
-			treeDrawing.y[N]=propAverage(treeDrawing.y[bD], treeDrawing.y[bA], nD, nA+nD); */
 		}
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			placeSingletons(treeDrawing, tree, d);

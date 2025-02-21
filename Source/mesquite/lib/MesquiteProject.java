@@ -138,9 +138,15 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		linkURLCommand = MesquiteModule.makeCommand("linkURL", ownerModule);
 		includeFileCommand = MesquiteModule.makeCommand("includeFile", ownerModule);
 		includeURLCommand = MesquiteModule.makeCommand("includeURL", ownerModule);
-		includeMergeSubmenuSpec = MesquiteSubmenuSpec.getMSSSpec(MesquiteTrunk.fileMenu, "Include & Merge from File",   ownerModule);
-		includeMergeSubmenuSpec.setList(FileAssistantFM.class);
-		includeMergeSubmenuSpec.setCommand(new MesquiteCommand("newAssistant", ownerModule));
+		includeMergeSubmenuSpec = new MesquiteSubmenuSpec(MesquiteTrunk.fileMenu, "Include & Merge",   ownerModule);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Include File...",  getIncludeFileCommand());
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Link File...",  getLinkFileCommand());
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Include File (Specify Tree Dialect)...", new MesquiteCommand("includeFileWTreeDialect", ownerModule));
+		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantFM.class);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Explain These Choices...",   new MesquiteCommand("explainIncludeChoices", ownerModule));
+
 	}
 
 	public void refreshProjectWindow(){

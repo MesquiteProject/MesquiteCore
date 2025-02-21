@@ -18,11 +18,11 @@ import java.io.File;
 
 import mesquite.externalCommunication.lib.PythonUtil;
 import mesquite.lib.*;
-import mesquite.lib.duties.GeneralFileMaker;
+import mesquite.lib.duties.GeneralFileMakerSingle;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class FlipTaxonLocus extends GeneralFileMaker {
+public class FlipTaxonLocus extends GeneralFileMakerSingle {
 
 	ExternalProcessManager externalProcessManager;
 

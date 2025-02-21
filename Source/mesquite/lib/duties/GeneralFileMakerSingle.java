@@ -20,12 +20,21 @@ import mesquite.lib.*;
 /* ======================================================================== */
 /**Modules that can establish a new project by reading a single file*/
 
-public interface GeneralFileMaker  {
-
+public abstract class GeneralFileMakerSingle extends MesquiteModule implements GeneralFileMaker  {
+   	 public Class getDutyClass() {
+   	 	return GeneralFileMakerSingle.class;
+   	 }
+ 	public String getDutyName() {
+ 		return "Establisher of new projects (One File)";
+   	}
+ 	
    	/** make a new    MesquiteProject.*/
  	public abstract MesquiteProject establishProject(String arguments);
 
 
+   	public boolean isSubstantive(){
+   		return false;  
+   	}
 }
 
 

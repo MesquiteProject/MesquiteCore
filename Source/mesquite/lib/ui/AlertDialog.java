@@ -143,6 +143,7 @@ public class AlertDialog  {
 		if (id.isInWizard())
 			id.appendToHelpString("<h3>Notice</h3>");
 		id.addHTMLPanel(message, w, h, linkTouchedCommand);
+		id.validate();
 		try {
 			id.completeAndShowDialog(okString,null,null,okString);
 		} catch (Exception e) {

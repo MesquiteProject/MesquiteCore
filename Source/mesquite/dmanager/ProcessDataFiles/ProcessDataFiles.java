@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.dmanager.ProcessDataFiles; 
 
 import java.awt.Button;
+
 import java.awt.Choice;
 import java.awt.List;
 import java.awt.event.ActionEvent;
@@ -26,11 +27,8 @@ import java.util.Vector;
 
 import javax.swing.JLabel;
 
-import mesquite.categ.lib.CategoricalState;
-import mesquite.genomic.FlagBySpruceup.FlagBySpruceup;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
-import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -44,12 +42,11 @@ import mesquite.lib.Puppeteer;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.FileInterpreter;
 import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.duties.FileProcessor;
-import mesquite.lib.duties.GeneralFileMaker;
+import mesquite.lib.duties.GeneralFileMakerMultiple;
 import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.TreeVector;
@@ -60,7 +57,7 @@ import mesquite.lib.ui.SingleLineTextField;
 
 
 /* ======================================================================== */
-public class ProcessDataFiles extends GeneralFileMaker implements ActionListener { 
+public class ProcessDataFiles extends GeneralFileMakerMultiple implements ActionListener { 
 	/*.................................................................................................................*/
 
 	MesquiteProject processProject = null;

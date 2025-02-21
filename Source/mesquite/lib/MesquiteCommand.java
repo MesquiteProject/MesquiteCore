@@ -82,7 +82,16 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 		totalCreated++;
 		ID = totalCreated;
 	}
-	
+	public MesquiteCommand clone(){
+		MesquiteCommand c = new MesquiteCommand(commandName, defaultArguments, ownerObject);
+		c.okOnOtherThread = okOnOtherThread;
+		c.letMe = letMe;
+		c.bypassQueue = bypassQueue;
+		c.hideInList = hideInList; 
+		c.suppressLogging = suppressLogging;
+		c.dontDuplicate = dontDuplicate; 
+		return c;
+	}
 	public int getID() {
 		return ID;
 	}

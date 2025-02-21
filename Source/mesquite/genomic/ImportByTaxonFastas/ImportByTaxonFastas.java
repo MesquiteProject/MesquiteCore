@@ -16,6 +16,7 @@ package mesquite.genomic.ImportByTaxonFastas;
 
 import java.io.File;
 
+
 import mesquite.lib.characters.CharacterData;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
@@ -23,7 +24,7 @@ import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
 import mesquite.lib.*;
 import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.duties.FileCoordinator;
-import mesquite.lib.duties.GeneralFileMaker;
+import mesquite.lib.duties.GeneralFileMakerMultiple;
 import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
@@ -33,7 +34,7 @@ import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class ImportByTaxonFastas extends GeneralFileMaker {
+public class ImportByTaxonFastas extends GeneralFileMakerMultiple {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){

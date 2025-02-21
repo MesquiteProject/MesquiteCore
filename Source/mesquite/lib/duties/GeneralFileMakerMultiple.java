@@ -13,19 +13,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-
-import mesquite.lib.*;
-
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
 
 /* ======================================================================== */
 /**Modules that can establish a new project by reading a single file*/
 
-public interface GeneralFileMaker  {
-
+public abstract class GeneralFileMakerMultiple extends MesquiteModule implements GeneralFileMaker  {
+   	 public Class getDutyClass() {
+   	 	return GeneralFileMakerMultiple.class;
+   	 }
+ 	public String getDutyName() {
+ 		return "Establisher of new projects (Multiple Files)";
+   	}
+ 	
    	/** make a new    MesquiteProject.*/
  	public abstract MesquiteProject establishProject(String arguments);
 
 
+   	public boolean isSubstantive(){
+   		return false;  
+   	}
 }
-
 

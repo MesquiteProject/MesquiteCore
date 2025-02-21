@@ -21,7 +21,7 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
-public class OpenURL extends GeneralFileMaker  {
+public class OpenURL extends GeneralFileMakerSingle  {
 	public String getNameForMenuItem() {
 		return "URL...";
 	}

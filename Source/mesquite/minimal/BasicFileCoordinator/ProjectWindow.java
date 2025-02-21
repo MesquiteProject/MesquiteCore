@@ -34,6 +34,7 @@ import mesquite.lib.ui.HelpSearchStrip;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MousePanel;
@@ -919,6 +920,8 @@ class AddElementPanel extends ElementPanel {
 		ElementManager tm = bfc.findElementManager(TreeVector.class);
 		addCommand(false, "fileLinkTrees.gif", "Link\nTrees", "Link Trees...", new MesquiteCommand("linkTreeFile", ((MesquiteModule)tm)));
 		addCommand(false, "fileIncludeTrees.gif", "Include\nTrees", "Include Trees...", new MesquiteCommand("includeTreeFileAskPartial", ((MesquiteModule)tm)));
+		addCommand(true, null, "-", "-",  null);
+		addCommand(true, null, "New Linked File...", "New Linked File...",  bfc.getProject().getNewLinkFileCommand());
 	}
 
 }

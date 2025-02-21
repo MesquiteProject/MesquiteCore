@@ -23,7 +23,7 @@ import mesquite.lib.ui.SingleLineTextField;
 import mesquite.tol.lib.*;
 
 
-public class GetToLTree extends GeneralFileMaker  {
+public class GetToLTree extends GeneralFileMakerSingle  {
 	protected int pageDepth = 1;
 	protected String cladeName = "";
 	/*.................................................................................................................*/

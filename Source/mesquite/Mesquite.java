@@ -675,9 +675,20 @@ public class Mesquite extends MesquiteTrunk
 		logln(" ");
 		makeMenu("Mesquite"); //just in case employees have no where else to put
 
-		openExternalSMS = new MesquiteSubmenuSpec(null, "Open Other", this);
-		openExternalSMS.setCommand(makeCommand("openGeneral", this));
-		openExternalSMS.setList(GeneralFileMaker.class);
+		openSpecialSubmenuSpec = new MesquiteSubmenuSpec(fileMenu, "Open Special", this);
+		MesquiteMenuItemSpec mmiO = addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "One File", null);
+		 mmiO.setEnabled(false); // this wasn't getting enamed,f or some reason....
+		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "Open File (Specify Tree Dialect)...", readFileWTreeDialectCommand);
+		addModuleMenuItemsSeparatelyToSubmenu(fileMenu, openSpecialSubmenuSpec, makeCommand("openGeneral", this), GeneralFileMakerSingle.class);
+		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "-", null);
+		 mmiO = addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "Multiple Files", null);
+		 mmiO.setEnabled(false); // this wasn't getting enamed,f or some reason....
+		addModuleMenuItemsSeparatelyToSubmenu(fileMenu, openSpecialSubmenuSpec, makeCommand("openGeneral", this), GeneralFileMakerMultiple.class);
+		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec,"-", null);
+		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec,"Explain These Choices...",   new MesquiteCommand("explainOpenChoices", this));
+		
+	//	openSpecialSubmenuSpec.setCommand(makeCommand("openGeneral", this));
+	//	openSpecialSubmenuSpec.setList(GeneralFileMakerSingle.class);
 
 		addMenuItem(helpMenu, "Mesquite Documentation", makeCommand("showHomePage",  this));
 		addMenuItem(helpMenu, "Support and Advice", makeCommand("showSupport",  this));
@@ -1765,7 +1776,7 @@ public class Mesquite extends MesquiteTrunk
 		return f;
 	}
 	/*.................................................................................................................*/
-	public MesquiteProject readTreeFile(){
+	public MesquiteProject readFileWTreeDialect(MesquiteProject project){
 		ExtensibleDialog dialog = null; //to be formed later
 		// === the file chosen
 		MesquiteString fileName = new MesquiteString();
@@ -1775,9 +1786,6 @@ public class Mesquite extends MesquiteTrunk
 		String startOfFile = MesquiteFile.getFileContentsAsString(path, 200); 
 		String token = parser.getFirstToken(startOfFile);
 		boolean isNexus = "#NEXUS".equalsIgnoreCase(token);
-
-		//Is there a project into which the file could be included?
-		boolean isProjectAvailable = projects.getNumProjects()>0;
 
 		//Make list of available Newick dialects
 		String dialectName = null;
@@ -1794,15 +1802,15 @@ public class Mesquite extends MesquiteTrunk
 			}
 			dialog = new ListDialog(containerOfModule(), "Reading file \"" + fileName + "\"", "In which dialect of Newick are the trees described?", false,null, dialectHumanNames, 8, selectedInDialog, "OK", null, false, true);
 		}
-		else if (!isNexus || isProjectAvailable)
+		else if (!isNexus || project != null)
 			dialog = new ExtensibleDialog(containerOfModule(), "Reading NEXUS or Phylip/Newick file with trees");
 		
 		//Completing the dialog with extra items
 		String autoSaveString = "";
-		boolean include = false;
+		
 		if (dialog != null){
 			Checkbox autoSaveB = null;
-			Checkbox includeB = null;
+		//	Checkbox includeB = null;
 			//NOTE these two check boxes might seem to interact, but will autosave only if Phylip, 
 			//and will include only if NEXUS. The reason inclusion is allowed only with NEXUS is that 
 			//phylip reading will try to use an existing taxa block, which can cause unrecognized taxon name warnings.
@@ -1810,8 +1818,8 @@ public class Mesquite extends MesquiteTrunk
 			//or warn user that only to be used if same taxa block???
 			if (!isNexus)
 				autoSaveB = dialog.addCheckBox("Auto-save converted NEXUS file", true); 
-			if (isProjectAvailable && isNexus)
-				includeB = dialog.addCheckBox("Include in project already open", false);
+			//if (isProjectAvailable && isNexus)
+		//		includeB = dialog.addCheckBox("Include in project already open", false);
 			dialog.addHorizontalLine(1);
 			dialog.addLabel("Note: This file opener can be used only with NEXUS and Phylip/Newick files!"); 
 
@@ -1830,28 +1838,17 @@ public class Mesquite extends MesquiteTrunk
 				}
 				if (autoSaveB != null && autoSaveB.getState())
 					autoSaveString = " @autosaveImported";
-				if (includeB!= null)
-					include = includeB.getState();
+			//	if (includeB!= null)
+			//		include = includeB.getState();
 			}
 			else return null;
 		}
 		
-		//Acting on UI
-		if (include && projects.getNumProjects()>0){
-			MesquiteProject cproj;
-			if (projects.getNumProjects()>1){
-				Listable[] ps = projects.getProjectsArray();
-			Listable choice = ListDialog.queryList(containerOfModule(), "Include in which project?", "Choose the project into which you want to include the contents of the tree file", null, ps, 0);
-			if (choice == null)
-				return null;
-			 cproj = (MesquiteProject)choice;
-			}
-			else
-				cproj = projects.getProject(0);
+		if (project != null){
 			if (isNexus)
-				cproj.getCoordinatorModule().includeFile(path, NexusFileInterpreter.class, ParseUtil.tokenize(dialectName) + autoSaveString + " @autodeleteDuplicateOrSubsetTaxa", 0, null);
+				project.getCoordinatorModule().includeFile(path, NexusFileInterpreter.class, ParseUtil.tokenize(dialectName) + autoSaveString + " @autodeleteDuplicateOrSubsetTaxa", 0, null);
 			else
-				cproj.getCoordinatorModule().includeFile(path, InterpretPhylipTreesBasic.class, ParseUtil.tokenize(dialectName) + autoSaveString + " @autodeleteDuplicateOrSubsetTaxa", 0, null);
+				project.getCoordinatorModule().includeFile(path, InterpretPhylipTreesBasic.class, ParseUtil.tokenize(dialectName) + autoSaveString + " @autodeleteDuplicateOrSubsetTaxa", 0, null);
 			return null;
 		}
 		
@@ -2048,8 +2045,32 @@ public class Mesquite extends MesquiteTrunk
 			return openOrImportFileHandler( path,  completeArguments, null);
 
 		}
-		else if (checker.compare(this.getClass(), "Opens tree file on disk with user-specified Newick dialect.  It could be opened as a separate project, or included into an existing one.", "[name and path of file].", commandName, "readTreeFile")) {
-			return readTreeFile();
+		else if (checker.compare(this.getClass(), "Opens tree file on disk with user-specified Newick dialect as a separate project.", "[name and path of file].", commandName, "readFileWTreeDialect")) {
+			return readFileWTreeDialect(null);
+		}
+		else if (checker.compare(this.getClass(), "Explains the File>Open Special items", "[]", commandName, "explainOpenChoices")) {
+			String explanation = "<html><body><h3>Open Special</h3>These menu items open files as separate (independent) projects. "
+					+ "Those at the top of the submenu open a single file; those at the bottom open multiple files in a folder."
+					+" The different options serve different purposes and have different limitations.<p></p>";
+			explanation += "<b>Open File (Specify Tree Dialect)</b>— This reads both NEXUS files and PHYLIP/Newick tree files. "
+					+"It can read trees with special properties attached such as posterior probabilities, "
+					+ "divergence times, or concordance factors, adjusting for the diverse and incompatible formats (\"dialects\") used by different programs "
+					+"(BEAST, MrBayes, IQ-TREE, etc.). (The regular \"Open File\" can read such tree information only if saved in the standard BEAST/Mesquite format.)"
+					+ " When reading NEXUS files, Open File (Specify Tree Dialect) reads more than just the trees, including matrices and other information. For PHYLIP format, it can read only tree files.<p></p> ";
+			MesquiteMenuItemSpec mmis = new MesquiteMenuItemSpec(null, "", module, null);  //temporary; doesn't get registered; just helps find compatible modules
+			mmis.setList(GeneralFileMakerSingle.class);
+			MesquiteModuleInfo mbi = null;
+			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) {
+				explanation += " <b>" + mbi.getNameForMenuItem() + "</b>— " + mbi.getExplanation() + "<p></p>";
+			}
+			mmis.setList(GeneralFileMakerMultiple.class);
+			mbi = null;
+			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) {
+				explanation += " <b>" + mbi.getNameForMenuItem() + "</b>— " + mbi.getExplanation() + "<p></p>";
+			}
+			explanation += "</body></html>";
+			//AlertDialog.noticeHTML(containerOfModule(), "Open Special Submenu", explanation, 500, 500, null);
+			alertHTML(containerOfModule().getParentFrame(), explanation,"Open Special Submenu", null);
 		}
 		else if (checker.compare(this.getClass(), "Opens recent file.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file]", commandName, "openRecent")) {
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
@@ -2608,7 +2629,7 @@ public class Mesquite extends MesquiteTrunk
 		projects = new Projects();
 		mesquiteTrunk.newFileCommand = makeCommand("newProject",  mesquiteTrunk);
 		mesquiteTrunk.openFileCommand = makeCommand("openFile",  mesquiteTrunk);
-		mesquiteTrunk.readTreeFileCommand = makeCommand("readTreeFile",  mesquiteTrunk);
+		mesquiteTrunk.readFileWTreeDialectCommand = makeCommand("readFileWTreeDialect",  mesquiteTrunk);
 		mesquiteTrunk.openRecentCommand = makeCommand("openRecent",  mesquiteTrunk);
 		mesquiteTrunk.clearRecentCommand = makeCommand("clearRecent",  mesquiteTrunk);
 		mesquiteTrunk.openURLCommand = makeCommand("openURL",  mesquiteTrunk);

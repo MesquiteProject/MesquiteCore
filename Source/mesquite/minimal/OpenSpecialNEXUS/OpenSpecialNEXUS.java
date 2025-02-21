@@ -21,7 +21,7 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
-public class OpenSpecialNEXUS extends GeneralFileMaker  {
+public class OpenSpecialNEXUS extends GeneralFileMakerSingle  {
 	public String getNameForMenuItem() {
 		return "Special NEXUS...";
 	}

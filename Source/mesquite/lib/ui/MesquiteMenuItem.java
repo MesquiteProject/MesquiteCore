@@ -131,7 +131,9 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 	public void setHideable(boolean h ){
 		hideable = h;
 	}
-
+	public void setLabel(String label){
+		super.setLabel(label);
+	}
 	public void resetLabel(){
 		if (InterfaceManager.isEditingMode()){
 			if (!hideable)

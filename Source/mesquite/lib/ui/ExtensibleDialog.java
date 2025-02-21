@@ -2068,9 +2068,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		scrollPane = new  ConstrJEP(w, h, linkTouchedCommand); 
 		tA.addHyperlinkListener(scrollPane);
 		scrollPane.getViewport().add( tA,  BorderLayout.CENTER ); 
-
+		scrollPane.setSize(w, h);
 		addToDialog(scrollPane);
-
 		return tA;
 	}
 	class ConstrJEP extends MQJScrollPane implements javax.swing.event.HyperlinkListener {
