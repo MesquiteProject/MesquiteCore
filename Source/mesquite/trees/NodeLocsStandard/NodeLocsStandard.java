@@ -500,9 +500,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	NameReference consensusNR = NameReference.getNameReference("consensusFrequency");
 
-	int cAAPS = 0;
 	void checkAndAdjustParameterSettings(TreeDisplay treeDisplay, Tree tree){
-		Debugg.println("@cAAPS " + cAAPS++);
 		//Making sure my extra is in the treeDisplay. If not, this is a new connection!
 		if (treeDisplay.getExtras() !=null) {
 			if (treeDisplay.getExtras().myElements(this)==null) {  //todo: need to do one for each treeDisplay!
