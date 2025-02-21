@@ -5209,8 +5209,10 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 					amount = 0;
 			}
 			if (amount != 0) {
-				vScroll.setValue(vScroll.getValue() + amount);
-				window.sizeDisplay();
+				vScroll.setValue(vScroll.getValue() + amount); 
+				window.setOrigin(hScroll.getValue(), vScroll.getValue(), false);
+				constrainTreeDisplay();
+		//	window.sizeDisplay(); //ZQ this had been here instead of the above two lines, which were used when the regular scroll bar is touched. OK?
 			}
 		}
 		else {
@@ -5222,7 +5224,9 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 					amount = 0;
 			}
 			hScroll.setValue(hScroll.getValue() + amount);
-			window.sizeDisplay();
+			window.setOrigin(hScroll.getValue(), vScroll.getValue(), false);
+			constrainTreeDisplay();
+			//window.sizeDisplay();//ZQ this had been here instead of the above two lines, which were used when the regular scroll bar is touched. OK?
 		}
 
 	}

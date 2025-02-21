@@ -263,6 +263,17 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 	}
 
+	boolean changeInOrientation(){
+		if (upOn.getValue() != (ornt == TreeDisplay.UP))
+			return true;
+		if (downOn.getValue() != (ornt == TreeDisplay.DOWN))
+			return true;
+		if (rightOn.getValue() != (ornt == TreeDisplay.RIGHT))
+			return true;
+		if (leftOn.getValue() != (ornt == TreeDisplay.LEFT))
+			return true;
+		return false;
+	}
 	void resetMenus(){
 		upOn.setValue(ornt == TreeDisplay.UP);
 		downOn.setValue(ornt == TreeDisplay.DOWN);
@@ -270,7 +281,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		leftOn.setValue(ornt == TreeDisplay.LEFT);
 		resetContainingMenuBar();
 	}
-	
+
 	void resetOrientation(int orientation){
 		ornt = orientation;
 		DrawTree dt = (DrawTree)findEmployerWithDuty(DrawTree.class);
@@ -281,8 +292,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 			treeDrawing.getTreeDisplay().setOrientation(ornt);
 			treeDrawing.getTreeDisplay().pleaseUpdate(true);
 		}
-		resetMenus();
-		parametersChanged();
+		if (changeInOrientation()) {
+			resetMenus();
+			parametersChanged();
+	}
 	}
 
 	boolean stretchWasSet = false;
@@ -487,7 +500,9 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	NameReference consensusNR = NameReference.getNameReference("consensusFrequency");
 
+	int cAAPS = 0;
 	void checkAndAdjustParameterSettings(TreeDisplay treeDisplay, Tree tree){
+		Debugg.println("@cAAPS " + cAAPS++);
 		//Making sure my extra is in the treeDisplay. If not, this is a new connection!
 		if (treeDisplay.getExtras() !=null) {
 			if (treeDisplay.getExtras().myElements(this)==null) {  //todo: need to do one for each treeDisplay!
@@ -499,18 +514,22 @@ public class NodeLocsStandard extends NodeLocsVH {
 		if (treeDisplay.getOrientation() == TreeDisplay.NOTYETSET || !compatibleWithOrientation(treeDisplay.getOrientation())){
 			if (employerAllowsReorientation()){
 				treeDisplay.setOrientation(lastOrientation);
-				ornt = lastOrientation;
+				if (ornt!= lastOrientation) 
+					ornt = lastOrientation;
 				resetMenus();
 			}
 		}
 		else { //inherited, accept ast ornt
-			ornt = treeDisplay.getOrientation();
-			resetMenus();
+			if (ornt!= treeDisplay.getOrientation()) {
+				ornt = treeDisplay.getOrientation();
+			}
+			if (changeInOrientation()) 
+				resetMenus();
 		}
 		treeDisplay.setFixedTaxonSpacing(fixedTaxonDistance);
-		
+
 		lastOrientation = treeDisplay.getOrientation();
-		
+
 		if (!leaveScaleAlone) {
 			treeDisplay.fixedDepthScale = fixedDepth;
 			treeDisplay.fixedScalingOn = fixedScale;
