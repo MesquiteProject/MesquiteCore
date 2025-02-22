@@ -2053,22 +2053,22 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Explains the File>Open Special items", "[]", commandName, "explainOpenChoices")) {
 			String explanation = "<html><body><h3>Open Special</h3>These menu items open files as separate (independent) projects. "
 					+ "Those at the top of the submenu open a single file; those at the bottom open multiple files in a folder."
-					+" The different options serve different purposes and have different limitations.<p></p>";
+					+" The different options serve different purposes and have different limitations.<hr>";
 			explanation += "<b>Open File (Specify Tree Dialect)</b>— This reads both NEXUS files and PHYLIP/Newick tree files. "
 					+"It can read trees with special properties attached such as posterior probabilities, "
 					+ "divergence times, or concordance factors, adjusting for the diverse and incompatible formats (\"dialects\") used by different programs "
 					+"(BEAST, MrBayes, IQ-TREE, etc.). (The regular \"Open File\" can read such tree information only if saved in the standard BEAST/Mesquite format.)"
-					+ " When reading NEXUS files, Open File (Specify Tree Dialect) reads more than just the trees, including matrices and other information. For PHYLIP format, it can read only tree files.<p></p> ";
+					+ " When reading NEXUS files, Open File (Specify Tree Dialect) reads more than just the trees, including matrices and other information. For PHYLIP format, it can read only tree files.<hr> ";
 			MesquiteMenuItemSpec mmis = new MesquiteMenuItemSpec(null, "", module, null);  //temporary; doesn't get registered; just helps find compatible modules
 			mmis.setList(GeneralFileMakerSingle.class);
 			MesquiteModuleInfo mbi = null;
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) {
-				explanation += " <b>" + mbi.getNameForMenuItem() + "</b>— " + mbi.getExplanation() + "<p></p>";
+				explanation += " <b>" + mbi.getNameForMenuItem() + "</b>— " + mbi.getExplanation() + "<hr>";
 			}
 			mmis.setList(GeneralFileMakerMultiple.class);
 			mbi = null;
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) {
-				explanation += " <b>" + mbi.getNameForMenuItem() + "</b>— " + mbi.getExplanation() + "<p></p>";
+				explanation += " <b>" + mbi.getNameForMenuItem() + "</b>— " + mbi.getExplanation() + "<hr>";
 			}
 			explanation += "</body></html>";
 			//AlertDialog.noticeHTML(containerOfModule(), "Open Special Submenu", explanation, 500, 500, null);

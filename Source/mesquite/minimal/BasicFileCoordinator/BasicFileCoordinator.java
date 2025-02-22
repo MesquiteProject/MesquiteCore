@@ -1681,23 +1681,23 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Explains the Include & Merge menu items", "[]", commandName, "explainIncludeChoices")) {
 			String explanation = "<h3>Including &amp; Merging Other Files</h3>These menu items allow you to bring information — e.g., taxa, matrices and trees — from other files "
 					+ "into your already-open project, so that it can be used alongside the information already in the project. The options are built for different purposes, "
-					+ "and have different limitations. Here are their explanations.<p></p>";
+					+ "and have different limitations. Here are their explanations.<hr>";
 			explanation += "<b>Include File...</b>— This reads a file and copies its information into the current project file. "
 					+ "When you save the project file, this new information is saved into the main project file."
 					+ " The incoming file is read in the context of the current file." 
-					+" If the incoming file has conflicting or incomplete information, it may be read improperly.<p></p> ";
+					+" If the incoming file has conflicting or incomplete information, it may be read improperly.<hr> ";
 			explanation += "<b>Link File...</b>— This reads a file and adds its information to that of the current project, as with Include File. "
-					+ "However, the incoming file remains separate. Any changes in its information are saved in the separate file.<p></p> ";
+					+ "However, the incoming file remains separate. Any changes in its information are saved in the separate file.<hr> ";
 			explanation += "<b>Include File (Specify Tree Dialect)</b>— This reads both NEXUS files and PHYLIP/Newick tree files, copying their information into the current project. "
 					+"It can read trees with special properties attached such as posterior probabilities, "
 					+ "divergence times, or concordance factors, adjusting for the diverse and incompatible formats (\"dialects\") used by different programs "
 					+"(BEAST, MrBayes, IQ-TREE, etc.). (The regular \"Include File\" can read such tree information only if saved in the standard BEAST/Mesquite format.)"
-					+ " When reading NEXUS files, Include File (Specify Tree Dialect) reads more than just the trees, including matrices and other information. For PHYLIP format, it can read only tree files.<p></p> ";
+					+ " When reading NEXUS files, Include File (Specify Tree Dialect) reads more than just the trees, including matrices and other information. For PHYLIP format, it can read only tree files.<hr> ";
 			MesquiteMenuItemSpec mmis = new MesquiteMenuItemSpec(null, "", module, null);  //temporary; doesn't get registered; just helps find compatible modules
 			mmis.setList(FileAssistantFM.class);
 			MesquiteModuleInfo mbi = null;
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) {
-				explanation += " <b>" + mbi.getNameForMenuItem() + "</b>— " + mbi.getExplanation() + "<p></p>";
+				explanation += " <b>" + mbi.getNameForMenuItem() + "</b>— " + mbi.getExplanation() + "<hr>";
 			}
 			explanation += "</body></html>";
 		//AlertDialog.noticeHTML(containerOfModule(), "Including & Merging Other Files", explanation, 500, 500, null);
