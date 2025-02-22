@@ -1176,7 +1176,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else
 			logln(logTitle+": " + s);
 		}
-		if (alertUseDialog) {
+		if (alertUseDialog) { //NOTE: This seems to work much better if on AWTEvent thread, so perhaps do these by bypassing PendingCommand queue?
 			AlertDialog.noticeHTML(parent,windowTitle, s, width, height, null);
 		}
 	}

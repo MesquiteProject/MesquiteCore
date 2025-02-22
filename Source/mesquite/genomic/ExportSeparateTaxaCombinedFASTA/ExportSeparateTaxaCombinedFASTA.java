@@ -157,6 +157,10 @@ public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
 	public boolean isPrerelease() {
 		return false;
 	}
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice() {
+		return true;
+	}
 
 }
 

@@ -345,8 +345,9 @@ public abstract class MesquiteDialog implements Commandable, Listable, Component
 			}
 		}
 		else {
+			repaintAll();
 			parentDialog.setVisible(true);
-
+			
 		}
 
 	}
@@ -404,6 +405,7 @@ public abstract class MesquiteDialog implements Commandable, Listable, Component
 					waiting = true;
 					while (waiting && waitingOnButtonPush)
 						Thread.sleep(20);
+					
 				} catch (InterruptedException e) {
 				}
 				return;

@@ -132,6 +132,8 @@ public class AlertDialog  {
 		id.dispose();
 		return (buttonPressed.getValue()==0);
 	}
+	
+	//NOTE: These HTML dialogs seem to work much better if on AWTEvent thread, so perhaps do these by bypassing PendingCommand queue?
 	public static void noticeHTML(Object parent, String title, String message, int w, int h, MesquiteCommand linkTouchedCommand) {
 		noticeHTML(parent, title, message, w, h, linkTouchedCommand, false);
 	}

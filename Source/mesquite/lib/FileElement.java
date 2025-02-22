@@ -331,11 +331,11 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		elementManager = manager;  //IF MANAGER NULL then find one
 
 		if (proj == null && f == null) {
-			MesquiteMessage.warnProgrammer("WARNING: addToFile called with null file and project");
+			MesquiteMessage.warnProgrammer("WARNING: addToFile called  on " + getClass() + "  " + getName() + " with null file and project");
 			return null;
 		}
 		else if ((proj != null && f != null && f.getProject()!=proj)) {
-			MesquiteMessage.warnProgrammer("WARNING: addToFile called with file (" + f.getName()+ ") not belonging to project (" + proj.getName() + ")");
+			MesquiteMessage.warnProgrammer("WARNING: addToFile called  on " + getClass() + "  " + getName() + " with file (" + f.getName()+ ") not belonging to project (" + proj.getName() + ")");
 			return null;
 		}
 		this.file=f; //IF FILE NULL THEN USE home of proj

@@ -42,22 +42,42 @@ public class ImportByTaxonFastas extends GeneralFileMakerMultiple {
 	}
 
 	/*.................................................................................................................*/
-	//If incomign taxa is null, establish new project. Otherwise fuse with chosen taxa
-	MesquiteProject processDirectory(String directoryPath, Taxa taxa){
-		if (StringUtil.blank(directoryPath))
-			return null;
+	//If incomign project is null, establish new project. 
+	public void processDirectory(String directoryPath, MesquiteProject project){
+		if (StringUtil.blank(directoryPath) || project == null)
+			return;
+		Taxa taxa= null;
+
+			ListableVector taxas = new ListableVector();
+			for (int iT = 0; iT<project.getNumberTaxas(); iT++){
+				Taxa eTaxa = project.getTaxa(iT);
+				taxas.addElement(eTaxa, false);
+			}
+			if (taxas.size()==1){
+				taxa = (Taxa)taxas.elementAt(0);
+			}
+			else if (taxas.size()>1){
+				Listable chosen = ListDialog.queryList(containerOfModule(), "With which taxa to fuse?", "Please choose the block of taxa with which you want the sequences imported to be fused", null, "OK", "Cancel", taxas.getElementArray(), 0);
+				taxa = (Taxa)chosen; //if null then will establish new
+				if (taxa == null)
+					return;
+			}
+		
+		if (taxa != null)
+			Debugg.println("@@@taxa " + taxa + " taxa.getProject() " + taxa.getProject() + " project " + project);
 		File directory = new File(directoryPath);
 		boolean abort = false;
 		String path = "";
 		StringBuffer results = new StringBuffer();
-		boolean projectMade = false;
+		boolean taxaNew = false;
 		if (directory!=null) {
 			if (directory.exists() && directory.isDirectory()) {
-				FileCoordinator fileCoord = getFileCoordinator();  //this is the temporary one for this GeneralFileMaker
-				if (fileCoord == null){
-					alert("oops, no file coordinator");
-				}
-				MesquiteProject incomingProject = fileCoord.initiateProject(directoryPath, new MesquiteFile()); //this is the reading project
+				//FileCoordinator fileCoord = getFileCoordinator();  //this is the temporary one for this GeneralFileMaker
+				//if (fileCoord == null){
+				//	alert("oops, no file coordinator");
+				//}
+			//	if (project == null)
+			//		project = fileCoord.initiateProject(directoryPath, new MesquiteFile()); //this is the reading project
 
 				int countWarnings = 0;
 				//If taxa is not passed, need to establish new project
@@ -65,12 +85,12 @@ public class ImportByTaxonFastas extends GeneralFileMakerMultiple {
 					TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
 					taxa = taxaManager.quietMakeNewTaxaBlock(0);
 					taxa.setName("Taxa from " + StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator));
-					projectMade = true;
+					taxaNew = true;
 				}
 				MesquiteProject recProject = taxa.getProject();  //either the existing project (if taxa had been passed in) or the new one
 				CharactersManager charactersManager = (CharactersManager)recProject.getCoordinatorModule().findElementManager(CharacterData.class);
 				//-----
-				if (!projectMade)
+				if (!taxaNew)
 					logln("Adding taxa to block " + taxa.getName() + " in file " + taxa.getFile().getFileName());
 				InterpretFastaDNA importer = (InterpretFastaDNA)findNearestColleagueWithDuty(InterpretFastaDNA.class);
 				String[] files = directory.list();
@@ -95,19 +115,19 @@ public class ImportByTaxonFastas extends GeneralFileMakerMultiple {
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
 								MesquiteFile file = new MesquiteFile();
 								file.setPath(path);
-								incomingProject.addFile(file);
-								file.setProject(incomingProject);
+								project.addFile(file);
+								file.setProject(project);
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
-								importer.readFile(incomingProject, file, null);
-								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
+								importer.readFile(project, file, null);
+							MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 
 								//The file is read. Get its one taxa block
 								String taxonName = StringUtil.getAllButLastItem(files[i], "."); //all but file extension
 
-								Taxa loci = incomingProject.getTaxa(file, 0);
+								Taxa loci = project.getTaxa(file, 0);
 
 								if (loci != null){
-									CharacterData incomingFlippedMatrix = incomingProject.getCharacterMatrix(file, loci, null, 0, false);
+									CharacterData incomingFlippedMatrix = project.getCharacterMatrix(file, loci, null, 0, false);
 									if (incomingFlippedMatrix != null){
 										progIndicator.setSecondaryMessage("Taxon: " + taxonName + " with " + loci.getNumTaxa() + " loci");
 
@@ -126,13 +146,13 @@ public class ImportByTaxonFastas extends GeneralFileMakerMultiple {
 											String locusName = loci.getTaxonName(iLocus);
 											CharacterData locusMatrix = recProject.getCharacterMatrixByReference(null,  taxa, null, locusName);
 											if (!(locusMatrix instanceof DNAData))
-													locusMatrix = null;
+												locusMatrix = null;
 											if (locusMatrix == null) { //no matrix yet; establish
 												locusMatrix = charactersManager.newCharacterData(taxa, 0, DNAData.DATATYPENAME); //this is manager of receiving project
 												locusMatrix.setName(locusName);
 												locusMatrix.addToFile(taxa.getFile(), recProject, null);
 											}
-											
+
 
 											/*Now time to pull sequence into locus matrix 
 											 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix
@@ -151,21 +171,18 @@ public class ImportByTaxonFastas extends GeneralFileMakerMultiple {
 														logln("Data in matrix " + locusMatrix.getName() + " replaced for taxon " + taxa.getTaxonName(receivingTaxonNumber));
 													else if (countWarnings == 10)
 														logln("Data replaced for other matrices or taxa as well");
-
 												}
-
 											}
 											for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
 												state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
 												locusMatrix.setState(ic, receivingTaxonNumber, state);
-
 											}
 										}
 									}
 								}
 
 
-								incomingProject.getCoordinatorModule().closeFile(file, true);
+								project.getCoordinatorModule().closeFile(file, true);
 								filesFound++;
 
 							}
@@ -181,47 +198,26 @@ public class ImportByTaxonFastas extends GeneralFileMakerMultiple {
 
 				}
 				progIndicator.goAway();
-				incomingProject.developing = false;  //so the coordinator knows it's OK to dispose
-				if (projectMade){  //otherwise return none, so BFC just shuts down the temporary one
-					return incomingProject;
-				}
+				project.developing = false;  //so the coordinator knows it's OK to dispose
+				if (!taxaNew)
+					taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			}
 
 
 		}
-		return null;
 	}
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
 		incrementMenuResetSuppression();
-		Projects existingProjects = MesquiteTrunk.getProjectList();
-		Taxa useTaxa = null;
-		if (existingProjects != null && existingProjects.getNumProjects()>0){
-			ListableVector taxas = new ListableVector();
-			for (int iP = 0; iP<existingProjects.getNumProjects(); iP++){
-				MesquiteProject eProject = existingProjects.getProject(iP);
-				for (int iT = 0; iT<eProject.getNumberTaxas(); iT++){
-					Taxa eTaxa = eProject.getTaxa(iT);
-					taxas.addElement(eTaxa, false);
-				}
-			}
-			if (taxas.size()==1){
-				useTaxa = (Taxa)taxas.elementAt(0);
-				if (!AlertDialog.query(containerOfModule(), "Fuse with existing data?", "Do you want to add the sequences imported to the existing block of taxa " + useTaxa.getName() + "?", "Fuse", "Establish New Project"))
-					useTaxa = null;
-			}
-			else if (taxas.size()>1){
-				Listable chosen = ListDialog.queryList(containerOfModule(), "Fuse with existing data?", "If you want the sequences imported to be fused with a existing block of taxa. please choose the block", null, "Fuse", "Establish New Project", taxas.getElementArray(), 0);
-				useTaxa = (Taxa)chosen; //if null then will establish new
-			}
-		}
 
 		String directoryPath = MesquiteFile.chooseDirectory("Choose folder containing FASTA files, one per taxon:", null); 
 		if (StringUtil.blank(directoryPath))
 			return null;
-
+		FileCoordinator fileCoord = getFileCoordinator();
+		proj = fileCoord.initiateProject(directoryPath, new MesquiteFile()); //this is the reading project
+		
 		// if there is a project, and it has taxa, can ask whether to add to it
-		MesquiteProject proj = processDirectory(directoryPath, useTaxa);
+		processDirectory(directoryPath, proj);
 		if (proj != null){
 			String fileSuggestion = StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator);
 			if (StringUtil.blank(fileSuggestion))

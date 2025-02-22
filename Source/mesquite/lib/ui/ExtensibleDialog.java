@@ -2059,7 +2059,6 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		JEditorPane tA= new MesqJEditorPane("text/html","<html></html>");
 		tA.setBackground(Color.white);
 		tA.setForeground(Color.black);
-		tA.setVisible(true);
 		if (message == null)
 			message = "";
 		tA.setText(message);
@@ -2070,6 +2069,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		scrollPane.getViewport().add( tA,  BorderLayout.CENTER ); 
 		scrollPane.setSize(w, h);
 		addToDialog(scrollPane);
+		tA.setVisible(true);
+		scrollPane.setVisible(true);
 		return tA;
 	}
 	class ConstrJEP extends MQJScrollPane implements javax.swing.event.HyperlinkListener {

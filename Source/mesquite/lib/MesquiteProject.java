@@ -29,6 +29,7 @@ import mesquite.lib.ui.HTMLDescribable;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
@@ -145,8 +146,9 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Include File (Specify Tree Dialect)...", new MesquiteCommand("includeFileWTreeDialect", ownerModule));
 		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantFM.class);
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
-		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Explain These Choices...",   new MesquiteCommand("explainIncludeChoices", ownerModule));
-
+		MesquiteCommand eICC =   new MesquiteCommand("explainIncludeChoices", ownerModule);
+		eICC.bypassQueue = true;
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Explain These Choices...",  eICC);
 	}
 
 	public void refreshProjectWindow(){

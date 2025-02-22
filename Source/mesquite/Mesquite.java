@@ -685,7 +685,9 @@ public class Mesquite extends MesquiteTrunk
 		 mmiO.setEnabled(false); // this wasn't getting enamed,f or some reason....
 		addModuleMenuItemsSeparatelyToSubmenu(fileMenu, openSpecialSubmenuSpec, makeCommand("openGeneral", this), GeneralFileMakerMultiple.class);
 		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec,"-", null);
-		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec,"Explain These Choices...",   new MesquiteCommand("explainOpenChoices", this));
+		MesquiteCommand eOCC =   new MesquiteCommand("explainOpenChoices", this);
+		eOCC.bypassQueue = true; //for some reason putting the HTML dialog on AWTEventThread helps!
+		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec,"Explain These Choices...",   eOCC);
 		
 	//	openSpecialSubmenuSpec.setCommand(makeCommand("openGeneral", this));
 	//	openSpecialSubmenuSpec.setList(GeneralFileMakerSingle.class);
