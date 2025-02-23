@@ -717,7 +717,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Designed for multilocus phylogenomic data, processes data files in a folder in diverse ways in multiple steps (i.e. a pipeline). "
+		return "Designed for multilocus phylogenomic data. Processes data files in a folder in diverse ways in multiple steps (i.e. a pipeline). "
 				+"Each file is read, and it can be translated to another format, or its sequences aligned, trimmed, a gene tree inferred, and all of the alignments consolidated into a single file.";
 	}
 	/*.................................................................................................................*/

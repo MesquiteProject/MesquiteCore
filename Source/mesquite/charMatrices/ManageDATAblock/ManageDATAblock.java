@@ -54,6 +54,10 @@ public class ManageDATAblock extends MesquiteModule {
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		if (block == null || file == null)
 			return null;
+		if (parser.hasFileReadingArgument(fileReadingArguments, "readOneTaxaBlockOnly") && getProject().getNumberTaxas(file)>0){
+			logln("DATA block skipped");
+			return skipNexusBlock(file, name, block, null, fileReadingArguments);
+		}
 		CharacterData data=null;
 		NEXUSFileParser commandParser = new NEXUSFileParser(block);
 

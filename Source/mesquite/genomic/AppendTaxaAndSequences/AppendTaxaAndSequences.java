@@ -18,6 +18,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 
+import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.lib.*;
@@ -75,9 +76,9 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 			fileToRead.setProject(proj);
 			//only do this if there's a set of taxa; ask user to choose if there are more than one
 			NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
-			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly @justTheseBlocks.TAXA.CHARACTERS");
+			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly @justTheseBlocks.TAXA.CHARACTERS.DATA");
 
-			DNAState state = new DNAState();
+			//CharacterState state = new CategoricalState();
 
 			CharactersManager charactersManager = (CharactersManager)proj.getCoordinatorModule().findElementManager(CharacterData.class);
 			Taxa incomingTaxa = proj.getTaxa(fileToRead, 0);
@@ -101,16 +102,17 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 					for (int iM = 0; iM<proj.getNumberCharMatrices(fileToRead); iM++){
 
 						CharacterData incomingMatrix = proj.getCharacterMatrix(fileToRead, iM);
-						if (incomingMatrix instanceof DNAData){
+
+						//if (incomingMatrix instanceof DNAData){
 							String incomingMatrixName = incomingMatrix.getName();
 							CharacterData receivingMatrix = proj.getCharacterMatrixByReference(null,  receivingTaxa, null, incomingMatrixName);
 							if (receivingMatrix == null){
-								receivingMatrix = charactersManager.newCharacterData(receivingTaxa, 0, DNAData.DATATYPENAME); //this is manager of receiving project
+								receivingMatrix = charactersManager.newCharacterData(receivingTaxa, 0, incomingMatrix.getDataTypeName()); //this is manager of receiving project
 
 								receivingMatrix.setName(incomingMatrixName);
 								receivingMatrix.addToFile(receivingTaxa.getFile(), proj, null);
 							}
-							if (receivingMatrix instanceof DNAData){
+							if (receivingMatrix.getDataTypeName().equalsIgnoreCase(incomingMatrix.getDataTypeName())){
 								/*Now time to pull sequence into locus matrix 
 								 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix
 								 */
@@ -122,7 +124,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 								if (existingTaxon){
 									if (incomingSeqLeng == 0)
 										doTransfer = false;
-									else {
+									else if (receivingMatrix.hasDataForTaxon(receivingTaxonNumber, true)) {
 										for (int ic = 0; ic< receivingMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other
 											receivingMatrix.setToInapplicable(ic, receivingTaxonNumber);
 										if (++countWarnings <10)
@@ -133,13 +135,14 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 									}
 
 								}
+								CharacterState state = null;
 								for (int ic = 0; ic< receivingMatrix.getNumChars() && ic< incomingMatrix.getNumChars(); ic++){
-									state = (DNAState)incomingMatrix.getCharacterState(state, ic, incomingTaxonNumber);
+									state = incomingMatrix.getCharacterState(state, ic, incomingTaxonNumber);
 									receivingMatrix.setState(ic, receivingTaxonNumber, state);
 
 								}
 							}
-						}
+						//}
 					}
 				}
 			}
@@ -178,9 +181,11 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Reads taxa and sequence matrices from a NEXUS file and concatenates them to taxa blocks and matrices in the current file, matching taxa and matrices by name. "
-				+	"Only the first taxa block and its matrices are read from the incoming file. Trees, codon positions, and other details are not read."
-				+" Tuned for workflows, e.g., phylogenomics, in which new taxa and sequences are added into a growing base data file. See also Include Data from Flipped FASTAs for an alternative model.";  
+		return "Reads taxa and matrices (especially sequence matrices) from a NEXUS file and concatenates them to taxa blocks and matrices in the current file, matching taxa and matrices by name. "
+				+	"Only the first taxa block and its matrices are read from the incoming file. Trees, codon positions, and other details are not read. "
+				+ "This is quicker and less awkward than General Merge Taxa & Matrices, but it is less careful, in that it relies on matching names to indicate identity. "
+				+" Tuned for workflows, e.g., phylogenomics, in which new taxa and sequences are added into a growing base data file. See also Include Data from Flipped FASTAs for an alternative model."
+				+ " NOTE: this can handle matrices other than DNA/Protein, but most uses are likely to be with sequence data.";  
 	}
 
 }

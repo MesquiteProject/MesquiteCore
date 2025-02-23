@@ -27,10 +27,10 @@ public class NameReference implements Listable {
 	private String value=null;
 	private URI mNamespace=null;
 	public static long totalCreated = 0;
-	public NameReference() {
+	private NameReference() {
 		totalCreated++;
 	}
-	public NameReference(String value) {
+	private NameReference(String value) {
 		if (value == null)
 			this.value=value;
 		else

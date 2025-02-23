@@ -101,7 +101,7 @@ public class IncludeTreeFilePartial extends FileAssistantTM {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Partial Sample from Tree File...";
+		return "Include Partial Sample from Tree File...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {

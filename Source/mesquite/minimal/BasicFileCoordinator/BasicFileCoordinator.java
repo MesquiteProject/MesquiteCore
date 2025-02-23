@@ -823,6 +823,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		cleanFusedReadingSuppressions();
 		getProject().decrementProjectWindowSuppression();
 	}
+	
 	void cleanFusedReadingSuppressions(){
 		int num = getProject().getNumberCharMatrices();
 		for (int im = 0; im< num; im++){
