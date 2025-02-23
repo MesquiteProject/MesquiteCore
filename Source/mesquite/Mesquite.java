@@ -1435,13 +1435,25 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project, in process making taxa block.*/
-	public MesquiteProject newFileWithTaxa(String arguments){
-		return newProject(arguments, 0);
+	private MesquiteProject newFileWithTaxa(String arguments){
+		MesquiteProject proj =  newProject(arguments, 0);
+		if (proj == null)
+			return null;
+		MesquiteFile mF = proj.getHomeFile();
+		if (mF != null)
+			mF.okForRecentRereading = true;
+		return proj;
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project.*/
-	public MesquiteProject newFile(String arguments){
-		return newProject(arguments, -1);
+	private MesquiteProject newFile(String arguments){
+		MesquiteProject proj = newProject(arguments, -1);
+		if (proj == null)
+			return null;
+		MesquiteFile mF = proj.getHomeFile();
+		if (mF != null)
+			mF.okForRecentRereading = true;
+		return proj;
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project.*/

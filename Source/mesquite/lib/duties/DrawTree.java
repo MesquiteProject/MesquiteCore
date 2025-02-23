@@ -55,6 +55,8 @@ public abstract class DrawTree extends MesquiteModule  {
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){
 		TreeDisplayHolder twm = (TreeDisplayHolder)findEmployerWithDuty(TreeDisplayHolder.class);
+		if (twm == null)
+			return true;
 		return twm.allowsReorientation();
 	}
    	 /** Returns a TreeDrawing to be used in the given TreeDisplay, with the given inital number of terminal taxa*/

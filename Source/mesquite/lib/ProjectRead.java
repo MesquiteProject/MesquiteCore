@@ -55,7 +55,7 @@ public class ProjectRead implements Runnable {
 		this.importerSubclass = importerSubclass;
 	}
 	/*.................................................................................................................*/
-	public MesquiteProject openGeneral(String arguments){
+	private MesquiteProject openGeneral(String arguments){
 		mesquite.incrementMenuResetSuppression();
 		FileCoordinator mb = (FileCoordinator)mesquite.hireEmployee(FileCoordinator.class, null); //if this could be scripted, pass into method
 		if (mb==null)
@@ -84,7 +84,7 @@ public class ProjectRead implements Runnable {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public MesquiteProject openURLString(String urlString){
+	private MesquiteProject openURLString(String urlString){
 		mesquite.incrementMenuResetSuppression();
 		FileCoordinator mb = (FileCoordinator)mesquite.hireEmployee(FileCoordinator.class, null); //if this could be scripted, pass into method
 		if (mb==null)
@@ -116,7 +116,7 @@ public class ProjectRead implements Runnable {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public MesquiteProject openStream(){
+	private MesquiteProject openStream(){
 		mesquite.incrementMenuResetSuppression();
 		FileCoordinator mb = (FileCoordinator)mesquite.hireEmployee(FileCoordinator.class, null); //if this could be scripted, pass into method
 		if (mb==null)
@@ -152,7 +152,7 @@ public class ProjectRead implements Runnable {
 	/* give alternative method which takes full file and passes it to FileCoordinator,
 	which then uses alternative methods in MesquiteProject reader that parses this string
 	instead of input stream*/
-	public MesquiteProject openFile(String pathname){
+	private MesquiteProject openFile(String pathname){
 		mesquite.incrementMenuResetSuppression();
 
 		FileCoordinator mb = (FileCoordinator)mesquite.hireEmployee(FileCoordinator.class, null);
@@ -191,7 +191,7 @@ public class ProjectRead implements Runnable {
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project.*/
-	public MesquiteProject newFile(String arguments, boolean makeTaxa){
+	 private MesquiteProject newFile(String arguments, boolean makeTaxa){
 		FileCoordinator mb = (FileCoordinator)mesquite.hireEmployee(FileCoordinator.class, null);
 		if (mb==null) {
 			mesquite.alert("Mesquite cannot function: no file coordinator available");
@@ -206,6 +206,9 @@ public class ProjectRead implements Runnable {
 				mb.iQuit();
 				return null;
 			}
+			MesquiteFile mf = project.getHomeFile();
+			if (mf != null)
+				mf.okForRecentRereading = true;
 			if (!MesquiteThread.isScripting())
 				mb.doCommand("saveFile", null, CommandChecker.defaultChecker);
 			return mb.getProject();
@@ -229,15 +232,20 @@ public class ProjectRead implements Runnable {
 			if (t instanceof MesquiteThread){
 				((MesquiteThread)t).setCurrent(1);
 			}
-
+			MesquiteProject proj = null;
 			if (category <= 0)
-				newFile(arguments, category==0);
+				proj = newFile(arguments, category==0);
 			else if (category == 1)
-				openFile(arguments);
+				proj = openFile(arguments);
 			else if (category == 2)
-				openURLString(arguments);
+				proj = openURLString(arguments);
 			else if (category == 3)
-				openGeneral(arguments);
+				proj = openGeneral(arguments);
+			if (proj != null){
+				MesquiteFile mf = proj.getHomeFile();
+			if (mf != null)
+			MesquiteTrunk.recentFileRecord(mf, true);  //updating Recents
+			}
 			//	else if (category == 4)
 			//		openStream(arguments);
 			if (thread !=null) {

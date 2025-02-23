@@ -247,7 +247,8 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		MesquiteStringBuffer sb = new MesquiteStringBuffer(100);
 		for (int i=recentFiles.size()-1; i>=0; i--) { //save in reverse order, so that most recent reappears on top
 			MesquiteFile stored = (MesquiteFile)recentFiles.elementAt(i);
-			sb.append(stored.getDirectoryName() + "\t" + stored.getFileName()+ "\n");
+			if (stored.okForRecentRereading)
+				sb.append(stored.getDirectoryName() + "\t" + stored.getFileName()+ "\n");
 		}
 		MesquiteFile.putFileContents(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName, sb, false);
 	}
@@ -271,6 +272,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 			String[] rfstring = StringUtil.delimitedTokensToStrings(rfs[i], '\t');
 			if (rfstring != null && rfstring.length>1) {
 				MesquiteFile rf = new MesquiteFile(rfstring[0], rfstring[1]);
+				rf.okForRecentRereading = true;
 				recentFileRecord(rf, false);
 			}
 		}
@@ -292,7 +294,6 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/*.................................................................................................................*/
 	/** Records new or newly opened file among Recent Files */
 	public static void recentFileRecord(MesquiteFile file, boolean saveToPrefs){
-	//	Debugg.println("@recentFileRecord " + file.getFileName() + " "  + file.okForRecentRereading);
 		if (file.getFileName() == null)
 			return;
 		MesquiteFile stored = findRecentFile(file, false);

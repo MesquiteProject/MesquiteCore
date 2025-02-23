@@ -63,8 +63,6 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 					return;
 			}
 		
-		if (taxa != null)
-			Debugg.println("@@@taxa " + taxa + " taxa.getProject() " + taxa.getProject() + " project " + project);
 		File directory = new File(directoryPath);
 		boolean abort = false;
 		String path = "";
