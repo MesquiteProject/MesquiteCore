@@ -156,8 +156,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private long topologyVersion = 0;
 	/** A number recording the branch lengths version number.  With changes of branch lengths or topology of the tree, the version number is incremented.  This way you know if you're dealing with the exact same tree or not.*/
 	private long branchLengthsVersion = 0;
-	/** a flag to tell the system the tree description being read is from a MrBayes contree file.*/
-	protected boolean readingMrBayesConTree = false;
+	///** a flag to tell the system the tree description being read is from a MrBayes contree file.*/
+	//protected boolean readingMrBayesConTree = false;
 	/** A number recording the last taxa version with which .*/
 	private long taxaVersion = 0;
 	/** Locks name to provoke error messages if name change attempted.*/
@@ -543,12 +543,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public long getTaxaVersion(){
 		return taxaVersion;
 	}
-	/** sets whether or not this is a MrBayes consensus tree.*/
+	/** sets whether or not this is a MrBayes consensus tree.*
 	public void setReadingMrBayesConTree(boolean value) {
 		readingMrBayesConTree = true;
 	}
 
-	/** sets whether or not this is a MrBayes consensus tree.*/
+	/** sets whether or not this is a MrBayes consensus tree.*
 	public boolean getReadingMrBayesConTree() {
 		return readingMrBayesConTree;
 	}
@@ -3163,12 +3163,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return nodeInfo;
 	}
 	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
-		if (readingMrBayesConTree) {  //ZQ why this kludge?
+	/*	if (readingMrBayesConTree) {  //ZQ why this kludge?
 			String c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">", false) + ">";  //get next token
 			c = retokenizeMrBayesConTreeNodeInfo(c); //what is this?
 			readAssociated(c, node, new MesquiteInteger(0), "", ",=>{}", predefinedDouble(TreeDescription, stringLoc));
 			ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
-		} else
+		} else  */
 			readAssociated(TreeDescription, node, stringLoc,whitespaceInNewickComments, punctuationInNewickComments, predefinedDouble(TreeDescription, stringLoc));
 
 	}
@@ -3508,7 +3508,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean readTree(String TreeDescription, MesquiteInteger startingPos, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
 		//	Debugg.println("###################################################");
-		//	Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
+		//Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
 		TreeDescription = preprocessForDialect(TreeDescription, getDialect());
 		//Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
 

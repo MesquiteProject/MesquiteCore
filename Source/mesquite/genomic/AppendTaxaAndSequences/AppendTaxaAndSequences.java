@@ -75,7 +75,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 			fileToRead.setProject(proj);
 			//only do this if there's a set of taxa; ask user to choose if there are more than one
 			NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
-			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly", new String[]{"TAXA", "CHARACTERS"});
+			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly @justTheseBlocks.TAXA.CHARACTERS");
 
 			DNAState state = new DNAState();
 
@@ -178,7 +178,9 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Reads a file and concatenates its taxa to an existing taxa block, and its sequences. NOTE: Only the first taxa block and matrix are read from the incoming file. Taxa and matrices are matched by name." ;  
+		return "Reads taxa and sequence matrices from a NEXUS file and concatenates them to taxa blocks and matrices in the current file, matching taxa and matrices by name. "
+				+	"Only the first taxa block and its matrices are read from the incoming file. Trees, codon positions, and other details are not read."
+				+" Tuned for workflows, e.g., phylogenomics, in which new taxa and sequences are added into a growing base data file. See also Include Data from Flipped FASTAs for an alternative model.";  
 	}
 
 }

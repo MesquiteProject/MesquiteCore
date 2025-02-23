@@ -89,7 +89,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public boolean writeTaxaWithAllMissing = true;
 	public boolean writeOnlySelectedTaxa = false;
 
-	public boolean mrBayesReadingMode = false;  //todo: this is temporary until general format options system built
+	//public boolean mrBayesReadingMode = false;  //todo: this is temporary until general format options system built
 	public String fileReadingArguments = null;
 	public int exporting = 0;  //todo: temporary.  0 = not exporting;  1 = first export; 2 = subsequent exports
 	public boolean notesBugWarn = false;

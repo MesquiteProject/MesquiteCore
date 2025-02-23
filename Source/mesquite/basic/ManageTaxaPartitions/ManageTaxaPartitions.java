@@ -249,7 +249,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				proj.addFile(fileToRead);
 				fileToRead.setProject(proj);
 				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
-				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized", new String[]{"LABELS"});
+				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS");
 
 				Listable[] combinedGroups = groupsVector.getElementArray();
 				for (int i = 0; i<combinedGroups.length; i++){
@@ -289,7 +289,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					proj.addFile(fileToRead);
 					fileToRead.setProject(proj);
 					NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
-					mb.readFile(getProject(), fileToRead, " @noWarnDupTaxaBlock @noWarnMissingReferent @noWarnUnrecognized", new String[]{"TAXA", "SETS", "LABELS"});
+					mb.readFile(getProject(), fileToRead, " @noWarnDupTaxaBlock @noWarnMissingReferent @noWarnUnrecognized @justTheseBlocks.TAXA.SETS.LABELS");
 					Listable[] currentTaxas = proj.getTaxas().getElementArray();
 					if (currentTaxas.length == oldTaxas.length)
 						return null;

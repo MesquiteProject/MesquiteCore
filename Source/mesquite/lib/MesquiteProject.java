@@ -73,7 +73,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	MesquiteFile homeFile;
 
 	/** Commands used with standard Close, Save and Save As...and other menu items*/
-	private MesquiteCommand closeCommand, closeFilesCommand, showFileOnDiskCommand, saveCommand, saveFilesCommand, saveAsCommand, saveLinkagesCommand, revertCommand, linkFileCommand, linkURLCommand, includeFileCommand, includeURLCommand;
+	private MesquiteCommand closeCommand, closeFilesCommand, showFileOnDiskCommand, saveCommand, saveFilesCommand, saveAsCommand, saveLinkagesCommand, revertCommand;
+	private MesquiteCommand linkFileCommand, linkURLCommand, includeFileCommand, includeURLCommand;
 	public MesquiteCommand exportCommand, newLinkFileCommand, getInfoCommand;
 	public MesquiteSubmenuSpec includeMergeSubmenuSpec;
 	/** The file coordinator module that owns this object*/
@@ -143,8 +144,13 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Include File...",  getIncludeFileCommand());
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Link File...",  getLinkFileCommand());
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
-		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Include File (Specify Tree Dialect)...", new MesquiteCommand("includeFileWTreeDialect", ownerModule));
+		MesquiteMenuItemSpec mmis = ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Taxa, Matrices (& Sometimes Trees)", null);
+		mmis.setEnabled(false); //just in case
 		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantFM.class);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
+		mmis = ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Trees", null);
+		mmis.setEnabled(false); //just in case
+		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantTM.class);
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
 		MesquiteCommand eICC =   new MesquiteCommand("explainIncludeChoices", ownerModule);
 		eICC.bypassQueue = true;

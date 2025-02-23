@@ -308,10 +308,11 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make New Trees Block from", makeCommand("newFilledTreeBlockInt",  this), TreeBlockFiller.class);
 		if (numModulesAvailable(TreeInferer.class)>0 && MesquiteTrunk.mesquiteModulesInfoVector.findModule(null, "#TreeInferenceCoordinator")==null)  //ExternalTreeSearcher
 			getFileCoordinator().addSubmenu(MesquiteTrunk.analysisMenu, "Tree Inference", makeCommand("newFilledTreeBlockInferenceInt",  this), TreeInferer.class);
-		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Import File with Trees");
+	/*	MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Import File with Trees");
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Link Contents...", makeCommand("linkTreeFile",  this));
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Include Contents...", makeCommand("includeTreeFile",  this));
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Include Partial Contents...", makeCommand("includePartialTreeFile",  this));
+	*/
 		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Save Copy of Tree Block...", makeCommand("exportTreesBlock",  this),  treesVector);
 		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.SHOW_SUBMENU);
 		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Save Copies of Tree Blocks", makeCommand("exportTreesBlocks",  this), TreeBlockSource.class);
@@ -675,7 +676,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			}
 			return treeFillerTask;
 		}
-		else if (checker.compare(this.getClass(), "Links file with trees", null, commandName, "linkTreeFile")) { 
+	/*	else if (checker.compare(this.getClass(), "Links file with trees", null, commandName, "linkTreeFile")) { 
 			MesquiteModule fCoord = getFileCoordinator();
 			fCoord.doCommand("linkTreeFile", StringUtil.argumentMarker + "fuseTreeBlocks", checker);
 		}
@@ -686,6 +687,12 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else if (checker.compare(this.getClass(), "Includes file with trees (partial)", null, commandName, "includePartialTreeFile")) { 
 			includeTreeFile(commandName, arguments, checker, true);
 		}
+		else if (checker.compare(this.getClass(), "Includes file with trees (ask if partial)", null, commandName, "includeTreeFileAskPartial")) {
+			boolean all = AlertDialog.query(containerOfModule(), "Read All Trees?", "Read all trees, or only a sample of the trees?", "All", "Sample");
+
+			includeTreeFile(commandName, arguments, checker, !all);
+		}
+		*/
 		else if (checker.compare(this.getClass(), "Sets the interpretation of numerical node labels, as per dialog in this module", "[true/false for interpret as numerical; true/false for as on branches; name of interpretation]", commandName, "setDefaultNumericalLabelInterpetation")) { 
 			// see also queryAboutNumericalLabelIntepretation, above
 			/*	Arguments: 
@@ -704,11 +711,6 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			return null;
 		}
 
-		else if (checker.compare(this.getClass(), "Includes file with trees (ask if partial)", null, commandName, "includeTreeFileAskPartial")) {
-			boolean all = AlertDialog.query(containerOfModule(), "Read All Trees?", "Read all trees, or only a sample of the trees?", "All", "Sample");
-
-			includeTreeFile(commandName, arguments, checker, !all);
-		}
 		else if (checker.compare(this.getClass(), "Creates a new tree block", "[reference of taxa block] [identification number of file to which tree block will belong] [name of tree block]", commandName, "newTreeBlock")) { 
 			//first argument: taxa; second argument: id of file to which to add; third argument name of tree block
 			Taxa taxa=null;
@@ -917,7 +919,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			lister.getModuleWindow().setVisible(true);
 		return lister;
 	}
-	/*-----------------------------------------------------------------*/
+	/*-----------------------------------------------------------------*
 	void includeTreeFile(String commandName, String arguments, CommandChecker checker, boolean partial){
 		if (!partial){
 			MesquiteModule fCoord = getFileCoordinator();
@@ -979,7 +981,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 
 	}
-
+/**/
 	void fireTreeFiller(){
 		fireEmployee(treeFillerTask);  
 		treeFillerTask = null;
@@ -1817,10 +1819,10 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					thisTree.setTreeVector(trees);
 					trees.addElement(thisTree, false);
 					treeRead = true;
-					if (file.mrBayesReadingMode)
-						thisTree.setReadingMrBayesConTree(true);
+					//if (file.mrBayesReadingMode)
+					//	thisTree.setReadingMrBayesConTree(true);
 					thisTree.readTree(treeDescription);
-					thisTree.setReadingMrBayesConTree(false);
+					//thisTree.setReadingMrBayesConTree(false);
 					//thisTree.warnRetIfNeeded();
 					thisTree.setName(treeName);
 					if (rootingStatus ==2) 

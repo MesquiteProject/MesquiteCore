@@ -26,6 +26,10 @@ import mesquite.categ.lib.*;
 public class InterpretMrBayesConTreeFile extends FileInterpreterI implements NEXUSInterpreter {
 
 	/*.................................................................................................................*/
+	public boolean loadModule() {  
+		return false;  //
+	}
+	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;  //make this depend on taxa reader being found?)
 	}
@@ -63,9 +67,9 @@ public class InterpretMrBayesConTreeFile extends FileInterpreterI implements NEX
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 		NexusFileInterpreter nfi = (NexusFileInterpreter)mf.getCoordinatorModule().findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
 		if (nfi!=null && nfi.canReadFile(file)){
-			file.mrBayesReadingMode = true;
+			//file.mrBayesReadingMode = true;
 			nfi.readFile(getProject(), file, arguments);	
-			file.mrBayesReadingMode = false;
+			//file.mrBayesReadingMode = false;
 		}
 	}
 

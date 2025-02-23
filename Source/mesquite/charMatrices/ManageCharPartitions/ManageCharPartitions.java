@@ -208,7 +208,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 				proj.addFile(fileToRead);
 				fileToRead.setProject(proj);
 				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
-				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized", new String[]{"LABELS"});
+				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS");
 
 				Listable[] combinedGroups = groupsVector.getElementArray();
 				for (int i = 0; i<combinedGroups.length; i++){

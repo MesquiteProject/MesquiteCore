@@ -15,6 +15,8 @@ package mesquite.lib.ui;
 
 import java.awt.event.*;
 
+import javax.swing.JScrollBar;
+
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;

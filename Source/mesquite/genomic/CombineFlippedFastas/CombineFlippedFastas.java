@@ -12,7 +12,7 @@
  GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 
-package mesquite.genomic.ImportByTaxonFastas;
+package mesquite.genomic.CombineFlippedFastas;
 
 import java.io.File;
 
@@ -34,7 +34,7 @@ import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class ImportByTaxonFastas extends GeneralFileMakerMultiple {
+public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
@@ -259,15 +259,18 @@ public class ImportByTaxonFastas extends GeneralFileMakerMultiple {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Import Flipped FASTA Files";
+		return "Combine Flipped FASTA Files";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Import Flipped FASTA Files (One per Taxon)";
+		return "Combine Flipped FASTA Files (One per Taxon)";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Imports a folder series of FASTA files each containing all of a taxon's sequences in each of a series of loci, building a project combining the taxa and with matrices for each of those loci." ;
+		return "Reads taxa & sequences. Imports all \"flipped\" FASTA files in a folder, each containing the sequences of many loci for a single taxon, to establish and build a file with with all of the taxa and a matrix for each of those loci."
+				+" Each input file should be named by the taxon name, and each sequence should be named for its locus. As each file is read, sequences are matched by name to the locus matrices being accumulated."
+				+" Tuned for phylogenomics workflows that maintain a library of flipped fasta files that can be combined for varied studies with different taxon sampling. "
+				+" Flipped FASTA files can be produced using File, Export, Flipped FASTA files (One per taxon). (Note: to add to existing matrices, use Include Flipped FASTA Files in the Include & Merge submenu.)" ;
 	}
 
 

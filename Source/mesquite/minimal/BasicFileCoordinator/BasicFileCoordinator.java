@@ -1634,7 +1634,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			String path = filterIfMarkedArgument(parser.getFirstToken(arguments));
 			String importer = filterIfMarkedArgument(parser.getNextToken());
 			String failureText = parser.getNextToken();
-			includeFile(path, importer, arguments, 1, failureText);
+			includeFile(path, importer, arguments + " @justTheseBlocks.TAXA.DATA.TREES", 1, failureText);
 		}
 		else if (checker.compare(this.getClass(), "Create a new linked file", "[path to file]", commandName, "newLinkedFile")) {
 			MesquiteFile file = (newLinkedFile(parser.getFirstToken(arguments)));
@@ -1674,34 +1674,32 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Hires new file assistant module", "[name of module]", commandName, "newAssistant")) {
 			return (FileAssistant)hireNamedEmployee(FileAssistant.class, arguments);
 		}
-		else if (checker.compare(this.getClass(), "Includes a file using trunk's service to read with a specified Newick tree dialect", "[]", commandName, "includeFileWTreeDialect")) {
-			MesquiteTrunk.mesquiteTrunk.readFileWTreeDialect(getProject());
-		}
 		//QZ: make general system?
 		else if (checker.compare(this.getClass(), "Explains the Include & Merge menu items", "[]", commandName, "explainIncludeChoices")) {
 			String explanation = "<h3>Including &amp; Merging Other Files</h3>These menu items allow you to bring information — e.g., taxa, matrices and trees — from other files "
 					+ "into your already-open project, so that it can be used alongside the information already in the project. The options are built for different purposes, "
-					+ "and have different limitations. Here are their explanations.<hr>";
-			explanation += "<b>Include File...</b>— This reads a file and copies its information into the current project file. "
-					+ "When you save the project file, this new information is saved into the main project file."
+					+ "and have different limitations. Here are their explanations.<br><br>";
+			explanation += "<b>Including Taxa, Matrices & sometimes Trees</b><br>";
+			explanation += "<ul><li><b>Include File</b>— Reads a file and copies its information into the current project file. "
+					+ "When you save the project file, this new information is saved into the main project file. Does not attempt to add to fuse new information into existing taxa blocks or matrices "
+					+"(for which, see Append Taxa &amp; Sequences or General Merge Taxa &amp; Matrices)."
 					+ " The incoming file is read in the context of the current file." 
-					+" If the incoming file has conflicting or incomplete information, it may be read improperly.<hr> ";
-			explanation += "<b>Link File...</b>— This reads a file and adds its information to that of the current project, as with Include File. "
-					+ "However, the incoming file remains separate. Any changes in its information are saved in the separate file.<hr> ";
-			explanation += "<b>Include File (Specify Tree Dialect)</b>— This reads both NEXUS files and PHYLIP/Newick tree files, copying their information into the current project. "
-					+"It can read trees with special properties attached such as posterior probabilities, "
-					+ "divergence times, or concordance factors, adjusting for the diverse and incompatible formats (\"dialects\") used by different programs "
-					+"(BEAST, MrBayes, IQ-TREE, etc.). (The regular \"Include File\" can read such tree information only if saved in the standard BEAST/Mesquite format.)"
-					+ " When reading NEXUS files, Include File (Specify Tree Dialect) reads more than just the trees, including matrices and other information. For PHYLIP format, it can read only tree files.<hr> ";
+					+" If the incoming file has conflicting or incomplete information, it may be read improperly.</li><br> ";
+			explanation += "<li><b>Link File</b>— Reads a file and adds its information to that of the current project, as with Include File. "
+					+ "However, the incoming file remains separate. Any changes in its information are saved in the separate file.</li><br> ";
 			MesquiteMenuItemSpec mmis = new MesquiteMenuItemSpec(null, "", module, null);  //temporary; doesn't get registered; just helps find compatible modules
 			mmis.setList(FileAssistantFM.class);
 			MesquiteModuleInfo mbi = null;
-			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) {
-				explanation += " <b>" + mbi.getNameForMenuItem() + "</b>— " + mbi.getExplanation() + "<hr>";
-			}
-			explanation += "</body></html>";
+			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) 
+				explanation += "<li><b>" + StringUtil.protectForXML(mbi.getNameForMenuItem()) + "</b>— " + StringUtil.protectForXML(mbi.getExplanation()) + "</li><br>";
+			explanation += "</ul><b>Including Trees</b><br><ul>";
+			mmis.setList(FileAssistantTM.class);
+			mbi = null;
+			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) 
+				explanation += "<li><b>" + StringUtil.protectForXML(mbi.getNameForMenuItem()) + "</b>— " + StringUtil.protectForXML(mbi.getExplanation()) + "</li><br>";
+			explanation += "</ul></body></html>";
 		//AlertDialog.noticeHTML(containerOfModule(), "Including & Merging Other Files", explanation, 500, 500, null);
-			alertHTML(containerOfModule().getParentFrame(), explanation,"Including & Merging Other Files", null);
+			alertHTML(containerOfModule().getParentFrame(), explanation,"Including & Merging Other Files", null, 600, 500);
 		}
 		else if (checker.compare(this.getClass(), "Save all files in project", null, commandName, "saveFiles")) {  //all files in project
 			String fileNames ="";
@@ -1732,14 +1730,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Gives information about the project", null, commandName, "getInfo")) {
 			String st = "This represents a project, which currently represents information from ";
 			if (proj.getNumberLinkedFiles() == 1) {
-				st = "The current file is " + proj.getHomeFileName();
+				st = "The current file is\n\n  " + proj.getHomeFileName();
 				if (!StringUtil.blank(proj.getHomeDirectoryName()))
-					st += ", located at " + proj.getHomeDirectoryName() + ".";
+					st += ",\n\nlocated at\n\n  " + proj.getHomeDirectoryName() + ".";
 			}
 			else {
-				st = "The current project includes " + proj.getNumberLinkedFiles() + " files.  The home file of the project is " + proj.getHomeFileName();
+				st = "The current project includes " + proj.getNumberLinkedFiles() + " files.  The home file of the project is\n\n" + proj.getHomeFileName() +"\n\n";
 				if (!StringUtil.blank(proj.getHomeDirectoryName()))
-					st += ", located at " + proj.getHomeDirectoryName() + ".";
+					st += ", located at\n\n" + proj.getHomeDirectoryName() + ".";
 				String[] s = proj.getFiles().getStrings();
 
 

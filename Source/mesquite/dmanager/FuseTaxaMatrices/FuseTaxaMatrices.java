@@ -85,7 +85,9 @@ public class FuseTaxaMatrices extends FileAssistantFM {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Includes a file and concatenates its taxa to an existing taxa block, for instance to add seqences." ;  
+		return "Reads a file and merges its information into the current project with various choices as to whether taxa blocks and matrices are "
+				+ "merged with existing ones in the current project, or read as separate taxa blocks and matrices. More general and flexible than Append Taxa & Sequences, "
+				+" but more awkward as well." ;  
 	}
 
 }

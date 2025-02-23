@@ -288,11 +288,6 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public void readFile(MesquiteProject mProj, MesquiteFile mNF, String arguments) {
-		readFile(mProj, mNF, arguments, null);
-	}
-	/*.................................................................................................................*/
-	public void readFile(MesquiteProject mProj, MesquiteFile mNF, String arguments, String[] justTheseBlocks) {
-		
 		incrementMenuResetSuppression();
 		int length = (int)mNF.existingLength();
 		int readToNow = 0;
@@ -306,6 +301,11 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			piMine = true;
 			if (mt instanceof MesquiteThread)
 				((MesquiteThread)mt).setProgressIndicator(progIndicator);
+		}
+		String[] justTheseBlocks = null;
+		if (parser.hasFileReadingArgument(arguments, "justTheseBlocks")){
+			String whichBlocks = parser.getFileReadingArgumentSubtype(arguments, "justTheseBlocks");
+			justTheseBlocks = StringUtil.delimitedTokensToStrings(whichBlocks, '.', false);
 		}
 		progIndicator.setButtonMode(ProgressIndicator.FLAG_AND_HIDE);
 		progIndicator.start();
@@ -345,16 +345,16 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 								}
 								else
 									progIndicator.setButtonMode(ProgressIndicator.FLAG_AND_HIDE);
-								if (mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
+							/*	if (mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
 									mNF.setTranslatedCharacter('[', '<');
 									mNF.setTranslatedCharacter(']', '>');
-								}
+								}*/
 								progIndicator.setText("Processing block: " + blockName.getValue(), false, true);
 								NexusBlock nb = sendBlockToReader(mProj, mNF, block, blockName.getValue(), length, readToNow, blockComments, arguments);
-								if (false && mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
+								/*if (false && mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
 									mNF.clearTranslatedCharacter('[');
 									mNF.clearTranslatedCharacter(']');
-								}
+								}*/
 								progIndicator.setText("Reading next block", false);
 								progIndicator.toFront();
 								readToNow += block.getNumCommands();

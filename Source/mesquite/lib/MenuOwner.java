@@ -2684,6 +2684,9 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					newMenu.add(showFileSubmenu);
 					addFilesToSubmenu(showFileSubmenu, proj, false, proj.getShowFileOnDiskCommand());
 				} else {
+					MesquiteMenuItem gi;
+					newMenu.add(gi = new MesquiteMenuItem("Get File Info...", MesquiteModule.mesquiteTrunk, proj.getInfoCommand));
+					gi.setShortcut(getInfoShortcut);
 					newMenu.add(new MesquiteMenuItem("Show File Location", MesquiteModule.mesquiteTrunk,
 							proj.getShowFileOnDiskCommand()));
 				}
@@ -2722,10 +2725,6 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				newMenu.add(new MesquiteMenuItem("Export...", MesquiteModule.mesquiteTrunk, proj.exportCommand));
 				newMenu.add(
 						new MesquiteMenuItem("Revert to Saved", MesquiteModule.mesquiteTrunk, proj.getRevertCommand()));
-				MesquiteMenuItem gi;
-				newMenu.add(
-						gi = new MesquiteMenuItem("Get Info...", MesquiteModule.mesquiteTrunk, proj.getInfoCommand));
-				gi.setShortcut(getInfoShortcut);
 			} else if (MesquiteTrunk.isApplet() || MesquiteTrunk.getProjectList().getNumProjects() == 0) {
 				// can't save either because this is menu for window trunkward of projects, and
 				// there is no project open, or is applet. Give user warning
@@ -2740,8 +2739,6 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				newMenu.add(saveAllItem);
 			}
 
-			if (whichWindow != null)
-				newMenu.add(new MesquiteMenuItem("Save Window as Text...", module, whichWindow.saveAsTextCommand));
 			newMenu.add("-");
 			/*-------------- Close tabs */
 			newMenu.add("-");
@@ -2754,6 +2751,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			/*-------------- Print item */
 
 			newMenu.add("-");
+			if (whichWindow != null)
+				newMenu.add(new MesquiteMenuItem("Save Window as Text...", module, whichWindow.saveAsTextCommand));
 			MesquiteMenuItem printItem = new MesquiteMenuItem(menuBar.getOwnerWindow().getPrintMenuItem(),
 					MesquiteModule.mesquiteTrunk, menuBar.getOwnerWindow().printCommand);
 			newMenu.add(printItem);

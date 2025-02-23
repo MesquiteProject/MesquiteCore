@@ -11,41 +11,21 @@
  This source code and its compiled class files are free and modifiable under the terms of 
  GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.IncludeFlippedFastaFiles;
+package mesquite.basic.IncludeTreesSpecifyTreeDialect;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-
-import mesquite.categ.lib.DNAData;
-import mesquite.categ.lib.DNAState;
-import mesquite.genomic.CombineFlippedFastas.CombineFlippedFastas;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
+import mesquite.basic.OpenFileSpecifyTreeDialect.OpenFileSpecifyTreeDialect;
 import mesquite.lib.duties.*;
-import mesquite.lib.taxa.Taxa;
-import mesquite.lib.taxa.TaxaGroup;
-import mesquite.lib.taxa.TaxaGroupVector;
-import mesquite.lib.taxa.Taxon;
-import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MesquiteFrame;
-import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
-public class IncludeFlippedFastaFiles extends FileAssistantFM {
+public class IncludeTreesSpecifyTreeDialect extends FileAssistantTM {
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		String directoryPath = MesquiteFile.chooseDirectory("Choose folder containing FASTA files, one per taxon:", null); 
-		if (StringUtil.blank(directoryPath))
-			return false;
-		CombineFlippedFastas importerTask = (CombineFlippedFastas)hireNamedEmployee(CombineFlippedFastas.class, "#ImportByTaxonFastas");
+		OpenFileSpecifyTreeDialect importerTask = (OpenFileSpecifyTreeDialect)hireNamedEmployee(OpenFileSpecifyTreeDialect.class, "#OpenFileSpecifyTreeDialect");
 		if (importerTask == null)
 			return false;
-		importerTask.processDirectory(directoryPath, getProject());
+		importerTask.readFileWTreeDialect(getProject(), false, true);
 		return true;
 	}
 
@@ -54,12 +34,16 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice() { 
+		return true;
+	}
+	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Include Data from Flipped FASTAs (One per Taxon)...";
+		return "Include Trees (Specify Tree Dialect)...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Include Data from Flipped FASTAs";
+		return "Include Trees (Specify Tree Dialect)";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -71,10 +55,12 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Imports all \"flipped\" FASTA files in a folder, each containing the sequences of many loci for a single taxon, to merge them into the current project, matching the taxa and sequences by name to current taxa and matrices."
-				+" Each input file should be named by the taxon name, and each sequence should be named for its locus. "
-				+" Tuned for phylogenomics workflows that maintain a library of flipped fasta files that can be combined for varied studies with different taxon sampling. "
-				+" Flipped FASTA files can be produced using File, Export, Flipped FASTA files (One per taxon). (Note: To establish a new project rather than merge into an existing, use Combine Flipped FASTA Files in the Open Special submenu.)" ;
+		return "Reads trees from NEXUS files and PHYLIP/Newick tree files with more flexible reading than in the normal \"Include File\". "
+				+"Copies trees into the current project, rather than establishing a new project (for which, see File>Open Special>Open File (Specify Tree Dialect)). "
+					+"It can adjust for the diverse and incompatible formats (\"dialects\") used by different programs "
+					+"(BEAST, MrBayes, IQ-TREE, etc.) to store special properties in trees such as posterior probabilities, "
+					+ "divergence times, or concordance factors. (The regular \"Include File\" can read such tree information only if saved in the standard BEAST/Mesquite format.)"
+					+ "" ;
 	}
 
 }

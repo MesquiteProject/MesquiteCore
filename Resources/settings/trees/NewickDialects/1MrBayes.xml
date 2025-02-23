@@ -3,7 +3,7 @@
 	<humanName>MrBayes</humanName> <!-- required -->
 	<internalName>MrBayes</internalName> <!-- required -->
 	<!-- At least one element of the following must be present -->
-	<punctuation>,={}&gt;&lt;</punctuation> 
+	<punctuation>,={}&gt;&lt;'</punctuation> 
 	<!-- replacements in sequence -->
 	<replacement> 
 		<before>prob ( percent )</before>
