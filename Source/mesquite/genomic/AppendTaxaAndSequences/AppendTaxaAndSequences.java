@@ -165,7 +165,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Quick Merge Taxa & Matrices...";
+		return "Quick Merge Taxa & Matrices from File...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
