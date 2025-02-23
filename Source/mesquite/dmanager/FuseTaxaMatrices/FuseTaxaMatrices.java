@@ -69,7 +69,7 @@ public class FuseTaxaMatrices extends FileAssistantFM {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "General Merge Taxa & Matrices from File...";
+		return "Careful Merge Taxa & Matrices from File...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -86,8 +86,8 @@ public class FuseTaxaMatrices extends FileAssistantFM {
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Reads a file and merges its information into the current project with various choices as to whether taxa blocks and matrices are "
-				+ "merged with existing ones in the current project, or read as separate taxa blocks and matrices. More general and flexible than Append Taxa & Sequences, "
-				+" but more awkward as well, because General Merge asks you many questions to control the merging, whereas Append makes more assumptions and does it quietly." ;  
+				+ "merged with existing ones in the current project, or read as separate taxa blocks and matrices. More general and flexible than Quick Merge Taxa & Matrices, "
+				+" but more awkward as well, because Careful Merge asks you many questions to control the merging, whereas Quick Merge makes more assumptions and does it quietly." ;  
 	}
 
 }

@@ -1683,7 +1683,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			explanation += "<b>Including Taxa, Matrices & sometimes Trees</b><br>";
 			explanation += "<ul><li><b>Include File</b>— Reads a file and copies its information into the current project file. "
 					+ "When you save the project file, this new information is saved into the main project file. Does not attempt to add to fuse new information into existing taxa blocks or matrices "
-					+"(for which, see Append Taxa &amp; Sequences or General Merge Taxa &amp; Matrices)."
+					+"(for which, see Quick Merge or Careful Merge Taxa &amp; Matrices)."
 					+ " The incoming file is read in the context of the current file." 
 					+" If the incoming file has conflicting or incomplete information, it may be read improperly.</li><br> ";
 			explanation += "<li><b>Link File</b>— Reads a file and adds its information to that of the current project, as with Include File. "

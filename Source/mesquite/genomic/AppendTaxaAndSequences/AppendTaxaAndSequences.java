@@ -165,11 +165,11 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Append Taxa & Sequences...";
+		return "Quick Merge Taxa & Matrices...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Append Taxa & Sequences";
+		return "Quick Merge Taxa & Matrices";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -183,9 +183,8 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 	public String getExplanation() {
 		return "Reads taxa and matrices (especially sequence matrices) from a NEXUS file and concatenates them to taxa blocks and matrices in the current file, matching taxa and matrices by name. "
 				+	"Only the first taxa block and its matrices are read from the incoming file. Trees, codon positions, and other details are not read. "
-				+ "This is quicker and less awkward than General Merge Taxa & Matrices, but it is less careful, in that it relies on matching names to indicate identity. "
-				+" Tuned for workflows, e.g., phylogenomics, in which new taxa and sequences are added into a growing base data file. See also Include Data from Flipped FASTAs for an alternative model."
-				+ " NOTE: this can handle matrices other than DNA/Protein, but most uses are likely to be with sequence data.";  
+				+ "This is quicker and less awkward than Careful Merge Taxa & Matrices, but it is less careful, in that it relies on matching names to indicate identity. "
+				+" Tuned for workflows, e.g., phylogenomics, in which new taxa and sequences are added into a growing base data file. See also Include Data from Flipped FASTAs for an alternative model.";  
 	}
 
 }
