@@ -302,6 +302,8 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			if (mt instanceof MesquiteThread)
 				((MesquiteThread)mt).setProgressIndicator(progIndicator);
 		}
+		if (!parser.hasAnyFileReadingArguments(arguments)) //needs to have not file reading arguments to go in list for reopening
+			mNF.okForRecentRereading = true;
 		String[] justTheseBlocks = null;
 		if (parser.hasFileReadingArgument(arguments, "justTheseBlocks")){
 			String whichBlocks = parser.getFileReadingArgumentSubtype(arguments, "justTheseBlocks");

@@ -56,7 +56,7 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 		if (myWindow != null)
 			myWindow.setTree(tree);
 	}
-	
+
 	public String getAnnotation(){
 		String annot = "Properties of branches/nodes in tree window";
 		TreeWindowMaker twm = (TreeWindowMaker)findEmployerWithDuty(TreeWindowMaker.class);
@@ -64,8 +64,8 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 			annot += " \"" + twm.getModuleWindow().getTitle() + "\"";
 		return annot + ".";
 	}
- 	public void setAnnotation(String note, boolean notify){
- 	}
+	public void setAnnotation(String note, boolean notify){
+	}
 	/*.................................................................................................................*/
 	public boolean showing(Object obj){
 		return (getModuleWindow()!=null && obj == tree);
@@ -89,16 +89,20 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 		if (myWindow != null){
 			myWindow.show();
 			myWindow.setVisible(true);
-			myWindow.setPopAsTile(true);
-			myWindow.popOut(true);
+			if (!MesquiteThread.isScripting()){
+				myWindow.setPopAsTile(true);
+				myWindow.popOut(true);
+			}
 			return;
 		}
 		addMenuItem("New Property...", new MesquiteCommand("newProperty", this));
 		myWindow = new NodesAssociatesListWindow(this);
 		setModuleWindow(myWindow);
 		myWindow.getParentFrame().setPopoutWidth(460);
-		myWindow.setPopAsTile(true);
-		myWindow.popOut(true);
+		if (!MesquiteThread.isScripting()){
+			myWindow.setPopAsTile(true);
+			myWindow.popOut(true);
+		}
 		makeMenu("List");
 		if (hireAssistantsRegardless || !MesquiteThread.isScripting()){
 			hireAssistant("#NodeAssociatesListValue");
@@ -251,7 +255,7 @@ public class NodeAssociatesList extends ListModule implements Annotatable {
 			else if (obj instanceof Bits) 
 				kind = Associable.BITS;
 			return new PropertyRecord(name, kind);
-			*/
+			 */
 		}
 		return null;
 	}
@@ -401,7 +405,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		setIcon(MesquiteModule.getRootImageDirectoryPath() + "showNodeAssoc.gif");
 		setDefaultAnnotatable(ownerModule);
 	}
-/**/
+	/**/
 	private void makeAssociatesList(){
 		associatesList.removeAllElements(false);
 		if (tree == null) 
@@ -419,7 +423,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		}
 	}
 
-	
+
 	void makeNewProperty(int kind, String name){
 		if (kind <0 || tree == null)
 			return;

@@ -18,16 +18,8 @@ import java.awt.Font;
 import mesquite.lib.Associable;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
-import mesquite.lib.MesquiteBoolean;
-import mesquite.lib.MesquiteDouble;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteListener;
-import mesquite.lib.MesquiteLong;
 import mesquite.lib.NameReference;
 import mesquite.lib.Nameable;
-import mesquite.lib.Notification;
-import mesquite.lib.Parser;
-import mesquite.lib.StringUtil;
 
 /* ======================================================================== */
 /*represents the bits, longs, doubles, strings and objects belonging to parts of an Associable.
@@ -39,12 +31,20 @@ public class PropertyRecord implements Listable, Nameable  {
 
 	private boolean belongsToBranch = true; //This is settable only from the settings managed by BranchPropertiesInit.
 	
+	public static ListableVector preferenceRecords = new ListableVector();
 	
 	public PropertyRecord(String name,int kind){
 		this.name = name;
 		nRef = NameReference.getNameReference(name);
 		this.kind = kind;
 	}
+	public static int preferredKind(String name){
+		PropertyRecord[] props = findInList(MesquiteTree.propertiesSettingsVector, name);
+		if (props == null || props.length>1)
+			return -1;
+		return props[0].kind;
+	}
+
 	public void setName(String name){
 		this.name = name;
 		nRef = NameReference.getNameReference(name);
@@ -83,6 +83,36 @@ public class PropertyRecord implements Listable, Nameable  {
 				return mi;
 		}
 		return null;
+	}
+	public static PropertyRecord[] findInList(ListableVector pList, String name){
+		int count = 0;
+		for (int i=0; i<pList.size(); i++){
+			PropertyRecord mi = (PropertyRecord)pList.elementAt(i);
+			if (mi.getNameReference().equalsString(name))
+				count++;
+		}
+		if (count == 0)
+			return null;
+		PropertyRecord[] props = new PropertyRecord[count];
+		count = 0;
+		for (int i=0; i<pList.size(); i++){
+			PropertyRecord mi = (PropertyRecord)pList.elementAt(i);
+			if (mi.getNameReference().equalsString(name))
+				props[count++] = mi;
+		}
+		return props;
+	}
+	public static String reportPropertyList(ListableVector pList){
+		String s = "Properties (" + pList.size() + ")\n";
+		for (int i=0; i<pList.size(); i++){
+			PropertyRecord mi = (PropertyRecord)pList.elementAt(i);
+			s += mi.toString() + "\n";
+		}
+		return s;
+	}
+	
+	public String toString(){
+		return "Property name: " + name + " kind " + kind;
 	}
 	
 }

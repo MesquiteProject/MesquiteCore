@@ -7,10 +7,14 @@ posteriorProbability	double	branch
 posterior	double	branch
 consensusFrequency	double	branch
 bootstrapFrequency	double	branch
-posteriorProbability	String	branch
-posterior	String	branch
-consensusFrequency	String	branch
-bootstrapFrequency	String	branch
 color	long	branch
 !color	String	branch
 width	double	branch
+prob(percent)	double	branch
+prob	double	branch
+prob stddev	double	branch
+length mean	double	branch
+length median	double	branch
+prob+-sd	double	branch
+prob range	double	branch
+length 95%HPD	double	branch

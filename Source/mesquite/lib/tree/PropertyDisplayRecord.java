@@ -52,7 +52,6 @@ public class PropertyDisplayRecord extends PropertyRecord  {
 	
 	public boolean inCurrentTree = false;  //depends on current tree; used by NodeAssociatesZ and Node Associates List system
 
-	public static ListableVector preferenceRecords = new ListableVector();
 	
 	public PropertyDisplayRecord(String name,int kind){
 		super(name, kind);
@@ -61,6 +60,7 @@ public class PropertyDisplayRecord extends PropertyRecord  {
 			cloneFrom(prefRecord);
 		//see mesquite.trees.PropertyDisplayRecordInit for defaults setting and management
 	}
+	
 	
 	public void cloneFrom(PropertyDisplayRecord other){
 		showing = other.showing;

@@ -1029,6 +1029,16 @@ public class Parser extends StringUtil {
 		return buffer.toString();
 	}
 	/*............................................  ....................................................*/
+	public boolean hasAnyFileReadingArguments(String arguments){
+		String fRA = getFirstToken(arguments);
+		while (!StringUtil.blank(fRA)) {
+			if (fRA.startsWith("" + StringUtil.argumentMarker ))
+				return true;
+			fRA = getNextToken();
+		}
+		return false;
+	}
+	/*............................................  ....................................................*/
 	public boolean hasFileReadingArgument(String arguments, String target){
 		String fRA = getFirstToken(arguments);
 		while (!StringUtil.blank(fRA)) {

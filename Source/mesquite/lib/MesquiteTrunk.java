@@ -292,6 +292,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/*.................................................................................................................*/
 	/** Records new or newly opened file among Recent Files */
 	public static void recentFileRecord(MesquiteFile file, boolean saveToPrefs){
+	//	Debugg.println("@recentFileRecord " + file.getFileName() + " "  + file.okForRecentRereading);
 		if (file.getFileName() == null)
 			return;
 		MesquiteFile stored = findRecentFile(file, false);

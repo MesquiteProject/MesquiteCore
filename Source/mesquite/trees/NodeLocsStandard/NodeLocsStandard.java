@@ -83,6 +83,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 		if (condition instanceof boolean[]){
 			fixedSettings = (boolean[])condition;
 		}
+		upOn = new MesquiteBoolean(false);
+		downOn = new MesquiteBoolean(false);
+		rightOn = new MesquiteBoolean(false);
+		leftOn = new MesquiteBoolean(false);
 		extras = new Vector();
 		inhibitStretch = new MesquiteBoolean(false);
 		center = new MesquiteBoolean(false);

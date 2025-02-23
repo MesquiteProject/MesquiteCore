@@ -894,6 +894,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			if (StringUtil.blank(key))
 				return;
 			if (reportReading) Debugg.println("@~~KEY " + key);
+			if (reportReading) Debugg.println("     @~~preferred kind " + PropertyRecord.preferredKind(key));
 			String eq = ParseUtil.getToken(assocString, pos, whitespace, punctuation); //eating up equals
 			if (reportReading) Debugg.println("     @~~equal " + eq);
 			int oldPos = pos.getValue();
@@ -1007,8 +1008,8 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					bb.setValue(node, values);
 				}
 			}
-			else if ((forceNumberToDouble && MesquiteNumber.isNumber(value)) || ((value.indexOf(".")>=0) && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos))) { //treat as double 
-				if (reportReading) Debugg.println("    {}~~to double " + value);
+			else if ((PropertyRecord.preferredKind(key)== Associable.DOUBLES) || (forceNumberToDouble && MesquiteNumber.isNumber(value)) || ((value.indexOf(".")>=0) && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos))) { //treat as double 
+				if (reportReading) Debugg.println("    ~~to double " + value);
 				NameReference nrEx= NameReference.getNameReference(key);   // fixed in 3.01
 				DoubleArray bb = getAssociatedDoubles(nrEx);       //Finding doubles if they exist
 				if (bb == null) {

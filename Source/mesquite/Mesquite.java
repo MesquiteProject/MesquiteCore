@@ -1452,7 +1452,7 @@ public class Mesquite extends MesquiteTrunk
 	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless){
 		return newProject(arguments, code, actAsScriptingRegardless, null, null);
 	}
-	/* makes and returns a new project.*/ //hackathon
+	/* makes and returns a new project.* NOT USED/ //hackathon
 	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments){
 		return newProject(arguments, code, actAsScriptingRegardless, originalArguments, null);
 	}
@@ -1482,8 +1482,8 @@ public class Mesquite extends MesquiteTrunk
 			return null;
 		}
 	}
-	/*.................................................................................................................*/
-	/* makes and returns a new project.*///hackathon
+	/*.................................................................................................................*
+	// makes and returns a new project.///hackathon
 	public MesquiteProject newProject(InputStream stream, String arguments, boolean actAsScriptingRegardless, String originalArguments){
 		if (MesquiteThread.isScripting() || actAsScriptingRegardless) {
 			ObjectContainer projCont = new ObjectContainer();
