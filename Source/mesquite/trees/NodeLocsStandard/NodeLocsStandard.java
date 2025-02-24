@@ -1194,7 +1194,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 		if (MesquiteTree.OK(tree)) {
 			//Making sure treeDisplay and here are in tune about some settings
 			checkAndAdjustParameterSettings(treeDisplay, tree);
-
 			TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 			int root = drawnRoot;
 			int subRoot = tree.motherOfNode(drawnRoot);

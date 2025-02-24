@@ -20,6 +20,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Commandable;
 import mesquite.lib.CompatibilityChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Identifiable;
 import mesquite.lib.Listable;
@@ -602,7 +603,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 					threadOfTreeChange =  null;
 				}
 			}
-			if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED){
+			if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED && Notification.getCode(notification) != MesquiteListener.PARTS_ADDED){
 				boolean deleted = deleteEmptyTrees();
 				if (deleted)
 					notifyListeners(this, (new Notification(MesquiteListener.PARTS_DELETED).setNotificationNumber(notification.getNotificationNumber()))); 

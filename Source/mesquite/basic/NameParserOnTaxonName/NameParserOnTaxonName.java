@@ -28,7 +28,24 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	NameParser nameParser = new NameParser(this, "taxon");
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
+		loadPreferences();
 		return true;
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		if (nameParser!=null){
+			String s = nameParser.preparePreferencesForXML(); 
+			if (StringUtil.notEmpty(s))
+				buffer.append(s);
+		}
+		return buffer.toString();
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if (nameParser!=null)
+			nameParser.processSingleXMLPreference(tag,content);
 	}
 	/*.................................................................................................................*/
    	public boolean getOptions(Taxa taxa, int firstSelected){
@@ -40,7 +57,6 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 			nameParser.setExamples(new String[]{taxa.getTaxonName(0), taxa.getTaxonName(1)});
 		else if (taxa.getNumTaxa()>0)
 			nameParser.setExamples(new String[]{taxa.getTaxonName(0)});
-		Debugg.println("@@@@@@@@@@@ ");
 			String helpString = "";
 			/*This tool requires that the names of the containing taxa (e.g., populations) are formed as reduced versions of the taxon names of the "
 					+ "other block of taxa (e.g., specimens).  In particular, the names of the populations must exactly match a portion of specimen names of the other block.  "
@@ -48,9 +64,10 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 					+ "matches the name of a population, then the specimen is associated with that population.";
 			*/
 			boolean ok = nameParser.queryOptions("Options for matching specimens to populations", "Populations will be matched to specimens by examining their names", "In choosing what parts of the specimen name to compare to the population names,", helpString);
+			if (ok)
+				storePreferences();
 			return ok;
 		
-		//	storePreferences();
    	}
    	
    	
@@ -87,6 +104,10 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
     	 		return  super.doCommand(commandName, arguments, checker);
 		return null;
    	 }
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
+		return true;
+	}
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
 		return "Keep/Delete Parts of Names...";

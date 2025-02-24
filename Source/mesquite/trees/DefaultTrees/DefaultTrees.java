@@ -60,6 +60,16 @@ public class DefaultTrees extends TreeSource {
    	 	return false;
    	 }
    	 
+ 	/* ................................................................................................................. */
+ 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+ 		if (checker.compare(this.getClass(), "Hires a tree display assistant module", "[name of assistant module]", commandName, "laxOff")) {
+ 		}
+ 		else
+ 			return super.doCommand(commandName, arguments, checker);
+ 		return null;
+ 	}
+
+   	 
    	 void formSymmetricalClade(MesquiteTree tree, int minTaxon, int maxTaxon){
  		int range = maxTaxon-minTaxon + 1;
  		if (range > 1) {

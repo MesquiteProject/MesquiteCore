@@ -581,6 +581,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			
 			if (tree.isLeftmostTerminalOfCollapsedClade(N)){
 				gL.setFont(currentFontsCollapsed[treeDisplay.collapsedCladeHighlightMode]);
+				underlined = treeDisplay.collapsedCladeUnderline;
 			}
 			else {
 				boolean useBold = colorerTask.getTaxonNameBoldness(taxa, taxonNumber);
@@ -643,7 +644,10 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}
 			gL.setColor(taxonColor); 
 
-			lengthString = fm.stringWidth(s); //what to do if underlined?
+			
+			Font font = gL.getFont();
+			FontMetrics fontMet = gL.getFontMetrics(font);
+			lengthString = fontMet.stringWidth(s); //what to do if underlined?
 			int centeringOffset = 0;
 			if (treeDisplay.centerNames)
 				centeringOffset = (longestString-lengthString)/2;
@@ -653,8 +657,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				double radians = Math.atan(slope);
 
 				boolean right = treeDrawing.lineTipX[N]>treeDrawing.lineBaseX[N];
-				Font font = gL.getFont();
-				FontMetrics fontMet = gL.getFontMetrics(font);
 				double height = fontMet.getHeight(); //0.667
 				int length = fontMet.stringWidth(s)+ separation;
 				int textOffsetH = 0; //fontMet.getHeight()*2/3;

@@ -51,13 +51,15 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 			discreetAlert("Sorry, this is not a NEXUS file");
 			return null;
 		}
-		
+
+		boolean includingInExistingProject = project != null;
+
 		//Make list of available Newick dialects
 		String dialectName = null;
 		String[] dialectHumanNames = null;
 		String[] dialectInternalNames = null;
 		MesquiteInteger selectedInDialog = new MesquiteInteger(0);
-		if (MesquiteTree.dialects.size()>0){
+		if (MesquiteTree.dialects.size()>0){ //multiple dialects; ask which one
 			dialectHumanNames = new String[MesquiteTree.dialects.size()];
 			dialectInternalNames = new String[MesquiteTree.dialects.size()];
 			for (int i=0; i<dialectHumanNames.length; i++){
@@ -67,12 +69,14 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 			}
 			dialog = new ListDialog(containerOfModule(), "Reading file \"" + fileName + "\"", "In which dialect of Newick are the trees described?", false,null, dialectHumanNames, 8, selectedInDialog, "OK", null, false, true);
 		}
-		else if (!isNexus || project != null)
-			dialog = new ExtensibleDialog(containerOfModule(), "Reading NEXUS or Phylip/Newick file with trees");
-		
+		else if (!isNexus) //no dialects, but since Phylip/Newick, must ask about auto-convert and also warn about taxon names
+			dialog = new ExtensibleDialog(containerOfModule(), "Reading tree file");
+		//	else if (includingInExistingProject)
+		//		dialog = new ExtensibleDialog(containerOfModule(), "Reading NEXUS file with trees");
+
 		//Completing the dialog with extra items
 		String autoSaveString = "";
-		
+
 		if (dialog != null){
 			Checkbox autoSaveB = null;
 			//NOTE these two check boxes might seem to interact, but will autosave only if Phylip, 
@@ -83,7 +87,15 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 			if (!isNexus)
 				autoSaveB = dialog.addCheckBox("Auto-save converted NEXUS file", true); 
 			dialog.addHorizontalLine(1);
-			dialog.addLabel("Note: This file opener can be used only with NEXUS and Phylip/Newick files!"); 
+			if (!isNexus) {
+				String warning = "";
+				if (includingInExistingProject)
+					warning = "\n\nNote!: Because this file is not a NEXUS file, Mesquite will assume (1) that the taxon names match those in the already-open project and (2) that it is a Phylip/Newick tree file. "
+							+ "If the taxon names don't match, tree reading will fail, and you may want to open the file separately using File>Open Special>Open File (Specify Tree Dialect). "
+							+ "If it is not a Phylip/Newick tree file, you may want to try the Open File menu Item.";
+				dialog.addLargeTextLabel("This file opener can be used only with NEXUS and Phylip/Newick files!"
+						+ warning); 
+			}
 
 			dialog.completeAndShowDialog(true);
 			if (dialog.buttonPressed.getValue() == 0)  {
@@ -103,7 +115,7 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 			}
 			else return null;
 		}
-		
+
 		if (project != null){
 			if (isNexus){
 				String fra = "";
@@ -115,7 +127,7 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 				project.getCoordinatorModule().includeFile(path, InterpretPhylipTreesBasic.class, ParseUtil.tokenize(dialectName) + autoSaveString + " @autodeleteDuplicateOrSubsetTaxa", 0, null);
 			return null;
 		}
-		
+
 		return MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(path, ParseUtil.tokenize(dialectName) + autoSaveString, TryNexusFirstTreeFileInterpreter.class);
 
 	}
@@ -163,11 +175,11 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 	/*.................................................................................................................*/
 	public String getExplanation() {
 		return "Reads NEXUS files and PHYLIP/Newick tree files "
-					+"with more flexible reading of trees than in the normal \"Open File\". It can adjust for the diverse and incompatible formats (\"dialects\") used by different programs "
-					+"(BEAST, MrBayes, IQ-TREE, etc.) to store special properties in trees such as posterior probabilities, "
-					+ "divergence times, or concordance factors. (The regular \"Open File\" can read such tree information only if saved in the standard BEAST/Mesquite format.)"
-					+ " When reading NEXUS files, Open File (Specify Tree Dialect) reads more than just the trees, including matrices and other information. For PHYLIP format, it can read only tree files."
-					+" Note: if you want to merge such trees into an existing project, use the similar File>Include & Merge>Include File (Specify Tree Dialect)." ;
+				+"with more flexible reading of trees than in the normal \"Open File\". It can adjust for the diverse and incompatible formats (\"dialects\") used by different programs "
+				+"(BEAST, MrBayes, IQ-TREE, etc.) to store special properties in trees such as posterior probabilities, "
+				+ "divergence times, or concordance factors. (The regular \"Open File\" can read such tree information only if saved in the standard BEAST/Mesquite format.)"
+				+ " When reading NEXUS files, Open File (Specify Tree Dialect) reads more than just the trees, including matrices and other information. For PHYLIP format, it can read only tree files."
+				+" Note: if you want to merge such trees into an existing project, use the similar File>Include & Merge>Include File (Specify Tree Dialect)." ;
 	}
 
 

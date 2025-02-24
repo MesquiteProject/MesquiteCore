@@ -113,6 +113,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 	public static Font defaultBigFont = new Font ("Dialog", Font.PLAIN, 12);
 	public static Font boldFont = new Font ("Dialog", Font.BOLD, 12);
+	public static Font italicFont = new Font ("Dialog", Font.ITALIC, 12);
 	public static Font defaultSmallFont = new Font ("SanSerif", Font.PLAIN, 10);
 	public static Font defaultVerySmallFont = new Font ("SanSerif", Font.PLAIN, 9);
 
@@ -1385,6 +1386,12 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public JLabel addLabel (String s) {
 		return addLabel(s,0,false,false);
+	}
+	/*.................................................................................................................*/
+	public JLabel addLabelItalic (String s) {
+		JLabel label = addLabel(s,0,false,false);
+		label.setFont(italicFont);
+		return label;
 	}
 	/*.................................................................................................................*/
 	public JLabel addLabel (String s, int alignment) {

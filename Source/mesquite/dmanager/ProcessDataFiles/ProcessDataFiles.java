@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -387,6 +388,21 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		}
 		return true;
 	}
+	
+	boolean duplicateTaxaWarned = false;
+	void scanForDuplicateTaxa(MesquiteProject proj, MesquiteFile file){
+		if (duplicateTaxaWarned)
+			return;
+		int numTaxas = proj.getNumberTaxas(file);
+		for (int iT = 0; iT<numTaxas; iT++){
+			String warning= proj.getTaxa(file, iT).hasDuplicateNames(false);
+			if (warning != null){
+				alert("The file " + file.getFileName() + " has duplicate taxon names. This may cause errors in processing. "
+						+"If subsequent files also have duplicate names, no warning will be given.");
+				duplicateTaxaWarned = true;
+			}
+		}
+	}
 	/*.................................................................................................................*/
 	protected boolean processFile(MesquiteFile fileToRead, StringBuffer results, MesquiteBoolean requestToSequester) {
 		logln("Processing file " + fileToRead.getName() + " in " + fileToRead.getDirectoryName() + "...");
@@ -399,6 +415,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		fileToRead.readMesquiteBlock = false;
 		if (fileToRead.openReading()) {
 			importer.readFile(getProject(), fileToRead, null);	
+			scanForDuplicateTaxa(getProject(), fileToRead);
 			getProject().getCoordinatorModule().wrapUpAfterFileRead(fileToRead);
 			//fileToRead.changeLocation(getSavedFilesDirectoryPath(fileToRead), fileToRead.getName() + ".nex");
 

@@ -339,6 +339,7 @@ public interface Tree extends Listable {
 	/** Returns a simple string describing the tree in standard parenthesis notation (Newick standard), excluding associated information except branch lengths.
 	To be used for output to user, not internally (as it may lose information).*/
 	public String writeTreeSimpleByNames();
+	public String writeTreeSimpleByNamesWithProperties();
 	public String writeTreeSimpleByNumbers();
 	public String writeTreeByT0Names(boolean includeBranchLengths);
 	public String writeTree(int byWhat);

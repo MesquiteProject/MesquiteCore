@@ -105,6 +105,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public static final int cCHM_BIG = 4; 
 	public static int cCHM_DEFAULT = 3;
 	public int collapsedCladeHighlightMode = cCHM_DEFAULT;
+	public boolean collapsedCladeUnderline = true;
 
 	protected boolean showBranchColors = true;
 	public static boolean printTreeNameByDefault = false;

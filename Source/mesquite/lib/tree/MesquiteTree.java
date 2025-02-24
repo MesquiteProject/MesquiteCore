@@ -1986,12 +1986,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public  int numberOfVisibleTerminalsInClade(int node) {
 		if (!inBounds(node))
 			return 0;
-		if (nodeIsTerminal(node) && isCollapsedClade(node))
+		if (nodeIsTerminal(node) || isCollapsedClade(node))
 			return 1; //count node itself
 		else{
 			int count = 0;
 			for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
-				count += numberOfTerminalsInClade(d);
+				count += numberOfVisibleTerminalsInClade(d);
 			return count;
 		}
 	}
@@ -3138,6 +3138,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return permitT0Names;
 	}
 
+	boolean echo = false;
+	private void echo(String c, int place){
+		if (!echo)
+			return;
+		if (c == null)
+			System.out.println("\nNULL at " + place);
+		else
+			System.err.print(c);
+	}
 
 	private boolean predefinedDouble(String TreeDescription, MesquiteInteger stringLoc){
 		int p = stringLoc.getValue();
@@ -3189,10 +3198,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	static final int CONTINUE = 0;
 	static final int DONT_SPROUT = 1;
 	static final int FAILED = 2;
+	static final int NOTHINGTHERE = 3;
 	private int readClade(String TreeDescription, int node, MesquiteInteger stringLoc, TaxonNamer namer,  String whitespaceString, String punctuationString) {
 		if (StringUtil.blank(TreeDescription))
-			return FAILED;
+			return NOTHINGTHERE;
 		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
+		if (StringUtil.blank(c))
+			return NOTHINGTHERE;
 		// ************************* Newick comment -- use Newick tokenizing rules ***************
 		//comments before nodes aren't accepted
 		while ("<".equals(c)) {
@@ -3203,14 +3215,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			}
 		}
 		// ************************* end Newick  tokenizing rules ***************
-
+		echo(c, 0);
 		if ("(".equals(c)){  //internal node
 			int sprouted = sproutDaughter(node, false);
 			int result = readClade(TreeDescription, sprouted,stringLoc, namer, whitespaceString, punctuationString);
-			if (result == FAILED)//������������������������
+			if (result == FAILED || result == NOTHINGTHERE)//������������������������
 				return FAILED;
 			c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma
 			if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c) || "%".equals(c) || "#".equals(c))){ // name of internal node!!!!
+				echo(c, 1);
 				c = readNamedInternal(TreeDescription, c, sprouted, stringLoc);
 			}
 			while (":".equals(c) || "<".equals(c)|| "%".equals(c) || "#".equals(c)) {
@@ -3242,12 +3255,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				}
 			}
 			while (",".equals(c)) {
+				echo(c, 2);
 				if (result == CONTINUE)
 					sprouted = sproutDaughter(node, false);
 				result = readClade(TreeDescription, sprouted,stringLoc, namer, whitespaceString, punctuationString);
-				if (result == FAILED) //������������������������
+				if (result == FAILED || result == NOTHINGTHERE) //������������������������
 					return FAILED;
 				c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString); //skip parens or next comma
+				echo(c, 3);
 				if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c)|| "%".equals(c) || "#".equals(c))){ // name of internal node!!!!
 					c = readNamedInternal(TreeDescription, c, sprouted, stringLoc);
 				}
@@ -3283,6 +3298,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return CONTINUE;
 		}
 		else {
+			echo(c, 4);
 			int path = 0;
 			int taxonNumber = -1;
 			int fromWhichNamer = -1;
@@ -3393,6 +3409,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 							nextSister[prev] = 0;
 						return DONT_SPROUT;
 					}
+				}
+				else if (StringUtil.blank(c)){
+					MesquiteMessage.warnUser("Blank taxon name in tree " + getName() + " for taxa " + getTaxa().getName() + " (search for \"ERROR>\" in output in log file) " + path);
+					StringBuffer sb = new StringBuffer(TreeDescription);
+					sb.insert(stringLoc.getValue()-1, "ERROR>");
+					MesquiteFile.writeToLog(sb.toString());
+					return FAILED;
 				}
 				else {
 					if (permitTaxaBlockEnlargement){
@@ -3534,7 +3557,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				}
 			}
 			stringLoc.setValue(oldPos);
-			if (readClade(TreeDescription, root, stringLoc, namer, whitespaceString, punctuationString) == FAILED){
+			int result = readClade(TreeDescription, root, stringLoc, namer, whitespaceString, punctuationString);
+			if (result == FAILED){
 				if (lastUnrecognizedName != null)
 					MesquiteMessage.warnProgrammer("read clade failed; taxon name unrecognized: " + lastUnrecognizedName);
 				else
@@ -3548,6 +3572,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 				return false;
 			}
+			else if (result == NOTHINGTHERE)
+				return false;
 
 		}
 		catch (Throwable e){
@@ -3961,6 +3987,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			s.append("[&U] ");
 		writeTreeProperties(s, true);
 		writeTreeByNumbers(root, s, true, true);
+		s.append(';');
+		return s.toString();
+	}
+	/*-----------------------------------------*/
+	/** Returns a simple string describing the tree in standard parenthesis notation (Newick standard), including branch lengths and properties.*/
+	public String writeTreeSimpleByNamesWithProperties() {
+		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
+		writeTreeByNames(root, s, true, true, true);
+		//writeTreeProperties(s, true);
 		s.append(';');
 		return s.toString();
 	}

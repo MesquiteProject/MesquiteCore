@@ -107,7 +107,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip  {
 		if (treeVector !=null && treeVector.size()>0) {
 			for (int iTree = 0; iTree < treeVector.size(); iTree++) {
 				tree = (Tree)treeVector.elementAt(iTree);
-				outputBuffer.append(tree.writeTreeSimpleByNames());  //or Tree.BY_NUMBERS  or Tree.BY_NAMES
+				outputBuffer.append(tree.writeTreeSimpleByNamesWithProperties());  //or Tree.BY_NUMBERS  or Tree.BY_NAMES
 				// if do it BY_NAMES, make sure you truncate the taxon names to 10 characters!!
 				outputBuffer.append(getLineEnding());
 			}

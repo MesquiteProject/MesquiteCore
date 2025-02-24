@@ -124,6 +124,8 @@ public class TreeUtil {
 
 		Parser parser = new Parser(arguments);
 		String dialect = parser.getFileReadingArgumentSubtype(arguments, "newickDialect");
+		if (dialect == null)
+			dialect = "Default";
 		if (dialect != null)
 			MesquiteMessage.println("Trees read assuming Newick dialect: " + dialect);
 		Parser treeParser = new Parser();
@@ -154,8 +156,8 @@ public class TreeUtil {
 		if (MesquiteInteger.isCombinable(maybe)){ //we did read some other number. Trees must come after this!
 			stringLoc.setValue(treeParser.getPosition());
 		}
-
-		while (stringLoc.getValue()+1<line.length() && !abort && (iTree<numTrees)) {
+		boolean done = false;
+		while (!done && stringLoc.getValue()+1<line.length() && !abort && (iTree<numTrees)) {
 
 			if (trees == null) {
 				trees = new TreeVector(taxa);
@@ -165,11 +167,15 @@ public class TreeUtil {
 			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
 			if (StringUtil.notEmpty(dialect))
 				t.setDialect(dialect);
+			int oldLoc = stringLoc.getValue();
 			t.readTree(line,stringLoc, namer, StringUtil.defaultWhitespace + "\n\r", "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
-
-			t.setName(treeNameBase + (iTree+1));
-			trees.addElement(t, false);
-			iTree++;
+			if (oldLoc < stringLoc.getValue()){
+				t.setName(treeNameBase + (iTree+1));
+				trees.addElement(t, false);
+				iTree++;
+			}
+			else
+				done = true;
 		}
 
 

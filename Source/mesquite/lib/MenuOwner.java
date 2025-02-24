@@ -2683,13 +2683,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					// submenu
 					newMenu.add(showFileSubmenu);
 					addFilesToSubmenu(showFileSubmenu, proj, false, proj.getShowFileOnDiskCommand());
-				} else {
-					MesquiteMenuItem gi;
-					newMenu.add(gi = new MesquiteMenuItem("Get File Info...", MesquiteModule.mesquiteTrunk, proj.getInfoCommand));
-					gi.setShortcut(getInfoShortcut);
-					newMenu.add(new MesquiteMenuItem("Show File Location", MesquiteModule.mesquiteTrunk,
-							proj.getShowFileOnDiskCommand()));
-				}
+				} 
 			}
 			/*-------------- Save & Save As menu or submenu */
 			newMenu.add("-");
@@ -2740,6 +2734,14 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			}
 
 			newMenu.add("-");
+			/*-------------- File Info */
+			if (numLinkedFiles == 1) {
+				MesquiteMenuItem gi;
+				newMenu.add(gi = new MesquiteMenuItem("Get File Info...", MesquiteModule.mesquiteTrunk, proj.getInfoCommand));
+				gi.setShortcut(getInfoShortcut);
+				newMenu.add(new MesquiteMenuItem("Show File Location", MesquiteModule.mesquiteTrunk,
+						proj.getShowFileOnDiskCommand()));
+			}
 			/*-------------- Close tabs */
 			newMenu.add("-");
 			whichWindow.closeWindowMenuItem = new MesquiteMenuItem(whichWindow.closeWindowMenuItemSpec);

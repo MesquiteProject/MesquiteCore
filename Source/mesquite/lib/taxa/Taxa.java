@@ -873,7 +873,6 @@ public class Taxa extends FileElement {
 					String name2 = getTaxonName(j);
 					if (name!=null && name.equalsIgnoreCase(name2)) {
 						list.append(" [" + i + "-" + j + "] " + name);
-						MesquiteMessage.println(name);
 					}
 				}
 			}

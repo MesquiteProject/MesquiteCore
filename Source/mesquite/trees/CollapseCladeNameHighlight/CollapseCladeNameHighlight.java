@@ -24,7 +24,8 @@ import mesquite.lib.ui.*;
 /* ======================================================================== */
 public class CollapseCladeNameHighlight extends TreeDrawAssistantI {
 	MesquiteBoolean collapsedBold = new MesquiteBoolean(true);
-	MesquiteBoolean collapsedItalics = new MesquiteBoolean(true);
+	MesquiteBoolean collapsedItalics = new MesquiteBoolean(false);
+	MesquiteBoolean collapsedUnderline = new MesquiteBoolean(true);
 	MesquiteBoolean collapsedBig = new MesquiteBoolean(true);
 	DrawTreeCoordinator drawCoordinatorTask = null;
 
@@ -35,6 +36,7 @@ public class CollapseCladeNameHighlight extends TreeDrawAssistantI {
 		MesquiteSubmenuSpec collapsedCladeSubmenu = addSubmenu(textMenu, "Highlight for Collapsed Clades");
 		addCheckMenuItemToSubmenu(textMenu, collapsedCladeSubmenu, "Bold", new MesquiteCommand("toggleBoldCollapsed", this), collapsedBold);
 		addCheckMenuItemToSubmenu(textMenu, collapsedCladeSubmenu, "Italics", new MesquiteCommand("toggleItalicsCollapsed", this), collapsedItalics);
+		addCheckMenuItemToSubmenu(textMenu, collapsedCladeSubmenu, "Underline", new MesquiteCommand("toggleUnderlineCollapsed", this), collapsedUnderline);
 		addCheckMenuItemToSubmenu(textMenu, collapsedCladeSubmenu, "Big", new MesquiteCommand("toggleBigCollapsed", this), collapsedBig);
 		addItemToSubmenu(textMenu, collapsedCladeSubmenu, "-", null);
 		addItemToSubmenu(textMenu, collapsedCladeSubmenu, "Save as Defaults", new MesquiteCommand("saveAsDefaults", this));
@@ -63,18 +65,20 @@ public class CollapseCladeNameHighlight extends TreeDrawAssistantI {
 
  	public void treeDisplayCreated(TreeDisplay treeDisplay){
 		treeDisplay.collapsedCladeHighlightMode = getCollapsedMode();
+		treeDisplay.collapsedCladeUnderline = collapsedUnderline.getValue();
  	}
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "mode", getCollapsedMode());   
-		//	StringUtil.appendXMLTag(buffer, 2, "selectedTaxonHighlightMode", selectedTaxonHighlightMode);   
+		StringUtil.appendXMLTag(buffer, 2, "underline", collapsedUnderline.getValue());   
 		return buffer.toString();
 	}
 
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("mode".equalsIgnoreCase(tag))
 			setCollapsedMode(MesquiteInteger.fromString(content));
-
+		if ("underline".equalsIgnoreCase(tag))
+			collapsedUnderline.setValue(MesquiteBoolean.fromTrueFalseString(content));
 	}
 
 	/*.................................................................................................................*/
@@ -85,6 +89,12 @@ public class CollapseCladeNameHighlight extends TreeDrawAssistantI {
 		return temp;
 	}	
 	
+	void setUnderlined(boolean underline){
+		for (int i = 0; i<drawCoordinatorTask.getNumTreeDisplays(); i++){
+			TreeDisplay tD = drawCoordinatorTask.getTreeDisplay(i);
+			tD.collapsedCladeUnderline = underline;			
+		}
+	}
 	void setBit(int bit, MesquiteBoolean b){
 		for (int i = 0; i<drawCoordinatorTask.getNumTreeDisplays(); i++){
 			TreeDisplay tD = drawCoordinatorTask.getTreeDisplay(i);
@@ -135,6 +145,14 @@ public class CollapseCladeNameHighlight extends TreeDrawAssistantI {
 			collapsedBig.toggleValue(arguments);
 			if (was != collapsedBig.getValue()){
 				setBit( TreeDisplay.cCHM_BIG, collapsedBig);
+				parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Whether collapsed clades are underlined", "[on or off]", commandName, "toggleUnderlineCollapsed")) {
+			boolean was = collapsedUnderline.getValue();
+			collapsedUnderline.toggleValue(arguments);
+			if (was != collapsedUnderline.getValue()){
+					setUnderlined(collapsedUnderline.getValue());
 				parametersChanged();
 			}
 		}

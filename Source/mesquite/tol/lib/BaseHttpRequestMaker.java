@@ -65,7 +65,6 @@ public class BaseHttpRequestMaker {
 
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 				new DefaultHttpMethodRetryHandler(3, false));
-
 		return executeMethod(client, method, response);
 	}
 
