@@ -70,6 +70,13 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		}
 		resetExamplesLabels();
 	}
+	String cutIfTooLong(String s){
+		if (s == null)
+			return null;
+		if (s.length()>20)
+			return s.substring(0, 20) + "...";
+		return s;
+	}
 	void resetExamplesLabels(){
 		numStartField.setEnabled(considerStartField.getState());
 		startBoundaryField.setEnabled(considerStartField.getState());
@@ -77,8 +84,10 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		numEndField.setEnabled(considerEndField.getState());
 		endBoundaryField.setEnabled(considerEndField.getState());
 		includeEndBoundaryInNameField.setEnabled(considerEndField.getState());
-		for (int i = 0; i<exampleLabels.length; i++)
-			exampleLabels[i].setText("\"" + examples[i] + "\" —> \"" + exampleExtraction(examples[i]) + "\"");
+		for (int i = 0; i<exampleLabels.length; i++){
+			
+			exampleLabels[i].setText("\"" + cutIfTooLong(examples[i]) + "\" —> \"" + cutIfTooLong(exampleExtraction(examples[i])) + "\"");
+		}
 	}
 	public boolean queryOptions(String title, String label, String constructingIntro, String helpString){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -127,7 +136,7 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 			dialog.addLabel("Examples:");
 			exampleLabels = new JLabel[examples.length];
 			for (int i = 0; i<exampleLabels.length; i++){
-				exampleLabels[i] = dialog.addLabel(examples[i]);
+				exampleLabels[i] = dialog.addLabel(cutIfTooLong(examples[i]));
 			}
 			resetExamplesLabels();
 			dialog.addHorizontalLine(1);

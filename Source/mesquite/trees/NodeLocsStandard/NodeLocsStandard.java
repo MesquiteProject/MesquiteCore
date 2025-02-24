@@ -385,21 +385,19 @@ public class NodeLocsStandard extends NodeLocsVH {
 		else if (checker.compare(this.getClass(), "Sets whether or not the branches are to be shown proportional to their lengths", "[on = proportional; off]", commandName, "branchLengthsToggle")) {
 			if (fixedSettings != null && fixedSettings.length>0 && fixedSettings[0])
 				return null;
-			resetShowBranchLengths=true;
-			branchLengthsDisplayMode.setValue(TreeDisplay.AUTOSHOWLENGTHS);
+			if (arguments == null) //reading old scripts only
+				return null;
+
+			MesquiteBoolean mbool = new MesquiteBoolean();
+			mbool.toggleValue(parser.getFirstToken(arguments));
+			if (mbool.getValue())
+				branchLengthsDisplayMode.setValue(TreeDisplay.DRAWUNASSIGNEDASONE);
+			else
+				branchLengthsDisplayMode.setValue(TreeDisplay.DRAWULTRAMETRIC);
 			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
 			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
 			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
-			deleteAllMenuItems();
-			fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
-			showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
-			broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);
-			deleteMenuItem(stretchMenuItem);
-			stretchMenuItem = null;
-			deleteMenuItem(evenMenuItem);
-			evenMenuItem = null;
-			resetContainingMenuBar();
-			parametersChanged();
+			//param changed not needed because this is an old script
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not the branches are to be shown proportional to their lengths", "[on = proportional; off]", commandName, "branchLengthsDisplay")) {
 			if (fixedSettings != null && fixedSettings.length>0 && fixedSettings[0])
