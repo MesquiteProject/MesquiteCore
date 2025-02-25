@@ -344,6 +344,12 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public long getVersionNumber(){
 		return versionNumber;
 	}
+	
+	protected void incrementVersion(int code, boolean notify){
+		versionNumber++;
+		setDirty(true);
+	}
+
 	public int getNumberOfParts() {
 		return numParts;
 	}
@@ -1114,7 +1120,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			}
 	}
 	public void transferAssociated(int fromNode, int toNode){
-		//setDirty???
 		if (bits!=null)
 			for (int i=0; i<bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
@@ -1140,6 +1145,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
 				b.setValue(toNode, b.getValue(fromNode));
 			}
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 
 	public void exchangeAssociated(int node1, int  node2){
@@ -1254,7 +1260,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
 				b.resetSize(numParts);
 			}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	/*-----------------------------------------*/
 	private int[] addToOrder(int[] order, int starting, int num) {
@@ -1367,7 +1373,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		catch (Exception e){
 		}
 
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return true;
 	}
 	/*-----------------------------------------*/
@@ -1415,7 +1421,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			previousOrder = IntegerArray.deleteParts(previousOrder, starting, num);
 		}
 		numParts = numParts-num;
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return true;
 	}
 	/** Deletes parts flagged for deletion in Bits*/
@@ -1461,7 +1467,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		//figuring out how many deleted total to adjust numParts
 		numParts = numParts-toDelete.numBitsOn();
 
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return true;
 	}	
 	/*-------------------------------------------------------*/
@@ -1508,7 +1514,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			shift += blocks[block][1]-blocks[block][0]+1;		
 		numParts = numParts-shift;
 
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return true;
 	}
 	/*-----------------------------------------*/
@@ -1558,7 +1564,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 
 
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return true;
 	}
 	public void restoreToPreviousOrder(){
@@ -1630,7 +1636,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			IntegerArray.swapParts(previousOrder, first, second);
 		}
 
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return true;
 	}
 	/* ---------------------Default Order -----------------------*/
@@ -1855,7 +1861,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			b.setNameReference(nr);
 			bits.addElement(b);
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return nr;
 	}
 	public void removeAssociatedBits(NameReference nRef){
@@ -1869,7 +1875,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	public Bits getAssociatedBits(NameReference nRef){
 		if (bits!=null && nRef!=null) {
@@ -1893,7 +1899,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	public void setAssociatedBit(NameReference nRef, int index, boolean value){
 		if (bits!=null && nRef!=null) {
@@ -1904,7 +1910,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 						b.setBit(index); 
 					else
 						b.clearBit(index);
-					setDirty(true);
+					incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 					return;
 				}
 			}
@@ -1916,7 +1922,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				b.setBit(index);
 			else
 				b.clearBit(index);
-			setDirty(true);
+			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		}
 	}
 	public boolean getAssociatedBit(NameReference nRef, int index){
@@ -1952,7 +1958,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			d.setNameReference(nr);
 			longs.addElement(d);
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return nr;
 	}
 	public void removeAssociatedLongs(NameReference nRef){
@@ -1966,7 +1972,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	public LongArray getAssociatedLongs(NameReference nRef){
 		if (longs!=null && nRef!=null) {
@@ -1990,7 +1996,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	public void zeroAllAssociatedLongs(NameReference nRef){
 		boolean found = false;
@@ -2003,7 +2009,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	public void setAssociatedLong(NameReference nRef, int index, long value){
 		if (longs!=null && nRef!=null) {
@@ -2011,7 +2017,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				LongArray b = (LongArray)longs.elementAt(i);
 				if (b !=null && nRef.equals(b.getNameReference())) {
 					b.setValue(index, value); 
-					setDirty(true);
+					incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 					return;
 				}
 			}
@@ -2020,7 +2026,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			if (b==null)
 				return;
 			b.setValue(index, value);
-			setDirty(true);
+			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		}
 	}
 	public long getAssociatedLong(NameReference nRef, int index){
@@ -2055,7 +2061,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			d.setNameReference(nr);
 			doubles.addElement(d);
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return nr;
 	}
 	public void removeAssociatedDoubles(NameReference nRef){
@@ -2069,7 +2075,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	public DoubleArray getAssociatedDoubles(NameReference nRef){
 		if (doubles!=null && nRef!=null) {
@@ -2093,7 +2099,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	public void setAssociatedDouble(NameReference nRef, int index, double value){
 		if (doubles!=null && nRef!=null) {
@@ -2101,7 +2107,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
 				if (b !=null && nRef.equals(b.getNameReference())) {
 					b.setValue(index, value); 
-					setDirty(true);
+					incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 					return;
 				}
 			}
@@ -2110,7 +2116,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			if (b==null)
 				return;
 			b.setValue(index, value);
-			setDirty(true);
+			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		}
 	}
 	public double getAssociatedDouble(NameReference nRef, int index){
@@ -2145,7 +2151,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			d.setNameReference(nr);
 			strings.addElement(d);
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return nr;
 	}
 	public void removeAssociatedStrings(NameReference nRef){
@@ -2159,7 +2165,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	public StringArray getAssociatedStrings(NameReference nRef){
 		if (strings!=null && nRef!=null) {
@@ -2183,7 +2189,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 
 	public void setAssociatedString(NameReference nRef, int index, String value){
@@ -2192,7 +2198,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				StringArray b = (StringArray)strings.elementAt(i);
 				if (b !=null && nRef.equals(b.getNameReference())) {
 					b.setValue(index, value); 
-					setDirty(true);
+					incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 					return;
 				}
 			}
@@ -2201,7 +2207,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			if (b==null)
 				return;
 			b.setValue(index, value);
-			setDirty(true);
+			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		}
 	}
 	public String getAssociatedString(NameReference nRef, int index){
@@ -2265,7 +2271,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			d = new ObjectArray(numParts);
 			d.setNameReference(nr);
 			objects.addElement(d);
-			setDirty(true);
+			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		}
 		return nr;
 	}
@@ -2280,7 +2286,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 	public ObjectArray getAssociatedObjects(NameReference nRef){
 		if (objects!=null && nRef!=null) {
@@ -2305,7 +2311,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				}
 			}
 		}
-		setDirty(true);
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 	}
 
 	static boolean assocStringObjectWarned = false;
@@ -2330,7 +2336,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
 				if (b !=null && nRef.equals(b.getNameReference())) {
 					b.setValue(index, value); 
-					setDirty(true);
+					incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 					return;
 				}
 			}
@@ -2339,7 +2345,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			if (b==null)
 				return;
 			b.setValue(index, value); 
-			setDirty(true);
+			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		}
 	}
 	public Object getAssociatedObject(NameReference nRef, int index){

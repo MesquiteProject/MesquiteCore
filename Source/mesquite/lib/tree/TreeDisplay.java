@@ -261,7 +261,12 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public TreeDrawing getTreeDrawing() {
 		return treeDrawing;
 	}
-
+	public Font getFont(){
+		Font alreadyHere = super.getFont();
+		if (alreadyHere == null)
+			return MesquiteWindow.defaultFont;
+		return alreadyHere;
+	}
 	public void setDrawingInProcess(boolean inProgress){
 		this.inProgress= inProgress;
 		if (!inProgress && holdingTree != null) {

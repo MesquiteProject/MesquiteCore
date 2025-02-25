@@ -3465,7 +3465,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (recoverEditedMenuItem != null && wasEnabled != recoverEditedMenuItem.isEnabled())
 				MesquiteTrunk.resetMenuItemEnabling();
 		}
-
 		Tree treeT = treeSourceTask.getTree(taxa, index);
 
 		if (disposing)
@@ -3481,12 +3480,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		if (disposing)
 			return null;
-		MesquiteBoolean editStatusToSet = new MesquiteBoolean();
+	MesquiteBoolean editStatusToSet = new MesquiteBoolean();
 		Tree t = setCloneOfTree(treeT, true, editStatusToSet);
-		treeEdited = editStatusToSet.getValue();
+	treeEdited = editStatusToSet.getValue();
 		editedByHand = false;
 		setTreeName(t);
-		messagePanel.setHighlighted(treeEdited);
+	messagePanel.setHighlighted(treeEdited);
 		if (treeInfoPanel != null)
 			treeInfoPanel.setHighlighted(!treeSourceLocked());
 
@@ -4503,7 +4502,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			Object obj = em.nextElement();
 			MesquiteModule mb = (MesquiteModule) obj;
 			if (mb instanceof TreeWindowAssistant) {
+				
+				long version = tree.getVersionNumber();
 				((TreeWindowAssistant) mb).setTree(tree);
+				if (version != tree.getVersionNumber()) {
+					treeEdited(true);
+				}
 			}
 		}
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());

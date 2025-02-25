@@ -953,8 +953,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Used to keep track of version numbers of tree.  Each time tree is changed, call this.  Also removes sensitive attachments. */
-	private void incrementVersion(int code, boolean notify){
-		versionNumber++;
+	protected void incrementVersion(int code, boolean notify){
+		super.incrementVersion(code, notify);
 		if (code == BRANCHES_REARRANGED) {
 			topologyVersion++;
 			branchLengthsVersion++;
@@ -964,7 +964,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (sensitiveAttachments!=null)
 			sensitiveAttachments.removeAllElements();
 		modifiedSinceNamed = true; 
-		setDirty(true);
 		if (nameLock)
 			MesquiteMessage.printStackTrace("Error: locked name in tree changed 2");
 		if (notify)

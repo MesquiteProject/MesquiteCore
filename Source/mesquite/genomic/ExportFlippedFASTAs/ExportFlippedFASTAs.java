@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.ExportSeparateTaxaCombinedFASTA;
+package mesquite.genomic.ExportFlippedFASTAs;
 
 /*~~  */
 
@@ -22,20 +22,16 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.categ.lib.*;
+import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
 
 
 /* ============  a file exporter ============*/
 
-public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
-	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		//	EmployeeNeed e = registerEmployeeNeed(VoucherInfoCoord.class, "Voucher information is needed for FASTA export for Genbank submissions.",
-		//			"This is activated automatically when you choose this exporter.");
-	}
-	//VoucherInfoCoord voucherInfoTask;
+public class ExportFlippedFASTAs extends FileInterpreterI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		//voucherInfoTask = (VoucherInfoCoord)hireEmployee(VoucherInfoCoord.class, null);
 		return true;
 	}
 	public void readFile(MesquiteProject mf, MesquiteFile mNF, String arguments) {
@@ -73,7 +69,6 @@ public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
 	String fileName = "untitled.nex";
 	protected boolean buildFileName = false;
 
-	
 	/*.................................................................................................................*/
 	public String getFileName(Taxa taxa, int it, CharacterData data, int index, String identifierString) {
 		String fileName = "";
@@ -84,7 +79,6 @@ public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
 		return fileName;
 	}
 
-
 	/*.................................................................................................................*/
 	public String getSequenceName(Taxa taxa, int it, String voucherID) {
 		return taxa.getTaxonName(it);
@@ -93,25 +87,60 @@ public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
 	public String getIdentifierString() {
 		return "";
 	}
+	boolean includeGaps = true;
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "includeGaps", includeGaps);  
+		StringUtil.appendXMLTag(buffer, 2, "writeOnlySelectedTaxa", writeOnlySelectedTaxa);  
+		return buffer.toString();
+	}
+	public void processSingleXMLPreference (String tag, String flavor, String content){
+		processSingleXMLPreference(tag, content);
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("includeGaps".equalsIgnoreCase(tag))
+			includeGaps = MesquiteBoolean.fromTrueFalseString(content);
+		if ("writeOnlySelectedTaxa".equalsIgnoreCase(tag))
+			writeOnlySelectedTaxa = MesquiteBoolean.fromTrueFalseString(content);
+
+	}
+
 	/*.................................................................................................................*/
 	public synchronized boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
-		//		boolean usePrevious = args.parameterExists("usePrevious");
-
-	/*	if (!MesquiteThread.isScripting())
-			if (!getExportOptions(false, true))
-				return false;
-*/
+		Taxa taxa = (Taxa)getProject().chooseTaxa(containerOfModule(),"For which block of taxa to export FASTA files?");
+		writeOnlySelectedTaxa = false;
+		includeGaps = true;
+		loadPreferences();
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExporterDialog dialog = new ExporterDialog(this,containerOfModule(), "Export Flipped FASTA Options", buttonPressed);
+		Checkbox includeGapsCheckBox = dialog.addCheckBox("Include gaps", includeGaps);  
+		Checkbox selectedOnly = null;
+		if (taxa.anySelected())
+			selectedOnly = dialog.addCheckBox("Selected taxa only", writeOnlySelectedTaxa);  
+		dialog.completeAndShowDialog(true);
+		if (buttonPressed.getValue()==0)  {
+			if (selectedOnly != null)
+				writeOnlySelectedTaxa = selectedOnly.getState();
+			includeGaps = includeGapsCheckBox.getState();
+			storePreferences();
+		}
+		else {
+			dialog.dispose();
+			return false;
+		}
+		dialog.dispose();
 		String directory = MesquiteFile.chooseDirectory("Choose folder into which files will be saved:");
 		if (StringUtil.blank(directory))
 			return false;
 		if (!directory.endsWith(MesquiteFile.fileSeparator))
 			directory+=MesquiteFile.fileSeparator;
 
-		boolean INCLUDE_GAPS = true;
 		StringBuffer buffer = new StringBuffer(500);
 
-		Taxa taxa = (Taxa)getProject().chooseTaxa(containerOfModule(),"For which block of taxa to export FASTA files?");
 		int numTaxa = taxa.getNumTaxa();
 		for (int it = 0; it<numTaxa; it++) {
 			if (!writeOnlySelectedTaxa || taxa.getSelected(it)){
@@ -120,7 +149,7 @@ public class ExportSeparateTaxaCombinedFASTA extends FileInterpreterI {
 				for (int iM = 0; iM < numMatrices; iM++){
 					CharacterData data = getProject().getCharacterMatrixVisible(taxa, iM, MolecularState.class);
 					if (data != null) {
-						MesquiteStringBuffer taxMatrixFastaBuffer = ((MolecularData)data).getSequenceAsFasta(INCLUDE_GAPS,false,it, data.getName());
+						MesquiteStringBuffer taxMatrixFastaBuffer = ((MolecularData)data).getSequenceAsFasta(includeGaps,false,it, data.getName());
 						String taxMatrixFasta = taxMatrixFastaBuffer.toString();
 						if (StringUtil.notEmpty(taxMatrixFasta)){
 							buffer.append(taxMatrixFasta);
