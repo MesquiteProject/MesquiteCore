@@ -150,6 +150,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 				return bdw;
 			}
 		}
+		else if (checker.compare(this.getClass(), "Goes to the matrix by reference", "[reference]", commandName, "showMatrix")) { 
+			if (bdw != null)
+				return bdw.doCommand("showMatrix", arguments, checker);
+		}
 
 		else
 			return super.doCommand(commandName, arguments, checker);
@@ -614,7 +618,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		else {
 			setCellColorer(noColor);
 		}
-	//	MesquiteModule groupColor = ownerModule.findEmployeeWithName("#TaxonGroupColor", true);
+		//	MesquiteModule groupColor = ownerModule.findEmployeeWithName("#TaxonGroupColor", true);
 		setRowNamesColorer(noColor);
 		MesquiteModule groupColor = ownerModule.findEmployeeWithName("#CharGroupColor", true);
 		setColumnNamesColorer(groupColor);
@@ -989,8 +993,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		for (int i = 0; i < ownerModule.getNumberOfEmployees(); i++) {
 			Object e = ownerModule.getEmployeeVector().elementAt(i);
 			if (e instanceof DataWindowAssistant && !(e instanceof DataWindowAssistantI))
-					temp.addLine("newAssistant ", ((MesquiteModule) e));
-			
+				temp.addLine("newAssistant ", ((MesquiteModule) e));
+
 		}
 		if (matrixInfoPanelEverShown) {
 			if (matrixInfoPanel != null) {
@@ -1005,7 +1009,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		return temp;
 	}
 
-NameReference oldColourNameRef = NameReference.getNameReference("color");
+	NameReference oldColourNameRef = NameReference.getNameReference("color");
 	private void setColor(int ic, int it, int c) {
 		if (data == null)
 			return;
@@ -1443,9 +1447,9 @@ NameReference oldColourNameRef = NameReference.getNameReference("color");
 		return null;
 	}
 
-	public void switchToMatrix(int imNext) {
+	public Commandable switchToMatrix(int imNext) {
 		// ask coordinator to show that window
-		
+
 		MesquiteModule bdwC = ownerModule.getEmployer();
 		CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
 		CommandRecord record = new CommandRecord(true);
@@ -1461,6 +1465,7 @@ NameReference oldColourNameRef = NameReference.getNameReference("color");
 
 		// close this one
 		closeWindow();
+		return mb;
 	}
 	/* ................................................................................................................. */
 	MesquiteInteger pos = new MesquiteInteger(0);
@@ -1496,8 +1501,7 @@ NameReference oldColourNameRef = NameReference.getNameReference("color");
 				imNext = im+1;
 			if (imNext == im)
 				return null;
-			switchToMatrix(imNext);
-			return null;
+			return switchToMatrix(imNext);
 		}
 		else if (checker.compare(this.getClass(), "Goes to the previous matrix", null, commandName, "previousMatrix")) {
 			// figure out what is previous matrix
@@ -1511,7 +1515,19 @@ NameReference oldColourNameRef = NameReference.getNameReference("color");
 
 			if (imPrev == im)
 				return null;
-			switchToMatrix(imPrev);
+			return switchToMatrix(imPrev);
+		}
+		else if (checker.compare(this.getClass(), "Goes to the matrix by reference", "[reference]", commandName, "showMatrix")) { 
+
+			MesquiteProject proj = data.getProject();
+			CharacterData d = proj.getCharacterMatrixByReference(null, data.getTaxa(), null, ParseUtil.getFirstToken(arguments, pos));
+			if (d!= null){
+				int imCurrent = proj.getMatrixNumber(data);
+				int imOther = proj.getMatrixNumber(d);
+				if (imCurrent == imOther)
+					return null;
+				return switchToMatrix(imOther);
+			}
 			return null;
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether the info panel is on", null, commandName, "toggleInfoPanel")) {
@@ -2302,7 +2318,7 @@ NameReference oldColourNameRef = NameReference.getNameReference("color");
 		}
 		else if (checker.compare(this.getClass(), "Hires new data editor assistant module", "[name of module]", commandName, "newAssistant")) {
 			//if can't find it, may be for a package not here; just absorb the instructions
-		/*	if (StringUtil.notEmpty(arguments) && MesquiteTrunk.mesquiteModulesInfoVector.findModule(DataWindowAssistant.class, arguments)== null)
+			/*	if (StringUtil.notEmpty(arguments) && MesquiteTrunk.mesquiteModulesInfoVector.findModule(DataWindowAssistant.class, arguments)== null)
 				return new MesquiteCommandAbsorber(); */
 			DataWindowAssistant dwa = (DataWindowAssistant) ownerModule.hireNamedEmployee(DataWindowAssistant.class, arguments);
 			if (dwa != null)
@@ -4796,7 +4812,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				if (obj instanceof DataWindowAssistant) {
 					DataWindowAssistant assistant = (DataWindowAssistant) obj;
 					if (assistant.rowTouched(isArrowEquivalent, row, getRowNamesPanel(), x, y,modifiers))
-							return;  // touch consumed!
+						return;  // touch consumed!
 				}
 			}
 			super.rowTouched(isArrowEquivalent, row, editorPanel, x, y, modifiers);
@@ -5091,7 +5107,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		window.getOwnerModule().unpauseAllPausables(v);
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 		data.notifyInLinked(new Notification(MesquiteListener.PARTS_MOVED));
-		
+
 		setNumRows(data.getNumTaxa());
 		setNumColumns(data.getNumChars());
 		setFirstColumnVisible(first);

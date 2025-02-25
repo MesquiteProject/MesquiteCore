@@ -231,7 +231,6 @@ public class BasicDataWindowCoord extends FileInit {
 			CharacterData data = findData(arguments, checker.getFile());
 			if (data == null)
 				return null;
-
 			//if no data window module active, hire one
 			DataWindowMaker mb = (DataWindowMaker)hireEmployee(DataWindowMaker.class, null);
 			if (mb!=null) {
