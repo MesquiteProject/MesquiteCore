@@ -117,9 +117,15 @@ public class TreeUtil {
 		return trees;
 
 	}
-	/*.................................................................................................................*/
+		/*.................................................................................................................*/
 	//reading arguments can include dialect hints, e.g. @newickDialect.MrBayes, @newickDialect.ASTRAL, @newickDialect.DELINEATE, etc.
 	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String arguments, String treeNameBase) {
+		return readNewickTreeFile(file, line, taxa, permitTaxaBlockEnlarge, false, namer,arguments, treeNameBase);
+	}
+
+	/*.................................................................................................................*/
+	//reading arguments can include dialect hints, e.g. @newickDialect.MrBayes, @newickDialect.ASTRAL, @newickDialect.DELINEATE, etc.
+	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, boolean enableT0Names, TaxonNamer namer, String arguments, String treeNameBase) {
 		TreeVector trees = null;
 
 		Parser parser = new Parser(arguments);
@@ -165,9 +171,17 @@ public class TreeUtil {
 			}
 			MesquiteTree t = new MesquiteTree(taxa);
 			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
+			if (enableT0Names)
+				t.setPermitT0Names(true);
 			if (StringUtil.notEmpty(dialect))
 				t.setDialect(dialect);
-			int oldLoc = stringLoc.getValue();
+			long oldLoc = stringLoc.getValue();
+			/*
+			 Parser debugParser = new Parser(line);
+			debugParser.setPosition(oldLoc);
+			String c = debugParser.getNextToken();
+			stringLoc.setValue(oldLoc);
+*/
 			t.readTree(line,stringLoc, namer, StringUtil.defaultWhitespace + "\n\r", "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
 			if (oldLoc < stringLoc.getValue()){
 				t.setName(treeNameBase + (iTree+1));

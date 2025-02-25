@@ -137,8 +137,11 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 							num = ".#" + (itr-lastNumTrees + 1);
 						Tree t = trees.getTree(itr);
 						count++;
-						if (t instanceof MesquiteTree)
-							((MesquiteTree)trees.getTree(itr)).setName(data.getName() + num + ".tree");
+						if (t instanceof MesquiteTree){
+							MesquiteTree tM = (MesquiteTree)t;
+							tM.setName(data.getName() + num + ".tree");
+							tM.attach(new MesquiteString("fromMatrix", data.getName()));
+						}
 					}
 				}
 			}

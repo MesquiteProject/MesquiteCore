@@ -3138,7 +3138,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 
 	boolean echo = false;
-	private void echo(String c, int place){
+	public void echo(String c, int place){
 		if (!echo)
 			return;
 		if (c == null)
@@ -3199,11 +3199,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	static final int FAILED = 2;
 	static final int NOTHINGTHERE = 3;
 	private int readClade(String TreeDescription, int node, MesquiteInteger stringLoc, TaxonNamer namer,  String whitespaceString, String punctuationString) {
-		if (StringUtil.blank(TreeDescription))
+		if (StringUtil.blank(TreeDescription)){
+			echo("x\n", 100);
 			return NOTHINGTHERE;
+		}
 		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
-		if (StringUtil.blank(c))
+		if (StringUtil.blank(c)){
+			echo("x\n", 100);
 			return NOTHINGTHERE;
+		}
 		// ************************* Newick comment -- use Newick tokenizing rules ***************
 		//comments before nodes aren't accepted
 		while ("<".equals(c)) {
@@ -3214,14 +3218,16 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			}
 		}
 		// ************************* end Newick  tokenizing rules ***************
-		echo(c, 0);
 		if ("(".equals(c)){  //internal node
+			echo(c, 0);
 			int sprouted = sproutDaughter(node, false);
 			int result = readClade(TreeDescription, sprouted,stringLoc, namer, whitespaceString, punctuationString);
-			if (result == FAILED || result == NOTHINGTHERE)//������������������������
+			if (result == FAILED || result == NOTHINGTHERE){//������������������������
+				echo("x\n", 100);
 				return FAILED;
+			}
 			c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma
-			if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c) || "%".equals(c) || "#".equals(c))){ // name of internal node!!!!
+			if (!((",".equals(c))||(")".equals(c)) || ":".equals(c) || "<".equals(c) || "%".equals(c) || "#".equals(c))){ // name of internal node!!!!
 				echo(c, 1);
 				c = readNamedInternal(TreeDescription, c, sprouted, stringLoc);
 			}
@@ -3231,6 +3237,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!expectedPunctuation(c)) {
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 1");
+						echo("x\n", 100);
 						return FAILED;
 					}
 				}
@@ -3239,6 +3246,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!expectedPunctuation(c)) {
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 2");
+						echo("x\n", 100);
 						return FAILED;
 					}
 				}
@@ -3249,6 +3257,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 3");
+						echo("x\n", 100);
 						return FAILED;
 					}
 				}
@@ -3258,11 +3267,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				if (result == CONTINUE)
 					sprouted = sproutDaughter(node, false);
 				result = readClade(TreeDescription, sprouted,stringLoc, namer, whitespaceString, punctuationString);
-				if (result == FAILED || result == NOTHINGTHERE) //������������������������
+				if (result == FAILED || result == NOTHINGTHERE){ //������������������������
+					echo("x\n", 100);
 					return FAILED;
+				}
 				c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString); //skip parens or next comma
-				echo(c, 3);
 				if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c)|| "%".equals(c) || "#".equals(c))){ // name of internal node!!!!
+					echo(c, 3);
 					c = readNamedInternal(TreeDescription, c, sprouted, stringLoc);
 				}
 				while (":".equals(c) || "<".equals(c)|| "%".equals(c) || "#".equals(c)) {
@@ -3271,6 +3282,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!expectedPunctuation(c)) {
 							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 4");
+							echo("x\n", 100);
 							return FAILED;
 						}
 					}
@@ -3279,6 +3291,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!expectedPunctuation(c)) {
 							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 5");
+							echo("x\n", 100);
 							return FAILED;
 						}
 					}
@@ -3289,10 +3302,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 6");
+							echo("x\n", 100);
 							return FAILED;
 						}
 					}
 				}
+				echo(c, 8);
 			}
 			return CONTINUE;
 		}
@@ -3342,6 +3357,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				if (taxonNumber>= nodeOfTaxon.length){
 					MesquiteMessage.warnProgrammer("taxon number too high found (" + c + "); number: "+taxonNumber);
 					taxonNumber = namer.whichTaxonNumber(taxa, c);
+					echo("s\n", 100);
 					return FAILED;
 				}
 
@@ -3414,9 +3430,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					StringBuffer sb = new StringBuffer(TreeDescription);
 					sb.insert(stringLoc.getValue()-1, "ERROR>");
 					MesquiteFile.writeToLog(sb.toString());
+					echo("x\n", 100);
 					return FAILED;
 				}
 				else {
+					echo(c, stringLoc.getValue());
 					if (permitTaxaBlockEnlargement){
 						inProgressAddingTaxa = true;
 						boolean success = taxa.addTaxa(taxa.getNumTaxa(), 1, true);
@@ -3445,6 +3463,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " (search for \"ERROR>\" in output in log file) " + path);
 						lastUnrecognizedName = c;
 					}
+					echo("x\n", 100);
 					return FAILED;
 				}
 			}
@@ -3569,10 +3588,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				if (startingPos !=null)
 					startingPos.setValue(stringLoc.getValue());
 
+				echo("\n", 100);
 				return false;
 			}
-			else if (result == NOTHINGTHERE)
+			else if (result == NOTHINGTHERE){
+				echo("\n", 100);
 				return false;
+			}
 
 		}
 		catch (Throwable e){
@@ -3581,6 +3603,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, "Problem reading tree");
 			if (startingPos !=null)
 				startingPos.setValue(stringLoc.getValue());
+			echo("\n", 100);
 			return false;
 		}
 
@@ -3598,6 +3621,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 7");
 						if (startingPos !=null)
 							startingPos.setValue(stringLoc.getValue());
+						echo("\n", 100);
 						return false;
 					}
 				}
@@ -3609,6 +3633,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 8");
 						if (startingPos !=null)
 							startingPos.setValue(stringLoc.getValue());
+						echo("\n", 100);
 						return false;
 					}
 				}
@@ -3657,11 +3682,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			MesquiteMessage.warnProgrammer("tree failed integrity check");
 			if (startingPos !=null)
 				startingPos.setValue(stringLoc.getValue());
+			echo("\n", 100);
 			return false;
 		}
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
 		if (startingPos !=null)
 			startingPos.setValue(stringLoc.getValue());
+		echo("\n", 100);
 		return true;
 	}
 	/*-----------------------------------------*/

@@ -92,7 +92,7 @@ public class NewickDialect implements Listable {
 			}
 			else if ("last".equalsIgnoreCase(r[2])){
 				int last = treeDescription.lastIndexOf(r[0]);
-				treeDescription = treeDescription.substring(0,last)+r[1]+treeDescription.substring(last);
+				treeDescription = treeDescription.substring(0,last-1)+r[1]+treeDescription.substring(last);
 			}
 		}
 		return treeDescription;

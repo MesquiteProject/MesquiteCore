@@ -37,7 +37,7 @@ import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
 public class ShowMatrixLinkedToTreeWindow extends TreeWindowAssistantN  {
-	
+
 	/*.................................................................................................................*/
 	DataWindowMaker matrixEditorTask = null;
 	/*.................................................................................................................*/
@@ -45,23 +45,32 @@ public class ShowMatrixLinkedToTreeWindow extends TreeWindowAssistantN  {
 		return true;
 	}
 
-	
+
 	public void employeeQuit(MesquiteModule m){
-	//	if (m==treeDrawCoordTask)
-			iQuit();
+		//	if (m==treeDrawCoordTask)
+		iQuit();
 	}
 
 	public boolean isSubstantive(){
 		return false;
 	}
-	
+
 	String treeName = null;
 	boolean warned = false;
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 		treeName = tree.getName();
+		CharacterData d = null;
 		MesquiteProject project = getProject();
-		CharacterData d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, treeName);
+		if (tree instanceof Attachable){
+			Object obj = ((Attachable)tree).getAttachment("fromMatrix", MesquiteString.class);
+			if (obj != null)
+				d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, ((MesquiteString)obj).getValue());
+			Debugg.println("@ from attachment " + d);
+		}
+
+		if (d == null)
+			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, treeName);
 		if (d == null)
 			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, StringUtil.getAllButLastItem(treeName, "."));
 		if (d == null)
@@ -73,7 +82,7 @@ public class ShowMatrixLinkedToTreeWindow extends TreeWindowAssistantN  {
 				MesquiteWindow matrixWindow = matrixEditorTask.getModuleWindow();
 				matrixWindow.setPopAsTile(true);
 				matrixWindow.popOut(true);
-		}
+			}
 			else {
 				matrixEditorTask = (DataWindowMaker)matrixEditorTask.doCommand("showMatrix", StringUtil.tokenize(project.getCharMatrixReferenceExternal(d)), CommandChecker.defaultChecker);
 			}
@@ -81,21 +90,21 @@ public class ShowMatrixLinkedToTreeWindow extends TreeWindowAssistantN  {
 		else if (!warned){
 			discreetAlert("No matrices were found linked to the current tree");
 			warned = true;
-	}
+		}
 
 	}
-	
+
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
-		
+
 		Snapshot sn = new Snapshot();
-		
+
 		return sn;
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns module coordinating tree drawing", null, commandName, "getTreeDrawCoordinator")) {
-		//	return treeDrawCoordTask;
+			//	return treeDrawCoordTask;
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

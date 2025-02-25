@@ -1822,6 +1822,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					//if (file.mrBayesReadingMode)
 					//	thisTree.setReadingMrBayesConTree(true);
 					thisTree.readTree(treeDescription);
+					thisTree.echo("—done\n", 99);
 					//thisTree.setReadingMrBayesConTree(false);
 					//thisTree.warnRetIfNeeded();
 					thisTree.setName(treeName);
