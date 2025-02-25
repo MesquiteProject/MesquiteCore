@@ -103,7 +103,7 @@ public void processUserClickingOnTextCommandLink(String command) {
 	public String getLogText() {
 		return searchTask.getLogText();
 	}
-
+/*
 	// optional, in case employer wants to force use of a matrix
  public MatrixSourceCoord getMatrixSource() {
 	 return searchTask.getMatrixSource();
@@ -239,7 +239,6 @@ public void processUserClickingOnTextCommandLink(String command) {
 	public void initialize(Taxa taxa){
 		searchTask.initialize(taxa);
 		searchTask.setTreeInferer(this);
-
 	}
 	/*.................................................................................................................*/
 	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){

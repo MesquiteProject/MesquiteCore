@@ -45,11 +45,11 @@ public class TreezBlocksFromMatrices extends DatasetsListUtility {
 	public String getExplanation() {
 		return "Infers trees and puts them into a tree block for each of the matrices." ;
 	}
-	TreeSearcher inferenceTask;
+	TreeSearcherFromMatrix inferenceTask;
 	MatrixSourceCoord matrixSourceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		inferenceTask = (TreeSearcher)hireCompatibleEmployee(TreeSearcher.class, "acceptImposedMatrixSource", "Tree inference method");
+		inferenceTask = (TreeSearcherFromMatrix)hireCompatibleEmployee(TreeSearcherFromMatrix.class, "acceptImposedMatrixSource", "Tree inference method");
 		matrixSourceTask = new MyListOfMatrices(this);
 		if (inferenceTask == null || matrixSourceTask == null)
 			return false;
@@ -137,8 +137,11 @@ public class TreezBlocksFromMatrices extends DatasetsListUtility {
 								num = ".#" + (itr+1);
 							Tree t = trees.getTree(itr);
 							count++;
-							if (t instanceof MesquiteTree)
-								((MesquiteTree)trees.getTree(itr)).setName(data.getName() + num);
+							if (t instanceof MesquiteTree){
+								MesquiteTree tM = (MesquiteTree)t;
+								tM.setName(data.getName() + num + ".tree");
+								tM.attach(new MesquiteString("fromMatrix", data.getName()));
+							}
 						}
 						trees.setName("Trees (" + inferenceTask.getName() + ") from matrix " + data.getName());
 						trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));

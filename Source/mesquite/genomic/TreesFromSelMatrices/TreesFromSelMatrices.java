@@ -45,11 +45,11 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 	public String getExplanation() {
 		return "Infers trees for each of the matrices, and compiles them into a single tree block." ;
 	}
-	TreeSearcher inferenceTask;
+	TreeSearcherFromMatrix inferenceTask;
 	MatrixSourceCoord matrixSourceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		inferenceTask = (TreeSearcher)hireCompatibleEmployee(TreeSearcher.class, "acceptImposedMatrixSource", "Tree inference method");
+		inferenceTask = (TreeSearcherFromMatrix)hireCompatibleEmployee(TreeSearcherFromMatrix.class, "acceptImposedMatrixSource", "Tree inference method");
 		matrixSourceTask = new MyListOfMatrices(this);
 		if (inferenceTask == null || matrixSourceTask == null)
 			return false;

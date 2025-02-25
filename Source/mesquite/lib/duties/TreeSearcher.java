@@ -67,17 +67,7 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract boolean initialize(Taxa taxa);
 
-   	//outsideMatrix
-   	// optional, in case employer wants to force use of a matrix
-   	MatrixSourceCoord matrixSourceImposed = null;
-	 public MatrixSourceCoord getMatrixSource() {
-		 return matrixSourceImposed;
-	 }
-	 public void setMatrixSource(MatrixSourceCoord msource) {
-		 this.matrixSourceImposed = msource;
-	 }
-		public abstract Class getCharacterClass();
-/*-------*/ 
+   	
 	 
 	 public TreeInferer getTreeInferer() {
 		 return treeInferer;

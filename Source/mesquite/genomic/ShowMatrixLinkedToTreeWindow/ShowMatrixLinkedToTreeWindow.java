@@ -66,7 +66,6 @@ public class ShowMatrixLinkedToTreeWindow extends TreeWindowAssistantN  {
 			Object obj = ((Attachable)tree).getAttachment("fromMatrix", MesquiteString.class);
 			if (obj != null)
 				d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, ((MesquiteString)obj).getValue());
-			Debugg.println("@ from attachment " + d);
 		}
 
 		if (d == null)
