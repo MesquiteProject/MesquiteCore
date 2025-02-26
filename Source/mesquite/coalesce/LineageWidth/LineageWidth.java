@@ -39,7 +39,7 @@ public class LineageWidth extends TreeDisplayAssistantI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
-		addMenuItem("Set all lineage width scaling factors...", makeCommand("setAllWidths",  this));
+	//	addMenuItem("Set all lineage width scaling factors...", makeCommand("setAllWidths",  this));
 		return true;
 	} 
 	/*.................................................................................................................*/
@@ -56,7 +56,7 @@ public class LineageWidth extends TreeDisplayAssistantI {
 		return newPj;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the scaling factor of lineage widths for all branches", "[width scale]", commandName, "setAllWidths")) {
 			pos.setValue(0);
