@@ -28,13 +28,8 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		assigner= (CodonPositionAssigner)hireNamedEmployee(CodonPositionAssigner.class, arguments);
-		if (assigner !=null) {
-			assigner = (CodonPositionAssigner)hireNamedEmployee(CodonPositionAssigner.class, arguments);
-			if (assigner == null)
-				return sorry(getName() + " couldn't start because the requested assigner wasn't successfully hired.");
-		}
-		else {
-			assigner = (CodonPositionAssigner)hireEmployee(MultipleSequenceAligner.class, "Codon Position Assigner");
+		if (assigner ==null) {
+			assigner = (CodonPositionAssigner)hireEmployee(CodonPositionAssigner.class, "Codon Position Assigner");
 			if (assigner == null)
 				return sorry(getName() + " couldn't start because no assigner module obtained.");
 		}

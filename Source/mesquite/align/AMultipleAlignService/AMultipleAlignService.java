@@ -17,12 +17,7 @@ public class AMultipleAlignService extends MolecularDataAlterer  implements Alte
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		aligner= (MultipleSequenceAligner)hireNamedEmployee(MultipleSequenceAligner.class, arguments);
-		if (aligner !=null) {
-			aligner = (MultipleSequenceAligner)hireNamedEmployee(MultipleSequenceAligner.class, arguments);
-			if (aligner == null)
-				return sorry(getName() + " couldn't start because the requested aligner wasn't successfully hired.");
-		}
-		else {
+		if (aligner ==null) {
 			aligner = (MultipleSequenceAligner)hireEmployee(MultipleSequenceAligner.class, "Aligner");
 			if (aligner == null)
 				return sorry(getName() + " couldn't start because no aligner module obtained.");

@@ -29,6 +29,7 @@ import mesquite.molec.lib.CodonPositionAssigner;
 public class MinimizeStopCodons extends CodonPositionAssigner {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		
 		return true;
 	}
 
