@@ -301,7 +301,8 @@ public class NumberArray {
 		}
 		if (valueClass==INT) {
 			doubleValues = new double[length];
-			for (int i=0; i<length; i++)
+			if (intValues != null)
+				for (int i=0; i<length; i++)
 				doubleValues[i]=MesquiteDouble.toDouble(intValues[i]);
 			doubleValues[index] = v;
 			intValues=null;
@@ -309,7 +310,8 @@ public class NumberArray {
 		}
 		else if (valueClass == LONG) {
 			doubleValues = new double[length];
-			for (int i=0; i<length; i++)
+			if (longValues != null)
+		for (int i=0; i<length; i++)
 				doubleValues[i]=MesquiteDouble.toDouble(longValues[i]);
 			doubleValues[index] = v;
 			longValues=null;
@@ -451,14 +453,20 @@ public class NumberArray {
 	/** DOCUMENT */
 	public void zeroArray() {
 		if (valueClass==INT) {
+			if (intValues == null)
+				return;
 			for (int i=0; i<length; i++)
 				intValues[i]=0;
 		}
 		else if (valueClass == LONG) {
+			if (longValues == null)
+				return;
 			for (int i=0; i<length; i++)
 				longValues[i]=0L;
 		}
 		else if (valueClass == DOUBLE) {
+			if (doubleValues == null)
+				return;
 			for (int i=0; i<length; i++)
 				doubleValues[i]=0.0;
 		}
