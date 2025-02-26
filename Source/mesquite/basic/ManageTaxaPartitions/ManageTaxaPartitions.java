@@ -223,6 +223,35 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		else if (checker.compare(this.getClass(), "Shows list of the taxon groups", null, commandName, "showTaxonGroups")) {
 			return showTaxonGroupList(null, listOfTaxonGroupsName);
 		}
+		else if (checker.compare(this.getClass(), "Exports current groups and group labels/colors to a NEXUS file for later import.", "[taxa block]", commandName, "exportPartitionAndLabels")) {
+			Taxa taxa = proj.getTaxa(checker.getFile(), parser.getFirstToken(arguments));
+			TaxaPartition partition = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
+			if (partition == null){
+				discreetAlert("Sorry, there isn't a current partition to export");
+				return null;
+			}
+			TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+			
+			String s = "#NEXUS\n";
+			
+			TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
+			s += taxaManager.getTaxaBlock(taxa, null, null);
+			s += "\n";
+			if (groups != null){
+					s+= "BEGIN LABELS;\n\n";
+			for (int ig = 0; ig<groups.size(); ig++){
+				TaxaGroup group = (TaxaGroup)groups.elementAt(ig);
+				s += getGroupLabelNexusCommand(group) + "\n";
+			}
+			s += "END;";
+			}
+			s += "\nBEGIN SETS;\n";
+			s += nexusStringForSpecsSet(partition, taxa, checker.getFile(), true);
+			s += "\nEND;";
+			if (!StringUtil.blank(s)){
+				MesquiteFile.putFileContentsQuery("Exported NEXUS file of current partition and group labels/colors, for later import into other files", s, true);
+			}
+		}
 		else if (checker.compare(this.getClass(), "Exports group labels/colors to a NEXUS file for later import.", "[]", commandName, "exportLabels")) {
 			TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 			if (groups == null)
@@ -276,11 +305,10 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		else if (checker.compare(this.getClass(), "Imports groups and group labels from a NEXUS file for a taxon block.", "[taxa block]", commandName, "importPartitions")) {
 			MesquiteProject proj = getProject();
 			TaxaGroupVector groupsVector = (TaxaGroupVector)proj.getFileElement(TaxaGroupVector.class, 0);
-			Listable[] currentGroups = groupsVector.getElementArray();
-			ListableVector newlyAddedGroups = new ListableVector();
+			Listable[] previousGroups = groupsVector.getElementArray();
 			Taxa taxaToReceive = proj.getTaxa(checker.getFile(), parser.getFirstToken(arguments));
 			if (taxaToReceive != null){
-				Listable[] oldTaxas = proj.getTaxas().getElementArray();
+				Listable[] previousTaxas = proj.getTaxas().getElementArray();
 				MesquiteString directoryName = new MesquiteString();
 				MesquiteString fileName = new MesquiteString();
 				MesquiteFile.openFileDialog("Please select a NEXUS file that has the same taxa block partitioned into groups.", directoryName, fileName);
@@ -291,20 +319,18 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
 					mb.readFile(getProject(), fileToRead, " @noWarnDupTaxaBlock @noWarnMissingReferent @noWarnUnrecognized @justTheseBlocks.TAXA.SETS.LABELS");
 					Listable[] currentTaxas = proj.getTaxas().getElementArray();
-					if (currentTaxas.length == oldTaxas.length)
+					if (currentTaxas.length == previousTaxas.length)
 						return null;
-					TaxaPartition currentPartition = (TaxaPartition)taxaToReceive.getOrMakeCurrentSpecsSet(TaxaPartition.class);
-					/*if (currentPartition==null){
-						currentPartition= new TaxaPartition("Partition", taxaToReceive.getNumTaxa(), null, taxaToReceive);
-						currentPartition.addToFile(taxaToReceive.getFile(), getProject(), findElementManager(TaxaPartition.class));
-						taxaToReceive.setCurrentSpecsSet(currentPartition, TaxaPartition.class);
-					}*/
-
+					
 					//***************
+					transferCurrentPartitionAndGroups( proj, previousTaxas, currentTaxas, taxaToReceive, previousGroups);
+/*
+					ListableVector newlyAddedGroups = new ListableVector();
+					TaxaPartition currentPartition = (TaxaPartition)taxaToReceive.getOrMakeCurrentSpecsSet(TaxaPartition.class);
 					//cycle through looking for taxon names that match and pulling across info
 					for (int iTax = 0; iTax<currentTaxas.length; iTax++){
 						Taxa sourceTaxa = (Taxa)currentTaxas[iTax];
-						if (sourceTaxa != taxaToReceive && ObjectArray.indexOf(oldTaxas, sourceTaxa)<0){  //look only at the newly read taxa blocks
+						if (sourceTaxa != taxaToReceive && ObjectArray.indexOf(previousTaxas, sourceTaxa)<0){  //look only at the newly read taxa blocks
 							TaxaPartition sourcePartition = (TaxaPartition)sourceTaxa.getCurrentSpecsSet(TaxaPartition.class);
 							if (sourcePartition != null){
 								for (int iSourceTaxon = 0; iSourceTaxon<sourceTaxa.getNumTaxa(); iSourceTaxon++){ //in each look for taxa with the same name as one in the recipient block
@@ -316,9 +342,9 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 											//First, deal with copying over the group information
 											TaxaGroup recGroupOfSameName = null;
 											int groupFoundInNew = newlyAddedGroups.indexOfByName(sourceGroup.getName());
-											int groupFoundInOld = ListableVector.indexOfByName(currentGroups, sourceGroup.getName());
+											int groupFoundInOld = ListableVector.indexOfByName(previousGroups, sourceGroup.getName());
 											if (groupFoundInOld>=0) //group of same name already exists in this file; therefore just copy over its colours etc.
-												recGroupOfSameName = (TaxaGroup)currentGroups[groupFoundInOld];
+												recGroupOfSameName = (TaxaGroup)previousGroups[groupFoundInOld];
 											else if (groupFoundInNew>=0) //group of same name already exists in this file; therefore just copy over its colours etc.
 												recGroupOfSameName = (TaxaGroup)newlyAddedGroups.elementAt(groupFoundInNew);
 											else {
@@ -340,6 +366,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 						}
 					}
 					//***************
+					///*/
 					proj.getCoordinatorModule().closeFile(fileToRead, true);
 
 				}
@@ -350,6 +377,50 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+	public void transferCurrentPartitionAndGroups(MesquiteProject proj, Listable[] previousTaxas, Listable[] currentTaxas, Taxa taxaToReceive, Listable[] previousGroups){
+		ListableVector newlyAddedGroups = new ListableVector();
+		TaxaPartition currentPartition = (TaxaPartition)taxaToReceive.getOrMakeCurrentSpecsSet(TaxaPartition.class);
+		//cycle through looking for taxon names that match and pulling across info
+		for (int iTax = 0; iTax<currentTaxas.length; iTax++){
+			Taxa sourceTaxa = (Taxa)currentTaxas[iTax];
+			if (sourceTaxa != taxaToReceive && ObjectArray.indexOf(previousTaxas, sourceTaxa)<0){  //look only at the newly read taxa blocks
+				TaxaPartition sourcePartition = (TaxaPartition)sourceTaxa.getCurrentSpecsSet(TaxaPartition.class);
+				if (sourcePartition != null){
+					for (int iSourceTaxon = 0; iSourceTaxon<sourceTaxa.getNumTaxa(); iSourceTaxon++){ //in each look for taxa with the same name as one in the recipient block
+						String sourceName = sourceTaxa.getTaxonName(iSourceTaxon);
+						int recipientTaxon = taxaToReceive.whichTaxonNumber(sourceName);
+						if (recipientTaxon>=0){ //recipient taxon matches source taxon!
+							TaxaGroup sourceGroup = (TaxaGroup)sourcePartition.getProperty(iSourceTaxon);
+							if (sourceGroup != null){  //the source has a group for this taxon
+								//First, deal with copying over the group information
+								TaxaGroup recGroupOfSameName = null;
+								int groupFoundInNew = newlyAddedGroups.indexOfByName(sourceGroup.getName());
+								int groupFoundInOld = ListableVector.indexOfByName(previousGroups, sourceGroup.getName());
+								if (groupFoundInOld>=0) //group of same name already exists in this file; therefore just copy over its colours etc.
+									recGroupOfSameName = (TaxaGroup)previousGroups[groupFoundInOld];
+								else if (groupFoundInNew>=0) //group of same name already exists in this file; therefore just copy over its colours etc.
+									recGroupOfSameName = (TaxaGroup)newlyAddedGroups.elementAt(groupFoundInNew);
+								else {
+									recGroupOfSameName = new TaxaGroup();
+									newlyAddedGroups.addElement(recGroupOfSameName, false);
+									recGroupOfSameName.addToFile(taxaToReceive.getFile(), proj, null);
+								}
+								//ZQ how to bring over symbol?
+								recGroupOfSameName.equalizeAs(sourceGroup);
+
+								TaxaGroup receivingGroup = (TaxaGroup)currentPartition.getProperty(recipientTaxon);
+								if (receivingGroup != recGroupOfSameName)
+									currentPartition.setProperty(recGroupOfSameName, recipientTaxon);
+
+							}
+						}
+					}
+				}
+			}
+		}
+
+}
 
 	private TaxaGroup findGroup(String token){ 
 		if (token ==null)
@@ -420,7 +491,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	/*.................................................................................................................*/
 	String nexusStringForSpecsSet(TaxaPartition taxaPartition, Taxa taxa, MesquiteFile file, boolean isCurrent){
 		String s= "";
-		if (taxaPartition !=null && (taxaPartition.getFile()==file || (taxaPartition.getFile()==null && taxa.getFile()==file))) {
+		if (taxaPartition !=null && (file == null || taxaPartition.getFile()==file || (taxaPartition.getFile()==null && taxa.getFile()==file))) {
 			String sT = " ";
 			TaxaGroup[] parts = taxaPartition.getGroups();
 			boolean firstTime =true;
@@ -441,7 +512,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				if (isCurrent)
 					s += "* ";
 				s+= StringUtil.tokenize(taxaPartition.getName()) + " ";
-				if (file.getProject().getNumberTaxas()>1)
+				if (file != null && file.getProject().getNumberTaxas()>1)
 					s+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
 				s+= " = "+  sT + ";" + StringUtil.lineEnding();
 			}

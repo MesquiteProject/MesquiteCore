@@ -19,6 +19,8 @@ import java.util.*;
 import mesquite.assoc.lib.*;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.*;
 import java.awt.image.*;
 
@@ -671,7 +673,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 }
 
 /* ======================================================================== */
-class BasicTreeDisplay extends TreeDisplay  {
+class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 	boolean showPixels = false;//for debugging
 	BasicTreeDrawCoordinator ownerDrawModule;
 	public BasicTreeDisplay (BasicTreeDrawCoordinator ownerModule, Taxa taxa) {
@@ -679,6 +681,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 		ownerDrawModule = ownerModule;
 		suppress = true;
 		setBackground(Color.white);
+		addKeyListener(this);
 	}
 	public void setTree(Tree tree) {
 		if (ownerModule.isDoomed())
@@ -688,7 +691,6 @@ class BasicTreeDisplay extends TreeDisplay  {
 		super.setTree(tree);//here ask for nodelocs to be calculated
 		if (wasNull)
 			repaint();
-
 	}
 	/* */
 	public boolean autoFontSubmenu () {
@@ -1091,6 +1093,23 @@ class BasicTreeDisplay extends TreeDisplay  {
 	/*_________________________________________________*/
 	private boolean responseOK(){
 		return (!getDrawingInProcess() && (tree!=null) && (!tree.isLocked()) && ownerModule!=null &&  (ownerModule.getEmployer() instanceof TreeDisplayActive));
+	}
+	
+	/*_________________________________________________*/
+	public void keyPressed(KeyEvent e) {
+		MesquiteWindow w = ownerModule.containerOfModule();
+		if (w != null && w.getPalette()!= null){
+			w.getPalette().keyPressed(e);
+		}
+	} 
+	public void keyTyped(KeyEvent e) {
+		
+	}
+	public void keyReleased(KeyEvent e) {
+		MesquiteWindow w = ownerModule.containerOfModule();
+		if (w != null && w.getPalette()!= null){
+			w.getPalette().keyReleased(e);
+		}
 	}
 	/*_________________________________________________*/
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {

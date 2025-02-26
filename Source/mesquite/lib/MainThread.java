@@ -96,10 +96,11 @@ public class MainThread extends MesquiteThread {
 	}
 	public String getCurrentCommandExplanation(){
 		if (currentlyExecuting !=null)
-			return currentlyExecuting.getExplanation();
+			return currentlyExecuting.getListName();
 		return null;
 	}
-	/** DOCUMENT */
+	
+	/** This is the main thread on which commands are queued (pendingCommands) and executed. */
 	public void run() {
 		try {
 			while (!MesquiteTrunk.mesquiteTrunk.isDoomed() && !isInterrupted()) { 
@@ -122,7 +123,6 @@ public class MainThread extends MesquiteThread {
 								MesquiteThread.setLoggerCurrentThread(c.getSupplementalLogger());
 								loggerSet = true;
 							}
-								
 							pc.go();
 							if (loggerSet){
 								MesquiteThread.setLoggerCurrentThread(null);

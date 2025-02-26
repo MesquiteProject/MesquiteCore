@@ -397,13 +397,14 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 		addMenuSeparator();
 		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
-		addMenuItem("Import Groups from File...", new MesquiteCommand("importPartitions",  "#" + taxa.getAssignedID(), manageTaxPart));
+		addMenuItem("Import Partition (Groups) from File...", new MesquiteCommand("importPartitions",  "#" + taxa.getAssignedID(), manageTaxPart));
+		addMenuItem("Export Current Partition and Group Labels/Colors to File...", new MesquiteCommand("exportPartitionAndLabels",  "#" + taxa.getAssignedID(), manageTaxPart));
 		addMenuItem("Import Group Labels & Colors Only from File...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
-		addMenuItem("Export Group Labels & Colors to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));
+		addMenuItem("Export Group Labels & Colors Only to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));
 		addMenuItem("Assign Colours Randomly to Colourless Groups", makeCommand("assignColorsRandomly", this));
 
 		addMenuSeparator();
-		addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
+		addMenuItem("Store Current Partition...", makeCommand("storeCurrent",  this));
 		addMenuItem("Create and assign groups based on taxon names...", makeCommand("createBasedOnNames",  this));
 		addMenuItem("Create taxa block based on current groups...", makeCommand("createTaxaBlock",  this));
 		addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));

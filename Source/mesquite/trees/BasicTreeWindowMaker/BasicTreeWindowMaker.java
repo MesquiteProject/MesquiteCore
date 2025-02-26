@@ -847,6 +847,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 
 	/* ................................................................................................................. */
 	public boolean mouseMoveInTreeDisplay(int modifiers, int x, int y, TreeDisplay treeDisplay, Graphics g) {
+		Component cF = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+
 		if (x > 2000000 || y > 2000000)
 			return true; // here because of bug in Mac OS X 10.0.4
 		if (!treeDisplay.getTree().isLocked()) {

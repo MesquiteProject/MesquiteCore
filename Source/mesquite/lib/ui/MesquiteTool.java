@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.Explainable;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteCommand;

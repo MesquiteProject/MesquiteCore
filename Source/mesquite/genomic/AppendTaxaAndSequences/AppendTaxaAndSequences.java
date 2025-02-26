@@ -18,6 +18,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 
+import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
@@ -28,6 +29,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ListDialog;
@@ -71,22 +73,26 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 		boolean transferDone = false;
 		MesquiteFile.openFileDialog("Please select a NEXUS file whose taxa and sequences you want to append to this one. Only the first taxa block will be read!", directoryName, fileName);
 		if (!fileName.isBlank()){
+			TaxaGroupVector groupsVector = (TaxaGroupVector)proj.getFileElement(TaxaGroupVector.class, 0);
+			Listable[] previousGroups = groupsVector.getElementArray();
+			Listable[] previousTaxas = proj.getTaxas().getElementArray();
 			MesquiteFile fileToRead = new MesquiteFile(directoryName.getValue(), fileName.getValue());
 			proj.addFile(fileToRead);
 			fileToRead.setProject(proj);
 			//only do this if there's a set of taxa; ask user to choose if there are more than one
 			NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
-			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly @justTheseBlocks.TAXA.CHARACTERS.DATA");
+			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly @justTheseBlocks.TAXA.CHARACTERS.DATA.SETS.LABELS");
 
 			//CharacterState state = new CategoricalState();
 
 			CharactersManager charactersManager = (CharactersManager)proj.getCoordinatorModule().findElementManager(CharacterData.class);
 			Taxa incomingTaxa = proj.getTaxa(fileToRead, 0);
+			Listable[] currentTaxas = new Listable[]{incomingTaxa};
 			int countWarnings = 0;
 
 			if (incomingTaxa != null){ // 
 				for (int incomingTaxonNumber = 0; incomingTaxonNumber<incomingTaxa.getNumTaxa(); incomingTaxonNumber++){
-					
+
 					String incomingTaxonName = incomingTaxa.getTaxonName(incomingTaxonNumber);
 					int receivingTaxonNumber = receivingTaxa.whichTaxonNumber(incomingTaxonName);
 					boolean existingTaxon = true;
@@ -104,51 +110,50 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 						CharacterData incomingMatrix = proj.getCharacterMatrix(fileToRead, iM);
 
 						//if (incomingMatrix instanceof DNAData){
-							String incomingMatrixName = incomingMatrix.getName();
-							CharacterData receivingMatrix = proj.getCharacterMatrixByReference(null,  receivingTaxa, null, incomingMatrixName);
-							if (receivingMatrix == null){
-								receivingMatrix = charactersManager.newCharacterData(receivingTaxa, 0, incomingMatrix.getDataTypeName()); //this is manager of receiving project
-
-								receivingMatrix.setName(incomingMatrixName);
-								receivingMatrix.addToFile(receivingTaxa.getFile(), proj, null);
+						String incomingMatrixName = incomingMatrix.getName();
+						CharacterData receivingMatrix = proj.getCharacterMatrixByReference(null,  receivingTaxa, null, incomingMatrixName);
+						if (receivingMatrix == null || !(receivingMatrix.getDataTypeName().equalsIgnoreCase(incomingMatrix.getDataTypeName()))){  //matrix of same name and kind not found; make a new one (new locus)
+							receivingMatrix = charactersManager.newCharacterData(receivingTaxa, 0, incomingMatrix.getDataTypeName()); //this is manager of receiving project
+							receivingMatrix.setName(incomingMatrixName);
+							receivingMatrix.addToFile(receivingTaxa.getFile(), proj, null);
+						}
+						/*Now time to pull sequence into receivingMatrix 	 */
+						transferDone = true;
+						int incomingSeqLeng = incomingMatrix.lastApplicable(incomingTaxonNumber) + 1;
+						if (incomingSeqLeng>receivingMatrix.getNumChars())
+							receivingMatrix.addCharacters(receivingMatrix.getNumChars(), incomingSeqLeng-receivingMatrix.getNumChars(), false);
+						boolean doTransfer = true; //for now, always overwrite as long as their is sequence coming in
+						if (existingTaxon){
+							if (incomingSeqLeng == 0) //no sequence coming in, so don't transfer
+								doTransfer = false;
+							else if (receivingMatrix.hasDataForTaxon(receivingTaxonNumber, true)) {
+								for (int ic = 0; ic< receivingMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other
+									receivingMatrix.setToInapplicable(ic, receivingTaxonNumber);
+								if (++countWarnings <10)
+									logln("Data in matrix " + receivingMatrix.getName() + " replaced for taxon " + receivingTaxa.getTaxonName(receivingTaxonNumber));
+								else if (countWarnings == 10)
+									logln("Data replaced for other matrices or taxa as well");
 							}
-							if (receivingMatrix.getDataTypeName().equalsIgnoreCase(incomingMatrix.getDataTypeName())){
-								/*Now time to pull sequence into locus matrix 
-								 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix
-								 */
-								transferDone = true;
-								int incomingSeqLeng = incomingMatrix.lastApplicable(incomingTaxonNumber) + 1;
-								if (incomingSeqLeng>receivingMatrix.getNumChars())
-									receivingMatrix.addCharacters(receivingMatrix.getNumChars(), incomingSeqLeng-receivingMatrix.getNumChars(), false);
-								boolean doTransfer = true; //for now, always overwrite
-								if (existingTaxon){
-									if (incomingSeqLeng == 0)
-										doTransfer = false;
-									else if (receivingMatrix.hasDataForTaxon(receivingTaxonNumber, true)) {
-										for (int ic = 0; ic< receivingMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other
-											receivingMatrix.setToInapplicable(ic, receivingTaxonNumber);
-										if (++countWarnings <10)
-											logln("Data in matrix " + receivingMatrix.getName() + " replaced for taxon " + receivingTaxa.getTaxonName(receivingTaxonNumber));
-										else if (countWarnings == 10)
-											logln("Data replaced for other matrices or taxa as well");
-
-									}
-
-								}
-								CharacterState state = null;
-								for (int ic = 0; ic< receivingMatrix.getNumChars() && ic< incomingMatrix.getNumChars(); ic++){
-									state = incomingMatrix.getCharacterState(state, ic, incomingTaxonNumber);
-									receivingMatrix.setState(ic, receivingTaxonNumber, state);
-
-								}
+						}
+						if (doTransfer){
+							CharacterState state = null;
+							for (int ic = 0; ic< receivingMatrix.getNumChars() && ic< incomingMatrix.getNumChars(); ic++){
+								state = incomingMatrix.getCharacterState(state, ic, incomingTaxonNumber);
+								receivingMatrix.setState(ic, receivingTaxonNumber, state);
 							}
+						}
 						//}
 					}
 				}
+				ManageTaxaPartitions partManager = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
+				partManager.transferCurrentPartitionAndGroups( proj, previousTaxas, currentTaxas, receivingTaxa, previousGroups);
 			}
 			if (!transferDone)
 				alert("Nothing was appended, perhaps because no appropriate matrices were found. "
 						+"Only the first taxa block in the incoming file is read, and so if that file had multiple taxa blocks, the appropriate matrices may belong to a subsequent taxa block."); 
+			else {
+				receivingTaxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+				}
 			//***************
 			proj.getCoordinatorModule().closeFile(fileToRead, true);
 

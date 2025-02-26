@@ -154,6 +154,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		setShowAnnotation(true);
 		table.requestFocusInWindow();
 		MesquiteWindow.addKeyListener(this, table);
+		addKeyListenerToAll(table, getPalette(), true);
 		resetTitle();
 	}
 	public void requestFocus(){

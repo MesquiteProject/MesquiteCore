@@ -89,6 +89,8 @@ public class ToolPalette extends MesquitePanel implements Commandable, KeyListen
 	boolean modifiersHadBeenPressed = false;
 
 	public void keyPressed(KeyEvent e){
+		if (currentTool != null)
+			currentTool.keyPressed(e);
 		if (MesquiteEvent.getModifiers(e)!=0 && toolButtons!=null) {
 			modifiersHadBeenPressed = true;
 			for (int i = 0; i<toolButtons.length; i++) {
