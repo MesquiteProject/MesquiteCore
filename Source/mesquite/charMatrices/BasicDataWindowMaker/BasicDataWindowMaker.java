@@ -1518,14 +1518,13 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			return switchToMatrix(imPrev);
 		}
 		else if (checker.compare(this.getClass(), "Goes to the matrix by reference", "[reference]", commandName, "showMatrix")) { 
-
 			MesquiteProject proj = data.getProject();
 			CharacterData d = proj.getCharacterMatrixByReference(null, data.getTaxa(), null, ParseUtil.getFirstToken(arguments, pos));
 			if (d!= null){
 				int imCurrent = proj.getMatrixNumber(data);
 				int imOther = proj.getMatrixNumber(d);
 				if (imCurrent == imOther)
-					return null;
+					return ownerModule;
 				return switchToMatrix(imOther);
 			}
 			return null;

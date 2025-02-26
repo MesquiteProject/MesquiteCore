@@ -67,7 +67,6 @@ public class ShowMatrixLinkedToTreeWindow extends TreeWindowAssistantN  {
 			if (obj != null)
 				d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, ((MesquiteString)obj).getValue());
 		}
-
 		if (d == null)
 			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, treeName);
 		if (d == null)
@@ -83,7 +82,7 @@ public class ShowMatrixLinkedToTreeWindow extends TreeWindowAssistantN  {
 				matrixWindow.popOut(true);
 			}
 			else {
-				matrixEditorTask = (DataWindowMaker)matrixEditorTask.doCommand("showMatrix", StringUtil.tokenize(project.getCharMatrixReferenceExternal(d)), CommandChecker.defaultChecker);
+			matrixEditorTask = (DataWindowMaker)matrixEditorTask.doCommand("showMatrix", StringUtil.tokenize(project.getCharMatrixReferenceExternal(d)), CommandChecker.defaultChecker);
 			}
 		}
 		else if (!warned){
