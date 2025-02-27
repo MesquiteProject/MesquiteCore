@@ -1196,7 +1196,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	public MesquiteModule instantiateEmployee(MesquiteModuleInfo mbi) {
 		if (mbi == null)
 			return null;
-		MesquiteThread.shouldBeOnMesquiteThread();
+		MesquiteThread.shouldBeOnMesquiteThread(true);
 		MesquiteModule mb = instantiateModule(mbi.mbClass);
 		if (mb != null) {
 			mb.employer = module;

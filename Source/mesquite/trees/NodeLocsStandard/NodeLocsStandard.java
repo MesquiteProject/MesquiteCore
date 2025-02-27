@@ -1221,9 +1221,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 			TreeDisplayRequests requested = treeDisplay.getExtraTreeDisplayRequests(); //accumulated if needed in checkAndAdjustParameterSettings
 			if (requested != null)
 				extraDepthAtRootRequested = requested.extraDepthAtRoot;
-			int taxonSpacingBuffer = 0;
 			double taxonSpacingTolerance = 0.99;
-
+		//	Debugg.println("@ effective field height " + treeDisplay.effectiveFieldHeight());
 
 			//Resetting tips margin according to length of taxon names
 			Graphics g = treeDisplay.getGraphics();
@@ -1258,7 +1257,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
 					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
 				else
-					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldWidth() - taxonSpacingBuffer) / numTerms);
+					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldWidth() - treeDisplay.bufferForScaleEtc) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>taxonSpacingTolerance*treeDisplay.effectiveFieldWidth() && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2; //TODO: this causes problems for shrunk, since first taxon doesn't move over enough
@@ -1316,7 +1315,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
 					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
 				else
-					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldWidth() - taxonSpacingBuffer) / numTerms);
+					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldWidth() - treeDisplay.bufferForScaleEtc) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>taxonSpacingTolerance*treeDisplay.effectiveFieldWidth() && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
@@ -1372,7 +1371,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
 					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
 				else
-					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldHeight() - taxonSpacingBuffer) / numTerms);
+					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldHeight() - treeDisplay.bufferForScaleEtc) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>taxonSpacingTolerance*treeDisplay.effectiveFieldHeight() && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
@@ -1428,7 +1427,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
 					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
 				else
-					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldHeight() - taxonSpacingBuffer) / numTerms);
+					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldHeight() - treeDisplay.bufferForScaleEtc) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>taxonSpacingTolerance*treeDisplay.effectiveFieldHeight() && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
@@ -1900,8 +1899,9 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 		g.drawRect(x+offX, y+offY, w, h);
 	}
 	/*.................................................................................................................*/
+	boolean showRectangles = false;
 	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
-		if (false){  //rectangles
+		if (showRectangles){  //rectangles
 			drawTranslatedRect(g, 2, 2, treeDisplay.getField().width, treeDisplay.getField().height, Color.green);
 			drawTranslatedRect(g, 2, 2, treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldHeight(), Color.cyan);
 

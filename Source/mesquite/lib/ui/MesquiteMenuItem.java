@@ -216,7 +216,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		//Event queue
-		if (command==null)
+		if (command==null || !command.isExecutable())
 			return ;//true;
 		if (hideable && hiddenStatusSet && InterfaceManager.isEditingMode()){
 			if (hiddenStatus == InterfaceManager.NORMAL){
@@ -255,7 +255,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 		if (traceChoice)
 			System.err.println("Menu item chosen " + 	constructorUsed); //more details?
 
-		if (command == null || MesquiteTrunk.suppressMenuResponse)
+		if (command == null || !command.isExecutable() || MesquiteTrunk.suppressMenuResponse)
 			return;
 		if (!command.bypassQueue && MesquiteDialog.currentWizard != null){
 			MesquiteTrunk.mesquiteTrunk.alert("Please complete the questions of the Wizard dialog before selecting menu items");

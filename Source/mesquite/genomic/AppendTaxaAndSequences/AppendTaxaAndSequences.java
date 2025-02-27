@@ -127,7 +127,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 							if (incomingSeqLeng == 0) //no sequence coming in, so don't transfer
 								doTransfer = false;
 							else if (receivingMatrix.hasDataForTaxon(receivingTaxonNumber, true)) {
-								for (int ic = 0; ic< receivingMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other
+								for (int ic = 0; ic< receivingMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other //ZQ: do this, or have it as query at start?
 									receivingMatrix.setToInapplicable(ic, receivingTaxonNumber);
 								if (++countWarnings <10)
 									logln("Data in matrix " + receivingMatrix.getName() + " replaced for taxon " + receivingTaxa.getTaxonName(receivingTaxonNumber));

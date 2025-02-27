@@ -315,6 +315,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		catch (Exception e){
 			//strange things can happen with threading...
 		}
+		MesquiteThread.shouldBeOnMesquiteThread(true);	//Debugg.println set to false before release	
 		alreadyDisposed = true;
 		if (activeWindow == this)
 			activeWindow = null;
@@ -1388,7 +1389,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 			closeWindowRequested();
 		}
 		else if (checker.compare(getClass(), "Requests resetSizes", null, commandName, "resetSizesDoingShow")) {
-				if (windows.size() >1 || frontMostInLocation(RESOURCES) != null)
+				if (windows !=null && windows.size() >1 || frontMostInLocation(RESOURCES) != null)
 					setSize(savedW, savedHWithTabs);
 				else
 					setSize(savedW, savedHWithoutTabs);

@@ -90,6 +90,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	private int dist=8;
 	private int minDist=8;
 	int minForTerminalBoxes = 0;
+	public int bufferForScaleEtc = 30;
 
 	/**  What is the mode for highlighting selected taxa in tree displays? */
 	public static final int sTHM_NONE = 0;
@@ -173,6 +174,14 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	public Font getTaxonNamesFont(){
 		return namesTask.getFont();
+	}
+	/*.................................................................................................................*/
+	public void setSize(int width, int height ){
+		super.setSize(width, height);
+	/*	if (getField().height>height){
+			Debugg.printStackTrace("@tree display set too small " + height + " of field " + getField().height);
+			setFieldSize(width, height);
+		}*/
 	}
 
 	/*_________________________________________________*/

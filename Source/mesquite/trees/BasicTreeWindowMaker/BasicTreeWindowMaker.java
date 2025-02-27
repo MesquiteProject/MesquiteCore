@@ -1649,24 +1649,31 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	Dimension getTreeViewportSize() {
-		if (usingPane)
-			return treePane.getViewportSize();
-		// SCROLLPANEreturn treePane.getViewportSize();
+		if (usingPane){
+			hScroll = treePane.getHAdjustable();
+			vScroll = treePane.getVAdjustable();
+			Dimension vP = new Dimension(treeDisplay.getFieldWidth() + hScroll.getValue(), treeDisplay.getFieldHeight() + vScroll.getValue());  
+			return vP;
+		}// SCROLLPANEreturn treePane.getViewportSize();
 		else
 			return new Dimension(treeDisplay.getWidth(), treeDisplay.getHeight());
 	}
 
 	Rectangle getTreeViewport() {
-		if (usingPane && hScroll != null) {
+		if (usingPane) {
 			if (!isFauxScrollPane() && MesquiteTrunk.isMacOSX())
-				return new Rectangle(0, 0, treeDisplay.getWidth(), treeDisplay.getHeight());  
+				return new Rectangle(0, 0, treeDisplay.getFieldWidth(), treeDisplay.getFieldHeight());  
 			hScroll = treePane.getHAdjustable();
 			vScroll = treePane.getVAdjustable();
-			return new Rectangle(hScroll.getValue(), vScroll.getValue(), treePane.getContentsWidth(), treePane.getContentsHeight());
+			Rectangle vP = new Rectangle(0, 0, treeDisplay.getFieldWidth() + hScroll.getValue(), treeDisplay.getFieldHeight() + vScroll.getValue());  
+			//Debugg.println("@gTV " +  treeDisplay.getFieldHeight() + vScroll.getValue());
+			return vP;
+		//	return new Rectangle(hScroll.getValue(), vScroll.getValue(), treePane.getContentsWidth(), treePane.getContentsHeight());
 			// SCROLLPANEreturn treePane.getViewportSize();
 		}
 		else
-			return new Rectangle(0, 0, treeDisplay.getWidth(), treeDisplay.getHeight());
+			return new Rectangle(0, 0, treeDisplay.getFieldWidth(), treeDisplay.getFieldHeight());  
+		//	return new Rectangle(0, 0, treeDisplay.getWidth(), treeDisplay.getHeight());
 	}
 
 	Point getTreeScrollPoint() {
@@ -1693,10 +1700,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................................. */
-	public void togglePane(boolean paneOn, boolean resetOrigin) {
+	public void adjustTreePane(boolean paneOn, boolean resetOrigin) {
 
 		if (paneOn) {
-			if (!usingPane) {
+			if (!usingPane) { //turning pane on
+				usingPane = true;
 				// SCROLLPANEif (!initiating)
 				// SCROLLPANE removeFromWindow(treeDisplay);
 				// SCROLLPANEif (treePane != null)
@@ -1708,7 +1716,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				addToWindow(treePane);
 				treePane.setLocation(0, 0);
 				treePane.addTreeDisplay(treeDisplay);
-				usingPane = true;
 
 				hScroll = treePane.getHAdjustable();
 				vScroll = treePane.getVAdjustable();
@@ -1723,31 +1730,31 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				resetScrolls();
 				oldH = hScroll.getValue();
 				oldV = vScroll.getValue();
-				/*
+				floatLegendsItem.setEnabled(true);
+				ownerModule.resetContainingMenuBar();
+				setOrigin(0, 0, true);
+			/*
 				 * vScroll.doLayout(); hScroll.doLayout(); hScroll.setVisible(true); vScroll.setVisible(true);
 				 */
 				// treePane.setSize(getWidth(), getHeight());
-				treePane.setSize(getWidth(), getHeight() - scrollWidth);
-				// SCROLLPANEaddToWindow(treePane);
-				// sizeDisplay();
-				// if (MesquiteInteger.isCombinable(setPosX))
-				// treePane.setScrollPosition(-setPosX, -setPosY);
-				// else treePane.setScrollPosition(0, 0);
-				if (palette != null)
-					palette.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
-				// sizeItem.setEnabled(true);
-				floatLegendsItem.setEnabled(true);
-				// if (!initiating) {
-				ownerModule.resetContainingMenuBar();
-				// treePane.setVisible(true);
-				treeDisplay.pleaseUpdate(true);
-				messagePanel.repaint();
-				// lockPanel.repaint();
-				// }
-				setOrigin(0, 0, true);
-				// initiating = false;
-				treePane.doLayout();
+			
+				
 			}
+			
+			//The following are needed whether the pane is newly shown or not
+			treePane.setSize(getWidth(), getHeight() - scrollWidth);
+			if (palette != null)
+				palette.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
+			treeDisplay.pleaseUpdate(true);
+			messagePanel.repaint();
+			// lockPanel.repaint();
+			// }
+			// initiating = false;
+			//Debugg.println("@##<<< treePane.getHeight() " + treePane.getHeight()  + "  treeDisplay.getHeight()  "  + treeDisplay.getHeight()  + "  treeDisplay.getFieldHeight()  "  + treeDisplay.getFieldHeight());
+			treeDisplay.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
+			treeDisplay.setSize(totalTreeFieldWidth, totalTreeFieldHeight);
+			treePane.doLayout();
+			//Debugg.println("@##>>> treePane.getHeight() " + treePane.getHeight()  + "  treeDisplay.getHeight()  "  + treeDisplay.getHeight()  + "  treeDisplay.getFieldHeight()  "  + treeDisplay.getFieldHeight());
 		}
 		else {
 			if (usingPane) {
@@ -1867,7 +1874,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		treeDisplay.autoStretchIfNeeded = true; // this is always true at moment; delete?
 		palette.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
 		if (drawingSizeMode == SCALETOFIT) {
-			togglePane(false, true);
+			adjustTreePane(false, true);
 			treeDisplay.setSize(getWidth(), getHeight() - scrollWidth);
 			treeDisplay.setFieldSize(getWidth(), getHeight() - scrollWidth);
 			treeDisplay.autoStretchIfNeeded = true;
@@ -1880,7 +1887,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 			Dimension s = treeDrawCoordTask.getPreferredSize();
 			if (s != null) {  //Preferred size given by tree drawer
-				togglePane(true, false);
+				adjustTreePane(true, false);
 				if (treePane != null)
 					treePane.setSize(getWidth(), getHeight() - scrollWidth);
 				treeDisplay.setSize(s.width, s.height);
@@ -1894,7 +1901,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 					treeDisplay.setFieldSize(width, height);
 					treeDisplay.redoCalculations(28813);
-					togglePane(false, false);
+					adjustTreePane(false, false);
 				}
 				else {
 					int borderWidth = 0;
@@ -1920,6 +1927,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 							}
 						}
 					}
+					//see what are the current window height, the current getSize of the treeDisplay, the current getField of the treeDisplay
 					boolean canFit = true;
 					Tree tree = treeDisplay.getTree();
 					int numTaxa = 0;
@@ -1929,32 +1937,30 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						numTaxa = taxa.getNumTaxa();
 
 					numTaxa +=1; //for good measure;
+
 					
-					// if (!canFit){
 					if (treeDisplay.getOrientation() == TreeDisplay.UP || treeDisplay.getOrientation() == TreeDisplay.DOWN)
-						canFit = numTaxa * basicMinSpacing < width-borderWidth;
+						canFit = numTaxa * basicMinSpacing < width-borderWidth-treeDisplay.bufferForScaleEtc;
 					else if (treeDisplay.getOrientation() == TreeDisplay.RIGHT || treeDisplay.getOrientation() == TreeDisplay.LEFT)
-						canFit = numTaxa * basicMinSpacing < height-borderHeight;
+						canFit = numTaxa * basicMinSpacing < height-borderHeight-treeDisplay.bufferForScaleEtc;
 					else
 						canFit = numTaxa * 6 < (width-borderWidth + height-borderHeight) / 2;
-					// }
-
-					if (canFit && scale <= 0) {
-						treeDisplay.setSize(width, height);
-
+					
+					if (canFit && scale <= 0) { //CAN FIT therefore go with the sizes as is
 						treeDisplay.setFieldSize(width, height); 
+						treeDisplay.setSize(width, height);
 						treeDisplay.redoCalculations(8813);
-						togglePane(false, false);
+						adjustTreePane(false, false);
 					}
-					else {
+					else { //CAN'T FIT there will have to say how much is needed, and turn on the scroll pane
 						treeDisplay.autoStretchIfNeeded = true;
 						if (treeDisplay.getOrientation() == TreeDisplay.UP || treeDisplay.getOrientation() == TreeDisplay.DOWN) {
-							totalTreeFieldWidth = numTaxa * basicMinSpacing + borderWidth;
+							totalTreeFieldWidth = numTaxa * basicMinSpacing + borderWidth+treeDisplay.bufferForScaleEtc + scrollWidth + 4;
 							totalTreeFieldHeight = height - scrollWidth - 4;
 						}
 						else if (treeDisplay.getOrientation() == TreeDisplay.RIGHT || treeDisplay.getOrientation() == TreeDisplay.LEFT) {
 							totalTreeFieldWidth = width - scrollWidth - 4;
-							totalTreeFieldHeight = numTaxa * basicMinSpacing + borderHeight;
+							totalTreeFieldHeight = numTaxa * basicMinSpacing + borderHeight+treeDisplay.bufferForScaleEtc + scrollWidth + 4;
 						}
 						else {
 							totalTreeFieldWidth = numTaxa * 8;
@@ -1972,13 +1978,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 								totalTreeFieldHeight /= 2;
 							}
 						}
-						// treeDisplay.setSize(w, h);
-						treeDisplay.setSize(totalTreeFieldWidth, totalTreeFieldHeight);
+
 						treeDisplay.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
+						treeDisplay.setSize(totalTreeFieldWidth, totalTreeFieldHeight);
+						treePane.setSize(width, height);
+						adjustTreePane(true, false);
+						treePane.doLayout();
 						treeDisplay.redoCalculations(881153);
-						togglePane(true, false);
-						treePane.setSize(getWidth(), getHeight() - scrollWidth);
-						// toggleLegendFloat();
 					}
 				}
 			}
@@ -1986,22 +1992,15 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else { // fixed size
 			int useWidth = MesquiteInteger.maximum(totalTreeFieldWidth, getWidth());
 			int useHeight = MesquiteInteger.maximum(totalTreeFieldHeight, getHeight() - scrollWidth);
-			// treeDisplay.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
-			treeDisplay.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
 			treeDisplay.setSize(useWidth, useHeight);
+			treeDisplay.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
 			treeDisplay.redoCalculations(88);
-			togglePane(true, false);
-			treePane.setSize(getWidth(), getHeight() - scrollWidth);
+			adjustTreePane(true, false);
+			treePane.setSize(getWidth() - scrollWidth, getHeight() - scrollWidth);
 		}
 		int CONTROLWIDTH = 63;
 		messageWidth = getWidth() - CONTROLWIDTH;
 		if (usingPane) {
-			// treeDisplay.setSize(getWidth()-scrollWidth, getHeight()-scrollWidth-scrollWidth);
-			// hScroll.setBounds(0, getHeight()-scrollWidth-scrollWidth+1, getWidth()-scrollWidth, scrollWidth);
-			// vScroll.setBounds(getWidth()-scrollWidth, 0, scrollWidth, getHeight()-scrollWidth-scrollWidth);
-			// hScroll.setValue(treePane.x);
-			treePane.setHMinMax(0, treeDisplay.getFieldWidth() - treePane.getWidth() - scrollWidth);
-
 			int increment = treePane.getHeight() / 10;
 			if (increment>treeDisplay.getFieldHeight())
 				increment = treeDisplay.getFieldHeight();
@@ -2013,17 +2012,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			vScroll.setUnitIncrement(10);
 			hScroll.setUnitIncrement(10);
 			resetScrolls();
-			treePane.setVMinMax(0, treeDisplay.getFieldHeight() - treePane.getHeight() - scrollWidth - scrollWidth);
+			treePane.setHMinMax(0, totalTreeFieldWidth - treePane.getWidth() );
+			treePane.setVMinMax(0, totalTreeFieldHeight-treePane.getHeight());
 			treePane.doLayout();
-			// vScroll.doLayout();
-			// hScroll.doLayout();
-			// setOrigin(treeRect.x, treeRect.y);
 		}
 		else {
 			treeDisplay.setSize(getWidth(), getHeight() - scrollWidth);
 			setOrigin(0, 0, true);
-			// hScroll.setLocation(getWidth(), getHeight()); //off screen
-			// vScroll.setLocation(getWidth(), getHeight()); //off screen
 		}
 		treeDisplay.setVisRect(getTreeViewport());
 		messagePanel.setLocation(CONTROLWIDTH, getHeight() - scrollWidth);
@@ -2995,6 +2990,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				}
 			}
 		}
+		else if (checker.compare(this.getClass(), "Resizes the display", "[] ", commandName, "sizeDisplay")) {
+			if (!MesquiteThread.isScripting()) {
+				sizeDisplay();
+				treeDisplay.redoCalculations(355);
+				treeDisplay.forceRepaint();
+			}
+		}
 		else if (checker.compare(this.getClass(), "Sets the current tool", "[name of tool]", commandName, "setTool")) {
 			ToolPalette palette = getPalette();
 			if (palette == null)
@@ -3482,12 +3484,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		if (disposing)
 			return null;
-	MesquiteBoolean editStatusToSet = new MesquiteBoolean();
+		MesquiteBoolean editStatusToSet = new MesquiteBoolean();
 		Tree t = setCloneOfTree(treeT, true, editStatusToSet);
-	treeEdited = editStatusToSet.getValue();
+		treeEdited = editStatusToSet.getValue();
 		editedByHand = false;
 		setTreeName(t);
-	messagePanel.setHighlighted(treeEdited);
+		messagePanel.setHighlighted(treeEdited);
 		if (treeInfoPanel != null)
 			treeInfoPanel.setHighlighted(!treeSourceLocked());
 
@@ -3944,13 +3946,18 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			else { // not in a taxon
 				if (currentTreeTool.isArrowTool()) {
-					fieldTouchX = x;
-					fieldTouchY = y;
-					lastFieldDragX = x;
-					lastFieldDragY = y;
-					if (!windowModule.getUseXORForBranchMoves()) {
-						GraphicsUtil.drawCross(g, fieldTouchX, fieldTouchY, 10);
-						treeDisplay.setCrossDrawn(true);
+					if (MesquiteEvent.rightClick(modifiers)){
+						showTreePopup(x, y); 
+					}
+					else {
+						fieldTouchX = x;
+						fieldTouchY = y;
+						lastFieldDragX = x;
+						lastFieldDragY = y;
+						if (!windowModule.getUseXORForBranchMoves()) {
+							GraphicsUtil.drawCross(g, fieldTouchX, fieldTouchY, 10);
+							treeDisplay.setCrossDrawn(true);
+						}
 					}
 				}
 
@@ -3961,6 +3968,36 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		// return false;
 	}
+	MesquitePopup popup;
+	/*...........................................*/
+	void addToPopup(String s){
+		if (s== null)
+			popup.addItem("-", ownerModule, null, "");
+		else
+		popup.addItem(s, ownerModule, new MesquiteCommand(null, null), "");
+	}
+	void showTreePopup(int x, int y){
+		Debugg.println("@showTreePopup " + tree);
+		if (tree == null)
+			return;
+		if (popup==null)
+			popup = new MesquitePopup(treeDisplay);
+		popup.removeAll();
+		addToPopup("Tree: " + tree.getName());
+		if (treeEdited)
+			addToPopup("— edited since obtained from source");
+		addToPopup(null);
+		addToPopup("Source: " + treeSourceTask.getParameters());
+		addToPopup("Number of taxa included: " + tree.numberOfTerminalsInClade(tree.getRoot()));
+		String bLS;
+		if (tree.hasBranchLengths())
+			bLS = "Branch lengths are defined";
+		else 
+			bLS = "No branch lengths are defined";
+		addToPopup(bLS);
+		popup.showPopup(x, y);
+	}
+
 	/* _________________________________________________ */
 	/* Historical note: this method's name begins with an upper case letter because it descends directly
 	from Pascal source code for MacClade 1 (1986) */
@@ -3989,12 +4026,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				}
 				if (Math.abs(x - fieldTouchX) < 4 && Math.abs(y - fieldTouchY) < 4)
 					notifyExtrasOfFieldTouch(g, x, y, modifiers);
-
 			}
 
 			fieldTouchX = -1;
 			fieldTouchY = -1;
-
 			lastFieldDragX = -1;
 			lastFieldDragY = -1;
 			if (treeDisplay.isCrossDrawn())
@@ -4504,7 +4539,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			Object obj = em.nextElement();
 			MesquiteModule mb = (MesquiteModule) obj;
 			if (mb instanceof TreeWindowAssistant) {
-				
+
 				long version = tree.getVersionNumber();
 				((TreeWindowAssistant) mb).setTree(tree);
 				if (version != tree.getVersionNumber()) {
@@ -5070,12 +5105,9 @@ class REALTreeScrollPane extends MQScrollPane implements AdjustmentListener, Mou
 
 class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener { // HANDMADETreeScrollPane
 	BasicTreeWindow window;
-
 	TWScroll hScroll, vScroll;
-
 	Panel port;
-
-	Component treeDisplay;
+	TreeDisplay treeDisplay;
 
 	public TreeScrollPane(BasicTreeWindow window) {
 		super();
@@ -5093,7 +5125,7 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 		this.window = window;
 	}
 
-	public void addTreeDisplay(Component c) {
+	public void addTreeDisplay(TreeDisplay c) {
 		port.add(c);
 		treeDisplay = c;
 	}
@@ -5126,6 +5158,21 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 
 	}
 
+	public Dimension getViewportSize() {
+		return new Dimension(port.getWidth(), port.getHeight());
+	}
+
+	public int getContentsWidth() {
+		return port.getWidth();
+	}
+
+	public int getContentsHeight() {
+		return treeDisplay.getField().height;
+	}
+
+	public Point getScrollPosition() {
+		return new Point(hScroll.getValue(), vScroll.getValue());
+	}
 	public void setVMinMax(int min, int max) {
 		if (min < 0)
 			min = 0;
@@ -5137,63 +5184,17 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 			scrollTouched(null, 0);
 
 		vScroll.setVisible(min != max);
-
+	
 		if (min == max)
 			treeDisplay.setLocation(treeDisplay.getLocation().x, 0);
+			
+		doLayout();
 	}
 
 	public void scrollTouched(TWScroll scroll, int value) {
 		window.setOrigin(hScroll.getValue(), vScroll.getValue(), false);
-		constrainTreeDisplay();
 	}
 
-	public Dimension getViewportSize() {
-		return new Dimension(port.getWidth(), port.getHeight());
-	}
-
-	public int getContentsWidth() {
-		return port.getWidth();
-	}
-
-	public int getContentsHeight() {
-		return port.getHeight();
-	}
-
-	public Point getScrollPosition() {
-		return new Point(hScroll.getValue(), vScroll.getValue());
-	}
-
-	public void constrainTreeDisplay() { // post 2. 6 needed at least for OS X as workaround for JVM failure to respect bounds of containing panel
-		if (treeDisplay == null)
-			return;
-		int w = port.getWidth();
-		int h = port.getHeight();
-		int wReduce = 0;
-		int hReduce = 0;
-
-		if (treeDisplay.getWidth() + treeDisplay.getX() != w)
-			wReduce = treeDisplay.getWidth() + treeDisplay.getX() - w;
-		if (treeDisplay.getHeight() + treeDisplay.getY() != h)
-			hReduce = treeDisplay.getHeight() + treeDisplay.getY() - h;
-		if (wReduce != 0 || hReduce != 0)
-			treeDisplay.setSize(treeDisplay.getWidth() - wReduce, treeDisplay.getHeight() - hReduce);
-	}
-
-	public void setSize(int w, int h) {
-		super.setSize(w, h);
-		doLayout();
-		constrainTreeDisplay();
-		window.checkPanelPositionsLegal();
-
-	}
-
-	public void setBounds(int x, int y, int w, int h) {
-		super.setBounds(x, y, w, h);
-		doLayout();
-		constrainTreeDisplay();
-		window.checkPanelPositionsLegal();
-
-	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		int amount = e.getScrollAmount() * 2;
@@ -5217,8 +5218,6 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 			if (amount != 0) {
 				vScroll.setValue(vScroll.getValue() + amount); 
 				window.setOrigin(hScroll.getValue(), vScroll.getValue(), false);
-				constrainTreeDisplay();
-				//	window.sizeDisplay(); //ZQ this had been here instead of the above two lines, which were used when the regular scroll bar is touched. OK?
 			}
 		}
 		else {
@@ -5231,14 +5230,11 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 			}
 			hScroll.setValue(hScroll.getValue() + amount);
 			window.setOrigin(hScroll.getValue(), vScroll.getValue(), false);
-			constrainTreeDisplay();
-			//window.sizeDisplay();//ZQ this had been here instead of the above two lines, which were used when the regular scroll bar is touched. OK?
 		}
 
 	}
 
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -5721,7 +5717,6 @@ class BasicTreeStatisticsPanel extends TreeInfoExtraPanel {
 
 	public void paint(Graphics g) {
 		super.paint(g);
-		// g.drawString("hello", 8, MINHEIGHT+20);
 		statsBox.setWidth(getBounds().width - 4);
 		statsBox.setFont(g.getFont());
 		statsBox.setString(treeStats);
@@ -5773,7 +5768,6 @@ class TreeSourceInfoPanel extends TreeInfoExtraPanel {
 
 	public void paint(Graphics g) {
 		super.paint(g);
-		// g.drawString("hello", 8, MINHEIGHT+20);
 		statsBox.setWidth(getBounds().width - 4);
 		statsBox.setFont(g.getFont());
 		statsBox.setString(treeSourceInfo);

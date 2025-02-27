@@ -925,7 +925,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public void prepareDialog () {
 		if (parentDialog != null && parentDialog.getParent() instanceof MesquiteFrame && !(MesquiteTrunk.startupShutdownThread == Thread.currentThread())) //if parent is another dialog, we'll forgive it for being on AWT thread
-			MesquiteThread.shouldBeOnMesquiteThread();
+			MesquiteThread.shouldBeOnMesquiteThread(false);  //disabled for release
 		if (MesquiteTrunk.isLinux())
 			addBlankLine();
 		pack();

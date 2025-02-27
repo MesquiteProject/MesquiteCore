@@ -86,9 +86,9 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		return (c.indexOf("mesquite.")>=0);
 	}
 
-	public static void shouldBeOnMesquiteThread() {
-		if (false && !isThreadBelongingToMesquite() && (MesquiteTrunk.developmentMode || MesquiteTrunk.debugMode))
-			MesquiteMessage.printStackTrace("###### ######This thread should be on a Mesquite thread!!! (thread is " + Thread.currentThread() + ")");
+	public static void shouldBeOnMesquiteThread(boolean enable) {
+		if (enable && !isThreadBelongingToMesquite() && (MesquiteTrunk.developmentMode || MesquiteTrunk.debugMode))
+			MesquiteMessage.printStackTrace("###### ######This should be on a Mesquite thread!!! (thread is " + Thread.currentThread() + ")");
 	}
 	public static boolean isReadingThread(){
 		Thread t = Thread.currentThread();

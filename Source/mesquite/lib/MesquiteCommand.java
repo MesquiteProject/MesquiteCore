@@ -95,6 +95,10 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	public int getID() {
 		return ID;
 	}
+	
+	public boolean isExecutable(){
+		return (commandName != null && ownerObject != null);
+	}
 	public void setSupplementalLogger(Logger logger){
 		this.supplementalLogger = logger;
 	}
@@ -146,7 +150,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 			return null;
 		}
 		if (!okOnOtherThread)
-			MesquiteThread.shouldBeOnMesquiteThread();
+			MesquiteThread.shouldBeOnMesquiteThread(true);
 		if (StringUtil.blank(arguments))
 			arguments = defaultArguments;
 		if (!suppressLogging || logEverything)
