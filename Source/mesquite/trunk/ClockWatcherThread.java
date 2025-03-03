@@ -106,8 +106,9 @@ public class ClockWatcherThread extends Thread {
 							for (int i=0; i<files.length; i++) {
 								if (MesquiteTrunk.mesquiteTrunk.applicationHandler9 != null)
 									MesquiteTrunk.mesquiteTrunk.applicationHandler9.handleOpenFile(files[i]);
-								else
-									EAWTHandler.handleOpenFile(files[i]);
+								/* Old macOS (pre Java 9) handling of file opening. Disabling until someone complains
+								 * else
+									EAWTHandler.handleOpenFile(files[i]);*/
 							}
 						}
 					}

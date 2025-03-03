@@ -2544,8 +2544,8 @@ public class Mesquite extends MesquiteTrunk
 
 		CommandChecker.registerClass(System.class, System.class);
 	}
-
 	String earlyWarning = "";
+	/* Old macOS (pre Java 9) handling of file opening. Disabling until someone complains
 	private void registerMacHandlers(){
 		if (!MesquiteWindow.GUIavailable)
 			return;
@@ -2573,7 +2573,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 	}
-
+	*/
 
 
 	public Mesquite(){
@@ -2676,12 +2676,14 @@ public class Mesquite extends MesquiteTrunk
 			}
 
 			/*/if JDK≥9 register quit handler */
-			if (getJavaVersionAsDouble()>=1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
+			//if (getJavaVersionAsDouble()>=1.9){ //if before Java 9.0 or before then use macOS handlers in old fashioned way
 				applicationHandler9 = new ApplicationHandler9(this);
-			}
+			//}
+			/* Old macOS (pre Java 9) handling of file opening. Disabling until someone complains
+
 			else
 				mesq.registerMacHandlers();  //no longer useful unless old Java & OS
-
+			*/
 
 
 			if (MesquiteTrunk.debugMode)
