@@ -20,7 +20,6 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.*;
 import mesquite.lib.duties.*;
-import mesquite.trunk.EAWTHandler;
 
 /* ======================================================================== */
 public class ConsoleThread extends Thread {

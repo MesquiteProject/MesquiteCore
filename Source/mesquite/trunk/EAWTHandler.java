@@ -23,8 +23,9 @@ import mesquite.*;
 
 
 
-/* ======================================================================== */
-public class EAWTHandler  implements FileOpener {
+/* ======================================================================== *
+/* Old macOS (pre Java 9) handling of file opening. Disabling until someone complains
+ * public class EAWTHandler  implements FileOpener {
 	boolean waiting = false;
 	Vector fileList;
 	Mesquite mesquite;
@@ -143,3 +144,4 @@ public class EAWTHandler  implements FileOpener {
 	}
 }
 
+*/

@@ -54,7 +54,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	boolean readingThread = false;
 	public boolean resetUIOnMe = true;
 	public static String SEPARATETHREADHELPMESSAGE = "If you use a separate thread, you will then regain control of Mesquite once the process starts."+
-	 " This has the advantage that it will allow you to continue to use Mesquite.  However, it is dangerous, as you can alter aspects of your data that will eventually cause problems for the separate process.";
+			" This has the advantage that it will allow you to continue to use Mesquite.  However, it is dangerous, as you can alter aspects of your data that will eventually cause problems for the separate process.";
 	static int numInst = 1;
 	static {
 		threads = new Vector(10);
@@ -81,7 +81,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	public static boolean isThreadBelongingToMesquite(){
 		Thread t = Thread.currentThread();
 		if ((t instanceof MesquiteThread) ||(t instanceof ConsoleThread) ||(t instanceof ClockWatcherThread))
-		return true;
+			return true;
 		String c = t.getClass().getName();
 		return (c.indexOf("mesquite.")>=0);
 	}
@@ -165,7 +165,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			mt.loggingSuspended = false;
 		}
 	}
-	
+
 	boolean indicatorSuppressed = false;
 	public static boolean pleaseSuppressProgressIndicatorsCurrentThread(){
 		Thread t = Thread.currentThread();
@@ -221,19 +221,19 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		if (t instanceof MesquiteThread){
 			MesquiteThread mt = (MesquiteThread)t;
 			if (mt.cleanUpJobs != null)
-			mt.cleanUpJobs.removeElement(job);
+				mt.cleanUpJobs.removeElement(job);
 		}
 
 	}
 	public void doCleanUp(){
-			if (cleanUpJobs != null){
-				for (int i = 0; i< cleanUpJobs.size(); i++){
-					CleanUpJob job = (CleanUpJob)cleanUpJobs.elementAt(i);
-					job.cleanUp();
-				}
-				cleanUpJobs.removeAllElements();
+		if (cleanUpJobs != null){
+			for (int i = 0; i< cleanUpJobs.size(); i++){
+				CleanUpJob job = (CleanUpJob)cleanUpJobs.elementAt(i);
+				job.cleanUp();
+			}
+			cleanUpJobs.removeAllElements();
 		}
-		
+
 	}
 	public static void addHint(MesquiteString hint){ //the name of the string is the module class name to which it applies; the value is the hint
 		Thread t = Thread.currentThread();
@@ -342,7 +342,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		Thread thisThread = Thread.currentThread();
 		if (thisThread instanceof MesquiteThread) 
 			return ((MesquiteThread)thisThread).pleaseBeQuiet;
-		
+
 		return false;
 	}
 	public static void setQuietPlease(boolean quiet) {
@@ -381,7 +381,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			return MesquiteTrunk.consoleListenSuppressed;  //treat as scripting if backgrounded
 		}
 		else if (!(thisThread instanceof CommandRecordHolder)){ //not a MesquiteThread
-			if (MesquiteTrunk.mesquiteTrunk.isStartupShutdownThread(thisThread) || 
+			/*if (MesquiteTrunk.mesquiteTrunk.isStartupShutdownThread(thisThread) || 
 					(MesquiteTrunk.isMacOSX() && 
 							(
 							(MesquiteTrunk.getJavaVersionAsDouble()<1.9 && mesquite.trunk.EAWTHandler.openFileThreads.indexOf(thisThread)>=0)
@@ -389,8 +389,10 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 							(MesquiteTrunk.getJavaVersionAsDouble()>=1.9 && mesquite.trunk.ApplicationHandler9.openFileThreads.indexOf(thisThread)>=0)
 							)
 					)
-				){
-				
+				)*/
+			if (MesquiteTrunk.mesquiteTrunk.isStartupShutdownThread(thisThread) || 
+					(MesquiteTrunk.isMacOSX() && mesquite.trunk.ApplicationHandler9.openFileThreads.indexOf(thisThread)>=0)){
+
 				shouldBeScripting = false;  //startup, shutdown; should be treated as nonscripting, but if scripting then OK
 				situation = 1;
 				if (diagnose) MesquiteMessage.println("isScripting:!CommandRecordHolder, 1");
@@ -400,7 +402,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 				shouldBeScripting = unknownThreadIsScripting;
 				situation = 2;
 				if (diagnose) MesquiteMessage.println("isScripting:!CommandRecordHolder, 2");
-		}
+			}
 
 		}
 		//Second see if there is a CommandRecord attached to the current thread
@@ -639,8 +641,10 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		if (mt instanceof CommandRecordHolder)
 			cr = ((CommandRecordHolder)mt).getCommandRecord(); // 
 		if (cr == null) {
+			/* Old macOS (pre Java 9) handling of file opening. Disabling until someone complains
 			if (MesquiteTrunk.debugMode && mt != MesquiteTrunk.startupShutdownThread && (MesquiteTrunk.isMacOSX() &&mesquite.trunk.EAWTHandler.openFileThreads.indexOf(mt)<0) && defaultIfNull == CommandRecord.nonscriptingRecord)
-				MesquiteMessage.printStackTrace("###############@\nNS CommandRecord used because none is attached to thread");
+				MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@\nNS CommandRecord used because none is attached to thread");
+			*/
 			return defaultIfNull;
 		}
 		return cr;

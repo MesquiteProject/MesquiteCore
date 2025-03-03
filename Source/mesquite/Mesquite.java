@@ -2594,6 +2594,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 	String earlyWarning = "";
+	/*
 	private void registerMacHandlers(){
 		if (!MesquiteWindow.GUIavailable)
 			return;
@@ -2621,7 +2622,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 	}
-
+*/
 
 
 	public Mesquite(){
@@ -2727,9 +2728,9 @@ public class Mesquite extends MesquiteTrunk
 			if (getJavaVersionAsDouble()>=1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
 				applicationHandler9 = new ApplicationHandler9(this);
 			}
-			else
+		/*	else
 				mesq.registerMacHandlers();  //no longer useful unless old Java & OS
-
+*/
 
 
 			if (MesquiteTrunk.debugMode)
