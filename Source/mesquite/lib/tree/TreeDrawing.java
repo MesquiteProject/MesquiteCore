@@ -116,6 +116,65 @@ public abstract class TreeDrawing  {
 			labelOrientation[i] = MesquiteInteger.unassigned;
 		}
 	}
+	/* ===###################################=== */
+	/*.................................................................................................................*/
+	/** Put in a request to enable terminal boxes (this allows taxon names to be drawn to leave room)*/
+	public void incrementEnableTerminalBoxes(){
+		enableTerminalBoxesRequests++;
+	}
+	/** Withdraw request to enable terminal boxes (this allows taxon names to be drawn to leave room)*/
+	public void decrementEnableTerminalBoxes(){
+		enableTerminalBoxesRequests--;
+		if (enableTerminalBoxesRequests<0)
+			enableTerminalBoxesRequests=0;
+	}
+	/** Returns if terminal boxes requested*/
+	public boolean terminalBoxesRequested(){
+		return (enableTerminalBoxesRequests>0);
+	}
+	/** Fill terminal box with current color. */
+	public abstract void fillTerminalBox(Tree tree, int node, Graphics g);
+	
+	/** Fill terminal box of node "node" with indicated set of colors */
+	public abstract void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g);
+	
+	/*.................................................................................................................*/
+	/** Find which terminal box is at x,y */
+	public int findTerminalBox(Tree tree,  int N, int x, int y) {
+		int foundTaxon =-1;
+		if  (tree.nodeIsTerminal(N)) {   //terminal
+
+			int taxonNumber = tree.taxonNumberOfNode(N);
+			if (taxonNumber<0) {
+				//MesquiteMessage.warnProgrammer("error: negative taxon number found in findNameOnTree");
+				return -1;
+			}
+			if (taxonNumber>=tree.getTaxa().getNumTaxa()) {
+				MesquiteMessage.warnProgrammer("error:  taxon number too large found in findTerminalBox (" + taxonNumber + ") node: " + N); 
+				return -1;
+			}
+			if (isInTerminalBox(tree, N, x, y))
+					return taxonNumber;
+		}
+		else {
+			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d) && foundTaxon==-1; d = tree.nextSisterOfNode(d)){
+				foundTaxon=findTerminalBox(tree, d, x, y);
+			}
+		}
+		return foundTaxon;
+	}
+	public int findTerminalBox(Tree tree, int x, int y){
+		int drawnRoot = getDrawnRoot(); 
+		if (!tree.nodeExists(drawnRoot))
+			drawnRoot = tree.getRoot();
+		return findTerminalBox(tree, drawnRoot, x, y); 
+	}
+	
+	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
+		return false;
+	}
+	/* ===###################################=== */
+	/*.................................................................................................................*/
 	public void translateAll(int shiftX, int shiftY){
 		for (int i= 0; i<numNodes; i++){
 			x[i] += shiftX; 
@@ -309,61 +368,6 @@ public abstract class TreeDrawing  {
 	/** Find which branch is at x,y (-1 if none) */
 	public abstract int findBranch(Tree tree, int drawnRoot, int x, int y, MesquiteDouble fraction);
 	
-	/** Put in a request to enable terminal boxes (this allows taxon names to be drawn to leave room)*/
-	public void incrementEnableTerminalBoxes(){
-		enableTerminalBoxesRequests++;
-	}
-	/** Withdraw request to enable terminal boxes (this allows taxon names to be drawn to leave room)*/
-	public void decrementEnableTerminalBoxes(){
-		enableTerminalBoxesRequests--;
-		if (enableTerminalBoxesRequests<0)
-			enableTerminalBoxesRequests=0;
-	}
-	/** Returns if terminal boxes requested*/
-	public boolean terminalBoxesRequested(){
-		return (enableTerminalBoxesRequests>0);
-	}
-	/** Fill terminal box with current color. */
-	public abstract void fillTerminalBox(Tree tree, int node, Graphics g);
-	
-	/** Fill terminal box of node "node" with indicated set of colors */
-	public abstract void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g);
-	
-	/*.................................................................................................................*/
-	/** Find which terminal box is at x,y */
-	public int findTerminalBox(Tree tree,  int N, int x, int y) {
-		int foundTaxon =-1;
-		if  (tree.nodeIsTerminal(N)) {   //terminal
-
-			int taxonNumber = tree.taxonNumberOfNode(N);
-			if (taxonNumber<0) {
-				//MesquiteMessage.warnProgrammer("error: negative taxon number found in findNameOnTree");
-				return -1;
-			}
-			if (taxonNumber>=tree.getTaxa().getNumTaxa()) {
-				MesquiteMessage.warnProgrammer("error:  taxon number too large found in findTerminalBox (" + taxonNumber + ") node: " + N); 
-				return -1;
-			}
-			if (isInTerminalBox(tree, N, x, y))
-					return taxonNumber;
-		}
-		else {
-			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d) && foundTaxon==-1; d = tree.nextSisterOfNode(d)){
-				foundTaxon=findTerminalBox(tree, d, x, y);
-			}
-		}
-		return foundTaxon;
-	}
-	public int findTerminalBox(Tree tree, int x, int y){
-		int drawnRoot = getDrawnRoot(); 
-		if (!tree.nodeExists(drawnRoot))
-			drawnRoot = tree.getRoot();
-		return findTerminalBox(tree, drawnRoot, x, y); 
-	}
-	
-	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
-		return false;
-	}
 	/*.................................................................................................................*/
 
 	/** Draw highlight for branch N with current color of graphics context */

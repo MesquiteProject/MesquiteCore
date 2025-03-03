@@ -324,6 +324,9 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		namesTask = dtn;
 	}
 
+	/*vvvvvvvvvvvvvvvvvv EXTRA SPACE REQUESTED BY EXTRAS ETC. vvvvvvvvvvvvvvvvv*/
+	// see TreeDrawing for stuff on terminal boxes
+	
 	//Distance from tip to taxon name
 	boolean tndExplicitlySet = false;
 	public void setMinimumTaxonNameDistanceFromTip(int minForTerminalBoxes, int min) {
@@ -374,7 +377,41 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		if (bordersRequestedByExtras ==null)
 			return 0;
 		return bordersRequestedByExtras.extraDepthAtRoot;
+	}	
+	TreeDisplayRequests bordersRequestedByExtras = new TreeDisplayRequests();  //left top right bottom
+	public TreeDisplayRequests getExtraTreeDisplayRequests(){
+		return bordersRequestedByExtras;
 	}
+	public void accumulateRequestsFromExtras(Tree tree) {
+		TreeDisplayRequests bordersPixelsTemp = getRequestsFromExtras(tree);
+		if (bordersPixelsTemp != null)
+			bordersRequestedByExtras = bordersPixelsTemp;
+	}
+	TreeDisplayRequests getRequestsFromExtras(Tree tree) {
+		if (tree == null || tree.getTaxa().isDoomed())
+			return null;
+		if (extras != null) {
+			TreeDisplayRequests overallBorder = new TreeDisplayRequests();
+			Enumeration e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ownerModule==null || ownerModule.isDoomed()) 
+					return null;
+				TreeDisplayRequests borderRequest = ex.getRequestsOfTreeDisplay(tree, treeDrawing);
+				if (borderRequest != null){
+					overallBorder.mergeFrom(borderRequest);
+				}
+
+			}
+			return overallBorder;
+		}
+		return null;
+	}	/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+	
+	
+	
 	public void setTipsMargin(int margin) {
 		tipsMargin = margin;
 	}
@@ -533,36 +570,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	}
 
 	
-	TreeDisplayRequests bordersRequestedByExtras = new TreeDisplayRequests();  //left top right bottom
-	public TreeDisplayRequests getExtraTreeDisplayRequests(){
-		return bordersRequestedByExtras;
-	}
-	public void accumulateRequestsFromExtras(Tree tree) {
-		TreeDisplayRequests bordersPixelsTemp = getRequestsFromExtras(tree);
-		if (bordersPixelsTemp != null)
-			bordersRequestedByExtras = bordersPixelsTemp;
-	}
-	TreeDisplayRequests getRequestsFromExtras(Tree tree) {
-		if (tree == null || tree.getTaxa().isDoomed())
-			return null;
-		if (extras != null) {
-			TreeDisplayRequests overallBorder = new TreeDisplayRequests();
-			Enumeration e = extras.elements();
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (ownerModule==null || ownerModule.isDoomed()) 
-					return null;
-				TreeDisplayRequests borderRequest = ex.getRequestsOfTreeDisplay(tree, treeDrawing);
-				if (borderRequest != null){
-					overallBorder.mergeFrom(borderRequest);
-				}
 
-			}
-			return overallBorder;
-		}
-		return null;
-	}
 
 	public void drawAllBackgroundExtrasOfPlacement(Tree tree, int drawnRoot, Graphics g, int placement) {
 		if (tree == null || tree.getTaxa().isDoomed())
