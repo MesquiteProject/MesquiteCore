@@ -167,6 +167,13 @@ public class StringUtil {
 		pos.setValue(s.length());
 		return null;
 	}
+	/*.................................................................................................................*/
+	public static char charAt(String string, MesquiteInteger pos) {
+		int loc = pos.getValue();
+		if (loc>=0 && loc< string.length())
+			return string.charAt(loc);
+		return 0;
+	}
 
 	static boolean isLineBreak(String s, int index) {
 		if (s == null || index >= s.length() || index < 0)
@@ -913,6 +920,8 @@ public class StringUtil {
 	public static String tokenize(String token, String punctuationString, StringBuffer sb) {
 		if (token == null)
 			return "";
+		if (token.length() == 0)
+			return "''";
 		if (hasPunctuation(token,punctuationString) || token.indexOf("_")>=0 || hasSpecial(token))  //28Feb05: added "_" so that this forced quoted token to preserve the underscore
 			return quote(token, sb);  
 		if (sb == null)

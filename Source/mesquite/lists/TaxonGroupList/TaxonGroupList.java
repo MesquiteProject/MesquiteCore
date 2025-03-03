@@ -41,9 +41,8 @@ public class TaxonGroupList extends ListModule {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("New Group Label...", MesquiteModule.makeCommand("newGroup",  this));
 		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
-		addMenuItem("Import Group Labels (from NEXUS File)...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
-		//addMenuItem("[ORIGINAL] Import Group Labels from File...", MesquiteModule.makeCommand("importLabelsOLD",  manageTaxPart)); //Debugg.println delete?
-		//addMenuItem("[ORIGINAL] Export Group Labels to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));//Debugg.println delete?
+		addMenuItem("Import Group Labels & Colors from File...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
+		addMenuItem("Export Group Labels & Colors to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));
 		return true;
 	}
 	public boolean showing(Object obj){
@@ -106,34 +105,7 @@ public class TaxonGroupList extends ListModule {
 			}
 			return group;
 		}
-		/*else if (checker.compare(this.getClass(), "Imports group labels from a NEXUS file.", "[]", commandName, "importLabels")) {
-			MesquiteString directoryName = new MesquiteString();
-			MesquiteString fileName = new MesquiteString();
-			MesquiteFile.openFileDialog("Please select a text file that has the taxon group labels, as exported previously.", directoryName, fileName);
-			if (!fileName.isBlank()){
-				String[] lines = MesquiteFile.getFileContentsAsStrings(directoryName.getValue() + fileName.getValue());
-				if (lines != null){
-					SpecsSetManager manageTaxPart = (SpecsSetManager)findElementManager(TaxaPartition.class);
-					for (int i = 0; i<lines.length; i++){
-						String command = lines[i]; //"	TAXAGROUPLABEL Amycoida COLOR = (RGB 1.0 0.62745098 0.06666667) ;";
-						boolean success = manageTaxPart.readNexusCommand(null, null, "LABELS", command, null);
-					}
-				}
-			}
-		}
-		else if (checker.compare(this.getClass(), "Exports group labels to a text file for later import.", "[]", commandName, "exportLabels")) {
-			ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
-			String s = "";
-			for (int row = 0; row<getNumberOfRows(); row++){
-				TaxaGroup group = ((TaxonGroupListWindow)getModuleWindow()).getTaxonGroup(row);
-				s += manageTaxPart.getGroupLabelNexusCommand(group) + "\n";
-			}
-			if (!StringUtil.blank(s)){
-				MesquiteFile.putFileContentsQuery("Exported file of group labels, for later import into other files", s, true);
-				
-			}
-		}
-		*/
+		
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		//return null;
@@ -245,7 +217,6 @@ public class TaxonGroupList extends ListModule {
 	/*.................................................................................................................*/
 	/** Requests a getModuleWindow() to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
-		//Debug.println("disposing of getModuleWindow()");
 		if (whichWindow == null)
 			return;
 		whichWindow.hide();
@@ -304,12 +275,13 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 		}
 		return null;
 	}
-	public boolean interceptRowNameTouch(int row, int regionInCellH, int regionInCellV, int modifiers){
+	public boolean interceptRowNameTouch(int row, EditorPanel editorPanel, int x, int y, int modifiers){
 		TaxaGroup group = getTaxonGroup(row);
 		if (group!=null){
 			getTable().editRowNameCell(row);
+			return true;
 		}
-		return true;
+		return false;
 	}
 	public void setRowName(int row, String name){
 		TaxaGroup group = getTaxonGroup(row);

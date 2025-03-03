@@ -35,7 +35,7 @@ public class InterpretFastaDNAByOTUID extends InterpretFastaDNA {
 			return -1;
 		String code = "";
 		for (int it=0; it<taxa.getNumTaxa(); it++) {
-			code = (String)taxa.getAssociatedObject(VoucherInfoFromOTUIDDB.voucherCodeRef, it);
+			code = (String)taxa.getAssociatedString(VoucherInfoFromOTUIDDB.voucherCodeRef, it);
 			if (codesMatch(code, token))
 						return it;
 		}

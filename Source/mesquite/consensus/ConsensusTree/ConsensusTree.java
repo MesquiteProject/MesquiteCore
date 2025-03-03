@@ -44,7 +44,9 @@ public class ConsensusTree extends TreeSource {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		startTree = 0;
-		treeSource= (TreeSource)hireEmployee(TreeSource.class, "Source of Trees for consensus");
+		treeSource= (TreeSource)hireNamedEmployee(TreeSource.class, "#StoredTrees");
+		if (treeSource == null)
+			treeSource= (TreeSource)hireEmployee(TreeSource.class, "Source of trees for consensus");
 		tlsC = makeCommand("setTreeSource",  this);
 		cC = makeCommand("setConsenser", this);
 		if (treeSource==null)
@@ -257,7 +259,7 @@ public class ConsensusTree extends TreeSource {
 	/*.................................................................................................................*/
 	public String getName() {
 		if (consenser != null && treeSource != null)
-			return consenser.getName() + " from " + treeSource.getParameters();
+			return consenser.getName() + " from " + treeSource.getName();
 		return "Consensus Tree";
 	}
 	/*.................................................................................................................*/

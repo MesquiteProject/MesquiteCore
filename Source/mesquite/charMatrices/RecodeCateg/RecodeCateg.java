@@ -53,7 +53,7 @@ public class RecodeCateg extends CategDataAlterer implements AltererSimpleCell {
 			
 			if (!(cData instanceof CategoricalData)){
 				discreetAlert( "Only categorical characters can be recoded by this module.");
-				return INCOMPATIBLE_DATA;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			}
 			if (!cData.anySelected()){
 				discreetAlert( "To recode characters, please select entire characters first.");
@@ -63,7 +63,7 @@ public class RecodeCateg extends CategDataAlterer implements AltererSimpleCell {
    			if (data instanceof DNAData || data instanceof ProteinData) {
 				if (!MesquiteThread.isScripting())
 					alert("Molecular characters cannot be recoded.");
-				return INCOMPATIBLE_DATA;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			}
 			else {
 		  		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
@@ -101,7 +101,7 @@ public class RecodeCateg extends CategDataAlterer implements AltererSimpleCell {
 				RecodeDialog dialog = new RecodeDialog(this, data, states, rules, chosen, maxState);
 				dialog.dispose();
 				if (!anyChanges(maxState) || chosen.isUnassigned())
-					return USER_STOPPED;
+					return ResultCodes.USER_STOPPED;
 				for (int ic = 0; ic< data.getNumChars(); ic++){
 					if (data.getSelected(ic))
 						data.recodeStates(ic, rules, maxState);
@@ -114,7 +114,7 @@ public class RecodeCateg extends CategDataAlterer implements AltererSimpleCell {
 					}
 				}
 			}
-   			return SUCCEEDED;
+   			return ResultCodes.SUCCEEDED;
    	}
 
    	private boolean anyChanges(int maxState){

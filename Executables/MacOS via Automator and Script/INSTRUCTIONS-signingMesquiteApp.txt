@@ -1,4 +1,4 @@
-2024
+January 2025
 
 ////////
 PREP for signing and notarizing
@@ -35,8 +35,8 @@ xcrun notarytool info --keychain-profile "mesquiteApp" SUBMISSION_ID
 xcrun notarytool log --keychain-profile "mesquiteApp" SUBMISSION_ID
 
 e.g.:
-xcrun notarytool info --keychain-profile "mesquiteApp" d398f990-7191-43e7-bccd-ac58631cd2de
-xcrun notarytool log --keychain-profile "mesquiteApp" d398f990-7191-43e7-bccd-ac58631cd2de
+xcrun notarytool info --keychain-profile "mesquiteApp" bf7a1026-6d93-4ed1-9ce8-b1f38cfc09b5
+xcrun notarytool log --keychain-profile "mesquiteApp" bf7a1026-6d93-4ed1-9ce8-b1f38cfc09b5
 
 
 AFTER SIGNED AND NOTARIZED

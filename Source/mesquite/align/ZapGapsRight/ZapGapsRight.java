@@ -43,7 +43,7 @@ public class ZapGapsRight extends MolecularDataAlterer  implements AltererAlignS
    	/** Called to alter data in those cells selected in table*/
    	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
 		if (!(cData instanceof MolecularData))
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		boolean found = false;
 		MolecularData data = (MolecularData)cData;
 
@@ -62,8 +62,8 @@ public class ZapGapsRight extends MolecularDataAlterer  implements AltererAlignS
 		data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED));
 		data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
 		if ( found)
-		return SUCCEEDED;
-		return MEH;
+		return ResultCodes.SUCCEEDED;
+		return ResultCodes.MEH;
    	}
    	/*.................................................................................................................*/
   	 public boolean showCitation() {

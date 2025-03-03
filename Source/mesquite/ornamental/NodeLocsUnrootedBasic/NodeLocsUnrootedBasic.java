@@ -331,7 +331,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		} 
 	}
 
-	private synchronized void rotateNode (int node, int rotateNode, double rotateAngle){   //node begins as the drawnRoot
+	private void rotateNode (int node, int rotateNode, double rotateAngle){   //node begins as the drawnRoot
 		double nx = location[node].getX();
 		double ny = location[node].getY();
 		double rx = location[rotateNode].getX();
@@ -344,7 +344,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 
 
-	private synchronized void rotateBranch (int node, int anc, int rotateNode, double rotateAngle){   //node begins as the drawnRoot
+	private void rotateBranch (int node, int anc, int rotateNode, double rotateAngle){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			int lastDaughter=tree.lastDaughterOfNodeUR(anc, node);
 			for (int d = tree.firstDaughterOfNodeUR(anc, node); tree.nodeExists(d); d = tree.nextAroundUR(node,d)){
@@ -356,7 +356,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		rotateNode(node, rotateNode, rotateAngle);
 	}
 
-	private synchronized void rotateTreeRec (int node, int rotateNode, double rotateAngle){  
+	private void rotateTreeRec (int node, int rotateNode, double rotateAngle){  
 		if (tree.nodeIsInternal(node)){
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				rotateTreeRec(d,  rotateNode, rotateAngle);
@@ -365,7 +365,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		rotateNode(node, rotateNode, rotateAngle);
 	}
 
-	private synchronized void rotateTree (int drawnRoot, int standardNode, double standardAngle){  
+	private void rotateTree (int drawnRoot, int standardNode, double standardAngle){  
 		double currentAngle = angleToNode(drawnRoot, standardNode) ;
 		double rotateAngle = currentAngle-standardAngle;
 		rotateTreeRec(drawnRoot, drawnRoot, rotateAngle);
@@ -418,7 +418,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	 */
 
 
-	private synchronized void reportDaughters (int drawnRoot, int node){   //node begins as the drawnRoot
+	private void reportDaughters (int drawnRoot, int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			int[] daughtersUR = tree.daughtersOfNodeUR(drawnRoot, node);
 			String s = " centerNode: " + node + " daughters: ";
@@ -434,7 +434,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	boolean nodeRotatedDuringEqualization = false;
 
-	private synchronized void equalizeDaylightForNode (int drawnRoot, int node){   //node begins as the drawnRoot
+	private void equalizeDaylightForNode (int drawnRoot, int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			double daylight = calculateDaylightForNode(drawnRoot, node);
 			int numDaughters = tree.numberOfDaughtersOfNode(node);
@@ -616,7 +616,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 		} 
 	}
 
-	private synchronized void equalizeDaylight (int drawnRoot, int node){   //node begins as the drawnRoot
+	private void equalizeDaylight (int drawnRoot, int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			if (node<20)
 				//if (node>=11 && node<=18)
@@ -698,7 +698,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	}
 
 	/** Calculates the angle of node Node, relative to vertext centerNode */
-	private synchronized double angleToNode(int centerNode, int node) {
+	private double angleToNode(int centerNode, int node) {
 		double dx = location[centerNode].getX();
 		double dy = location[centerNode].getY();
 		double nodedx = location[node].getX()-dx;
@@ -717,7 +717,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	}
 
 	/** Calculates angle between nodes leftNode and rightNode relative to vertex centerNode */
-	private synchronized double angleBetweenNodes(int centerNode, int leftNode, int rightNode) {
+	private double angleBetweenNodes(int centerNode, int leftNode, int rightNode) {
 		double dx = location[centerNode].getX();
 		double dy = location[centerNode].getY();
 		double ldx = location[leftNode].getX()-dx;
@@ -751,7 +751,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	/** Among the nodes that are descendent from node "node", calculates
 	 *  the node that is furthest counterclockwise relative to node "node" */
-	private synchronized void leftmostNodeOfCladeUR(int node, int anc, int centerNode, MesquiteDouble maxAngle, MesquiteInteger maxNode, double leftMaxAngle, double rightMaxAngle) {
+	private void leftmostNodeOfCladeUR(int node, int anc, int centerNode, MesquiteDouble maxAngle, MesquiteInteger maxNode, double leftMaxAngle, double rightMaxAngle) {
 		if (tree.nodeIsInternal(node)){
 			int startNode = tree.firstDaughterOfNodeUR(anc, node);
 			int count = 0;
@@ -820,7 +820,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	/** Among the nodes that are descendent from node "node", calculates
 	 *  the node that is furthest clockwise relative to node "node" */
-	private synchronized void rightmostNodeOfCladeUR(int node, int anc, int centerNode, MesquiteDouble maxAngle, MesquiteInteger maxNode, double leftMaxAngle, double rightMaxAngle) {
+	private void rightmostNodeOfCladeUR(int node, int anc, int centerNode, MesquiteDouble maxAngle, MesquiteInteger maxNode, double leftMaxAngle, double rightMaxAngle) {
 		if (tree.nodeIsInternal(node)){
 			int startNode = tree.firstDaughterOfNodeUR(anc, node);
 			int count = 0;
@@ -891,7 +891,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	/** Among the nodes that are "descendent" from node "node", calculates
 	 *  the node that is furthest counterclockwise relative to node "node" */
-	private synchronized int leftmostNode(int node, int centerNode, double leftMaxAngle, double rightMaxAngle) {
+	private int leftmostNode(int node, int centerNode, double leftMaxAngle, double rightMaxAngle) {
 		MesquiteDouble maxAngle = new MesquiteDouble();
 		MesquiteInteger maxNode = new MesquiteInteger(0);
 		if (tree.nodeIsTerminal(node))
@@ -903,7 +903,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 	/** Among the nodes that are "descendent" from node "node", calculates
 	 *  the node that is furthest clockwise relative to node "node" */
-	private synchronized int rightmostNode(int node, int centerNode, double leftMaxAngle, double rightMaxAngle) {
+	private int rightmostNode(int node, int centerNode, double leftMaxAngle, double rightMaxAngle) {
 		MesquiteDouble maxAngle = new MesquiteDouble();
 		MesquiteInteger maxNode = new MesquiteInteger(0);
 		if (tree.nodeIsTerminal(node))
@@ -970,7 +970,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 
 	/**  */
-	private synchronized double daylightBetweenNodes (int drawnRoot, int leftDaughter, int rightDaughter, int centerNode){   //node begins as the drawnRoot
+	private double daylightBetweenNodes (int drawnRoot, int leftDaughter, int rightDaughter, int centerNode){   //node begins as the drawnRoot
 		boolean centerNodeToCheck = ((centerNode==46) || (centerNode==53) ||(centerNode==54) || (centerNode==64));
 		centerNodeToCheck = false;
 		if (centerNodeToCheck) {
@@ -1012,7 +1012,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 
 
-	private synchronized double calculateDaylightForNode (int drawnRoot, int node){   //node begins as the drawnRoot
+	private double calculateDaylightForNode (int drawnRoot, int node){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			double daylight = 0.0;
 			int[] daughtersUR = tree.daughtersOfNodeUR(drawnRoot, node);
@@ -1069,7 +1069,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	}
 	 */
 
-	private synchronized void calculateDaylight (int drawnRoot, int node, MesquiteDouble daylight){   //node begins as the drawnRoot
+	private void calculateDaylight (int drawnRoot, int node, MesquiteDouble daylight){   //node begins as the drawnRoot
 		if (tree.nodeIsInternal(node)){
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 				calculateDaylight(drawnRoot, d, daylight);
@@ -1092,7 +1092,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 	 */
 
 	/** This calculates the node locs of each node entirely using the angular sector devoted to the descendents. */
-	private synchronized void adjustDaylight (int drawnRoot){   //node begins as the drawnRoot
+	private void adjustDaylight (int drawnRoot){   //node begins as the drawnRoot
 
 		double daylightInTree = 0.0;
 		double lastDaylightInTree = 0.0;
@@ -1277,7 +1277,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 
 	/*_________________________________________________*/
-	public synchronized void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { 
+	public  void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot) { 
 		if (MesquiteTree.OK(tree)) {
 			this.tree = tree;
 			this.treeDisplay = treeDisplay;
@@ -1314,11 +1314,15 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 				}
 			}
 
-			if (resetShowBranchLengths)
-				treeDisplay.showBranchLengths=showBranchLengths.getValue();
+			if (resetShowBranchLengths){
+				if (showBranchLengths.getValue())
+					treeDisplay.branchLengthDisplay=TreeDisplay.DRAWUNASSIGNEDASONE;
+				else
+					treeDisplay.branchLengthDisplay=TreeDisplay.DRAWULTRAMETRIC;
+			}
 			else {
-				if (treeDisplay.showBranchLengths != showBranchLengths.getValue()) {
-					showBranchLengths.setValue(treeDisplay.showBranchLengths);
+				if (treeDisplay.showBranchLengths() != showBranchLengths.getValue()) {
+					showBranchLengths.setValue(treeDisplay.showBranchLengths());
 					if (showBranchLengths.getValue()) 
 						showScaleItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
 					else
@@ -1332,7 +1336,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 			emptyRootSlices=1;
 			anglePerTerminalTaxon=(2 * Math.PI) / tree.numberOfTerminalsInClade(drawnRoot);  // the angle allotted to each terminal
 
-			treeRectangle = rect;
+			treeRectangle = treeDisplay.getField();
 			scaling = 100;
 
 
@@ -1464,7 +1468,7 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 }
 
 
-class NodeLocsUnrootedExtra extends TreeDisplayBkgdExtra {
+class NodeLocsUnrootedExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	NodeLocsUnrootedBasic locsModule;
 
 	public NodeLocsUnrootedExtra (NodeLocsUnrootedBasic ownerModule, TreeDisplay treeDisplay) {
@@ -1476,15 +1480,18 @@ class NodeLocsUnrootedExtra extends TreeDisplayBkgdExtra {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
 		if (locsModule.showScale.getValue() && locsModule.showBranchLengths.getValue())
 			locsModule.drawGrid(tree.tallestPathAboveNode(drawnRoot, 1.0), treeDisplay.fixedDepthScale, locsModule.scaling, tree, drawnRoot, treeDisplay, g);
-		//g.setColor(Color.green);
-		//g.fillOval(locsModule.centerx-8, locsModule.centery-8, 16, 16);
 	}
 	/*.................................................................................................................*/
+	public   void printUnderTree(Tree tree, int drawnRoot, Graphics g) {
+		drawUnderTree(tree, drawnRoot, g);
+	}
+	/*.................................................................................................................*/
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		drawOnTree(tree, drawnRoot, g);
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {

@@ -53,11 +53,11 @@ public class TrimTerminalByLength extends DataAlterer implements AltererSimpleCe
 		if (dData==null)
 			return -10;
 		if (!(dData instanceof CategoricalData))
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		CategoricalData data= (CategoricalData)dData;
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
 			if (!queryOptions())
-				return USER_STOPPED;
+				return ResultCodes.USER_STOPPED;
 		}
 
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
@@ -98,8 +98,8 @@ public class TrimTerminalByLength extends DataAlterer implements AltererSimpleCe
 			}
 		}
 		if ( changed)
-		return SUCCEEDED;
-		return MEH;
+		return ResultCodes.SUCCEEDED;
+		return ResultCodes.MEH;
 	}	/*.................................................................................................................*/
 	public boolean isPrerelease() {
 		return true;

@@ -136,18 +136,18 @@ public String preparePreferencesForXML () {
 			return -10;
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
    			if (!queryOptions(data.getNumTaxa()))
-   				return USER_STOPPED;
+   				return ResultCodes.USER_STOPPED;
 		}
 
 		if (!(data instanceof DNAData))
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 	//	try{
 		processData((DNAData)data,data.getTaxa());
 //		}
 //		catch (ArrayIndexOutOfBoundsException e){
 //			return false;
 //		}
-		return SUCCEEDED;
+		return ResultCodes.SUCCEEDED;
    	}
    	
 	/*.................................................................................................................*/

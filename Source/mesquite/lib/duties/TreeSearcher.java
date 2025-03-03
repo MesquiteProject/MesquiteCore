@@ -67,17 +67,7 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract boolean initialize(Taxa taxa);
 
-   	//outsideMatrix
-   	// optional, in case employer wants to force use of a matrix
-   	MatrixSourceCoord matrixSourceImposed = null;
-	 public MatrixSourceCoord getMatrixSource() {
-		 return matrixSourceImposed;
-	 }
-	 public void setMatrixSource(MatrixSourceCoord msource) {
-		 this.matrixSourceImposed = msource;
-	 }
-		public abstract Class getCharacterClass();
-/*-------*/ 
+   	
 	 
 	 public TreeInferer getTreeInferer() {
 		 return treeInferer;
@@ -105,15 +95,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	 }
 	 
 	 
-	public static int INCOMPATIBLE_DATA = -4;
-	public static int NULLVALUE = -3;
-	public static int USERCANCELONINITIALIZE = -2;
-	public static int NORESPONSE = -1;
-	public static int NOERROR = 0;
 
    	 /** Fills the passed tree block with trees. */
   	public abstract int fillTreeBlock(TreeVector treeList);
-  	  
+  	 
 	public void setNumberTask(NumberForTree numTask){
 	}
   	

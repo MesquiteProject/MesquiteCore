@@ -94,17 +94,17 @@ public class NumberArray {
 	public NumberArray cloneArray(){
 		NumberArray c = new NumberArray();
 		c.length = length;
-		if (valueClass==INT) {
+		if (valueClass==INT && intValues != null) {
 			c.intValues = new int[length];
 			for (int i=0; i<length; i++)
 				c.intValues[i]=intValues[i];
 		}
-		else if (valueClass == LONG) {
+		else if (valueClass == LONG && longValues != null) {
 			c.longValues = new long[length];
 			for (int i=0; i<length; i++)
 				c.longValues[i]=longValues[i];
 		}
-		else if (valueClass == DOUBLE) {
+		else if (valueClass == DOUBLE && doubleValues != null) {
 			c.doubleValues = new double[length];
 			for (int i=0; i<length; i++)
 				c.doubleValues[i]=doubleValues[i];
@@ -147,7 +147,15 @@ public class NumberArray {
 	}
 	/*...........................................................*/
 	public boolean legalIndex(int i){
-		return (i>=0 && i<length);
+		if (i<0 || i>=length)
+			return false;
+		if (valueClass == INT && intValues == null)
+			return false;
+		if (valueClass == LONG && longValues == null)
+			return false;
+		if (valueClass == DOUBLE && doubleValues == null)
+			return false;
+		return true;
 	}
 	/*--------------------------------GET/SET-----------------------------*/
 	/*...........................................................*/
@@ -187,7 +195,11 @@ public class NumberArray {
 	/** Returns double value at index. */
 	public double getDouble(int index) {
 		if (!legalIndex(index)) {
-			MesquiteMessage.warnProgrammer("NumberArray index out of bounds (a3) " + index + "  max: " + length);
+			MesquiteMessage.warnProgrammer("NumberArray index out of bounds (a3) " + index + "  max: " + length + " valueclass " + valueClass + " intValues " + intValues + " doubleValues " + doubleValues);
+			if (intValues != null)
+				MesquiteMessage.warnProgrammer("    intValues length " + intValues.length);
+			if (doubleValues != null)
+				MesquiteMessage.warnProgrammer("    doubleValues length " + doubleValues.length);
 		}
 		else  {
 			if (valueClass==INT)
@@ -296,12 +308,17 @@ public class NumberArray {
 	/** Sets value of element "index" to the passed value */
 	public void setValue(int index, double v) {
 		if (!legalIndex(index)) {
-			MesquiteMessage.warnProgrammer("NumberArray index out of bounds (d) " + index + "  max: " + length);
+			MesquiteMessage.warnProgrammer("NumberArray index out of bounds (d) " + index + "  max: " + length + " valueclass " + valueClass + " intValues " + intValues + " doubleValues " + doubleValues);
+			if (intValues != null)
+				MesquiteMessage.warnProgrammer("    intValues length " + intValues.length);
+			if (doubleValues != null)
+				MesquiteMessage.warnProgrammer("    doubleValues length " + doubleValues.length);
 			return;
 		}
 		if (valueClass==INT) {
 			doubleValues = new double[length];
-			for (int i=0; i<length; i++)
+			if (intValues != null)
+				for (int i=0; i<length; i++)
 				doubleValues[i]=MesquiteDouble.toDouble(intValues[i]);
 			doubleValues[index] = v;
 			intValues=null;
@@ -309,7 +326,8 @@ public class NumberArray {
 		}
 		else if (valueClass == LONG) {
 			doubleValues = new double[length];
-			for (int i=0; i<length; i++)
+			if (longValues != null)
+		for (int i=0; i<length; i++)
 				doubleValues[i]=MesquiteDouble.toDouble(longValues[i]);
 			doubleValues[index] = v;
 			longValues=null;
@@ -451,14 +469,20 @@ public class NumberArray {
 	/** DOCUMENT */
 	public void zeroArray() {
 		if (valueClass==INT) {
+			if (intValues == null)
+				return;
 			for (int i=0; i<length; i++)
 				intValues[i]=0;
 		}
 		else if (valueClass == LONG) {
+			if (longValues == null)
+				return;
 			for (int i=0; i<length; i++)
 				longValues[i]=0L;
 		}
 		else if (valueClass == DOUBLE) {
+			if (doubleValues == null)
+				return;
 			for (int i=0; i<length; i++)
 				doubleValues[i]=0.0;
 		}
@@ -471,20 +495,23 @@ public class NumberArray {
 	/*...........................................................*/
 	/** DOCUMENT */
 	public void deassignArray(boolean resetValueClass) {
-		if (valueClass==INT) {
+		if (valueClass==INT  && intValues != null) {
 			for (int i=0; i<length; i++)
 				intValues[i]=MesquiteInteger.unassigned;
 		}
-		else if (valueClass == LONG) {
+		else if (valueClass == LONG && longValues != null) {
 			for (int i=0; i<length; i++)
 				longValues[i]=MesquiteLong.unassigned;
 		}
-		else if (valueClass == DOUBLE) {
+		else if (valueClass == DOUBLE && doubleValues != null) {
 			for (int i=0; i<length; i++)
 				doubleValues[i]=MesquiteDouble.unassigned;
 		}
-		if (resetValueClass)
+		if (resetValueClass) {
 			valueClass = INT;
+			if (intValues == null)
+				intValues = new int[length];
+		}
 	}
 	/*...........................................................*/
 	/** this method calculates the minimum value in the objects array from 

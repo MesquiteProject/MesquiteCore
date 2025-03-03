@@ -15,6 +15,8 @@ package mesquite.lib.ui;
 
 import java.awt.event.*;
 
+import javax.swing.JScrollBar;
+
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -132,6 +134,8 @@ public class AlertDialog  {
 		id.dispose();
 		return (buttonPressed.getValue()==0);
 	}
+	
+	//NOTE: These HTML dialogs seem to work much better if on AWTEvent thread, so perhaps do these by bypassing PendingCommand queue?
 	public static void noticeHTML(Object parent, String title, String message, int w, int h, MesquiteCommand linkTouchedCommand) {
 		noticeHTML(parent, title, message, w, h, linkTouchedCommand, false);
 	}
@@ -143,6 +147,7 @@ public class AlertDialog  {
 		if (id.isInWizard())
 			id.appendToHelpString("<h3>Notice</h3>");
 		id.addHTMLPanel(message, w, h, linkTouchedCommand);
+		id.validate();
 		try {
 			id.completeAndShowDialog(okString,null,null,okString);
 		} catch (Exception e) {

@@ -43,11 +43,11 @@ public class RandomFillCont extends ContDataAlterer implements AltererRandomizat
 			
    			boolean did=false;
 			if (!(data instanceof ContinuousData))
-				return INCOMPATIBLE_DATA;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			MesquiteBoolean answer = new MesquiteBoolean(true);
 			MesquiteDouble.queryTwoDoubles(containerOfModule(), "Random fill", "Mean of filled states", "Variance of filled states", answer, mean, variance);
 			if (!answer.getValue() && variance.getValue()>=0 && (variance.isCombinable()))
-				return USER_STOPPED;
+				return ResultCodes.USER_STOPPED;
 			standardDeviation = Math.sqrt(variance.getValue());
 			ContinuousData cData = (ContinuousData)data;
 			return alterContentOfCells(data,table, undoReference);

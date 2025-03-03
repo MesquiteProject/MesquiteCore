@@ -39,7 +39,7 @@ public class LineageWidth extends TreeDisplayAssistantI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
-		addMenuItem("Set all lineage width scaling factors...", makeCommand("setAllWidths",  this));
+	//	addMenuItem("Set all lineage width scaling factors...", makeCommand("setAllWidths",  this));
 		return true;
 	} 
 	/*.................................................................................................................*/
@@ -56,7 +56,7 @@ public class LineageWidth extends TreeDisplayAssistantI {
 		return newPj;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the scaling factor of lineage widths for all branches", "[width scale]", commandName, "setAllWidths")) {
 			pos.setValue(0);
@@ -113,8 +113,10 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 			((MesquiteWindow)ownerModule.containerOfModule()).addTool(colorTool);
 		}
 	}
-	/*....................................................................................................*/
+	/*....................................................................................................*
 	private void drawWidths (Tree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		double w =widths.getValue(node);
 		if (MesquiteDouble.isCombinable(w)) {
 			double nodeX = treeDisplay.getTreeDrawing().x[node];
@@ -133,12 +135,13 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 				miniEditor.setLocation((int)treeDisplay.getTreeDrawing().x[editorNode],(int) treeDisplay.getTreeDrawing().y[editorNode]); // integer nodeloc approximation
 			else hideMiniEditor();
 		}
-		if (widths!=null) {
+		/* as of v4, handled by NodeAssocZ
+		 * if (widths!=null) {
 			Color c = g.getColor();
 			g.setColor(Color.green);
 			drawWidths(tree, drawnRoot, g);
 			if (c!=null) g.setColor(c);
-		}
+		}*/
 	}
 
 	/*.................................................................................................................*/
@@ -149,19 +152,19 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 	public   void setTree(Tree tree) {
 		this.tree = tree;
 		if (tree != null)
-			widths = tree.getWhichAssociatedDouble(widthNameReference);
+			widths = tree.getAssociatedDoubles(widthNameReference);
 	}
 
 	/*.................................................................................................................*/
 	private   void setLineageWidths(MesquiteTree tree, int node, double w) {
-		tree.setAssociatedDouble(widthNameReference, node, w, true);
+		tree.setAssociatedDouble(widthNameReference, node, w);
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			setLineageWidths(tree, d, w);
 	}
 	/*.................................................................................................................*/
 	public   void setAllWidths(double w) {
 		if (tree instanceof MesquiteTree) {
-			if (((MesquiteTree)tree).getWhichAssociatedDouble(widthNameReference)==null)
+			if (((MesquiteTree)tree).getAssociatedDoubles(widthNameReference)==null)
 				((MesquiteTree)tree).makeAssociatedDoubles("width");
 			setLineageWidths((MesquiteTree)tree, tree.getRoot(), w);
 			((MesquiteTree)tree).notifyListeners(this, new Notification(MesquiteListener.UNKNOWN));
@@ -175,9 +178,9 @@ class WidthsToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	private void setWidth(MesquiteTree tree, int node, double w){
-		if (tree.getWhichAssociatedDouble(widthNameReference)==null)
+		if (tree.getAssociatedDoubles(widthNameReference)==null)
 			tree.makeAssociatedDoubles("width");
-		tree.setAssociatedDouble(widthNameReference, node, w, true);
+		tree.setAssociatedDouble(widthNameReference, node, w);
 		tree.notifyListeners(this, new Notification(MesquiteListener.UNKNOWN));
 	}
 	/*.................................................................................................................*/

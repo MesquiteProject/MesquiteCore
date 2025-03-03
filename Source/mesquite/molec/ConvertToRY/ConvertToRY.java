@@ -35,7 +35,7 @@ public class ConvertToRY extends DNADataAlterer implements AltererDNACell {
 		this.table = table;
 		if (!(data instanceof DNAData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on nucleotide data");
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		}
 		return alterContentOfCells(data,table, undoReference);
 	}

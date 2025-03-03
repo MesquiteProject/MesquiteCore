@@ -35,7 +35,11 @@ public class DeassignBranchLengths extends BranchLengthsAltererMult {
    	 public boolean isPrerelease(){
    	 	return false;
    	 }
-   
+ 	/*.................................................................................................................*/
+   	 public boolean requestPrimaryChoice(){
+   	 	return true;
+   	 }
+
 	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
   	 		if (tree instanceof MesquiteTree) {

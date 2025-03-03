@@ -32,12 +32,12 @@ import mesquite.io.lib.*;
 /* ======================================================================== */
 /** A set of static methods for NCBI*/
 public class NCBIUtil {
-	public final static NameReference EVALUE = new NameReference("BLASTeValue");
-	public final static NameReference BITSCORE = new NameReference("BLASTbitScore");
-	public final static NameReference DEFINITION = new NameReference("GenBankdefinition");
-	public final static NameReference ACCESSION = new NameReference("GenBankAccession");
-	public final static NameReference FRAME = new NameReference("GenBankFrame");
-	public final static NameReference TAXONOMY = new NameReference("GenBankTaxonomy");
+	public final static NameReference EVALUE = NameReference.getNameReference("BLASTeValue");
+	public final static NameReference BITSCORE = NameReference.getNameReference("BLASTbitScore");
+	public final static NameReference DEFINITION = NameReference.getNameReference("GenBankdefinition");
+	public final static NameReference ACCESSION = NameReference.getNameReference("GenBankAccession");
+	public final static NameReference FRAME = NameReference.getNameReference("GenBankFrame");
+	public final static NameReference TAXONOMY = NameReference.getNameReference("GenBankTaxonomy");
 
 	
 	

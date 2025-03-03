@@ -183,13 +183,13 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 	public   void setTree(Tree tree) {
 	}
 	String getConstraints(Tree tree, int node){
-		return (String)tree.getAssociatedObject(ConstrainNodeAge.nodeAgeConstrRef, node);
+		return (String)tree.getAssociatedString(ConstrainNodeAge.nodeAgeConstrRef, node);
 	}
 	Parser parser = new Parser();
 
 	void setNote(Tree tree, int node, String note){
 		if (tree instanceof Associable){
-			((Associable)tree).setAssociatedObject(ConstrainNodeAge.nodeAgeConstrRef, node, note);
+			((Associable)tree).setAssociatedString(ConstrainNodeAge.nodeAgeConstrRef, node, note);
 			((Associable)tree).notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 
 		}

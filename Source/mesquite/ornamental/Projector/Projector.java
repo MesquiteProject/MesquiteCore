@@ -128,6 +128,8 @@ class ProjectorToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public   void drawNode(Tree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawNode(tree, d, g);
 		if (tree.nodeIsTerminal(node)) {

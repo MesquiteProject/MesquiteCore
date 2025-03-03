@@ -114,8 +114,8 @@ public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlig
 		}
 
 		if ( dataChanged.getValue())
-		return SUCCEEDED;
-		return MEH;
+		return ResultCodes.SUCCEEDED;
+		return ResultCodes.MEH;
 
 	}
 

@@ -22,6 +22,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeUtil;
 
 public class ExportFusedPhylip extends InterpretPhylip {
 
@@ -101,7 +102,7 @@ public class ExportFusedPhylip extends InterpretPhylip {
 	}
 	/*.................................................................................................................*/
 	public String getTranslationTablePath(){
-		return getExportedFileDirectory()+IOUtil.translationTableFileName;
+		return getExportedFileDirectory()+ TreeUtil.translationTableFileName;
 	}
 	/*.................................................................................................................*/
 	public void writeExtraFiles(Taxa taxa){

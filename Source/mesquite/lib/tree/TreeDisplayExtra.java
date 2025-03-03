@@ -66,6 +66,12 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 		this.placement = placement;
 	}
 	
+	/* The TreeDisplayRequests object has public int fields leftBorder, topBorder, rightBorder, bottomBorder (in pixels and in screen orientation)
+	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
+	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
+		return null;
+	}
+
 	public TreeDisplay getTreeDisplay(){
 		return treeDisplay;
 	}
@@ -227,6 +233,10 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	/**to inform TreeDisplayExtra that cursor has just exited branch N*/
 	public void cursorExitBranch(Tree tree, int N, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
+	public void cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, boolean isArrowTool){
+		cursorTouchBranch(tree, N, g);
+	}
+	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
 	public void cursorTouchBranch(Tree tree, int N, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just touched the field (not in a branch or taxon)*/
 	public void cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers){}
@@ -234,6 +244,10 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	public void cursorEnterTaxon(Tree tree, int M, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just exited name of terminal taxon M*/
 	public void cursorExitTaxon(Tree tree, int M, Graphics g){}
+	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*/
+	public void cursorTouchTaxon(Tree tree, int M, Graphics g, int modifiers, boolean isArrowTool){
+		cursorTouchTaxon(tree, M, g);
+	}
 	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*/
 	public void cursorTouchTaxon(Tree tree, int M, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just moved OUTSIDE of taxa or branches*/

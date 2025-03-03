@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<mesquite>
+<!-- NOTE: because this file is named example.xml, it is ignored by Mesquite in dialect reading -->
+	<humanName>XXXXX</humanName> <!-- required -->
+	<internalName>XXXX</internalName> <!-- required -->
+	<!-- At least one element of the following must be present -->
+	<punctuation>XXXX</punctuation> <!-- if not present, punctuation is null, i.e. default  -->
+	<whitespace>XXXX</whitespace> <!-- if not present, whitespace is null, i.e. default  -->
+	<!-- replacements in sequence -->
+	<replacement> 
+		<before>xxxx</before>
+		<after>yyyy</after>
+	</replacement> 
+	<replacement> 
+		<before>zzzzzz</before>
+		<after>wwwww</after>
+		<where>last</where> <!-- default all; alternatives first, last -->
+	</replacement> 
+	<replacement> 
+		<before>aaa</before>
+		<after>bbbb</after>
+	</replacement> 
+
+</mesquite>
+

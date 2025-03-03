@@ -544,8 +544,18 @@ public class MolecularData extends CategoricalData {
 		Taxon taxon = getTaxa().getTaxon(it);
 		Associable tInfo = getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, it, s);
+			tInfo.setAssociatedString(MolecularData.genBankNumberRef, it, s);
 		}
+	}
+	/*...............................................................................................................*/
+	/** Gets the GenBank number of a particular taxon in this data object. */
+	public String getGenBankNumber(int it){
+		Taxon taxon = getTaxa().getTaxon(it);
+		Associable tInfo = getTaxaInfo(true);
+		if (tInfo != null && taxon != null) {
+			return tInfo.getAssociatedString(MolecularData.genBankNumberRef, it);
+		}
+		return null;
 	}
 
 	/* ..........................................  .................................................. */

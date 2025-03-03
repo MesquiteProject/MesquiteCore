@@ -223,7 +223,7 @@ public class Listened implements Listenable {
 								ls[m].changed(caller, this, notification);
 								long time = timer.timeSinceLast();
 								if (time>20)
-									MesquiteMessage.println("@Time: " +  time + " ms. " + "Object: " + this + ".   Listener: " + ls[m]);
+									MesquiteMessage.println("Time: " +  time + " ms. " + "Object: " + this + ".   Listener: " + ls[m]);
 							} else {
 								try {
 									ls[m].changed(caller, this, notification); // >>>>> NOTIFICATION IS HERE <<<<<

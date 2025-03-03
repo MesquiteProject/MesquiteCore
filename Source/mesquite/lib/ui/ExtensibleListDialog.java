@@ -16,6 +16,7 @@ package mesquite.lib.ui;
 import java.awt.*;
 import java.awt.event.*;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;

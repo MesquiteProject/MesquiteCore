@@ -23,6 +23,7 @@ import javax.swing.text.JTextComponent;
 import pal.math.MathUtils;
 import mesquite.lib.*;
 import mesquite.lib.duties.FileInterpreter;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorTheme;
@@ -30,6 +31,7 @@ import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteButton;
 import mesquite.lib.ui.MesquitePDFFile;
 import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquitePrintJob;
 import mesquite.lib.ui.MesquiteScrollbar;
 import mesquite.lib.ui.MesquiteTool;
@@ -663,8 +665,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 	/* ................................................................................................................. */
 
-	public boolean inBetweenSelection( int column, int row, int regionInCellH, int regionInCellV) {
+	public boolean inBetweenSelection( int column, int row, EditorPanel editorPanel, int x, int y) {
 		int buff = 2;
+		int regionInCellH = editorPanel.findRegionInCellH(x);
+		int regionInCellV = editorPanel.findRegionInCellV(y);
 		if (selectedBetweenColumns())
 			return (row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection()) && ((regionInCellH>80 && column == getStartBetweenColumnSelection()) || (regionInCellH<20 && column == getStartBetweenColumnSelection()+1)) ;
 		else if (selectedBetweenRows())
@@ -1082,11 +1086,41 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 
 	/* ................................................................................................................. */
-	protected boolean anyCellInRowSelected(int row) {
+	public boolean anyCellInRowSelected(int row) {
 		if (!rowLegal(row))
 			return false;
 		for (int i = 0; i < numColumnsTotal; i++) {
 			if (isCellSelected(i, row))
+				return true;
+		}
+		return false;
+	}
+	/* ................................................................................................................. */
+	public boolean anyCellInRowSelectedAnyWay(int row) {
+		if (!rowLegal(row))
+			return false;
+		for (int i = 0; i < numColumnsTotal; i++) {
+			if (isCellSelectedAnyWay(i, row))
+				return true;
+		}
+		return false;
+	}
+	/* ................................................................................................................. */
+	public boolean anyCellInColumnSelected(int column) {
+		if (!columnLegal(column))
+			return false;
+		for (int i = 0; i < numRowsTotal; i++) {
+			if (isCellSelected(column, i))
+				return true;
+		}
+		return false;
+	}
+	/* ................................................................................................................. */
+	public boolean anyCellInColumnSelectedAnyWay(int column) {
+		if (!columnLegal(column))
+			return false;
+		for (int i = 0; i < numRowsTotal; i++) {
+			if (isCellSelectedAnyWay(column, i))
 				return true;
 		}
 		return false;
@@ -3388,7 +3422,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 
 	/* ............................................................................................................... */
 	/** Called if cell is touched. Can be overridden in subclasses to change response to touch. */
-	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if (!columnLegal(column) || !rowLegal(row))
 			return;
 		if (!cellsSelectable && !isCellEditable(column, row))
@@ -3396,6 +3430,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		/*
 		 * if ((column == columnFirstTouched && row == rowFirstTouched) && (anyCellSelected() || editingMatrixCell())) { offEditMatrixCell(); deselectAllNotify(); selectCell(column,row); redrawCell(column,row); } else
 		 */
+		
 		if (MesquiteEvent.shiftKeyDown(modifiers) && (anyCellSelected() || editingMatrixCell())) {
 			offEditMatrixCell();
 			int firstRow = firstRowWithSelectedCell();
@@ -3502,7 +3537,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/**
 	 * Called if mouse dragged over cell. Can be overridden in subclasses to respond.
 	 */
-	public void cellDrag(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDrag(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (!columnLegal(column) || !rowLegal(row))
 			return;
 		if (!cellsSelectable)
@@ -3524,7 +3559,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/**
 	 * Called if mouse is dropped on cell. Can be overridden in subclasses to respond.
 	 */
-	public void cellDropped(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDropped(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (!singleTableCellSelected())
 			defocusCell();
 	}
@@ -3534,7 +3569,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 	/* ............................................................................................................... */
 	/** Called if column name is touched. Can be overridden in subclasses to change response to touch. */
-	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void columnNameTouched(int column, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		// TODO: have extension of selection if shift or command; have boolean if name editable and if selectable
 		if (!columnLegal(column))
 			return;
@@ -3579,7 +3614,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 
 	/* ............................................................................................................... */
 	/** Called if row name is touched. Can be overridden in subclasses to change response to touch. */
-	public void rowNameTouched(int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void rowNameTouched(int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if (!rowNamesEditable && !rowNamesSelectable)
 			return;
 		if (!rowLegal(row))
@@ -3640,7 +3675,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 
 	/** Called if column is touched. Can be overridden in subclasses to change response to touch. */
 	/* ............................................................................................................... */
-	public void columnTouched(boolean isArrowEquivalent, int column, int regionInCellH, int regionInCellV, int modifiers) {
+	public void columnTouched(boolean isArrowEquivalent, int column, EditorPanel editorPanel, int x, int y, int modifiers) {
 		// int[] columnsToRedraw = new int[2];
 		// columnsToRedraw[0] = column;
 		// columnsToRedraw[1] = column;
@@ -3701,12 +3736,18 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 
 	/* ............................................................................................................... */
-	public void subRowTouched(int subRow, int column, int regionInCellH, int regionInCellV, int x, int y, int modifiers) {
+	public void subRowTouched(int subRow, int column, EditorPanel editorPanel, int x, int y, int modifiers) {
 	}
 
 	/* ............................................................................................................... */
+	/** Called if row is touched. Can be overridden in subclasses to change response to touch. *
+	public void rowTouched(boolean asArrow, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
+		rowTouched(asArrow, row, null, 0, 0, editorPanel, x, y, modifiers);
+	}
+	public void rowTouched(boolean asArrow, int row, RowNamesPanel panel, int x, int y, EditorPanel editorPanel, int x, int y, int modifiers) {
+	/* ............................................................................................................... */
 	/** Called if row is touched. Can be overridden in subclasses to change response to touch. */
-	public void rowTouched(boolean asArrow, int row, int regionInCellH, int regionInCellV, int modifiers) {
+		public void rowTouched(boolean asArrow, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (!rowsSelectable) {
 			return;
 		}
@@ -4482,7 +4523,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 
 	/* ............................................................................................................... */
-	/** returns whether any column is selected. */
+	/** returns whether any column is selected.*/
 	public boolean anyColumnSelected() {
 		return columnsSelected[0].anyBitsOn();
 	}
@@ -5057,6 +5098,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 
 	/* ............................................................................................................... */
+	/** returns whether a cell in a row is selected. */
+	public boolean anyCellsInRowSelectedAnyWay(int row) {
+		if (isRowSelected(row))
+			return true;
+		for (int column=0; column<numColumnsTotal; column++)
+			if (isColumnSelected(column) || isCellBitOn(column, row))
+					return true;
+		return false;
+	}
+	/* ............................................................................................................... */
 	/** returns whether a cell in a column is selected. */
 	public boolean anyCellsInColumnSelectedAnyWay(int column) {
 		if (isColumnSelected(column))
@@ -5186,12 +5237,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		if (rowLegal(row))
 			return rowsSelected[0].isBitOn(row);
 		return false;
-	}
-
-	/* ............................................................................................................... */
-	/** is any row selected. */
-	public boolean isAnyRowSelected() {
-		return rowsSelected[0].anyBitsOn();
 	}
 
 	/* ............................................................................................................... */

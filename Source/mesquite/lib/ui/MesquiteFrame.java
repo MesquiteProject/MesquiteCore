@@ -23,6 +23,7 @@ import java.util.*;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteFile;
@@ -314,6 +315,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		catch (Exception e){
 			//strange things can happen with threading...
 		}
+		MesquiteThread.shouldBeOnMesquiteThread(true);	//Debugg.println set to false before release	
 		alreadyDisposed = true;
 		if (activeWindow == this)
 			activeWindow = null;
@@ -398,7 +400,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		return "==============================\n" + getTitle() +"\n" + listComponentsRec(this, "   ");
 	}
 	public static String listComponentsAllWindows() {
-		String list = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+		String list = "##################################\n";
 		Vector frames = new Vector();
 	 for (int i = 0; i<MesquiteTrunk.windowVector.size(); i++) {
 		 MesquiteWindow window = (MesquiteWindow)MesquiteTrunk.windowVector.elementAt(i);
@@ -562,6 +564,19 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		}
 		return false;
 	}
+	/*.................................................................................................................*/
+	public MesquiteWindow findWindowByUniqueID(String uniqueID){
+		if (uniqueID == null)
+			return null;
+		for (int i = 0; i<windows.size(); i++){
+			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
+			if (uniqueID.equals(w.getUniqueID()))
+				return w;
+		}
+		return null;
+
+	}
+
 	/*.................................................................................................................*/
 	private MesquiteWindow findWindow(String s){
 		for (int i = 0; i<windows.size(); i++){
@@ -1005,6 +1020,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		if (tabs !=null)
 			tabs.repaint();
 	}
+	
 	public void OLDsetAsFrontWindow(MesquiteWindow w){
 		//	frontWindow = null;
 		if (w != null && windows.indexOf(w)>=0) {
@@ -1373,7 +1389,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 			closeWindowRequested();
 		}
 		else if (checker.compare(getClass(), "Requests resetSizes", null, commandName, "resetSizesDoingShow")) {
-				if (windows.size() >1 || frontMostInLocation(RESOURCES) != null)
+				if (windows !=null && windows.size() >1 || frontMostInLocation(RESOURCES) != null)
 					setSize(savedW, savedHWithTabs);
 				else
 					setSize(savedW, savedHWithoutTabs);
@@ -1464,6 +1480,8 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 				ProgressWindow.allIndicatorsToFront();
 
 		}
+
+				
 
 	}
 

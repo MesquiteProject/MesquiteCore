@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<mesquite>
+	<humanName>Default/Mesquite/BEAST</humanName> <!-- required -->
+	<internalName>Default</internalName> <!-- required -->
+</mesquite>
+

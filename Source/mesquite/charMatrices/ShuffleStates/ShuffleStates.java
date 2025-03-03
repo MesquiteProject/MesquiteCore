@@ -98,8 +98,8 @@ public class ShuffleStates extends DataAlterer implements AltererRandomizations{
    				}
    			}
 			if (did)
-				return SUCCEEDED;
-				return MEH;
+				return ResultCodes.SUCCEEDED;
+				return ResultCodes.MEH;
 			
    	}
 

@@ -45,11 +45,11 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 	public String getExplanation() {
 		return "Infers trees for each of the matrices, and compiles them into a single tree block." ;
 	}
-	TreeSearcher inferenceTask;
+	TreeSearcherFromMatrix inferenceTask;
 	MatrixSourceCoord matrixSourceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		inferenceTask = (TreeSearcher)hireCompatibleEmployee(TreeSearcher.class, "acceptImposedMatrixSource", "Tree inference method");
+		inferenceTask = (TreeSearcherFromMatrix)hireCompatibleEmployee(TreeSearcherFromMatrix.class, "acceptImposedMatrixSource", "Tree inference method");
 		matrixSourceTask = new MyListOfMatrices(this);
 		if (inferenceTask == null || matrixSourceTask == null)
 			return false;
@@ -110,7 +110,7 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 				int result = inferenceTask.fillTreeBlock(trees);
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
-				if (result == TreeSearcher.USERCANCELONINITIALIZE) {
+				if (result == ResultCodes.USERCANCELONINITIALIZE) {
 					logln("User cancelled the analyses."); 
 					userCancel=true;
 					stop = true;
@@ -137,8 +137,11 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 							num = ".#" + (itr-lastNumTrees + 1);
 						Tree t = trees.getTree(itr);
 						count++;
-						if (t instanceof MesquiteTree)
-							((MesquiteTree)trees.getTree(itr)).setName(data.getName() + num);
+						if (t instanceof MesquiteTree){
+							MesquiteTree tM = (MesquiteTree)t;
+							tM.setName(data.getName() + num + ".tree");
+							tM.attach(new MesquiteString("fromMatrix", data.getName()));
+						}
 					}
 				}
 			}

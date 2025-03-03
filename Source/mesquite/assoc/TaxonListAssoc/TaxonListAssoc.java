@@ -90,7 +90,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		addMenuItem(null, "Assign Associates to Selected Taxa...", makeCommand("setAssociates", this));
 		addMenuItem(null, "Add Associates to Selected Taxa...", makeCommand("addAssociates", this));
 		addMenuItem(null, "Remove Associates", makeCommand("removeAssociates", this));
-		addMenuItem(null, "?Auto-assign Matches...", makeCommand("autoAssignExact", this)); //ZQ what does this do?
+		//addMenuItem(null, "?Auto-assign Matches...", makeCommand("autoAssignExact", this)); 
 		addMenuItem(null, "Assign Associates by Name Matching...", makeCommand("calculateAssociation", this));
 		addMenuItem(null, "Trade Status Contained-Containing", makeCommand("tradeStatus", this));
 		addMenuItem(null, "-", null);
@@ -98,7 +98,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		addMenuItem(null, "Duplicate Association", makeCommand("duplicateAssociation", this));
 		addMenuItem(null, "-", null);
 		addMenuItem(null, "Create New Associated Taxon...", makeCommand("createAssociate", this));
-		addMenuItem(null, "?Create New Taxa in Containing Block from Selected", makeCommand("createNewTaxaFromSelected", this)); //ZQ What does this do? Debugg.println this shoudl work only if what is shown is contained
+	//	addMenuItem(null, "?Create New Taxa in Containing Block from Selected", makeCommand("createNewTaxaFromSelected", this)); 
 		addMenuItem(null, "Delete Associated Taxa...", makeCommand("deleteAssociateTaxa", this));
 		addMenuItem(null, "-", null);
 		if (this.taxa != null)
@@ -142,7 +142,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	public MesquiteWindow getParentWindow(){
 		return containingWindow;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Auto-assign Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
@@ -486,10 +486,11 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		else  if (checker.compare(this.getClass(), "Asks the association manager to make a new association", null, commandName, "newAssociation")) {
 			return newAssociation();
 		}
-		else  if (checker.compare(this.getClass(), "Automatically sets associates if there is an exact match of names", null, commandName, "autoAssignExact")) {
+	/*	else  if (checker.compare(this.getClass(), "Automatically sets associates if there is an exact match of names", null, commandName, "autoAssignExact")) {
 			if (queryOptions())
 				autoAssign(ignoreWhitespace, ignoreCase);
 		}
+		*/
 		/*else  if (checker.compare(this.getClass(), "Sets which other taxon is associated with these; replaces existing", null, commandName, "setAssociate")) {
 			chooseAndSetAssociate(false);
 		}
@@ -502,7 +503,8 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		else if (checker.compare(this.getClass(), "Sets which other taxa are associated with single selected taxon; adds to existing", null, commandName, "addAssociates")) {
 			chooseAndSetAssociates(true);
 		}
-		else  if (checker.compare(this.getClass(), "Creates new taxa", null, commandName, "createNewTaxaFromSelected")) {
+		/*
+		 * else  if (checker.compare(this.getClass(), "Creates new taxa", null, commandName, "createNewTaxaFromSelected")) {
 			if (association == null)
 				return null;
 			Taxa otherTaxa = association.getOtherTaxa(taxa);
@@ -521,12 +523,13 @@ public class TaxonListAssoc extends TaxonListAssistant {
 					association.setAssociation(t, otherT, true);
 				}
 			}
-			if (added) {
+			if (added) { 
 				//taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 				association.notifyListeners(this, new Notification(MesquiteListener.UNKNOWN));  
 				parametersChanged();
 			}
 		}
+		*/
 		else if (checker.compare(this.getClass(), "Creates a new taxon and adds to existing", null, commandName, "createAssociate")) {
 			if (association == null)
 				return null;
@@ -534,10 +537,12 @@ public class TaxonListAssoc extends TaxonListAssistant {
 				discreetAlert("To create a new associate, rows (taxa) in this table need to be selected to which to assign the new associate.");
 				return null;
 			}				
+			String n = MesquiteString.queryString(containerOfModule(), "Name of Taxon", "Name the new taxon", "Taxon");
+			if (StringUtil.blank(n))
+				return null;
 			Taxa otherTaxa = association.getOtherTaxa(taxa);
 			otherTaxa.addTaxa(otherTaxa.getNumTaxa()-1, 1, false);
 			Taxon t = otherTaxa.getTaxon(otherTaxa.getNumTaxa()-1);
-			String n = MesquiteString.queryString(containerOfModule(), "Name of Taxon", "Name the new taxon", "Taxon");
 			t.setName(n);
 			otherTaxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			addAssociateOfSelected(t);

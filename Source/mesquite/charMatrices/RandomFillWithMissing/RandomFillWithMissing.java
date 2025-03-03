@@ -73,7 +73,7 @@ public class RandomFillWithMissing extends CategDataAlterer implements AltererRa
 	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!MesquiteThread.isScripting())
 			if (!queryOptions())
-				return USER_STOPPED;
+				return ResultCodes.USER_STOPPED;
 		return alterContentOfCells(data,table, undoReference);
 	}
 

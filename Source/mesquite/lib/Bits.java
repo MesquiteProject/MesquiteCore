@@ -21,7 +21,7 @@ import java.util.Random;
  * Bits - an object to contain and manage a field of booleans. This was invented
  * before the Java Bitfield was discovered. Perhaps not needed.
  */
-public class Bits implements Listable {
+public class Bits implements Listable, Nameable {
 	int[] array;
 	int numBits;
 	int numInts;
@@ -45,11 +45,9 @@ public class Bits implements Listable {
 	// intially for MesquiteTree to know if info applies to node or branch ancestral
 	// to node
 	boolean between = false;
-
 	public void setBetweenness(boolean b) {
-		between = true;
+		between = b;
 	}
-
 	public boolean isBetween() {
 		return between;
 	}
@@ -77,6 +75,12 @@ public class Bits implements Listable {
 		for (int i = 0; i < numInts && i < b.getNumInts(); i++)
 			b.array[i] = array[i];
 	}
+	public boolean[] getAsArray() {
+		boolean[] bools = new boolean[getSize()];
+		for (int i=0; i<bools.length; i++)
+			bools[i] = isBitOn(i);
+		return bools;
+}
 
 	public void setBits(Bits b) {
 		if (b == null)
@@ -99,6 +103,9 @@ public class Bits implements Listable {
 
 	public NameReference getNameReference() {
 		return nr;
+	}
+	public void setName(String n){
+		nr = NameReference.getNameReference(n);
 	}
 
 	public String getName() {

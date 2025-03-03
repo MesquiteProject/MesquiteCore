@@ -14,8 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+import java.util.Vector;
+
 import mesquite.lib.*;
 import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.tree.TreeDrawing;
 
 
@@ -39,7 +42,7 @@ public abstract class DrawTree extends MesquiteModule  {
    	public String[] getDefaultModule() {
    		return new String[] { "#SquareLineTree", "#DiagonalDrawTree"};
    	}
-   	   	
+   	 public abstract Vector getDrawings();
 	/** Returns the preferred size (if any) of the tree drawing */
 	public Dimension getPreferredSize(){
 		return null;
@@ -51,7 +54,10 @@ public abstract class DrawTree extends MesquiteModule  {
 	
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){
-		return true;
+		TreeDisplayHolder twm = (TreeDisplayHolder)findEmployerWithDuty(TreeDisplayHolder.class);
+		if (twm == null)
+			return true;
+		return twm.allowsReorientation();
 	}
    	 /** Returns a TreeDrawing to be used in the given TreeDisplay, with the given inital number of terminal taxa*/
 	public abstract TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa);

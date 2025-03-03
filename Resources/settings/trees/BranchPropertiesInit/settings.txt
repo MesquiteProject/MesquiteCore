@@ -1,0 +1,20 @@
+#name of property	"kind (double, long, boolean, String, Object). Use Object for double[], String[], etc."	assigned to branch or node
+#lines beginning with a number/pound sign are ignored		
+nodeLabel	String	node
+branchLength	double	branch
+length	double	branch
+posteriorProbability	double	branch
+posterior	double	branch
+consensusFrequency	double	branch
+bootstrapFrequency	double	branch
+color	long	branch
+!color	String	branch
+width	double	branch
+prob(percent)	double	branch
+prob	double	branch
+prob stddev	double	branch
+length mean	double	branch
+length median	double	branch
+prob+-sd	double	branch
+prob range	double	branch
+length 95%HPD	double	branch

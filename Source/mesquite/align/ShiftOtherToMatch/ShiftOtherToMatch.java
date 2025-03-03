@@ -145,7 +145,7 @@ public boolean queryOptions(int it, int max) {
 		MesquiteInteger lastColumn = new MesquiteInteger();  // this is the last column selected
 		if (table.onlySingleRowBlockSelected(row,firstColumn, lastColumn)) {
 			if (!queryOptions(row.getValue(), data.getNumTaxa()-1))
-					return USER_STOPPED;
+					return ResultCodes.USER_STOPPED;
 			MesquiteBoolean dataChanged = new MesquiteBoolean (false);
 			MesquiteInteger charAdded = new MesquiteInteger(0);
 
@@ -197,8 +197,8 @@ public boolean queryOptions(int it, int max) {
 				}
 			}
 			if ( dataChanged.getValue())
-				return SUCCEEDED;
-			return MEH;
+				return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
 		}
 		else {
 			discreetAlert( "A portion of only one sequence can be selected.");

@@ -34,7 +34,7 @@ public class ColorTaxon extends TaxaListAssistantI  {
 	String colorString = "Color Red";
 	long savedColor = currentColor;
 	MesquiteBoolean removeColor;
-	NameReference colorNameRef = NameReference.getNameReference("color");
+
 	public String getName() {
 		return "Color Taxa";
 	}
@@ -72,7 +72,7 @@ public class ColorTaxon extends TaxaListAssistantI  {
 	private void setColor(int it, long c){
 		if ( it<0)
 			return;
-		taxa.setAssociatedLong(colorNameRef, it, c);
+		taxa.setColor(it, ColorDistribution.getStandardColorAsHex((int)c));
 		table.redrawCell(-1,it);
 	}
 	/*.................................................................................................................*/

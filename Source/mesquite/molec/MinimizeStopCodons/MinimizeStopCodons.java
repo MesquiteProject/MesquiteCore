@@ -29,6 +29,7 @@ import mesquite.molec.lib.CodonPositionAssigner;
 public class MinimizeStopCodons extends CodonPositionAssigner {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		
 		return true;
 	}
 
@@ -68,9 +69,9 @@ public class MinimizeStopCodons extends CodonPositionAssigner {
 	public int assignCodonPositions(DNAData data, CodonPositionsSet modelSet){
 		//SUGGESTION: could ask about ignoring flanking gappy regions if getAminoAcidNumbers allowed start and end point
 		if (data==null  || modelSet == null) 
-			return DataAlterer.INPUT_NULL;
+			return ResultCodes.INPUT_NULL;
 		setPositionsMinStops(data, modelSet);
-		return DataAlterer.SUCCEEDED;
+		return ResultCodes.SUCCEEDED;
 	}
 
 

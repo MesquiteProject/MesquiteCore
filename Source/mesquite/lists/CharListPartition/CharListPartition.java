@@ -19,36 +19,33 @@ import mesquite.lists.lib.*;
 import java.util.*;
 import java.awt.*;
 
+import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
 import mesquite.categ.lib.DNAData;
+import mesquite.charMatrices.ManageCharPartitions.ManageCharPartitions;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
-public class CharListPartition extends CharListAssistant {
-	/*.................................................................................................................*/
-	public String getName() {
-		return "Group Membership (characters)";
-	}
-	public String getExplanation() {
-		return "Lists and allows changes to group membership in the current partition of characters, for List of Characters window." ;
-	}
+public class CharListPartition extends CharListAssistant implements SelectionInformer{
 	/*.................................................................................................................*/
 	CharacterData data=null;
 	MesquiteTable table=null;
-	MesquiteSubmenuSpec mss, mEGC, mDGC;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, mss2, msRCP;
 	CharactersGroupVector groups;
+	CharactersSelectedUtility helperTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
 		groups.addListener(this);
+		helperTask = (CharactersSelectedUtility)hireNamedEmployee(CharactersSelectedUtility.class, "#CharPartitionHelper");
 		return true;
 	}
+	/*.................................................................................................................*/
 	public void endJob(){
 		if (data != null)
 			data.removeListener(this);
@@ -56,254 +53,38 @@ public class CharListPartition extends CharListAssistant {
 			groups.removeListener(this);
 		super.endJob();
 	}
-	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
-	private void setPartition(CharactersGroup group, String arguments){
-		if (table !=null && data!=null) {
-			boolean changed=false;
-			String name = parser.getFirstToken(arguments);
-			if (group == null && StringUtil.blank(name))
-				return;
-			CharacterPartition partition = (CharacterPartition) data.getCurrentSpecsSet(CharacterPartition.class);
-			if (partition==null){
-				partition= new CharacterPartition("Partition", data.getNumChars(), null, data);
-				partition.addToFile(data.getFile(), getProject(), findElementManager(CharacterPartition.class));
-				data.setCurrentSpecsSet(partition, CharacterPartition.class);
-			}
-			if (group == null){
-				CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
-				Object obj = groups.getElement(name);
-				group = (CharactersGroup)obj;
-			}
-			if (group != null) {
-				if (partition != null) {
-					if (employer!=null && employer instanceof ListModule) {
-						int c = ((ListModule)employer).getMyColumn(this);
-						for (int i=0; i<data.getNumChars(); i++) {
-							if (table.isCellSelectedAnyWay(c, i)) {
-								partition.setProperty(group, i);
-								if (!changed)
-									outputInvalid();
-								changed = true;
-							}
-						}
-					}
-				}
-				if (changed)
-					data.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
-							outputInvalid();
-							parametersChanged();
-			}
-		}
+	public String getName() {
+		return "Group Membership (characters)";
 	}
-	private void refineByCodonPosition(){
-		if (table !=null && data!=null) {
-			boolean changed=false;
-			CodonPositionsSet codons = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
-			CharacterPartition partition = (CharacterPartition) data.getCurrentSpecsSet(CharacterPartition.class);
-			if (codons == null || partition == null)
-				return;
-			if (employer!=null && employer instanceof ListModule) {
-				int c = ((ListModule)employer).getMyColumn(this);
-				for (int i=0; i<data.getNumChars(); i++) {
-					if (table.isCellSelectedAnyWay(c, i)) {
-						if (codons.getInt(i)>0 && codons.getInt(i)<=3 ){
-							CharactersGroup currentGroup = (CharactersGroup)partition.getProperty(i);
-							String newName = currentGroup.getName() + "_" + codons.toString(i);
-							CharactersGroup newGroup = (CharactersGroup)groups.elementWithName(newName);
-							if (newGroup == null){
-								newGroup = new CharactersGroup();
-								newGroup.setName(newName);
-								newGroup.setColor(currentGroup.getColor());
-								newGroup.setSymbol(currentGroup.getSymbol());
-								groups.addElement(newGroup, true);
-							}
-							partition.setProperty(newGroup, i);
-							if (!changed)
-								outputInvalid();
-							changed = true;
-						}
-					}
-				}
-			}
-
-			if (changed)
-				data.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
-			outputInvalid();
-			parametersChanged();
-
-
-		}
+	public String getExplanation() {
+		return "Lists and allows changes to group membership in the current partition of characters, for List of Characters window." ;
 	}
-	private void removePartition(){
-		if (table !=null && data!=null) {
-			boolean changed=false;
-			CharacterPartition partition = (CharacterPartition) data.getCurrentSpecsSet(CharacterPartition.class);
-			if (partition!=null){
-				if (employer!=null && employer instanceof ListModule) {
-					int c = ((ListModule)employer).getMyColumn(this);
-					for (int i=0; i<data.getNumChars(); i++) {
-						if (table.isCellSelectedAnyWay(c, i)) {
-							partition.setProperty(null, i);
-							if (!changed)
-								outputInvalid();
-							changed = true;
-						}
-					}
-				}
-
-				if (changed)
-					data.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
-							outputInvalid();
-							parametersChanged();
-
-			}
-		}
-	}
-	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets the character group of the selected characters", "[name of group]", commandName, "setPartition")) {
-			setPartition(null, arguments);
-		}
-		else if (checker.compare(this.getClass(), "Edits the name and color of a character group label", "[name of group]", commandName, "editGroup")) {
-			String name = parser.getFirstToken(arguments);
-			if (StringUtil.blank(name))
-				return null;
-			String num = parser.getNextToken();
-			Object obj = CharListPartitionUtil.editGroup(this, data,containerOfModule(),name, num);
-			if (obj!=null) {
-				outputInvalid();
-				parametersChanged();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Deletes a character group label", "[name of group]", commandName, "deleteGroup")) {
-			String name = parser.getFirstToken(arguments);
-			if (StringUtil.blank(name))
-				return null;
-			String num = parser.getNextToken();
-			boolean b = CharListPartitionUtil.deleteGroup(this, data,containerOfModule(),name, num);
-			if (b) {
-				outputInvalid();
-				parametersChanged();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Creates a new group for use in character partitions", null, commandName, "newGroup")) {
-			MesquiteString ms = new MesquiteString("");
-			CharactersGroup group = CharListPartitionUtil.makeGroup(this,data,containerOfModule(), ms);
-			if (group==null) return null;
-			setPartition(group, ms.getValue());
-		}
-		else if (checker.compare(this.getClass(), "Stores the current character partition set", null, commandName, "storeCurrent")) {
-			if (data!=null){
-				SpecsSetVector ssv = data.getSpecSetsVector(CharacterPartition.class);
-				if (ssv == null || ssv.getCurrentSpecsSet() == null) {
-					CharacterPartition partition= new CharacterPartition("Partition", data.getNumChars(), null, data);
-					partition.addToFile(data.getFile(), getProject(), findElementManager(CharacterPartition.class));
-					data.setCurrentSpecsSet(partition, CharacterPartition.class);
-					ssv = data.getSpecSetsVector(CharacterPartition.class);
-				}
-				if (ssv!=null) {
-					SpecsSet s = ssv.storeCurrentSpecsSet();
-					if (s.getFile() == null)
-						s.addToFile(data.getFile(), getProject(), findElementManager(CharacterPartition.class));
-					s.setName(ssv.getUniqueName("Partition"));
-					String name = MesquiteString.queryString(containerOfModule(), "Name", "Name of character partition to be stored", s.getName());
-					if (!StringUtil.blank(name))
-						s.setName(name);
-					ssv.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));  
-				}
-				else MesquiteMessage.warnProgrammer("sorry, can't store because no specssetvector");
-			}
-			//return ((ListWindow)getModuleWindow()).getCurrentObject();
-		}
-		else if (checker.compare(this.getClass(), "Replaces a stored character partition set by the current one", null, commandName, "replaceWithCurrent")) {
-			if (data!=null){
-				SpecsSetVector ssv = data.getSpecSetsVector(CharacterPartition.class);
-				if (ssv!=null) {
-					SpecsSet chosen = (SpecsSet)ListDialog.queryList(containerOfModule(), "Replace stored set", "Choose stored partition to replace by current set",MesquiteString.helpString, ssv, 0);
-					if (chosen!=null){
-						SpecsSet current = ssv.getCurrentSpecsSet();
-						ssv.replaceStoredSpecsSet(chosen, current);
-					}
-				}
-
-				outputInvalid();
-				parametersChanged();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Loads the stored character partition to be the current one", "[number of partition to load]", commandName, "loadToCurrent")) {
-			if (data !=null) {
-				int which = MesquiteInteger.fromFirstToken(arguments, pos);
-				if (MesquiteInteger.isCombinable(which)){
-					SpecsSetVector ssv = data.getSpecSetsVector(CharacterPartition.class);
-					if (ssv!=null) {
-						SpecsSet chosen = ssv.getSpecsSet(which);
-						if (chosen!=null){
-							ssv.setCurrentSpecsSet(chosen.cloneSpecsSet()); 
-							data.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???
-							return chosen;
-						}
-					}
-				}
-				outputInvalid();
-				parametersChanged();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Removes the group designation from the selected characters", null, commandName, "removeGroup")) {
-			removePartition();
-		}
-		else if (checker.compare(this.getClass(), "Refines current groups by intersecting them with codon positions", null, commandName, "refineByCodonPosition")) {
-			refineByCodonPosition();
-		}
-		else
-			return  super.doCommand(commandName, arguments, checker);
-		return null;
-	}
-
-	/*.................................................................................................................*/
+	
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
-		/* hire employees here */
-		deleteMenuItem(mss);
-		deleteMenuItem(mss2);
-		deleteMenuItem(mScs);
-	//	deleteMenuItem(mScsPF);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mLine2);
-		deleteMenuItem(mStc);
-		deleteMenuItem(nNG);
-		deleteMenuItem(mEGC);
-		deleteMenuItem(mDGC);
-	//	deleteMenuItem(mEGN);
-		deleteMenuItem(nNG);
-		deleteMenuItem(msRCP);
-		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
-		mss.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
-		if (data != null && data instanceof DNAData)
-			msRCP =	 addMenuItem("Refine Groups by Codon Position", makeCommand("refineByCodonPosition", this));
-
-			
-		mss2 = addMenuItem("Remove Group Designation", makeCommand("removeGroup", this));
-		mLine2 = addMenuSeparator();
-		nNG = addMenuItem("New Group...", makeCommand("newGroup",  this));
-		mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
-		mEGC.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
-		mDGC = addSubmenu(null, "Delete Group...", makeCommand("deleteGroup", this));
-		mDGC.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
-		mLine = addMenuSeparator();
-		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
-		if (data !=null)
-			mStc = addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharacterPartition.class));
-		//mScsPF = addMenuItem("Create Partition Based upon RAxML Format...", makeCommand("createByRAxML",  this));
-		this.data = data;
-		this.table = table;
 		if (data != this.data){
 			if (this.data != null)
-			this.data.removeListener(this);
+				this.data.removeListener(this);
 			data.addListener(this);
 		}
+		this.data = data;
+		this.table = table;
+		helperTask.setDataAndSelectionInformer(data, this);
+	}
+	public boolean isItemSelected (int item, Object caller){
+		if (table != null && employer!=null && employer instanceof ListModule) {
+			int c = ((ListModule)employer).getMyColumn(this);
+			return table.isCellSelectedAnyWay(c, item);
+		}
+		return false;
+	}
+	public boolean anyItemsSelected (Object caller){
+		if (table != null && employer!=null && employer instanceof ListModule) {
+			int c = ((ListModule)employer).getMyColumn(this);
+			return table.anyCellsInColumnSelectedAnyWay(c);
+		}
+		return false;
 	}
 	public void changed(Object caller, Object obj, Notification notification){
 		if (caller == this)

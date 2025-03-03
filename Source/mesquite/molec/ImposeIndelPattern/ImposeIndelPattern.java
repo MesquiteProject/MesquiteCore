@@ -65,7 +65,7 @@ public class ImposeIndelPattern extends DataAlterer implements AltererAlignShift
 				}
 	 	 	}
 
-		return SUCCEEDED;
+		return ResultCodes.SUCCEEDED;
 	}
 
 	/*.................................................................................................................*/

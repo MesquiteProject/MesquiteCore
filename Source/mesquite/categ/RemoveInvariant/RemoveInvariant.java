@@ -57,15 +57,15 @@ public class RemoveInvariant extends DataAlterer  implements AltererWholeCharact
    	/** Called to alter data in those cells selected in table*/
    	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
 		if (!(cData instanceof CategoricalData))
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		CategoricalData data = (CategoricalData)cData;
 		int oldNumChars = data.getNumChars();
 		removeCharactersThatAreInvariant(data);
 		
 		logln("" + (oldNumChars-data.getNumChars()) +  " characters removed");
 		if (oldNumChars != data.getNumChars())
-			return SUCCEEDED;
-			return MEH;
+			return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
    	}
 	/*.................................................................................................................*/
   	 public boolean showCitation() {

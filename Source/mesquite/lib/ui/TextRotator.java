@@ -74,6 +74,16 @@ public class TextRotator {
 			drawFreeRotatedText(s, g,horizPosition, vertPosition, -Math.PI/2, null, false, null);
 		
 	}
+	/* -------------------------------------------------*/
+	public void drawRotatedText(String s, Graphics g, int horizPosition, int vertPosition) {
+		if (s == null)
+			return;
+		
+		//for Java 1.2
+
+		drawFreeRotatedText(s, g,horizPosition, vertPosition, -Math.PI/2, null, false, null);
+		
+	}
 	
 	public void drawFreeRotatedText(String s, Graphics g, int horizPosition, int vertPosition, double rotation, Point offsets, boolean alignBottom, Polygon poly) {
 			if (s==null)

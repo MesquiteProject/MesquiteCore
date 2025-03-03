@@ -31,6 +31,7 @@ import java.util.List;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.FileDirtier;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDropListener;
@@ -335,8 +336,9 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (MesquiteWindow.checkDoomed(this))
+		if (MesquiteWindow.checkDoomed(this)){
 			return null;
+		}
 		if (checker.compare(this.getClass(), "Mouse down", "[modifiers as integer][click count][when][x][y]", commandName, "mouseDown")) {
 			int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
 			int clickCount = MesquiteInteger.fromString(arguments, pos);
@@ -377,7 +379,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse moved", "[modifiers as integer][x][y]", commandName, "mouseMoved")) {
-			int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
+int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
 			int x = MesquiteInteger.fromString(arguments, pos);
 			int y = MesquiteInteger.fromString(arguments, pos);
 			MesquiteTool t = getT();
@@ -487,6 +489,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 		currentX = e.getX();
 		currentY = e.getY();
 		MesquiteException.lastLocation = 108;
+		
 		clickedCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " " +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteException.lastLocation = 0;
 	}
@@ -531,6 +534,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 		currentX = e.getX();
 		currentY = e.getY();
 		MesquiteException.lastLocation = 111;
+
 		downCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " " + e.getClickCount() + " " + e.getWhen() + " " +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteException.lastLocation = 0;
 	}

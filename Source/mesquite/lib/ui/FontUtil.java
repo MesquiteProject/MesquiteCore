@@ -3,8 +3,10 @@ package mesquite.lib.ui;
 import java.awt.GraphicsEnvironment;
 
 import mesquite.lib.Commandable;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.Parser;
 
 public class FontUtil {
 
@@ -22,7 +24,7 @@ public class FontUtil {
 		MesquiteSubmenuSpec msf = mb.addSubmenu(whichMenu, submenuName);
 		String[] fontList = getSmallFontList();
 		for (int i=0; i<fontList.length; i++) 
-			mb.addItemToSubmenu(whichMenu, msf, fontList[i], mb.makeCommand("setFont",  ownerObject));
+			mb.addItemToSubmenu(whichMenu, msf, fontList[i], new MesquiteCommand("setFont",  Parser.tokenize(fontList[i]), ownerObject));
 		mb.addLineToSubmenu(whichMenu, msf);
 		mb.addItemToSubmenu(whichMenu, msf, "Other...", mb.makeCommand(setFontOther,  ownerObject));
 		mb.addLineToSubmenu(whichMenu, msf);

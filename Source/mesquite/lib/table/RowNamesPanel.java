@@ -307,8 +307,6 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		touchY=-1;
 		touchRow=-1;
 		int possibleTouch = findRow(x, y);
-		int regionInCellH = findRegionInCellH(x);
-		int regionInCellV =findRegionInCellV(y);
 		boolean isArrowEquivalent = ((TableTool)tool).isArrowKeyOnRow(x,table);
 
 		touchX=-1;
@@ -329,7 +327,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			else if ((table.showRowGrabbers) && (x<table.getRowGrabberWidth())) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool() && !isArrowEquivalent)
 					possibleTouch = findRowBeforeBetween(x, y);
-				table.rowTouched(isArrowEquivalent, possibleTouch,regionInCellH, regionInCellV,modifiers);
+				table.rowTouched(isArrowEquivalent, possibleTouch,this, x, y,modifiers);
 				if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 					touchY=y;
 					lastY = MesquiteInteger.unassigned;;
@@ -339,7 +337,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 
 			}
 			else if (isArrowEquivalent) {
-				table.rowNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers,clickCount);
+				table.rowNameTouched(possibleTouch,this, x, y, modifiers,clickCount);
 			}
 			else if (tool!=null && ((TableTool)tool).getWorksOnRowNames()) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool())
@@ -347,11 +345,11 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 				touchY=y;
 				lastY = y;
 				touchRow=possibleTouch;
-				table.rowNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers,clickCount);
+				table.rowNameTouched(possibleTouch,this, x, y, modifiers,clickCount);
 			}
 		}
 		else if (possibleTouch==-2 && ((TableTool)tool).getWorksBeyondLastRow())
-			table.rowTouched(isArrowEquivalent,possibleTouch,regionInCellH, regionInCellV,modifiers);
+			table.rowTouched(isArrowEquivalent,possibleTouch,this, x, y,modifiers);
 		else if (tool != null && tool.isArrowTool()){
 			table.offAllEdits();
 			table.outOfBoundsTouched(modifiers, clickCount);
@@ -388,9 +386,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			else if (((TableTool)tool).getWorksOnRowNames()) {
 				table.checkForAutoScroll(this, MesquiteInteger.unassigned,y);   // pass unassigned in x so it doesn't do anything in that direction
 				int dragRow = findRow(x, y);
-				int regionInCellH = findRegionInCellH(x);
-				int regionInCellV =findRegionInCellV(y);
-				((TableTool)tool).cellDrag(-1,dragRow,regionInCellH,regionInCellV,modifiers);
+				((TableTool)tool).cellDrag(-1,dragRow, this, x, y,modifiers);
 				if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
 					table.emphasizeRow(previousRowDragged,dragRow, touchRow, false, Color.blue);
 					previousRowDragged = dragRow;
@@ -447,7 +443,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 				int dropRow = findRow(x, y);
 				int regionInCellH = findRegionInCellH(x);
 				int regionInCellV =findRegionInCellV(y);
-				((TableTool)tool).cellDropped(-1,dropRow,regionInCellH,regionInCellV,modifiers);
+				((TableTool)tool).cellDropped(-1,dropRow, this, x, y,modifiers);
 			}
 
 	}

@@ -20,6 +20,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Commandable;
 import mesquite.lib.CompatibilityChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Identifiable;
 import mesquite.lib.Listable;
@@ -395,7 +396,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		if (taxa==null)
 			return;
 		Taxon t = taxa.getTaxon(taxonName, false, true);
-		if (t == null) {
+	/*	if (t == null) {  //Debugg.println If want to permit T0 at this level, need get/set method for this vector itself
 			if (MesquiteTree.permitT0Names && taxonName.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there
 					String number = taxonName.substring(1, taxonName.length());
 					int num = MesquiteInteger.fromString(number);
@@ -403,6 +404,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 						t = taxa.getTaxon(num);
 			}
 		}
+		*/
 		if (t==null)
 			MesquiteMessage.warnProgrammer("Taxon name in translation table doesn't correspond to name of known taxon (\"" + taxonName + "\" [a])");
 
@@ -462,7 +464,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 			String label = (ParseUtil.getToken((String)table.elementAt(i),pos));
 			Taxon t = taxa.getTaxon(taxonName, false, true);
 			translationTable.setLabel(t, label, false); //note label set even if taxon not found; signal later to return null for whichtaxon number
-			if (t==null) {
+		/*	if (t==null) {
 				if (MesquiteTree.permitT0Names && taxonName.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there
 						String number = taxonName.substring(1, taxonName.length());
 						int num = MesquiteInteger.fromString(number);
@@ -470,6 +472,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 							t = taxa.getTaxon(num);
 				}
 			}
+			*/
 			if (t == null)
 				MesquiteMessage.warnProgrammer(	"Taxon name in translation table doesn't correspond to name of known taxon (\"" + taxonName + "\" [b])");
 
@@ -600,7 +603,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 					threadOfTreeChange =  null;
 				}
 			}
-			if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED){
+			if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED && Notification.getCode(notification) != MesquiteListener.PARTS_ADDED){
 				boolean deleted = deleteEmptyTrees();
 				if (deleted)
 					notifyListeners(this, (new Notification(MesquiteListener.PARTS_DELETED).setNotificationNumber(notification.getNotificationNumber()))); 

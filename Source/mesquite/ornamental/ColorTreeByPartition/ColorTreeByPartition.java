@@ -26,8 +26,10 @@ import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayEarlyExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteMenuSpec;
 
 /* ======================================================================== */
 public class ColorTreeByPartition extends TreeDisplayAssistantDI {
@@ -37,7 +39,11 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
 		colorByPartition = new MesquiteBoolean(false);
-		addCheckMenuItem(null, "Color Branches by Partition", makeCommand("colorByPartition",  this), colorByPartition);
+		MesquiteMenuSpec colorMenu = findMenuAmongEmployers("Color");
+		MesquiteModule mb = this;
+		if (colorMenu != null && colorMenu.getOwnerModule() != null)
+			mb = colorMenu.getOwnerModule();
+		mb.addCheckMenuItem(colorMenu, "Color Branches by Taxon Groups", makeCommand("colorByPartition",  this), colorByPartition);
 		return true;
 	} 
 	/*.................................................................................................................*/
@@ -48,7 +54,7 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Color Branches by Partition";
+		return "Color Branches by Taxon Groups";
 	}
 
 	/*.................................................................................................................*/
@@ -101,7 +107,7 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 }
 
 /* ======================================================================== */
-class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener   {
+class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener, TreeDisplayEarlyExtra   {
 	ColorTreeByPartition branchNotesModule;
 	TaxaPartition partitions = null;
 	ColorDistribution[] colors;
@@ -112,8 +118,24 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 		branchNotesModule = ownerModule;
 		showColors = branchNotesModule.colorByPartition.getValue();
 	}
+	/*_________________________________________________*/
+	public ColorDistribution colorsInClade(Tree tree, int node){
+		if (tree.nodeIsTerminal(node))
+			return colors[node];
+		ColorDistribution cladeColor = null;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+			ColorDistribution dsColor = colorsInClade(tree, d);
+			if (cladeColor == null)
+				cladeColor = dsColor;
+			else
+				cladeColor.concatenate(dsColor);
+		}
+		return cladeColor;
+	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
+		if (!tree.isVisibleEvenIfInCollapsed(node))
+			return;
 		if (showColors) {
 			if (needsReharvesting)
 				reharvest(tree);
@@ -121,7 +143,12 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 			if (partitions != null){
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawOnTree(tree, d, g);
-				if (colors[node].anyColors())
+				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
+					ColorDistribution cladeColors = colorsInClade(tree, tree.deepestCollapsedAncestor(node));
+					if (cladeColors != null && cladeColors.anyColors())
+						treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, cladeColors, g);
+				}
+				else if (colors[node].anyColors())
 					treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, colors[node], g);
 			}
 		}

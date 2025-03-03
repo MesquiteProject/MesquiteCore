@@ -40,12 +40,12 @@ public class MultiplyStates extends ContDataAlterer  implements AltererContinuou
    	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
    			boolean did=false;
 			if (!(data instanceof ContinuousData))
-				return INCOMPATIBLE_DATA;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			double d = MesquiteDouble.queryDouble(containerOfModule(), "Multiply values", "Multiply values in matrix by:", scalingFactor); //todo: have dialog also ask to what item; also in other similar ContDataAlterer's
 			if (MesquiteDouble.isCombinable(d))
 				scalingFactor = d;
 			else
-				return USER_STOPPED;
+				return ResultCodes.USER_STOPPED;
 			return alterContentOfCells(data,table, undoReference);
    	}
 

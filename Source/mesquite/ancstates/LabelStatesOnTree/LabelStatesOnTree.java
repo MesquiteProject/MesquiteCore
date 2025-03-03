@@ -87,6 +87,8 @@ class LabelStatesDecorator extends TreeDecorator {
 	}
 	/*.................................................................................................................*/
 	public   void labelNode(int N,  Tree tree, CharacterHistory statesAtNodes, CharacterDistribution observedStates, Graphics g) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				labelNode(d, tree, statesAtNodes, observedStates, g);
 		int nodeX = (int)treeDisplay.getTreeDrawing().x[N];  // integer node approximation

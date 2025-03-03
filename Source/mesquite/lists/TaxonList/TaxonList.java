@@ -367,13 +367,11 @@ class TaxonListWindow extends ListWindow {
 			setTitle("Taxa \"" + taxa.getName() + "\""); 
 	}
 	/*...............................................................................................................*/
-	NameReference colorNameRef = NameReference.getNameReference("color");
 	public void setRowNameColor(Graphics g, int row){
 		//		g.setColor(Color.black);
 		if (taxa!=null ) {
-			long c = taxa.getAssociatedLong(colorNameRef, row);
-			if (MesquiteLong.isCombinable(c))
-				g.setColor(ColorDistribution.getStandardColor((int)c));
+			if (taxa.getColor(row) != null)
+				g.setColor(taxa.getColor(row));
 		}
 	}
 	/*.................................................................................................................*/

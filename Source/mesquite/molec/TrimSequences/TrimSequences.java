@@ -126,7 +126,7 @@ public class TrimSequences extends MolecularDataAlterer implements AltererWholeC
 				undoReference.setResponsibleModule(this);
 			}
 		}
-		return SUCCEEDED;
+		return ResultCodes.SUCCEEDED;
 	}
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData ddata, int ic, int it){

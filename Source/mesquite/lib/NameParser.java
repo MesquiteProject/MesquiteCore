@@ -1,6 +1,9 @@
 package mesquite.lib;
 
 import java.awt.Checkbox;
+import java.awt.Dimension;
+import java.awt.TextArea;
+import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.TextEvent;
@@ -35,7 +38,17 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		this.ownerModule = ownerModule;
 	}
 
+	//NOTE: if the screen size seems too small for more than two examples, only the first and last will be shown
 	public void setExamples(String[] examples){
+		if (examples == null)
+			return;
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		if (screenSize.height<1000 && examples.length > 2){
+			String[] ex = new String[2];
+			ex[0] = examples[0];
+			ex[1] = examples[examples.length-1];
+			examples = ex;
+		}
 		this.examples = examples;
 	}
 
@@ -43,7 +56,7 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 	IntegerField numStartField, numEndField;
 	SingleLineTextField startBoundaryField, endBoundaryField;
 	Checkbox includeStartBoundaryInNameField, includeEndBoundaryInNameField, considerStartField, considerEndField;
-	JLabel[] exampleLabels;
+	ExampleLabel[] exampleLabels;
 	String iEPhrase(boolean upperCase){
 		if (upperCase){
 			if (includeExcludeButtons.getValue() == 0)
@@ -70,6 +83,7 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		}
 		resetExamplesLabels();
 	}
+	
 	void resetExamplesLabels(){
 		numStartField.setEnabled(considerStartField.getState());
 		startBoundaryField.setEnabled(considerStartField.getState());
@@ -77,8 +91,11 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		numEndField.setEnabled(considerEndField.getState());
 		endBoundaryField.setEnabled(considerEndField.getState());
 		includeEndBoundaryInNameField.setEnabled(considerEndField.getState());
-		for (int i = 0; i<exampleLabels.length; i++)
-			exampleLabels[i].setText("\"" + examples[i] + "\" —> \"" + exampleExtraction(examples[i]) + "\"");
+		for (int i = 0; i<exampleLabels.length; i++){
+			
+			exampleLabels[i].before.setText(examples[i]);
+			exampleLabels[i].after.setText(exampleExtraction(examples[i]));
+		}
 	}
 	public boolean queryOptions(String title, String label, String constructingIntro, String helpString){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -125,12 +142,15 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		if (examples != null && examples.length>0){
 			dialog.addHorizontalLine(1);
 			dialog.addLabel("Examples:");
-			exampleLabels = new JLabel[examples.length];
+			exampleLabels = new ExampleLabel[examples.length];
 			for (int i = 0; i<exampleLabels.length; i++){
-				exampleLabels[i] = dialog.addLabel(examples[i]);
+				exampleLabels[i] = new ExampleLabel();
+				exampleLabels[i].before = dialog.addLabel(examples[i]);
+				dialog.addLabelItalic("becomes");
+				exampleLabels[i].after = dialog.addLabel(examples[i]);
+				dialog.addHorizontalLine(1);
 			}
 			resetExamplesLabels();
-			dialog.addHorizontalLine(1);
 		}
 
 		dialog.completeAndShowDialog(true);
@@ -386,8 +406,8 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		}
 
 	}
+}
 
-
-
-
+class ExampleLabel {
+	JLabel before, after;
 }

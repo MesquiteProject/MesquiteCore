@@ -43,11 +43,11 @@ public class TreezFilesFromMatrices extends DatasetsListUtility {
 	public String getExplanation() {
 		return "Infers trees for each of the selected matrices, and puts the trees from each matrix into a separate tree file." ;
 	}
-	TreeSearcher inferenceTask;
+	TreeSearcherFromMatrix inferenceTask;
 	MatrixSourceCoord matrixSourceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		inferenceTask = (TreeSearcher)hireCompatibleEmployee(TreeSearcher.class, "acceptImposedMatrixSource", "Tree inference method");
+		inferenceTask = (TreeSearcherFromMatrix)hireCompatibleEmployee(TreeSearcherFromMatrix.class, "acceptImposedMatrixSource", "Tree inference method");
 		matrixSourceTask = new MyListOfMatrices(this);
 		if (inferenceTask == null || matrixSourceTask == null)
 			return false;
@@ -114,7 +114,7 @@ public class TreezFilesFromMatrices extends DatasetsListUtility {
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 				int result = inferenceTask.fillTreeBlock(trees);
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
-				if (result == TreeSearcher.USERCANCELONINITIALIZE) {
+				if (result == ResultCodes.USERCANCELONINITIALIZE) {
 					logln("User cancelled the analyses."); 
 					userCancel=true;
 					stop = true;

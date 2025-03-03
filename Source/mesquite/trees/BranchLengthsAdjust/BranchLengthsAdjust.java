@@ -405,7 +405,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			String mod= ParseUtil.getRemaining(arguments, io);
 
 
-			if (!treeDisplay.showBranchLengths) {
+			if (!treeDisplay.showBranchLengths()) {
 				setMiniEditor(node, x,y);
 				return null;
 			}

@@ -622,6 +622,8 @@ public class CommandChecker {
 
 	/* ................................................................................................................. */
 	void addToDutyClasses(Class duty) {
+		if (duty == null)
+			return;
 		int numDuties = dutyClasses.size();
 		int found = -1;
 		for (int d = 0; d < numDuties && found != -2; d++) {
@@ -1027,7 +1029,7 @@ public class CommandChecker {
 		} else if (item instanceof MesquiteSubmenu) {
 			if (label)
 				ex += "<li><b>" + item.getLabel() + "</b>";
-			MesquiteSubmenu mmi = (MesquiteSubmenu) item;
+		MesquiteSubmenu mmi = (MesquiteSubmenu) item;
 			long id = mmi.getOwnerModuleID();
 			ex += getModuleReference(id);
 			if (mmi.getCommand() != null)

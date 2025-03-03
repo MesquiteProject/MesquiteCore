@@ -121,6 +121,8 @@ class BranchLengthsLabeler extends TreeDisplayDrawnExtra   {
 	}
 	/*.................................................................................................................*/
 	public void writeLengthAtNode(Graphics g, int N,  Tree tree) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				writeLengthAtNode(g, d, tree);
 				

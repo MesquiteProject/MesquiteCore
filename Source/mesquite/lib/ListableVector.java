@@ -834,6 +834,19 @@ public class ListableVector extends FileElement implements StringLister, Command
 	}
 
 	/*...........................................................*/
+	public static void sort(String[] array){
+		if (array==null || array.length<=1)
+			return;
+		
+		for (int i=1; i<array.length; i++) {
+			for (int j= i-1; j>=0 && collator.compare(array[j], array[j+1])>0 ; j--) {
+				String temp = array[j];
+				array[j] = array[j+1];
+				array[j+1]=temp;
+			}
+		}
+		
+	}
 	public static void sort(int[] array){
 		if (array==null || array.length<=1)
 			return;
@@ -857,8 +870,6 @@ public class ListableVector extends FileElement implements StringLister, Command
 						array[j] = array[j+1];
 						array[j+1]=temp;
 					
-				
-				
 			}
 		}
  	}

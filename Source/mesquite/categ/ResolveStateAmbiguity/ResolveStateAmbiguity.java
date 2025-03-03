@@ -37,7 +37,7 @@ public class ResolveStateAmbiguity extends CategDataAlterer implements AltererCo
 	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!(data instanceof CategoricalData)){
 			MesquiteMessage.warnProgrammer("Attempt to resolve ambiguities in non-categorical data");
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		}
 		return alterContentOfCells(data,table, undoReference);
 	}

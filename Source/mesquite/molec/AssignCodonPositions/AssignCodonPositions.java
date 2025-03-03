@@ -28,13 +28,8 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		assigner= (CodonPositionAssigner)hireNamedEmployee(CodonPositionAssigner.class, arguments);
-		if (assigner !=null) {
-			assigner = (CodonPositionAssigner)hireNamedEmployee(CodonPositionAssigner.class, arguments);
-			if (assigner == null)
-				return sorry(getName() + " couldn't start because the requested assigner wasn't successfully hired.");
-		}
-		else {
-			assigner = (CodonPositionAssigner)hireEmployee(MultipleSequenceAligner.class, "Codon Position Assigner");
+		if (assigner ==null) {
+			assigner = (CodonPositionAssigner)hireEmployee(CodonPositionAssigner.class, "Codon Position Assigner");
 			if (assigner == null)
 				return sorry(getName() + " couldn't start because no assigner module obtained.");
 		}
@@ -69,10 +64,10 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 	//	this.table = table;
 		if (assigner ==  null || data == null)
-			return INPUT_NULL;
+			return ResultCodes.INPUT_NULL;
 		if (!(data instanceof DNAData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on nucleotide data");
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		}
 		CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
 		if (modelSet == null) {
@@ -81,7 +76,7 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 			data.setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
 		}
 		int success = assigner.assignCodonPositions((DNAData)data,  modelSet);
-		if (success==SUCCEEDED)
+		if (success==ResultCodes.SUCCEEDED)
 			data.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
 		
 		return success;

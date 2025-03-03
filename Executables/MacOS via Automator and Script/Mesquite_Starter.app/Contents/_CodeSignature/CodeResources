@@ -4,6 +4,10 @@
 <dict>
 	<key>files</key>
 	<dict>
+		<key>Resources/ApplicationStub.icns</key>
+		<data>
+		RYTqh+7iocnEIV8iTs9EgJjEkO4=
+		</data>
 		<key>Resources/Assets.car</key>
 		<data>
 		PQZ6T51bkBveK5Q9P3zARWsKXJY=
@@ -19,6 +23,17 @@
 	</dict>
 	<key>files2</key>
 	<dict>
+		<key>Resources/ApplicationStub.icns</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			RYTqh+7iocnEIV8iTs9EgJjEkO4=
+			</data>
+			<key>hash2</key>
+			<data>
+			odOqeBevxysHIbR5V5qgZz11qTuV9cL5jKaIcUw3R0I=
+			</data>
+		</dict>
 		<key>Resources/Assets.car</key>
 		<dict>
 			<key>hash</key>
@@ -56,7 +71,7 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			UY4CKFclAFYb1wA5dcW0uoFGXrM=
+			2IPhpSAy1sgGNYZMexwO8BCrq4Q=
 			</data>
 			<key>requirement</key>
 			<string>identifier document and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "8LT29UFQPL"</string>

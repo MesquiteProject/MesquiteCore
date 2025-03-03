@@ -171,8 +171,8 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		return false;
 	}
 */
-	NameReference previousTaxaNameRef = new NameReference("previousTaxon");
-	NameReference newlyAddedTaxaNameRef = new NameReference("newlyAddedTaxon");
+	NameReference previousTaxaNameRef = NameReference.getNameReference("previousTaxon");
+	NameReference newlyAddedTaxaNameRef = NameReference.getNameReference("newlyAddedTaxon");
 	
 	/*.................................................................................................................*/
 	public void startRecordingTaxa(Taxa taxa){

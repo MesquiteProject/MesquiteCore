@@ -744,8 +744,6 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		touchColumn=-1;
 		/*@@@*/
 		int possibleTouch = findColumn(x, y);
-		int regionInCellH = findRegionInCellH(x);
-		int regionInCellV = findRegionInCellV(y);
 		int subRow = findSubRow(x, y);
 
 		if (tool != null && isArrowEquivalent && isDiagonal() && y> height-3  && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
@@ -757,12 +755,12 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		else if (possibleTouch<table.numColumnsTotal && possibleTouch>=0) {
 			table.startAutoScrollThread(this);
 			if (subRow>=0) {  // touch on subrow
-				table.subRowTouched(subRow, possibleTouch,regionInCellH, regionInCellV, x, y, modifiers);
+				table.subRowTouched(subRow, possibleTouch,this, x, y, modifiers);
 			}
 			else if (table.touchColumnNameEvenIfSelected() && (table.showColumnGrabbers) && (y>=table.getColumnGrabberWidth())) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool())
 					possibleTouch = findColumnBeforeBetween(x, y);
-				table.columnNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers, clickCount);
+				table.columnNameTouched(possibleTouch,this, x, y, modifiers, clickCount);
 			}
 			else if (tool != null && isArrowEquivalent && table.getUserAdjustColumn()==MesquiteTable.RESIZE && nearColumnBoundary(x, y)  && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 				touchX=x;
@@ -789,7 +787,7 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 			else if ((table.showColumnGrabbers) && (y<table.getColumnGrabberWidth())) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool() && !isArrowEquivalent)
 					possibleTouch = findColumnBeforeBetween(x, y);
-				table.columnTouched(isArrowEquivalent, possibleTouch,regionInCellH, regionInCellV, modifiers);
+				table.columnTouched(isArrowEquivalent, possibleTouch,this, x, y, modifiers);
 				if (tool != null && isArrowEquivalent && table.getUserMoveColumn() && table.isColumnSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 					touchX=x;
 					shimmerX = MesquiteInteger.unassigned;
@@ -800,11 +798,11 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 			else {
 				if (((TableTool)tool).getIsBetweenRowColumnTool())
 					possibleTouch = findColumnBeforeBetween(x, y);
-				table.columnNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers, clickCount);
+				table.columnNameTouched(possibleTouch,this, x, y, modifiers, clickCount);
 			}
 		}
 		else if (possibleTouch==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
-			table.columnTouched(isArrowEquivalent, possibleTouch,regionInCellH, regionInCellV, modifiers);
+			table.columnTouched(isArrowEquivalent, possibleTouch,this, x, y, modifiers);
 		else if (((TableTool)tool).getDeselectIfOutsideOfCells()) {
 			table.offAllEdits();
 			table.outOfBoundsTouched(modifiers, clickCount);

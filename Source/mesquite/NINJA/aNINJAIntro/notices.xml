@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<mesquite>
+	<MessagesFromHome>
+		<version>1</version>
+		<currentReleaseVersion>
+			<versionString>1.0</versionString>
+			<version>100</version>
+			<downloadURL>http://mesquiteproject.org/packages/ninja</downloadURL>
+		</currentReleaseVersion>
+	</MessagesFromHome>
+</mesquite>

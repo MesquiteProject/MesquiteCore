@@ -33,7 +33,7 @@ public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNAC
 	
 		if (!(dData instanceof DNAData)){
 			MesquiteMessage.warnProgrammer(getName() + " requires DNA data");
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		}
 		DNAData data = (DNAData)dData;
 		if (!data.someCoding()) 
@@ -83,8 +83,8 @@ public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNAC
 			}
 		}
 		if ( changed)
-			return SUCCEEDED;
-			return MEH;
+			return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
 	}
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData ddata, int ic, int it){

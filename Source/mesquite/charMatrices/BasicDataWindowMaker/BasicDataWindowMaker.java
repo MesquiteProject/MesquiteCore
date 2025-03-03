@@ -150,6 +150,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 				return bdw;
 			}
 		}
+		else if (checker.compare(this.getClass(), "Goes to the matrix by reference", "[reference]", commandName, "showMatrix")) { 
+			if (bdw != null)
+				return bdw.doCommand("showMatrix", arguments, checker);
+		}
 
 		else
 			return super.doCommand(commandName, arguments, checker);
@@ -614,9 +618,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		else {
 			setCellColorer(noColor);
 		}
-		MesquiteModule groupColor = ownerModule.findEmployeeWithName("#TaxonGroupColor", true);
-		setRowNamesColorer(groupColor);
-		groupColor = ownerModule.findEmployeeWithName("#CharGroupColor", true);
+		//	MesquiteModule groupColor = ownerModule.findEmployeeWithName("#TaxonGroupColor", true);
+		setRowNamesColorer(noColor);
+		MesquiteModule groupColor = ownerModule.findEmployeeWithName("#CharGroupColor", true);
 		setColumnNamesColorer(groupColor);
 		setTextColorer(noColor);
 		MesquiteSubmenuSpec mShowDataInfoStrip = ownerModule.addSubmenu(ownerModule.displayMenu, "Add Char Info Strip", ownerModule.makeCommand("hireDataInfoStrip", this), DataColumnNamesAssistant.class);
@@ -989,8 +993,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		for (int i = 0; i < ownerModule.getNumberOfEmployees(); i++) {
 			Object e = ownerModule.getEmployeeVector().elementAt(i);
 			if (e instanceof DataWindowAssistant && !(e instanceof DataWindowAssistantI))
-					temp.addLine("newAssistant ", ((MesquiteModule) e));
-			
+				temp.addLine("newAssistant ", ((MesquiteModule) e));
+
 		}
 		if (matrixInfoPanelEverShown) {
 			if (matrixInfoPanel != null) {
@@ -1005,25 +1009,24 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		return temp;
 	}
 
-	NameReference colorNameRef = NameReference.getNameReference("color");
-
+	NameReference oldColourNameRef = NameReference.getNameReference("color");
 	private void setColor(int ic, int it, int c) {
 		if (data == null)
 			return;
 		if (ic < 0 && it < 0) {
 		}
 		else if (ic < 0) { // taxon
-			data.getTaxa().setAssociatedLong(colorNameRef, it, c);
+			data.getTaxa().setColor(it, ColorDistribution.getStandardColorAsHex(c));
 		}
 		else if (it < 0) { // character
-			data.setAssociatedLong(colorNameRef, ic, c);
+			data.setColor(ic, ColorDistribution.getStandardColorAsHex(c));
 		}
 		else if (!MesquiteLong.isCombinable(c) || c < 0) {
-			data.setCellObject(colorNameRef, ic, it, null);
+			data.setCellObject(oldColourNameRef, ic, it, null);
 		}
 		else {
 			MesquiteInteger ms = new MesquiteInteger((int) c);
-			data.setCellObject(colorNameRef, ic, it, ms);
+			data.setCellObject(oldColourNameRef, ic, it, ms);
 		}
 	}
 
@@ -1444,9 +1447,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		return null;
 	}
 
-	public void switchToMatrix(int imNext) {
+	public Commandable switchToMatrix(int imNext) {
 		// ask coordinator to show that window
-		
+
 		MesquiteModule bdwC = ownerModule.getEmployer();
 		CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
 		CommandRecord record = new CommandRecord(true);
@@ -1462,6 +1465,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 		// close this one
 		closeWindow();
+		return mb;
 	}
 	/* ................................................................................................................. */
 	MesquiteInteger pos = new MesquiteInteger(0);
@@ -1497,8 +1501,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				imNext = im+1;
 			if (imNext == im)
 				return null;
-			switchToMatrix(imNext);
-			return null;
+			return switchToMatrix(imNext);
 		}
 		else if (checker.compare(this.getClass(), "Goes to the previous matrix", null, commandName, "previousMatrix")) {
 			// figure out what is previous matrix
@@ -1512,7 +1515,18 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 			if (imPrev == im)
 				return null;
-			switchToMatrix(imPrev);
+			return switchToMatrix(imPrev);
+		}
+		else if (checker.compare(this.getClass(), "Goes to the matrix by reference", "[reference]", commandName, "showMatrix")) { 
+			MesquiteProject proj = data.getProject();
+			CharacterData d = proj.getCharacterMatrixByReference(null, data.getTaxa(), null, ParseUtil.getFirstToken(arguments, pos));
+			if (d!= null){
+				int imCurrent = proj.getMatrixNumber(data);
+				int imOther = proj.getMatrixNumber(d);
+				if (imCurrent == imOther)
+					return ownerModule;
+				return switchToMatrix(imOther);
+			}
 			return null;
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether the info panel is on", null, commandName, "toggleInfoPanel")) {
@@ -1974,7 +1988,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				int i = 0;
 				Bits sel = table.getColumnsSelected();
 				boolean asked = false;
-				ObjectArray charNotes = data.getWhichAssociatedObject(NameReference.getNameReference("comments"));
+				ObjectArray charNotes = data.getAssociatedObjects(NameReference.getNameReference("comments"));
 				while (i < table.getNumColumns()) {
 					if (sel.isBitOn(i)) {
 						table.deselectColumn(i);
@@ -2303,7 +2317,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		}
 		else if (checker.compare(this.getClass(), "Hires new data editor assistant module", "[name of module]", commandName, "newAssistant")) {
 			//if can't find it, may be for a package not here; just absorb the instructions
-		/*	if (StringUtil.notEmpty(arguments) && MesquiteTrunk.mesquiteModulesInfoVector.findModule(DataWindowAssistant.class, arguments)== null)
+			/*	if (StringUtil.notEmpty(arguments) && MesquiteTrunk.mesquiteModulesInfoVector.findModule(DataWindowAssistant.class, arguments)== null)
 				return new MesquiteCommandAbsorber(); */
 			DataWindowAssistant dwa = (DataWindowAssistant) ownerModule.hireNamedEmployee(DataWindowAssistant.class, arguments);
 			if (dwa != null)
@@ -3590,7 +3604,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		if (sbUsed)
 			lineCount++;
 		boolean taxNamesChanged = false;
-		boolean atLeastOneFullRowSelected = isAnyRowSelected();
+		boolean atLeastOneFullRowSelected = anyRowSelected();
 		for (int j = 0; j < numRowsTotal && lineCount < lines.length; j++) {
 			if (sbUsed)
 				sb = new StringBuffer(lines[lineCount]);
@@ -3914,6 +3928,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		Color color = null;
 		if (!isRow)
 			color = data.getDefaultCharacterColor(number);
+		else {
+			color = data.getTaxa().getDefaultTaxonColor(number);
+		}
 		if (color != null)
 			return color;
 		else if (!isRow)
@@ -4683,18 +4700,17 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
-
+	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if ((window.getCurrentTool() == window.arrowTool) && (clickCount > 1) && window.ibeamTool != null) {
 			window.setCurrentTool(window.ibeamTool);
 			window.getPalette().setCurrentTool(window.ibeamTool);
-			((TableTool) window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
 		else if (((TableTool) window.getCurrentTool()).useTableTouchRules()) {
-			super.cellTouched(column, row, regionInCellH, regionInCellV, modifiers, clickCount);
+			super.cellTouched(column, row, editorPanel, x, y, modifiers, clickCount);
 		}
 		else {
-			((TableTool) window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate() || ((TableTool) window.getCurrentTool()).useTableTouchRules()) {
 			setFocusedCell(column, row);
@@ -4706,19 +4722,19 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void cellDrag(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDrag(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules())
-			super.cellDrag(column, row, regionInCellH, regionInCellV, modifiers);
+			super.cellDrag(column, row, editorPanel, x, y, modifiers);
 		else
-			((TableTool) window.getCurrentTool()).cellDrag(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellDrag(column, row, editorPanel, x, y, modifiers);
 	}
 
 	/* ............................................................................................................... */
-	public void cellDropped(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDropped(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules())
-			super.cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+			super.cellDropped(column, row, editorPanel, x, y, modifiers);
 		else
-			((TableTool) window.getCurrentTool()).cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellDropped(column, row, editorPanel, x, y, modifiers);
 
 	}
 
@@ -4728,7 +4744,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (singleTableCellSelected()) {
 				Dimension sel = getFirstTableCellSelected();
 				if (oldColumn != sel.width || oldRow != sel.height) {
-					((TableTool) window.getCurrentTool()).cellTouched(sel.width, sel.height, 50, 50, 0);
+					((TableTool) window.getCurrentTool()).cellTouched(sel.width, sel.height, getMatrixPanel(), 50, 50, 0);
 				}
 			}
 		}
@@ -4763,7 +4779,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void rowNameTouched(int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void rowNameTouched(int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate()) {
 			cellAnnotated.setCell(-1, row);
 			window.setAnnotation(cellAnnotated);
@@ -4775,23 +4791,33 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (clickCount > 1 && window.ibeamTool != null) {
 				window.setCurrentTool(window.ibeamTool);
 				window.getPalette().setCurrentTool(window.ibeamTool);
-				((TableTool) window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+				((TableTool) window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 			}
 			else
-				super.rowNameTouched(row, regionInCellH, regionInCellV, modifiers, clickCount);
+				super.rowNameTouched(row, editorPanel, x, y, modifiers, clickCount);
 		else
-			((TableTool) window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 		broadcastFocusInCell(-1, row);
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(-1, row);
 	}
 
 	/* ............................................................................................................... */
-	public void rowTouched(boolean isArrowEquivalent, int row, int regionInCellH, int regionInCellV, int modifiers) {
-		if (((TableTool) window.getCurrentTool()).useTableTouchRules() || isArrowEquivalent)
-			super.rowTouched(isArrowEquivalent, row, regionInCellH, regionInCellV, modifiers);
+	public void rowTouched(boolean isArrowEquivalent, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
+		if (((TableTool) window.getCurrentTool()).useTableTouchRules() || isArrowEquivalent){
+			Enumeration enumeration = window.ownerModule.getEmployeeVector().elements();
+			while (enumeration.hasMoreElements()) {
+				Object obj = enumeration.nextElement();
+				if (obj instanceof DataWindowAssistant) {
+					DataWindowAssistant assistant = (DataWindowAssistant) obj;
+					if (assistant.rowTouched(isArrowEquivalent, row, getRowNamesPanel(), x, y,modifiers))
+						return;  // touch consumed!
+				}
+			}
+			super.rowTouched(isArrowEquivalent, row, editorPanel, x, y, modifiers);
+		}
 		else
-			((TableTool) window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(-1, row);
 	}
@@ -4883,7 +4909,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void columnNameTouched(int column, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate()) {
 			cellAnnotated.setCell(column, -1);
 			window.setAnnotation(cellAnnotated);
@@ -4896,13 +4922,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (clickCount > 1 && window.ibeamTool != null) {
 				window.setCurrentTool(window.ibeamTool);
 				window.getPalette().setCurrentTool(window.ibeamTool);
-				((TableTool) window.getCurrentTool()).cellTouched(column, -1, regionInCellH, regionInCellV, modifiers);
+				((TableTool) window.getCurrentTool()).cellTouched(column, -1, editorPanel, x, y, modifiers);
 			}
 			else
-				super.columnNameTouched(column, regionInCellH, regionInCellV, modifiers, clickCount);
+				super.columnNameTouched(column, editorPanel, x, y, modifiers, clickCount);
 		}
 		else {
-			((TableTool) window.getCurrentTool()).cellTouched(column, -1, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, -1, editorPanel, x, y, modifiers);
 		}
 		broadcastFocusInCell(column, -1);
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
@@ -4910,7 +4936,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void subRowTouched(int subRow, int column, int regionInCellH, int regionInCellV, int x, int y, int modifiers) {
+	public void subRowTouched(int subRow, int column, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (!columnLegal(column))
 			return;
 		if (column >= 0) {
@@ -4918,7 +4944,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (assistant != null){
 				assistant.setColumnTouched(column);
 				if (((TableTool) window.getCurrentTool()).getSpecialToolForColumnNamesInfoStrips())
-					((TableTool) window.getCurrentTool()).cellTouched(column, subRow, regionInCellH, regionInCellV, modifiers);
+					((TableTool) window.getCurrentTool()).cellTouched(column, subRow, editorPanel, x, y, modifiers);
 				else
 					assistant.showPopUp(columnNames, x + 5, y + 5);
 			}
@@ -4926,12 +4952,21 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void columnTouched(boolean isArrowEquivalent, int column, int regionInCellH, int regionInCellV, int modifiers) {
+	public void columnTouched(boolean isArrowEquivalent, int column, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules() || isArrowEquivalent) {
-			super.columnTouched(isArrowEquivalent, column, regionInCellH, regionInCellV, modifiers);
+			Enumeration enumeration = window.ownerModule.getEmployeeVector().elements();
+			while (enumeration.hasMoreElements()) {
+				Object obj = enumeration.nextElement();
+				if (obj instanceof DataWindowAssistant) {
+					DataWindowAssistant assistant = (DataWindowAssistant) obj;
+					if (assistant.columnTouched(isArrowEquivalent, column, getColumnNamesPanel(), x, y,modifiers))
+						return;
+				}
+			}
+			super.columnTouched(isArrowEquivalent, column, editorPanel, x, y, modifiers);
 		}
 		else {
-			((TableTool) window.getCurrentTool()).cellTouched(column, -1, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, -1, editorPanel, x, y, modifiers);
 		}
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(column, -1);
@@ -5071,7 +5106,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		window.getOwnerModule().unpauseAllPausables(v);
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 		data.notifyInLinked(new Notification(MesquiteListener.PARTS_MOVED));
-		
+
 		setNumRows(data.getNumTaxa());
 		setNumColumns(data.getNumChars());
 		setFirstColumnVisible(first);

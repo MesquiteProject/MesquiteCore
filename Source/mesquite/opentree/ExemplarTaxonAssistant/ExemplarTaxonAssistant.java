@@ -126,7 +126,7 @@ import mesquite.opentree.lib.*;
 		/** for those permitting editing, indicates user has edited to incoming string.*/
 		public void setString(int row, String s){
 			if (taxa!=null) {
-				taxa.setAssociatedObject(OpenTreeUtil.nonExemplarRef, row, s);
+				taxa.setAssociatedString(OpenTreeUtil.nonExemplarRef, row, s);
 			}
 			
 		}

@@ -534,6 +534,8 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 	}
 	/*.................................................................................................................*/
 	private void drawTerminalStuff(int N, Tree tree, Graphics g) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		if (tree == null || g == null || treeDisplay == null || treeDisplay.getTreeDrawing() == null || observedStatesA == null || observedStatesB == null)
 			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -684,12 +686,12 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 				g.setColor(ColorDistribution.lightOrange);
 			//g.setColor(new Color(Color.HSBtoRGB((float)(i * 1.0 /numTaxa),(float)1.0,(float)1.0)));
 			int thisNode = t1;
-			while (tree.nodeExists(thisNode) && thisNode!= path.getBase() && thisNode!=drawnRoot) {
+			while (tree.nodeExists(thisNode) && thisNode!= path.getBase() && thisNode!=drawnRoot && !tree.withinCollapsedClade(thisNode)) {
 				treeDisplay.getTreeDrawing().fillBranch(tree, thisNode, g);
 				thisNode=tree.motherOfNode(thisNode);
 			}
 			thisNode = t2;
-			while (tree.nodeExists(thisNode) && thisNode!= path.getBase() && thisNode!=drawnRoot) {
+			while (tree.nodeExists(thisNode) && thisNode!= path.getBase() && thisNode!=drawnRoot && !tree.withinCollapsedClade(thisNode)) {
 				treeDisplay.getTreeDrawing().fillBranch(tree, thisNode, g);
 				thisNode=tree.motherOfNode(thisNode);
 			}

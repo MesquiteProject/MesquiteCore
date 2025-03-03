@@ -20,7 +20,7 @@ import mesquite.lib.*;
 /* ======================================================================== */
 /**Searchers to find trees that optimize something.*/
 
-public abstract class ExternalTreeSearcher extends TreeSearcher  {
+public abstract class ExternalTreeSearcher extends TreeSearcherFromMatrix  {
    	 public Class getDutyClass() {
    	 	return ExternalTreeSearcher.class;
    	 }

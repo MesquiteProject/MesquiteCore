@@ -43,11 +43,11 @@ public class RandomFillUniform extends ContDataAlterer implements AltererRandomi
 
 		boolean did=false;
 		if (!(data instanceof ContinuousData))
-			return INCOMPATIBLE_DATA;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		MesquiteBoolean answer = new MesquiteBoolean(true);
 		MesquiteDouble.queryTwoDoubles(containerOfModule(), "Random fill (Uniform)", "Minimum of filled states", "Maximum of filled states", answer, min, max);
 		if (!answer.getValue() && min.isCombinable() && (max.isCombinable()) && max.getValue()>=min.getValue())
-			return USER_STOPPED;
+			return ResultCodes.USER_STOPPED;
 		ContinuousData cData = (ContinuousData)data;
 		return alterContentOfCells(data,table, undoReference);
 	}

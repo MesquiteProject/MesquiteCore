@@ -37,14 +37,6 @@ public class TaxaGroup extends GroupLabel {
 	public TaxaGroup() {
 	}
 
-	public void equalizeAs(TaxaGroup toCopy){
-		//taxa = toCopy.taxa; //ZQ shold this be copied?
-		color = toCopy.color;
-		symbol = toCopy.symbol;
-		colorWasSet = toCopy.colorWasSet;
-		visible = toCopy.visible;
-		setName(toCopy.getName());
-	}
 	public static boolean supportsSymbols() {
 		return true;
 	}

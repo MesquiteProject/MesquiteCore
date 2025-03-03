@@ -99,7 +99,7 @@ public abstract class MesquiteDialog implements Commandable, Listable, Component
 				}
 			}
 			if (f == MesquiteWindow.dialogAnchor && (MesquiteTrunk.debugMode))
-				MesquiteMessage.printStackTrace("@@@@@@@@@@@DIALOG ANCHOR USED FOR " + title); 
+				MesquiteMessage.printStackTrace("#################DIALOG ANCHOR USED FOR " + title); 
 
 			parentDialog = new MesquiteDialogParent(f, title, !usingWizard);
 			//parentDialog = new MesquiteDialogParent(MesquiteWindow.dialogAnchor, title, !usingWizard);
@@ -345,8 +345,9 @@ public abstract class MesquiteDialog implements Commandable, Listable, Component
 			}
 		}
 		else {
+			repaintAll();
 			parentDialog.setVisible(true);
-
+			
 		}
 
 	}
@@ -404,6 +405,7 @@ public abstract class MesquiteDialog implements Commandable, Listable, Component
 					waiting = true;
 					while (waiting && waitingOnButtonPush)
 						Thread.sleep(20);
+					
 				} catch (InterruptedException e) {
 				}
 				return;

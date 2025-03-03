@@ -38,7 +38,7 @@ public class MQScrollbar extends Scrollbar {
 	public void setSize (int w, int h){
 		if (touching != null && touching != Thread.currentThread()){
 			if (MesquiteTrunk.developmentMode)
-				System.err.println("Warning: thread clash in scollbar avoided (setSize)");
+				System.err.println("Warning: thread clash in MQScrollbar avoided (setSize). This thread: " + Thread.currentThread() + "; also touching " + touching);
 			return;
 		}
 		touching = Thread.currentThread();
@@ -48,7 +48,7 @@ public class MQScrollbar extends Scrollbar {
 	public void setBounds (int x, int y, int w, int h){
 		if (touching != null && touching != Thread.currentThread()){
 			if (MesquiteTrunk.developmentMode)
-				System.err.println("Warning: thread clash in scollbar avoided (setBounds)");
+				System.err.println("Warning: thread clash in MQScrollbar avoided (setBounds). This thread: " + Thread.currentThread() + "; also touching " + touching);
 			return;
 		}
 		touching = Thread.currentThread();
@@ -58,7 +58,7 @@ public class MQScrollbar extends Scrollbar {
 	public void setLocation (int x, int y){
 		if (touching != null && touching != Thread.currentThread()){
 			if (MesquiteTrunk.developmentMode)
-				System.err.println("Warning: thread clash in scollbar avoided (setLocation)");
+				System.err.println("Warning: thread clash in MQScrollbar avoided (setLocation). This thread: " + Thread.currentThread() + "; also touching " + touching);
 			return;
 		}
 		touching = Thread.currentThread();
@@ -68,7 +68,7 @@ public class MQScrollbar extends Scrollbar {
 	public void setVisibleAmount (int a){
 		if (touching != null && touching != Thread.currentThread()){
 			if (MesquiteTrunk.developmentMode)
-				System.err.println("Warning: thread clash in scollbar avoided (setVisibleAmount)");
+				System.err.println("Warning: thread clash in MQScrollbar avoided (setVisibleAmount). This thread: " + Thread.currentThread() + "; also touching " + touching);
 			return;
 		}
 		touching = Thread.currentThread();
@@ -79,7 +79,7 @@ public class MQScrollbar extends Scrollbar {
 	public void setBlockIncrement (int a){
 		if (touching != null && touching != Thread.currentThread()){
 			if (MesquiteTrunk.developmentMode)
-				System.err.println("Warning: thread class in scollbar avoided (setBlockIncrement)");
+				System.err.println("Warning: thread clash in MQScrollbar avoided (setBlockIncrement). This thread: " + Thread.currentThread() + "; also touching " + touching);
 			return;
 		}
 		touching = Thread.currentThread();

@@ -71,6 +71,9 @@ public class UnrootedTree extends DrawTree {
 	public boolean allowsReorientation(){
 		return false;
 	}
+	public Vector getDrawings(){
+		return drawings;
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
@@ -91,7 +94,7 @@ public class UnrootedTree extends DrawTree {
 					Object obj = e.nextElement();
 					UnrootedTreeDrawing treeDrawing = (UnrootedTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(newWidth, 6); 
 				}
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -137,7 +140,6 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 	BasicStroke defaultStroke;
 
 	private int foundBranch;
-	NameReference triangleNameRef;
 
 	public UnrootedTreeDrawing (TreeDisplay treeDisplay, int numTaxa, UnrootedTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
@@ -146,13 +148,12 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 		}
 		catch (Throwable t){
 		}
-		triangleNameRef = NameReference.getNameReference("triangled");
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		treeDisplay.setOrientation(TreeDisplay.UNROOTED);
 		oldNumTaxa = numTaxa;
 		namesFollowLines = true;
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 		ready = true;
 	}
 	public void resetNumNodes(int numNodes){
@@ -206,7 +207,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 //		drawArc(g, polarLength, angle, node, motherN, 0);
 
 
-		if (tree.getAssociatedBit(triangleNameRef,node)) {
+		if (tree.isCollapsedClade(node)) {
 			double highestTerminal = findHighest(tree, node, polarLength);
 			R = ownerModule.nodeLocsTask.treeCenter.getX() + highestTerminal;
 			L = ownerModule.nodeLocsTask.treeCenter.getX() - highestTerminal;
@@ -322,13 +323,14 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 	}
 	/*----------------------------------------------------------------------------*/
 	private  void drawClade(Tree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
-			long c = tree.getAssociatedLong(ColorDistribution.colorNameReference, node);
 			g.setColor(treeDisplay.getBranchColor(node));
 			if (tree.getRoot()!=node)  //TODO: only draw if requested  tree.getRooted() || 
 				drawOneBranch(tree, node, g);
 
-			if (!tree.getAssociatedBit(triangleNameRef,node))
+			if (!tree.isCollapsedClade(node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawClade( tree, d, g);
 		}
@@ -341,7 +343,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 		GraphicsUtil.fillRect(g,rect.getX()+inset, rect.getY()+inset, rect.getWidth()-inset*2, rect.getHeight()-inset*2);
 		*/
 		if (MesquiteTree.OK(tree)) {
-			treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
 			g.setColor(treeDisplay.branchColor);
@@ -384,7 +386,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void calcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node)) {  // it's not collapses into a triangle
+		if (!tree.isCollapsedClade(node)) {  // it's not collapses into a triangle
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				calcBranchPolys(tree, d, polys, isTouch);
 			defineBranchPoly(node, polys[node], isTouch, tree.nodeIsInternal(node), x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
@@ -427,7 +429,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 				resetNumNodes(tree.getNumNodeSpaces());
 			if (!tree.nodeExists(getDrawnRoot()))
 				setDrawnRoot(tree.getRoot());
-			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot(),  treeDisplay.getField()); //Graphics g removed as parameter May 02
+			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot()); //Graphics g removed as parameter May 02
 			calcBranchPolys(tree, getDrawnRoot());
 		}
 	}
@@ -539,19 +541,9 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 		Shape box = getTerminalBox(tree,node,g,1,1);
 		GraphicsUtil.draw(g, box);
 	}
-	/*_________________________________________________*/
-	private boolean ancestorIsTriangled(Tree tree, int node) {
-		if (!tree.nodeExists(node))
-			return false;
-		if (tree.getAssociatedBit(triangleNameRef, tree.motherOfNode(node)))
-			return true;
-		if (tree.getRoot() == node || tree.getSubRoot() == node)
-			return false;
-		return ancestorIsTriangled(tree, tree.motherOfNode(node));
-	}
 	/*----------------------------------------------------------------------------*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRoot()!=node) && !tree.withinCollapsedClade(node)) {
 			Color c = g.getColor();
 			if (treeDisplay.getOrientation()==TreeDisplay.UNROOTED) {
 				int numColors = colors.getNumColors();
@@ -595,7 +587,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !tree.withinCollapsedClade(node)) {
 			GraphicsUtil.fill(g,fillBranchPoly[node]);
 			int motherN= tree.motherOfNode(node);
 			double[] polarLength= ownerModule.nodeLocsTask.polarLength;
@@ -699,7 +691,7 @@ class UnrootedTreeDrawing extends TreeDrawing  {
 					}
 			}
 
-			if (!tree.getAssociatedBit(triangleNameRef,node))
+			if (!tree.isCollapsedClade(node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, d, x, y, fraction);
 

@@ -214,16 +214,17 @@ class ModelsListWindow extends ListWindow implements MesquiteListener {
 		}
 		return null;
 	}
-	public boolean interceptRowNameTouch(int row, int regionInCellH, int regionInCellV, int modifiers){
+	public boolean interceptRowNameTouch(int row, EditorPanel editorPanel, int x, int y, int modifiers){
 		CharacterModel model = getModel(row);
 		if (model!=null){
 			if (model.isBuiltIn()) {
-				((ListTable)getTable()).superRowNameTouched(row,  regionInCellH,  regionInCellV, modifiers,1);
+				((ListTable)getTable()).superRowNameTouched(row,  editorPanel, x, y, modifiers,1);
 			}
 			else
 				getTable().editRowNameCell(row);
+			return true;
 		}
-		return true;
+		return false;
 	}
 	public void setRowName(int row, String name){
 		CharacterModel model = getModel(row);

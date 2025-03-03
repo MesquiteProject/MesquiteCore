@@ -76,6 +76,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		treeDisplay =treeDrawCoordTask.createOneTreeDisplay(taxa, this); //TODO: set tree display when tree is set for first time
 		scrollPane = new MQScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
 		scrollPane.add(treeDisplay);
+		treeDisplay.autoStretchIfNeeded = true;
 		sizeDisplays();
 		addToWindow(scrollPane);
 		resetTitle();
@@ -89,6 +90,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 			return;
 		tce.setTree(tree);
 		treeDisplay.addExtra(tce);
+		treeDisplay.accumulateRequestsFromExtras(tree);
 		treeDisplay.pleaseUpdate(false);
 		if (getMode()>0)
 			updateTextPage();

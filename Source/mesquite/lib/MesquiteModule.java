@@ -23,7 +23,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.lang3.StringEscapeUtils;
 import mesquite.lib.duties.*;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.ui.AlertDialog;
@@ -32,7 +31,6 @@ import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ToolPalette;
 import mesquite.tol.lib.BaseHttpRequestMaker;
-import mesquite.trunk.PhoneHomeThread;
 import edu.stanford.ejalbert.*;  //for Browserlauncher
 
 
@@ -75,7 +73,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "23 January 2025";
+		return "27 Feburary 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -93,7 +91,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1029;  
+		return 1043;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -558,6 +556,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** A method called immediately before a file is to be saved.*/
 	public void fileAboutToBeWritten(MesquiteFile f) {
+	}
+	/*.................................................................................................................*/
+	/** A method called immediately before a file is to be saved.*/
+	public void fileWritingFinished(MesquiteFile f) {
 	}
 	/*.................................................................................................................*/
 	/** A method called when a FileElement added to the project; module can respond as needed (e.g., 
@@ -1174,7 +1176,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else
 			logln(logTitle+": " + s);
 		}
-		if (alertUseDialog) {
+		if (alertUseDialog) { //NOTE: This seems to work much better if on AWTEvent thread, so perhaps do these by bypassing PendingCommand queue?
 			AlertDialog.noticeHTML(parent,windowTitle, s, width, height, null);
 		}
 	}
@@ -2115,6 +2117,19 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Return Mesquite commands that will put the module (approximately) back into its current state. Used
 	so that on file save, a Mesquite block can be saved that will return the user more or less to previous state. */
 	public Snapshot getSnapshot(MesquiteFile file) {  //this allows employees to be dealt with
+		Snapshot temp = new Snapshot();
+
+		/* examples
+ 		temp.addLine("toggleMesquiteBoolean " + mesquiteBoolean.toOffOnString());
+		temp.addLine("setPrimerInfoSource " +  StringUtil.tokenize(primerInfoTask.getClassName()));  
+
+		 */
+
+		return temp;
+	}
+	/** For additional snapshot commands that come after employees'. */
+	//these late commands should not expect subsequent commands to an object returned!
+	public Snapshot getLateSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 
 		/* examples

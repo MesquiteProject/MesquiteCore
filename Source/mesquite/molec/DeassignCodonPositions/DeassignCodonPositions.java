@@ -44,9 +44,9 @@ public class DeassignCodonPositions extends CodonPositionAssigner {
 	/** Called to alter data in those cells selected in table*/
 	public int assignCodonPositions(DNAData data, CodonPositionsSet modelSet){
 		if (data==null  || modelSet == null) 
-			return DataAlterer.INPUT_NULL;
+			return ResultCodes.INPUT_NULL;
 		deassign(data, modelSet);
-		return DataAlterer.SUCCEEDED;
+		return ResultCodes.SUCCEEDED;
 	}
 
 

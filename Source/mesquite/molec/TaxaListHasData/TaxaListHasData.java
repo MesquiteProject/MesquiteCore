@@ -521,33 +521,19 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			setNote(row, s, CharacterData.taxonMatrixNotesRef);
 	}
 
-	/*...............................................................................................................*
-	void setNote(int row, String s){
-		if (tInfo == null)
-			return;
-		tInfo.setAssociatedObject(MolecularData.genBankNumberRef, row, s);
-	}
-	/*...............................................................................................................*
-	String getNote(int row, NameReference nameRef){
-		if (tInfo == null)
-			return null;
-		Object obj = tInfo.getAssociatedObject(MolecularData.genBankNumberRef, row);
-		if (obj == null || !(obj instanceof String))
-			return null;
-		return (String)obj;
-	}
+	
 	/*...............................................................................................................*/
 	void setNote(int row, String s, NameReference nameRef){
 		if (tInfo == null)
 			return;
-		tInfo.setAssociatedObject(nameRef, row, s);
+		tInfo.setAssociatedString(nameRef, row, s);
 	}
 	/*...............................................................................................................*/
 	String getNote(int row, NameReference nameRef){
 		if (tInfo == null)
 			return null;
-		Object obj = tInfo.getAssociatedObject(nameRef, row);
-		if (obj == null || !(obj instanceof String))
+		String obj = tInfo.getAssociatedString(nameRef, row);
+		if (obj == null)
 			return null;
 		return (String)obj;
 	}

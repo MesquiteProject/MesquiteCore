@@ -20,6 +20,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ProgressIndicator;
 
 
@@ -88,9 +89,8 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			extraTaxon = numTaxa;
 			taxa.addTaxa(numTaxa-1, 1, false);
 			data.addTaxa(numTaxa-1, 1);
-			NameReference colorNameRef = NameReference.getNameReference("color");
 			for (int it = extraTaxon; it<taxa.getNumTaxa(); it++)
-				taxa.setAssociatedLong(colorNameRef, it, 8, true);
+				taxa.setColor(it, ColorDistribution.hexFromColor(ColorDistribution.paleGoldenRod)); //paleGoldenRod
 		}
 		if (numChars<0 || !MesquiteInteger.isCombinable(numChars))
 			numChars = data.getNumChars();
@@ -98,7 +98,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		int PREFEREXISTING = 1;
 		int PREFERINCOMING = 0;
 		int SEPARATENOTOVERWRITE = 2;
-		NameReference colorNameRef = NameReference.getNameReference("color");
 		MesquiteTimer readTime = new MesquiteTimer();
 		MesquiteTimer totalTime = new MesquiteTimer();
 
@@ -276,7 +275,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			String problem = null;
 			int lastTaxonNumber = -1;
 			
-			if (NEXUSFileParser.verbose) Debugg.println("@@@@@@@@  CMM ");
+			if (NEXUSFileParser.verbose) Debugg.println("###############  CMM ");
 			for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken(false)); it++) {
 
 				boolean preserveNewTaxon = false;
@@ -322,7 +321,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					}
 				}
 				CommandRecord.tick("Reading character states for " + taxa.getTaxonName(whichTaxon));
-				if (NEXUSFileParser.verbose)  Debugg.println("@@@@@@@@  CMM1");
+				if (NEXUSFileParser.verbose)  Debugg.println("###############  CMM1");
 				int ic=0;
 				lastTaxonNumber = whichTaxon;
 				if (fuse){ //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    FUSE
@@ -351,7 +350,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 							if (overwritingRule == SEPARATENOTOVERWRITE){  //don't deassign extra taxon, and invent new taxon and change value of extraTaxon
 								preserveNewTaxon = true;
 								taxa.setTaxonName(extraTaxon, taxa.getUniqueName(taxa.getTaxonName(whichTaxon)+" (for " + data.getName() + ", from file " + fileBeingRead.getFileName() + ")"), false);
-								taxa.setAssociatedLong(colorNameRef, extraTaxon, 13, true);
+								taxa.setColor(extraTaxon, ColorDistribution.hexFromColor(Color.cyan));
 								int numTaxa = taxa.getNumTaxa();
 								taxa.addTaxa(numTaxa-1, 1, false);  //this is for future
 								data.addTaxa(numTaxa-1, 1);
@@ -425,12 +424,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 	private void markAsOverwritten(CharacterData data, int whichTaxon, MesquiteFile fileBeingRead){
 		Associable tInfo = data.getTaxaInfo(true);
 
-		Object obj = tInfo.getAssociatedObject(orRef, whichTaxon);
+		Object obj = tInfo.getAssociatedString(orRef, whichTaxon);
 		String s = "";
 		if (obj != null && obj instanceof String)
 			s = "; " + (String)obj;
 		s = "Overwritten by states from file " + fileBeingRead.getFileName() + " on " + getDateAndTime() + s;
-		tInfo.setAssociatedObject(orRef, whichTaxon, s);
+		tInfo.setAssociatedString(orRef, whichTaxon, s);
 
 		MesquiteMessage.warnUser("NOTE: Previous states in matrix \"" + data.getName() + "\" for taxon " + (whichTaxon+1) + " (" + data.getTaxa().getTaxonName(whichTaxon) + ") overwritten using states from file " + fileBeingRead.getFileName());
 

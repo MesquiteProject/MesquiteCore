@@ -31,7 +31,7 @@ import mesquite.lib.table.*;
 	 public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		 if (data.isEditInhibited()){
 				discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
-			 return OBJECT_LOCKED;
+			 return ResultCodes.OBJECT_LOCKED;
 		 }
 		 boolean did=false;
 	   		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
@@ -83,9 +83,9 @@ import mesquite.lib.table.*;
 		 }
 		 if (did){
 			 data.notifyInLinked(new Notification(DATA_CHANGED));
-		 return SUCCEEDED;
+		 return ResultCodes.SUCCEEDED;
 		 }
-		 return MEH;
+		return ResultCodes.MEH;
 	 }
 
 

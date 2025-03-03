@@ -68,7 +68,7 @@ public class SearchForBetterTree extends TreeAlterer {
 		return false;
 	}
 	public boolean requestPrimaryChoice(){
-		return true;
+		return false;
 	}
 	public CompatibilityTest getCompatibilityTest(){
 		if (numberTask !=null)

@@ -288,11 +288,6 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public void readFile(MesquiteProject mProj, MesquiteFile mNF, String arguments) {
-		readFile(mProj, mNF, arguments, null);
-	}
-	/*.................................................................................................................*/
-	public void readFile(MesquiteProject mProj, MesquiteFile mNF, String arguments, String[] justTheseBlocks) {
-		
 		incrementMenuResetSuppression();
 		int length = (int)mNF.existingLength();
 		int readToNow = 0;
@@ -306,6 +301,13 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			piMine = true;
 			if (mt instanceof MesquiteThread)
 				((MesquiteThread)mt).setProgressIndicator(progIndicator);
+		}
+		if (!parser.hasAnyFileReadingArguments(arguments)) //needs to have not file reading arguments to go in list for reopening
+			mNF.okForRecentRereading = true;
+		String[] justTheseBlocks = null;
+		if (parser.hasFileReadingArgument(arguments, "justTheseBlocks")){
+			String whichBlocks = parser.getFileReadingArgumentSubtype(arguments, "justTheseBlocks");
+			justTheseBlocks = StringUtil.delimitedTokensToStrings(whichBlocks, '.', false);
 		}
 		progIndicator.setButtonMode(ProgressIndicator.FLAG_AND_HIDE);
 		progIndicator.start();
@@ -345,16 +347,16 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 								}
 								else
 									progIndicator.setButtonMode(ProgressIndicator.FLAG_AND_HIDE);
-								if (mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
+							/*	if (mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
 									mNF.setTranslatedCharacter('[', '<');
 									mNF.setTranslatedCharacter(']', '>');
-								}
+								}*/
 								progIndicator.setText("Processing block: " + blockName.getValue(), false, true);
 								NexusBlock nb = sendBlockToReader(mProj, mNF, block, blockName.getValue(), length, readToNow, blockComments, arguments);
-								if (false && mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
+								/*if (false && mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
 									mNF.clearTranslatedCharacter('[');
 									mNF.clearTranslatedCharacter(']');
-								}
+								}*/
 								progIndicator.setText("Reading next block", false);
 								progIndicator.toFront();
 								readToNow += block.getNumCommands();
@@ -386,44 +388,10 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 							else
 								mNF.setAnnotation(fileComments.toString(), false);
 						}
-						if (!mesquiteBlockFound && (mNF == mProj.getHomeFile())) {
-							FileCoordinator mb = (FileCoordinator)getProject().getCoordinatorModule();
-							if (mb != null){
-								mb.showBasicWindows();
-							/*	MesquiteWindow mw = mb.getModuleWindow();
-								if (mw != null)
-									mw.setWindowSize(1000, 800);
-								//	if (getProject().getNumberTaxas()>0){
-								MesquiteModule mbb = findNearestColleagueWithName("Manage TAXA blocks");
-								if (mbb != null)
-									mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
-								//	}
-								if (getProject().getNumberCharMatrices()>3){
-									mbb = findNearestColleagueWithName("#ManageCharacters");
-									if (mbb != null)
-										mbb.doCommand("showDatasList", null, CommandChecker.defaultChecker);
-								}
-								else if (getProject().getNumberCharMatrices()>0){
-									mbb = findNearestColleagueWithName("Data Window Coordinator");
-									if (mbb != null) {
-										for (int im = 0; im< getProject().getNumberCharMatrices(); im++)
-											mbb.doCommand("showDataWindow", "" + im, CommandChecker.defaultChecker);
-									}
-								}
-								else {
-									mbb = findNearestColleagueWithName("#ManageTrees");
-									if (getProject().getNumberTreeVectors()==1) {
-										mbb.doCommand("showTreesInWindow", "" + 0, CommandChecker.defaultChecker);
-									}
-									else if (getProject().getNumberTreeVectors()>1) {
-										mbb.doCommand("showTreeBlocks", null, CommandChecker.defaultChecker);
 
-									}
-								}
-								*/
-							}
-
-						}
+						if (mesquiteBlockFound && (mNF == mProj.getHomeFile()))
+							mProj.openedWithoutMesquiteBlock = false;
+						
 						progIndicator.goAway();
 						fileReadTimer.end();
 
@@ -488,6 +456,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			MesquiteFrame f = getProject().getFrame();
 			f.checkScriptedWindowSizes();
 		}
+		MesquiteTrunk.recentFileRecord(mNF, true);  //updating that it's ok to reread in REcent
 		decrementMenuResetSuppression();
 
 	}
@@ -710,6 +679,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			}
 			checkIntegrityForWriting(getFileCoordinator(), mNF);
 			mNF.setIsNexus(true);
+			
 			ListableVector blocks = getProject().getNexusBlocks();
 			MesquiteTimer time = new MesquiteTimer();
 			time.start();

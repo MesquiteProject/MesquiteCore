@@ -23,6 +23,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.misc.VoucherInfoFromOTUIDDB;
 import mesquite.lib.table.*;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
@@ -303,7 +304,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		return mesquiteTabbedFile.getNameFromTabDelimitedFile(sampleCode, taxonName);
 	}
 
-	NameReference colorNameRef = NameReference.getNameReference("color");
+
 	/*.................................................................................................................*/
 	/** Called to alter the taxon name in a single cell.  If you use the alterContentOfCells method of this class, 
    	then you must supply a real method for this, not just this stub. */
@@ -324,7 +325,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 					logln(""+it+". Taxon \"" + taxa.getTaxonName(it) +"\" renamed to \"" + newName + "\"");
 				taxa.setTaxonName(it, newName, false);
 				if (changeColor.getValue())
-					taxa.setAssociatedLong(colorNameRef, it, 14);
+					taxa.setColor(it, "#0000ff");
 				
 			} else
 				logln(""+it+". Taxon \"" + taxa.getTaxonName(it) +"\": no entry in names file.");
@@ -340,7 +341,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 				return taxa.getTaxonName(ic);
 			}
 			else {
-			String s = (String)taxa.getAssociatedObject(VoucherInfoFromOTUIDDB.voucherCodeRef, ic);
+			String s = (String)taxa.getAssociatedString(VoucherInfoFromOTUIDDB.voucherCodeRef, ic);
 			return s;
 			}
 		}

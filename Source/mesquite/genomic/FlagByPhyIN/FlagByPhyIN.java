@@ -229,7 +229,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		return buffer.toString();
 	}
 	public void processSingleXMLPreference (String tag, String flavor, String content){
-		processSingleXMLPreference(tag, null, content);
+		processSingleXMLPreference(tag, content);
 	}
 
 	/*.................................................................................................................*/

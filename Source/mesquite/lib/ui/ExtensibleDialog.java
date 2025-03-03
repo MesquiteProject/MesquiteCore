@@ -66,7 +66,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 	MesquiteModule helpURLOwnerModule=null;
 	Button button0, button1, button2;
-//	Button[] buttons = new Button[10];
+	//	Button[] buttons = new Button[10];
 	Image helpImage;
 	boolean useManualPage = false;
 	public String defaultOKLabel = "OK";
@@ -113,6 +113,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 	public static Font defaultBigFont = new Font ("Dialog", Font.PLAIN, 12);
 	public static Font boldFont = new Font ("Dialog", Font.BOLD, 12);
+	public static Font italicFont = new Font ("Dialog", Font.ITALIC, 12);
 	public static Font defaultSmallFont = new Font ("SanSerif", Font.PLAIN, 10);
 	public static Font defaultVerySmallFont = new Font ("SanSerif", Font.PLAIN, 9);
 
@@ -154,11 +155,11 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	private GridBagConstraints adjustGridBagConstraints() {
 		return constraints;
 	}
-	
+
 	public void setFocalComponent(Component fc) {
 		focalComponent = fc;
 	}
-	
+
 	/*.................................................................................................................*/
 	protected void intializeDialog (String title, MesquiteInteger buttonPressed) {
 		d = new Dimension(minDialogWidth, minDialogHeight);
@@ -170,7 +171,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (MesquiteTrunk.isLinux())
 			addBlankLine();
 	}
-	
+
 	public void addAttachment(Object obj) {
 		attachments.addElement(obj);
 	}
@@ -441,6 +442,14 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return button0;
 	}
 	/*.................................................................................................................*/
+	public Button getSecondButton () {
+		return button1;
+	}
+	/*.................................................................................................................*/
+	public Button getThirdButton () {
+		return button2;
+	}
+	/*.................................................................................................................*/
 	public Button getCancelButton () {
 		int cancel = getButtonNumber(getDefaultCancelLabel());
 		if (cancel==0)
@@ -652,6 +661,29 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		addBlankLine();
 	}
 	/*.................................................................................................................*/
+	public Button[] addButtonRow (String buttonLabel0, String buttonLabel1, String buttonLabel2, ActionListener listener) {
+		Panel buttonPanel = new MQPanel();
+		Button[] buttons= new Button[3];
+		if (buttonLabel0 != null) {
+			buttons[0]=addAButton(buttonLabel0,buttonPanel);
+			if ((listener!=null))
+				buttons[0].addActionListener(listener);
+		}
+		if (buttonLabel1 != null) {
+			buttons[1]=addAButton(buttonLabel1,buttonPanel);
+			if ((listener!=null))
+				buttons[1].addActionListener(listener);
+		}
+		if (buttonLabel2 != null) {
+			buttons[2]=addAButton(buttonLabel2,buttonPanel);
+			if ((listener!=null))
+				buttons[2].addActionListener(listener);
+		}
+		addToDialog(buttonPanel);	
+		gridBag.setConstraints(buttonPanel,constraints);
+		return buttons;
+	}
+	/*.................................................................................................................*/
 	public Button addAButton (String s, Panel buttons) { 
 		return addAButton(s,buttons,null);
 	}
@@ -704,8 +736,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 	/*.................................................................................................................*/
 	public TextCanvasWithButtons addATextCanvasWithButtons(String s, String button1Name, String button1Command, String button2Name, String button2Command, ActionListener actionListener){
-        Panel newPanel = addNewDialogPanel();
-        GridBagLayout gridbag = new GridBagLayout();
+		Panel newPanel = addNewDialogPanel();
+		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints gridConstraints = new GridBagConstraints();
 		gridConstraints.gridwidth=1;
 		gridConstraints.gridheight=2;
@@ -725,33 +757,33 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		else if (dialogWidth> maxDialogWidthWithCanvas) 
 			dialogWidth =maxDialogWidthWithCanvas;
 		MesquiteTextCanvas textCanvas = MesquiteTextCanvas.getTextCanvas(dialogWidth-sideBuffer*2, defaultSmallFont, s);
-        gridbag.setConstraints(textCanvas, gridConstraints);
-        newPanel.add(textCanvas);
+		gridbag.setConstraints(textCanvas, gridConstraints);
+		newPanel.add(textCanvas);
 		textCanvasWithButtons.setTextCanvas(textCanvas);
-		
+
 		gridConstraints.weighty = 0.0;		   //reset to the default
 		gridConstraints.gridwidth = GridBagConstraints.REMAINDER; //end row
 		gridConstraints.gridheight = 1;		   //reset to the default
 		gridConstraints.gridy = 1;
 		gridConstraints.gridx = 3;
 
-        Button button = new Button(button1Name);
-        gridbag.setConstraints(button, gridConstraints);
-        newPanel. add(button);
+		Button button = new Button(button1Name);
+		gridbag.setConstraints(button, gridConstraints);
+		newPanel. add(button);
 		button.addActionListener(actionListener);
 		button.setActionCommand(button1Command);
 		textCanvasWithButtons.setButton(button);
 
 		if (StringUtil.notEmpty(button2Name)) {
 			gridConstraints.gridy = 2;
-	        Button button2 = new Button(button2Name);
-	        gridbag.setConstraints(button2, gridConstraints);
-	        newPanel.add(button2);
+			Button button2 = new Button(button2Name);
+			gridbag.setConstraints(button2, gridConstraints);
+			newPanel.add(button2);
 			button2.addActionListener(actionListener);
 			button2.setActionCommand(button2Command);
 			textCanvasWithButtons.setButton2(button2);
 		}
-		
+
 		lastPanel=null;
 		return textCanvasWithButtons;
 	}
@@ -893,7 +925,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public void prepareDialog () {
 		if (parentDialog != null && parentDialog.getParent() instanceof MesquiteFrame && !(MesquiteTrunk.startupShutdownThread == Thread.currentThread())) //if parent is another dialog, we'll forgive it for being on AWT thread
-			MesquiteThread.shouldBeOnMesquiteThread();
+			MesquiteThread.shouldBeOnMesquiteThread(false);  //disabled for release
 		if (MesquiteTrunk.isLinux())
 			addBlankLine();
 		pack();
@@ -1159,6 +1191,19 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return createListenedList (names, null, selected, numElements, actionListener, itemListener, multipleMode);
 	}
 	public DoubleClickList createListenedList (Object names, boolean[] isSubchoice, MesquiteInteger selected, int numElements, ActionListener actionListener, ItemListener itemListener, boolean multipleMode) {
+		DoubleClickList list = new DoubleClickList (numElements, multipleMode); 
+		list.setDoubleClickListener(this);
+		list.setBackground(Color.white);
+		list.addItemListener(itemListener);
+		list.addActionListener(actionListener);
+
+
+		resetList(list, names, isSubchoice, selected, false);
+
+		return list;
+	}
+
+	public void resetList(DoubleClickList list, Object names, boolean[] isSubchoice, MesquiteInteger selected, boolean justUpdateNames){
 		String[] strings = null;
 		Listable[] listables = null;
 		if (names != null)
@@ -1166,27 +1211,45 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				listables = (Listable[])names;
 			else if (names instanceof String[])
 				strings = (String[])names;
-		DoubleClickList list = new DoubleClickList (numElements, multipleMode); 
-		list.setDoubleClickListener(this);
-		list.setBackground(Color.white);
-		list.addItemListener(itemListener);
-		list.addActionListener(actionListener);
-		if (listables!=null){
-			if (MenuOwner.considerPriorities)
-				for (int i=1; i<MenuOwner.MAXPRIORITY; i++)
-					addListableToList(listables, isSubchoice, list, i);
-			addListableToList(listables, isSubchoice, list, 0);
-			if (selected!=null && selected.getValue()>=0 && selected.getValue()<listables.length)
-				list.select(selected.getValue());
+
+		if (justUpdateNames){  //this took some fiddling so as not to mess up the selection!
+			if (listables!=null){
+				if (MesquiteTrunk.developmentMode && listables.length != list.getItemCount())
+					System.err.println("ExtensibleDialog: resetList update with different array sizes (listables)");
+				for (int i = 0; i<listables.length && i< list.getItemCount(); i++)
+					if ( list.getItem(i)== null || !list.getItem(i).equals(listables[i].getName())){
+						list.add(listables[i].getName(), i);
+						list.remove(i+1);
+					}
+			}
+			else if (strings!=null){
+				if (MesquiteTrunk.developmentMode && strings.length != list.getItemCount())
+					System.err.println("ExtensibleDialog: resetList update with different array sizes (strings)");
+				for (int i = 0; i<strings.length && i< list.getItemCount(); i++)
+					if ( list.getItem(i)== null || !list.getItem(i).equals(strings[i])){
+						list.add(strings[i], i);
+						list.remove(i+1);
+					}
+			}
 		}
-		else if (strings!=null){
-			for (int i=0; i<strings.length; i++)
-				if (strings[i]!=null)
-					list.add(StringUtil.truncateIfLonger(strings[i], maxLengthInList), -1);
-			if (selected!=null && selected.getValue()>=0 && selected.getValue()<strings.length)
-				list.select(selected.getValue());
+		else {
+			list.removeAll();
+			if (listables!=null){
+				if (MenuOwner.considerPriorities)
+					for (int i=1; i<MenuOwner.MAXPRIORITY; i++)
+						addListableToList(listables, isSubchoice, list, i);
+				addListableToList(listables, isSubchoice, list, 0);
+				if (selected!=null && selected.getValue()>=0 && selected.getValue()<listables.length)
+					list.select(selected.getValue());
+			}
+			else if (strings!=null){
+				for (int i=0; i<strings.length; i++)
+					if (strings[i]!=null)
+						list.add(StringUtil.truncateIfLonger(strings[i], maxLengthInList), -1);
+				if (selected!=null && selected.getValue()>=0 && selected.getValue()<strings.length)
+					list.select(selected.getValue());
+			}
 		}
-		return list;
 	}
 	/*.................................................................................................................*/
 	/**Adds a panel with three labels closely stacked, one on top of the other. */
@@ -1325,6 +1388,12 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return addLabel(s,0,false,false);
 	}
 	/*.................................................................................................................*/
+	public JLabel addLabelItalic (String s) {
+		JLabel label = addLabel(s,0,false,false);
+		label.setFont(italicFont);
+		return label;
+	}
+	/*.................................................................................................................*/
 	public JLabel addLabel (String s, int alignment) {
 		return addLabel(s,alignment,true,false);
 	}
@@ -1339,6 +1408,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				addLabel(message);
 		}
 	}
+
+
 	public Choice addPopUpMenu (JLabel messageLabel, String[] choices, int defaultChoice) {
 		Panel newPanel = addNewDialogPanel();
 		newPanel.add(messageLabel);
@@ -1810,6 +1881,31 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return textFields;
 	}
 
+	/*.................................................................................................................*/
+	public Checkbox[] addCheckboxRow(String[] labels, boolean[] initialValues) {
+		if (labels == null || initialValues == null || labels.length != initialValues.length || labels.length == 0)
+			return null;
+		Checkbox[] boxes = new Checkbox [labels.length]; 
+
+		GridBagLayout gridBag = new GridBagLayout();
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridwidth=1;
+		constraints.gridheight=1;
+		constraints.fill=GridBagConstraints.BOTH;
+
+		Panel newPanel = new MQPanel();
+		newPanel.setLayout(gridBag);
+		gridBag.setConstraints(newPanel,constraints);
+		constraints.gridy = 1;
+
+		for (int i = 0; i<labels.length; i++) {
+			constraints.gridx=i+2;
+			newPanel.add(boxes[i]=new Checkbox(labels[i], null, initialValues[i]),constraints);
+		}
+
+		addNewDialogPanel(newPanel);
+		return boxes;
+	}
 
 	/*.................................................................................................................*/
 	public Checkbox[][] addCheckboxMatrix(int numColumns, int numRows, String[] columnLabels, String[] rowLabels) {
@@ -1970,7 +2066,6 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		JEditorPane tA= new MesqJEditorPane("text/html","<html></html>");
 		tA.setBackground(Color.white);
 		tA.setForeground(Color.black);
-		tA.setVisible(true);
 		if (message == null)
 			message = "";
 		tA.setText(message);
@@ -1979,9 +2074,10 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		scrollPane = new  ConstrJEP(w, h, linkTouchedCommand); 
 		tA.addHyperlinkListener(scrollPane);
 		scrollPane.getViewport().add( tA,  BorderLayout.CENTER ); 
-
+		scrollPane.setSize(w, h);
 		addToDialog(scrollPane);
-
+		tA.setVisible(true);
+		scrollPane.setVisible(true);
 		return tA;
 	}
 	class ConstrJEP extends MQJScrollPane implements javax.swing.event.HyperlinkListener {
@@ -2024,7 +2120,6 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	public void buttonHit(String buttonLabel, Button button) {
 		if (buttonPressed!=null) {
 			buttonPressed.setValue(getButtonNumber(buttonLabel));
-
 		}
 		if (textEdgeCompensationDetector!= null){
 			Dimension d = textEdgeCompensationDetector.getSize();
@@ -2062,8 +2157,9 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			if (e.getComponent().getBounds().contains(e.getComponent().getBounds().x+e.getX(),e.getComponent().getBounds().y+e.getY())) {
 				String label = ((Button)e.getComponent()).getLabel();
 				if (getButtonNumber(label)>=0) {
-					if ((getButtonNumber(label)==checkValuesAcceptableButton()) && !dialogValuesAcceptable())
+					if ((getButtonNumber(label)==checkValuesAcceptableButton()) && !dialogValuesAcceptable()){
 						dialogValuesNotAcceptableWarning();
+					}
 					else {
 						buttonHit(label, (Button)e.getComponent());
 						if (autoDispose)
@@ -2083,10 +2179,10 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public void mousePressed(MouseEvent e){
-	//	if (MesquiteTrunk.isMacOSXYosemiteOrLater() && MesquiteTrunk.isJava VersionLessThan(1.7))  // workaround because of bug in Yosemite Java 1.6
-	//		checkForButtonHit(e);
+		//	if (MesquiteTrunk.isMacOSXYosemiteOrLater() && MesquiteTrunk.isJava VersionLessThan(1.7))  // workaround because of bug in Yosemite Java 1.6
+		//		checkForButtonHit(e);
 	}
-	
+
 	public void selectButton(String label){ //for use by scripting & console
 		buttonHit(label, null);
 		if (autoDispose)

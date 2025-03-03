@@ -15,7 +15,9 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.DiagonalRootDrawer;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.SquareTipDrawer;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDrawing;
@@ -26,7 +28,7 @@ import mesquite.trees.lib.*;
 
 import java.awt.geom.*;
 /* ======================================================================== */
-public class ArcTree extends DrawTree {
+public class ArcTree extends DrawTree implements DiagonalRootDrawer, SquareTipDrawer {
 	public String getName() {
 		return "Curvogram";
 	}
@@ -41,10 +43,8 @@ public class ArcTree extends DrawTree {
 
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
-	MesquiteString orientationName;
 	Vector drawings;
 	int oldEdgeWidth = 8;
-	int ornt;
 	MesquiteString nodeLocsName;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -58,18 +58,13 @@ public class ArcTree extends DrawTree {
 			mss.setSelected(nodeLocsName);
 		}
 		drawings = new Vector();
-		orientationName = new MesquiteString("Up");
-		ornt = TreeDisplay.UP;
-		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		orientationSubmenu.setSelected(orientationName);
-		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this));
-		addItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this));
 
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
 		return true;
 
+	}
+	public Vector getDrawings(){
+		return drawings;
 	}
 
 	public void employeeQuit(MesquiteModule m){
@@ -77,12 +72,7 @@ public class ArcTree extends DrawTree {
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		ArcTreeDrawing treeDrawing =  new ArcTreeDrawing (treeDisplay, numTaxa, this);
-		if (legalOrientation(treeDisplay.getOrientation())){
-			orientationName.setValue(orient(treeDisplay.getOrientation()));
-			ornt = treeDisplay.getOrientation();
-		}
-		else
-			treeDisplay.setOrientation(ornt);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
@@ -90,31 +80,11 @@ public class ArcTree extends DrawTree {
 		return (orientation == TreeDisplay.UP || orientation == TreeDisplay.DOWN || orientation == TreeDisplay.RIGHT || orientation == TreeDisplay.LEFT);
 	}
 
-	public String orient (int orientation){
-		if (orientation == TreeDisplay.UP)
-			return "Up";
-		else if (orientation == TreeDisplay.DOWN)
-			return "Down";
-		else if (orientation == TreeDisplay.RIGHT)
-			return "Right";
-		else if (orientation == TreeDisplay.LEFT)
-			return "Left";
-		else return "other";
-	}
-	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setNodeLocs", nodeLocsTask);
 		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
-		if (ornt== TreeDisplay.UP)
-			temp.addLine("orientUp"); 
-		else if (ornt== TreeDisplay.DOWN)
-			temp.addLine("orientDown"); 
-		else if (ornt== TreeDisplay.LEFT)
-			temp.addLine("orientLeft"); 
-		else if (ornt== TreeDisplay.RIGHT)
-			temp.addLine("orientRight"); 
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -142,7 +112,7 @@ public class ArcTree extends DrawTree {
 					Object obj = e.nextElement();
 					ArcTreeDrawing treeDrawing = (ArcTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(newWidth, 6); 
 				}
 				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -151,53 +121,21 @@ public class ArcTree extends DrawTree {
 		else if (checker.compare(this.getClass(), "Returns the employee module that assigns node locations", null, commandName, "getNodeLocsEmployee")) {
 			return nodeLocsTask;
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				ArcTreeDrawing treeDrawing = (ArcTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.UP);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {  //for legacy scripts
+			if (nodeLocsTask != null)
+				nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				ArcTreeDrawing treeDrawing = (ArcTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.DOWN);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				ArcTreeDrawing treeDrawing = (ArcTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.RIGHT);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
-			Enumeration e = drawings.elements();
-			ornt = 0;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				ArcTreeDrawing treeDrawing = (ArcTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.LEFT);
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
+		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {//for legacy scripts
+			if (nodeLocsTask != null)
+			nodeLocsTask.doCommand(commandName, arguments, checker);
 		}
 		else {
 			return  super.doCommand(commandName, arguments, checker);
@@ -231,7 +169,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 
 	public ArcTreeDrawing (TreeDisplay treeDisplay, int numTaxa, ArcTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
@@ -275,7 +213,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 		if (treeDisplay==null) {ownerModule.logln("treeDisplay null"); return;}
 		if (tree==null) { ownerModule.logln("tree null"); return;}
 
-		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot,  treeDisplay.getField()); //Graphics g removed as parameter May 02
+		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot); //Graphics g removed as parameter May 02
 		calculateLines(tree, drawnRoot);
 		edgewidth = preferredEdgeWidth;
 		if (treeDisplay.getTaxonSpacing()<edgewidth+2) {
@@ -314,7 +252,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawClade(Tree tree, Graphics g, int node) {
-		if (tree.nodeExists(node)) {
+		if (tree.nodeExists(node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			if (tree.getRooted() || tree.getRoot()!=node) {
 				DrawTreeUtil.drawOneCurvedBranch(treeDisplay, x, y, getEdgeWidth(), tree, g, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), defaultStroke);
@@ -509,21 +447,24 @@ class ArcTreeDrawing extends TreeDrawing  {
 		if (foundBranch==0) {
 			if (DrawTreeUtil.inBranch(treeDisplay, this.x, this.y, getEdgeWidth(), tree, node, x,y) || inNode(node,x,y)){
 				foundBranch = node;
+				if (tree.withinCollapsedClade(node))
+					foundBranch = tree.deepestCollapsedAncestor(node);
 				if (fraction!=null)
-					if (inNode(node,x,y))
+					if (inNode(foundBranch,x,y))
 						fraction.setValue(ATNODE);
 					else {
-						int motherNode = tree.motherOfNode(node);
+						int motherNode = tree.motherOfNode(foundBranch);
 						fraction.setValue(EDGESTART);  //TODO: this is just temporary: need to calculate value along branch.
 						if (tree.nodeExists(motherNode)) {
 							if (treeDisplay.getOrientation()==TreeDisplay.UP|| treeDisplay.getOrientation()==TreeDisplay.DOWN)  {
-								fraction.setValue( Math.abs(1.0*(y-this.y[motherNode])/(this.y[node]-this.y[motherNode])));
+								fraction.setValue( Math.abs(1.0*(y-this.y[motherNode])/(this.y[foundBranch]-this.y[motherNode])));
 							}
 							else if (treeDisplay.getOrientation()==TreeDisplay.LEFT || treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-								fraction.setValue( Math.abs(1.0*(x-this.x[motherNode])/(this.x[node]-this.x[motherNode])));
+								fraction.setValue( Math.abs(1.0*(x-this.x[motherNode])/(this.x[foundBranch]-this.x[motherNode])));
 							}
 						}
 					}
+				return;
 			}
 
 			int thisSister = tree.firstDaughterOfNode(node);

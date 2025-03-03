@@ -110,6 +110,7 @@ public class ShadeStatesOnTree extends DisplayStatesAtNodes {
 class ShadeStatesDecorator extends TreeDecorator {
 	ShadeStatesOnTree ownerModule;
 	ColorDistribution colors;
+	ObjectArray colorsInClades;
 	ColorDistribution grayEquivocal;
 	ColorEventVector colorSequence;
 	TreeDrawing oldDrawing = null;
@@ -120,6 +121,7 @@ class ShadeStatesDecorator extends TreeDecorator {
 		this.ownerModule=ownerModule;
 		colors = new ColorDistribution();
 		grayEquivocal = new ColorDistribution();
+		colorsInClades = new ObjectArray(0);
 		grayEquivocal.setColor(0, Color.lightGray);
 		turnedOff = false;
 		if (treeDisplay!=null && treeDisplay.getTreeDrawing()!=null) {
@@ -129,6 +131,8 @@ class ShadeStatesDecorator extends TreeDecorator {
 	}
 	/*.................................................................................................................*/
 	private   void writeStateAtNode(CharacterHistory statesAtNodes,CharacterDistribution observedStates, Graphics g, int N,  Tree tree) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			writeStateAtNode(statesAtNodes, observedStates, g, d, tree);
 		int nodeX = (int)treeDisplay.getTreeDrawing().x[N];  // integer node approximation
@@ -158,8 +162,10 @@ class ShadeStatesDecorator extends TreeDecorator {
 	/*.................................................................................................................*/
 	private boolean shadeNode(int N, Tree tree, CharacterHistory statesAtNodes, CharacterDistribution observedStates, MesquiteBoolean showStateWeights, Graphics g) {
 		boolean anyDataInClade = ownerModule.showPredictions.getValue();
+		ColorDistribution cladeColors = getCladeColors(N);
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 			boolean dataInDaughterClade = shadeNode(d, tree, statesAtNodes, observedStates, showStateWeights, g);
+			cladeColors.concatenate(getCladeColors(d));
 			if (dataInDaughterClade)
 				anyDataInClade = true;
 		}
@@ -170,33 +176,38 @@ class ShadeStatesDecorator extends TreeDecorator {
 			anyDataInClade = true;
 		}
 		else {
-
+			
 			if (tree.nodeIsTerminal(N)) {  //terminal
-				if (observedStates !=null) {
+				 if (observedStates !=null) {
 					int M = tree.taxonNumberOfNode(N);
 					if (!observedStates.isUnassigned(M)&&!(observedStates.isInapplicable(M))) {
 						int numColors=0;
 						
 						numColors=statesAtNodes.getColorsAtNode(N, colors, colorTable, showStateWeights == null || showStateWeights.getValue()); //, ownerModule.getProject().stateColors
-						treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  N, colors, g);
+						cladeColors. concatenate(colors);
+						
+						if (tree.isVisibleEvenIfInCollapsed(N))
+							treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  N, colors, g);
 						numColors = statesAtNodes.getColorsOfState(cs = observedStates.getCharacterState(cs, M), colors, colorTable); //, ownerModule.getProject().stateColors
 
-						treeDisplay.getTreeDrawing().fillTerminalBoxWithColors(tree,  N, colors, g);
+						if (!tree.withinCollapsedClade(N))
+							treeDisplay.getTreeDrawing().fillTerminalBoxWithColors(tree,  N, colors, g);
 						anyDataInClade = true;
 					}
 					else {  //missing data! Terminal
 						if (ownerModule.showPredictions.getValue()){
 							int numColors=statesAtNodes.getColorsAtNode(N, colors, colorTable, showStateWeights == null || showStateWeights.getValue()); //, ownerModule.getProject().stateColors
+							if (tree.isVisibleEvenIfInCollapsed(N))
 							treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  N, colors, g);
 						}
-						else
+						else	if (tree.isVisibleEvenIfInCollapsed(N))
 							treeDisplay.getTreeDrawing().fillBranchWithMissingData(tree,  N, g);
 					}
 				}
 				else {
 					int numColors=statesAtNodes.getColorsAtNode(N, colors, colorTable, showStateWeights == null || showStateWeights.getValue()); //, ownerModule.getProject().stateColors
-					if (numColors!=0)
-						treeDisplay.getTreeDrawing().fillTerminalBoxWithColors(tree,  N, colors, g);
+					if (numColors!=0 && !tree.withinCollapsedClade(N))
+					treeDisplay.getTreeDrawing().fillTerminalBoxWithColors(tree,  N, colors, g);
 					anyDataInClade = true;
 				}
 			}
@@ -213,6 +224,9 @@ class ShadeStatesDecorator extends TreeDecorator {
 					//This is the basic, old-fashioned tracing of a character
 					else
 						treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  N, colors, g);
+					if (tree.isDeepestCollapsedAncestor(N)){ // give its accumulated clade colors to the leftmost terminal visible
+						treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  tree.leftmostTerminalOfNode(N), cladeColors, g);
+					}
 				}
 			}
 
@@ -224,10 +238,33 @@ class ShadeStatesDecorator extends TreeDecorator {
 	public void useColorTable(MesquiteColorTable table){  
 		colorTable = table;
 	}
+
+
+	ColorDistribution getCladeColors(int node){
+		if (node >=0 && node <colorsInClades.getSize()){
+			return (ColorDistribution)colorsInClades.getValue(node);
+		}
+		return null;
+	}
+	void prepareCladeColors(Tree tree){
+		colorsInClades.resetSize(tree.getNumNodeSpaces());
+		for (int i = 0; i<colorsInClades.getSize(); i++){
+			Object obj = colorsInClades.getValue(i);
+			if (obj == null){
+				ColorDistribution c = new ColorDistribution();
+				colorsInClades.setValue(i, c);
+			}
+			else {
+				ColorDistribution c = (ColorDistribution)obj;
+				c.initialize();
+			}
+		}
+	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int drawnRoot, Object obj, Object obj2, Object obj3, Graphics g) {
 		if (!(obj instanceof CharacterHistory))
 			return;
+		prepareCladeColors(tree);
 		CharacterHistory statesAtNodes = (CharacterHistory)obj;
 		CharacterDistribution observedStates = (CharacterDistribution)obj2;
 		MesquiteBoolean showStateWeights = null;

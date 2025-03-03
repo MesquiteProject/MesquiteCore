@@ -82,9 +82,9 @@ public abstract class TreeBlockFiller extends MesquiteModule   {
    	 are to be filled if the source offers an unlimited number (e.g., if simulated trees).  This method by default calls
    	 the methods of TreeSource if this object is of the TreeSource subclass.  If this is not a TreeSource, 
    	 this method should be overridden*/
-  	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited, boolean verbose){
+  	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited, boolean verbose){
   		if (treeList==null || abort)
-  			return;
+  			return ResultCodes.MEH;
   		if (this instanceof TreeSource && !abort) {
   			Taxa taxa = treeList.getTaxa();
   			TreeSource ts = (TreeSource)this;
@@ -92,7 +92,7 @@ public abstract class TreeBlockFiller extends MesquiteModule   {
   			if (numTrees<=0 || !MesquiteInteger.isFinite(numTrees)) 
   				numTrees = numberIfUnlimited;
   			if (numTrees<=0 || !MesquiteInteger.isFinite(numTrees))
-  				return;
+  				return ResultCodes.MEH;
   			Tree tree = ts.getTree(taxa, 0);
   			if (tree!=null) {
   				treeList.addElement(tree.cloneTree(), false);
@@ -113,14 +113,15 @@ public abstract class TreeBlockFiller extends MesquiteModule   {
 
   		}
   		abort = false;
+  		return ResultCodes.SUCCEEDED;
   	}
   	
 	 /** Fills the passed tree block with trees.  The parameter numberIfUnlimited indicates how many trees
 	 are to be filled if the source offers an unlimited number (e.g., if simulated trees).  This method by default calls
 	 the methods of TreeSource if this object is of the TreeSource subclass.  If this is not a TreeSource, 
 	 this method should be overridden*/
-	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
-		fillTreeBlock(treeList,numberIfUnlimited, false);
+	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
+		return fillTreeBlock(treeList,numberIfUnlimited, false);
 	}
 
 

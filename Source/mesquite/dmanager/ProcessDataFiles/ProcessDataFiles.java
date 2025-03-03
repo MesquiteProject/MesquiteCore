@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.dmanager.ProcessDataFiles; 
 
 import java.awt.Button;
+
 import java.awt.Choice;
 import java.awt.List;
 import java.awt.event.ActionEvent;
@@ -26,8 +27,6 @@ import java.util.Vector;
 
 import javax.swing.JLabel;
 
-import mesquite.categ.lib.CategoricalState;
-import mesquite.genomic.FlagBySpruceup.FlagBySpruceup;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Debugg;
@@ -44,12 +43,11 @@ import mesquite.lib.Puppeteer;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.FileInterpreter;
 import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.duties.FileProcessor;
-import mesquite.lib.duties.GeneralFileMaker;
+import mesquite.lib.duties.GeneralFileMakerMultiple;
 import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.TreeVector;
@@ -60,7 +58,7 @@ import mesquite.lib.ui.SingleLineTextField;
 
 
 /* ======================================================================== */
-public class ProcessDataFiles extends GeneralFileMaker implements ActionListener { 
+public class ProcessDataFiles extends GeneralFileMakerMultiple implements ActionListener { 
 	/*.................................................................................................................*/
 
 	MesquiteProject processProject = null;
@@ -390,6 +388,21 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		}
 		return true;
 	}
+	
+	boolean duplicateTaxaWarned = false;
+	void scanForDuplicateTaxa(MesquiteProject proj, MesquiteFile file){
+		if (duplicateTaxaWarned)
+			return;
+		int numTaxas = proj.getNumberTaxas(file);
+		for (int iT = 0; iT<numTaxas; iT++){
+			String warning= proj.getTaxa(file, iT).hasDuplicateNames(false);
+			if (warning != null){
+				alert("The file " + file.getFileName() + " has duplicate taxon names. This may cause errors in processing. "
+						+"If subsequent files also have duplicate names, no warning will be given.");
+				duplicateTaxaWarned = true;
+			}
+		}
+	}
 	/*.................................................................................................................*/
 	protected boolean processFile(MesquiteFile fileToRead, StringBuffer results, MesquiteBoolean requestToSequester) {
 		logln("Processing file " + fileToRead.getName() + " in " + fileToRead.getDirectoryName() + "...");
@@ -402,6 +415,7 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 		fileToRead.readMesquiteBlock = false;
 		if (fileToRead.openReading()) {
 			importer.readFile(getProject(), fileToRead, null);	
+			scanForDuplicateTaxa(getProject(), fileToRead);
 			getProject().getCoordinatorModule().wrapUpAfterFileRead(fileToRead);
 			//fileToRead.changeLocation(getSavedFilesDirectoryPath(fileToRead), fileToRead.getName() + ".nex");
 
@@ -720,7 +734,8 @@ public class ProcessDataFiles extends GeneralFileMaker implements ActionListener
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Processes a folder of data files.";
+		return "Designed for multilocus phylogenomic data. Processes data files in a folder in diverse ways in multiple steps (i.e. a pipeline). "
+				+"Each file is read, and it can be translated to another format, or its sequences aligned, trimmed, a gene tree inferred, and all of the alignments consolidated into a single file.";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

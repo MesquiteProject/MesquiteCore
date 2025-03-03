@@ -187,7 +187,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 					 if ("=".equals(next)) {
 						next = treeParser.getNextToken();
 						int value = MesquiteInteger.fromString(next);
-						tree.setAssociatedDouble(valuesAtNodes, node, 0.01*value, true);  // value will be a percentage
+						tree.setAssociatedDouble(valuesAtNodes, node, 0.01*value);  // value will be a percentage
 
 					} else
 						treeParser.setPosition(loc);

@@ -71,6 +71,31 @@ public class GraphicsUtil {
 		drawLine(g2,fromX, fromY, toX, toY);
 	}
 	/*_________________________________________________*/
+	public static void fillRoundRect(Graphics2D g2, double x, double y, double width, double height, double arcWidth,double arcHeight) {
+		RoundRectangle2D rect = new RoundRectangle2D.Double(x,y,width,height,arcWidth, arcHeight);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.fill(rect);
+	}
+	/*_________________________________________________*/
+	public static void fillRoundRect(Graphics g, double x, double y, double width, double height,double arcWidth,double arcHeight) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		fillRoundRect(g2,x,y,width,height,arcWidth, arcHeight);
+	}
+	/*_________________________________________________*/
+	public static void drawRoundRect(Graphics2D g2, double x, double y, double width, double height,double arcWidth,double arcHeight) {
+		RoundRectangle2D rect = new RoundRectangle2D.Double(x,y,width,height,arcWidth, arcHeight);
+		g2.draw(rect);
+	}
+	/*_________________________________________________*/
+	public static void drawRoundRect(Graphics g, double x, double y, double width, double height,double arcWidth,double arcHeight) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		drawRect(g2,x,y,width,height);
+	}
+	/*_________________________________________________*/
 	public static void fillRect(Graphics2D g2, double x, double y, double width, double height) {
 		Rectangle2D rect = new Rectangle2D.Double(x,y,width,height);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

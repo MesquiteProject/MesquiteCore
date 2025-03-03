@@ -28,7 +28,11 @@ import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.HTMLDescribable;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.characters.*;
 
@@ -69,8 +73,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	MesquiteFile homeFile;
 
 	/** Commands used with standard Close, Save and Save As...and other menu items*/
-	private MesquiteCommand closeCommand, closeFilesCommand, showFileOnDiskCommand, saveCommand, saveFilesCommand, saveAsCommand, saveLinkagesCommand, revertCommand, linkFileCommand, linkURLCommand, includeFileCommand, includeURLCommand;
+	private MesquiteCommand closeCommand, closeFilesCommand, showFileOnDiskCommand, saveCommand, saveFilesCommand, saveAsCommand, saveLinkagesCommand, revertCommand;
+	private MesquiteCommand linkFileCommand, linkURLCommand, includeFileCommand, includeURLCommand;
 	public MesquiteCommand exportCommand, newLinkFileCommand, getInfoCommand;
+	public MesquiteSubmenuSpec includeMergeSubmenuSpec;
 	/** The file coordinator module that owns this object*/
 	public FileCoordinator ownerModule=null; 
 
@@ -85,6 +91,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public boolean autosave = false;
 	public boolean isDoomed = false;
 	public boolean isProcessDataFilesProject = false;
+	public boolean openedWithoutMesquiteBlock = true;
 	public long timePreviouslySavedAsRecorded = 0;
 	public long timePreviouslySavedByFile = 0;
 
@@ -133,6 +140,21 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		linkURLCommand = MesquiteModule.makeCommand("linkURL", ownerModule);
 		includeFileCommand = MesquiteModule.makeCommand("includeFile", ownerModule);
 		includeURLCommand = MesquiteModule.makeCommand("includeURL", ownerModule);
+		includeMergeSubmenuSpec = new MesquiteSubmenuSpec(MesquiteTrunk.fileMenu, "Include & Merge",   ownerModule);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Include File...",  getIncludeFileCommand());
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Link File...",  getLinkFileCommand());
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
+		MesquiteMenuItemSpec mmis = ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Taxa, Matrices (& Sometimes Trees)", null);
+		mmis.setEnabled(false); //just in case
+		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantFM.class);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
+		mmis = ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Trees", null);
+		mmis.setEnabled(false); //just in case
+		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantTM.class);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
+		MesquiteCommand eICC =   new MesquiteCommand("explainIncludeChoices", ownerModule);
+		eICC.bypassQueue = true;
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Explain These Choices...",  eICC);
 	}
 
 	public void refreshProjectWindow(){
@@ -290,6 +312,18 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
 			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
 			if (id == trees.getID())
+				return trees;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	/** returns the Trees with given name */
+	public TreeVector getTreesByName(String name) {
+		if (name == null)
+			return null;
+		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
+			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
+			if (name.equals(trees.getName()))
 				return trees;
 		}
 		return null;
@@ -477,7 +511,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (name != null)
 				temp.addLine("setName " + ParseUtil.tokenize(name));
 			if (saveSnapAttach)
-				temp.addLine("attachments "+ writeAttachments(false));
+				temp.addLine("attachments <"+ writeAttachments() +">");
 			return temp;
 		}
 		return null;
@@ -773,6 +807,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** returns command to save as project (linked files)*/
 	public MesquiteCommand getSaveLinkagesCommand(){
 		return saveLinkagesCommand;
+	}
+	
+	public MesquiteSubmenuSpec getIncludeMergeSubmenuSpec(){
+		return includeMergeSubmenuSpec;
 	}
 	/*.................................................................................................................*/
 	/** returns the file coordinator module in charge of the project*/

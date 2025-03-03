@@ -15,6 +15,7 @@ package mesquite.lib.taxa;
 
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.DNAState;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;

@@ -34,8 +34,9 @@ public class SimpleNamesTaxonNamer extends TaxonNamer {
 	public int whichTaxonNumberFromNumberTranslationTable(Taxa taxa, int otherNumber){
 		if (!MesquiteInteger.isCombinable(otherNumber) || numberTranslationTable==null)
 			return -1;
-		if (otherNumber>=0 && otherNumber<numberTranslationTable.length)
+		if (otherNumber>=0 && otherNumber<numberTranslationTable.length){
 			return numberTranslationTable[otherNumber];
+		}
 		return -1;
 	}
 

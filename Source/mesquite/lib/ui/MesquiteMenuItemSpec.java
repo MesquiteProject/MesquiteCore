@@ -40,6 +40,7 @@ public class MesquiteMenuItemSpec implements Listable, Disposable {
 	protected String argument = null;
 	protected MesquiteSubmenuSpec submenu;
 	protected Class dutyClass = null;
+	protected int choicePrimarySecondary = 0; //0 all priorities; 1, default + primary modules, -1 secondary modules
 	protected Object compatibilityRestriction = null;
 	protected QualificationsTest qualificationsTest = null;
 	protected ListableVector lVector = null;
@@ -61,6 +62,7 @@ public class MesquiteMenuItemSpec implements Listable, Disposable {
 	public MesquiteMenuItemSpec(MesquiteMenuSpec whichMenu, String itemName, MesquiteModule ownerModule, MesquiteCommand command) {
 		this.whichMenu = whichMenu;
 		this.itemName = itemName;
+		this.ownerModule = ownerModule;
 		if (ownerModule!=null){
 			ownerID  = ownerModule.getID();
 			ownerClass = 	ownerModule.getClass();
@@ -120,6 +122,9 @@ boolean alreadyDisposed = false;
 	}
 	public void setOwnerModuleID(long id){
 		ownerID = id;
+	}
+	public MesquiteModule getOwnerModule(){
+		return ownerModule;
 	}
 	public String getName(){
 		return getCurrentItemName();
@@ -197,6 +202,12 @@ boolean alreadyDisposed = false;
 	}
 	public void setList(StringLister s){
 		this.stringLister = s;
+	}
+	public void setChoicePrimarySecondary(int priority){
+		this.choicePrimarySecondary = priority;
+	}
+	public int getChoicePrimarySecondary(){
+		return choicePrimarySecondary;
 	}
 
 	public ListableVector getListableVector(){

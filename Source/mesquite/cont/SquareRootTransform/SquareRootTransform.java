@@ -38,7 +38,7 @@ public class SquareRootTransform extends ContDataAlterer  implements AltererCont
    	/** Called to alter data in those cells selected in table*/
    	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 			if (!(data instanceof ContinuousData))
-				return INCOMPATIBLE_DATA;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			return alterContentOfCells(data,table, undoReference);
    	}
 

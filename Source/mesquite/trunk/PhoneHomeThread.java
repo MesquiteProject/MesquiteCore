@@ -25,6 +25,15 @@ import mesquite.tol.lib.BaseHttpRequestMaker;
 
 /* ======================================================================== */
 public class PhoneHomeThread extends Thread {
+
+	/*
+	 * 
+	 * The following are in MesquiteModule:
+	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
+	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
+	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
+
+	 * */
 	Vector beans = new Vector();
 	public PhoneHomeThread () {
 		setPriority(Thread.MIN_PRIORITY);
@@ -68,6 +77,7 @@ public class PhoneHomeThread extends Thread {
 					buildNum = "PreRelease-" + buildNum;
 				if (contactMessage != null)
 					buildNum += "&" + contactMessage;
+				
 				BaseHttpRequestMaker.contactServer(buildNum, MesquiteModule.versionReportURL, response);
 				String r = response.toString();
 			//if mq3rs is included in response, then this is real response
@@ -91,7 +101,6 @@ public class PhoneHomeThread extends Thread {
 		StringBuffer logBuffer = new StringBuffer();
 		String path  = MesquiteModule.prefsDirectory+ MesquiteFile.fileSeparator+ "phoneRecords.xml";
 		PhoneHomeUtil.readOldPhoneRecords(path, phoneRecords);
-
 		for (int i= 0; i<MesquiteTrunk.mesquiteModulesInfoVector.size(); i++){
 			MesquiteModuleInfo mmi = (MesquiteModuleInfo)MesquiteTrunk.mesquiteModulesInfoVector.elementAt(i);
 			if (!StringUtil.blank(mmi.getHomePhoneNumber())) {

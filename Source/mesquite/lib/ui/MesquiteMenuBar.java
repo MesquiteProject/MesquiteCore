@@ -17,6 +17,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 
+import mesquite.lib.Debugg;
+
 /* ======================================================================== */
 /** A menu bar attached to a window.*/
 public class MesquiteMenuBar extends MenuBar {
@@ -41,9 +43,13 @@ public class MesquiteMenuBar extends MenuBar {
 	public Menu add(Menu menu) {
 		if (menu==null)
 			return null;
+
 		while (menuWithSameLabelExists(menu.getLabel()))
 			menu.setLabel(menu.getLabel()+".");
 		return super.add(menu);
+	}
+	public void remove(Menu menu) {
+		super.remove(menu);
 	}
 	/*-------------------------------------------------------*/
 	public void finalize() throws Throwable {

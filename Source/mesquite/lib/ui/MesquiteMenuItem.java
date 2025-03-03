@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.Journal;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteCommand;
@@ -51,10 +52,12 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 	boolean hiddenStatusSet = false;
 	boolean hideable = true;
 	Class dutyClass = null;
-
+	static boolean traceChoice = false;  //for debugging
+	int constructorUsed = -1;
 
 	public MesquiteMenuItem(String itemName, MesquiteModule ownerModule, MesquiteCommand command) {
 		super();
+		constructorUsed = 0;
 		addActionListener(this);
 		if (itemName == null) {
 			MesquiteMessage.printStackTrace("Menu item with null name: ownerModule " + ownerModule +" command " + command);
@@ -80,6 +83,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 
 	public MesquiteMenuItem(String itemName, MesquiteModule ownerModule, MesquiteCommand command, String argument) {
 		this( itemName,  ownerModule,  command);
+		constructorUsed = 1;
 		this.argument = argument;
 		//totalCreated++;
 	}
@@ -87,6 +91,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 	//This is constructor used to make menu from specs
 	public MesquiteMenuItem(MesquiteMenuItemSpec specification) {
 		super();
+		constructorUsed = 2;
 		if (specification==null)
 			return;
 		addActionListener(this);
@@ -126,7 +131,9 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 	public void setHideable(boolean h ){
 		hideable = h;
 	}
-
+	public void setLabel(String label){
+		super.setLabel(label);
+	}
 	public void resetLabel(){
 		if (InterfaceManager.isEditingMode()){
 			if (!hideable)
@@ -209,7 +216,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		//Event queue
-		if (command==null)
+		if (command==null || !command.isExecutable())
 			return ;//true;
 		if (hideable && hiddenStatusSet && InterfaceManager.isEditingMode()){
 			if (hiddenStatus == InterfaceManager.NORMAL){
@@ -245,7 +252,10 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 		chooseItem(argument);
 	}
 	public void chooseItem(String arg) {
-		if (command == null || MesquiteTrunk.suppressMenuResponse)
+		if (traceChoice)
+			System.err.println("Menu item chosen " + 	constructorUsed); //more details?
+
+		if (command == null || !command.isExecutable() || MesquiteTrunk.suppressMenuResponse)
 			return;
 		if (!command.bypassQueue && MesquiteDialog.currentWizard != null){
 			MesquiteTrunk.mesquiteTrunk.alert("Please complete the questions of the Wizard dialog before selecting menu items");

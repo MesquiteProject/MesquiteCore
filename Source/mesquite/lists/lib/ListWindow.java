@@ -154,6 +154,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		setShowAnnotation(true);
 		table.requestFocusInWindow();
 		MesquiteWindow.addKeyListener(this, table);
+		addKeyListenerToAll(table, getPalette(), true);
 		resetTitle();
 	}
 	public void requestFocus(){
@@ -257,7 +258,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		return table.cellsEditableByDefault();
 	}
 	/*...............................................................................................................*/
-	/** returns whether or not a row name of table is editable.*/
+	/** returns whether or not a row name of table is editable. Received in setRowName*/
 	public boolean isRowNameEditable(int row){
 		return table.checkRowNameEditable(row);
 	}
@@ -975,7 +976,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	public boolean interceptCellTouch(int  column, int row, int modifiers){
 		return false;
 	}
-	public boolean interceptRowNameTouch(int row, int regionInCellH, int regionInCellV, int modifiers){
+	public boolean interceptRowNameTouch(int row, EditorPanel editorPanel, int x, int y, int modifiers){
 		return false;
 	}
 	public void deleteSelectedColumns() {

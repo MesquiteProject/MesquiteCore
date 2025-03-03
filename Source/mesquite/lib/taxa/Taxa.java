@@ -527,7 +527,9 @@ public class Taxa extends FileElement {
 			if (forgivingOfSpaceUnderscore) {
 				String taxonNameSp = taxonName.replace("_"," ");
 				for (int i = 0; i < numTaxa; i++) {
-					String tNiSp = taxon[i].getName().replace("_"," ");
+					String tNiSp = taxon[i].getName();
+					if (tNiSp != null)
+						tNiSp = tNiSp.replace("_"," ");
 					if (taxonNameSp.equalsIgnoreCase(tNiSp))
 						return i;
 				}
@@ -722,6 +724,8 @@ public class Taxa extends FileElement {
 		}
 	}
 
+	
+	
 	/* ................................................................................................................. */
 	public String getName() {
 		if (name == null)
@@ -731,6 +735,16 @@ public class Taxa extends FileElement {
 	/** returns true if this has name equivalent to default name*/
 	public boolean hasDefaultName() {
 		return  (name==null) || name.equals("Taxa");
+	}
+	/* ................................................................................................................. */
+	public Color getDefaultTaxonColor(int it){
+		TaxaPartition part = (TaxaPartition)getCurrentSpecsSet(TaxaPartition.class);
+		if (part == null)
+			return null;
+		TaxaGroup group = part.getTaxaGroup(it);
+		if (group == null)
+			return null;
+		return group.getColor();
 	}
 
 	/* ................................................................................................................. */
@@ -859,7 +873,6 @@ public class Taxa extends FileElement {
 					String name2 = getTaxonName(j);
 					if (name!=null && name.equalsIgnoreCase(name2)) {
 						list.append(" [" + i + "-" + j + "] " + name);
-						MesquiteMessage.println(name);
 					}
 				}
 			}
@@ -944,7 +957,7 @@ public class Taxa extends FileElement {
 		int row = numTaxa-1;
 		int firstInBlockDeleted = -1;
 		int lastInBlockDeleted = -1;
-		Debugg.printStackTrace("@@@@@@@@@@ deleteTaxaFlag not tested and not efficient @@@@@@@@@@@@@@@@");
+		Debugg.printStackTrace("########### deleteTaxaFlag not tested and not efficient ###########");
 
 		//Note that this method is overridden in CharacterList so as to be able to use the deletePartsFlagged system
 		while(row>=0) {

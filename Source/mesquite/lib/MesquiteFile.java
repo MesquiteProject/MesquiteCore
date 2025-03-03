@@ -19,8 +19,10 @@ import java.net.*;
 import java.util.*;
 import com.apple.mrj.*;
 
+import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.misc.HNode;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxonFilterer;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MesquitePopup;
@@ -81,13 +83,13 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public boolean ambiguityToMissing = false;  //todo: this is temporary until general format options system built
 	public boolean writeCharLabelInfo = true;  //todo: this is temporary until general format options system built
 	public boolean writeCharStateLabelsSeparately = false;  //todo: this is temporary until general format options system built
-	
+	public boolean okForRecentRereading = false; //Is this OK to go to Open Recent list for rereading?
 	public boolean writeExcludedCharacters=true;
 	public boolean writeCharactersWithNoData=true;
 	public boolean writeTaxaWithAllMissing = true;
 	public boolean writeOnlySelectedTaxa = false;
 
-	public boolean mrBayesReadingMode = false;  //todo: this is temporary until general format options system built
+	//public boolean mrBayesReadingMode = false;  //todo: this is temporary until general format options system built
 	public String fileReadingArguments = null;
 	public int exporting = 0;  //todo: temporary.  0 = not exporting;  1 = first export; 2 = subsequent exports
 	public boolean notesBugWarn = false;
@@ -1875,13 +1877,31 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return token;
 	}
 
-
+	boolean endCommand(char c, Parser parser){
+		if (c != ';')
+			return false;
+		// it is a semicolon, but is there a substantive comment pending? If not, then it's the end
+		if (parser == null)
+			return true;
+		return !parser.isSubstantiveCommentPending();
+	}
+	boolean endCommand(String c, Parser parser){
+		if (c == null || c.length() == 0)
+			return false;
+		if (c.charAt(0) != ';')
+			return false;
+		// it is a semicolon, but is there a substantive comment pending? If not, then it's the end
+		if (parser == null)
+			return true;
+		return !parser.isSubstantiveCommentPending();
+	}
 	/*.................................................................................................................*/
 	/** returns the next command in the file.  Extra information about the command is
 	returned in the MesquiteInteger status.  If the command is the "begin", 1 is returned; if "end;", 2 is returned.
 	Otherwise 0 is returned.   
 	If includeEntireCommand is true, then the entire command is returned; if false, the only the first token (command name) is returned.
 	(Returning only part of the command can save time if the commands are long (e.g., a TREE) and not needed. */
+
 	public String getNextCommand(MesquiteInteger status, StringBuffer commandComments, boolean includeEntireCommand) {
 		getNextCommandStatusTimer.start();
 		StringBuffer command= new StringBuffer(300);
@@ -1901,10 +1921,10 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 		if (!emptyToken(token)) {
 			command.append(token);  // this is the command name
-			while (!emptyToken(token) && !token.equals(";")) {
+			while (!emptyToken(token) && !endCommand(token, parser)) {
 				token = nextToken(commandComments);
 				if (includeEntireCommand && !emptyToken(token)) {
-					if (token.charAt(0)!=';' && !parser.whitespace(token.charAt(0))) 
+					if (!endCommand(token, parser) && !parser.whitespace(token.charAt(0))) 
 						command.append(' ');
 					command.append(token);
 				}
@@ -1940,7 +1960,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			status.setValue(0);
 		String lastT = null;
 		if (!emptyToken(token)) {
-			while (token!=null && !token.equals(";")) {
+			while (token!=null && !endCommand(token, parser)) {
 				lastT = token;
 				token = nextToken(null);
 			}

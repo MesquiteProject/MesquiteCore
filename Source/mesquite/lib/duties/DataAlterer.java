@@ -47,16 +47,6 @@ public abstract class DataAlterer extends MesquiteModule  {
    		return false;
    	}
 	/*.................................................................................................................*/
-	public final static int NOT_YET_DONE = -7;
-	public final static int FILE_PROBLEM = -6;
-	public final static int INPUT_NULL = -5;
-	public final static int OBJECT_LOCKED = -4;
-	public final static int INCOMPATIBLE_DATA = -3;
-	public final static int ERROR = -2;  //use only if you don't want to say what kind of error
-	public final static int USER_STOPPED = -1;
-	public final static int SUCCEEDED = 0;
-	public final static int NO_RESPONSE = 1;
-	public final static int MEH = 2;
 	
    	/** Called to alter data in those cells selected in table.  
    	 * Returns 
@@ -85,7 +75,7 @@ public abstract class DataAlterer extends MesquiteModule  {
    	public int alterContentOfCells(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference){
    		if (data.isEditInhibited()){
 			discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
-   			return OBJECT_LOCKED;
+   			return ResultCodes.OBJECT_LOCKED;
    		}
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
    		numCellsAltered =MesquiteLong.unassigned;
@@ -151,8 +141,8 @@ public abstract class DataAlterer extends MesquiteModule  {
 		if (MesquiteLong.isCombinable(numCellsAltered))
 			logln("Number of data cells altered: " + numCellsAltered);
 		if ( did)
-		return SUCCEEDED;
-		return MEH;
+		return ResultCodes.SUCCEEDED;
+		return  ResultCodes.MEH;
    	}
 	/*.................................................................................................................*/
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */

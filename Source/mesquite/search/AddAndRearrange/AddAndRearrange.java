@@ -73,9 +73,6 @@ public class AddAndRearrange extends TreeSearcher implements Incrementable {
 		//TODO: if this is made to be persistent, need setHiringCommand for both
 	}
 
-	public  Class getCharacterClass() {
-		return null;
-	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -329,14 +326,14 @@ public class AddAndRearrange extends TreeSearcher implements Incrementable {
 	/*.................................................................................................................*/
 	public int fillTreeBlock(TreeVector treeList){
 		if (treeList==null)
-			return NULLVALUE;
+			return ResultCodes.INPUT_NULL;
 		Taxa taxa = treeList.getTaxa();
 		TreeVector trees = getTrees(taxa);
 		treeList.setName("Trees from Mesquite's heuristic search");
 		treeList.setAnnotation ("Parameters: "  + getParameters(), false);
 		if (trees!=null)
 			treeList.addElements(trees, false);
-		return NOERROR;
+		return ResultCodes.NO_ERROR;
 	}
 	/*.................................................................................................................*/
 	public String getParameters() {

@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.Explainable;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteEvent;
@@ -256,7 +257,6 @@ public class MesquiteButton extends MousePanel implements Explainable, ImageOwne
 				if (optionImage!=null)
 					tool.setCursorImage(null);
 				tool.setOptionDown(true);
-
 				if (tool.getInUse() && (optionImage!=null || tool.hasTemporaryOptionCursor())) {
 					MesquiteWindow w = MesquiteWindow.windowOfItem(this);
 					if (w!=null)

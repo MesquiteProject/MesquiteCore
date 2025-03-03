@@ -1,5 +1,6 @@
 package mesquite.externalCommunication.AppHarvester;
 
+import mesquite.lib.CommandChecker;
 import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteMessage;
@@ -17,7 +18,18 @@ public class AppHarvester extends MesquiteInit {
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		harvestApps();
+		addMenuItem(MesquiteTrunk.helpMenu, "Helper Apps", makeCommand("showDetails", this));
 		return true;
+	}
+	StringBuffer details = new StringBuffer();
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Shows details of what apps are loaded.", null, commandName, "showDetails")) {
+			logln("\n" + details.toString());
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 
 	/*.................................................................................................................*/
@@ -25,6 +37,7 @@ public class AppHarvester extends MesquiteInit {
 		String appsDirPath = MesquiteFile.getPathWithSingleSeparatorAtEnd(MesquiteTrunk.appsDirectory);
 		File appsDir = new File(appsDirPath);
 		StringBuffer sb = new StringBuffer();
+		StringBuffer incompReport = new StringBuffer();
 		if (appsDir.exists() && appsDir.isDirectory()) {
 			appInformationFileVector = new Vector();
 			String[] appsFiles = appsDir.list();
@@ -41,22 +54,36 @@ public class AppHarvester extends MesquiteInit {
 						countFound++;
 						if (compatible(appInfoFile)) {
 							appInformationFileVector.addElement(appInfoFile);
-							sb.append("Loading "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + "\n");
+							if (countFound-countIncomp==1)
+								sb.append("Loaded from apps folder: "); 
+							sb.append("  "+ appInfoFile.getAppName() + " (" + appInfoFile.getVersion() + ");");
+							details.append("Loaded "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + "\n");
 						}
 						else {
-							if (MesquiteTrunk.debugMode)
-								sb.append("INCOMPATIBLE: "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + " (compiledAs: " + appInfoFile.getCompiledAs() + ")\n");
+							incompReport.append("— INCOMPATIBLE: "+ appInfoFile.getAppName() + " from " + appsFiles[i]+", version " + appInfoFile.getVersion() + " (compiledAs: " + appInfoFile.getCompiledAs() + ")\n");
 							countIncomp++;
 						}
 
 					}
 				}
 			}
-			if (countIncomp>1)
-				sb.append(" —" + countIncomp + " other apps also in found apps folder, but they were incompatible with the processor architecture or the operating system.\n");
-			else if (countIncomp==1)
-				sb.append(" —" + countIncomp + " other app also in found apps folder, but it was incompatible with the processor architecture or the operating system.\n");
-
+			if (countFound-countIncomp>0)
+				sb.append("\n");
+			if (countIncomp>0){
+				if (countIncomp>1){
+					sb.append("(" + countIncomp + " incompatible apps");
+					details.append("\n" + countIncomp + " apps were found that were ");
+				}
+				else if (countIncomp==1){
+					sb.append("(" + countIncomp + " incompatible app");
+					details.append("\n" + countIncomp + " app was found that was ");
+				};
+				sb.append(" found, not loaded.)\n");
+				details.append("incompatible with the processor or operating system, and not loaded.\n");
+			}
+			details.append(incompReport + "\n");
+			if (MesquiteTrunk.debugMode)
+				logln(incompReport.toString());
 			//Filters to remove redundant apps
 			int numApps = appInformationFileVector.size();
 			AppInformationFile appInfoFile;
@@ -77,9 +104,9 @@ public class AppHarvester extends MesquiteInit {
 							appInformationFileVector.removeElement(appInfoFile);
 							redundantRemoved = true;
 							if (MesquiteTrunk.isMacOSX())
-								sb.append(" —x86 version of " + programName + " ignored because an Apple Silicon version is available.\n");
+								details.append("— x86 version of " + programName + " ignored because an Apple Silicon version is available.\n");
 							else 
-								sb.append(" —x86 version of " + programName + " ignored because an Arm64 version is available.\n");
+								details.append("— x86 version of " + programName + " ignored because an Arm64 version is available.\n");
 						}
 					}
 
@@ -92,7 +119,7 @@ public class AppHarvester extends MesquiteInit {
 				String programName = appInfoFile.getAppName();
 				int numComp = getNumAppsForProgram(programName);
 				if (numComp>1) {
-					sb.append(" —will ignore extra app of " + programName+ " (in " + appInfoFile.getAppNameWithinAppsDirectory() + "). Only the first will be used.\n");
+					details.append("— Ignored extra app of " + programName+ " (in " + appInfoFile.getAppNameWithinAppsDirectory() + "). Only the first will be used.\n");
 					redundantRemoved = true;
 					appInformationFileVector.removeElement(appInfoFile);
 				}
@@ -100,7 +127,8 @@ public class AppHarvester extends MesquiteInit {
 			}
 			if (redundantRemoved)
 				sb.append("Mesquite ignored some versions of a built-in app because other copies were available. If you prefer to use the ignored version, please make sure that only the version you want to use is in the apps folder in Mesquite_Folder.\n");
-				
+			if (countFound>0)
+				sb.append("For more details about apps in apps folder, choose Helper Apps from the Help menu.");
 			//AppInformationFile.setAppInformationFileVector(appInformationFileVector);
 		}
 		logln(sb.toString());
@@ -114,7 +142,7 @@ public class AppHarvester extends MesquiteInit {
 			return false;
 		return appCompatibleWithArchitecture(os, arch);
 	}
-	
+
 	static boolean appCompatibleWithArchitecture(String appOS, String appArch) {
 		//both macos & windows under aarch64 can handle x86 programs
 		if ((appOS.equalsIgnoreCase("macos") && MesquiteTrunk.isMacOSX()) || (appOS.equalsIgnoreCase("windows") && MesquiteTrunk.isWindows())) {

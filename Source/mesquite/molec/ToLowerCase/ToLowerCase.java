@@ -37,7 +37,7 @@ public class ToLowerCase extends DNADataAlterer implements AltererDNACell {
    	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
  			if (!(data instanceof DNAData)){
 				MesquiteMessage.warnProgrammer("Attempt to set non-DNA data to lower case");
-				return INCOMPATIBLE_DATA;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			}
 			return alterContentOfCells(data,table, undoReference);
    	}

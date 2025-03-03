@@ -70,6 +70,8 @@ public class AlterTrees extends TreeListUtility {
    	public boolean requestPrimaryChoice(){
    		return true;  
    	}
+   	
+   	boolean firstTime = true;
    	/** Called to operate on the data in all cells.  Returns true if data altered*/
    	public boolean operateOnTrees(TreeVector trees){
    		if (trees == null)
@@ -83,6 +85,7 @@ public class AlterTrees extends TreeListUtility {
    			dotFreq=5;
    		else if (numTrees>500)
    			dotFreq=10;
+   		firstTime = true;
 		for (int j=0; j<numTrees; j++){
 			if (doAll || trees.getSelected(j)){
 				Tree tree = trees.getTree(j);
@@ -92,6 +95,7 @@ public class AlterTrees extends TreeListUtility {
 			   		if (j % dotFreq == 0)
 			   			log(".");
 					boolean success = alterTask.transformTree((MesquiteTree)tree, null, true); //WAYNECHECK: why was notify set to false here?  This caused a lack of updating in the tree list window.
+					firstTime = false;
  				}
 			}
 		}
@@ -100,6 +104,11 @@ public class AlterTrees extends TreeListUtility {
 		return true;
 		
 	}
+   	
+	public boolean okToInteractWithUser(int howImportant, String messageToUser){
+		return firstTime;
+	}
+
 }
 
 

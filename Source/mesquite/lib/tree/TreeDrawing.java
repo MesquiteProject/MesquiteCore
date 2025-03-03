@@ -16,6 +16,7 @@ package mesquite.lib.tree;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
+import mesquite.lib.CommandChecker;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -54,6 +55,10 @@ public abstract class TreeDrawing  {
 	public double[] lineBaseY; 
 	public double[] lineTipX; //tip of line on which to draw labels etc.
 	public double[] lineTipY; 
+	public double[] xDashed; //supplemental; used for dashed lines in collapsed clades
+	public double[] yDashed; //
+	public double[] xSolid; //
+	public double[] ySolid; //
 	/**labelOrientation indicates where label is to be drawn w.r.t. node, in degrees. 0 = normal horizontal 
 	writing to right of node, as would be done for a tree with orientation RIGHT.
 	This does not represent simple rotation, i.e. 180 is on left side, but the writing is not upside down.  Thus
@@ -79,6 +84,10 @@ public abstract class TreeDrawing  {
 		totalCreated++;
 		resetNumNodes(numNodes);
 	}
+	
+	public TreeDisplay getTreeDisplay(){
+		return treeDisplay;
+	}
 	public void resetNumNodes(int numNodes){
 		if (this.numNodes == numNodes && x != null)
 			return;
@@ -87,6 +96,10 @@ public abstract class TreeDrawing  {
 		x = new double[numNodes];
 		y = new double[numNodes];
 		z = new double[numNodes];
+		xDashed = new double[numNodes];
+		yDashed = new double[numNodes];
+		xSolid = new double[numNodes];
+		ySolid = new double[numNodes];
 		labelOrientation = new int[numNodes];
 		lineBaseX = new double[numNodes];
 		lineBaseY = new double[numNodes];
@@ -103,7 +116,20 @@ public abstract class TreeDrawing  {
 			labelOrientation[i] = MesquiteInteger.unassigned;
 		}
 	}
-
+	public void translateAll(int shiftX, int shiftY){
+		for (int i= 0; i<numNodes; i++){
+			x[i] += shiftX; 
+			lineBaseX[i] += shiftX;
+			lineTipX[i] += shiftX; 
+			xDashed[i] += shiftX; 
+			xSolid[i] += shiftX; 
+			y[i] += shiftY; 
+			lineBaseY[i] += shiftY;
+			lineTipY[i] += shiftY; 
+			yDashed[i] += shiftY; 
+			ySolid[i] += shiftY; 
+		}
+	}
 	public double getX(int node){
 		return x[node];
 	}

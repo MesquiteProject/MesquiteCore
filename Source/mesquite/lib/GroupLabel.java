@@ -16,6 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.ui.MesquiteSymbol;
 
 
@@ -49,6 +50,17 @@ public class GroupLabel extends FileElement {
 		color = null;
 	}
 	
+	public void equalizeAs(GroupLabel toCopy){
+		color = toCopy.color;
+		if (toCopy.symbol == null)
+			symbol = null;
+		else {
+			symbol = toCopy.symbol.cloneMethod(); //ZQ: I assume this needs to be cloned, not the exact same object?  
+		}
+		colorWasSet = toCopy.colorWasSet;
+		visible = toCopy.visible;
+		setName(toCopy.getName());
+	}
 	public static boolean supportsSymbols() {
 		return false;
 	}

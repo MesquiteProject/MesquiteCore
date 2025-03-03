@@ -22,7 +22,7 @@ import mesquite.lib.ui.TwoStringsDialog;
 /* ======================================================================== */
 /**This String wrapper class is used to be able to pass Strings by reference and have the
 	original change as needed*/
-public class MesquiteString extends Listened implements Listable, Identifiable, Explainable {
+public class MesquiteString extends Listened implements Listable, Identifiable { //, Explainable {
 	public static final int riseOffset = 5;
 	private boolean bound = false;
 	public static long totalCreated = 0;
@@ -70,7 +70,7 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 	}
 	public String toString() {
 		if (isNull)
-			return "null";
+			return "NULL";
 		return sb.toString();
 	}
 	public boolean isBlank() {
@@ -87,9 +87,9 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 		else
 			return name;
 	}
-	public String getExplanation(){
+	/*public String getExplanation(){
 		return getValue();
-	}
+	}*/
 	public static boolean explicitlyUnassigned(String s){
 		if (s==null)
 			return false;

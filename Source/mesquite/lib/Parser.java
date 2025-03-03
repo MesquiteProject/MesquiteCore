@@ -29,6 +29,7 @@ public class Parser extends StringUtil {
 	String lineEndStringSet = null;
 	static char openCommentBracket = '[';
 	static char closeCommentBracket = ']';
+	public static char substantiveCommentMark = '&'; //had been % before v. 4
 	public static boolean allowComments = true;
 	boolean convertUnderscoresToBlanks = true;
 	char quoteChar = defaultQuote;
@@ -37,7 +38,7 @@ public class Parser extends StringUtil {
 	boolean hyphensArePartOfNumbers = true;
 	MesquiteStringBuffer line = new MesquiteStringBuffer(1000);
 	char[][] charTranslationTable = new char[50][2];  //50 max
-	
+
 	public Parser(){
 		pos = new MesquiteLong(0);
 		buffer = new StringBuffer(100); 
@@ -290,7 +291,7 @@ public class Parser extends StringUtil {
 		}
 	}
 	/*.................................................................................................................*/
-	
+
 	public void setPunctuationStringRaw(String s){
 		if (s==null){
 			punctuationStringSet = null;
@@ -303,7 +304,7 @@ public class Parser extends StringUtil {
 	public String getPunctuationString (){
 		return punctuationString;
 	}
-	
+
 	private boolean storageNull() {
 		return line == null;
 	}
@@ -575,7 +576,7 @@ public class Parser extends StringUtil {
 			return null;
 		char c=getNextChar();
 		buffer.setLength(0);
-		
+
 		int count = 0;
 		while (count++< n && pos.getValue()<=line.length() && c!=(char)0) {  
 			buffer.append(c);
@@ -595,7 +596,7 @@ public class Parser extends StringUtil {
 			return null;
 		char c=getNextChar();
 		buffer.setLength(0);
-		
+
 		int count = 0;
 		while (count++< n && !lineEndCharacter(c) &&  pos.getValue()<=line.length() && c!=(char)0) {  
 			buffer.append(c);
@@ -1028,14 +1029,38 @@ public class Parser extends StringUtil {
 		return buffer.toString();
 	}
 	/*............................................  ....................................................*/
+	public boolean hasAnyFileReadingArguments(String arguments){
+		String fRA = getFirstToken(arguments);
+		while (!StringUtil.blank(fRA)) {
+			if (fRA.startsWith("" + StringUtil.argumentMarker ))
+				return true;
+			fRA = getNextToken();
+		}
+		return false;
+	}
+	/*............................................  ....................................................*/
 	public boolean hasFileReadingArgument(String arguments, String target){
 		String fRA = getFirstToken(arguments);
 		while (!StringUtil.blank(fRA)) {
 			if (fRA.equalsIgnoreCase(StringUtil.argumentMarker + target))
 				return true;
+			if (fRA.startsWith(StringUtil.argumentMarker + target + "."))
+				return true;
 			fRA = getNextToken();
 		}
 		return false;
+	}
+	/*............................................  ....................................................*/
+	public String getFileReadingArgumentSubtype(String arguments, String target){
+		String fRA = getFirstToken(arguments);
+		while (!StringUtil.blank(fRA)) {
+			if (fRA.startsWith(StringUtil.argumentMarker + target + ".")){
+				String subS = fRA.substring(fRA.indexOf(".")+1, fRA.length());
+				return subS;
+			}
+			fRA = getNextToken();
+		}
+		return null;
 	}
 	/*............................................  ....................................................*/
 	/** returns next XML starttag element name.  Returns attributes in MesquiteString attributes.  If it is an empty element (ending in /) or a processing instruction (bounded by ?) that too is returned in the arguments.*/
@@ -1174,7 +1199,7 @@ public class Parser extends StringUtil {
 			return null;
 		else {
 			String st = line.toString();
-			
+
 			return st.substring((int)startPos,(int)endPos.getValue()); //Debugg.println
 		}
 	}
@@ -1227,7 +1252,11 @@ public class Parser extends StringUtil {
 	}
 	/*.................................................................................................................*/
 
-	int pendingPComment = 0;
+	boolean pendingPComment = false;
+
+	public boolean isSubstantiveCommentPending(){
+		return pendingPComment;
+	}
 	/*.................................................................................................................*/
 	char getNextChar(MesquiteInteger pendingBrackets, StringBuffer comment, MesquiteBoolean suppressComment) {
 		long posTemp = pos.getValue();
@@ -1246,11 +1275,12 @@ public class Parser extends StringUtil {
 			char next = 0;
 			if (posTemp<line.length())
 				next = lineCharAt(line, posTemp);
-			if (debt==0 && (next == '%')) { 
+			if (debt==0 && (next == '%' || next == '&')) { //a substantive comment Mesquite-style; can only be at first level
 				c = '<';
 				posTemp++; //done to go past %
 				line.setCharAt(posTemp-1, c); //done in case punctuation passed back will cause pos to decrement
-				pendingPComment = 1;
+				pendingPComment = true;
+				//don't add to debt to treat as a comment, but remember that there is a pending Substantive comment
 			}
 			else {
 				if (!storeCharToComment(c, debt, comment, suppressComment))
@@ -1262,12 +1292,12 @@ public class Parser extends StringUtil {
 
 		}
 		else if (closingCommentBracket(c)) {
-			if (comment!=null)
-				comment.append("$1");
-			if (debt==0 && pendingPComment >0) {
+			/*if (comment!=null)
+				comment.append("$1");*/
+			if (debt==0 && pendingPComment) {
 				c = '>';
 				line.setCharAt(posTemp-1, c); //done in case punctuation passed back will cause pos to decrement
-				pendingPComment = 0;
+				pendingPComment = false;
 			}
 			else {
 				if (debt>0){
@@ -1287,7 +1317,7 @@ public class Parser extends StringUtil {
 			c=lineCharAt(line, posTemp);
 			if (!whitespace(c) && count == 1 && checkExclamation){
 				if (checkExclamation && debt ==1)
-					if (c != '!' && c!= '&')
+					if (c != '!') // && c!= '&')
 						suppressComment.setValue(true);
 				checkExclamation = false;
 			}
@@ -1299,8 +1329,8 @@ public class Parser extends StringUtil {
 				debt++;
 			}
 			else if (closingCommentBracket(c)) {
-				if (comment!=null)
-					comment.append("$2");
+				/*if (comment!=null)
+					comment.append("$2");*/
 				if (debt>0){
 					debt--;
 					storeCharToComment(c, debt, comment, suppressComment);
@@ -1589,6 +1619,7 @@ public class Parser extends StringUtil {
 			p.setValue(pos.getValue());
 		return token;
 	}
+
 	/*.................................................................................................................*/
 	/** Returns the next command in the string passed starting at the given character */
 	public String getNextCommand() {
@@ -1600,10 +1631,10 @@ public class Parser extends StringUtil {
 		String token = getUnalteredToken(false);
 		if (!blankByCurrentWhitespace(token)) {
 			commandBuffer.append(token);
-			while (!blankByCurrentWhitespace(token) && !token.equals(";")) {
+			while (!blankByCurrentWhitespace(token) && !(token.equals(";") && !isSubstantiveCommentPending())) {
 				token = getUnalteredToken( false);
 				if (token != null && token.length() >0) {
-					if (token.charAt(0)!=';') 
+					if (!(token.charAt(0)==';' && !isSubstantiveCommentPending())) 
 						commandBuffer.append(' ');
 					commandBuffer.append(token);
 				}

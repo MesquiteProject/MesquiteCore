@@ -128,9 +128,9 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static MesquiteMenuSpec fileMenu, editMenu, charactersMenu, treesMenu, analysisMenu, windowsMenu, helpMenu, utilitiesMenu;  
 	public static MesquiteSubmenuSpec defaultsSubmenu, setupSubmenu;
 	/** Commands belonging to special menu items owned by the trunk of Mesquite.  */
-	public MesquiteCommand newFileCommand, openFileCommand,  openRecentCommand, clearRecentCommand, openURLCommand, showLicenseCommand, resetMenusCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
+	public MesquiteCommand newFileCommand, openFileCommand, openRecentCommand, clearRecentCommand, openURLCommand, showLicenseCommand, resetMenusCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
 	//public MesquiteCommand currentCommandCommand;
-	public MesquiteSubmenuSpec openExternalSMS;
+	public MesquiteSubmenuSpec openSpecialSubmenuSpec;
 	/** True if MesquiteModule hiring and firing should be logged.*/
 	public static boolean trackActivity = false;
 	/** The name of the current module set loaded */
@@ -210,7 +210,6 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	open a new file */
 	public abstract MesquiteProject newProject(String pathname, int code, boolean actAsScriptingRegardless);
 
-
 	/*.................................................................................................................*/
 	public abstract MesquiteProject openOrImportFileHandler(String path, String completeArguments, Class importerSubclass);
 	/*.................................................................................................................*/
@@ -248,7 +247,8 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		MesquiteStringBuffer sb = new MesquiteStringBuffer(100);
 		for (int i=recentFiles.size()-1; i>=0; i--) { //save in reverse order, so that most recent reappears on top
 			MesquiteFile stored = (MesquiteFile)recentFiles.elementAt(i);
-			sb.append(stored.getDirectoryName() + "\t" + stored.getFileName()+ "\n");
+			if (stored.okForRecentRereading)
+				sb.append(stored.getDirectoryName() + "\t" + stored.getFileName()+ "\n");
 		}
 		MesquiteFile.putFileContents(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName, sb, false);
 	}
@@ -263,6 +263,8 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 	/** Read recent files */
 	public void readRecordOfRecentFiles(){
+		if (!MesquiteFile.fileExists(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName))
+			return;
 		String[] rfs = MesquiteFile.getFileContentsAsStrings(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName);
 		if (rfs == null)
 			return;
@@ -270,6 +272,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 			String[] rfstring = StringUtil.delimitedTokensToStrings(rfs[i], '\t');
 			if (rfstring != null && rfstring.length>1) {
 				MesquiteFile rf = new MesquiteFile(rfstring[0], rfstring[1]);
+				rf.okForRecentRereading = true;
 				recentFileRecord(rf, false);
 			}
 		}
@@ -352,8 +355,9 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOS(){
-		return !StringUtil.blank(System.getProperty("mrj.version"));
+		return System.getProperty("os.name").startsWith("Mac OS X") ||  !StringUtil.blank(System.getProperty("mrj.version"));
 	}
+	
 	public static boolean isMacOSX(){
 		return System.getProperty("os.name").startsWith("Mac OS X");
 	}

@@ -18,6 +18,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import mesquite.lib.Context;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Explainable;
 import mesquite.lib.IntegerArray;
@@ -59,16 +60,32 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 	boolean hasDefault=true;
 	WorkaroundThread thread;
 	boolean requiresResetWorkaround = true;
-	public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, boolean[] isSubchoice, MesquiteInteger selected, String okButton, String cancelButton, String thirdButton, boolean prioritize, Class priorityClass, boolean hasDefault, boolean multipleMode) {
+	public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, int numRows, boolean[] isSubchoice, MesquiteInteger selected, String okButton, String cancelButton, String thirdButton, boolean prioritize, Class priorityClass, boolean hasDefault, boolean multipleMode) {
 		super(parent,title);
+		
+		//setting up list
+		int numNames = -1;
 		if (names instanceof Listable[]){
 			this.listables = (Listable[])names;
+			numNames = ((Listable[])names).length;
 		}
-		else if (names instanceof String[])
+		else if (names instanceof String[]){
 			strings = (String[])names;
+			numNames = ((String[])names).length;
+		}
+		if (numRows<0) {
+			if (numNames<0 || numNames>16)
+				numRows = 16;
+			else
+				numRows = numNames;
+			if (numRows<8)
+				numRows = 8;
+		}
 		originalListables = listables;
 		listables = filterHiddenListables(listables);
 		listablesUsed = listables; 
+		
+		
 		this.selected = selected;
 		this.thirdButton =thirdButton;
 		this.prioritize = prioritize;
@@ -90,7 +107,7 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		}
 
 		Panel mainPanel = addNewDialogPanel();
-		list = createListenedList (names, isSubchoice, selected, 16, this,this, multipleMode);
+		list = createListenedList (names, isSubchoice, selected, numRows, this,this, multipleMode);
 		list.setForceSize(true);
 		mainPanel.add(list);
 
@@ -141,8 +158,19 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		//ok = getMainButton();
 
 	}
+	
+	public void resetList(Object names, boolean justUpdateNames){
+		super.resetList(list, names, isSubchoice, selected, justUpdateNames);
+	}
+
+	public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, boolean[] isSubchoice, MesquiteInteger selected, String okButton, String cancelButton, String thirdButton, boolean prioritize, Class priorityClass, boolean hasDefault, boolean multipleMode) {
+		this(parent,title,message, autoComplete, helpString, names, -1, isSubchoice, selected,okButton,cancelButton, thirdButton,prioritize,priorityClass,hasDefault, multipleMode);
+	}
 	public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, MesquiteInteger selected, String okButton, String thirdButton, boolean prioritize, Class priorityClass, boolean hasDefault, boolean multipleMode) {
 		this(parent,title,message, autoComplete, helpString, names, null, selected,okButton,null, thirdButton,prioritize,priorityClass,hasDefault, multipleMode);
+	}
+	public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, int numRows, MesquiteInteger selected, String okButton, String thirdButton, boolean prioritize, Class priorityClass, boolean hasDefault, boolean multipleMode) {
+		this(parent,title,message, autoComplete, helpString, names, numRows, null, selected,okButton,null, thirdButton,prioritize,priorityClass,hasDefault, multipleMode);
 	}
 	public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, MesquiteInteger selected, String okButton, String cancelButton, String thirdButton, boolean prioritize, Class priorityClass, boolean hasDefault, boolean multipleMode) {
 		this(parent,title,message, autoComplete, helpString, names, null, selected,okButton,cancelButton, thirdButton,prioritize,priorityClass,hasDefault, multipleMode);
@@ -150,6 +178,9 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 
 	public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, MesquiteInteger selected, String okButton,String thirdButton, boolean hasDefault, boolean multipleMode) {
 		this(parent,title,message, autoComplete, helpString, names,selected,okButton,thirdButton,false,null,hasDefault, multipleMode);
+	}
+	public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, int numRows, MesquiteInteger selected, String okButton,String thirdButton, boolean hasDefault, boolean multipleMode) {
+		this(parent,title,message, autoComplete, helpString, names,numRows, selected,okButton,thirdButton,false,null,hasDefault, multipleMode);
 	}
 	public ListDialog (MesquiteWindow parent, String title, String message, boolean autoComplete, String helpString, Object names, MesquiteInteger selected, String thirdButton, boolean hasDefault, boolean multipleMode) {
 		this(parent,title,message, autoComplete, helpString, names,selected,"OK",thirdButton,false,null,hasDefault, multipleMode);
@@ -437,7 +468,7 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 				count++;
 		return count;
 	}
-	private void setSelected(boolean[] selected){
+	public void setSelected(boolean[] selected){
 		if (selected == null)
 			return;
 		for (int i=0; i<list.getItemCount(); i++)
@@ -747,8 +778,15 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		else
 			return null;
 	}
-	protected DoubleClickList getList(){
+	public DoubleClickList getList(){
 		return list;
+	}
+	public IntegerArray getIndicesSelected(){
+		return indicesSelected;
+	}
+	public IntegerArray getIndicesCurrentlySelected(){
+		indicesSelected.setValues(translateIndicesUsedToOriginal(list.getSelectedIndexes()));
+		return indicesSelected;
 	}
 	private int[] translateIndicesUsedToOriginal(int[] indices){
 		if (indices !=null && listablesUsed !=null && listablesUsed != originalListables){
@@ -808,7 +846,10 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 	/*.................................................................................................................*/
 	public void buttonHit(String buttonLabel, Button button) {
 		if (buttonLabel!=null)
-			if (buttonLabel.equalsIgnoreCase(getMainButton().getLabel())){
+			if (buttonPressed!=null) {
+				buttonPressed.setValue(getButtonNumber(buttonLabel));
+			}
+			if (getMainButton() != null && buttonLabel.equalsIgnoreCase(getMainButton().getLabel())){
 				try {
 					if (selected!=null) {
 						selected.setValue(translateIndexUsedToOriginal(list.getSelectedIndex()));
@@ -825,10 +866,15 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 					selected.setValue(-i-1); //if nothing selected do not respond!
 				dispose();
 			}
-			else if (buttonLabel.equalsIgnoreCase(thirdButton)){
-				selected.setValue(-1); 
+			else if (buttonLabel.equalsIgnoreCase(thirdButton)){ //ZQ: what was this for?
+				if (selected != null)
+					selected.setValue(-1); 
+				for (int i = 0; i<list.getRows(); i++)
+					list.deselect(i);
+				if (indicesSelected != null)
+				indicesSelected.setValues(translateIndicesUsedToOriginal(list.getSelectedIndexes()));
 			}
-			else {
+			else if (buttonLabel.equalsIgnoreCase("Cancel") || buttonLabel.equalsIgnoreCase("Done")){
 				if (selected!=null)
 					selected.setToUnassigned();
 				indicesSelected.setValues(null);

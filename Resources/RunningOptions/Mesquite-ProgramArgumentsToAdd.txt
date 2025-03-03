@@ -1,4 +1,4 @@
-
+-development
 
 INSTRUCTIONS
 If you put text on the first line, above, it will be used by Mesquite-Starter.app as additional command-line program arguments in starting Mesquite. 

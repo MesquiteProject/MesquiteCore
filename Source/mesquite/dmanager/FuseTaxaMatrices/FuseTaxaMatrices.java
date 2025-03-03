@@ -45,13 +45,13 @@ public class FuseTaxaMatrices extends FileAssistantFM {
 
 	private void includeFuse(){
 		String message = "You are about to read in another file, and import the taxa and characters blocks found there, with or without fusing to taxa and character blocks in "
-			+ "the current file.  This process will NOT incorporate trees, footnotes or most other auxiliary information associated "
+			+ "the current file.  This process will NOT incorporate trees, footnotes, codon positions or most other auxiliary information associated "
 			+ "with those taxa and character blocks. ";
 
 		discreetAlert( message);
 		MesquiteModule fCoord = getFileCoordinator();
 		MesquiteCommand command = makeCommand("includeFileFuse", fCoord);
-		command.doItMainThread(StringUtil.argumentMarker + "fuseTaxaCharBlocks", null, this);
+		command.doItMainThread(StringUtil.argumentMarker + "fuseTaxaCharBlocks " + StringUtil.argumentMarker + "justTheseBlocks.TAXA.DATA.CHARACTERS", null, this);
 		
 		MesquiteWindow w = containerOfModule();
 		MesquiteFrame f = w.getParentFrame();
@@ -69,7 +69,7 @@ public class FuseTaxaMatrices extends FileAssistantFM {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "General Merge Taxa & Matrices from File...";
+		return "Careful Merge Taxa & Matrices from File...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -85,7 +85,9 @@ public class FuseTaxaMatrices extends FileAssistantFM {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Includes a file and concatenates its taxa to an existing taxa block, for instance to add seqences." ;  
+		return "Reads a file and merges its information into the current project with various choices as to whether taxa blocks and matrices are "
+				+ "merged with existing ones in the current project, or read as separate taxa blocks and matrices. More general and flexible than Quick Merge Taxa & Matrices, "
+				+" but more awkward as well, because Careful Merge asks you many questions to control the merging, whereas Quick Merge makes more assumptions and does it quietly." ;  
 	}
 
 }

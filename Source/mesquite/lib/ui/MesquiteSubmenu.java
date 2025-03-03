@@ -95,16 +95,19 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 	}
 	*/
 	public static StringLister getFontSizeList() {
-		StringArray f = new StringArray(9);
-		f.setValue(0,"9");
-		f.setValue(1,"10");
-		f.setValue(2,"12");
-		f.setValue(3,"14");
-		f.setValue(4,"18");
-		f.setValue(5,"24");
-		f.setValue(6,"30");
-		f.setValue(7,"36");
-		f.setValue(8,"Other...");
+		StringArray f = new StringArray(12);
+		f.setValue(0,"6");
+		f.setValue(1,"7");
+		f.setValue(2,"8");
+		f.setValue(3,"9");
+		f.setValue(4,"10");
+		f.setValue(5,"12");
+		f.setValue(6,"14");
+		f.setValue(7,"18");
+		f.setValue(8,"24");
+		f.setValue(9,"30");
+		f.setValue(10,"36");
+		f.setValue(11,"Other...");
 		return f;
 	}
 	
@@ -122,6 +125,9 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 	public static MesquiteSubmenu getFontSizeSubmenu(String title, Menu ownerMenu, MesquiteModule ownerModule, MesquiteCommand setFontSizeCommand) {
 		MesquiteSubmenu submenuSize=MesquiteSubmenu.getSubmenu(title, ownerMenu, ownerModule);
 		submenuSize.setSelected(new MesquiteString(""));
+		submenuSize.add(new MesquiteCheckMenuItem("6",  ownerModule, setFontSizeCommand, "6", submenuSize.checkString));
+		submenuSize.add(new MesquiteCheckMenuItem("7",  ownerModule, setFontSizeCommand, "7", submenuSize.checkString));
+		submenuSize.add(new MesquiteCheckMenuItem("8",  ownerModule, setFontSizeCommand, "8", submenuSize.checkString));
 		submenuSize.add(new MesquiteCheckMenuItem("9",  ownerModule, setFontSizeCommand, "9", submenuSize.checkString));
 		submenuSize.add(new MesquiteCheckMenuItem("10",  ownerModule, setFontSizeCommand, "10", submenuSize.checkString));
 		submenuSize.add(new MesquiteCheckMenuItem("12",  ownerModule, setFontSizeCommand, "12", submenuSize.checkString));

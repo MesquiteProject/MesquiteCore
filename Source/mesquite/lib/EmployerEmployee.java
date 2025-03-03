@@ -25,6 +25,7 @@ import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.InfoBar;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 
@@ -560,6 +561,16 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		}
 		return closed;
 	}
+	/* ................................................................................................................. */
+	/** Moves the employee to first in the vector. */
+	public void moveEmployeeToFirst(MesquiteModule mb) {
+		if (employees == null)
+			return;
+		if (employees.indexOf(mb)<0)
+			return;
+		employees.removeElement(mb, false);
+		employees.insertElementAt(mb, 0, false);
+	}
 
 	/* ................................................................................................................. */
 	/** Finds the first more senior employer in the heirarchy that belongs to a particular subclass. */
@@ -1038,7 +1049,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		if (MesquiteTrunk.debugMode && MesquiteTrunk.reportUnregisteredNeeds){
 			EmployeeNeed need = findEmployeeNeed(mb.getClass());
 			if (need == null) {
-				MesquiteMessage.println("@@@@@@@@@@@@@@@@@@@@");
+				MesquiteMessage.println("#################");
 				MesquiteMessage.println("UNREGISTERED NEED: " + dutyClass.getName() + " for " + module.getModuleInfo().getClassName() + " (hiring " + mb.getModuleInfo().getClassName() + ")");
 				String ln = listNeeds();
 				if (!StringUtil.blank(ln))
@@ -1185,7 +1196,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	public MesquiteModule instantiateEmployee(MesquiteModuleInfo mbi) {
 		if (mbi == null)
 			return null;
-		MesquiteThread.shouldBeOnMesquiteThread();
+		MesquiteThread.shouldBeOnMesquiteThread(true);
 		MesquiteModule mb = instantiateModule(mbi.mbClass);
 		if (mb != null) {
 			mb.employer = module;

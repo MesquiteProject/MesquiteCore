@@ -200,7 +200,7 @@ public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 				successFirstMatrix = firstAlterTask.alterData(data, null, null, alteredDataParameters);
 				doneFirstMatrix = true;
-				if (successFirstMatrix == DataAlterer.SUCCEEDED) {
+				if (successFirstMatrix == ResultCodes.SUCCEEDED) {
 					matricesDone.setBit(im);
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 					if (alteredDataParameters.getSubcodes() != null)
@@ -428,7 +428,7 @@ class AlterThread extends MesquiteThread {
 						ownerModule.logln("Exception in Parallel Alter Matrices -- " + e);
 					}
 					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
-					if (result == DataAlterer.SUCCEEDED) {
+					if (result == ResultCodes.SUCCEEDED) {
 						Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 						if (alteredDataParameters.getSubcodes() != null)
 							notification.setSubcodes(alteredDataParameters.getSubcodes());

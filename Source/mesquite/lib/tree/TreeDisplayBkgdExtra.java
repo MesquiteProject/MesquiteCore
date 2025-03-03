@@ -19,11 +19,12 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-/** A subclass of TreeDisplayExtra.  Used only so that tree drawing knows to call these before the tree
+/** An interface for TreeDisplayExtra to know they also have a drawUnderTree and printUnderTree method.  Used only so that tree drawing knows to call these before the tree
 is drawn.. */
-public abstract class TreeDisplayBkgdExtra extends TreeDisplayExtra {
-	public TreeDisplayBkgdExtra (MesquiteModule ownerModule, TreeDisplay treeDisplay) {
-		super(ownerModule, treeDisplay);
-	}
+public interface TreeDisplayBkgdExtra  {
+	/**draw on the tree passed*/
+	public abstract void drawUnderTree(Tree tree, int drawnRoot, Graphics g);
+	/**print on the tree passed*/
+	public abstract void printUnderTree(Tree tree, int drawnRoot, Graphics g);
 }
 

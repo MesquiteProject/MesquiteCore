@@ -82,9 +82,22 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 		totalCreated++;
 		ID = totalCreated;
 	}
-	
+	public MesquiteCommand clone(){
+		MesquiteCommand c = new MesquiteCommand(commandName, defaultArguments, ownerObject);
+		c.okOnOtherThread = okOnOtherThread;
+		c.letMe = letMe;
+		c.bypassQueue = bypassQueue;
+		c.hideInList = hideInList; 
+		c.suppressLogging = suppressLogging;
+		c.dontDuplicate = dontDuplicate; 
+		return c;
+	}
 	public int getID() {
 		return ID;
+	}
+	
+	public boolean isExecutable(){
+		return (commandName != null && ownerObject != null);
 	}
 	public void setSupplementalLogger(Logger logger){
 		this.supplementalLogger = logger;
@@ -137,7 +150,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 			return null;
 		}
 		if (!okOnOtherThread)
-			MesquiteThread.shouldBeOnMesquiteThread();
+			MesquiteThread.shouldBeOnMesquiteThread(true);
 		if (StringUtil.blank(arguments))
 			arguments = defaultArguments;
 		if (!suppressLogging || logEverything)
@@ -198,8 +211,9 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	}
 	/** Do the command, passing the given arguments.  This will call the commanded object's doCommand method.  Object passed is UI object (if any), such as menu item or button in window, from which command was issued*/
 	public void doItMainThread(String arguments, String uiCallInformation, boolean showWaitCursors, boolean logCommand, Object c, boolean useWizard) {
-		if (dontDuplicate && MainThread.commandAlreadyOnQueue(this))
+		if (dontDuplicate && MainThread.commandAlreadyOnQueue(this)){
 			return;
+		}
 		if (bypassQueue) {
 			doIt(arguments);
 			return;

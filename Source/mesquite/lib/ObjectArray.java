@@ -15,10 +15,11 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.text.*;
+import java.util.Vector;
 
 
 /* ======================================================================== */
-public class ObjectArray implements Listable {
+public class ObjectArray implements Listable, Nameable {
 	Object[] values;
 	NameReference name=null;
 	public ObjectArray(int num){
@@ -30,7 +31,7 @@ public class ObjectArray implements Listable {
 	//intially for MesquiteTree to know if info applies to node or branch ancestral to node
 	boolean between = false;
 	public void setBetweenness(boolean b){
-		between = true;  
+		between = b;  
 	}
 	public boolean isBetween(){
 		return between;
@@ -41,6 +42,9 @@ public class ObjectArray implements Listable {
 			return name.getValue();
 		else
 			return "";
+	}
+	public void setName(String n){
+		name = NameReference.getNameReference(n);
 	}
 	/*...........................................................*/
 	public void setNameReference(NameReference nr){
@@ -53,6 +57,32 @@ public class ObjectArray implements Listable {
 	public void zeroArray(){
 		for (int i=0; i<values.length; i++)
 			values[i] =  null;
+	}
+
+
+	public boolean oneKindOfObject(){ //returns null if they vary; must be exact match
+		Class classFound =null;
+		for (int i=0; i<values.length; i++) {
+			if (values[i] != null){
+				if (classFound == null)
+					classFound = values[i].getClass();
+				else if (classFound != values[i].getClass())
+					return false;
+			}
+		}
+		return true;
+	}
+	public Class getCommonClass(){ //returns null if they vary; must be exact match
+		Class classFound =null;
+		for (int i=0; i<values.length; i++) {
+			if (values[i] != null){
+				if (classFound == null)
+					classFound = values[i].getClass();
+				else if (classFound != values[i].getClass())
+					return null;
+			}
+		}
+		return classFound;
 	}
 	/*...........................................................*/
 	public void copyTo(ObjectArray d){

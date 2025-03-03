@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<mesquite>
+	<humanName>MrBayes</humanName> <!-- required -->
+	<internalName>MrBayes</internalName> <!-- required -->
+	<!-- At least one element of the following must be present -->
+	<punctuation>,={}&gt;&lt;'</punctuation> 
+	<!-- replacements in sequence -->
+	<replacement> 
+		<before>prob ( percent )</before>
+		<after>'prob(percent)'</after>
+	</replacement> 
+	<replacement> 
+		<before>prob + - sd</before>
+		<after>'prob+-sd'</after>
+	</replacement> 
+	<replacement> 
+		<before>effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _mean</before>
+		<after>'effectivebrlenIgrBrlens{1,2,3,4,5}_mean'</after>
+	</replacement> 
+	<replacement> 
+		<before>effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _95%HPD</before>
+		<after>'effectivebrlenIgrBrlens{1,2,3,4,5}_95%HPD'</after>
+	</replacement> 
+	<replacement>
+		<before>effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _95%HPD</before>
+		<after>'effectivebrlenIgrBrlens{1,2,3,4,5}_95%HPD'</after>
+	</replacement>
+	<replacement>
+		<before>effectivebrlenIgrBrlens { 1 , 2 , 3 , 4 , 5 } _median</before>
+		<after>'effectivebrlenIgrBrlens{1,2,3,4,5}_median'</after>
+	</replacement>
+	<replacement>
+		<before>effectivebrlenIgrBrlens { 6 , 7 , 8 } _mean</before>
+		<after>'effectivebrlenIgrBrlens{6,7,8}_mean'</after>
+	</replacement>
+	<replacement>
+		<before>effectivebrlenIgrBrlens { 6 , 7 , 8 } _95%HPD</before>
+		<after>'effectivebrlenIgrBrlens{6,7,8}_95%HPD'</after>
+	</replacement>
+	<replacement>
+		<before>effectivebrlenIgrBrlens { 6 , 7 , 8 } _median</before>
+		<after>'effectivebrlenIgrBrlens{6,7,8}_median'</after>	
+		<before>effectivebrlenIgrBrlens { 9 } _mean</before>
+		<after>'effectivebrlenIgrBrlens{9}_mean'</after>
+	</replacement>
+	<replacement>
+		<before>effectivebrlenIgrBrlens { 9 } _95%HPD</before>
+		<after>'effectivebrlenIgrBrlens{9}_95%HPD'</after>
+	</replacement>
+	<replacement>
+		<before>effectivebrlenIgrBrlens { 9 } _median</before>
+		<after>'effectivebrlenIgrBrlens{9}_median'</after>
+	</replacement>
+	<replacement>
+		<before>rateIgrBrlens { 1 , 2 , 3 , 4 , 5 } _mean</before>
+		<after>'rateIgrBrlens{1,2,3,4,5}_mean'</after>
+	</replacement>
+	<replacement>
+		<before>rateIgrBrlens { 1 , 2 , 3 , 4 , 5 } _95%HPD</before>
+		<after>'rateIgrBrlens{1,2,3,4,5}_95%HPD'</after>
+	</replacement>
+	<replacement>
+		<before>rateIgrBrlens { 1 , 2 , 3 , 4 , 5 } _median</before>
+		<after>'rateIgrBrlens{1,2,3,4,5}_median'</after>
+	</replacement>
+	<replacement>
+		<before>rateIgrBrlens { 6 , 7 , 8 } _mean</before>
+		<after>'rateIgrBrlens{6,7,8}_mean'</after>
+	</replacement>
+	<replacement>
+		<before>rateIgrBrlens { 6 , 7 , 8 } _95%HPD</before>
+		<after>'rateIgrBrlens{6,7,8}_95%HPD'</after>
+	</replacement>
+	<replacement>
+		<before>rateIgrBrlens { 6 , 7 , 8 } _median</before>
+		<after>'rateIgrBrlens{6,7,8}_median'</after>
+	</replacement>
+	<replacement>
+		<before>rateIgrBrlens { 9 } _mean</before>
+		<after>'rateIgrBrlens{9}_mean'</after>
+	</replacement>
+	<replacement>
+		<before>rateIgrBrlens { 9 } _95%HPD</before>
+		<after>'rateIgrBrlens{9}_95%HPD'</after>
+	</replacement>
+	<replacement>
+		<before>rateIgrBrlens { 9 } _median</before>
+		<after>'rateIgrBrlens{9}_median'</after>
+	</replacement>
+	<replacement>
+		<before>"</before>
+		<after>'</after>
+	</replacement>
+
+</mesquite>
+

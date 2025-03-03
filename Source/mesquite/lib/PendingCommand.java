@@ -122,9 +122,9 @@ public class PendingCommand implements SpecialListName, Explainable {
 			if (command == null)
 				s = "No command";
 			else if (command.getOwner() instanceof Listable)
-				s= "Command: " + command.getName() + " to " + ((Listable)command.getOwner()).getName() + " ID: " + getID();
+				s= "Command (ID: " + getID() + "): " + command.getName() + " to " + ((Listable)command.getOwner()).getName();
 			else
-				s= "Command: " + command.getName() + " to unknown object";
+				s= "Command (ID: " + getID() + "): " + command.getName() + " to object " + command.getOwner();
 			/*
 			if (running)
 				return "(IN PROGRESS) " + s;
