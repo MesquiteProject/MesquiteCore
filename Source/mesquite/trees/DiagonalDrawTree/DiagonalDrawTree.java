@@ -867,24 +867,6 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		else 
 			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
 	}
-	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-		Rectangle2D box;
-		int ew = branchEdgeWidth(node, false)-2;
-		if (isUP()) 
-			box = new Rectangle2D.Double(x[node], y[node]-ew-3, ew, ew);
-		else if (isDOWN())
-			box = new Rectangle2D.Double(x[node], y[node]+2, ew, ew);
-		else  if (isRIGHT()) 
-			box = new Rectangle2D.Double(x[node]+1, y[node], ew, ew);
-		else  if (isLEFT())
-			box = new Rectangle2D.Double(x[node]-ew-3, y[node], ew, ew);
-		else 
-			box = new Rectangle2D.Double(x[node], y[node], ew, ew);
-		GraphicsUtil.fillRect(g, box.getX(), box.getY(), box.getWidth(), box.getHeight());
-		g.setColor(treeDisplay.getBranchColor(node));
-		GraphicsUtil.drawRect(g, box.getX(), box.getY(), box.getWidth(), box.getHeight());
-	}
 
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){

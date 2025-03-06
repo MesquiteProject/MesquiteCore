@@ -301,9 +301,6 @@ class ConstellationDrawing extends TreeDrawing  {
 		GraphicsUtil.fillOval(g, x[node]- spotsize/2 + 2, y[node]- spotsize/2 + 2, spotsize - 4, spotsize - 4, true);
 	}
 	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-	}
-	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 	}
 	/*_________________________________________________*/

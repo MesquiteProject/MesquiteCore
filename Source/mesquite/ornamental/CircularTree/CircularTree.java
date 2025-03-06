@@ -439,14 +439,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 
 		return box;
 	}
-	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-		Shape box = getTerminalBox(tree,node,g,1,1);
-		GraphicsUtil.fill(g, box);
-		g.setColor(treeDisplay.getBranchColor(node));
-		GraphicsUtil.draw(g, box);
-	}
-
+	
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		int numColors = colors.getNumColors();

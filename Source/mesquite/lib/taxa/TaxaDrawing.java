@@ -125,9 +125,10 @@ public abstract class TaxaDrawing  {
 	public boolean terminalBoxesRequested(){
 		return (enableTerminalBoxesRequests>0);
 	}
-	/** Fill terminal box with current color. */
+	/** Fill terminal box with current color. *
 	public abstract void fillTerminalBox(Taxa taxa, int node, Graphics g);
-	
+	NOTE: This was removed v.4 because it was never called!
+	*/
 	/** Fill terminal box of node "node" with indicated set of colors */
 	public abstract void fillTerminalBoxWithColors(Taxa taxa, int node, ColorDistribution colors, Graphics g);
 	

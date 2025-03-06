@@ -982,7 +982,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	int branchFrom;
 	int highlightedTaxon = -1;
 	int taxonTouched = -1;
-	int xFrom, yFrom, xTo, yTo, fieldTouchX, fieldTouchY, lastFieldDragX, lastFieldDragY;
+	int xFrom, yFrom, xTo, yTo, fieldTouchX, fieldTouchY, lastFieldDragX, lastFieldDragY, fieldTouchedExtrasX, fieldTouchedExtrasY;
 	/*static final int CONTINUE_WITH_EDITED = 1;
 	static final int CHANGE_TREE_WITH_SOURCE = 0;
 	static final int ASK_USER_TREE_CHANGE = 2;
@@ -1666,20 +1666,15 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			hScroll = treePane.getHAdjustable();
 			vScroll = treePane.getVAdjustable();
 			Rectangle vP = new Rectangle(0, 0, treeDisplay.getFieldWidth() + hScroll.getValue(), treeDisplay.getFieldHeight() + vScroll.getValue());  
-			//Debugg.println("@gTV " +  treeDisplay.getFieldHeight() + vScroll.getValue());
 			return vP;
-		//	return new Rectangle(hScroll.getValue(), vScroll.getValue(), treePane.getContentsWidth(), treePane.getContentsHeight());
-			// SCROLLPANEreturn treePane.getViewportSize();
 		}
 		else
 			return new Rectangle(0, 0, treeDisplay.getFieldWidth(), treeDisplay.getFieldHeight());  
-		//	return new Rectangle(0, 0, treeDisplay.getWidth(), treeDisplay.getHeight());
 	}
 
 	Point getTreeScrollPoint() {
 		if (usingPane)
 			return treePane.getScrollPosition();
-		// SCROLLPANEreturn treePane.getScrollPosition();
 		else
 			return new Point(0, 0);
 	}
@@ -1733,14 +1728,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				floatLegendsItem.setEnabled(true);
 				ownerModule.resetContainingMenuBar();
 				setOrigin(0, 0, true);
-			/*
+				/*
 				 * vScroll.doLayout(); hScroll.doLayout(); hScroll.setVisible(true); vScroll.setVisible(true);
 				 */
 				// treePane.setSize(getWidth(), getHeight());
-			
-				
+
+
 			}
-			
+
 			//The following are needed whether the pane is newly shown or not
 			treePane.setSize(getWidth(), getHeight() - scrollWidth);
 			if (palette != null)
@@ -1750,11 +1745,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			// lockPanel.repaint();
 			// }
 			// initiating = false;
-			//Debugg.println("@##<<< treePane.getHeight() " + treePane.getHeight()  + "  treeDisplay.getHeight()  "  + treeDisplay.getHeight()  + "  treeDisplay.getFieldHeight()  "  + treeDisplay.getFieldHeight());
 			treeDisplay.setFieldSize(totalTreeFieldWidth, totalTreeFieldHeight);
 			treeDisplay.setSize(totalTreeFieldWidth, totalTreeFieldHeight);
 			treePane.doLayout();
-			//Debugg.println("@##>>> treePane.getHeight() " + treePane.getHeight()  + "  treeDisplay.getHeight()  "  + treeDisplay.getHeight()  + "  treeDisplay.getFieldHeight()  "  + treeDisplay.getFieldHeight());
 		}
 		else {
 			if (usingPane) {
@@ -1938,14 +1931,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 					numTaxa +=1; //for good measure;
 
-					
+
 					if (treeDisplay.getOrientation() == TreeDisplay.UP || treeDisplay.getOrientation() == TreeDisplay.DOWN)
 						canFit = numTaxa * basicMinSpacing < width-borderWidth-treeDisplay.bufferForScaleEtc;
 					else if (treeDisplay.getOrientation() == TreeDisplay.RIGHT || treeDisplay.getOrientation() == TreeDisplay.LEFT)
 						canFit = numTaxa * basicMinSpacing < height-borderHeight-treeDisplay.bufferForScaleEtc;
 					else
 						canFit = numTaxa * 6 < (width-borderWidth + height-borderHeight) / 2;
-					
+
 					if (canFit && scale <= 0) { //CAN FIT therefore go with the sizes as is
 						treeDisplay.setFieldSize(width, height); 
 						treeDisplay.setSize(width, height);
@@ -2267,6 +2260,27 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................................. */
+	public void addWindowAssistant(TreeWindowAssistant tda) {
+		tda.setEmployeesInStartup(true); // normally used only within EmployerEmployee, this helps assistants know they are still in startup phase
+		///	treeDrawCoordTask.addAssistantTask(tda);
+
+		TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplay);
+
+		if (tce == null)
+			return;
+		if (tree != null)
+			tce.setTree(tree);
+
+		treeDisplay.addExtra(tce);
+		if (tree != null)
+			treeDisplay.accumulateRequestsFromExtras(tree);
+		checkPanelPositionsLegal();
+		treeDisplay.pleaseUpdate(false);
+		if (getMode() > 0)
+			updateTextPage();
+		tda.setEmployeesInStartup(false);
+	}
+	/* ................................................................................................................. */
 	public void addAssistant(TreeDisplayAssistant tda) {
 		tda.setEmployeesInStartup(true); // normally used only within EmployerEmployee, this helps assistants know they are still in startup phase
 		treeDrawCoordTask.addAssistantTask(tda);
@@ -2498,8 +2512,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		else if (checker.compare(this.getClass(), "Hires a tree window assistant module", "[name of assistant module]", commandName, "newWindowAssistant")) {
 			TreeWindowAssistant tda = (TreeWindowAssistant) ownerModule.hireNamedEmployee(TreeWindowAssistant.class, arguments);
-			if (tda != null && tree != null)
+			if (tda != null && tree != null){
 				tda.setTree(tree);
+				addWindowAssistant(tda);
+				treeDisplay.redoCalculations(33);
+				treeDisplay.forceRepaint();
+			}
 			return tda;
 		}
 		else if (checker.compare(this.getClass(), "Returns the tree", null, commandName, "getTree")) {
@@ -3902,6 +3920,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		yTo = -1;
 		fieldTouchX = -1;
 		fieldTouchY = -1;
+		fieldTouchedExtrasX = -1;
+		fieldTouchedExtrasY = -1;
 		lastFieldDragX = -1;
 		lastFieldDragY = -1;
 		taxonTouched = -1;
@@ -3950,6 +3970,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						showTreePopup(x, y); 
 					}
 					else {
+						if (notifyExtrasOfFieldTouch(g, x, y, modifiers)){
+							fieldTouchedExtrasX = x;
+							fieldTouchedExtrasY = y;
+							return true;
+						}
 						fieldTouchX = x;
 						fieldTouchY = y;
 						lastFieldDragX = x;
@@ -3974,10 +3999,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (s== null)
 			popup.addItem("-", ownerModule, null, "");
 		else
-		popup.addItem(s, ownerModule, new MesquiteCommand(null, null), "");
+			popup.addItem(s, ownerModule, new MesquiteCommand(null, null), "");
 	}
 	void showTreePopup(int x, int y){
-		Debugg.println("@showTreePopup " + tree);
 		if (tree == null)
 			return;
 		if (popup==null)
@@ -4006,36 +4030,48 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return;
 		if (treeDisplay.getInvalid())
 			return;
-		if (currentTreeTool.isArrowTool() && fieldTouchX >= 0 && fieldTouchY >= 0) {
-			g.setColor(Color.blue);
-			if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()) {
-				g.setXORMode(Color.white); // for some reason color doesn't matter in MacOS, but does in Win95
-				GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
-			}
-			highlightedNodes = null;
-			highlightedTaxa = null;
-
-			if (!dragSelect(modifiers, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY)) {
-				if (taxa.anySelected()) {
-					taxa.deselectAll();
-					taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+		if (currentTreeTool.isArrowTool()){
+			if (fieldTouchX >= 0 && fieldTouchY >= 0) {
+				g.setColor(Color.blue);
+				if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()) {
+					g.setXORMode(Color.white); // for some reason color doesn't matter in MacOS, but does in Win95
+					GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
 				}
-				if (tree.anySelected()) {
-					tree.deselectAll();
-					tree.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-				}
-				if (Math.abs(x - fieldTouchX) < 4 && Math.abs(y - fieldTouchY) < 4)
-					notifyExtrasOfFieldTouch(g, x, y, modifiers);
-			}
+				highlightedNodes = null;
+				highlightedTaxa = null;
 
-			fieldTouchX = -1;
-			fieldTouchY = -1;
-			lastFieldDragX = -1;
-			lastFieldDragY = -1;
-			if (treeDisplay.isCrossDrawn())
-				treeDisplay.update(g);
-			return;
+				if (!dragSelect(modifiers, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY)) {
+					if (taxa.anySelected()) {
+						taxa.deselectAll();
+						taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+					}
+					if (tree.anySelected()) {
+						tree.deselectAll();
+						tree.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+					}
+				}
+
+				fieldTouchX = -1;
+				fieldTouchY = -1;
+				lastFieldDragX = -1;
+				lastFieldDragY = -1;
+				if (treeDisplay.isCrossDrawn())
+					treeDisplay.update(g);
+				return;
+			}
+			else if (fieldTouchedExtrasX >=0 && fieldTouchedExtrasY >=0){
+				notifyExtrasOfFieldDrop(g, x, y, modifiers);
+				fieldTouchX = -1;
+				fieldTouchY = -1;
+				lastFieldDragX = -1;
+				lastFieldDragY = -1;
+				fieldTouchedExtrasX = -1;
+				fieldTouchedExtrasY = -1;
+				return;
+			}
 		}
+
+
 		if ((!treeDisplay.getTree().isLocked()) && (branchFrom != 0)) {
 			MesquiteDouble fraction = new MesquiteDouble();
 			if (currentTreeTool.informTransfer()) {
@@ -4102,21 +4138,34 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return;
 		if (treeDisplay.getInvalid())
 			return;
-		if (currentTreeTool.isArrowTool() && fieldTouchX >= 0 && fieldTouchY >= 0) {
-			g.setColor(Color.blue);
-			if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()) {
-				g.setXORMode(Color.white); // for some reason color doesn't matter in MacOS, but does in Win95
-				GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
-				GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY);
-				// g.drawRect(fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
-				// g.drawRect(fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
+		if (currentTreeTool.isArrowTool()){
+			if (fieldTouchX >= 0 && fieldTouchY >= 0) {
+				g.setColor(Color.blue);
+				if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()) {
+					g.setXORMode(Color.white); // for some reason color doesn't matter in MacOS, but does in Win95
+					GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
+					GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY);
+					// g.drawRect(fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
+					// g.drawRect(fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
+				}
+				else
+					dragHighlight(g, modifiers, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY);
+				lastFieldDragX = x;
+				lastFieldDragY = y;
+				return;
 			}
-			else
-				dragHighlight(g, modifiers, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY);
-			lastFieldDragX = x;
-			lastFieldDragY = y;
-			return;
+			else if (fieldTouchedExtrasX >=0 && fieldTouchedExtrasX >=0){
+					notifyExtrasOfFieldDrag(g, x, y, modifiers);
+					lastFieldDragX = x;
+					lastFieldDragY = y;
+				
+				return;
+			}
+
 		}
+
+
+
 		MesquiteDouble fraction = new MesquiteDouble();
 		int branchFound = findBranch(x, y, fraction);
 		if (branchFound > 0) {
@@ -4470,14 +4519,43 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfFieldTouch(Graphics g, int x, int y, int modifiers) {
+	//	return true if consumed!
+	boolean notifyExtrasOfFieldTouch(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorTouchField(tree, g, x, y, modifiers);
+					if (tce.cursorTouchField(tree, g, x, y, modifiers, 0))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+	/* ................................................................................................ */
+	void notifyExtrasOfFieldDrag(Graphics g, int x, int y, int modifiers) {
+		if (treeDisplay.getExtras() != null) {
+			Enumeration e = treeDisplay.getExtras().elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				if (obj instanceof TreeDisplayExtra) {
+					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
+					tce.cursorDragField(tree, g, x, y, modifiers, 0);
+				}
+			}
+		}
+	}
+	/* ................................................................................................ */
+	void notifyExtrasOfFieldDrop(Graphics g, int x, int y, int modifiers) {
+		if (treeDisplay.getExtras() != null) {
+			Enumeration e = treeDisplay.getExtras().elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				if (obj instanceof TreeDisplayExtra) {
+					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
+					tce.cursorDropField(tree, g, x, y, modifiers, 0);
 				}
 			}
 		}
@@ -5184,10 +5262,10 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 			scrollTouched(null, 0);
 
 		vScroll.setVisible(min != max);
-	
+
 		if (min == max)
 			treeDisplay.setLocation(treeDisplay.getLocation().x, 0);
-			
+
 		doLayout();
 	}
 

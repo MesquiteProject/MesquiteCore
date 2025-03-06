@@ -1147,6 +1147,26 @@ public class StringUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
+	public static String stripWhitespaceAroundPunctuation(String token) { 
+		if (token == null)
+			return "";
+		StringBuffer sb = new StringBuffer();
+		char prev = '\0';
+		for (int i=0; i<token.length(); i++) {
+			char c = token.charAt(i);
+			char nxt = '\0';
+			if (i+1<token.length())
+				nxt = token.charAt(i+1);
+			if (!whitespace(c))  // if dark, keep regardless
+				sb.append(c);
+			else if (!punctuation(prev) && !punctuation(nxt)) // if white, keep it if neither of neighbours is punctuation
+				sb.append(c);
+			prev = c;
+		}
+		return sb.toString();
+	}
+
+	/*.................................................................................................................*/
 	public static String stripLeadingWhitespace(String token) { 
 		return stripLeadingWhitespace(token, defaultWhitespace);
 	}
@@ -1271,17 +1291,29 @@ public class StringUtil {
 		return (c==']');
 	}
 	/*.................................................................................................................*/
-	public static boolean whitespace(char c, String whitespaceString) {
+	public static boolean whitespace(char c) {
 		// in the future, we might want to add  if (c<0) return true;
 		if (c<0)
 			return true;
 		if (c==0)
 			return false;  
-
-
+			return defaultWhitespace.indexOf(c)>=0;
+	}
+	/*.................................................................................................................*/
+	public static boolean whitespace(char c, String whitespaceString) {
+		if (c<0)
+			return true;
+		if (c==0)
+			return false;  
 		if (whitespaceString!=null)
 			return whitespaceString.indexOf(c)>=0;
 			return defaultWhitespace.indexOf(c)>=0;
+	}
+	/*.................................................................................................................*/
+	public static boolean punctuation(char c) {
+		if (c==0)
+			return false;
+		return defaultPunctuation.indexOf(c)>=0;
 	}
 	/*.................................................................................................................*/
 	public static boolean punctuation(char c, String punctuationString) {

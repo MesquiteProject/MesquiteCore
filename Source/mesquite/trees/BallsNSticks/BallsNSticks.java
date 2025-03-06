@@ -572,11 +572,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		GraphicsUtil.fillOval(g, x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4, ownerModule.cosmic.getValue());
 	}
 	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-		fillBranch(tree, node, g);
-		// need to show more informative terminal information
-	}
-	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		fillBranchWithColors(tree, node, colors, g);
 	}

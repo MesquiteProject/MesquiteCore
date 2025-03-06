@@ -239,7 +239,13 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
 	public void cursorTouchBranch(Tree tree, int N, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just touched the field (not in a branch or taxon)*/
-	public void cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers){}
+	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
+		return false;
+	}
+	/**to inform TreeDisplayExtra that cursor has just dragged in the field (not in a branch or taxon)*/
+	public void cursorDragField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){}
+	/**to inform TreeDisplayExtra that cursor has just dropped the field (not in a branch or taxon)*/
+	public void cursorDropField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){}
 	/**to inform TreeDisplayExtra that cursor has just entered name of terminal taxon M*/
 	public void cursorEnterTaxon(Tree tree, int M, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just exited name of terminal taxon M*/

@@ -324,8 +324,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		namesTask = dtn;
 	}
 
-	/*vvvvvvvvvvvvvvvvvv EXTRA SPACE REQUESTED BY EXTRAS ETC. vvvvvvvvvvvvvvvvv*/
-	// see TreeDrawing for stuff on terminal boxes
 	
 	//Distance from tip to taxon name
 	boolean tndExplicitlySet = false;
@@ -335,18 +333,29 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		if (!tndExplicitlySet || dist<minDist)
 			dist = minDist;
 	}
-	public void setTaxonNameDistanceFromTip(int newDist) { 
+	public void setTaxonNameDistanceFromTip(int newDist) { //called only by MirrorTree
 		if (newDist>=minDist) {
 			this.dist = newDist;
 			tndExplicitlySet = true;
 		}
 	}
-	public int getTaxonNameDistanceFromTip() {
+	public int getMinTaxonNameDistanceFromTip() {
+		int distance = dist;
 		if (treeDrawing != null && treeDrawing.terminalBoxesRequested())
-			return dist + minForTerminalBoxes;
-		else
-			return dist;
+			distance += minForTerminalBoxes;
+			return distance;
 	}
+	public int getTaxonNameDistanceFromTip() {
+		int distance = dist;
+		if (treeDrawing != null && treeDrawing.terminalBoxesRequested())
+			distance += minForTerminalBoxes;
+		if (bordersRequestedByExtras != null)
+			distance += bordersRequestedByExtras.tipsFieldDistance;
+			return distance;
+	}
+	/*vvvvvvvvvvvvvvvvvv EXTRA SPACE REQUESTED BY EXTRAS ETC. vvvvvvvvvvvvvvvvv*/
+	// see TreeDrawing for stuff on terminal boxes for trace character; it's an older system that was left as is.
+	
 	public int effectiveFieldWidth(){
 		return getField().width-effectiveFieldLeftMargin()-effectiveFieldRightMargin();
 	}
@@ -372,6 +381,11 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		if (bordersRequestedByExtras ==null)
 			return 0;
 		return bordersRequestedByExtras.bottomBorder;
+	}
+	public int totalTipsFieldDistance(){
+		if (bordersRequestedByExtras ==null)
+			return 0;
+		return bordersRequestedByExtras.tipsFieldDistance;
 	}
 	public double extraRequestedDepthAtRoot(){
 		if (bordersRequestedByExtras ==null)
@@ -479,28 +493,27 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void addExtra(TreeDisplayExtra extra) {
 		if (extras != null){
 			extras.addElement(extra, false);
-			if (tree != null){
-				TreeDisplayRequests before = getExtraTreeDisplayRequests();
-				accumulateRequestsFromExtras(tree);
-				TreeDisplayRequests after = getExtraTreeDisplayRequests();
-				if (!TreeDisplayRequests.equal(before, after))
-					redoCalculationsMainThread();
-			}
+			reviseBorders(true);
 	}
 	}
 	public void removeExtra(TreeDisplayExtra extra) {
 	 if (extras != null){
 			extras.removeElement(extra, false);
-			if (tree != null){
-				TreeDisplayRequests before = getExtraTreeDisplayRequests();
-				accumulateRequestsFromExtras(tree);
-				TreeDisplayRequests after = getExtraTreeDisplayRequests();
-				if (!TreeDisplayRequests.equal(before, after))
-					redoCalculationsMainThread();
-			}
+			reviseBorders(true);
 		}
 	
 	}
+	
+	public void reviseBorders(boolean recalculatePositions){
+		if (tree != null){
+			TreeDisplayRequests before = getExtraTreeDisplayRequests();
+			accumulateRequestsFromExtras(tree);
+			TreeDisplayRequests after = getExtraTreeDisplayRequests();
+			if (recalculatePositions && !TreeDisplayRequests.equal(before, after))
+					redoCalculationsMainThread();
+		}
+	}
+	
 	public boolean findExtra(TreeDisplayExtra extra) {
 		if (extras == null)
 			return false;
@@ -734,6 +747,22 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/*.................................................................................................................*/
 	public int getOrientation() {
 		return treeOrientation;
+	}
+	/*.................................................................................................................*/
+	public boolean isUp() {
+		return treeOrientation == UP;
+	}
+	/*.................................................................................................................*/
+	public boolean isDown() {
+		return treeOrientation == DOWN;
+	}
+	/*.................................................................................................................*/
+	public boolean isRight() {
+		return treeOrientation == RIGHT;
+	}
+	/*.................................................................................................................*/
+	public boolean isLeft() {
+		return treeOrientation == LEFT;
 	}
 
 	/*.................................................................................................................*/

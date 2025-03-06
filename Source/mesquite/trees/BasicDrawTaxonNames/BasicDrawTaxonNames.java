@@ -512,7 +512,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	}
 	/*.................................................................................................................*/
 	protected void drawNamesOnTree(Tree tree, int drawnRoot, int N, TreeDisplay treeDisplay, TaxaPartition partitions) {
-		if  (tree.nodeIsTerminal(N)) {   //terminal
+		if  (tree.nodeIsTerminal(N)) {   //terminal ####################################################
 			if (!tree.isVisibleEvenIfInCollapsed( N))
 				return;
 			if (!showTaxonNames.getValue())
@@ -652,7 +652,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			if (treeDisplay.centerNames)
 				centeringOffset = (longestString-lengthString)/2;
 
-			if (treeDrawing.namesFollowLines ){
+			if (treeDrawing.namesFollowLines ){    // ################## === For CircleTree or PlotTree === ####################
 				double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])*1.0/(treeDrawing.lineBaseX[N]*1.0-treeDrawing.lineTipX[N]);
 				double radians = Math.atan(slope);
 
@@ -678,7 +678,10 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				textRotator.drawFreeRotatedText(s, gL, (int)horizPosition, (int)vertPosition, radians, new Point(textOffsetH, textOffsetV), false, namePolys[taxonNumber]);  //integer nodeloc approximation
 
 			}
-			else if ((treeDrawing.labelOrientation[N]==270) || treeDisplay.getOrientation()==TreeDisplay.UP) {
+			// ####################################### Taxon names for NodeLocsStandard trees ####################################################
+			else if ((treeDrawing.labelOrientation[N]==270) || treeDisplay.getOrientation()==TreeDisplay.UP) { // ################## === UP === ####################
+				//if there is a tipsField, then vert changes from the one based on the tip's y, to the one based on fields
+				
 				horiz += treeDrawing.getEdgeWidth()/2;
 				if (Math.abs(treeDrawing.namesAngle)<0.01) {
 					horiz -= StringUtil.getStringDrawLength(gL,"A");
@@ -687,7 +690,10 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					textRotator.drawFreeRotatedText(s,  gL, (int)horiz-rise/2, (int)vert-separation, treeDrawing.namesAngle, null, true, namePolys[taxonNumber]); //integer nodeloc approximation
 				}
 				else {
-					vert -= centeringOffset;
+					if (treeDisplay.totalTipsFieldDistance()>0){
+						vert = treeDisplay.effectiveFieldTopMargin()+treeDisplay.getTipsMargin();
+					}
+					else vert -= centeringOffset;
 					if (!nameExposedOnTree(tree, taxonNumber))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
@@ -702,14 +708,18 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					}
 				}
 			}
-			else if ((treeDrawing.labelOrientation[N]==90) || treeDisplay.getOrientation()==TreeDisplay.DOWN) {
+			else if ((treeDrawing.labelOrientation[N]==90) || treeDisplay.getOrientation()==TreeDisplay.DOWN) {// ################## === DOWN === ####################
 				horiz += treeDrawing.getEdgeWidth()/2;
-				/*if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=90)){
+				/*Name rotation now works only for UP
+				 * if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=90)){
 					textRotator.drawFreeRotatedText(s,  gL, horiz-rise*2, vert+separation, treeDrawing.namesAngle, null, false, namePolys[taxonNumber]); // /2
 				}
 				else */
 				{
-					vert += centeringOffset;
+					if (treeDisplay.totalTipsFieldDistance()>0){
+						vert = treeDisplay.effectiveFieldHeight()+treeDisplay.effectiveFieldTopMargin()-treeDisplay.getTipsMargin();
+					}
+				vert += centeringOffset;
 					if (!nameExposedOnTree(tree, taxonNumber))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
@@ -723,13 +733,22 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					}
 				}
 			}
-			else if ((treeDrawing.labelOrientation[N]==0) || treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
+			else if ((treeDrawing.labelOrientation[N]==0) || treeDisplay.getOrientation()==TreeDisplay.RIGHT) {// ################## ===RIGHT === ####################
 				vert += treeDrawing.getEdgeWidth()/2;
-				/*if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=0)){
+				/*Name rotation now works only for UP
+				 *if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=0)){
 					textRotator.drawFreeRotatedText(s,  gL, horiz+separation, vert-rise*2, treeDrawing.namesAngle, null, false, namePolys[taxonNumber]); ///2
 				}
 				else */{
+				//Debugg.println must do for other orientations!
+					if (treeDisplay.totalTipsFieldDistance()>0){
+						horiz = treeDisplay.effectiveFieldWidth()+treeDisplay.effectiveFieldLeftMargin()-treeDisplay.getTipsMargin();
+					}
+					else {
+					//At this point horiz is just the x of the terminal node
+					//centering offset is just the left shift if we are to centre taxon names! (e.g. for mirror tree window)
 					horiz += centeringOffset;
+					}
 					if (!nameExposedOnTree(tree, taxonNumber))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
@@ -738,6 +757,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					if (nameIsVisible(treeDisplay, taxonNumber)){
 						if (bgColor!=null) {
 							gL.setColor(bgColor);
+							//separation is getTaxonNameDistanceFromTip
 							GraphicsUtil.fillRect(gL,horiz+separation, vert-rise/2, lengthString, rise+descent);
 							gL.setColor(taxonColor);
 						}
@@ -750,13 +770,19 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					}
 				}
 			}
-			else if ((treeDrawing.labelOrientation[N]==180) || treeDisplay.getOrientation()==TreeDisplay.LEFT) {
+			else if ((treeDrawing.labelOrientation[N]==180) || treeDisplay.getOrientation()==TreeDisplay.LEFT) {// ################## ===LEFT === ####################
 				vert += treeDrawing.getEdgeWidth()/2;
-				/*if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=0)){
+				/*Name rotation now works only for UP
+				 *if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=0)){
 					textRotator.drawFreeRotatedText(s,  gL, horiz - separation, vert-rise*2, treeDrawing.namesAngle, null, true, namePolys[taxonNumber]);
 				}
 				else */{
-					horiz -= centeringOffset;
+					if (treeDisplay.totalTipsFieldDistance()>0){
+						horiz = treeDisplay.effectiveFieldLeftMargin()+treeDisplay.getTipsMargin();
+					}
+					else {
+						horiz -= centeringOffset;
+				}
 					if (!nameExposedOnTree(tree, taxonNumber))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
@@ -876,7 +902,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}
 
 				gL.setFont(previousFont);
-		}
+		}   //end terminal ##############################################################################################
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				drawNamesOnTree(tree,drawnRoot, d, treeDisplay, partitions);
@@ -1139,7 +1165,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				return -1;
 			findNameOnTree(tree, drawnRoot, x, y);
 		}
-		return foundTaxon; }
+		return foundTaxon; 
+		
+	}
 
 	/*.................................................................................................................*/
 	public   void fillTaxon(Graphics g, int M) {

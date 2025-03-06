@@ -132,9 +132,6 @@ public abstract class TreeDrawing  {
 	public boolean terminalBoxesRequested(){
 		return (enableTerminalBoxesRequests>0);
 	}
-	/** Fill terminal box with current color. */
-	public abstract void fillTerminalBox(Tree tree, int node, Graphics g);
-	
 	/** Fill terminal box of node "node" with indicated set of colors */
 	public abstract void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g);
 	
@@ -232,6 +229,23 @@ public abstract class TreeDrawing  {
 
 	/** Sets the tree.  This is done outside of a paint() call, and is the place that any complex calculations should be performed! */
 	public abstract void recalculatePositions(Tree tree) ;
+
+	/*.................................................................................................................*/
+	/** Draw lines for debugging */
+	boolean drawDebuggingLines = false; // see also showRectangles in NodeLocsStandard
+	public void drawDebuggingLines(Tree tree,  int node, Graphics g) {
+		if (!drawDebuggingLines)
+			return;
+		g.setColor(Color.orange);
+		g.drawLine((int)lineBaseX[node], (int)lineBaseY[node], (int)lineTipX[node], (int)lineTipY[node]);
+		g.fillOval( (int)lineTipX[node]-2, (int)lineTipY[node]-2, 4, 4);
+		g.setColor(Color.green);
+		g.fillOval( (int)x[node]-2, (int)y[node]-2, 4, 4);
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+				drawDebuggingLines(tree, d, g);
+			}
+	}
+	/*.................................................................................................................*/
 
 	/** Draw tree in graphics context */
 	public abstract void drawTree(Tree tree, int drawnRoot, Graphics g) ;

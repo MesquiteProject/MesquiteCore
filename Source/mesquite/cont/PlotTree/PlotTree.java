@@ -403,9 +403,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 			GraphicsUtil.fillOval(g, x[node]- s/2 + 2, y[node]- s/2 + 2, s - 4, s - 4);
 		}
 	}
-	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-	}
+	
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 	}

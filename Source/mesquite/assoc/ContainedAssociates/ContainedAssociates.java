@@ -1508,17 +1508,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		}
 	}
 
-	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-		Rectangle2D box;
-		int ew = edgeWidth-2;
-
-		box = new Rectangle2D.Double(x[node], y[node]-ew-3, ew, boxHeight);
-		GraphicsUtil.fillRect(g, box.getX(), box.getY(), box.getWidth(), box.getHeight());
-		g.setColor(Color.black);
-		GraphicsUtil.drawRect(g, box.getX(), box.getY(), box.getWidth(), box.getHeight());
-	}
-
+	
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		Rectangle2D box;

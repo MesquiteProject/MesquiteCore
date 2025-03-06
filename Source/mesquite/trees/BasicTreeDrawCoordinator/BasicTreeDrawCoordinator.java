@@ -823,7 +823,8 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 
 				if (bailOut(initialPending)) return;
 				getTreeDrawing().drawTree(tree, dRoot, g); //ALLOW other drawnRoots!
-
+				
+				getTreeDrawing().drawDebuggingLines(tree, dRoot, g); //there's a boolean there to turn off/on
 				//showNodeLocations(tree, g, tree.getRoot());
 				stage = 2;
 

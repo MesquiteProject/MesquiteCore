@@ -3509,7 +3509,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	String punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 	String whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
 
-	private String preprocessForDialect(String tD, String dialectName){
+	private String preprocessForDialect(String tD, MesquiteInteger startingPos, String dialectName){
 		if (dialects.indexOfByNameIgnoreCase(dialectName)>=0){
 			NewickDialect dialect = (NewickDialect)dialects.elementAt(dialects.indexOfByNameIgnoreCase(dialectName));
 			punctuationInNewickComments = dialect.getPunctuation();
@@ -3550,7 +3550,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		deassignAssociated();
 		//	Debugg.println("###################################################");
 		//Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
-		TreeDescription = preprocessForDialect(TreeDescription, getDialect());
+		TreeDescription = preprocessForDialect(TreeDescription, startingPos, getDialect());
 		//Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
 
 		//QZ: if whitespace or punc passed in, don't override?

@@ -1575,14 +1575,6 @@ public class Parser extends StringUtil {
 		return '\0';
 	}
 	/*.................................................................................................................*/
-	public boolean whitespace(char c) {
-		return whitespace(c, whitespaceString);
-	}
-	/*.................................................................................................................*/
-	public boolean punctuation(char c) {
-		return punctuation(c, punctuationString);
-	}
-	/*.................................................................................................................*/
 	/** Returns the name of the next command in the string passed starting at the given character.  Resets pos afterward to start of command name. */
 	public String getNextCommandNameWithoutConsuming(MesquiteLong p) {
 		if (p!=null)

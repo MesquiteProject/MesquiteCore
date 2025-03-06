@@ -25,30 +25,41 @@ public class TreeDisplayRequests {
 	
 		left, top, right, bottom borders are measured in pixels and in actually screen orientation, not relative to the root-tip direction of the tree
 		
+		tipsFieldDistance is measured in pixels, and in tree orientation. Used, e.g. in Character State Boxes
+		
 		extraDepthAtRoot is measured in tree length units, and are rootward regardless of screen orientation
 	 * */
 	public int leftBorder = 0; //in pixels
 	public int topBorder = 0; //in pixels
 	public int rightBorder = 0; //in pixels
 	public int bottomBorder = 0; //in pixels
-	
+	public int tipsFieldDistance = 0; //in pixels
 	public double extraDepthAtRoot = 0; //in branch length dimensions
+	
+	public int tipsFieldBase = 0;
+	static int separation = 4;
 	
 	public TreeDisplayRequests(){
 	}
-	public TreeDisplayRequests(int left, int top, int right, int bottom, double rootward){
+	public TreeDisplayRequests(int left, int top, int right, int bottom, int tipsDistance, double rootward){
 		leftBorder = left; 
 		topBorder = top; 
 		rightBorder = right; 
 		bottomBorder = bottom; 
+		tipsFieldDistance = tipsDistance;
 		extraDepthAtRoot = rootward; 
 	}
 	
+	//This is called ONLY by the treeDisplay to accumulate the overall border and to set the bases of each if the fields. 
+	//Thus, the only object in which it is called is the overall request in treeDisplay.
 	public void mergeFrom(TreeDisplayRequests other){
 		leftBorder = MesquiteInteger.maximum(leftBorder, other.leftBorder);
 		topBorder = MesquiteInteger.maximum(topBorder, other.topBorder);
 		rightBorder = MesquiteInteger.maximum(rightBorder, other.rightBorder);
 		bottomBorder = MesquiteInteger.maximum(bottomBorder, other.bottomBorder);
+		other.tipsFieldBase = tipsFieldBase + separation; //telling the other where its field starts
+		tipsFieldBase += separation + other.tipsFieldDistance;  //accumulating the total field width
+		tipsFieldDistance = tipsFieldBase;  //accumulating the total field width
 		extraDepthAtRoot = MesquiteDouble.maximum(extraDepthAtRoot, other.extraDepthAtRoot);
 	}
 	

@@ -257,11 +257,7 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		boolean ch = (field.width!=x || field.height !=y);
 		field.width=x;
 		field.height=y;
-		/*if (x>getBounds().width || y>getBounds().height)
-			Debugg.printStackTrace("@ field size set to more than bounds ");
-		else
-			Debugg.println("@ field size set to w h (" + x + ", " + y + ") in (" + getBounds().width + ", " + getBounds().height + ")");
-			*/
+		
 
 		if (ch)
 			redoCalculations(4); 
@@ -269,22 +265,14 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	public void setFieldWidth(int x) {
 		boolean ch = (field.width!=x);
 		field.width=x;
-		/*if (x>getBounds().width)
-			Debugg.printStackTrace("@ field size set to more than bounds ");
-		else
-			Debugg.println("@ field size set w to " + x );
-			*/
+		
 		if (ch)
 			redoCalculations(5); 
 	}
 	public void setFieldHeight(int y) {
 		boolean ch = (field.height !=y);
 		field.height=y;
-	/*	if (y>getBounds().height)
-			Debugg.printStackTrace("@ field size set to more than bounds ");
-		else
-			Debugg.println("@ field size h set to " +  y);
-			*/
+	
 		if (ch)
 			redoCalculations(6); 
 	}
