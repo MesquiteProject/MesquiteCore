@@ -182,7 +182,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						}
 					}
 
-
 					if (data.hasDataForTaxon(extraTaxon)){  //something read in.  Now transfer to correct taxon
 						int numRead = ice;
 						if (response==mesquite.lib.characters.CharacterData.EOL)
@@ -243,8 +242,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						done = false;
 				parser.setLineEndingsDark(false);
 				it++;
-
-
 			}
 			if (fuse){
 				taxa.deleteTaxa(extraTaxon, 1, false);
@@ -274,7 +271,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			boolean toDelete = false;
 			String problem = null;
 			int lastTaxonNumber = -1;
-			
+
 			if (NEXUSFileParser.verbose) Debugg.println("###############  CMM ");
 			for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken(false)); it++) {
 
@@ -395,7 +392,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					extraTaxon++;
 
 			}
-	//		MatrixFileParser.verbose = true; //Debugg.println delete
+			//		MatrixFileParser.verbose = true; //Debugg.println delete
 			if (fuse){
 				taxa.deleteTaxa(extraTaxon, 1, false); 
 				data.deleteTaxa(extraTaxon, 1);

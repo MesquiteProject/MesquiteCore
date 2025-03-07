@@ -1157,7 +1157,7 @@ public class StringUtil {
 			char nxt = '\0';
 			if (i+1<token.length())
 				nxt = token.charAt(i+1);
-			if (!whitespace(c))  // if dark, keep regardless
+			if (!whitespace(c, defaultWhitespace))  // if dark, keep regardless
 				sb.append(c);
 			else if (!punctuation(prev) && !punctuation(nxt)) // if white, keep it if neither of neighbours is punctuation
 				sb.append(c);
@@ -1291,7 +1291,7 @@ public class StringUtil {
 		return (c==']');
 	}
 	/*.................................................................................................................*/
-	public static boolean whitespace(char c) {
+	public static boolean defaultWhitespace(char c) {
 		// in the future, we might want to add  if (c<0) return true;
 		if (c<0)
 			return true;

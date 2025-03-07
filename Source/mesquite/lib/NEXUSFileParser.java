@@ -19,20 +19,30 @@ public class NEXUSFileParser {
 	Parser parser;
 	MesquiteStringBuffer tempBuffer;
 	FileBlock block;
-	public static final boolean READ_DIRECT_FROM_FILE = false;
+	public static final boolean READ_DIRECT_FROM_FILE_DEFAULT = true;  //set as True??? Debugg.println
+	public boolean readDirectFromFile =READ_DIRECT_FROM_FILE_DEFAULT;
 	public static boolean verbose = false;
 
-	public NEXUSFileParser(FileBlock block){
+	public NEXUSFileParser(FileBlock block, boolean readDirectFromFile){
+		this.readDirectFromFile = readDirectFromFile;
 		parser = new Parser();
 		this.block = block;
 		tempBuffer = new MesquiteStringBuffer();
-		if (!READ_DIRECT_FROM_FILE)
+		if (!readDirectFromFile)
 			parser.setBuffer(block.toMesquiteStringBuffer());
 		parser.setWhitespaceString(StringUtil.defaultWhitespace);   //fixing to default whitespace
+	}
+
+	public NEXUSFileParser(FileBlock block){
+		this(block, READ_DIRECT_FROM_FILE_DEFAULT);
 	}
 	/*  ............................................................................  */
 	public long getFilePosition() {
 		return block.getFilePosition();
+	}
+	/*  ............................................................................  */
+	public long getParserPosition() {
+		return parser.getPosition();
 	}
 	/*  ............................................................................  */
 	public boolean atEOF() {
@@ -50,7 +60,7 @@ public class NEXUSFileParser {
 	/*  ............................................................................  */
 	/* Called when tokens etc. are requested, to make sure the parser hasn't exhausted. If so, get another line from the file until one with darkspace is found*/
 	private void checkAndRefreshParser() {
-		if (!READ_DIRECT_FROM_FILE)
+		if (!readDirectFromFile)
 			return;
 		boolean needToGetMore = parser.atEnd();
 		while (needToGetMore && !block.atEOF()) { 
@@ -68,7 +78,7 @@ public class NEXUSFileParser {
 	/*  -------------------------------------------------------------  */
 	/* gets the local parser, including at least current in the file, at current position */
 	public Parser getParserAtCurrentPosition() {
-		if (!READ_DIRECT_FROM_FILE)
+		if (!readDirectFromFile)
 			return parser;
 		checkAndRefreshParser();
 		return parser;
@@ -81,7 +91,7 @@ public class NEXUSFileParser {
 	/*  -------------------------------------------------------------  */
 	/* Get the next (darkspace) token*/
 	public String getNextToken(boolean forceStripWhite) {
-		if (!READ_DIRECT_FROM_FILE) {
+		if (!readDirectFromFile) {
 			String s = parser.getNextToken();
 			if (verbose) Debugg.println("~~~gNT [" + s + "]");
 			return s;
@@ -118,7 +128,7 @@ public class NEXUSFileParser {
 	public String getNextCommand(MesquiteLong posJustBeforeCommand) {
 		if (posJustBeforeCommand != null)
 			posJustBeforeCommand.setValue(parser.getPosition());
-		if (!READ_DIRECT_FROM_FILE) {
+		if (!readDirectFromFile) {
 			String s= parser.getNextCommand();
 			if (verbose) Debugg.println("~~~gNC [" + s + "]");
 			return s;
@@ -145,7 +155,7 @@ public class NEXUSFileParser {
 
 	/*  -------------------------------------------------------------  */
 	public String getNextCommandNameWithoutConsuming() { 
-		if (!READ_DIRECT_FROM_FILE) {
+		if (!readDirectFromFile) {
 			String s = parser.getNextCommandNameWithoutConsuming();
 			if (verbose) Debugg.println("~~~gNCNameWC [" + s + "]");
 			return s;
@@ -173,7 +183,7 @@ public class NEXUSFileParser {
 
 	/*  -------------------------------------------------------------  */
 	public String getPieceOfLine(int len) {
-		if (!READ_DIRECT_FROM_FILE) {
+		if (!readDirectFromFile) {
 			String s= parser.getPieceOfLine(len);
 			if (verbose) Debugg.println("~~~gPOL [" + s + "]");
 			return s;
@@ -205,6 +215,10 @@ public class NEXUSFileParser {
 	/*  -------------------------------------------------------------  */
 	public void setLineEndingsDark(boolean b) {
 		parser.setLineEndingsDark(b);
+	}
+	/*  -------------------------------------------------------------  */
+	public boolean getLineEndingsDark() {
+		return parser.getLineEndingsDark();
 	}
 
 }

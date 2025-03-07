@@ -1322,14 +1322,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		sizeDisplay();
 		ownerModule.hireAllEmployees(TreeWindowAssistantI.class);
 		Enumeration em = ownerModule.getEmployeeVector().elements();
-		if (tree != null)
-			while (em.hasMoreElements()) {
-				Object obj = em.nextElement();
-				MesquiteModule mb = (MesquiteModule) obj;
-				if (mb instanceof TreeWindowAssistant) {
-					((TreeWindowAssistant) mb).setTree(tree);
-				}
+		while (em.hasMoreElements()) {
+			Object obj = em.nextElement();
+			MesquiteModule mb = (MesquiteModule) obj;
+			if (mb instanceof TreeWindowAssistant) {
+				addWindowAssistant((TreeWindowAssistant)mb);
 			}
+		}
 		setShowExplanation(true);
 		setShowAnnotation(true);
 		baseExplanation.setValue("This is a tree window.  In it you can view trees from various tree sources, edit trees, and store trees.");
@@ -2271,9 +2270,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (tree != null)
 			tce.setTree(tree);
 
-		treeDisplay.addExtra(tce);
-		if (tree != null)
-			treeDisplay.accumulateRequestsFromExtras(tree);
+		if (tce != null){
+			treeDisplay.addExtra(tce);
+			if (tree != null)
+				treeDisplay.accumulateRequestsFromExtras(tree);
+		}
 		checkPanelPositionsLegal();
 		treeDisplay.pleaseUpdate(false);
 		if (getMode() > 0)
@@ -4155,10 +4156,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				return;
 			}
 			else if (fieldTouchedExtrasX >=0 && fieldTouchedExtrasX >=0){
-					notifyExtrasOfFieldDrag(g, x, y, modifiers);
-					lastFieldDragX = x;
-					lastFieldDragY = y;
-				
+				notifyExtrasOfFieldDrag(g, x, y, modifiers);
+				lastFieldDragX = x;
+				lastFieldDragY = y;
+
 				return;
 			}
 

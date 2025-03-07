@@ -58,7 +58,8 @@ public class TreeDisplayRequests {
 		rightBorder = MesquiteInteger.maximum(rightBorder, other.rightBorder);
 		bottomBorder = MesquiteInteger.maximum(bottomBorder, other.bottomBorder);
 		other.tipsFieldBase = tipsFieldBase + separation; //telling the other where its field starts
-		tipsFieldBase += separation + other.tipsFieldDistance;  //accumulating the total field width
+		if (other.tipsFieldDistance>0)
+			tipsFieldBase += separation + other.tipsFieldDistance;  //accumulating the total field width
 		tipsFieldDistance = tipsFieldBase;  //accumulating the total field width
 		extraDepthAtRoot = MesquiteDouble.maximum(extraDepthAtRoot, other.extraDepthAtRoot);
 	}

@@ -2025,7 +2025,7 @@ public class ManageCharacters extends CharactersManager {
 		 boolean newTaxaFlag = false;
 
 		 String commandName = null;
-		 boolean lookForEnd = NEXUSFileParser.READ_DIRECT_FROM_FILE;
+		 boolean lookForEnd = commandParser.readDirectFromFile;
 		 boolean endReached = false; 
 		 while (!(lookForEnd && endReached) && !commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
 			 CommandRecord.tick("Reading " + commandName);

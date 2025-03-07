@@ -70,7 +70,7 @@ public class ManageDATAblock extends MesquiteModule {
 		Taxa taxa= null;
 		int numChars=0;
 		NexusBlock b = null;
-		 boolean lookForEnd = NEXUSFileParser.READ_DIRECT_FROM_FILE;
+		 boolean lookForEnd = commandParser.readDirectFromFile;
 		 boolean endReached = false; 
 		while (!(lookForEnd && endReached) && !commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
 			if (commandName.equalsIgnoreCase("DIMENSIONS")) { 

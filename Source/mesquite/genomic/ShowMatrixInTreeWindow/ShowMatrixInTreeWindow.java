@@ -21,6 +21,7 @@ import mesquite.categ.lib.MolecularData;
 import mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
@@ -32,98 +33,186 @@ import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.Legend;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MessagePanel;
+import mesquite.lib.ui.RadioButtons;
+import mesquite.lib.ui.TextRotator;
 
 /* ======================================================================== */
-public class ShowMatrixInTreeWindow extends TreeWindowAssistantN  {
-//	Vector extras = new Vector();
+public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
+	//	Vector extras = new Vector();
+	ShowMatrixLinkedExtra extra;
 	/*.................................................................................................................*/
 	CharacterData data = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addMenuItem("Show Matrix in Tree Window...", new MesquiteCommand("queryOptions", this));
 		return true;
 	}
 
 	//This method is optional for TreeWindowAssistants, unlike TreeDisplayAssistants
 	public TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay){
-		ShowMatrixLinkedExtra extra = new ShowMatrixLinkedExtra(this, treeDisplay);
-	//	extras.addElement(extra);
+		extra = new ShowMatrixLinkedExtra(this, treeDisplay);
+		//	extras.addElement(extra);
 		return extra;
 	}
 
-	public void employeeQuit(MesquiteModule m){
-		//	if (m==treeDrawCoordTask)
-		iQuit();
-	}
+
 
 	public boolean isSubstantive(){
 		return false;
 	}
 
+	// settings ******
+	boolean showMatrix = false;
+	int choose0Link1 = 0;
+	boolean selectedCharatersOnly = false;
+	// ******************
+
 	String treeName = null;
 	boolean warned = false;
+	Taxa taxa = null;
+	Tree tree = null;
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 		treeName = tree.getName();
-		CharacterData d = null;
-		MesquiteProject project = getProject();
-		if (tree instanceof Attachable){
-			Object obj = ((Attachable)tree).getAttachment("fromMatrix", MesquiteString.class);
-			if (obj != null)
-				d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, ((MesquiteString)obj).getValue());
-		}
-		if (d == null)
-			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, treeName);
-		if (d == null)
-			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, StringUtil.getAllButLastItem(treeName, "."));
-		if (d == null)
-			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, StringUtil.getAllButLastItem(treeName, "#"));
-		if (d == null)
-			d = project.getCharacterMatrix(tree.getTaxa(), 0);
-		if (d != null){
-			data = d;
-			// add listeners to update if needed
-
-
-			/*
-			if (matrixEditorTask ==null){
-				BasicDataWindowCoord coordTask = (BasicDataWindowCoord)findNearestColleagueWithDuty(BasicDataWindowCoord.class);
-				matrixEditorTask = (DataWindowMaker)coordTask.doCommand("showDataWindow", StringUtil.tokenize(project.getCharMatrixReferenceExternal(d)), CommandChecker.defaultChecker);
-				MesquiteWindow matrixWindow = matrixEditorTask.getModuleWindow();
-				matrixWindow.setPopAsTile(true);
-				matrixWindow.popOut(true);
-			}
-			else {
-				matrixEditorTask = (DataWindowMaker)matrixEditorTask.doCommand("showMatrix", StringUtil.tokenize(project.getCharMatrixReferenceExternal(d)), CommandChecker.defaultChecker);
-			}
-			 */
-		}
-		else {
-			data = null;
-			/*
-			if (!warned){
-			discreetAlert("No matrices were found linked to the current tree");
-			warned = true;
-		} */
-		}
+		taxa = tree.getTaxa();
+		this.tree = tree;
+		if (choose0Link1 == 1)
+			resetMatrix(tree);
 	}
 
+	void resetMatrix(Tree tree){
+		if (!showMatrix)
+			return;
+		CharacterData oldData = data;
+		if (choose0Link1 == 0){
+			data = getProject().chooseData(containerOfModule(), taxa, null, "Choose matrix to show with tree");
+			//Debugg.println remember what matrix for snapshot!
+		}
+		else if (tree != null) {
+			//here also look for matrix from source if needed
+			MesquiteProject project = getProject();
+			CharacterData d = null;
+			if (tree instanceof Attachable){
+				Object obj = ((Attachable)tree).getAttachment("fromMatrix", MesquiteString.class);
+				if (obj != null)
+					d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, ((MesquiteString)obj).getValue());
+			}
+			if (d == null)
+				d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, treeName);
+			if (d == null)
+				d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, StringUtil.getAllButLastItem(treeName, "."));
+			if (d == null)
+				d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, StringUtil.getAllButLastItem(treeName, "#"));
+			if (d != null){
+				data = d;
+			}
+			else {
+				data = null;
+			}
+		}
+		else 
+			data = getProject().getCharacterMatrix(taxa, 0);
+		if (data!= oldData){
+			if (oldData != null)
+				oldData.removeListener(this);
+			if (data != null)
+				data.addListener(this);
+			if (extra!= null)
+				extra.forceRefresh();
+
+		}
+		// add listeners to update if needed
+	}
+	/* ................................................................................................................. */
+	/** passes which object changed (from MesquiteListener interface) */
+	public void changed(Object caller, Object obj, Notification notification) {
+		int code = Notification.getCode(notification);
+		int[] parameters = Notification.getParameters(notification);
+		if (obj instanceof CharacterData) 
+			extra.forceRefresh();
+	}
+
+	public boolean queryOptions(){
+		int numMatrices = 0;
+		if (taxa != null)
+			numMatrices = getProject().getNumberCharMatrices(taxa);
+		if (numMatrices == 0){
+			alert("Sorry, there are no matrices available for this set of taxa");
+			return false;
+		}
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Show matrix with tree?",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Do you want to show a matrix with the tree?");
+		dialog.addLabelSmallText("Note: the matrix will be visible only when the tree is shown in horizontal or vertical orientation.");
+		RadioButtons choices = null;
+		if (numMatrices >1){
+			dialog.addBlankLine();
+			choices = dialog.addRadioButtons (new String[]{"Choose matrix to show", "Show matrix linked to tree, if any"}, choose0Link1);
+			dialog.addBlankLine();
+		}
+	//	Checkbox selectedOnly = dialog.addCheckBox("Selected characters only, if any                 ", selectedCharatersOnly);
+	//	dialog.addBlankLine();
+
+		dialog.addAuxiliaryDefaultPanels();
+		dialog.addPrimaryButtonRow("Show Matrix", "Don't Show");
+		dialog.prepareAndDisplayDialog();
+
+		// button 0 is show, 1 is don't show
+		if (buttonPressed.getValue()==0)  {
+			if (choices != null)
+				choose0Link1= choices.getValue();
+		//	selectedCharatersOnly = selectedOnly.getState();
+			showMatrix = true;
+		}
+		else showMatrix = false;
+		dialog.dispose();
+
+		if (showMatrix)
+			resetMatrix(tree);
+		if (extra!= null)
+			extra.turnOnOff(showMatrix);
+
+		return true;
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 
 		Snapshot sn = new Snapshot();
-
+		sn.addLine("chooseOrLink " + choose0Link1);
+		if (data != null && choose0Link1 == 0)
+			sn.addLine("setMatrix " + getProject().getMatrixNumber(data));
+		//sn.addLine("selectedOnly " + selectedCharatersOnly);
+		sn.addLine("showMatrix " + showMatrix);
 		return sn;
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Queries options", null, commandName, "options")) {
-			//queryOptions();
+		if (checker.compare(this.getClass(), "Queries options", null, commandName, "queryOptions")) {
+			queryOptions();
 			parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Whether to show a matrix", "[true/false]", commandName, "showMatrix")) {
+			showMatrix = MesquiteBoolean.fromTrueFalseString(arguments);
+			if (extra!= null)
+				extra.forceRefresh();
+		}
+		else if (checker.compare(this.getClass(), "Choose matrix vs. show one linked to tree", "[0 choose 1 link]", commandName, "chooseOrLink")) {
+			int cL = MesquiteInteger.fromString(arguments);
+			if (cL == 0 || cL ==1){
+				choose0Link1 = cL;
+			}
+		}
+		else if (checker.compare(this.getClass(), "Which matrix to show", "[matrix only]", commandName, "setMatrix")) {
+			int cL = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(cL)){
+				data = getProject().getCharacterMatrix(cL);
+				}
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -149,7 +238,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 	TreeDisplay treeDisplay;
 	TreeDrawing treeDrawing;
 	CharacterData data;
-	int fieldWidth = 200;
+	int fieldWidth = 0;
 	boolean naiveFieldWidth = true;
 	int baseIC = 0;
 	int lastIC = 0;
@@ -166,7 +255,28 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		this.treeDisplay = treeDisplay;
 		scroller = new Rectangle(0,0,0,0);
 		edgeGrabber = new Rectangle(0,0,0,0);
+	}
 
+	void turnOnOff(boolean on){
+		boolean changed = false;
+		if (on && fieldWidth == 0){
+			fieldWidth = 186;
+			changed = true;
+		}
+		else if (!on && fieldWidth > 0){
+			fieldWidth = 0;
+			changed = true;
+		}
+		if (changed){
+			borders.tipsFieldDistance = fieldWidth;
+			treeDisplay.reviseBorders(false);
+			forceRefresh();
+		}
+	}
+
+	void forceRefresh(){
+		treeDisplay.redoCalculations(78344);
+		treeDisplay.forceRepaint();
 	}
 	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
 		naiveFieldWidth = false;
@@ -185,7 +295,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		boxEdges.deassignArray();
 		baseIC = 0;
 	}
-	
+
 	//Sets boxEdges, which are the lower or right (trailing) edges of boxes between taxa. Start will 
 	int prevTaxon = MesquiteInteger.unassigned;
 	double prevTip = MesquiteDouble.unassigned;
@@ -348,9 +458,11 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 				drawOnTreeRec(tree, daughter, g);
 		}
 	}
-
+	TextRotator textRotator = new TextRotator();
 	/* ========================================= */
 	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+		if (!ownerModule.showMatrix || ownerModule.data == null)
+			return;
 		if (treeDisplay.getOrientation() != TreeDisplay.LEFT && treeDisplay.getOrientation() != TreeDisplay.RIGHT && treeDisplay.getOrientation() != TreeDisplay.UP && treeDisplay.getOrientation() != TreeDisplay.DOWN)
 			return;
 		if (ownerModule.data == null)
@@ -360,6 +472,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		if (data == null)  //!!! draw bank field with message that no data matches
 			return;
 
+		Color oldColor = g.getColor();
 		//###################### find edges between adjacent tips
 		boxEdges.deassignArray();
 		minSpace = MesquiteDouble.unassigned;  // to help edges
@@ -374,6 +487,9 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		drawOnTreeRec(tree, drawnRoot, g);
 
 		//###################### draw scroll and other decorations
+		String matrixName = data.getName();
+		FontMetrics fontMet = g.getFontMetrics(g.getFont());
+		int lengthName = fontMet.stringWidth(matrixName); //what to do if underlined?
 		int edgeGrabberSize = 16;
 		int scrollRound = 8;
 		int scrollEdge =  (int)(prevTip+ minSpace/2+6);
@@ -406,6 +522,9 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 			g.setColor(Color.lightGray);
 			g.fillRoundRect(x+2, scrollEdge-1, xEnd-x-4, 3, scrollRound, scrollRound); //scroller
 
+			g.setColor(Color.black);
+			g.drawString(matrixName, getBase()+fieldSize()/2-lengthName/2, scrollEdge+16);
+
 		}
 		else if (treeDisplay.isUp() || treeDisplay.isDown()){
 			g.fillRect(scrollEdge, getBase(), 2, fieldSize()); //line
@@ -435,9 +554,11 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 			g.setColor(Color.lightGray);
 			g.fillRoundRect(scrollEdge-1, y+2, 3,  yEnd-y-4, scrollRound, scrollRound); //scroller
 
+			g.setColor(Color.black);
+			textRotator.drawRotatedText(matrixName, g, treeDisplay, scrollEdge+14, getBase()+fieldSize()/2+lengthName/2);
 
 		}
-
+		g.setColor(oldColor);
 	}
 	/* ========================================= */
 

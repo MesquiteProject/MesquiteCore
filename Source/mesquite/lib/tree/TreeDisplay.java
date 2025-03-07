@@ -243,11 +243,9 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	int paleComponent(int c, double palenessMultiplier) {
 		c = (int)(255 - palenessMultiplier*(255-c));
 		if (c<0) {
-			//	Debugg.println("--------------------colour " + c);
 			return 0;
 		}
 		if (c>255) {
-			// Debugg.println("++++++++++++++colour " + c);
 			return 255;
 		}
 		return c;

@@ -199,6 +199,12 @@ public class Parser extends StringUtil {
 			lineEndStringSet = s;
 		}
 	}
+	
+	/*.................................................................................................................*/
+	public boolean whitespace(char c) {
+		return whitespace(c, whitespaceString);
+	}
+
 	/*.................................................................................................................*/
 	public boolean lineEndCharacter(char c) {
 		if (c<0)
