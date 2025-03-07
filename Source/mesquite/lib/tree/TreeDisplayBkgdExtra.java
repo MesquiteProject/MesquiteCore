@@ -23,8 +23,8 @@ import mesquite.lib.duties.*;
 is drawn.. */
 public interface TreeDisplayBkgdExtra  {
 	/**draw on the tree passed*/
-	public abstract void drawUnderTree(Tree tree, int drawnRoot, Graphics g);
+	public void drawUnderTree(Tree tree, int drawnRoot, Graphics g);
 	/**print on the tree passed*/
-	public abstract void printUnderTree(Tree tree, int drawnRoot, Graphics g);
+	public void printUnderTree(Tree tree, int drawnRoot, Graphics g);
 }
 

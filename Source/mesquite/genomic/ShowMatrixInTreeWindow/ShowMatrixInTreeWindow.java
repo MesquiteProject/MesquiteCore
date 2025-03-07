@@ -27,11 +27,14 @@ import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.tree.TreeDisplayBkgdExtra;
+import mesquite.lib.tree.TreeDisplayEarlyExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.Legend;
@@ -71,6 +74,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 	boolean showMatrix = false;
 	int choose0Link1 = 0;
 	boolean selectedCharatersOnly = false;
+	int fieldWidth = 0;
 	// ******************
 
 	String treeName = null;
@@ -156,8 +160,8 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 			choices = dialog.addRadioButtons (new String[]{"Choose matrix to show", "Show matrix linked to tree, if any"}, choose0Link1);
 			dialog.addBlankLine();
 		}
-	//	Checkbox selectedOnly = dialog.addCheckBox("Selected characters only, if any                 ", selectedCharatersOnly);
-	//	dialog.addBlankLine();
+		//	Checkbox selectedOnly = dialog.addCheckBox("Selected characters only, if any                 ", selectedCharatersOnly);
+		//	dialog.addBlankLine();
 
 		dialog.addAuxiliaryDefaultPanels();
 		dialog.addPrimaryButtonRow("Show Matrix", "Don't Show");
@@ -167,7 +171,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		if (buttonPressed.getValue()==0)  {
 			if (choices != null)
 				choose0Link1= choices.getValue();
-		//	selectedCharatersOnly = selectedOnly.getState();
+			//	selectedCharatersOnly = selectedOnly.getState();
 			showMatrix = true;
 		}
 		else showMatrix = false;
@@ -185,6 +189,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 
 		Snapshot sn = new Snapshot();
 		sn.addLine("chooseOrLink " + choose0Link1);
+		sn.addLine("fieldWidth " + fieldWidth);
 		if (data != null && choose0Link1 == 0)
 			sn.addLine("setMatrix " + getProject().getMatrixNumber(data));
 		//sn.addLine("selectedOnly " + selectedCharatersOnly);
@@ -199,8 +204,10 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		}
 		else if (checker.compare(this.getClass(), "Whether to show a matrix", "[true/false]", commandName, "showMatrix")) {
 			showMatrix = MesquiteBoolean.fromTrueFalseString(arguments);
-			if (extra!= null)
-				extra.forceRefresh();
+			if (extra!= null){
+				extra.turnOnOff(showMatrix);
+				//extra.forceRefresh();
+			}
 		}
 		else if (checker.compare(this.getClass(), "Choose matrix vs. show one linked to tree", "[0 choose 1 link]", commandName, "chooseOrLink")) {
 			int cL = MesquiteInteger.fromString(arguments);
@@ -212,7 +219,13 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 			int cL = MesquiteInteger.fromString(arguments);
 			if (MesquiteInteger.isCombinable(cL)){
 				data = getProject().getCharacterMatrix(cL);
-				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets field width", "[pixels]", commandName, "fieldWidth")) {
+			int cL = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(cL)){
+				fieldWidth = cL;
+			}
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -233,7 +246,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 
 }
 
-class ShowMatrixLinkedExtra extends TreeDisplayExtra {
+class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	ShowMatrixInTreeWindow ownerModule;
 	TreeDisplay treeDisplay;
 	TreeDrawing treeDrawing;
@@ -253,6 +266,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		super(ownerModule, treeDisplay);
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
+		if (ownerModule.showMatrix)
+			fieldWidth = ownerModule.fieldWidth;
 		scroller = new Rectangle(0,0,0,0);
 		edgeGrabber = new Rectangle(0,0,0,0);
 	}
@@ -260,7 +275,10 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 	void turnOnOff(boolean on){
 		boolean changed = false;
 		if (on && fieldWidth == 0){
-			fieldWidth = 186;
+			if (ownerModule.fieldWidth>0)
+				fieldWidth = ownerModule.fieldWidth;
+			else
+				fieldWidth = 186;
 			changed = true;
 		}
 		else if (!on && fieldWidth > 0){
@@ -268,6 +286,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 			changed = true;
 		}
 		if (changed){
+			if (ownerModule.showMatrix)
+				ownerModule.setTree(treeDisplay.getTree());
 			borders.tipsFieldDistance = fieldWidth;
 			treeDisplay.reviseBorders(false);
 			forceRefresh();
@@ -334,7 +354,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		else if (treeDisplay.isLeft())
 			return treeDisplay.effectiveFieldLeftMargin()+treeDisplay.getTipsMargin() - borders.tipsFieldDistance  - treeDisplay.getMinTaxonNameDistanceFromTip()-bufferForEdgeGrabber; //+ borders.tipsFieldBase
 		else if (treeDisplay.isUp())
-			return treeDisplay.effectiveFieldTopMargin()+treeDisplay.getTipsMargin() - borders.tipsFieldDistance  - treeDisplay.getMinTaxonNameDistanceFromTip()-bufferForEdgeGrabber; //+ borders.tipsFieldBase
+			return treeDisplay.effectiveFieldTopMargin()+treeDisplay.getTipsMargin() - borders.tipsFieldDistance  - treeDisplay.getMinTaxonNameDistanceFromTip(); //+ borders.tipsFieldBase
 		else if (treeDisplay.isDown())
 			return borders.tipsFieldBase+ treeDisplay.effectiveFieldHeight()+treeDisplay.effectiveFieldTopMargin()-treeDisplay.getTipsMargin()+bufferForEdgeGrabber;
 		return -1;
@@ -377,6 +397,15 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		return w;
 	}
 	void drawStateRectangle(Graphics g, double x, double y, double taxonSpace, CharacterData data, int ic, int it){
+		/*if (data == null){
+			g.setColor(ColorDistribution.veryLightGray);
+			if (treeDisplay.isRight() || treeDisplay.isLeft())
+				g.fillRect((int)x,(int)y,(int)( spacingPerCharacter()),  (int)(taxonSpace));
+			else if (treeDisplay.isUp() || treeDisplay.isDown()) 
+				g.fillRect((int)x,(int)y,(int)(taxonSpace), (int)( spacingPerCharacter()));
+		}
+		else 
+		 */
 		if (data instanceof MolecularData){
 			g.setColor(data.getColorOfStates(ic, it));
 			if (treeDisplay.isRight() || treeDisplay.isLeft())
@@ -402,7 +431,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		}
 
 	}
-
+	double minTip = MesquiteDouble.unassigned;
+	double maxTip = MesquiteDouble.unassigned;
 	/* ========================================= */
 	public void drawOnTreeRec(Tree tree, int node, Graphics g) {
 		if (tree.nodeIsTerminal(node)){
@@ -413,41 +443,50 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 				double topY = treeDrawing.y[node] - minSpace/2;
 				if (MesquiteInteger.isCombinable(prevTaxon)) // not the first
 					topY = boxEdges.getValue(prevTaxon);
+				minTip=MesquiteDouble.minimum(minTip, topY);
 				double bottomY = boxEdges.getValue(tree.taxonNumberOfNode(node));
 				if (!MesquiteDouble.isCombinable(bottomY)) // the last
 					bottomY = treeDrawing.y[node] + minSpace/2;
-				double x = getBase();
+				maxTip=MesquiteDouble.maximum(maxTip, bottomY);
+				if (data != null){
+					double x = getBase();
 
-				perBox = spacingPerCharacter();
-				numIC = 0;  //redundant, but avoids isolating an example
-				for (int ic = 0; ic*perBox<fieldSize() && (ic+baseIC<data.getNumChars()); ic++){
-					//See ColorByState for how matrix editor chooseColors
-					//			g.setColor(data.getColorOfStates(ic + baseIC, tree.taxonNumberOfNode(node)));
-					drawStateRectangle(g, x, topY,bottomY-topY, data, ic + baseIC, tree.taxonNumberOfNode(node));
-					x += perBox; 
-					lastIC = ic;
-					numIC++;
+					perBox = spacingPerCharacter();
+					numIC = 0;  //redundant, but avoids isolating an example
+					for (int ic = 0; ic*perBox<fieldSize() && (ic+baseIC<data.getNumChars()); ic++){
+						//See ColorByState for how matrix editor chooseColors
+						//			g.setColor(data.getColorOfStates(ic + baseIC, tree.taxonNumberOfNode(node)));
+						drawStateRectangle(g, x, topY,bottomY-topY, data, ic + baseIC, tree.taxonNumberOfNode(node));
+						x += perBox; 
+						lastIC = ic;
+						numIC++;
+					}
 				}
 			}
 			else if (treeDisplay.isUp() || treeDisplay.isDown()) {
 				double leftX = treeDrawing.x[node] - minSpace/2;  
 				if (MesquiteInteger.isCombinable(prevTaxon)) // not the first
 					leftX = boxEdges.getValue(prevTaxon);
+				minTip=MesquiteDouble.minimum(minTip, leftX);
 				double rightX = boxEdges.getValue(tree.taxonNumberOfNode(node));
 				if (!MesquiteDouble.isCombinable(rightX)) // the last
 					rightX = treeDrawing.x[node] + minSpace/2;
-				double y = getBase();
+				maxTip=MesquiteDouble.maximum(maxTip, rightX);
 
-				perBox = spacingPerCharacter();
-				numIC = 0;  //redundant, but avoids isolating an example
-				for (int ic = 0; ic*perBox<fieldSize() && (ic+baseIC<data.getNumChars()); ic++){
-					//See ColorByState for how matrix editor chooseColors
-					//	g.setColor(data.getColorOfStates(ic + baseIC, tree.taxonNumberOfNode(node)));
-					//	g.fillRect((int)leftX,(int)y,(int)(rightX-leftX), (int)( perBox));
-					drawStateRectangle(g, leftX, y,rightX-leftX, data, ic + baseIC, tree.taxonNumberOfNode(node));
-					y += perBox; 
-					lastIC = ic;
-					numIC++;
+				if (data != null){
+					double y = getBase();
+
+					perBox = spacingPerCharacter();
+					numIC = 0;  //redundant, but avoids isolating an example
+					for (int ic = 0; ic*perBox<fieldSize() && (ic+baseIC<data.getNumChars()); ic++){
+						//See ColorByState for how matrix editor chooseColors
+						//	g.setColor(data.getColorOfStates(ic + baseIC, tree.taxonNumberOfNode(node)));
+						//	g.fillRect((int)leftX,(int)y,(int)(rightX-leftX), (int)( perBox));
+						drawStateRectangle(g, leftX, y,rightX-leftX, data, ic + baseIC, tree.taxonNumberOfNode(node));
+						y += perBox; 
+						lastIC = ic;
+						numIC++;
+					}
 				}
 			}
 			prevTaxon = tree.taxonNumberOfNode(node);
@@ -461,16 +500,12 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 	TextRotator textRotator = new TextRotator();
 	/* ========================================= */
 	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
-		if (!ownerModule.showMatrix || ownerModule.data == null)
+		if (!ownerModule.showMatrix)
 			return;
 		if (treeDisplay.getOrientation() != TreeDisplay.LEFT && treeDisplay.getOrientation() != TreeDisplay.RIGHT && treeDisplay.getOrientation() != TreeDisplay.UP && treeDisplay.getOrientation() != TreeDisplay.DOWN)
 			return;
-		if (ownerModule.data == null)
-			return;
 		data = ownerModule.data;
 		treeDrawing = treeDisplay.getTreeDrawing(); //just making sure this is most current
-		if (data == null)  //!!! draw bank field with message that no data matches
-			return;
 
 		Color oldColor = g.getColor();
 		//###################### find edges between adjacent tips
@@ -484,10 +519,27 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		prevTaxon = MesquiteInteger.unassigned;
 		lastIC = 0;
 		numIC = 0;
+		minTip = MesquiteDouble.unassigned;
+		maxTip = MesquiteDouble.unassigned;
+
 		drawOnTreeRec(tree, drawnRoot, g);
+		if (data == null) {
+			g.setColor(ColorDistribution.veryLightGray);
+			if (treeDisplay.isRight() || treeDisplay.isLeft()) 
+				g.fillRect(getBase(), (int)minTip, fieldSize(), (int)(maxTip-minTip));
+			else if (treeDisplay.isUp()) 
+				g.fillRect((int)minTip, getBase(), (int)(maxTip-minTip), fieldSize());
+			else if (treeDisplay.isUp() || treeDisplay.isDown()) 
+				g.fillRect((int)minTip, getBase(), (int)(maxTip-minTip), fieldSize());
+
+		}
 
 		//###################### draw scroll and other decorations
-		String matrixName = data.getName();
+		String matrixName = "";
+		if (data != null)
+			matrixName = data.getName();
+		else
+			matrixName = "No matrix is available";
 		FontMetrics fontMet = g.getFontMetrics(g.getFont());
 		int lengthName = fontMet.stringWidth(matrixName); //what to do if underlined?
 		int edgeGrabberSize = 16;
@@ -495,73 +547,126 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		int scrollEdge =  (int)(prevTip+ minSpace/2+6);
 		g.setColor(Color.gray);
 		if (treeDisplay.isRight() || treeDisplay.isLeft()){
-			g.drawRect(getBase(), scrollEdge-1, fieldSize(), 2); //line
-			//g.fillRect(getBase(), scrollEdge, fieldSize(), 2); //line
-			if (treeDisplay.isRight()){
-				g.fillRect(getBase()-bufferForEdgeGrabber, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
-				g.fillRect(getBase()-bufferForEdgeGrabber+3, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
-				//		g.fillRect(getBase()+fieldSize()-1, scrollEdge-4, 2, 10); //end
-				edgeGrabber.x =getBase()-bufferForEdgeGrabber-2; edgeGrabber.y = scrollEdge-edgeGrabberSize; edgeGrabber.width = 8; edgeGrabber.height = edgeGrabberSize+4;
+			if (data != null){
+				g.drawRect(getBase(), scrollEdge-1, fieldSize(), 2); //line
+				//g.fillRect(getBase(), scrollEdge, fieldSize(), 2); //line
+				if (treeDisplay.isRight()){
+					g.fillRect(getBase()-bufferForEdgeGrabber, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
+					g.fillRect(getBase()-bufferForEdgeGrabber+3, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
+					//		g.fillRect(getBase()+fieldSize()-1, scrollEdge-4, 2, 10); //end
+					edgeGrabber.x =getBase()-bufferForEdgeGrabber-2; edgeGrabber.y = scrollEdge-edgeGrabberSize; edgeGrabber.width = 8; edgeGrabber.height = edgeGrabberSize+4;
+				}
+				else {
+					g.fillRect(getBase()+fieldSize()+3, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
+					g.fillRect(getBase()+fieldSize()+6, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
+					//		g.fillRect(getBase(), scrollEdge-4, 2, 10); //end
+					edgeGrabber.x =getBase()+fieldSize(); edgeGrabber.y = scrollEdge-edgeGrabberSize; edgeGrabber.width = 8; edgeGrabber.height = edgeGrabberSize+4;
+				}
+
+
+				g.setColor(Color.gray);
+				int x = getLocationOfCharacterInScroll(baseIC);
+				int xEnd = getLocationOfCharacterInScroll(baseIC+numIC);
+				if (xEnd - x<12) 
+					xEnd = x+12;
+				scroller.x = x-3; scroller.y = scrollEdge-6; scroller.width = xEnd-x+6; scroller.height = 12;
+				g.fillRoundRect(x, scrollEdge-4, xEnd-x, 9, scrollRound, scrollRound); //scroller
+
+				g.setColor(Color.lightGray);
+				g.fillRoundRect(x+2, scrollEdge-1, xEnd-x-4, 3, scrollRound, scrollRound); //scroller
 			}
-			else {
-				g.fillRect(getBase()+fieldSize()+3, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
-				g.fillRect(getBase()+fieldSize()+6, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
-				//		g.fillRect(getBase(), scrollEdge-4, 2, 10); //end
-				edgeGrabber.x =getBase()+fieldSize(); edgeGrabber.y = scrollEdge-edgeGrabberSize; edgeGrabber.width = 8; edgeGrabber.height = edgeGrabberSize+4;
-			}
-
-
-			g.setColor(Color.gray);
-			int x = getLocationOfCharacterInScroll(baseIC);
-			int xEnd = getLocationOfCharacterInScroll(baseIC+numIC);
-			if (xEnd - x<12) 
-				xEnd = x+12;
-			scroller.x = x-3; scroller.y = scrollEdge-6; scroller.width = xEnd-x+6; scroller.height = 12;
-			g.fillRoundRect(x, scrollEdge-4, xEnd-x, 9, scrollRound, scrollRound); //scroller
-
-			g.setColor(Color.lightGray);
-			g.fillRoundRect(x+2, scrollEdge-1, xEnd-x-4, 3, scrollRound, scrollRound); //scroller
-
 			g.setColor(Color.black);
 			g.drawString(matrixName, getBase()+fieldSize()/2-lengthName/2, scrollEdge+16);
 
 		}
 		else if (treeDisplay.isUp() || treeDisplay.isDown()){
-			g.fillRect(scrollEdge, getBase(), 2, fieldSize()); //line
-			if (treeDisplay.isDown()){
-				g.fillRect(scrollEdge-edgeGrabberSize, getBase()-bufferForEdgeGrabber, edgeGrabberSize+2, 2); // edge grabber
-				g.fillRect(scrollEdge-edgeGrabberSize, getBase()-bufferForEdgeGrabber+3, edgeGrabberSize+2, 2); // edge grabber
-				g.fillRect(scrollEdge-4, getBase(), 6, 2); //start
-				//	g.fillRect(scrollEdge-4, getBase()+fieldSize()-1, 6, 2); //end
-				edgeGrabber.y =getBase()-bufferForEdgeGrabber; edgeGrabber.x = scrollEdge-edgeGrabberSize; edgeGrabber.height = 8; edgeGrabber.width = edgeGrabberSize+8;
+			if (data != null){
+				g.fillRect(scrollEdge, getBase(), 2, fieldSize()); //line
+				if (treeDisplay.isDown()){
+					g.fillRect(scrollEdge-edgeGrabberSize, getBase()-bufferForEdgeGrabber, edgeGrabberSize+2, 2); // edge grabber
+					g.fillRect(scrollEdge-edgeGrabberSize, getBase()-bufferForEdgeGrabber+3, edgeGrabberSize+2, 2); // edge grabber
+					g.fillRect(scrollEdge-4, getBase(), 6, 2); //start
+					//	g.fillRect(scrollEdge-4, getBase()+fieldSize()-1, 6, 2); //end
+					edgeGrabber.y =getBase()-bufferForEdgeGrabber; edgeGrabber.x = scrollEdge-edgeGrabberSize; edgeGrabber.height = 8; edgeGrabber.width = edgeGrabberSize+8;
+				}
+				else {  //UP
+					g.fillRect(scrollEdge-edgeGrabberSize, getBase()+fieldSize()+3, edgeGrabberSize+2, 2); // edge grabber
+					g.fillRect(scrollEdge-edgeGrabberSize, getBase()+fieldSize()+6, edgeGrabberSize+2, 2); // edge grabber
+					g.fillRect(scrollEdge-4, getBase()+fieldSize()-1, 6, 2); //start
+					//	g.fillRect(scrollEdge-4, getBase(), 6, 2); //end
+					edgeGrabber.y =getBase()+fieldSize(); edgeGrabber.x = scrollEdge-edgeGrabberSize; edgeGrabber.height = 8; edgeGrabber.width = edgeGrabberSize+8;
+				}
+
+				g.setColor(Color.gray);
+				int y = getLocationOfCharacterInScroll(baseIC);
+				int yEnd = getLocationOfCharacterInScroll(baseIC+numIC);
+				if (yEnd - y<12) 
+					yEnd = y+12;
+				scroller.y = y-3; scroller.x = scrollEdge-6; scroller.height = yEnd-y+6; scroller.width = 12;
+				g.fillRoundRect(scrollEdge-4, y, 9, yEnd-y, scrollRound, scrollRound); //scroller
+
+				g.setColor(Color.lightGray);
+				g.fillRoundRect(scrollEdge-1, y+2, 3,  yEnd-y-4, scrollRound, scrollRound); //scroller
 			}
-			else {  //UP
-				g.fillRect(scrollEdge-edgeGrabberSize, getBase()+fieldSize()+3, edgeGrabberSize+2, 2); // edge grabber
-				g.fillRect(scrollEdge-edgeGrabberSize, getBase()+fieldSize()+6, edgeGrabberSize+2, 2); // edge grabber
-				g.fillRect(scrollEdge-4, getBase()+fieldSize()-1, 6, 2); //start
-				//	g.fillRect(scrollEdge-4, getBase(), 6, 2); //end
-				edgeGrabber.y =getBase()+fieldSize(); edgeGrabber.x = scrollEdge-edgeGrabberSize; edgeGrabber.height = 8; edgeGrabber.width = edgeGrabberSize+8;
-			}
-
-			g.setColor(Color.gray);
-			int y = getLocationOfCharacterInScroll(baseIC);
-			int yEnd = getLocationOfCharacterInScroll(baseIC+numIC);
-			if (yEnd - y<12) 
-				yEnd = y+12;
-			scroller.y = y-3; scroller.x = scrollEdge-6; scroller.height = yEnd-y+6; scroller.width = 12;
-			g.fillRoundRect(scrollEdge-4, y, 9, yEnd-y, scrollRound, scrollRound); //scroller
-
-			g.setColor(Color.lightGray);
-			g.fillRoundRect(scrollEdge-1, y+2, 3,  yEnd-y-4, scrollRound, scrollRound); //scroller
-
 			g.setColor(Color.black);
 			textRotator.drawRotatedText(matrixName, g, treeDisplay, scrollEdge+14, getBase()+fieldSize()/2+lengthName/2);
 
 		}
 		g.setColor(oldColor);
 	}
+	/*.................................................................................................................*/
+	/* ========================================= */
+	int taxonNum = 0;
+	public void drawUnderTreeRec(Tree tree, int node, Graphics g) {
+		if (tree.nodeIsTerminal(node)){
+			//int edgeWidth = treeDrawing.getEdgeWidth();
+			//g.setColor(Color.black);
+			//for left-right
+			taxonNum++;
+			if (taxonNum %2 ==0) {
+			if (treeDisplay.isRight() || treeDisplay.isLeft()) {
+				double topY = treeDrawing.y[node] - minSpace/2;
+				if (MesquiteInteger.isCombinable(prevTaxon)) // not the first
+					topY = boxEdges.getValue(prevTaxon);
+				double bottomY = boxEdges.getValue(tree.taxonNumberOfNode(node));
+				if (!MesquiteDouble.isCombinable(bottomY)) // the last
+					bottomY = treeDrawing.y[node] + minSpace/2;
+				g.fillRect(0, (int)topY, 10000, (int)(bottomY-topY));
+			}
+			else if (treeDisplay.isUp() || treeDisplay.isDown()) {
+				double leftX = treeDrawing.x[node] - minSpace/2;  
+				if (MesquiteInteger.isCombinable(prevTaxon)) // not the first
+					leftX = boxEdges.getValue(prevTaxon);
+				double rightX = boxEdges.getValue(tree.taxonNumberOfNode(node));
+				if (!MesquiteDouble.isCombinable(rightX)) // the last
+					rightX = treeDrawing.x[node] + minSpace/2;
+				g.fillRect((int)leftX, 0, (int)(rightX-leftX), 10000);
+
+				}
+			}
+			prevTaxon = tree.taxonNumberOfNode(node);
+
+		}
+		else {
+			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) 
+				drawUnderTreeRec(tree, daughter, g);
+		}
+	}	
+	public   void drawUnderTree(Tree tree, int node, Graphics g) {
+		if (!ownerModule.showMatrix)
+			return;
+		treeDrawing = treeDisplay.getTreeDrawing();
+		if (treeDrawing == null)
+			return;
+		taxonNum = 0;//draw grey bars for taxa
+		Color c = g.getColor();
+		g.setColor(ColorDistribution.veryVeryLightGray);
+		drawUnderTreeRec(tree, node, g);
+		g.setColor(c);
+	}
 	/* ========================================= */
 
+	public void printUnderTree(Tree tree, int drawnRoot, Graphics g){}
 
 	public void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 	}
@@ -574,6 +679,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra {
 		if (borders.tipsFieldDistance + increase<50)
 			return;
 		borders.tipsFieldDistance += increase;
+		ownerModule.fieldWidth = borders.tipsFieldDistance;
 		treeDisplay.reviseBorders(false);
 		treeDisplay.redoCalculations(78244);
 		treeDisplay.forceRepaint();
