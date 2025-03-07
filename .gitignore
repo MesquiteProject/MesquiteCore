@@ -43,6 +43,5 @@ org.eclipse.ltk.core.refactoring.prefs
 ehthumbs.db
 Thumbs.db
 .gitignore
-/.classpath
 /.gitignore
 /target/
