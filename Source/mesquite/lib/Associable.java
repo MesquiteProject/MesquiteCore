@@ -1784,6 +1784,64 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		return -1;
 	}
 	/*-----------------------------------------*/
+	/** Returns index of i'th selected part if any are selected, otherwise returns i.
+	 * If there are not i parts selected (but some are), numParts is returned */
+	public int selectedIndexToPartIndex(int i) {
+		if (!anySelected())
+			return i;
+		int count = 0;
+		for (int k = 0;  k<getNumberOfParts(); k++) {
+			if (selected.isBitOn(k)){
+				if (count == i)
+					return k;
+				count++;
+			}
+		}
+		return getNumberOfParts();
+	}
+	/*-----------------------------------------*/
+	/** Returns index of part that is the i'th selected, if any are selected, otherwise the i'th part.
+	 * if i is not selected, then returns the previous selected index
+	 *  If there are not i selected parts, numParts is returned */
+	public int partIndexToSelectedIndex(int i) {
+		if (!anySelected())
+			return i;
+		int count = 0;
+		for (int k = 0;  k<getNumberOfParts(); k++) {
+			if (i == k)
+				return count;
+			if (selected.isBitOn(k))
+				count++;
+		}
+		return getNumberOfParts();
+	}
+	/*-----------------------------------------*/
+	/** Returns index of next selected part if any are selected, otherwise the next part.
+	 * If there are no remaining parts, numParts is returned */
+	public int nextSelectedIfAny(int previous) {
+		if (!anySelected())
+			return previous +1;
+		
+		for (int i = previous+1; i<getNumberOfParts(); i++) {
+			if (selected.isBitOn(i))
+				return i;
+		}
+		return getNumberOfParts();
+	}
+	/*-----------------------------------------*/
+	/** Returns index of next selected part if any are selected, otherwise the next part.
+	 * If there are no remaining parts, numParts is returned */
+	public int nextPart(int previous, boolean selectedOnly) {
+		if (!selectedOnly || !anySelected())
+			return previous +1;
+		
+		for (int i = previous+1; i<getNumberOfParts(); i++) {
+			if (selected.isBitOn(i))
+				return i;
+		}
+		return getNumberOfParts();
+	}
+	/*-----------------------------------------*/
 	/** Returns index of last selected part */
 	public int lastSelected() {
 		if (!anySelected())

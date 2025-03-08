@@ -157,21 +157,27 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		RadioButtons choices = null;
 		if (numMatrices >1){
 			dialog.addBlankLine();
-			choices = dialog.addRadioButtons (new String[]{"Choose matrix to show", "Show matrix linked to tree, if any"}, choose0Link1);
+			choices = dialog.addRadioButtons (new String[]{"Choose matrix to show", "Show matrix linked to tree, if any          "}, choose0Link1);
 			dialog.addBlankLine();
 		}
-		//	Checkbox selectedOnly = dialog.addCheckBox("Selected characters only, if any                 ", selectedCharatersOnly);
-		//	dialog.addBlankLine();
+		Checkbox selectedOnly = dialog.addCheckBox("Selected characters only", selectedCharatersOnly);
+		dialog.addBlankLine();
 
 		dialog.addAuxiliaryDefaultPanels();
-		dialog.addPrimaryButtonRow("Show Matrix", "Don't Show");
+		String noButton = "Cancel";
+		String yesButton = "Show Matrix";
+		if (showMatrix) {
+			noButton = "Turn Off";
+			yesButton = "OK";
+		}
+		dialog.addPrimaryButtonRow(yesButton, noButton);
 		dialog.prepareAndDisplayDialog();
 
 		// button 0 is show, 1 is don't show
 		if (buttonPressed.getValue()==0)  {
 			if (choices != null)
 				choose0Link1= choices.getValue();
-			//	selectedCharatersOnly = selectedOnly.getState();
+			selectedCharatersOnly = selectedOnly.getState();
 			showMatrix = true;
 		}
 		else showMatrix = false;
@@ -192,7 +198,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		sn.addLine("fieldWidth " + fieldWidth);
 		if (data != null && choose0Link1 == 0)
 			sn.addLine("setMatrix " + getProject().getMatrixNumber(data));
-		//sn.addLine("selectedOnly " + selectedCharatersOnly);
+		sn.addLine("selectedOnly " + selectedCharatersOnly);
 		sn.addLine("showMatrix " + showMatrix);
 		return sn;
 	}
@@ -208,6 +214,9 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 				extra.turnOnOff(showMatrix);
 				//extra.forceRefresh();
 			}
+		}
+		else if (checker.compare(this.getClass(), "Whether to show selected characters only", "[true/false]", commandName, "selectedOnly")) {
+			selectedCharatersOnly = MesquiteBoolean.fromTrueFalseString(arguments);
 		}
 		else if (checker.compare(this.getClass(), "Choose matrix vs. show one linked to tree", "[0 choose 1 link]", commandName, "chooseOrLink")) {
 			int cL = MesquiteInteger.fromString(arguments);
@@ -253,8 +262,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	CharacterData data;
 	int fieldWidth = 0;
 	boolean naiveFieldWidth = true;
-	int baseIC = 0;
-	int lastIC = 0;
+	int baseICSel = 0;
 	int numIC = 0;
 	double birdsEyeW = 2;
 	double perBox = birdsEyeW;
@@ -313,7 +321,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		else if (tree.getTaxa().getNumTaxa()>boxEdges.getSize())
 			boxEdges.resetSize(tree.getTaxa().getNumTaxa());
 		boxEdges.deassignArray();
-		baseIC = 0;
+		baseICSel = 0;
 	}
 
 	//Sets boxEdges, which are the lower or right (trailing) edges of boxes between taxa. Start will 
@@ -364,17 +372,20 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 
 	int getNumCharsTotal(){
-		return data.getNumChars();
+		if (data.anySelected())
+			return data.numberSelected();
+		else
+			return data.getNumChars();
 	}
 	/* .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
 	//get the left/right or up/down location of the kth character
 	int getLocationOfCharacter(int k){
-		if (k<baseIC || k>baseIC+numIC)
+		if (k<baseICSel || k>baseICSel+numIC)
 			return -1;
-		return (int)(getBase() + perBox*(k-baseIC));
+		return (int)(getBase() + perBox*(k-baseICSel));
 	}
 	/* .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
-	//get the left/right or up/down location of the kth character
+	//get the left/right or up/down location of the kth character. This is not necessarily the kth character of the matrix!
 	int getLocationOfCharacterInScroll(int k){
 		if (k<0 || k>getNumCharsTotal())
 			return -1;
@@ -397,15 +408,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		return w;
 	}
 	void drawStateRectangle(Graphics g, double x, double y, double taxonSpace, CharacterData data, int ic, int it){
-		/*if (data == null){
-			g.setColor(ColorDistribution.veryLightGray);
-			if (treeDisplay.isRight() || treeDisplay.isLeft())
-				g.fillRect((int)x,(int)y,(int)( spacingPerCharacter()),  (int)(taxonSpace));
-			else if (treeDisplay.isUp() || treeDisplay.isDown()) 
-				g.fillRect((int)x,(int)y,(int)(taxonSpace), (int)( spacingPerCharacter()));
-		}
-		else 
-		 */
+		
 		if (data instanceof MolecularData){
 			g.setColor(data.getColorOfStates(ic, it));
 			if (treeDisplay.isRight() || treeDisplay.isLeft())
@@ -453,14 +456,22 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 					perBox = spacingPerCharacter();
 					numIC = 0;  //redundant, but avoids isolating an example
+					int count = 0;
+					int baseIC = data.selectedIndexToPartIndex(baseICSel);
+					for (int ic = baseIC; count*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
+						drawStateRectangle(g, x, topY,bottomY-topY, data, ic, tree.taxonNumberOfNode(node));
+						x += perBox; 
+						count++;
+						numIC++;
+					}
+/*					
 					for (int ic = 0; ic*perBox<fieldSize() && (ic+baseIC<data.getNumChars()); ic++){
-						//See ColorByState for how matrix editor chooseColors
-						//			g.setColor(data.getColorOfStates(ic + baseIC, tree.taxonNumberOfNode(node)));
 						drawStateRectangle(g, x, topY,bottomY-topY, data, ic + baseIC, tree.taxonNumberOfNode(node));
 						x += perBox; 
 						lastIC = ic;
 						numIC++;
 					}
+					*/
 				}
 			}
 			else if (treeDisplay.isUp() || treeDisplay.isDown()) {
@@ -478,15 +489,22 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 					perBox = spacingPerCharacter();
 					numIC = 0;  //redundant, but avoids isolating an example
-					for (int ic = 0; ic*perBox<fieldSize() && (ic+baseIC<data.getNumChars()); ic++){
-						//See ColorByState for how matrix editor chooseColors
-						//	g.setColor(data.getColorOfStates(ic + baseIC, tree.taxonNumberOfNode(node)));
-						//	g.fillRect((int)leftX,(int)y,(int)(rightX-leftX), (int)( perBox));
-						drawStateRectangle(g, leftX, y,rightX-leftX, data, ic + baseIC, tree.taxonNumberOfNode(node));
+					int count=0;
+					int baseIC = data.selectedIndexToPartIndex(baseICSel);
+					for (int ic = baseIC; count*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
+						drawStateRectangle(g, leftX, y,rightX-leftX, data, ic, tree.taxonNumberOfNode(node));
 						y += perBox; 
-						lastIC = ic;
+						count++;
 						numIC++;
 					}
+					/*
+					for (int ic = 0; ic*perBox<fieldSize() && (ic+baseIC<data.getNumChars()); ic++){
+						drawStateRectangle(g, leftX, y,rightX-leftX, data, ic + baseIC, tree.taxonNumberOfNode(node));
+						y += perBox; 
+				//		lastIC = ic;
+						numIC++;
+					}
+					*/
 				}
 			}
 			prevTaxon = tree.taxonNumberOfNode(node);
@@ -517,12 +535,14 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 		//###################### recurse through tree to tips to draw! Also record last character and number of characters.
 		prevTaxon = MesquiteInteger.unassigned;
-		lastIC = 0;
+	//	lastIC = 0;
 		numIC = 0;
 		minTip = MesquiteDouble.unassigned;
 		maxTip = MesquiteDouble.unassigned;
 
 		drawOnTreeRec(tree, drawnRoot, g);
+
+		
 		if (data == null) {
 			g.setColor(ColorDistribution.veryLightGray);
 			if (treeDisplay.isRight() || treeDisplay.isLeft()) 
@@ -565,8 +585,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 
 				g.setColor(Color.gray);
-				int x = getLocationOfCharacterInScroll(baseIC);
-				int xEnd = getLocationOfCharacterInScroll(baseIC+numIC);
+				int x = getLocationOfCharacterInScroll(baseICSel); //ERROR! this baseIC is currently in data's number, not the selectedNumbering! needs to be in
+				int xEnd = getLocationOfCharacterInScroll(baseICSel+numIC);
 				if (xEnd - x<12) 
 					xEnd = x+12;
 				scroller.x = x-3; scroller.y = scrollEdge-6; scroller.width = xEnd-x+6; scroller.height = 12;
@@ -598,8 +618,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				}
 
 				g.setColor(Color.gray);
-				int y = getLocationOfCharacterInScroll(baseIC);
-				int yEnd = getLocationOfCharacterInScroll(baseIC+numIC);
+				int y = getLocationOfCharacterInScroll(baseICSel);
+				int yEnd = getLocationOfCharacterInScroll(baseICSel+numIC);
 				if (yEnd - y<12) 
 					yEnd = y+12;
 				scroller.y = y-3; scroller.x = scrollEdge-6; scroller.height = yEnd-y+6; scroller.width = 12;
@@ -652,16 +672,28 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				drawUnderTreeRec(tree, daughter, g);
 		}
 	}	
-	public   void drawUnderTree(Tree tree, int node, Graphics g) {
+	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
+
 		if (!ownerModule.showMatrix)
 			return;
 		treeDrawing = treeDisplay.getTreeDrawing();
 		if (treeDrawing == null)
 			return;
+		//###################### find edges between adjacent tips, just in case this comes before drawOnTree
+		boxEdges.deassignArray();
+		minSpace = MesquiteDouble.unassigned;  // to help edges
+		prevTaxon = MesquiteInteger.unassigned;
+		prevTip = MesquiteDouble.unassigned;
+		getTipEdges(tree, drawnRoot);
+		//######################
+
+		
 		taxonNum = 0;//draw grey bars for taxa
 		Color c = g.getColor();
 		g.setColor(ColorDistribution.veryVeryLightGray);
-		drawUnderTreeRec(tree, node, g);
+		//######################
+		drawUnderTreeRec(tree, drawnRoot, g);
+		//######################
 		g.setColor(c);
 	}
 	/* ========================================= */
@@ -686,13 +718,13 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 	}
 	void resetBaseCharacter(int increase){
-		int zBaseIC = getLocationOfCharacterInScroll(baseIC);
+		int zBaseIC = getLocationOfCharacterInScroll(baseICSel);
 		int newBaseIC = getCharacterOfLocationInScroll(increase + zBaseIC);
 		if (newBaseIC<0)
 			newBaseIC =0;
 		if (newBaseIC+numIC>=getNumCharsTotal())
 			newBaseIC =getNumCharsTotal()-numIC;
-		baseIC = newBaseIC;
+		baseICSel = newBaseIC;
 		treeDisplay.forceRepaint();
 
 	}
