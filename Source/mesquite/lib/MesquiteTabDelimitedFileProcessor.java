@@ -151,7 +151,7 @@ import mesquite.lib.ui.SingleLineTextField;
 			if (e.getActionCommand().equalsIgnoreCase("TaxonNameFileBrowse")) {
 				MesquiteString dnaNumberListDir = new MesquiteString();
 				MesquiteString dnaNumberListFile = new MesquiteString();
-				String s = MesquiteFile.openFileDialog("Choose file containing OTU ID codes and names", dnaNumberListDir, dnaNumberListFile);
+				String s = MesquiteFile.openFileDialog("Choose file containing Taxon ID codes and names", dnaNumberListDir, dnaNumberListFile);
 				if (!StringUtil.blank(s)) {
 					sampleCodeListPath = s;
 					if (sampleCodeFilePathField!=null) 

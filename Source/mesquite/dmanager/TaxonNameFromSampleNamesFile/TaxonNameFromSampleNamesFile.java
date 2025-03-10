@@ -183,7 +183,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Rename Taxa Based On Table with File",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
-		Checkbox matchTaxonName = dialog.addCheckBox("Match Current Taxon Name (otherwise OTU ID code)", matchCurrentTaxonName.getValue());
+		Checkbox matchTaxonName = dialog.addCheckBox("Match Current Taxon Name (otherwise Taxon ID code)", matchCurrentTaxonName.getValue());
 		Checkbox colorChanged = dialog.addCheckBox("Color changed taxa", changeColor.getValue());
 		
 		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File with Replacement Names", "Column for Replacement Names");
@@ -207,7 +207,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 */
 		
 		
-		String s = "This file must contain in its first line the titles of each of the columns, delimited by tabs.  The first column must be the target to match (current taxon name or OTU ID code), ";
+		String s = "This file must contain in its first line the titles of each of the columns, delimited by tabs.  The first column must be the target to match (current taxon name or Taxon ID code), ";
 		s+= "and the second and later columns should contain naming schemes for the sequences. Each of the following lines must contain the entry for one sample.\n\n";
 		s+= "<BR><BR>For example, the file might look like this:<br><br>\n";
 		s+= "code  &lt;tab&gt;  Short name &lt;tab&gt;  Simple name  &lt;tab&gt;  Name with numbers  &lt;tab&gt;  Name with localities <br>\n";
@@ -276,7 +276,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 			line = sampleCodeListParser.getRawNextDarkLine();
 		}
 		// got here and no match found -- log an error
-		MesquiteMessage.warnUser("No OTU ID code named '" + sampleCode + "' found in taxon names file.");
+		MesquiteMessage.warnUser("No Taxon ID code named '" + sampleCode + "' found in taxon names file.");
 		return null;
 	}
 	/*.................................................................................................................*
@@ -364,7 +364,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		if (e.getActionCommand().equalsIgnoreCase("TaxonNameFileBrowse")) {
 			MesquiteString dnaNumberListDir = new MesquiteString();
 			MesquiteString dnaNumberListFile = new MesquiteString();
-			String s = MesquiteFile.openFileDialog("Choose file containing OTU ID codes and names", dnaNumberListDir, dnaNumberListFile);
+			String s = MesquiteFile.openFileDialog("Choose file containing Taxon ID codes and names", dnaNumberListDir, dnaNumberListFile);
 			if (!StringUtil.blank(s)) {
 				sampleCodeListPath = s;
 				if (sampleCodeFilePathField!=null) 
@@ -406,7 +406,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Renames the taxa based upon chosen columns in a tab-delimited text file, using OTU IDs or curent taxon names to find the relevant row within that file.";
+		return "Renames the taxa based upon chosen columns in a tab-delimited text file, using Taxon IDs or curent taxon names to find the relevant row within that file.";
 	}
 
 	/*.................................................................................................................*/

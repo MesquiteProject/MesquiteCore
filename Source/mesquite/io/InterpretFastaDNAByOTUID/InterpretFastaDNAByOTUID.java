@@ -43,7 +43,7 @@ public class InterpretFastaDNAByOTUID extends InterpretFastaDNA {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "FASTA (DNA/RNA) - Taxon Names Match OTU ID Code";
+		return "FASTA (DNA/RNA) - Taxon Names Match Taxon ID Code";
 	}
 
 }
