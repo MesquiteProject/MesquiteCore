@@ -96,7 +96,11 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 	public void moveToBaseInSequence() { 
 		if (data == null || table ==null || !MesquiteInteger.isCombinable(column) || !MesquiteInteger.isCombinable(row))
 			return;
-		int num = MesquiteInteger.queryInteger(table.getWindow(), "Base within sequence to move to", "Base within sequence to move to", 1, 1, data.getNumberApplicableInTaxon(row, false));
+		int max = data.getNumberApplicableInTaxon(row, false);
+		if (max<1) {
+			Debugg.printStackTrace();
+		}
+		int num = MesquiteInteger.queryInteger(table.getWindow(), "Base within sequence to move to", "Base within sequence to move to", 1, 1, max);
 		if (!MesquiteInteger.isCombinable(num)) 	
 				return;
 		int count=0;

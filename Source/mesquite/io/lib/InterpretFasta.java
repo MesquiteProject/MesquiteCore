@@ -760,10 +760,13 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 		if (outputBuffer!=null) {
 			saveExportedFileWithExtension(outputBuffer, arguments, preferredDataFileExtension());
-			saveExtraFiles(data);  
 			return true;
 		}
 		 */
+		
+		if (success)
+			saveExtraFiles(data);  
+
 		return success;
 	}
 
