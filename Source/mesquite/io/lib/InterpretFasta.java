@@ -621,7 +621,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			return taxa.getTaxonName(it)+uniqueSuffix;
 		//return ParseUtil.tokenize(taxa.getTaxonName(it)+uniqueSuffix);
 	}
-	protected void saveExtraFiles(CharacterData data){
+	protected void saveExtraFiles(CharacterData data, String filePath){
 	}
 
 	protected boolean taxonHasData(CharacterData data, int it){
@@ -752,7 +752,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 		//new style
 		String fileName = suggestedFileName(null, preferredDataFileExtension());
-		String filePath = getPathForExport(arguments, fileName, null, null);
+		String filePath = getPathForExport(arguments, fileName, null, null);   //Wayne QZ:  you declared a local variable filePath here, but filePath is global to FileInterpreter, and some methods use this.
+																									// I've changed this back to global; is this OK?
 		boolean success = writeMatrixToFile(data, filePath ); 
 
 		/*
@@ -765,7 +766,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		 */
 		
 		if (success)
-			saveExtraFiles(data);  
+			saveExtraFiles(data, filePath);  
 
 		return success;
 	}
