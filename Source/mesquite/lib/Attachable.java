@@ -255,6 +255,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			if (reportReading) Debugg.println("  d " +  MesquiteDouble.toString(d) + " pos " + pos.getValue());
 
 			if (!MesquiteDouble.isCombinable(d)){ //not a number; treat as string
+				if (reportReading) Debugg.println("     -> string ");
 				pos.setValue(posBeforeValue);
 				ParseUtil.getToken(assocString, pos); //eating up value again
 				MesquiteString mb = new MesquiteString();
@@ -265,6 +266,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			else {
 				if (value.indexOf(".")>=0) { //treat as double 
 					//TODO:  there is a problem here; if some cases use ., others not, should be double; but will be treated as mixed
+					if (reportReading) Debugg.println("     -> double ");
 					MesquiteDouble mb = new MesquiteDouble();
 					pos.setValue(posBeforeValue);
 					mb.setValue(MesquiteDouble.fromString(assocString, pos));
@@ -272,10 +274,12 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 					attachIfUniqueName(mb);
 				}
 				else {  //treat as long
+					if (reportReading) Debugg.println("     -> long ");
 					MesquiteLong mb = new MesquiteLong();
 					pos.setValue(posBeforeValue);
 					mb.setValue(MesquiteLong.fromString(assocString, pos));
-					if (mb.isCombinable())
+				
+					if (!mb.isCombinable())
 						return false;
 					mb.setName(key);
 					attachIfUniqueName(mb);

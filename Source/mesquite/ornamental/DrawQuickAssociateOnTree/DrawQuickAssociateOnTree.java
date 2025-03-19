@@ -24,7 +24,7 @@ import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.taxa.TaxaPartition;
-import mesquite.lib.tree.PropertyDisplayRecord;
+import mesquite.lib.tree.DisplayableTreeProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayEarlyExtra;
@@ -38,7 +38,7 @@ import mesquite.lib.ui.StringInABox;
 public class DrawQuickAssociateOnTree extends TreeDisplayAssistantDI {
 	public Vector extras;
 	MesquiteBoolean showing;
-	PropertyDisplayRecord property = null;
+	DisplayableTreeProperty property = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
@@ -65,7 +65,7 @@ public class DrawQuickAssociateOnTree extends TreeDisplayAssistantDI {
 			else {
 				String name = parser.getFirstToken(arguments);
 				int kind = MesquiteInteger.fromString(parser);
-				property = new PropertyDisplayRecord(name, kind);
+				property = new DisplayableTreeProperty(name, kind);
 				showing.setValue(true);
 				for (int i =0; i<extras.size(); i++){
 					QuickAssociateExtra e = (QuickAssociateExtra)extras.elementAt(i);
@@ -102,7 +102,7 @@ public class DrawQuickAssociateOnTree extends TreeDisplayAssistantDI {
 class QuickAssociateExtra extends TreeDisplayExtra   {
 	DrawQuickAssociateOnTree propModule;
 	boolean show;
-	PropertyDisplayRecord property;
+	DisplayableTreeProperty property;
 	StringInABox box;
 	public QuickAssociateExtra (DrawQuickAssociateOnTree ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
@@ -157,7 +157,7 @@ class QuickAssociateExtra extends TreeDisplayExtra   {
 		drawOnTree(tree, node, g);
 	}
 
-	void setShowProperty(boolean a, PropertyDisplayRecord property){
+	void setShowProperty(boolean a, DisplayableTreeProperty property){
 		show = a;
 		this.property = property;
 		treeDisplay.pleaseUpdate(false);

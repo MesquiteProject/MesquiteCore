@@ -19,8 +19,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.PropertyDisplayRecord;
-import mesquite.lib.tree.PropertyRecord;
+import mesquite.lib.tree.DisplayableTreeProperty;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
 
@@ -45,7 +44,7 @@ public class RemoveAssociated extends TreeAltererMult {
 		if (tree instanceof Associable) {
 			MesquiteTree mTree = (MesquiteTree)tree;
 			if (!MesquiteThread.isScripting() && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")){
-				PropertyDisplayRecord[] properties = mTree.getPropertyRecords();
+				DisplayableTreeProperty[] properties = mTree.getPropertyRecords();
 				if (properties == null || properties.length == 0)
 					return false;
 				ListableVector lv = new ListableVector();

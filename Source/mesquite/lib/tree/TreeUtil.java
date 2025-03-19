@@ -138,11 +138,14 @@ public class TreeUtil {
 		treeParser.setQuoteCharacter((char)0);
 		int numTrees = MesquiteInteger.infinite;
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
+		
+		/*
 		if (line != null){
 			treeParser.setString(line); 
-			String token = treeParser.getNextToken();  // numTaxa
+			String token = treeParser.getNextToken();  // numTrees
 			numTrees = MesquiteInteger.fromString(token);
 		}
+		*/
 		int iTree = 0;
 		boolean abort = false;
 
@@ -156,11 +159,11 @@ public class TreeUtil {
 		if (MesquiteInteger.isCombinable(possibleNumTrees)){ //we did read numTrees!
 			stringLoc.setValue(treeParser.getPosition());
 			numTrees = possibleNumTrees;
-		}
-		token = treeParser.getNextToken();  // is there another number?
-		int maybe = MesquiteInteger.fromString(token);
-		if (MesquiteInteger.isCombinable(maybe)){ //we did read some other number. Trees must come after this!
-			stringLoc.setValue(treeParser.getPosition());
+			token = treeParser.getNextToken();  // is there another number?
+			int maybe = MesquiteInteger.fromString(token);
+			if (MesquiteInteger.isCombinable(maybe)){ //we did read some other number. Trees must come after this!
+				stringLoc.setValue(treeParser.getPosition());
+			}
 		}
 		boolean done = false;
 		while (!done && stringLoc.getValue()+1<line.length() && !abort && (iTree<numTrees)) {

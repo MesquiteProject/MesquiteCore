@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodeAssociatesListShow;
+package mesquite.trees.NodePropertiesListShow;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -28,17 +28,17 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.PropertyDisplayRecord;
+import mesquite.lib.tree.DisplayableTreeProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
-import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
-import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
-import mesquite.trees.lib.NodeAssociatesListAssistant;
+import mesquite.trees.NodePropertiesList.NodePropertiesList;
+import mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
+import mesquite.trees.lib.NodePropertiesListAssistant;
 
 /* ======================================================================== */
-public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
+public class NodePropertiesListShow extends NodePropertiesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
@@ -100,7 +100,7 @@ public class NodeAssociatesListShow extends NodeAssociatesListAssistant  {
 			discreetAlert("Please selected rows before attempting to show or hide them here");
 			return;
 		}
-		PropertyDisplayRecord[] mis = new PropertyDisplayRecord[table.numRowsSelected()];
+		DisplayableTreeProperty[] mis = new DisplayableTreeProperty[table.numRowsSelected()];
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){

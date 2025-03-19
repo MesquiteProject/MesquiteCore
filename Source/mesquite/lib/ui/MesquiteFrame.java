@@ -1537,14 +1537,15 @@ class FrameTabsPanel extends MousePanel {
 	int defaultBackEdge = 10;
 	public static int lowerBarHeight = 4;
 
-	static Image goaway, popOut, popIn, minimize, mediumize, show, goawayMouseOver;
+	static Image goaway, popToTile, popOut, popIn, minimize, mediumize, show, goawayMouseOver;
 	static {
 		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goawayTransparent.gif");
 		goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goAway.gif");
 		minimize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
 		mediumize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "mediumizeTransparent.gif");
-		popOut = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "decompactTransparent.gif");
-		popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "compactTransparent.gif");
+		popToTile = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopToTitle.gif");
+		popOut = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopToWindow.gif");
+		popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopIn.gif");
 		show = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "showTransparent.gif");
 	}
 	MesquitePopup popupForPopoutWindow=null;
@@ -1564,8 +1565,9 @@ class FrameTabsPanel extends MousePanel {
 			goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goAway.gif");
 			minimize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
 			mediumize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "mediumizeTransparent.gif");
-			popOut = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "decompactTransparent.gif");
-			popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "compactTransparent.gif");
+			popToTile = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopToTitle.gif");
+			popOut = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopToWindow.gif");
+			popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopIn.gif");
 			show = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "showTransparent.gif");
 		}
 		closeCommand = new MesquiteCommand("closeWindow", this);

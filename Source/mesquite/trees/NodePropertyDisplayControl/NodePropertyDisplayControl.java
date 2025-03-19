@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodeAssociatesZDisplayControl;
+package mesquite.trees.NodePropertyDisplayControl;
 /*~~  */
 
 
@@ -45,7 +45,7 @@ import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.PropertyDisplayRecord;
+import mesquite.lib.tree.DisplayableTreeProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayEarlyExtra;
@@ -66,10 +66,10 @@ import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.StringInABox;
-import mesquite.trees.NodeAssociatesAManager.NodeAssociatesAManager;
+import mesquite.trees.NodePropertiesAManager.NodePropertiesAManager;
 
 /* ======================================================================== */
-public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI implements ActionListener, ItemListener, TextListener {
+public class NodePropertyDisplayControl extends TreeDisplayAssistantI implements ActionListener, ItemListener, TextListener {
 	public Vector extras;
 
 //	MesquiteSubmenuSpec positionSubMenu;
@@ -81,7 +81,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 	boolean moduleIsNaive = true; //so as not to save the snapshot
 	ListableVector propertyList;
-	NodeAssociatesAManager managerModule;
+	NodePropertiesAManager managerModule;
 	MesquiteTree tree;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -90,7 +90,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			twMB.addMenuItem(null, "Display Branch/Node Properties on Tree...", makeCommand("showDialog", this));
 			propertyList = twMB.getBranchPropertiesList();
 		}
-		managerModule = (NodeAssociatesAManager)findNearestColleagueWithDuty(NodeAssociatesAManager.class);
+		managerModule = (NodePropertiesAManager)findNearestColleagueWithDuty(NodePropertiesAManager.class);
 		extras = new Vector();
 		return true;
 	}
@@ -117,18 +117,18 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 	}
 	
 	/*.========================================================..**/
-	PropertyDisplayRecord findInList(String s, int kind){
+	DisplayableTreeProperty findInList(String s, int kind){
 		if (propertyList.indexOfByName(s)<0)
 			return null;
 		for (int i=0; i<propertyList.size(); i++){
-			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
+			DisplayableTreeProperty mi = (DisplayableTreeProperty)propertyList.elementAt(i);
 			if (mi.getName().equalsIgnoreCase(s) && mi.kind ==kind)
 				return mi;
 		}
 		return null;
 	}
 	/*...............................................................................*/
-	public void pleaseShowHide(PropertyDisplayRecord[] list, boolean show){
+	public void pleaseShowHide(DisplayableTreeProperty[] list, boolean show){
 		if (list == null)
 			return;
 
@@ -144,7 +144,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		parametersChanged();
 	}
 	/*...............................................................................*/
-	public boolean isShowing(PropertyDisplayRecord mi){
+	public boolean isShowing(DisplayableTreeProperty mi){
 		if (mi == null)
 			return false;
 		return mi.showing;
@@ -153,7 +153,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 	boolean anyShowing(){
 
 		for (int i=0; i<propertyList.size(); i++){
-			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
+			DisplayableTreeProperty mi = (DisplayableTreeProperty)propertyList.elementAt(i);
 			if (mi.showing)
 				return true;
 		}
@@ -236,7 +236,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 		IntegerArray indicesSelected = dialog.getIndicesCurrentlySelected();
 		for (int i= 0; i<queryPropertiesList.length; i++){
-			PropertyDisplayRecord property = (PropertyDisplayRecord)queryPropertiesList[i];
+			DisplayableTreeProperty property = (DisplayableTreeProperty)queryPropertiesList[i];
 			if (indicesSelected == null || indicesSelected.getSize() == 0 || indicesSelected.indexOf(i)>=0){
 				showNameConsensus.vote(property.showName);
 				centeredConsensus.vote(property.centered);
@@ -281,7 +281,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			return;
 		}
 		for (int i= 0; i<queryPropertiesList.length; i++){
-			PropertyDisplayRecord property = (PropertyDisplayRecord)queryPropertiesList[i];
+			DisplayableTreeProperty property = (DisplayableTreeProperty)queryPropertiesList[i];
 			String before = "";
 			if (property.showing)
 				before =  "✓ "; 
@@ -438,19 +438,19 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 		boolean actionTaken = false;
 		if (e.getActionCommand().equalsIgnoreCase("showSelected")) {
 			for (int k = 0; k<indicesSelected.getSize(); k++){
-				((PropertyDisplayRecord)queryPropertiesList[indicesSelected.getValue(k)]).showing = true;	
+				((DisplayableTreeProperty)queryPropertiesList[indicesSelected.getValue(k)]).showing = true;	
 			}
 			actionTaken = true;
 		}
 		else if (e.getActionCommand().equalsIgnoreCase("hideSelected")) {
 			for (int k = 0; k<indicesSelected.getSize(); k++){
-				((PropertyDisplayRecord)queryPropertiesList[indicesSelected.getValue(k)]).showing = false;
+				((DisplayableTreeProperty)queryPropertiesList[indicesSelected.getValue(k)]).showing = false;
 			}
 			actionTaken = true;
 		}
 		else if (e.getActionCommand().equalsIgnoreCase("setStyle")) {
 			for (int k = 0; k<indicesSelected.getSize(); k++){
-				PropertyDisplayRecord property = (PropertyDisplayRecord)queryPropertiesList[indicesSelected.getValue(k)];
+				DisplayableTreeProperty property = (DisplayableTreeProperty)queryPropertiesList[indicesSelected.getValue(k)];
 				if (MesquiteInteger.isCombinable(fontSizeF.getValue()))
 					property.fontSize = fontSizeF.getValue();
 				if (MesquiteInteger.isCombinable(digitsF.getValue()))
@@ -476,7 +476,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			actionTaken = true;
 		}
 		else if (e.getActionCommand().equalsIgnoreCase("saveStylesAsDefaults")) {
-				PropertyDisplayRecord.mergeIntoPreferences(propertyList); 
+				DisplayableTreeProperty.mergeIntoPreferences(propertyList); 
 		}
 		if (actionTaken){
 			rePrefaceList();
@@ -493,7 +493,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			return null;
 		Snapshot temp = new Snapshot();
 		for (int i=0; i< propertyList.size(); i++) {
-			PropertyDisplayRecord n = (PropertyDisplayRecord)propertyList.elementAt(i);
+			DisplayableTreeProperty n = (DisplayableTreeProperty)propertyList.elementAt(i);
 			temp.addLine("showAssociate " + StringUtil.tokenize(n.getName()) + " " + n.kind + " " + n.showing);
 
 			// sequence: showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical
@@ -526,7 +526,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			//use "x" to ignore
 			String name = parser.getFirstToken(arguments);
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
-			PropertyDisplayRecord property = findInList(name, kind);
+			DisplayableTreeProperty property = findInList(name, kind);
 			if (property!= null){
 				property.setBooleans(parser);				 
 			if (!MesquiteThread.isScripting()) parametersChanged();
@@ -536,7 +536,7 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 			// sequence fontSize, xOffset, yOffset, digits, color, thresholdValueToShow
 			String name = parser.getFirstToken(arguments);
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
-			PropertyDisplayRecord property = findInList(name, kind);
+			DisplayableTreeProperty property = findInList(name, kind);
 			if (property!= null){
 				property.setNumbers(parser);				 
 				if (!MesquiteThread.isScripting()) parametersChanged();
@@ -545,28 +545,28 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 		else if (checker.compare(this.getClass(), "Sets booleans for all double properties. For reading of 3.x scripts", "[on or off for 7 booleans]", commandName, "setBooleansAllDoubles")) {
 			for (int i= 0; i< propertyList.size(); i++){
-				PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
+				DisplayableTreeProperty property = (DisplayableTreeProperty)propertyList.elementAt(i);
 				if (property.kind == Associable.DOUBLES)
 					doCommand("setBooleans", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets booleans for all string properties. For reading of 3.x scripts", "[on or off for 7 booleans]", commandName, "setBooleansAllStrings")) {
 			for (int i= 0; i< propertyList.size(); i++){
-				PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
+				DisplayableTreeProperty property = (DisplayableTreeProperty)propertyList.elementAt(i);
 				if (property.kind == Associable.STRINGS)
 					doCommand("setBooleans", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets numbers for all double properties. For reading of 3.x scripts", "[numbers for 7 values]", commandName, "setNumbersAllDoubles")) {
 			for (int i= 0; i< propertyList.size(); i++){
-				PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
+				DisplayableTreeProperty property = (DisplayableTreeProperty)propertyList.elementAt(i);
 				if (property.kind == Associable.DOUBLES)
 					doCommand("setNumbers", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets booleans for all string properties. For reading of 3.x scripts", "[numbers for 7 values]", commandName, "setNumbersAllStrings")) {
 			for (int i= 0; i< propertyList.size(); i++){
-				PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
+				DisplayableTreeProperty property = (DisplayableTreeProperty)propertyList.elementAt(i);
 				if (property.kind == Associable.STRINGS)
 					doCommand("setNumbers", ParseUtil.tokenize(property.getName()) + " " + property.kind + " " + arguments, checker);
 			}
@@ -617,14 +617,14 @@ public class NodeAssociatesZDisplayControl extends TreeDisplayAssistantI impleme
 
 /* ======================================================================== */
 class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, TreeDisplayLateExtra{
-	NodeAssociatesZDisplayControl controlModule;
+	NodePropertyDisplayControl controlModule;
 	MesquiteCommand taxonCommand, branchCommand, respondCommand;
 	MesquiteTree myTree = null;
 	StringInABox box = new StringInABox( "", treeDisplay.getFont(),1500);
 	TreeTool infoTool;
 
 	/*.--------------------------------------------------------------------------------------..*/
-	public NodeAssocDisplayExtra (NodeAssociatesZDisplayControl ownerModule, TreeDisplay treeDisplay) {
+	public NodeAssocDisplayExtra (NodePropertyDisplayControl ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		controlModule = ownerModule;
 		infoTool = new TreeTool(this, "BranchInfo", ownerModule.getPath(), "branchInfo.gif", 5,2,"Branch Info", "This tool is used to show information about a branch.");
@@ -640,7 +640,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		treeDisplay.redoCalculations(319283);
 	}
 	/*.................................................................................................................*/
-	String stringAtNodeForPropertyExplanation(MesquiteTree tree, int node, PropertyDisplayRecord property, boolean showNames){
+	String stringAtNodeForPropertyExplanation(MesquiteTree tree, int node, DisplayableTreeProperty property, boolean showNames){
 		String nodeString  = property.getStringAtNode(tree, node, showNames, !showNames, false);
 		return nodeString;
 	}
@@ -669,7 +669,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 	String[] stringsAtNode(MesquiteTree tree, int node, boolean showingAll, boolean showNamesRegardless, Vector nameCodes, int forWhere){ //0 elsewhere; 1 = screen display; 2 = popup
 		Vector nodeStrings = new Vector();
 		for (int p = 0; p< controlModule.propertyList.size(); p++){
-			PropertyDisplayRecord property = (PropertyDisplayRecord)controlModule.propertyList.elementAt(p);
+			DisplayableTreeProperty property = (DisplayableTreeProperty)controlModule.propertyList.elementAt(p);
 			if (property.inCurrentTree){
 				String nodeString = null;
 				if ((showingAll || property.showing) && (tree.nodeIsInternal(node) || property.showOnTerminals)){
@@ -717,13 +717,13 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 			nL +=  "[none]";
 		else
 			nL += myTree.getNodeLabel(branchFound);
-		popupKeys.addElement(new PropertyDisplayRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN));
+		popupKeys.addElement(new DisplayableTreeProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN));
 		addToPopup(nL, branchFound, responseNumber++);
 
 		addToPopup("Branch/node number: " + branchFound, branchFound, responseNumber++);
-		popupKeys.addElement(new PropertyDisplayRecord("nodenumber", Associable.BUILTIN));
+		popupKeys.addElement(new DisplayableTreeProperty("nodenumber", Associable.BUILTIN));
 		addToPopup("-", branchFound, responseNumber++);
-		popupKeys.addElement(new PropertyDisplayRecord("dash", Associable.BUILTIN));
+		popupKeys.addElement(new DisplayableTreeProperty("dash", Associable.BUILTIN));
 		String[] strings = stringsAtNode(myTree, branchFound, true, true, popupKeys, 2);
 		if (strings != null)
 			for (int i = 0; i<strings.length; i++)
@@ -749,7 +749,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 			int responseNumber= MesquiteInteger.fromString(arguments, pos);
 			if (responseNumber>=0 && branchFound >0 && MesquiteInteger.isCombinable(branchFound) && MesquiteInteger.isCombinable(responseNumber) ) {
 				if (responseNumber<popupKeys.size()){
-					PropertyDisplayRecord property = (PropertyDisplayRecord)popupKeys.elementAt(responseNumber);
+					DisplayableTreeProperty property = (DisplayableTreeProperty)popupKeys.elementAt(responseNumber);
 					String name = property.getName();
 					NameReference nameRef = NameReference.getNameReference(name);
 					MesquiteWindow container = controlModule.containerOfModule();
@@ -898,7 +898,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		}
 		
 		for (int p = 0; p< controlModule.propertyList.size(); p++){
-			PropertyDisplayRecord property = (PropertyDisplayRecord)controlModule.propertyList.elementAt(p);
+			DisplayableTreeProperty property = (DisplayableTreeProperty)controlModule.propertyList.elementAt(p);
 			if (property.inCurrentTree && property.showing && (tree.nodeIsInternal(node) || property.showOnTerminals)){
 				String nodeString = property.getStringAtNode(tree, node);
 				if (StringUtil.notEmpty(nodeString)){

@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodeAssociatesListBetween;
+package mesquite.trees.NodePropertiesListBetween;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -28,16 +28,15 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.PropertyDisplayRecord;
-import mesquite.lib.tree.PropertyRecord;
+import mesquite.lib.tree.DisplayableTreeProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
-import mesquite.trees.lib.NodeAssociatesListAssistant;
+import mesquite.trees.lib.NodePropertiesListAssistant;
 
 /* ======================================================================== */
-public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
+public class NodePropertiesListBetween extends NodePropertiesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
@@ -105,12 +104,12 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 			discreetAlert("Please selected rows before attempting to reassign them here");
 			return;
 		}
-		PropertyRecord[] mis = new PropertyRecord[table.numRowsSelected()];
+
 		int count = 0;
 		boolean prohibited = false;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				PropertyRecord pr = getPropertyAtRow(ir);
+				DisplayableTreeProperty pr = getPropertyAtRow(ir);
 				if (!pr.setBelongsToBranch(toBranch, true))
 					prohibited = true;
 				else if (tree.propertyIsBetween(pr) != toBranch) {
@@ -159,7 +158,7 @@ public class NodeAssociatesListBetween extends NodeAssociatesListAssistant  {
 		return "Branch";
 	}
 	public String getStringForRow(int ic) {
-		PropertyDisplayRecord property = getPropertyAtRow(ic);
+		DisplayableTreeProperty property = getPropertyAtRow(ic);
 		if (property != null)
 			return nodeOrBranch(property.getBelongsToBranch());
 		return "—";

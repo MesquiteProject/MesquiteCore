@@ -89,6 +89,7 @@ public class NumAttachedToTree extends NumberForTree {
 			if (at !=null) {
 				for (int i =0; i < at.size(); i++){
 					Object obj = at.elementAt(i);
+					Debugg.println("attached " + obj);
 					if (obj instanceof MesquiteDouble || obj instanceof MesquiteNumber  || obj instanceof MesquiteInteger   || obj instanceof MesquiteLong) {
 						String name = ((Listable)obj).getName();
 						if (names.indexOfByNameIgnoreCase(name)<0) {

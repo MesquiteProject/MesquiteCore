@@ -10,7 +10,11 @@
 		<after>'prob(percent)'</after>
 	</replacement> 
 	<replacement> 
-		<before>prob + - sd</before>
+		<before> + - </before>
+		<after>+-</after>
+	</replacement> 
+	<replacement> 
+		<before>prob+-sd</before>
 		<after>'prob+-sd'</after>
 	</replacement> 
 	<replacement> 

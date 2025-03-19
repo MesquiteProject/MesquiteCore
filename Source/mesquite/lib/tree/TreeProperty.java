@@ -1,0 +1,107 @@
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+ */
+package mesquite.lib.tree;
+
+import java.awt.Font;
+
+import mesquite.lib.Associable;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.NameReference;
+import mesquite.lib.Nameable;
+import mesquite.lib.PropertyRecord;
+
+/* ======================================================================== */
+/*A specialized version of PropertyRecord for trees, especially for tree branches/nodes*/
+public class TreeProperty extends PropertyRecord  {
+
+	private boolean belongsToBranch = true; //This is settable only from the settings managed by BranchPropertiesInit.
+	
+	
+	/*This vector records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties.
+	 * This is read by BranchPropertiesInit, and cannot be changed at runtime. It cannot be overridden either.*/
+	public static ListableVector treePropertiesSettingsVector = new ListableVector(); 
+
+	//The storage points for tree properties are:
+	// TreeProperty.treePropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
+	// DisplayableTreeProperty.treePropertyDisplayPreferences: static, records the display preferences of tree properties
+	// MesquiteProject.knownTreeProperties: instance, the properties known by the project. For interface; not saved to file.
+	// The module BranchPropertiesInit is the primary manager
+
+	//as of 4.0, this isn't instantiated at this level, but only as DisplayableTreeProperty
+	public TreeProperty(String name,int kind){
+		super(name, kind);
+	}
+	//as of 4.0, this isn't instantiated at this level, but only as DisplayableTreeProperty
+	public TreeProperty(NameReference nr,int kind){
+		super(nr, kind);
+	}
+	public static int preferredKind(String name){
+		PropertyRecord[] props = findInTreePropertySettings(name);
+		if (props == null || props.length>1)
+			return -1;
+		return props[0].kind;
+	}
+	public boolean getBelongsToBranch(){ //in Associable, this is referred to as betweenness
+		return belongsToBranch;
+	}
+
+	//returns true if succeeds
+	public boolean setBelongsToBranch(boolean belongsToBranch, boolean recordIfNew){
+		if (kind == Associable.BUILTIN || TreeProperty.findInTreePropertySettings(nRef, kind) != null)
+			return false;
+		if (this.belongsToBranch != belongsToBranch){
+			//Debugg.println("@  recordInVector;
+		}
+		this.belongsToBranch = belongsToBranch;
+		return true;
+	}
+	public static TreeProperty findInTreePropertySettings(NameReference nr, int kind){
+		ListableVector pList = treePropertiesSettingsVector;
+		for (int i=0; i<pList.size(); i++){
+			TreeProperty mi = (TreeProperty)pList.elementAt(i);
+			if (mi.getNameReference().equals(nr) && mi.kind ==kind)
+				return mi;
+		}
+		return null;
+	}
+
+	public static TreeProperty[] findInTreePropertySettings(String name){
+		ListableVector pList = treePropertiesSettingsVector;
+		int count = 0;
+		for (int i=0; i<pList.size(); i++){
+			PropertyRecord mi = (PropertyRecord)pList.elementAt(i);
+			if (mi.getNameReference().equalsString(name))
+				count++;
+		}
+		if (count == 0)
+			return null;
+		TreeProperty[] props = new TreeProperty[count];
+		count = 0;
+		for (int i=0; i<pList.size(); i++){
+			TreeProperty mi = (TreeProperty)pList.elementAt(i);
+			if (mi.getNameReference().equalsString(name))
+				props[count++] = mi;
+		}
+		return props;
+	}
+	
+	public void addToKnownTreePropertiesIfNeeded(MesquiteTree tree){
+		if (tree != null && tree.getTaxa() != null && tree.getTaxa().getProject()!= null)
+			addIfNotInList(tree.getTaxa().getProject().knownTreeProperties, this);// add p to project.knownTreeProperties if not there by name
+	}
+
+
+}
+

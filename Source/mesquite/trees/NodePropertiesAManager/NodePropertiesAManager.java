@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodeAssociatesAManager;
+package mesquite.trees.NodePropertiesAManager;
 /*~~  */
 
 
@@ -45,29 +45,13 @@ import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.PropertyDisplayRecord;
+import mesquite.lib.tree.DisplayableTreeProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
-import mesquite.lib.tree.TreeDisplayEarlyExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
-import mesquite.lib.tree.TreeDisplayLateExtra;
-import mesquite.lib.tree.TreeDrawing;
-import mesquite.lib.tree.TreeTool;
-import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.ui.ColorDistribution;
-import mesquite.lib.ui.DoubleClickList;
-import mesquite.lib.ui.DoubleField;
-import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MQJLabel;
-import mesquite.lib.ui.MesquiteCheckMenuItem;
-import mesquite.lib.ui.MesquiteMenuItem;
-import mesquite.lib.ui.MesquitePopup;
-import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.lib.ui.MesquiteWindow;
-import mesquite.lib.ui.StringInABox;
 
 /* ======================================================================== */
-public class NodeAssociatesAManager extends TreeDisplayAssistantI {
+public class NodePropertiesAManager extends TreeDisplayAssistantI {
 
 	String[] reservedNames = new String[]{"!color"};
 	String[] builtInNames = new String[]{MesquiteTree.branchLengthName, MesquiteTree.nodeLabelName};
@@ -86,8 +70,8 @@ public class NodeAssociatesAManager extends TreeDisplayAssistantI {
 			propertyList = twMB.getBranchPropertiesList();
 		}
 	//	extras = new Vector();
-		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
-		propertyList.addElement(new PropertyDisplayRecord(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
+		propertyList.addElement(new DisplayableTreeProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
+		propertyList.addElement(new DisplayableTreeProperty(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
 
 		return true;
 	}
@@ -119,27 +103,27 @@ public class NodeAssociatesAManager extends TreeDisplayAssistantI {
 		System.out.println("Properties on record & to show");
 
 		for (int i=0; i<list.size(); i++){
-			PropertyDisplayRecord mi = (PropertyDisplayRecord)list.elementAt(i);
+			DisplayableTreeProperty mi = (DisplayableTreeProperty)list.elementAt(i);
 			System.out.println(mi.getName() + "\t" + mi.kind + " showing " + mi.showing);
 		}
 	}
-	PropertyDisplayRecord findInList(NameReference nr, int kind){
-		return (PropertyDisplayRecord)PropertyDisplayRecord.findInList(propertyList, nr, kind);
+	DisplayableTreeProperty findInList(NameReference nr, int kind){
+		return (DisplayableTreeProperty)DisplayableTreeProperty.findInList(propertyList, nr, kind);
 	}
-	PropertyDisplayRecord findInList(String s, int kind){
+	DisplayableTreeProperty findInList(String s, int kind){
 		if (propertyList.indexOfByName(s)<0)
 			return null;
 		for (int i=0; i<propertyList.size(); i++){
-			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
+			DisplayableTreeProperty mi = (DisplayableTreeProperty)propertyList.elementAt(i);
 			if (mi.getName().equalsIgnoreCase(s) && mi.kind ==kind)
 				return mi;
 		}
 		return null;
 	}
 	/*...............................................................................*/
-	int indexInList(PropertyDisplayRecord property){
+	int indexInList(DisplayableTreeProperty property){
 		for (int i=0; i<propertyList.size(); i++){
-			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
+			DisplayableTreeProperty mi = (DisplayableTreeProperty)propertyList.elementAt(i);
 			if (mi.equals(property))
 				return i;
 		}
@@ -150,7 +134,7 @@ public class NodeAssociatesAManager extends TreeDisplayAssistantI {
 		return indexInList(property)>=0;
 	}
 	/*...............................................................................*/
-	public boolean isBuiltIn(PropertyDisplayRecord mi){
+	public boolean isBuiltIn(DisplayableTreeProperty mi){
 		return mi.kind== Associable.BUILTIN;
 	}
 	/*...............................................................................*
@@ -191,9 +175,9 @@ public class NodeAssociatesAManager extends TreeDisplayAssistantI {
 			return;
 		if (name.equalsIgnoreCase("selected") && kind == Associable.BITS)
 			return;
-		PropertyDisplayRecord mi = findInList(name, kind);
+		DisplayableTreeProperty mi = findInList(name, kind);
 		if (mi==null){  
-			mi = new PropertyDisplayRecord(name, kind);
+			mi = new DisplayableTreeProperty(name, kind);
 			mi.showing = show;
 			propertyList.addElement(mi, false);
 		}
@@ -209,12 +193,12 @@ public class NodeAssociatesAManager extends TreeDisplayAssistantI {
 			return;
 		int count = 0;
 		for (int i=0; i<propertyList.size(); i++){
-			PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
+			DisplayableTreeProperty property = (DisplayableTreeProperty)propertyList.elementAt(i);
 			property.inCurrentTree = tree.isPropertyAssociated(property);
 			count++;
 			property.setBelongsToBranch(tree.propertyIsBetween(property), true);
 		}
-		PropertyDisplayRecord[] properties = tree.getPropertyRecords();
+		DisplayableTreeProperty[] properties = tree.getPropertyRecords();
 		if (properties == null)
 			return;
 		for (int i=0; i<properties.length; i++){
@@ -664,11 +648,11 @@ public class NodeAssociatesAManager extends TreeDisplayAssistantI {
 
 /* ======================================================================== */
 class NAAMDisplayExtra extends TreeDisplayExtra{
-	NodeAssociatesAManager controlModule;
+	NodePropertiesAManager controlModule;
 	MesquiteTree myTree = null;
 
 	/*.--------------------------------------------------------------------------------------..*/
-	public NAAMDisplayExtra (NodeAssociatesAManager ownerModule, TreeDisplay treeDisplay) {
+	public NAAMDisplayExtra (NodePropertiesAManager ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		controlModule = ownerModule;
 	}

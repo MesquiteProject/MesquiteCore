@@ -79,20 +79,47 @@ public class NewickDialect implements Listable {
 	public void setWhitespace(String whitespace){
 		this.whitespace = punctuation;
 	}
-	public String translate(String treeDescription){
+	
+	String replace(String orig, int loc, int targetLength, String replacement, int[] correspondence){
+		String modified = orig.substring(0,loc)+replacement+orig.substring(loc+targetLength);
+		if (correspondence != null){
+			int push = replacement.length() - targetLength;
+			for (int i = loc; i< correspondence.length; i++)
+				correspondence[i] +=  push;
+		}
+			
+		return modified;
+	}
+	public String translate(String treeDescription, ObjectContainer container){ //pass back translation correspondence in the container
 		if (treeDescription == null)
 			return null;
+		int[] correspondence = null;
+		if (container != null) {
+			correspondence = new int[treeDescription.length()];
+			for (int i = 0; i< correspondence.length; i++)
+				correspondence[i] = i;
+			
+			container.setObject(correspondence);
+		}
 		for (int i = 0; i<replacements.size(); i++){
 			String[] r = (String[])replacements.elementAt(i);
-			if ("all".equalsIgnoreCase(r[2]))
-				treeDescription = treeDescription.replace(r[0], r[1]);
-			else if ("first".equalsIgnoreCase(r[2])){
-				int first = treeDescription.indexOf(r[0]);
-				treeDescription = treeDescription.substring(0,first)+r[1]+treeDescription.substring(first);
+			if ("all".equalsIgnoreCase(r[2])) {
+				if (correspondence != null){  //need to track correspondence
+					while (treeDescription.indexOf(r[0])>=0){
+						treeDescription = replace(treeDescription, treeDescription.indexOf(r[0]), r[0].length(), r[1], correspondence);
+					}
+				}
+				else
+					treeDescription = treeDescription.replace(r[0], r[1]);
 			}
-			else if ("last".equalsIgnoreCase(r[2])){
-				int last = treeDescription.lastIndexOf(r[0]);
-				treeDescription = treeDescription.substring(0,last-1)+r[1]+treeDescription.substring(last);
+			else {
+				int loc = -1;
+				if ("first".equalsIgnoreCase(r[2]))
+					loc = treeDescription.indexOf(r[0]);
+				else if ("last".equalsIgnoreCase(r[2]))
+					loc = treeDescription.lastIndexOf(r[0]);
+				if (loc >=0)
+					treeDescription = replace(treeDescription, loc, r[0].length(), r[1], correspondence);
 			}
 		}
 		return treeDescription;
@@ -213,14 +240,14 @@ public class NewickDialect implements Listable {
 		}
 		return true;
 	}
-	
+
 	public String toString(){
 		String s = "Dialect " + internalName + " for " + humanName + '\n';
-		
+
 		if (punctuation == null)
 			s += "\tpunctuation null\n";
 		else
-		s += "\tpunctuation " + punctuation + '\n';
+			s += "\tpunctuation " + punctuation + '\n';
 		if (whitespace == null)
 			s += "\twhitespace null\n";
 		else

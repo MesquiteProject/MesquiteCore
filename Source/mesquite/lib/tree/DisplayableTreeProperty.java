@@ -30,9 +30,7 @@ import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
 
 /* ======================================================================== */
-/*represents the bits, longs, doubles, strings and objects belonging to parts of an Associable.
- *  Not permanently in an Associable, but for temporary use, e.g. for display in tree window, hence the graphics parameters*/
-public class PropertyDisplayRecord extends PropertyRecord  {
+public class DisplayableTreeProperty extends TreeProperty  {
 	public boolean showing = false;
 	public boolean showName = true;
 	public boolean centered = false;
@@ -48,21 +46,27 @@ public class PropertyDisplayRecord extends PropertyRecord  {
 	public int fontSize = 12;
 	public int color = 0; //standard Mesquite colors in ColorDistribution
 	
+	//this records the display preferences of tree properties
+	public static ListableVector treePropertyDisplayPreferences = new ListableVector();
+
+	//==== The storage points for tree properties are: ====
+	// TreeProperty.treePropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
+	// DisplayableTreeProperty.treePropertyDisplayPreferences: static, records the display preferences of tree properties
+	// MesquiteProject.knownTreeProperties: instance, the properties known by the project. For interface; not saved to file.
+	// The module BranchPropertiesInit is the primary manager
 	
-	
-	public boolean inCurrentTree = false;  //depends on current tree; used by NodeAssociatesZ and Node Associates List system
+	public boolean inCurrentTree = false;  //depends on current tree; used by NodePropertyDisplayControl and Node Properties List system
 
 	
-	public PropertyDisplayRecord(String name,int kind){
+	public DisplayableTreeProperty(String name,int kind){
 		super(name, kind);
-		PropertyDisplayRecord prefRecord = (PropertyDisplayRecord)findInList(preferenceRecords, nRef, kind);
+		DisplayableTreeProperty prefRecord = (DisplayableTreeProperty)findInList(treePropertyDisplayPreferences, nRef, kind);
 		if (prefRecord != null)
 			cloneFrom(prefRecord);
-		//see mesquite.trees.PropertyDisplayRecordInit for defaults setting and management
 	}
 	
 	
-	public void cloneFrom(PropertyDisplayRecord other){
+	public void cloneFrom(DisplayableTreeProperty other){
 		showing = other.showing;
 		showName = other.showName;
 		centered = other.centered;
@@ -133,15 +137,15 @@ public class PropertyDisplayRecord extends PropertyRecord  {
 	
 	public static void mergeIntoPreferences(ListableVector propertyList){
 		for (int i = 0; i< propertyList.size(); i++){
-			PropertyDisplayRecord property = (PropertyDisplayRecord)propertyList.elementAt(i);
-			PropertyDisplayRecord prefRecord = (PropertyDisplayRecord)findInList(preferenceRecords, property.getNameReference(), property.kind);
+			DisplayableTreeProperty property = (DisplayableTreeProperty)propertyList.elementAt(i);
+			DisplayableTreeProperty prefRecord = (DisplayableTreeProperty)findInList(treePropertyDisplayPreferences, property.getNameReference(), property.kind);
 			if (prefRecord == null) {
-				prefRecord = new PropertyDisplayRecord(property.getName(), property.kind);
-				preferenceRecords.addElement(prefRecord, false);
+				prefRecord = new DisplayableTreeProperty(property.getName(), property.kind);
+				treePropertyDisplayPreferences.addElement(prefRecord, false);
 			}
 			prefRecord.cloneFrom(property);
 		}
-		preferenceRecords.notifyListeners(PropertyDisplayRecord.class, new Notification(MesquiteListener.PARTS_ADDED));
+		treePropertyDisplayPreferences.notifyListeners(DisplayableTreeProperty.class, new Notification(MesquiteListener.PARTS_ADDED));
 	}
 	
 

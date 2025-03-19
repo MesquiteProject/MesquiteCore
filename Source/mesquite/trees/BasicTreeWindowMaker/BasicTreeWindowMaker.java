@@ -30,7 +30,7 @@ import mesquite.lib.ui.*;
 
 import java.awt.datatransfer.*;
 
-import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
+import mesquite.trees.NodePropertiesList.NodePropertiesList;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
 /** Makes and manages a Tree Window for tree editing and visualization */
@@ -434,8 +434,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (checker.compare(this.getClass(), "Returns the block of taxa associated with this tree window", null, commandName, "getTaxa")) {
 			return taxa;
 		}
-		else if (checker.compare(this.getClass(), "Displays the Node Associates List window if first tree has novel annotations other than built in or reserved.", null, commandName, "autoShowPropertiesList")) {
-			MesquiteModule mb = findEmployeeWithName("#NodeAssociatesList");
+		else if (checker.compare(this.getClass(), "Displays the Node Properties List window if first tree has novel annotations other than built in or reserved.", null, commandName, "autoShowPropertiesList")) {
+			MesquiteModule mb = findEmployeeWithName("#NodePropertiesList");
 			if (mb != null && treeSourceTask != null && taxa != null){
 				Tree tempTree = treeSourceTask.getTree(taxa, 0);
 				if (tempTree instanceof MesquiteTree){
@@ -1091,7 +1091,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		infoButton.setShowBackground(false);
 		infoButton.setButtonExplanation("Show Tree Info Panel");
 		controlStrip.addButton(infoButton);
-		MesquiteModule mbNAL = ownerModule.findEmployeeWithDuty(NodeAssociatesList.class);
+		MesquiteModule mbNAL = ownerModule.findEmployeeWithDuty(NodePropertiesList.class);
 		MesquiteButton nodeInfoButton = new MesquiteButton(ownerModule, MesquiteModule.makeCommand("toggleWindow", mbNAL), null, true, MesquiteModule.getRootImageDirectoryPath() + "showNodeAssoc.gif", 12, 16);
 		// infoBar.addExtraButton(MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", MesquiteModule.makeCommand("toggleInfoPanel", this));
 		nodeInfoButton.setUseWaitThread(false);

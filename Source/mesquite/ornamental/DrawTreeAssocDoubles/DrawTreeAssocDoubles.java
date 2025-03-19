@@ -30,10 +30,10 @@ import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.StringInABox;
-import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
+import mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
 
 /* ======================================================================== */
-/* No longer used, subsumed under NodeAssociatesZDisplayControl, but kept here to forward old scripts thereto */
+/* No longer used, subsumed under NodePropertyDisplayControl, but kept here to forward old scripts thereto */
 public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 	public boolean loadModule(){
 		return true;
@@ -81,7 +81,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			boolean B = true;
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
-			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 			if (mb != null)
 				mb.doCommand("setBooleansAllDoubles",  " x x x x x " + B + " x ", checker);
 	}
@@ -90,7 +90,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			boolean B = true;
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
-			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 			if (mb != null)
 				mb.doCommand("setBooleansAllDoubles",  " x x x x x x " + !B + " ", checker);
 		}
@@ -99,7 +99,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			boolean B = true;
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
-			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 			if (mb != null)
 				mb.doCommand("setBooleansAllDoubles",  " x x " + B + " x x x x ", checker);
 		}
@@ -108,7 +108,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			boolean B = true;
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
-			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 			if (mb != null)
 				mb.doCommand("setBooleansAllDoubles",  " x x x " + B + " x x x ", checker);
 		}
@@ -117,7 +117,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			boolean B = true;
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
-			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 			if (mb != null)
 				mb.doCommand("setBooleansAllDoubles",  " x " + B + " x x x x x ", checker);
 			
@@ -126,7 +126,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		else if (checker.compare(this.getClass(), "Sets how many digits are shown", "[number of digits]", commandName, "setDigits")) {//forwarded
 			int newWidth= MesquiteInteger.fromFirstToken(arguments, pos);
 			if (newWidth>=0 && newWidth<24 ) {
-				MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+				MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 				if (mb != null)
 					mb.doCommand("setNumbersAllDoubles",  " x x x  " + newWidth + " x x  ", checker);
 			}
@@ -135,7 +135,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			parser.setString(arguments);
 			double newThreshold = MesquiteDouble.fromString(parser);
 			if (MesquiteDouble.isCombinable(newThreshold)) {
-				MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+				MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 				if (mb != null)
 					mb.doCommand("setNumbersAllDoubles",  " x x x x x " + newThreshold, checker);
 			}
@@ -145,7 +145,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			boolean B = true;
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
-			MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 			if (mb != null){
 				mb.doCommand("setBooleansAllDoubles",  " false false false false false true false ", checker);
 				mb.doCommand("setNumbersAllDoubles",  " x -2 9  0 x ?  ", checker);
@@ -155,7 +155,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			int newX= MesquiteInteger.fromFirstToken(arguments, pos);
 			int newY= MesquiteInteger.fromString(arguments, pos);
 			if (MesquiteInteger.isCombinable(newX) && newX>-200 && newX <200 && newY>-200 && newY <200) {
-				MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+				MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 				if (mb != null)
 					mb.doCommand("setNumbersAllDoubles",  " x " + newX + " " + newY + " x x x x  ", checker);
 			}
@@ -163,7 +163,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		else if (checker.compare(this.getClass(), "Sets font size", "[font size]", commandName, "setFontSize")) {//forwarded
 			int newWidth= MesquiteInteger.fromFirstToken(arguments, pos);
 			if (newWidth>1 && newWidth<96 ) {
-				MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+				MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 				if (mb != null)
 					mb.doCommand("setNumbersAllDoubles",  " " + newWidth + " x x x x x x  ", checker);
 			}
@@ -175,7 +175,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
 			if (B && on.getValue()){
-				MesquiteModule mb = findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+				MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 			if (mb != null){
 				String toggle = "true";
 				if (name.equalsIgnoreCase("consensusFrequency") ||name.equalsIgnoreCase("posteriorProbability") ||name.equalsIgnoreCase("bootstrapFrequency"))  //because old system used to treat thses as starting at true!

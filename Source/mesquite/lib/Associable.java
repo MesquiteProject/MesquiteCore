@@ -17,8 +17,7 @@ import java.awt.*;
 import java.util.*;
 
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.PropertyDisplayRecord;
-import mesquite.lib.tree.PropertyRecord;
+import mesquite.lib.tree.DisplayableTreeProperty;
 import mesquite.lib.ui.ColorDistribution;
 
 /*.................................................................................................................*/
@@ -609,7 +608,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 
 	/*-----------------------------------------*/
-	public void renameAssociated(PropertyDisplayRecord property, String newName, boolean notify){
+	public void renameAssociated(DisplayableTreeProperty property, String newName, boolean notify){
 		Nameable d = null;
 		if (property.kind == Associable.BITS)
 			d = getAssociatedBits(property.getNameReference());
@@ -707,45 +706,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 	}
 
-	public PropertyDisplayRecord[] getPropertyRecords(){ 
-		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
-		if (total == 0)
-			return null;
-		PropertyDisplayRecord[] names = new PropertyDisplayRecord[total];
-		int count = 0;
-		if (bits!=null) {
-			for (int i=0; i<bits.size(); i++) {
-				Listable b = (Listable)bits.elementAt(i);
-				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.BITS);
-			}
-		}
-		if (longs!=null) {
-			for (int i=0; i<longs.size(); i++) {
-				Object obj = longs.elementAt(i);
-				Listable b = (Listable)longs.elementAt(i);
-				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.LONGS);
-			}
-		}
-		if (doubles!=null){
-			for (int i=0; i<doubles.size(); i++) {
-				Listable b = (Listable)doubles.elementAt(i);
-				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.DOUBLES);
-			}
-		}
-		if (strings!=null){
-			for (int i=0; i<strings.size(); i++) {
-				Listable b = (Listable)strings.elementAt(i);
-				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.STRINGS);
-			}
-		}
-		if (objects!=null) {
-			for (int i=0; i<objects.size(); i++) {
-				Listable b = (Listable)objects.elementAt(i);
-				names[count++] = new PropertyDisplayRecord(b.getName(), Associable.OBJECTS);
-			}
-		}
-		return names;
-	}
+
 	public void deassignAllColor(){
 		deassignAllAssociatedStrings(ColorDistribution.colorRGBNameReference);
 	}

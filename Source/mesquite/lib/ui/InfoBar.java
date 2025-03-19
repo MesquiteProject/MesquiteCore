@@ -50,6 +50,7 @@ public class InfoBar extends MousePanel implements Commandable {
 	MesquiteInteger which;
 	int defaultMenuBase = 40;
 	int menuBase = defaultMenuBase;
+	int tileIconEdge = 19;
 	//	int[] tabOffsets = new int[] {54, 92, 162, 213, 272};
 	int triangleWidth = 4;
 	final boolean showTabs = false;  //turning off post-2.75
@@ -88,7 +89,7 @@ public class InfoBar extends MousePanel implements Commandable {
 	//HelpSearchStrip searchStrip;
 	SimplicityStrip simplicityStrip;
 	static Image iconImages;  
-	public static Image triangleImage, triangleImageDown, popIn;
+	public static Image triangleImage, triangleImageDown, popIn, popOutToWindow, popOutToTile;
 	public static Image releaseImage, prereleaseImage;
 	//	public static Image[] graphicsTab, textTab, parametersTab, modulesTab, citationsTab;
 	//	public static Image[] baseImage;  
@@ -131,7 +132,9 @@ public class InfoBar extends MousePanel implements Commandable {
 		}
 		if (iconImages==null && MesquiteModule.getRootPath()!=null){ //done here instead of static in case root path not yet defined when static run
 			iconImages=  MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "infoBarIcons.gif");  
-			popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "compactTransparent.gif");  
+			popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopIn.gif");  
+			popOutToWindow = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopToWindow.gif");  
+			popOutToTile = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopToTile.gif");  
 		}
 		which = new MesquiteInteger(0);
 		setFont(smallFont);
@@ -204,7 +207,17 @@ public class InfoBar extends MousePanel implements Commandable {
 		}*/
 		int colo = window.getColorScheme();
 		FontMetrics fm = g.getFontMetrics();
-		if (popIn!=null && window.isPoppedOut()) g.drawImage(popIn,0,0, this);
+		if (window.isPoppedOut()){
+			if (popIn!= null)
+				g.drawImage(popIn,0,0, this);
+		}
+		else {
+			if (popOutToTile != null) {
+				g.drawImage(popOutToTile, 3, 0, this);
+				g.drawImage(popOutToWindow, tileIconEdge, 0, this);
+			}
+				
+		}
 		int height = getHeight();
 		int top = 2;
 		int round = 6;
@@ -695,8 +708,18 @@ public class InfoBar extends MousePanel implements Commandable {
 			}
 
 		if (x< menuBase){
-			if (MesquiteWindow.compactWindows && window.isPoppedOut())
+			if (MesquiteWindow.compactWindows){
+				if (window.isPoppedOut())
 				window.getOwnerModule().getFileCoordinator().getModuleWindow().getParentFrame().popIn(window);
+				else if (x< tileIconEdge){
+					window.setPopAsTile(true);
+					window.popOut(true);
+				}
+				else {
+					window.setPopAsTile(false);
+					window.popOut(true);
+				}
+			}
 		}
 		/*else if (x>=rel+7 && x <= rel+7+8){
 			MesquiteModule mod = window.getOwnerModule() ;

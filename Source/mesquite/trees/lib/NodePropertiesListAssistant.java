@@ -1,19 +1,19 @@
 package mesquite.trees.lib;
 
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.PropertyDisplayRecord;
+import mesquite.lib.tree.DisplayableTreeProperty;
 import mesquite.lists.lib.ListAssistant;
-import mesquite.trees.NodeAssociatesList.NodeAssociatesList;
-import mesquite.trees.NodeAssociatesZDisplayControl.NodeAssociatesZDisplayControl;
+import mesquite.trees.NodePropertiesList.NodePropertiesList;
+import mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
 
 /* ======================================================================== */
-public abstract class NodeAssociatesListAssistant extends ListAssistant  {
+public abstract class NodePropertiesListAssistant extends ListAssistant  {
 	//It's a bit risky (and unorthodox) sto store direct references to some of the other moduels, but too bad
-	NodeAssociatesZDisplayControl displayModule;
-	NodeAssociatesList listModule;
+	NodePropertyDisplayControl displayModule;
+	NodePropertiesList listModule;
 
    	 public Class getDutyClass() {
-   	 	return NodeAssociatesListAssistant.class;
+   	 	return NodePropertiesListAssistant.class;
    	 }
  	public String getDutyName() {
  		return "Node associates list assistant";
@@ -28,19 +28,19 @@ public abstract class NodeAssociatesListAssistant extends ListAssistant  {
 	public void cursorMove(MesquiteTree tree){
 	}
 	
-	/* This arrangement is quite unorthodox in Mesquite, where this list assistants ask of their mother (NodeAssociatesList) 
-	 * but also of their aunt (NodeAssociatesZDisplayControl). Normally the latter is discouraged. The mother and the aunt
+	/* This arrangement is quite unorthodox in Mesquite, where this list assistants ask of their mother (NodePropertiesList) 
+	 * but also of their aunt (NodePropertyDisplayControl). Normally the latter is discouraged. The mother and the aunt
 	 * should probably have been one module (managing and controlling display of tree associates) but it would have been quite big.
 	 * */
 	protected void controlAppearanceOnTree(){
 		if (displayModule == null)
-			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			displayModule = (NodePropertyDisplayControl)findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 		if (displayModule != null)
 			 displayModule.queryDialog();
 	}
-	protected boolean isShowingOnTree(PropertyDisplayRecord property){
+	protected boolean isShowingOnTree(DisplayableTreeProperty property){
 		if (displayModule == null)
-			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			displayModule = (NodePropertyDisplayControl)findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 		if (displayModule != null)
 			return displayModule.isShowing(property);
 		return false;
@@ -48,27 +48,27 @@ public abstract class NodeAssociatesListAssistant extends ListAssistant  {
 	
 	protected boolean associateInListIsBuiltIn(int row){
 		if (listModule == null)
-			listModule = (NodeAssociatesList)findEmployerWithDuty(NodeAssociatesList.class);
+			listModule = (NodePropertiesList)findEmployerWithDuty(NodePropertiesList.class);
 		if (listModule != null)
 			return listModule.associateIsBuiltIn(row);
 		return false;
 	}
-	protected PropertyDisplayRecord getPropertyAtRow(int row){
+	protected DisplayableTreeProperty getPropertyAtRow(int row){
 		if (listModule == null)
-			listModule = (NodeAssociatesList)findEmployerWithDuty(NodeAssociatesList.class);
+			listModule = (NodePropertiesList)findEmployerWithDuty(NodePropertiesList.class);
 		if (listModule != null)
 			return listModule.getPropertyAtRow(row);
 		return null;
 	}
-	protected void pleaseShowHideOnTree(PropertyDisplayRecord[] properties, boolean show){
+	protected void pleaseShowHideOnTree(DisplayableTreeProperty[] properties, boolean show){
 		if (displayModule == null)
-			displayModule = (NodeAssociatesZDisplayControl)findNearestColleagueWithDuty(NodeAssociatesZDisplayControl.class);
+			displayModule = (NodePropertyDisplayControl)findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 		if (displayModule != null)
 			displayModule.pleaseShowHide(properties, show);
 	}
 	protected void pleaseDeleteRow(int row, boolean notify){
 		if (listModule == null)
-			listModule = (NodeAssociatesList)findEmployerWithDuty(NodeAssociatesList.class);
+			listModule = (NodePropertiesList)findEmployerWithDuty(NodePropertiesList.class);
 		if (listModule != null)
 			 listModule.internalDeleteRow(row, notify);
 	}

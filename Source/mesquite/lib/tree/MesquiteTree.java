@@ -51,8 +51,10 @@ import mesquite.lib.NameReference;
 import mesquite.lib.Nameable;
 import mesquite.lib.Notification;
 import mesquite.lib.ObjectArray;
+import mesquite.lib.ObjectContainer;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
+import mesquite.lib.PropertyRecord;
 import mesquite.lib.RandomBetween;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
@@ -733,8 +735,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (!getRooted() && getRoot()==node)
 			return false;
 		return !withinCollapsedClade(node) || isLeftmostTerminalOfCollapsedClade(node);
-		
-		
+
+
 	}
 	/*__===============================================___*/
 	public String uniformColorInClade(int node){
@@ -3171,13 +3173,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return nodeInfo;
 	}
 	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
-	/*	if (readingMrBayesConTree) {  //ZQ why this kludge?
+		/*	if (readingMrBayesConTree) {  //ZQ why this kludge?
 			String c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">", false) + ">";  //get next token
 			c = retokenizeMrBayesConTreeNodeInfo(c); //what is this?
 			readAssociated(c, node, new MesquiteInteger(0), "", ",=>{}", predefinedDouble(TreeDescription, stringLoc));
 			ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
 		} else  */
-			readAssociated(TreeDescription, node, stringLoc,whitespaceInNewickComments, punctuationInNewickComments, predefinedDouble(TreeDescription, stringLoc));
+		readAssociated(TreeDescription, node, stringLoc,whitespaceInNewickComments, punctuationInNewickComments, predefinedDouble(TreeDescription, stringLoc));
 
 	}
 	/*-----------------------------------------*/
@@ -3509,7 +3511,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	String punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 	String whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
 
-	private String preprocessForDialect(String tD, MesquiteInteger startingPos, String dialectName){
+	private String preprocessForDialect(String tD, ObjectContainer correspondenceContainer, String dialectName){
 		if (dialects.indexOfByNameIgnoreCase(dialectName)>=0){
 			NewickDialect dialect = (NewickDialect)dialects.elementAt(dialects.indexOfByNameIgnoreCase(dialectName));
 			punctuationInNewickComments = dialect.getPunctuation();
@@ -3518,7 +3520,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 			if (whitespaceInNewickComments == null)
 				whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
-			tD = dialect.translate(tD);
+			tD = dialect.translate(tD, correspondenceContainer);
 			return tD;
 		}
 		return tD;
@@ -3543,19 +3545,58 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		return readTree(TreeDescription, null, namer, whitespaceString, punctuationString, readAssociated);
 	}
-
-	/* ########################### READ TREE ################################ */
+	String justBefore(String s, int upTo){
+		if (upTo>=s.length())
+			upTo = s.length();
+		int L = 6;
+		int start= upTo - L;
+		if (start < 0)
+			start = 0;
+		return s.substring(start, upTo);
+	}
+	String justAfter(String s, int from){
+		if (from>=s.length())
+			return "";
+		int L = 6;
+		int end= from +L;
+		if (end>s.length())
+			end = s.length();
+		return s.substring(from, end);
+	}
+	/* ######################################################################################################## */
+	/* ############################################# READ TREE ################################################## */
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, MesquiteInteger startingPos, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
-		//	Debugg.println("###################################################");
-		//Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
-		TreeDescription = preprocessForDialect(TreeDescription, startingPos, getDialect());
-		//Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
-
+		/**
+		Debugg.println("###################################################");
+		if (startingPos != null) {
+			Debugg.println("DESCRIPTION AS RECEIVED BY TREE (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
+			Debugg.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
+		}
+		else
+			Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
+		/**/
+		ObjectContainer correspondenceContainer = null;
+		if (startingPos != null)
+			correspondenceContainer = new ObjectContainer();
+		TreeDescription = preprocessForDialect(TreeDescription, correspondenceContainer, getDialect());
+		/**
+		if (startingPos !=null) 
+			startingPos.setValue(getTranslatedLoc(correspondenceContainer, startingPos.getValue()));//this needs to be reset to the translated position!
+		if (startingPos != null){
+			Debugg.println("#####################DESCRIPTION AS PROCESSED (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
+			Debugg.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
+		}
+		else 
+			Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
+		if (correspondenceContainer != null)
+			Debugg.println("@ " + IntegerArray.toString((int[])correspondenceContainer.getObject()));
+		
+		/**/
 		//QZ: if whitespace or punc passed in, don't override?
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
-		if (startingPos !=null)
+		if (startingPos !=null) 
 			stringLoc.setValue(startingPos.getValue());
 		if (readAssociated && TreeDescription.indexOf("[&")>=0){
 			TreeDescription = StringUtil.replace(TreeDescription, "[&", "<");
@@ -3686,10 +3727,24 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return false;
 		}
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
-		if (startingPos !=null)
-			startingPos.setValue(stringLoc.getValue());
+		if (startingPos !=null){
+			startingPos.setValue(getTranslatedLoc(correspondenceContainer, stringLoc.getValue()));
+			/*
+			 * if (startingPos != null)
+				Debugg.println("   stringLoc after " + justBefore(TreeDescription, startingPos.getValue()));
+			*/
+		}
 		echo("\n", 100);
 		return true;
+	}
+	
+	int getTranslatedLoc(ObjectContainer correspondenceContainer, int loc){
+		if (correspondenceContainer == null)
+			return loc;
+		int[] dialectCorrespondence = (int[])correspondenceContainer.getObject();
+		if (dialectCorrespondence!= null)
+			return dialectCorrespondence[loc];
+		return loc;
 	}
 	/*-----------------------------------------*/
 	/** Sets the tree to be a default bush.*/
@@ -5432,55 +5487,150 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		NameReference nr = super.makeAssociatedBits(n);
 		Bits b = getAssociatedBits(nr);
 		b.setBetweenness(true); //default for trees
-		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.BITS);
+		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.BITS);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
+		else
+			p = new TreeProperty(nr, Associable.BITS);
+		p.addToKnownTreePropertiesIfNeeded(this);
+
 		return nr;
 	}
 	public NameReference makeAssociatedLongs(String n){
 		NameReference nr = super.makeAssociatedLongs(n);
 		LongArray b = getAssociatedLongs(nr);
 		b.setBetweenness(true); //default for trees
-		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.LONGS);
+		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.LONGS);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
+		else
+			p = new TreeProperty(nr, Associable.LONGS);
+		p.addToKnownTreePropertiesIfNeeded(this);
 		return nr;
 	}
 	public NameReference makeAssociatedDoubles(String n){
 		NameReference nr = super.makeAssociatedDoubles(n);
 		DoubleArray b = getAssociatedDoubles(nr);
 		b.setBetweenness(true); //default for trees
-		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.DOUBLES);
+		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.DOUBLES);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
+		else
+			p = new TreeProperty(nr, Associable.DOUBLES);
+		p.addToKnownTreePropertiesIfNeeded(this);
 		return nr;
 	}
 	public NameReference makeAssociatedStrings(String n){
 		NameReference nr = super.makeAssociatedStrings(n);
 		StringArray b = getAssociatedStrings(nr);
 		b.setBetweenness(true); //default for trees
-		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.STRINGS);
+		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.STRINGS);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
+		else
+			p = new TreeProperty(nr, Associable.STRINGS);
+		p.addToKnownTreePropertiesIfNeeded(this);
 		return nr;
 	}
 	public NameReference makeAssociatedObjects(String n){
 		NameReference nr = super.makeAssociatedObjects(n);
 		ObjectArray b = getAssociatedObjects(nr);
 		b.setBetweenness(true); //default for trees
-		PropertyRecord p = PropertyRecord.findInList(propertiesSettingsVector, nr, Associable.OBJECTS);
+		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.OBJECTS);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
+		else
+			p = new TreeProperty(nr, Associable.OBJECTS);
+		p.addToKnownTreePropertiesIfNeeded(this);
 		return nr;
 	}
-
+	public boolean addProperty(TreeProperty property, boolean notify){
+		NameReference nr = property.getNameReference();
+		if (property.kind == Associable.BITS){
+			if (getAssociatedBits(nr) != null)  //already exists
+				return false;
+			makeAssociatedBits(property.getName());
+			Bits bits = getAssociatedBits(nr);
+			bits.setBetweenness(property.getBelongsToBranch());
+			notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+			return true;
+		}
+		else if (property.kind == Associable.DOUBLES){
+			if (getAssociatedDoubles(nr) != null)  //already exists
+				return false;
+			makeAssociatedDoubles(property.getName());
+			DoubleArray ds =getAssociatedDoubles(nr);
+			ds.setBetweenness(property.getBelongsToBranch());
+			if (notify)
+				notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+			return true;
+		}
+		else if (property.kind == Associable.LONGS){
+			if (getAssociatedLongs(nr) != null)  //already exists
+				return false;
+			makeAssociatedLongs(property.getName());
+			LongArray ls = getAssociatedLongs(nr);
+			ls.setBetweenness(property.getBelongsToBranch());
+			if (notify)
+				notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+			return true;
+		}
+		else if (property.kind == Associable.STRINGS){
+			if (getAssociatedStrings(nr) != null)  //already exists
+				return false;
+			makeAssociatedStrings(property.getName());
+			StringArray sa = getAssociatedStrings(nr);
+			sa.setBetweenness(property.getBelongsToBranch());
+			if (notify)
+				notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+			return true;
+		}
+		return false;
+	}
+	/*--------------------------------------------*/
+	public DisplayableTreeProperty[] getPropertyRecords(){ 
+		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
+		if (total == 0)
+			return null;
+		DisplayableTreeProperty[] names = new DisplayableTreeProperty[total];
+		int count = 0;
+		if (bits!=null) {
+			for (int i=0; i<bits.size(); i++) {
+				Listable b = (Listable)bits.elementAt(i);
+				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.BITS);
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i<longs.size(); i++) {
+				Object obj = longs.elementAt(i);
+				Listable b = (Listable)longs.elementAt(i);
+				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.LONGS);
+			}
+		}
+		if (doubles!=null){
+			for (int i=0; i<doubles.size(); i++) {
+				Listable b = (Listable)doubles.elementAt(i);
+				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.DOUBLES);
+			}
+		}
+		if (strings!=null){
+			for (int i=0; i<strings.size(); i++) {
+				Listable b = (Listable)strings.elementAt(i);
+				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.STRINGS);
+			}
+		}
+		if (objects!=null) {
+			for (int i=0; i<objects.size(); i++) {
+				Listable b = (Listable)objects.elementAt(i);
+				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.OBJECTS);
+			}
+		}
+		return names;
+	}
 	/* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
 	values in ManageTrees.queryAboutNumericalLabelIntepretation() */ //Debugg.println
-	
-	/*This vector records whether branch/node properties are assigned to nodes or branches, according to the settings in Mesquite_Folder/settings/trees/BranchPropertiesInit. 
-	 * This is read by BranchPropertiesInit, and cannot be changed at runtime. It cannot be overrided either.*/
-	public static ListableVector propertiesSettingsVector = new ListableVector(); 
-	
+
+
 
 	private String writeAssociatedBetweenness(){
 		String s = "";
