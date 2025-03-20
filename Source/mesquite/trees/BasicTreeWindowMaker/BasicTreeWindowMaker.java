@@ -2449,8 +2449,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			TreeDisplayAssistant tda = (TreeDisplayAssistant) ownerModule.hireNamedEmployee(TreeDisplayAssistant.class, arguments);
 			if (tda != null) {
 				addAssistant(tda);
-				if (!MesquiteThread.isScripting())
+				if (!MesquiteThread.isScripting()){
 					ownerModule.resetContainingMenuBar();
+				}
 			}
 			ownerModule.decrementMenuResetSuppression();
 			return tda;
@@ -3864,7 +3865,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		else {
 			int taxonFound = findTaxon(x, y);
-			if (highlightedTaxon >= 0) {
+			if (highlightedTaxon >= 0) {  //there had alread been a taxon highlighted
 				if (taxonFound == -1) {
 					int wasHighlighted = highlightedTaxon;
 					RevertTaxon(g, highlightedTaxon);
@@ -3881,7 +3882,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					setExplanation(getTaxonExplanation(taxa, taxonFound)); //TaxonExplanation
 				}
 			}
-			else if (taxonFound != -1) {
+			else if (taxonFound != -1) {  // there hadn't been a taxon highlighted, but now we were in one
 				InvertTaxon(g, taxonFound);
 				notifyExtrasOfTaxonEnter(g, taxonFound);
 				setExplanation(getTaxonExplanation(taxa, taxonFound)); //TaxonExplanation
@@ -3889,6 +3890,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else {
 				resetBaseExplanation();
 				setExplanation(baseExplanation, false);
+				treeDisplay.setCursor(currentTreeTool.getCursor());
 				currentTreeTool.moved(x, y, tree, modifiers);
 				notifyExtrasOfCursorMove(g, x, y);
 				// notify extras?

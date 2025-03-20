@@ -569,18 +569,18 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		if (treeDisplay.isRight() || treeDisplay.isLeft()){
 			if (data != null){
 				g.drawRect(getBase(), scrollEdge-1, fieldSize(), 2); //line
-				//g.fillRect(getBase(), scrollEdge, fieldSize(), 2); //line
+
 				if (treeDisplay.isRight()){
 					g.fillRect(getBase()-bufferForEdgeGrabber, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
 					g.fillRect(getBase()-bufferForEdgeGrabber+3, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
-					//		g.fillRect(getBase()+fieldSize()-1, scrollEdge-4, 2, 10); //end
-					edgeGrabber.x =getBase()-bufferForEdgeGrabber-2; edgeGrabber.y = scrollEdge-edgeGrabberSize; edgeGrabber.width = 8; edgeGrabber.height = edgeGrabberSize+4;
+
+					edgeGrabber.x =getBase()-bufferForEdgeGrabber-2; edgeGrabber.y = treeDisplay.effectiveFieldTopMargin(); edgeGrabber.width = 8; edgeGrabber.height = treeDisplay.effectiveFieldHeight();
 				}
 				else {
 					g.fillRect(getBase()+fieldSize()+3, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
 					g.fillRect(getBase()+fieldSize()+6, scrollEdge-edgeGrabberSize, 2, edgeGrabberSize+2); // edge grabber
-					//		g.fillRect(getBase(), scrollEdge-4, 2, 10); //end
-					edgeGrabber.x =getBase()+fieldSize(); edgeGrabber.y = scrollEdge-edgeGrabberSize; edgeGrabber.width = 8; edgeGrabber.height = edgeGrabberSize+4;
+
+					edgeGrabber.x =getBase()+fieldSize(); edgeGrabber.y = treeDisplay.effectiveFieldTopMargin(); edgeGrabber.width = 8; edgeGrabber.height = treeDisplay.effectiveFieldHeight();
 				}
 
 
@@ -607,14 +607,14 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 					g.fillRect(scrollEdge-edgeGrabberSize, getBase()-bufferForEdgeGrabber+3, edgeGrabberSize+2, 2); // edge grabber
 					g.fillRect(scrollEdge-4, getBase(), 6, 2); //start
 					//	g.fillRect(scrollEdge-4, getBase()+fieldSize()-1, 6, 2); //end
-					edgeGrabber.y =getBase()-bufferForEdgeGrabber; edgeGrabber.x = scrollEdge-edgeGrabberSize; edgeGrabber.height = 8; edgeGrabber.width = edgeGrabberSize+8;
+					edgeGrabber.y =getBase()-bufferForEdgeGrabber; edgeGrabber.x = treeDisplay.effectiveFieldLeftMargin(); edgeGrabber.height = 8; edgeGrabber.width = treeDisplay.effectiveFieldWidth();
 				}
 				else {  //UP
 					g.fillRect(scrollEdge-edgeGrabberSize, getBase()+fieldSize()+3, edgeGrabberSize+2, 2); // edge grabber
 					g.fillRect(scrollEdge-edgeGrabberSize, getBase()+fieldSize()+6, edgeGrabberSize+2, 2); // edge grabber
 					g.fillRect(scrollEdge-4, getBase()+fieldSize()-1, 6, 2); //start
 					//	g.fillRect(scrollEdge-4, getBase(), 6, 2); //end
-					edgeGrabber.y =getBase()+fieldSize(); edgeGrabber.x = scrollEdge-edgeGrabberSize; edgeGrabber.height = 8; edgeGrabber.width = edgeGrabberSize+8;
+					edgeGrabber.y =getBase()+fieldSize(); edgeGrabber.x = treeDisplay.effectiveFieldLeftMargin(); edgeGrabber.height = 8; edgeGrabber.width = treeDisplay.effectiveFieldWidth();
 				}
 
 				g.setColor(Color.gray);
@@ -728,7 +728,18 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		treeDisplay.forceRepaint();
 
 	}
+	
+	
 	/* ========================================= */
+	public void cursorMove(Tree tree, int x, int y, Graphics g){
+		if (edgeGrabber.contains(x, y)) {
+			if (treeDisplay.isRight() || treeDisplay.isLeft())
+				treeDisplay.setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));  //this is undone in ScanFlash of BasicTreeWindow
+			else if (treeDisplay.isUp() || treeDisplay.isDown())
+				treeDisplay.setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
+		}
+
+	}
 	int edgeGrabTouch = -1;
 	int scrollerTouch = -1;
 	/**to inform TreeDisplayExtra that cursor has just touched the field (not in a branch or taxon)*/

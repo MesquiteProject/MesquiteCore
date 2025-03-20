@@ -128,7 +128,7 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 						cDE.setTimeBarInterval(newWidth);
 					}
 				}
-				
+
 				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
 
@@ -204,6 +204,7 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra  {
 	ChronogramDisplay ownerModule;
 	NameReference errorBarNameRef = NameReference.getNameReference("height 95% HPD");
+	NameReference heightNameRef = NameReference.getNameReference("height");
 	TreeDisplay treeDisplay;
 	TextRotator textRotator;
 
@@ -238,14 +239,14 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	/*.................................................................................................................*/
 	/* The TreeDisplayRequests object has public int fields leftBorder, topBorder, rightBorder, bottomBorder (in pixels and in screen orientation)
 	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
+	TreeDisplayRequests borderRequests = new TreeDisplayRequests(0, 0, 0, 100, 0, 20); 
 	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
-		TreeDisplayRequests requests = new TreeDisplayRequests();
-		requests.bottomBorder = 100;
-		requests.extraDepthAtRoot = 50.0;
-		return requests;
+		borderRequests.bottomBorder = 100;
+		borderRequests.extraDepthAtRoot = findOldest((MesquiteTree)tree, treeDrawing.getDrawnRoot()) -getHeight((MesquiteTree)tree,  treeDrawing.getDrawnRoot());
+		return borderRequests;
 	}
-/*.................................................................................................................*/
-	
+	/*.................................................................................................................*/
+
 	//NOTE: set treeDisplay.inhibitDefaultScaleBar = true;
 	double getXFromTime(double time) {
 		if (pixelsPerTime==MesquiteDouble.unassigned || startXValue==MesquiteDouble.unassigned) {
@@ -292,7 +293,19 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		}
 
 	}
-
+	/*.................................................................................................................*/
+	public double findOldest(MesquiteTree tree, int node) {
+		if (tree.withinCollapsedClade(node))
+			return MesquiteDouble.unassigned;
+		if (!tree.nodeIsTerminal(node)) {
+			double oldest = getUpper(tree, node);
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				oldest = MesquiteDouble.maximum(oldest, findOldest(tree, d));
+			return oldest;
+		}
+		return MesquiteDouble.unassigned;
+	}
+	
 	/*.................................................................................................................*/
 	double getLower(MesquiteTree tree, int node){
 		Object obj = tree.getAssociatedObject(errorBarNameRef, node);
@@ -314,6 +327,14 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			}
 		}
 		return MesquiteDouble.unassigned;
+	}
+	/*.................................................................................................................*/
+	double getHeight(MesquiteTree tree, int node){
+		double nodeHeight =  tree.getAssociatedDouble(heightNameRef, node);
+		if (!MesquiteDouble.isCombinable(nodeHeight))
+			nodeHeight = (getLower(tree, node)+getUpper(tree, node))/2.0;
+		return  nodeHeight;
+
 	}
 	static int startX = 0;
 	static int startY = 1;
@@ -440,16 +461,19 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 
 	}
+	
+	
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
 		if (treeDisplay.getOrientation()!=TreeDisplay.RIGHT)
 			return;
-	/*reset();
+		
+		/*reset();
 
 		if (drawGrayTimeBars) {
 			drawGrayBars(tree,node,g);
 		}
-*/
+		 */
 		if (drawGeologicalTimeScale) {
 			double[] scale = treeDisplay.getScale();
 			int top = (int)scale[endY]+gapBetweenScaleAndGeologicalTimeScale;
@@ -463,7 +487,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		g.setColor(t);
 	}
 
-	
+
 	/*.................................................................................................................*/
 	void update(){
 		reset();
@@ -480,18 +504,15 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
+
 	}
-	/*NameReference assocValueRef = NameReference.getNameReference("consensusFrequency");
-	double getValue(Tree tree, int node){
-		return tree.getAssociatedDouble(assocValueRef, node);
-	}
-	 */
+	
 	public void turnOff() {
 		treeDisplay.inhibitDefaultScaleBar = false;
 		ownerModule.extras.removeElement(this);
 		super.turnOff();
 	}
-	
+
 	public void setDrawGeologicalTimeScale(boolean drawGeologicalTimeScale) {
 		this.drawGeologicalTimeScale = drawGeologicalTimeScale;
 	}
@@ -518,11 +539,11 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		/*if (drawGrayTimeBars) {
 			drawGrayBars(tree,drawnRoot,g);
 		}
-*/
+		 */
 		double[] scale = treeDisplay.getScale();
 		int top = (int)scale[endY]+gapBetweenScaleAndGeologicalTimeScale;
 		drawEras(top,g);
-		
+
 		Color t = g.getColor();
 		g.setColor(Color.blue);
 		drawNodes((MesquiteTree)tree, drawnRoot, g);

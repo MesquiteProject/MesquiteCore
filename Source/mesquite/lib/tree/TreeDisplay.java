@@ -451,8 +451,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Recalculates node positions", "[]", commandName, "redoCalculations")) {
-			if (!(Thread.currentThread() instanceof ProjectReadThread))
+			if (!(Thread.currentThread() instanceof ProjectReadThread)){
 				redoCalculations(134618);
+				pleaseUpdate();
+			}
 		}
 		else return super.doCommand(commandName, arguments, checker);
 		return null;
