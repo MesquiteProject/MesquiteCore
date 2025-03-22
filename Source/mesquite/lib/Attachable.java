@@ -231,7 +231,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 		String value = ParseUtil.getToken(assocString, pos); //finding value
 		if (StringUtil.blank(value))
 			return false;
-		if (reportReading) Debugg.println("@~~KEY " + key + " VALUE " + value + " pos " + pos.getValue());
+		if (reportReading) Debugg.println("!!!~~KEY " + key + " VALUE " + value + " pos " + pos.getValue());
 		if (value.equalsIgnoreCase("on")) {
 			MesquiteBoolean mb = new MesquiteBoolean(true);
 			mb.setName(key);

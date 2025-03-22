@@ -856,14 +856,14 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (pos==null || node>numParts || node<0 || StringUtil.blank(assocString))
 			return;
 		String key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
-		if (reportReading) Debugg.println("@" + pos.getValue() + " ~~~~~~~~~~~~readAssociated at " + pos.getValue() + "  " + assocString);
+		if (reportReading) Debugg.println("!!!" + pos.getValue() + " ~~~~~~~~~~~~readAssociated at " + pos.getValue() + "  " + assocString);
 		while (!">".equals(key)) {
 			if (StringUtil.blank(key))
 				return;
-			if (reportReading) Debugg.println("@~~KEY " + key);
+			if (reportReading) Debugg.println("!!!~~KEY " + key);
 			if (reportReading) Debugg.println("     @~~preferred kind " + PropertyRecord.preferredKind(key));
 			String eq = ParseUtil.getToken(assocString, pos, whitespace, punctuation); //eating up equals
-			if (reportReading) Debugg.println("     @~~equal " + eq);
+			if (reportReading) Debugg.println("     !!!~~equal " + eq);
 			int oldPos = pos.getValue();
 			String value = ParseUtil.getToken(assocString, pos, whitespace, punctuation); //finding value
 			value=StringUtil.removeFirstCharacterIfMatch(value, '\'');
@@ -871,7 +871,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			//if (whitespace != null && whitespace.length() == 0){
 			value = StringUtil.stripLeadingWhitespace(value);
 			value = StringUtil.stripTrailingWhitespace(value);
-			if (reportReading) Debugg.println("     @~~[value] [" + value + "]");
+			if (reportReading) Debugg.println("     !!!~~[value] [" + value + "]");
 			//}
 			if (StringUtil.blank(value))
 				return;

@@ -62,7 +62,7 @@ public class TreeProperty extends PropertyRecord  {
 		if (kind == Associable.BUILTIN || TreeProperty.findInTreePropertySettings(nRef, kind) != null)
 			return false;
 		if (this.belongsToBranch != belongsToBranch){
-			//Debugg.println("@  recordInVector;
+			//Debugg.println("!!!  recordInVector;
 		}
 		this.belongsToBranch = belongsToBranch;
 		return true;

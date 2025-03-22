@@ -178,10 +178,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/*.................................................................................................................*/
 	public void setSize(int width, int height ){
 		super.setSize(width, height);
-	/*	if (getField().height>height){
-			Debugg.printStackTrace("@tree display set too small " + height + " of field " + getField().height);
-			setFieldSize(width, height);
-		}*/
 	}
 
 	/*_________________________________________________*/
@@ -293,7 +289,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	}
 
 	public void setTree(Tree tree) {
-
 		if (tree!=null && tree.getTaxa() != taxa)
 			setTaxa(tree.getTaxa());
 

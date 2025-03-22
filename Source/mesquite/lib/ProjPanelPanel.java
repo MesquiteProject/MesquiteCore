@@ -368,7 +368,6 @@ public void resetTitle(){
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		//if modifiers include right click/control, then do dropdown menu
 		if (MesquiteEvent.rightClick(modifiers) || y<= MINHEIGHT && x> triangleOffset + 8) {
-			Debugg.println("name " + title + " "+ getClass());
 			redoMenu();
 			popup.show(this, x,y);
 			return;

@@ -428,7 +428,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 			DisplayableTreeProperty property = (DisplayableTreeProperty)mainPropertiesList.elementAt(i);
 			if (MesquiteTrunk.developmentMode){ //Debugg.println delete before release
 				if (tree.isPropertyAssociated(property) != property.inCurrentTree)
-					Debugg.printStackTrace("@property.inCurrentTree not up to date!");
+					Debugg.printStackTrace("!!! property.inCurrentTree not up to date!");
 			}
 			if (property.inCurrentTree)
 				associatesList.addElement(property, false);

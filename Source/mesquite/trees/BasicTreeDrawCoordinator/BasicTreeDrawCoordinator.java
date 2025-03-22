@@ -754,6 +754,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 	int retry =0;
 	/*_________________________________________________*/
 	public void paint(Graphics g) {
+
 		if (getPrintingInProcess())
 			return;
 		if (ownerModule == null || ownerModule.isDoomed())

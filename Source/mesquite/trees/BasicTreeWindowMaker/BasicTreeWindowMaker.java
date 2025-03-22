@@ -2202,7 +2202,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		treeAnnotationShown = false;
 		// tree=null; //done to catch spurious redraws
 		treeVersion = 0;
-		treeDisplay.setTree(null); // done to catch spurious redraws
+		//treeDisplay.setTree(null); // done to catch spurious redraws
 		int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 		if (numTrees == 0) {
 			currentTreeNumber = 0;

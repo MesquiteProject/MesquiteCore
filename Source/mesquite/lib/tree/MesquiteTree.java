@@ -3591,7 +3591,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else 
 			Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
 		if (correspondenceContainer != null)
-			Debugg.println("@ " + IntegerArray.toString((int[])correspondenceContainer.getObject()));
+			Debugg.println("!!! " + IntegerArray.toString((int[])correspondenceContainer.getObject()));
 		
 		/**/
 		//QZ: if whitespace or punc passed in, don't override?
