@@ -1736,7 +1736,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 		g.setColor(c);
 		int offX = treeDisplay.effectiveFieldLeftMargin();
 		int offY = treeDisplay.effectiveFieldTopMargin();
-		g.drawRect(x+offX, y+offY, w, h);
+		g.drawRect(x+offX, y+offY, w, h); 
 	}
 	/*.................................................................................................................*/
 	boolean showRectangles = false; //see also drawDebuggingLines in TreeDrawing

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat Jun 07 11:30:00 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
+[written Fri Mar 21 10:21:49 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 
 BEGIN TAXA;
 	TITLE Species;
@@ -26,17 +26,18 @@ END;
 
 BEGIN TREES;
 	Title 'Trees block 2 from 10-speciesTreeSearch.nex';
+	ID 0195b9b9970f43;
 	LINK Taxa = Species;
 	TRANSLATE
-		1 Aus,
-		2 Fubonidia,
-		3 Ibbinidibe,
-		4 Snorolopa,
-		5 Quidnubia,
-		6 Suinon,
-		7 Zorabynyx,
-		8 Huichoros,
-		9 Jotinupa;
+[0] 		1 Aus,
+[1] 		2 Fubonidia,
+[2] 		3 Ibbinidibe,
+[3] 		4 Snorolopa,
+[4] 		5 Quidnubia,
+[5] 		6 Suinon,
+[6] 		7 Zorabynyx,
+[7] 		8 Huichoros,
+[8] 		9 Jotinupa;
 	TREE First_Tree = ((((1:60.0,5:70.0):40.0,4:30.0):30.0,((7:60.0,6:80.0):30.0,2:40.0):70.0):80.0,((9:40.0,8:60.0):40.0,3:90.0):87.0);
 	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
 	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
@@ -46,24 +47,25 @@ END;
 
 BEGIN TREES;
 	Title 'Trees block 2 from 10-speciesTreeSearch.nex';
+	ID 0195b9b9971044;
 	LINK Taxa = Genes;
 	TRANSLATE
-		1 nd1_Aus1,
-		2 nd1_Aus2,
-		3 nd1_Aus3,
-		4 nd1_Aus4,
-		5 nd1_Fubonidia1,
-		6 nd1_Ibbinidibe1,
-		7 nd1_Ibbinidibe2,
-		8 nd1_Snorolopa1,
-		9 nd1_Quidnubia1,
-		10 nd1_Quidnubia2,
-		11 nd1_Suinon1,
-		12 nd1_Suinon2,
-		13 nd1_Huichoros1,
-		14 nd1_Huichoros2,
-		15 nd1_Huichoros3,
-		16 nd1_Jotinupa1;
+[0] 		1 nd1_Aus1,
+[1] 		2 nd1_Aus2,
+[2] 		3 nd1_Aus3,
+[3] 		4 nd1_Aus4,
+[4] 		5 nd1_Fubonidia1,
+[5] 		6 nd1_Ibbinidibe1,
+[6] 		7 nd1_Ibbinidibe2,
+[7] 		8 nd1_Snorolopa1,
+[8] 		9 nd1_Quidnubia1,
+[9] 		10 nd1_Quidnubia2,
+[10] 		11 nd1_Suinon1,
+[11] 		12 nd1_Suinon2,
+[12] 		13 nd1_Huichoros1,
+[13] 		14 nd1_Huichoros2,
+[14] 		15 nd1_Huichoros3,
+[15] 		16 nd1_Jotinupa1;
 	TREE gene_tree = (((((((1,2),3),9),(4,10)),8),((11,12),5)),((6,7),(((13,16),15),14)));
 
 END;
@@ -98,6 +100,7 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		timeSaved 1742577709796;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 3724502825702124430 WM1148e55ddbf41;
@@ -105,16 +108,43 @@ Begin MESQUITE;
 		endTell;
 		getWindow;
 		tell It;
-			setResourcesState false false 72;
-			setPopoutState 400;
+			suppress;
+			setUniqueID 0195b9b996e9108;
 			setExplanationSize 0;
 			setAnnotationSize 0;
 			setFontIncAnnot 0;
 			setFontIncExp 0;
-			setSize 592 515;
-			setLocation 15 22;
+			setSize 592 520;
+			setLocation 15 25;
 			setFont SanSerif;
 			setFontSize 10;
+			getToolPalette;
+			tell It;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+		tell It;
+			includeGaps true;
+			simplifyTaxonName false;
+			convertMultStateToMissing false;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNAByOTUID.InterpretFastaDNAByOTUID;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -125,18 +155,20 @@ Begin MESQUITE;
 				tell It;
 					setTaxa #3724502825702124430;
 					setTreeBlock 1;
+					setTreeBlockID 0195b9b9970f43;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 686.979143280190.3783168923320340251;
 				getTreeWindow;
 				tell It;
+					setUniqueID 0195b9b99719109;
 					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 614 507;
+					setSize 614 597;
 					setLocation 658 28;
 					setFont SanSerif;
 					setFontSize 10;
@@ -164,59 +196,84 @@ Begin MESQUITE;
 						tell It;
 							setTaxa #2577575139471600534;
 							setTreeBlock 1;
+							setTreeBlockID 0195b9b9971044;
 							toggleUseWeights off;
 						endTell;
 						setContained 1;
 						toggleScale on;
-						setInitialOffsetX -514;
+						toggleContainedNames on;
+						setInitialOffsetX 4;
 						setInitialOffsetY -160;
+						setContainingBranchColor Wood;
 						desuppress ;
 						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
-							stretchToggle off;
-							branchLengthsToggle on;
+							inhibitStretchToggle on;
+							orientUp;
+							branchLengthsDisplay 2;
 							toggleScale on;
 							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
+							setFixedTaxonDistance 0;
 						endTell;
 					endTell;
 					setBackground White;
-					setBranchColor Blue;
+					setBranchColor Wood;
 					showNodeNumbers off;
 					showBranchColors on;
-					labelBranchLengths off;
-					centerBrLenLabels on;
-					showBrLensUnspecified on;
-					showBrLenLabelsOnTerminals on;
-					setBrLenLabelColor 0 0 255;
-					setNumBrLenDecimals 6;
+					setSelectedTaxonHighlightMode 1;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setFont SanSerif;
 						setFontSize 10;
 						setColor Black;
-						toggleColorPartition on;
+						setTaxonNameStyler  #mesquite.trees.ColorTaxonByPartition.ColorTaxonByPartition;
 						toggleShadePartition off;
+						toggleShowFootnotes on;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
 						namesAngle ?;
 					endTell;
+					getEmployee #mesquite.trees.CollapseCladeNameHighlight.CollapseCladeNameHighlight;
+					tell It;
+						setMode 3;
+					endTell;
 				endTell;
 					setTreeNumber 1;
-					setTree '((((9:0.2,4:0.6):0.3,3:0.5):0.6,((6:0.2,5:0.5):0.4,1:0.6):0.4):0.3,((8:0.4,7:0.5):0.4,2:0.5):0.3);';
-					useSuggestedSize off;
-					toggleSizeToFit on;
+					setDrawingSizeMode 1;
+					toggleLegendFloat on;
 					toggleTextOnTree off;
+					togglePrintName off;
 					showWindow;
 				endTell;
 				desuppressEPCResponse;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
+				getEmployee #mesquite.genomic.ShowMatrixInTreeWindow.ShowMatrixInTreeWindow;
+				tell It;
+					chooseOrLink 0;
+					fieldWidth 0;
+					selectedOnly false;
+					showMatrix false;
+				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
-					setColor Red;
+					setColorRGB #ff0000;
 					removeColor off;
+				endTell;
+				getEmployee #mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
+				tell It;
+					showAssociate Node_label 0 false;
+					setBooleans Node_label 0  false false false false true false false false;
+					setNumbers Node_label 0  12 0 0 4 0 ?;
+					showAssociate Branch_length 0 false;
+					setBooleans Branch_length 0  true true false true true false false false;
+					setNumbers Branch_length 0  12 0 0 6 0 ?;
 				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
@@ -226,19 +283,6 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
-				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
-				tell It;
-					setOn on;
-					setDigits 4;
-					writeAsPercentage off;
-					toggleHorizontal on;
-					setFontSize 10;
-					setOffset 0  0;
-				endTell;
-				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
-				tell It;
-					panelOpen false;
-				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -247,14 +291,18 @@ Begin MESQUITE;
 			setPrevFileName '09-genesInSpecies.nex';
 			getWindow;
 			tell It;
+					setUniqueID 0195b9b9976f110;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
 					setSize 520 498;
-					setLocation 15 22;
+					setLocation 15 25;
 					setFont SanSerif;
 					setFontSize 10;
+					getToolPalette;
+					tell It;
+					endTell;
 					setActive;
 				setExplanation 'In this file is a stored gene tree.  Imagine that one sought to infer a species tree using the gene tree.  The species tree shown here containing the gene tree has a lot of discordance with the gene tree, indicated by the high cost (18) of "extra lineages" (also called "deep coalescences" by Maddison 1997).  You can try moving branches of the species tree to try find one that is more concordant with the gene tree.^n^nMesquite has a general concept of "a number for a tree".  Examples could be the treelength, the number of steps in a character, the likelihood of the tree, its symmetry, and so on.  Each of these is a number that applies to the tree.  For any given number for a tree, one might seek that tree which maximizes or minimizes it (e.g., minimizing treelength in a standard parsimony search).  The Tree Search modules allow one to search for a tree optimizing any such number for a tree available.  Here, we''d like to search for a species tree minimizing deep coalescences.  ^n^nTo do that, go to the Taxa&Trees menu and select "Heuristic (Add and Rearrange)" from the "Tree Search" submenu from the "Make New Trees Block from" submenu.  Indicate you want to search for trees of "Species", and to use the criterion "Deep coalescences (species)", available if you check the Show Secondary Choices option, and use "Stored Trees" as the source of the contained trees (to use the stored gene tree).  The tree search modules currently do a simple addition sequence followed by branch rearrangements, and are much much much much slower than PAUP (for instance).  But, after humming for a while, they should indicate that the trees are ready.  When they are ready, you can go to the Tree menu of the tree window, and select the new tree block from the Tree Block submenu.  Hit the blue button at the top left of the tree window to go to Tree # 1, that found in the search.  You''ll see a species tree with which the gene tree is much more concordant (a cost of only 4).^n';
 				setTitle Best_species_tree;
@@ -263,6 +311,15 @@ Begin MESQUITE;
 				setNextButtonName Next;
 			endTell;
 			showWindow;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			findWindow 0195b9b9976f110;
+			tell It;
+				setAsFront;
+			endTell;
+			desuppress;
 		endTell;
 		endTell;
 end;

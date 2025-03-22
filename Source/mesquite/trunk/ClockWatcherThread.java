@@ -77,7 +77,6 @@ public class ClockWatcherThread extends Thread {
 			//Surveying windows to reset graphically after first shown (bugs in some macOS versions)
 			if (sleptLong || sleepCount % (sleep/catnap) == 1) {
 				MesquiteThread.surveyDoomedIndicators();
-				if (MesquiteTrunk.isMacOSX())
 					MesquiteThread.surveyNewWindows();
 			}
 

@@ -128,8 +128,9 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 			return null;
 		}
 
-		return MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(path, ParseUtil.tokenize(dialectName) + autoSaveString, TryNexusFirstTreeFileInterpreter.class);
+		MesquiteProject p = MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(path, ParseUtil.tokenize(dialectName) + autoSaveString, TryNexusFirstTreeFileInterpreter.class);
 
+		return p;
 	}
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {

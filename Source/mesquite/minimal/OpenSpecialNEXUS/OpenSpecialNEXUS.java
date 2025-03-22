@@ -48,7 +48,8 @@ public class OpenSpecialNEXUS extends GeneralFileMakerSingle  {
 	/** make a new    MesquiteProject.*/
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments){
-		return MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(null, arguments, NEXUSInterpreter.class);
+		MesquiteProject p = MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(null, arguments, NEXUSInterpreter.class);
+		return p;
 	}
 }
 

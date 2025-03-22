@@ -414,7 +414,8 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		fileToRead.linkProgressIndicator(progIndicator2);
 		fileToRead.readMesquiteBlock = false;
 		if (fileToRead.openReading()) {
-			importer.readFile(getProject(), fileToRead, null);	
+			fileToRead.blockForRecentRereading = true;
+			importer.readFile(getProject(), fileToRead, null);
 			scanForDuplicateTaxa(getProject(), fileToRead);
 			getProject().getCoordinatorModule().wrapUpAfterFileRead(fileToRead);
 			//fileToRead.changeLocation(getSavedFilesDirectoryPath(fileToRead), fileToRead.getName() + ".nex");

@@ -84,6 +84,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public boolean writeCharLabelInfo = true;  //todo: this is temporary until general format options system built
 	public boolean writeCharStateLabelsSeparately = false;  //todo: this is temporary until general format options system built
 	public boolean okForRecentRereading = false; //Is this OK to go to Open Recent list for rereading?
+	public boolean blockForRecentRereading = false; //This prohibits ok switch from being okForRecentRereading to true
 	public boolean writeExcludedCharacters=true;
 	public boolean writeCharactersWithNoData=true;
 	public boolean writeTaxaWithAllMissing = true;

@@ -247,9 +247,13 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 
 	 */
 	public void windowResized(){
+		try {
 		if (projPanel != null){
 			projPanel.setBounds(0,0,getBounds().width, getBounds().height);
 			scrollPanel.setBounds(0,getBounds().height-scrollHeight,getWidth(), scrollHeight);
+		}
+		}
+		catch (Exception e){
 		}
 	}
 	/*.................................................................................................................*/

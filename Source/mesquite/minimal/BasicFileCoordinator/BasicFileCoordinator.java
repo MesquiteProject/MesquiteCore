@@ -200,7 +200,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		p.setFrame(pw.getParentFrame());
 		setModuleWindow(pw);
 		if (Thread.currentThread() instanceof ProjectReadThread)
-			pw.setWindowSize(2, 500);
+			pw.setWindowSize(2, 200);
 		else
 			pw.setWindowSize(700, 500);
 		pw.setWindowLocation(8,8, false); //TODO: should set staggered positions
@@ -756,7 +756,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			saveAllFiles();
 			p.autosave = false;
 		}
-		MesquiteTrunk.recentFileRecord(p.getHomeFile(), true);
+		//MesquiteTrunk.recentFileRecord(p.getHomeFile(), true);
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
 	}
@@ -1117,6 +1117,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 			}
 		}
+		MesquiteTrunk.cleanRecentFiles();
 		decrementMenuResetSuppression();
 		return true;
 	}

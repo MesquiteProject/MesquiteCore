@@ -4022,6 +4022,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else 
 			bLS = "No branch lengths are defined";
 		addToPopup(bLS);
+		notifyExtrasOfRightClickPopup(popup);
 		popup.showPopup(x, y);
 	}
 
@@ -4561,6 +4562,22 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					tce.cursorDropField(tree, g, x, y, modifiers, 0);
 				}
 			}
+		}
+	}
+	/* ................................................................................................ */
+	void notifyExtrasOfRightClickPopup(MesquitePopup popup) {
+		if (treeDisplay.getExtras() != null) {
+			int numItems = popup.getItemCount();
+			Enumeration e = treeDisplay.getExtras().elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				if (obj instanceof TreeDisplayExtra) {
+					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
+					tce.addToRightClickPopup(popup);
+				}
+			}
+			if (popup.getItemCount()>numItems)
+				popup.insert(new MenuItem("-"), numItems);
 		}
 	}
 

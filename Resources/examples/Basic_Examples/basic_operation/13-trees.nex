@@ -1,18 +1,19 @@
 #NEXUS
-[written Sun May 04 14:33:10 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
+[written Sat Mar 22 10:57:02 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 BEGIN TREES;
 	Title 'Trees from "13-trees.nex"';
+	ID 0195bf00033729;
 	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
-		1 Aus,
-		2 Fubonidia,
-		3 Ibbinidibe,
-		4 Snorolopa,
-		5 Quidnubia,
-		6 Suinon,
-		7 Zorabynyx,
-		8 Huichoros,
-		9 Jotinupa;
+[0] 		1 Aus,
+[1] 		2 Fubonidia,
+[2] 		3 Ibbinidibe,
+[3] 		4 Snorolopa,
+[4] 		5 Quidnubia,
+[5] 		6 Suinon,
+[6] 		7 Zorabynyx,
+[7] 		8 Huichoros,
+[8] 		9 Jotinupa;
 	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
 	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
 	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));

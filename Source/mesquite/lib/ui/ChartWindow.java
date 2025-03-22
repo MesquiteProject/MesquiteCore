@@ -18,6 +18,7 @@ import java.awt.event.*;
 
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.*;
 
@@ -40,8 +41,8 @@ public abstract class ChartWindow extends MesquiteWindow {
 			arrowTool.setInUse(true);
 		infoTool = new ChartTool(this, "info", MesquiteModule.getRootImageDirectoryPath(), "info.gif", 1, 1, "Show Information", null, null, null);
 		addTool(infoTool);
-		setShowExplanation(true);
-		setShowAnnotation(true);
+			setShowExplanation(true);
+			setShowAnnotation(true);
 		if (getPalette() != null)
 			getPalette().setNumColumns(1);
 		resetTitle();

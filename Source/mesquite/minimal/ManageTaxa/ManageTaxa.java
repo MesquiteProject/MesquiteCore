@@ -1034,7 +1034,8 @@ public class ManageTaxa extends TaxaManager {
 
 
 				if (!autoDelete && (alerts.getValue() && !MesquiteThread.isScripting())) {
-					if (AlertDialog.query(containerOfModule(), "Duplicate taxa block?", warning + " \n\nDo you want to delete the second block?", button, "Keep", 1, helpString)){
+					if (AlertDialog.query(containerOfModule(), "Duplicate taxa block?", warning + " \n\nDo you want to delete the second block? If you do, subsequent matrices and other information will be read as pertaining to the original block."
+							+"\n\n(Deleting the second block is recommended if your intention is to merge information in the file being read with information already in your current file.)", button, "Keep", 1, helpString)){
 						if (eTOrder == null)
 							setOrder(eT, newTaxa);
 						newTaxa.dispose();

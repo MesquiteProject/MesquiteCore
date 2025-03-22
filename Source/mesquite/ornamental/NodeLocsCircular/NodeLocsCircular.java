@@ -27,6 +27,7 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayBkgdExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeDrawing;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 
@@ -448,16 +449,17 @@ public class NodeLocsCircular extends NodeLocsCircle {
 				radius=(treeRectangle.width * 3 )/ 8;
 			else
 				radius=(treeRectangle.height) * 3 / 8;
+
 			circleSlice = radius / (mostNodesToTip(drawnRoot) + emptyRootSlices);  //{v4: have it based upon an ellipse}
 
 			int centreX, centreY;
-			if (treeDisplay.getWidth()>treeRectangle.width)
+		/*	if (treeDisplay.g()>treeRectangle.width)  // why was it like this in 3.x?
 				centreX = treeDisplay.getWidth()/2;
-			else
+			else*/
 				centreX = treeRectangle.width / 2;
-			if (treeDisplay.getHeight()>treeRectangle.height)
+	/*		if (treeDisplay.getHeight()>treeRectangle.height)
 				centreY = treeDisplay.getHeight()/2;
-			else
+			else */
 				centreY = treeRectangle.height / 2;
 			treeCenter.setLocation(centreX, centreY);
 
@@ -527,7 +529,33 @@ class NodeLocsCircularExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		return null;
 	}
 	/*.................................................................................................................*/
+	boolean showRectangles = false; //see also drawDebuggingLines in TreeDrawing
+	void drawTranslatedRect(Graphics g, int x, int y, int w, int h, Color c){
+		g.setColor(c);
+		int offX = treeDisplay.effectiveFieldLeftMargin();
+		int offY = treeDisplay.effectiveFieldTopMargin();
+		g.drawRect(x+offX, y+offY, w, h);
+	}
+	/*.................................................................................................................*/
 	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
+		if (showRectangles){  //rectangles
+			drawTranslatedRect(g, 2, 2, treeDisplay.getField().width, treeDisplay.getField().height, Color.green);
+			drawTranslatedRect(g, 2, 2, treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldHeight(), Color.cyan);
+			
+			g.setColor(Color.blue);
+			g.drawRect(2, 2, treeDisplay.effectiveFieldLeftMargin()-2, treeDisplay.effectiveFieldTopMargin()-2);
+			g.setColor(Color.red);
+			g.drawRect(treeDisplay.getField().width - treeDisplay.effectiveFieldRightMargin(), treeDisplay.getField().height - treeDisplay.effectiveFieldBottomMargin(), treeDisplay.effectiveFieldRightMargin()-2, treeDisplay.effectiveFieldBottomMargin()-2);
+
+			
+			int xTips = treeDisplay.effectiveFieldWidth()+treeDisplay.effectiveFieldLeftMargin()-treeDisplay.getTipsMargin();
+			g.setColor(ColorDistribution.lightBlue);
+			g.fillRect(xTips, treeDisplay.effectiveFieldTopMargin(), treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldHeight());
+			
+		//	g.setColor(ColorDistribution.lightBlue);
+			
+		//	g.fillRect(xTips + treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldTopMargin(), treeDisplay.totalTipsFieldDistance(), treeDisplay.effectiveFieldHeight());
+		}
 		if (locsModule.showScale.getValue() && locsModule.showBranchLengths.getValue())
 			locsModule.drawGrid(g, tree.tallestPathAboveNode(drawnRoot, 1.0), locsModule.scaling, locsModule.treeCenter);
 	}

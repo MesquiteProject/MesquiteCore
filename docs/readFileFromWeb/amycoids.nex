@@ -1,0 +1,154 @@
+#NEXUS
+[written Sun May 04 14:45:53 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
+
+BEGIN TAXA;
+	TITLE amycoids;
+	DIMENSIONS NTAX=6;
+	TAXLABELS
+		sitticines amycines Hurieae hyetussines synemosynines thiodinines 
+	;
+	BLOCKID WM119b5e5bdf028;
+
+END;
+
+
+BEGIN NOTES;
+
+	SUPPLEMENTAL   TAXA = amycoids TAXON = 2 NAME = hyperlink STRING = amycines.nex;
+
+	HYPERLINK TAXA = amycoids TAXON = 1 URL = amycines.nex;
+HYPERLINK TAXA = amycoids CLADE = Amycoida URL = salticidae.nex;
+HYPERLINK TAXA = amycoids CLADE = '<salticids' URL = salticidae.nex;
+
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 4134070017914817629 WM119b5e5bdf028;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 100;
+			setPopoutState 235;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 869 471;
+			setLocation 6 24;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
+		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
+		tell It;
+			makeTreeWindow #4134070017914817629  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
+			tell It;
+				setTreeSource  #mesquite.trees.DefaultTrees.DefaultTrees;
+				setAssignedID 758.1054577222855.7038299692095461532;
+				getTreeWindow;
+				tell It;
+					setExplanationSize 30;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setSize 534 404;
+					setLocation 6 24;
+					setFont SanSerif;
+					setFontSize 10;
+					getToolPalette;
+					tell It;
+						setTool mesquite.ornamental.TaxonLink.TaxonLinkToolExtra.taxonLink;
+					endTell;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				tell It;
+					suppress;
+					setTreeDrawer  #mesquite.trees.DiagonalDrawTree.DiagonalDrawTree;
+					tell It;
+						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						tell It;
+							stretchToggle off;
+							branchLengthsToggle off;
+							toggleScale on;
+							toggleBroadScale off;
+							toggleCenter off;
+							toggleEven off;
+						endTell;
+						setEdgeWidth 12;
+						orientRight;
+					endTell;
+					setBackground White;
+					setBranchColor Black;
+					showNodeNumbers off;
+					showBranchColors on;
+					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
+					desuppress;
+					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
+					tell It;
+						setFontSize 18;
+						setColor Black;
+						toggleColorPartition on;
+						toggleShadePartition off;
+						toggleNodeLabels on;
+						toggleCenterNodeNames off;
+						toggleShowNames on;
+						namesAngle ?;
+					endTell;
+				endTell;
+					setTreeNumber 1;
+					setTree '(1,2,3,4,5,6)''<salticids'';';
+					useSuggestedSize off;
+					toggleSizeToFit on;
+					toggleTextOnTree off;
+					showWindow;
+				endTell;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
+				tell It;
+					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.TextWindowMaker.TextWindowMaker;
+		tell It;
+			setText 'To follow a link attached to branch of the tree, you need to touch on the branch itself, not on the label.  Thus, to go back to the salticid page, touch on the root branch with the Go To Link tool.';
+			getWindow;
+			tell It;
+				popAsTile true;
+				popOut;
+				setExplanationSize 0;
+				setAnnotationSize 0;
+				setFontIncAnnot 0;
+				setFontIncExp 0;
+				setSize 229 454;
+				setLocation 6 24;
+				setFont SanSerif;
+				setFontSize 14;
+				setActive;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+
+

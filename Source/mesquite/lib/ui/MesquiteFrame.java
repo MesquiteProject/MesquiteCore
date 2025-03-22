@@ -269,16 +269,19 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		}
 	}
 	public void checkScriptedWindowSizes(){  //This is a kludge to fix the bug where windows can open at much greater width than they should have
-		if (maxScriptedPoppedWidth == 0)
-			return;
 		int ow = getBounds().width;
-		if (ow != maxScriptedMainWidth){
+		int oh = getBounds().height;
+		if (ow != maxScriptedMainWidth || oh != maxScriptedMainHeight){
 			Insets insets = getInsets();
 			storeInsets(insets);
 
 			int totalNeededWidth = maxScriptedMainWidth + insets.left + insets.right;
-			setSavedDimensions(totalNeededWidth, getBounds().height);
-			setSize(totalNeededWidth, getBounds().height);
+			int totalNeededHeight= maxScriptedMainHeight + insets.top + insets.bottom;
+			if (tabs != null){
+				totalNeededHeight += tabHeight;
+			}
+			setSavedDimensions(totalNeededWidth, totalNeededHeight);
+			setSize(totalNeededWidth, totalNeededHeight);
 			resetSizes(true);
 			for (int i = 0; i<windows.size(); i++){
 				MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
@@ -306,7 +309,11 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 
 	/*.................................................................................................................*/
 	boolean alreadyDisposed = false;
+	boolean alreadyDisposing = false;
 	public void dispose() {
+		if (alreadyDisposing)
+			return;
+		alreadyDisposing = true;
 		if (alreadyDisposed)
 			return;
 		try{
@@ -320,7 +327,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		if (activeWindow == this)
 			activeWindow = null;
 		totalDisposed++;
-
+		MesquiteThread.shouldBeOnMesquiteThread(true);
 		super.dispose();
 		ownerModule = null;
 		if (project != null && project.getFrame() == this) {
@@ -1103,6 +1110,10 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 	}
 
 		/*.................................................................................................................*/
+	public void resetFullDimensions(){
+		saveFullDimensions();
+	}
+		/*.................................................................................................................*/
 	protected void saveFullDimensions(){
 		savedFullW = getBounds().width;
 		savedFullH = getBounds().height;
@@ -1179,7 +1190,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		setSavedDimensions(totalNeededWidth, totalNeededHeight);
 		setSize(totalNeededWidth, totalNeededHeight);
 		resetSizes(true);
-		for (int i = 0; i<windows.size(); i++){
+	for (int i = 0; i<windows.size(); i++){
 			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 			w.resetContentsSize();
 
@@ -1196,6 +1207,13 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 			return poptile.getBounds();
 		return main.getBounds();
 	}
+	public String reportHeights(){
+		String s = "main " + main.getBounds().height;
+		s += " savedFullH " + savedFullH;
+		if (tabs != null)
+			s += " tabHeight " + tabHeight;
+		return s;
+	}
 	
 	/*.................................................................................................................*/
 	public void resetSizes(boolean resizeContainedWindows){
@@ -1207,7 +1225,6 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		if (!force && (getBounds().width != savedFullW || getBounds().height != savedFullH)){
 		}
 		else if (oldInsetTop!=insets.top || oldInsetBottom !=insets.bottom || oldInsetRight!= insets.right || oldInsetLeft != insets.left) {
-
 			int totalNeededWidth = savedFullW+(insets.right-oldInsetRight)+(insets.left-oldInsetLeft);
 			int totalNeededHeight = savedFullH+(insets.top-oldInsetTop)+(insets.bottom-oldInsetBottom);
 			setSavedDimensions(totalNeededWidth, totalNeededHeight);

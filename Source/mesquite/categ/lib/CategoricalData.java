@@ -2651,8 +2651,7 @@ public class CategoricalData extends CharacterData {
 				boolean wasWhitespace = false;
 				while ((wasWhitespace=parser.whitespace(c))  && c!=0 && loc<s.length())
 					c = s.charAt(loc++);
-
-				if (!wasWhitespace){
+				if (!wasWhitespace || parser.lineEndCharacter(c)){
 					if (parser.lineEndCharacter(c)) {
 						char r = parser.charOnDeck(1);
 						//if next character is also lineEndCharacter but of opposite sort (i.e. \n instead of \r) then eat it up

@@ -49,7 +49,8 @@ public class NumForTaxonWMatrix extends NumberForTaxon {
 			return sorry(getName() + " couldn't start because no number calculator was obtained.");
 		}
 
-		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, MolecularState.class, "Source of character matrix (for " + getName() + ")"); 
+		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, null, "Source of character matrix (for " + getName() + ")"); 
+	//	matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, MolecularState.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		return true;

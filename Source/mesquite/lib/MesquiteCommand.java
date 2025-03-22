@@ -305,6 +305,8 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	/** sets whether the command is to bypass the command queue (e.g., for force quit) */
 	public void setQueueBypass(boolean bypass) {
 		bypassQueue = bypass;
+		if (bypass)
+			setOKOnOtherThread(true);
 	}
 	/** sets whether the command is to be suppressed from the command queue if there is already the same command to the same object there*/
 	public void setDontDuplicate(boolean dd) {

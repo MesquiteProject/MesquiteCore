@@ -529,7 +529,8 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		}
 	}
 
-	/* Used to be called only for OS X jaguar, whose paint bugs with new window are worked around if resize forced, but resurrected for El Capitan*/
+	/**/
+	/* Initially resized windows in old MacOS; now checks to see if menu bar is null. Also tickles dialogs in MacOS to make sure they display parts.*/
 	public static void surveyNewWindows(){
 		try {
 			if (MesquiteModule.mesquiteTrunk.windowVector.size() == 0)
@@ -539,14 +540,16 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 				while (e.hasMoreElements()) {
 					MesquiteWindow win = (MesquiteWindow)e.nextElement();
 					if (win.isVisible()){
-						win.tickled++;
-						if (win.tickled==1) {
-							Toolkit.getDefaultToolkit().sync();
-							win.setWindowSize(win.getWindowWidth(), win.getWindowHeight());
+						if (win.getParentFrame().getMenuBar()== null) {
+							MesquiteTrunk.mesquiteTrunk.resetMenusCommand.doItMainThread(null, null, null);
+							break;
 						}
 					}
 				}
 			}
+			 if (!MesquiteTrunk.isMacOSX()) 
+				 return;
+			
 			if (MesquiteModule.mesquiteTrunk.dialogVector.size() == 0)
 				return;
 			else {

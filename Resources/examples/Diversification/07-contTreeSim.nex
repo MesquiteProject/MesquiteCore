@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat Jun 07 11:47:58 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
+[written Sat Mar 22 14:22:45 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -133,108 +133,109 @@ CHARSTATELABELS
 END;
 BEGIN TREES;
 	Title 'Trees from "07-contTreeSim.nex"';
+	ID 0195bfbc8f40235;
 	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
-		1 taxon_1,
-		2 taxon_2,
-		3 taxon_3,
-		4 taxon_4,
-		5 taxon_5,
-		6 taxon_6,
-		7 taxon_7,
-		8 taxon_8,
-		9 taxon_9,
-		10 taxon_10,
-		11 taxon_11,
-		12 taxon_12,
-		13 taxon_13,
-		14 taxon_14,
-		15 taxon_15,
-		16 taxon_16,
-		17 taxon_17,
-		18 taxon_18,
-		19 taxon_19,
-		20 taxon_20,
-		21 taxon_21,
-		22 taxon_22,
-		23 taxon_23,
-		24 taxon_24,
-		25 taxon_25,
-		26 taxon_26,
-		27 taxon_27,
-		28 taxon_28,
-		29 taxon_29,
-		30 taxon_30,
-		31 taxon_31,
-		32 taxon_32,
-		33 taxon_33,
-		34 taxon_34,
-		35 taxon_35,
-		36 taxon_36,
-		37 taxon_37,
-		38 taxon_38,
-		39 taxon_39,
-		40 taxon_40,
-		41 taxon_41,
-		42 taxon_42,
-		43 taxon_43,
-		44 taxon_44,
-		45 taxon_45,
-		46 taxon_46,
-		47 taxon_47,
-		48 taxon_48,
-		49 taxon_49,
-		50 taxon_50,
-		51 taxon_51,
-		52 taxon_52,
-		53 taxon_53,
-		54 taxon_54,
-		55 taxon_55,
-		56 taxon_56,
-		57 taxon_57,
-		58 taxon_58,
-		59 taxon_59,
-		60 taxon_60,
-		61 taxon_61,
-		62 taxon_62,
-		63 taxon_63,
-		64 taxon_64,
-		65 taxon_65,
-		66 taxon_66,
-		67 taxon_67,
-		68 taxon_68,
-		69 taxon_69,
-		70 taxon_70,
-		71 taxon_71,
-		72 taxon_72,
-		73 taxon_73,
-		74 taxon_74,
-		75 taxon_75,
-		76 taxon_76,
-		77 taxon_77,
-		78 taxon_78,
-		79 taxon_79,
-		80 taxon_80,
-		81 taxon_81,
-		82 taxon_82,
-		83 taxon_83,
-		84 taxon_84,
-		85 taxon_85,
-		86 taxon_86,
-		87 taxon_87,
-		88 taxon_88,
-		89 taxon_89,
-		90 taxon_90,
-		91 taxon_91,
-		92 taxon_92,
-		93 taxon_93,
-		94 taxon_94,
-		95 taxon_95,
-		96 taxon_96,
-		97 taxon_97,
-		98 taxon_98,
-		99 taxon_99,
-		100 taxon_100;
+[0] 		1 taxon_1,
+[1] 		2 taxon_2,
+[2] 		3 taxon_3,
+[3] 		4 taxon_4,
+[4] 		5 taxon_5,
+[5] 		6 taxon_6,
+[6] 		7 taxon_7,
+[7] 		8 taxon_8,
+[8] 		9 taxon_9,
+[9] 		10 taxon_10,
+[10] 		11 taxon_11,
+[11] 		12 taxon_12,
+[12] 		13 taxon_13,
+[13] 		14 taxon_14,
+[14] 		15 taxon_15,
+[15] 		16 taxon_16,
+[16] 		17 taxon_17,
+[17] 		18 taxon_18,
+[18] 		19 taxon_19,
+[19] 		20 taxon_20,
+[20] 		21 taxon_21,
+[21] 		22 taxon_22,
+[22] 		23 taxon_23,
+[23] 		24 taxon_24,
+[24] 		25 taxon_25,
+[25] 		26 taxon_26,
+[26] 		27 taxon_27,
+[27] 		28 taxon_28,
+[28] 		29 taxon_29,
+[29] 		30 taxon_30,
+[30] 		31 taxon_31,
+[31] 		32 taxon_32,
+[32] 		33 taxon_33,
+[33] 		34 taxon_34,
+[34] 		35 taxon_35,
+[35] 		36 taxon_36,
+[36] 		37 taxon_37,
+[37] 		38 taxon_38,
+[38] 		39 taxon_39,
+[39] 		40 taxon_40,
+[40] 		41 taxon_41,
+[41] 		42 taxon_42,
+[42] 		43 taxon_43,
+[43] 		44 taxon_44,
+[44] 		45 taxon_45,
+[45] 		46 taxon_46,
+[46] 		47 taxon_47,
+[47] 		48 taxon_48,
+[48] 		49 taxon_49,
+[49] 		50 taxon_50,
+[50] 		51 taxon_51,
+[51] 		52 taxon_52,
+[52] 		53 taxon_53,
+[53] 		54 taxon_54,
+[54] 		55 taxon_55,
+[55] 		56 taxon_56,
+[56] 		57 taxon_57,
+[57] 		58 taxon_58,
+[58] 		59 taxon_59,
+[59] 		60 taxon_60,
+[60] 		61 taxon_61,
+[61] 		62 taxon_62,
+[62] 		63 taxon_63,
+[63] 		64 taxon_64,
+[64] 		65 taxon_65,
+[65] 		66 taxon_66,
+[66] 		67 taxon_67,
+[67] 		68 taxon_68,
+[68] 		69 taxon_69,
+[69] 		70 taxon_70,
+[70] 		71 taxon_71,
+[71] 		72 taxon_72,
+[72] 		73 taxon_73,
+[73] 		74 taxon_74,
+[74] 		75 taxon_75,
+[75] 		76 taxon_76,
+[76] 		77 taxon_77,
+[77] 		78 taxon_78,
+[78] 		79 taxon_79,
+[79] 		80 taxon_80,
+[80] 		81 taxon_81,
+[81] 		82 taxon_82,
+[82] 		83 taxon_83,
+[83] 		84 taxon_84,
+[84] 		85 taxon_85,
+[85] 		86 taxon_86,
+[86] 		87 taxon_87,
+[87] 		88 taxon_88,
+[88] 		89 taxon_89,
+[89] 		90 taxon_90,
+[90] 		91 taxon_91,
+[91] 		92 taxon_92,
+[92] 		93 taxon_93,
+[93] 		94 taxon_94,
+[94] 		95 taxon_95,
+[95] 		96 taxon_96,
+[96] 		97 taxon_97,
+[97] 		98 taxon_98,
+[98] 		99 taxon_99,
+[99] 		100 taxon_100;
 	TREE 'Simulated Tree (with character) 1' = (((((((69:0.03,13:0.03):0.03,48:0.060000000000000005):0.12999999999999998,((((5:0.01,66:0.01):0.05,(((4:0.02,55:0.02):0.02,9:0.04):0.01,((72:0.02,90:0.02):0.02,(((86:0.01,26:0.01):0.01,11:0.02):0.01,(99:0.02,(38:0.01,27:0.01):0.01):0.01):0.01):0.01):0.01):0.03,(25:0.02,65:0.02):0.07):0.07,((((((((6:0.01,20:0.01):0.01,(49:0.01,8:0.01):0.01):0.02,(88:0.03,((47:0.01,74:0.01):0.01,(7:0.01,62:0.01):0.01):0.01):0.01):0.01,(((63:0.01,31:0.01):0.01,(78:0.01,24:0.01):0.01):0.01,(75:0.01,59:0.01):0.02):0.02):0.01,(((23:0.01,42:0.01):0.01,(96:0.01,84:0.01):0.01):0.01,((95:0.01,39:0.01):0.01,94:0.02):0.01):0.03):0.02,((((((68:0.01,19:0.01):0.02,80:0.03):0.01,(70:0.02,79:0.02):0.02):0.01,((32:0.02,93:0.02):0.02,((35:0.02,15:0.02):0.01,(56:0.02,17:0.02):0.01):0.01):0.01):0.01,((((54:0.02,37:0.02):0.01,(60:0.02,85:0.02):0.01):0.01,(43:0.03,(45:0.02,77:0.02):0.01):0.01):0.01,(((10:0.02,16:0.02):0.01,(81:0.02,18:0.02):0.01):0.01,((76:0.02,87:0.02):0.01,(91:0.02,73:0.02):0.01):0.01):0.01):0.01):0.01,((((58:0.02,33:0.02):0.01,41:0.03):0.01,61:0.04):0.02,((((97:0.02,67:0.02):0.01,(82:0.02,34:0.02):0.01):0.01,((83:0.02,29:0.02):0.01,(46:0.02,22:0.02):0.01):0.01):0.01,(((98:0.02,52:0.02):0.01,14:0.03):0.01,(1:0.02,100:0.02):0.02):0.01):0.01):0.01):0.01):0.060000000000000005,((51:0.05,2:0.05):0.04,((21:0.060000000000000005,3:0.060000000000000005):0.01,(((44:0.02,12:0.02):0.02,((53:0.02,92:0.02):0.01,(28:0.02,40:0.02):0.01):0.01):0.01,71:0.05):0.02):0.02):0.05):0.01,57:0.15):0.01):0.03):0.4300000000000002,36:0.6200000000000003):1.330000000000001,50:1.9500000000000015):0.16,30:2.109999999999999):0.19000000000000003,(89:0.10999999999999999,64:0.10999999999999999):2.1899999999999973):0.0;
 	TREE 'Simulated Tree (with character) 2' = (18:3.139999999999977,((9:0.7000000000000004,81:0.7000000000000004):0.24000000000000007,((((((93:0.04,56:0.04):0.02,2:0.060000000000000005):0.01,(59:0.060000000000000005,66:0.060000000000000005):0.01):0.48000000000000026,6:0.5500000000000003):0.10999999999999999,91:0.6600000000000004):0.10999999999999999,(((76:0.09,((26:0.07,7:0.07):0.01,(((32:0.02,86:0.02):0.03,(35:0.03,44:0.03):0.02):0.02,(95:0.02,85:0.02):0.05):0.01):0.01):0.21000000000000005,(43:0.03,55:0.03):0.2700000000000001):0.18000000000000002,((8:0.34000000000000014,(((((25:0.01,19:0.01):0.05,((17:0.01,89:0.01):0.03,((97:0.02,79:0.02):0.01,(27:0.01,46:0.01):0.02):0.01):0.02):0.02,(((((11:0.01,31:0.01):0.01,(98:0.01,47:0.01):0.01):0.01,((5:0.01,52:0.01):0.01,(96:0.01,74:0.01):0.01):0.01):0.01,(62:0.01,49:0.01):0.03):0.02,73:0.060000000000000005):0.02):0.01,(((((75:0.03,100:0.03):0.01,(15:0.01,24:0.01):0.03):0.01,((80:0.01,4:0.01):0.01,21:0.02):0.03):0.01,((78:0.01,71:0.01):0.04,(64:0.02,(54:0.01,87:0.01):0.01):0.03):0.01):0.02,(((((22:0.02,94:0.02):0.01,(61:0.01,34:0.01):0.02):0.01,(((50:0.01,16:0.01):0.01,65:0.02):0.01,29:0.03):0.01):0.01,(39:0.04,((10:0.01,48:0.01):0.02,23:0.03):0.01):0.01):0.02,((30:0.05,(((12:0.01,53:0.01):0.01,(82:0.01,63:0.01):0.01):0.01,(20:0.02,42:0.02):0.01):0.02):0.01,((70:0.02,88:0.02):0.03,(51:0.04,92:0.04):0.01):0.01):0.01):0.01):0.01):0.02,((((14:0.02,38:0.02):0.01,1:0.03):0.04,((99:0.05,((36:0.02,58:0.02):0.02,((37:0.02,28:0.02):0.01,(84:0.02,68:0.02):0.01):0.01):0.01):0.01,((90:0.04,33:0.04):0.01,83:0.05):0.01):0.01):0.02,(3:0.08,(67:0.05,(45:0.03,57:0.03):0.02):0.03):0.01):0.02):0.23000000000000007):0.060000000000000005,(((41:0.13999999999999999,(69:0.09999999999999999,77:0.09999999999999999):0.04):0.05,(40:0.060000000000000005,13:0.060000000000000005):0.12999999999999998):0.02,(72:0.18000000000000002,60:0.18000000000000002):0.03):0.19000000000000003):0.08):0.2900000000000001):0.17):2.199999999999997):0.0;
 	TREE 'Simulated Tree (with character) 3' = (22:2.159999999999998,((((67:0.5100000000000002,5:0.5100000000000002):0.15,40:0.6600000000000004):0.22000000000000006,((((62:0.060000000000000005,74:0.060000000000000005):0.3300000000000001,((63:0.09,((7:0.02,18:0.02):0.02,(76:0.01,17:0.01):0.03):0.05):0.10999999999999999,75:0.20000000000000004):0.19000000000000003):0.01,((((20:0.01,50:0.01):0.01,42:0.02):0.17,((80:0.060000000000000005,60:0.060000000000000005):0.04,((43:0.04,(36:0.03,58:0.03):0.01):0.02,(71:0.03,84:0.03):0.03):0.04):0.09):0.04,(((((14:0.02,11:0.02):0.02,(85:0.03,((94:0.01,73:0.01):0.01,57:0.02):0.01):0.01):0.02,86:0.060000000000000005):0.04,39:0.09999999999999999):0.10999999999999999,((((((9:0.02,13:0.02):0.04,(16:0.02,12:0.02):0.04):0.08,((1:0.07,(90:0.05,(34:0.04,83:0.04):0.01):0.02):0.04,(93:0.060000000000000005,((27:0.03,78:0.03):0.02,38:0.05):0.01):0.05):0.03):0.02,((((48:0.07,(64:0.01,29:0.01):0.060000000000000005):0.05,((((53:0.02,68:0.02):0.04,77:0.060000000000000005):0.03,(((2:0.02,92:0.02):0.04,((97:0.01,44:0.01):0.02,6:0.03):0.03):0.02,((96:0.01,100:0.01):0.01,3:0.02):0.060000000000000005):0.01):0.01,19:0.09999999999999999):0.02):0.01,((89:0.05,23:0.05):0.060000000000000005,(((((47:0.02,46:0.02):0.02,70:0.04):0.01,(45:0.03,69:0.03):0.02):0.02,((((87:0.01,55:0.01):0.01,10:0.02):0.02,99:0.04):0.02,49:0.060000000000000005):0.01):0.01,(25:0.04,(32:0.03,61:0.03):0.01):0.04):0.03):0.02):0.02,((24:0.09,((91:0.04,37:0.04):0.02,(41:0.05,21:0.05):0.01):0.03):0.04,(30:0.060000000000000005,54:0.060000000000000005):0.07):0.02):0.01):0.01,((65:0.060000000000000005,88:0.060000000000000005):0.01,(28:0.05,(35:0.04,79:0.04):0.01):0.02):0.09999999999999999):0.02,((56:0.04,66:0.04):0.11999999999999998,((8:0.02,81:0.02):0.10999999999999999,82:0.12999999999999998):0.03):0.03):0.02):0.02):0.17):0.05,((98:0.3200000000000001,(72:0.10999999999999999,31:0.10999999999999999):0.21000000000000005):0.060000000000000005,(51:0.37000000000000016,((((59:0.05,33:0.05):0.01,52:0.060000000000000005):0.09,15:0.15):0.060000000000000005,95:0.21000000000000005):0.16):0.01):0.07):0.4300000000000002):0.03,(4:0.5100000000000002,26:0.5100000000000002):0.4000000000000002):1.2500000000000009):0.0;
@@ -244,19 +245,11 @@ BEGIN TREES;
 END;
 
 
-BEGIN ASSUMPTIONS;
-	TYPESET * UNTITLED   =  Squared:  1 -  5;
-
-END;
-
-BEGIN MESQUITECHARMODELS;
-	ProbModelSet * UNTITLED   =  Brownian_default:  1 -  5;
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		timeSaved 1742678565136;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 6732219986260810463 WM1148f47d2081;
@@ -264,20 +257,49 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 2591902839263838224 WM11493f9adec0;
-			checksum 0 2295126586 WM11493f9adec0;
+			mqVersion 390;
+			checksumv 0 3 2295126586 WM11493f9adec0  numChars 5   numItems 1   min -9.107755278982134   max 0.49224472101786715   sumSquares 2171.6278850696044   NumFiles 1 NumMatrices 1;
+			mqVersion;
 		endTell;
 		getWindow;
 		tell It;
-			setResourcesState false false 72;
-			setPopoutState 400;
+			suppress;
+			setUniqueID 0195bfbc8f19542;
 			setExplanationSize 0;
 			setAnnotationSize 0;
 			setFontIncAnnot 0;
 			setFontIncExp 0;
 			setSize 1163 648;
-			setLocation 8 22;
+			setLocation 8 25;
 			setFont SanSerif;
 			setFontSize 10;
+			getToolPalette;
+			tell It;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+		tell It;
+			includeGaps true;
+			simplifyTaxonName false;
+			convertMultStateToMissing false;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNAByOTUID.InterpretFastaDNAByOTUID;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -287,17 +309,19 @@ Begin MESQUITE;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
+					setTreeBlockID 0195bfbc8f40235;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 786.1187814845004.4817563795317733133;
 				getTreeWindow;
 				tell It;
+					setUniqueID 0195bfbc8f4b543;
 					setExplanationSize 30;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 1091 581;
-					setLocation 8 22;
+					setSize 1091 576;
+					setLocation 8 25;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
@@ -312,43 +336,45 @@ Begin MESQUITE;
 					tell It;
 						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
-							stretchToggle off;
-							branchLengthsToggle on;
+							inhibitStretchToggle on;
+							orientUp;
+							branchLengthsDisplay 2;
 							toggleScale on;
 							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
+							setFixedTaxonDistance 0;
 						endTell;
 						setEdgeWidth 6;
-						orientUp;
-						toggleCorners on;
+						setCornerMode Diagonal  50;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
 					showBranchColors on;
-					labelBranchLengths off;
-					centerBrLenLabels on;
-					showBrLensUnspecified on;
-					showBrLenLabelsOnTerminals on;
-					setBrLenLabelColor 0 0 255;
-					setNumBrLenDecimals 6;
+					setSelectedTaxonHighlightMode 1;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setColor Black;
-						toggleColorPartition on;
+						setTaxonNameStyler  #mesquite.trees.ColorTaxonByPartition.ColorTaxonByPartition;
 						toggleShadePartition off;
+						toggleShowFootnotes on;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
 						namesAngle ?;
 					endTell;
+					getEmployee #mesquite.trees.CollapseCladeNameHighlight.CollapseCladeNameHighlight;
+					tell It;
+						setMode 3;
+					endTell;
 				endTell;
 					setTreeNumber 3;
-					useSuggestedSize off;
-					toggleSizeToFit on;
+					setDrawingSizeMode 1;
+					toggleLegendFloat on;
 					toggleTextOnTree off;
+					togglePrintName off;
 					showWindow;
 					newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 				tell It;
@@ -356,6 +382,7 @@ Begin MESQUITE;
 					setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 					tell It;
 						toggleLabels off;
+						togglePredictions off;
 						toggleGray off;
 					endTell;
 					setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
@@ -376,24 +403,45 @@ Begin MESQUITE;
 								toggleWeight on;
 							endTell;
 						endTell;
+						toggleShowSelectedOnly off;
 					endTell;
 					setCharacter 3;
 					setMapping 1;
 					toggleShowLegend on;
-					toggleGray off;
+					setColorMode 0;
 					toggleWeights on;
-					setInitialOffsetX -162;
+					setInitialOffsetX 4;
 					setInitialOffsetY -307;
 					setLegendWidth 142;
-					setLegendHeight 302;
+					setLegendHeight 305;
 					resume ;
 				endTell;
 				endTell;
 				desuppressEPCResponse;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
+				getEmployee #mesquite.genomic.ShowMatrixInTreeWindow.ShowMatrixInTreeWindow;
+				tell It;
+					chooseOrLink 0;
+					fieldWidth 0;
+					selectedOnly false;
+					showMatrix false;
+				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
-					setColor Red;
+					setColorRGB #ff0000;
 					removeColor off;
+				endTell;
+				getEmployee #mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
+				tell It;
+					showAssociate Node_label 0 false;
+					setBooleans Node_label 0  false false false false true false false false;
+					setNumbers Node_label 0  12 0 0 4 0 ?;
+					showAssociate Branch_length 0 false;
+					setBooleans Branch_length 0  true true false true true false false false;
+					setNumbers Branch_length 0  12 0 0 6 0 ?;
 				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
@@ -403,19 +451,6 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
-				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
-				tell It;
-					setOn on;
-					setDigits 4;
-					writeAsPercentage off;
-					toggleHorizontal on;
-					setFontSize 10;
-					setOffset 0  0;
-				endTell;
-				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
-				tell It;
-					panelOpen false;
-				endTell;
 			endTell;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -424,40 +459,60 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					setUniqueID 0195bfbc8f9e544;
 					setExplanationSize 30;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 1091 581;
-					setLocation 8 22;
+					setLocation 8 25;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
 					tell It;
+						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
-					colorRowNames  #mesquite.charMatrices.TaxonGroupColor.TaxonGroupColor;
+					colorRowNames  #mesquite.charMatrices.NoColor.NoColor;
 					colorColumnNames  #mesquite.charMatrices.CharGroupColor.CharGroupColor;
 					colorText  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
 					toggleShowTaxonNames on;
 					toggleTight off;
+					toggleThinRows off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleReduceCellBorders off;
 					toggleAutoWCharNames on;
+					toggleAutoTaxonNames off;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
 					setColumnWidth 70;
 					toggleBirdsEye off;
+					toggleColorOnlyTaxonNames off;
+					toggleShowPaleGrid off;
+					toggleShowPaleCellColors off;
+					toggleShowPaleExcluded off;
+					togglePaleInapplicable on;
+					togglePaleMissing off;
+					toggleShowBoldCellText off;
 					toggleAllowAutosize on;
 					toggleColorsPanel off;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
 				hideWindow;
+				getEmployee #mesquite.charMatrices.AlterData.AlterData;
+				tell It;
+					toggleBySubmenus off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorByState.ColorByState;
+				tell It;
+					setStateLimit 9;
+					toggleUniformMaximum on;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -468,6 +523,10 @@ Begin MESQUITE;
 					togglePanel off;
 				endTell;
 				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.SelSummaryStrip.SelSummaryStrip;
 				tell It;
 					showStrip off;
 				endTell;
@@ -483,6 +542,7 @@ Begin MESQUITE;
 			setPrevFileName '06-BiSSEtrees.nex';
 			getWindow;
 			tell It;
+					setUniqueID 0195bfbc8fd0545;
 					popAsTile false;
 					popOut;
 					setExplanationSize 0;
@@ -490,9 +550,12 @@ Begin MESQUITE;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
 					setSize 515 205;
-					setLocation 108 630;
+					setLocation 40 748;
 					setFont SanSerif;
 					setFontSize 10;
+					getToolPalette;
+					tell It;
+					endTell;
 				setExplanation 'This shows a tree and character simulated together. The character evolved by brownian motion; the tree speciated with a rate that is the value of the simulated character.^n^nA block of simulated trees and accompanying matrix (such that the i''th character was simulated with the i''th tree) was made by selecting Trees & Diversification Characters from the Taxa & Trees menu.  You can choose to simulate as shown (with a continuous character) or with the BiSSE model using a binary character.';
 				setTitle Simulated_trees_&_characters;
 				toggleFileNames off;
@@ -500,6 +563,15 @@ Begin MESQUITE;
 				setNextButtonName Next;
 			endTell;
 			showWindow;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			findWindow 0195bfbc8f4b543;
+			tell It;
+				setAsFront;
+			endTell;
+			desuppress;
 		endTell;
 		endTell;
 end;

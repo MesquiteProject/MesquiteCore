@@ -1,11 +1,12 @@
 #NEXUS
-[written Sun May 04 14:33:10 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
+[written Sat Mar 22 10:57:01 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "13-matrix.nex"';
 	DIMENSIONS  NCHAR=2;
-	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	FORMAT DATATYPE = STANDARD RESPECTCASE GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
-		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+		1 number_of_eyes /  one two,
+		2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
 	Fubonidia   11
@@ -22,19 +23,4 @@ BEGIN CHARACTERS;
 
 
 END;
-BEGIN CODONS;
-	CODESET * UNTITLED   =  universal:  1 -  2;
-
-
-END;
-
-BEGIN ASSUMPTIONS;
-	TYPESET * UNTITLED   =  unord:  1 -  2;
-
-END;
-
-BEGIN MESQUITECHARMODELS;
-	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
-END;
-
 

@@ -1,5 +1,5 @@
 #NEXUS
-[written Wed Aug 26 11:49:29 PDT 2009 by Mesquite  version 2.6+ (build 508) at thrandina.zoology.ubc.ca/137.82.80.142 (Wayne Maddison)]
+[written Sat Mar 22 12:21:24 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 
 BEGIN TAXA;
 	TITLE Taxa;
@@ -15,9 +15,93 @@ END;
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "13-AsymmLikelihood.nex"';
 	DIMENSIONS  NCHAR=85;
-	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1 2 3 4 5 6 7 8";
+	FORMAT DATATYPE = STANDARD RESPECTCASE GAP = - MISSING = ? SYMBOLS = "  0 1 2 3 4 5 6 7 8";
 	CHARSTATELABELS 
-		1 silver_spots /  absent present, 2 interval_3_micro. /  'absent-v._slight_mirrors' slight_mirrors distinct_mirrors, 3 'interval 4+5 micro.' /  absent v._slight_mirrors slight_mirrors distinct_mirrors, 4 'interval 6+7 micro.' /  absent v._slight_mirrors slight_mirrors distinct_mirrors, 5 outer_mirror /  joined isolated, 6 silver_spot /  restricted_to_3rd also_on_4th, 7 elytral_microsculpture /  isodiametric slightly_trans. transverse, 8 suborbital_setae /  absent 'short_+_sparse_denser', 9 midlat._pron._seta /  absent present, 10 'ed3 + ed5 + 3rd' /  on_3rd_interneur in_interval, 11 'ed3 + ed5 pos.' /  anterior_edge_of_ss center_of_s._spot, 12 '# eo4 - eo5 setae' /  '0-0.4' '0.4-0.8' '1.8-2.1' '>3', 13 ed7_setae /  '1_seta-2_setae', 14 male_adhes._setae /  narrow wide, 15 protars._4_setae /  flattened circular, 16 protars._4_setae /  narrow_separ. wide_separ., 17 mandibles /  curved straight, 18 lacinia_shape /  curved straight, 19 lacinia_width /  narrow wide, 20 mentum_shape /  triangular 'trapezoid-rectangular', 21 tooth_emarg.? /  no yes, 22 tooth_bulbous? /  no slightly markedly, 23 mentum_epilobes /  indistinct 'slight-distinct', 24 pronotum /  rounded trapezoid, 25 pronot._carina /  absent short 'long_-_gap' 'long_-_basal', 26 metasternum /  unbordered bordered, 27 elytral_impression /  absent slight definite, 28 humeral_margin /  absent short moderate long, 29 interneur_4_shape /  straight slightly_sinuate distinctly_sinuate, 30 'ed3 + ed5 area' /  simple foveolate, 31 elytral_punctures /  circular slightly_trans. transverse, 32 interneur_8_depth /  shallow slightly_deep deep, 33 interval_5_apex /  flat ridged, 34 elytral_plica /  absent internal_only connected, 35 male_protars._3 /  no_projection slight_proj. prominent_proj., 36 protars._4_proj. /  absent short medium long, 37 flagellar_sheath /  paler dark_hooked, 38 flagellar_sheath /  simple long_thin_scales, 39 CSC_right_lobe /  absent margin_narrow margin_medium margin_wide, 40 CSC_rt._lobe_ridge /  absent slight distinct, 41 VSP_dors._ridge /  unangled slight_angle mod._angle sharp_angle, 42 VSP_sculpture /  unscaled slight scaled, 43 flagellar_sheath /  unspotted dark_spot, 44 ostial_patch /  absent small medium 'med-large' large, 45 ostial_scale /  dense sparse_small, 46 ostial_microtrichia /  no_combs few_combs many_combs, 47 ost._sclero_strip /  absent present, 48 ost._strip_beaded /  no yes, 49 scaled_pillow /  absent present, 50 sac_membrane /  small_scales large_scales, 51 ventral_bulge /  absent slight distinct, 52 aedeagal_apex /  straight abruptly_bent, 53 vaginal_plate /  absent present, 54 apex_spermatheca /  rounded indented, 55 S1_setae /  absent short medium long, 56 S2_length /  '100-200' '200-300' '300-400' '>400', 57 S2_dors.lat._setae, 58 stern._X_setae /  very_short long, 59 autosome_# /  20 22 24 26 30 32 34 36 38, 60 Y_chrom_size /  absent small medium large, 61 L1_frontale /  unspotted slightly spotted, 62 L1_head_color /  light centrally_dark all_dark, 63 post_FR3_micro. /  absent slight_laterally laterally_only centrally, 64 FR3_microsculpture /  absent single_teeth small_combs large_combs, 65 eggbursters /  denticles small_teeth 'large:_spaced' 'large:_clustered', 66 pron._microtuber /  absent absent_centr. faint_centrally more even_more throughout, 67 FR1_width /  narrow wide, 68 FR3_width /  narrow wide, 69 PR4_length /  very_short short long, 70 PR10_length /  absent short medium long, 71 'gPR +gME' /  absent present, 72 PR13_size /  short long, 73 ME2_length /  very_short short medium long, 74 ME14_length /  very_short short medium long, 75 TE6_length /  very_short short long, 76 TE11_length /  very_short short long, 77 TE11_shape /  narrow wide_blunt, 78 TE_alpha /  absent present, 79 EP1_length /  short long, 80 Seg._VIII_EP1_width /  narrow wide, 81 Seg._IX_ST2 /  absent present, 82 mandible_margin /  shelf_absent narrow medium wide_shelf, 83 L2_nr._FR3 /  absent present, 84 L2_stipites /  absent present, 85 #long_UR_setae /  7_setae 9_setae 10_setae ; 
+		1 silver_spots /  absent present,
+		2 interval_3_micro. /  'absent-v._slight_mirrors' slight_mirrors distinct_mirrors,
+		3 'interval 4+5 micro.' /  absent v._slight_mirrors slight_mirrors distinct_mirrors,
+		4 'interval 6+7 micro.' /  absent v._slight_mirrors slight_mirrors distinct_mirrors,
+		5 outer_mirror /  joined isolated,
+		6 silver_spot /  restricted_to_3rd also_on_4th,
+		7 elytral_microsculpture /  isodiametric slightly_trans. transverse,
+		8 suborbital_setae /  absent 'short_+_sparse_denser',
+		9 midlat._pron._seta /  absent present,
+		10 'ed3 + ed5 + 3rd' /  on_3rd_interneur in_interval,
+		11 'ed3 + ed5 pos.' /  anterior_edge_of_ss center_of_s._spot,
+		12 '# eo4 - eo5 setae' /  '0-0.4' '0.4-0.8' '1.8-2.1' '>3',
+		13 ed7_setae /  '1_seta-2_setae',
+		14 male_adhes._setae /  narrow wide,
+		15 protars._4_setae /  flattened circular,
+		16 protars._4_setae /  narrow_separ. wide_separ.,
+		17 mandibles /  curved straight,
+		18 lacinia_shape /  curved straight,
+		19 lacinia_width /  narrow wide,
+		20 mentum_shape /  triangular 'trapezoid-rectangular',
+		21 tooth_emarg.? /  no yes,
+		22 tooth_bulbous? /  no slightly markedly,
+		23 mentum_epilobes /  indistinct 'slight-distinct',
+		24 pronotum /  rounded trapezoid,
+		25 pronot._carina /  absent short 'long_-_gap' 'long_-_basal',
+		26 metasternum /  unbordered bordered,
+		27 elytral_impression /  absent slight definite,
+		28 humeral_margin /  absent short moderate long,
+		29 interneur_4_shape /  straight slightly_sinuate distinctly_sinuate,
+		30 'ed3 + ed5 area' /  simple foveolate,
+		31 elytral_punctures /  circular slightly_trans. transverse,
+		32 interneur_8_depth /  shallow slightly_deep deep,
+		33 interval_5_apex /  flat ridged,
+		34 elytral_plica /  absent internal_only connected,
+		35 male_protars._3 /  no_projection slight_proj. prominent_proj.,
+		36 protars._4_proj. /  absent short medium long,
+		37 flagellar_sheath /  paler dark_hooked,
+		38 flagellar_sheath /  simple long_thin_scales,
+		39 CSC_right_lobe /  absent margin_narrow margin_medium margin_wide,
+		40 CSC_rt._lobe_ridge /  absent slight distinct,
+		41 VSP_dors._ridge /  unangled slight_angle mod._angle sharp_angle,
+		42 VSP_sculpture /  unscaled slight scaled,
+		43 flagellar_sheath /  unspotted dark_spot,
+		44 ostial_patch /  absent small medium 'med-large' large,
+		45 ostial_scale /  dense sparse_small,
+		46 ostial_microtrichia /  no_combs few_combs many_combs,
+		47 ost._sclero_strip /  absent present,
+		48 ost._strip_beaded /  no yes,
+		49 scaled_pillow /  absent present,
+		50 sac_membrane /  small_scales large_scales,
+		51 ventral_bulge /  absent slight distinct,
+		52 aedeagal_apex /  straight abruptly_bent,
+		53 vaginal_plate /  absent present,
+		54 apex_spermatheca /  rounded indented,
+		55 S1_setae /  absent short medium long,
+		56 S2_length /  '100-200' '200-300' '300-400' '>400',
+		57 S2_dors.lat._setae,
+		58 stern._X_setae /  very_short long,
+		59 autosome_# /  20 22 24 26 30 32 34 36 38,
+		60 Y_chrom_size /  absent small medium large,
+		61 L1_frontale /  unspotted slightly spotted,
+		62 L1_head_color /  light centrally_dark all_dark,
+		63 post_FR3_micro. /  absent slight_laterally laterally_only centrally,
+		64 FR3_microsculpture /  absent single_teeth small_combs large_combs,
+		65 eggbursters /  denticles small_teeth 'large:_spaced' 'large:_clustered',
+		66 pron._microtuber /  absent absent_centr. faint_centrally more even_more throughout,
+		67 FR1_width /  narrow wide,
+		68 FR3_width /  narrow wide,
+		69 PR4_length /  very_short short long,
+		70 PR10_length /  absent short medium long,
+		71 'gPR +gME' /  absent present,
+		72 PR13_size /  short long,
+		73 ME2_length /  very_short short medium long,
+		74 ME14_length /  very_short short medium long,
+		75 TE6_length /  very_short short long,
+		76 TE11_length /  very_short short long,
+		77 TE11_shape /  narrow wide_blunt,
+		78 TE_alpha /  absent present,
+		79 EP1_length /  short long,
+		80 Seg._VIII_EP1_width /  narrow wide,
+		81 Seg._IX_ST2 /  absent present,
+		82 mandible_margin /  shelf_absent narrow medium wide_shelf,
+		83 L2_nr._FR3 /  absent present,
+		84 L2_stipites /  absent present,
+		85 #long_UR_setae /  7_setae 9_setae 10_setae ; 
 	MATRIX
 	balli             1010-00(1 2)1000011000000010(0 1)02(1 2)0000020300100204020-0000002021132222010023013322101002000
 	foveum            1010-00(1 2)10(0 1)1011000000010(0 1)0210000020300100204020-00000020211322230100230133220010(0 1)2???
@@ -46,27 +130,28 @@ BEGIN CHARACTERS;
 END;
 BEGIN TREES;
 	Title 'Trees from "13-AsymmLikelihood.nex"';
+	ID 0195b98803f2131;
 	LINK Taxa = Taxa;
 	TRANSLATE
-		1 balli,
-		2 foveum,
-		3 argenteolum,
-		4 alaskense,
-		5 semenovi,
-		6 stenoderum,
-		7 carinula,
-		8 velox,
-		9 lapponicum,
-		10 punctatostriatum,
-		11 hesperium,
-		12 lorquinii,
-		13 zephyrum,
-		14 l._levettei,
-		15 l._carrianum,
-		16 inaequale,
-		17 litorale,
-		18 conicolle,
-		19 striatum;
+[0] 		1 balli,
+[1] 		2 foveum,
+[2] 		3 argenteolum,
+[3] 		4 alaskense,
+[4] 		5 semenovi,
+[5] 		6 stenoderum,
+[6] 		7 carinula,
+[7] 		8 velox,
+[8] 		9 lapponicum,
+[9] 		10 punctatostriatum,
+[10] 		11 hesperium,
+[11] 		12 lorquinii,
+[12] 		13 zephyrum,
+[13] 		14 l._levettei,
+[14] 		15 l._carrianum,
+[15] 		16 inaequale,
+[16] 		17 litorale,
+[17] 		18 conicolle,
+[18] 		19 striatum;
 	TREE Untitled_Tree = (19,((1,2),((((4,3,5),6),(7,(8,9))),10,(12,11,(13,(15,14,16,(17,18)))))));
 	TREE Untitled_Tree = (19,6,7,8,9,10,(1,2),(3,4,5),(11,12,13,(17,18,(14,15,16))));
 	TREE Untitled_Tree = (19,(1,2),7,6,8,9,10,(3,4,5),(11,12,13,(17,18,(14,15,16))));
@@ -96,7 +181,7 @@ BEGIN paup;
 
 END;
 BEGIN LABELS;
-	CHARGROUPLABEL Adult_External COLOR = (RGB 0.262745098 0.38431373 0.90980392) ;
+	CHARGROUPLABEL Adult_External COLOR = (RGB 0.2627451 0.38431373 0.90980392) ;
 	CHARGROUPLABEL Male_Genitalia COLOR = (RGB 1.0 0.59607843 0.03137255) ;
 	CHARGROUPLABEL Female_Genitalia COLOR = (RGB 0.85490196 0.96078431 0.05882353) ;
 	CHARGROUPLABEL Chromosomes COLOR = (RGB 0.12156863 0.72941176 0.12156863) ;
@@ -107,22 +192,22 @@ BEGIN LABELS;
 END;
 
 BEGIN SETS;
-	CHARSET Adult_External   =   1 -  36;
-	CHARSET Male_Genitalia   =   37 -  52;
-	CHARSET Female_Genitalia   =   53 -  58;
-	CHARSET Chromosomes   =   59 -  60;
-	CHARSET Larvae   =   61 -  85;
+	CHARSET Adult_External   =   1- 36;
+	CHARSET Male_Genitalia   =   37- 52;
+	CHARSET Female_Genitalia   =   53- 58;
+	CHARSET Chromosomes   =   59- 60;
+	CHARSET Larvae   =   61- 85;
 
-	CHARPARTITION * UNTITLED  =  Adult_External :  1 -  36, Male_Genitalia :  37 -  52, Female_Genitalia :  53 -  58, Chromosomes :  59 -  60, Larval_Structure :  61 -  85;
-	CHARPARTITION body_parts  =  Adult_External :  1 -  36, Male_Genitalia :  37 -  52, Female_Genitalia :  53 -  58, Chromosomes :  59 -  60, Larval_Structure :  61 -  85;
-	CHARPARTITION 'adult/larvae'  =  Adult :  1 -  58, Chromosomes :  59 -  60, Larval_Structure :  61 -  85;
+	CHARPARTITION * UNTITLED  =  Adult_External :  1- 36, Male_Genitalia :  37- 52, Female_Genitalia :  53- 58, Chromosomes :  59- 60, Larval_Structure :  61- 85;
+	CHARPARTITION body_parts  =  Adult_External :  1- 36, Male_Genitalia :  37- 52, Female_Genitalia :  53- 58, Chromosomes :  59- 60, Larval_Structure :  61- 85;
+	CHARPARTITION 'adult/larvae'  =  Adult :  1- 58, Chromosomes :  59- 60, Larval_Structure :  61- 85;
 
 END;
 
 BEGIN ASSUMPTIONS;
 	OPTIONS DEFTYPE =              unord PolyTcount =              MINSTEPS;
-	TYPESET * UNTITLED   =  unord:  34 64, ord:  1 -  33 35 -  63 65 -  85;
-TYPESET types   =  unord:  34 64, ord:  1 -  33 35 -  63 65 -  85;
+	TYPESET * UNTITLED   =  unord:  34 64, ord:  1- 33 35- 63 65- 85;
+TYPESET types   =  unord:  34 64, ord:  1- 33 35- 63 65- 85;
 
 	EXSET larval_only  =  1 -  60;
 EXSET adult_external  =  37 -  85;
@@ -135,7 +220,7 @@ END;
 
 BEGIN NOTES;
 
-	TEXT  TAXA = Taxa TAXON = 5 TEXT = only_known_from_one_specimen;
+	TEXT  TAXON = 5 TEXT = only_known_from_one_specimen;
 
 	TEXT   TAXON = 17 CHARACTER = 59 TEXT = 'From_Nettman_(1984),_in_den_Boer_et_al._"Carabid_Beetles._Their_Adaptations_and_Dynamics."';
 
@@ -147,7 +232,7 @@ BEGIN MESQUITECHARMODELS;
 	CharModel My_Asymmetrical_Model (AsymmMk) = 
 		 rate 0.2 bias 0.1 equilibAsPrior;
 
-	ProbModelSet * UNTITLED   =  My_Asymmetrical_Model:  1 -  85;
+	ProbModelSet * UNTITLED   =  My_Asymmetrical_Model:  1- 85;
 END;
 
 BEGIN MacClade;
@@ -212,16 +297,11 @@ BEGIN MacClade;
 	BothTools '1';
 
 END;
-BEGIN CODONS;
-	CODESET * UNTITLED   =  universal:  1 -  85;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		timeSaved 1742671284631;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 4388395586715833634 WM114899559a6126;
@@ -229,25 +309,49 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 206796807167704052 WM114899559ca0;
-			checksumv 0 2 238762464 WM114899559ca0;
+			mqVersion 390;
+			checksumv 0 3 238762464 WM114899559ca0  getNumChars 85 numChars 85 getNumTaxa 19 numTaxa 19   short true   bits 383   states 383   sumSquaresStatesOnly 96416.0 sumSquares 96416.0 longCompressibleToShort false usingShortMatrix true   NumFiles 1 NumMatrices 1;
+			mqVersion;
 		endTell;
 		getWindow;
 		tell It;
 			suppress;
-			setResourcesState false false 72;
-			setPopoutState 400;
+			setUniqueID 0195b98803b0212;
 			setExplanationSize 0;
 			setAnnotationSize 0;
 			setFontIncAnnot 0;
 			setFontIncExp 0;
-			setSize 492 259;
-			setLocation -7 22;
+			setSize 555 245;
+			setLocation 20 42;
 			setFont SanSerif;
 			setFontSize 10;
 			getToolPalette;
 			tell It;
 			endTell;
-			desuppress;
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+		tell It;
+			includeGaps true;
+			simplifyTaxonName false;
+			convertMultStateToMissing false;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNAByOTUID.InterpretFastaDNAByOTUID;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -257,19 +361,21 @@ Begin MESQUITE;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
+					setTreeBlockID 0195b98803f2131;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 553.1024349539831.1587552359099835858;
 				getTreeWindow;
 				tell It;
+					setUniqueID 0195b9880400213;
 					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 515 612;
-					setLocation 501 32;
+					setSize 484 697;
+					setLocation 599 30;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
@@ -282,34 +388,31 @@ Begin MESQUITE;
 					tell It;
 						setSpotDiameter 22;
 						setEdgeWidth 4;
-						orientRight;
 						useDiagonal;
+						toggleBallsInternal on;
 						toggleCosmic off;
 						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
 							inhibitStretchToggle on;
-							branchLengthsToggle off;
+							orientRight;
+							branchLengthsDisplay 0;
 							toggleScale on;
 							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
+							setFixedTaxonDistance 0;
 						endTell;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
 					showBranchColors on;
-					labelBranchLengths off;
-					centerBrLenLabels on;
-					showBrLensUnspecified on;
-					showBrLenLabelsOnTerminals on;
-					setBrLenLabelColor 0 0 255;
-					setNumBrLenDecimals 6;
+					setSelectedTaxonHighlightMode 1;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setColor Black;
-						toggleColorPartition on;
+						setTaxonNameStyler  #mesquite.trees.ColorTaxonByPartition.ColorTaxonByPartition;
 						toggleShadePartition off;
 						toggleShowFootnotes on;
 						toggleNodeLabels on;
@@ -317,11 +420,16 @@ Begin MESQUITE;
 						toggleShowNames on;
 						namesAngle ?;
 					endTell;
+					getEmployee #mesquite.trees.CollapseCladeNameHighlight.CollapseCladeNameHighlight;
+					tell It;
+						setMode 3;
+					endTell;
 				endTell;
 					setTreeNumber 4;
 					setDrawingSizeMode 1;
 					toggleLegendFloat on;
 					toggleTextOnTree off;
+					togglePrintName off;
 					showWindow;
 					newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 				tell It;
@@ -329,6 +437,7 @@ Begin MESQUITE;
 					setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 					tell It;
 						toggleLabels off;
+						togglePredictions off;
 						toggleGray off;
 					endTell;
 					setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
@@ -351,11 +460,12 @@ Begin MESQUITE;
 								setUnderflowCheckFreq 2;
 							endTell;
 						endTell;
+						toggleShowSelectedOnly off;
 					endTell;
 					setCharacter 20;
 					setMapping 1;
 					toggleShowLegend on;
-					toggleGray off;
+					setColorMode 0;
 					toggleWeights on;
 					setInitialOffsetX 3;
 					setInitialOffsetY 4;
@@ -366,10 +476,30 @@ Begin MESQUITE;
 				endTell;
 				endTell;
 				desuppressEPCResponse;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
+				getEmployee #mesquite.genomic.ShowMatrixInTreeWindow.ShowMatrixInTreeWindow;
+				tell It;
+					chooseOrLink 0;
+					fieldWidth 0;
+					selectedOnly false;
+					showMatrix false;
+				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
-					setColor Red;
+					setColorRGB #ff0000;
 					removeColor off;
+				endTell;
+				getEmployee #mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
+				tell It;
+					showAssociate Node_label 0 false;
+					setBooleans Node_label 0  false false false false true false false false;
+					setNumbers Node_label 0  12 0 0 4 0 ?;
+					showAssociate Branch_length 0 false;
+					setBooleans Branch_length 0  true true false true true false false false;
+					setNumbers Branch_length 0  12 0 0 6 0 ?;
 				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
@@ -378,20 +508,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
-				tell It;
-					setOn on;
-					setDigits 4;
-					writeAsPercentage off;
-					toggleCentred on;
-					toggleHorizontal on;
-					setFontSize 10;
-					setOffset 0  0;
-				endTell;
-				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
-				tell It;
-					panelOpen false;
 				endTell;
 			endTell;
 		endTell;
@@ -403,14 +519,15 @@ Begin MESQUITE;
 				tell It;
 					getWindow;
 					tell It;
+						setUniqueID 0195b9895636232;
 						popAsTile false;
 						popOut;
 						setExplanationSize 0;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
-						setSize 420 259;
-						setLocation 32 400;
+						setSize 483 223;
+						setLocation 80 373;
 						setFont SanSerif;
 						setFontSize 10;
 						getToolPalette;
@@ -427,12 +544,13 @@ Begin MESQUITE;
 			setPrevFileName '12-Mk1Likelihood.nex';
 			getWindow;
 			tell It;
+					setUniqueID 0195b98804c2215;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 420 242;
-					setLocation -7 22;
+					setSize 483 223;
+					setLocation 20 42;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
@@ -446,6 +564,15 @@ Begin MESQUITE;
 				setNextButtonName Next;
 			endTell;
 			showWindow;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			findWindow 0195b98804c2215;
+			tell It;
+				setAsFront;
+			endTell;
+			desuppress;
 		endTell;
 		endTell;
 end;

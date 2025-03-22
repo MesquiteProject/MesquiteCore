@@ -244,7 +244,7 @@ public class ProjectRead implements Runnable {
 			if (proj != null){
 				MesquiteFile mf = proj.getHomeFile();
 			if (mf != null)
-			MesquiteTrunk.recentFileRecord(mf, true);  //updating Recents
+				MesquiteTrunk.recentFileRecord(mf, true);  //updating Recents
 			}
 			//	else if (category == 4)
 			//		openStream(arguments);

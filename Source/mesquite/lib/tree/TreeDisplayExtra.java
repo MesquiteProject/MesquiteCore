@@ -16,11 +16,13 @@ package mesquite.lib.tree;
 import java.awt.*;
 
 import mesquite.lib.Listable;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.OwnedByModule;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 
 import java.util.*;
@@ -227,6 +229,10 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 		return "";
 	}
 
+	/**Add any desired menu items to the right click popup*/
+	public void addToRightClickPopup(MesquitePopup popup){
+		//popup.addItem("Show...", ownerModule, new MesquiteCommand(null, null), "argument");
+	}
 	public  int findBranch(Tree tree, int drawnRoot, int x, int y){return -1;} // should be renamed; need method to tell assistant to react to mousedown that might be in its node picture etc.
 	/**to inform TreeDisplayExtra that cursor has just entered branch N*/
 	public void cursorEnterBranch(Tree tree, int N, Graphics g){}

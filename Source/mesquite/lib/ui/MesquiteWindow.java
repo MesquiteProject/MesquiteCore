@@ -1555,7 +1555,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*.................................................................................................................*/
 	/** Sets the visibility of the explanation area */
 	public void setShowExplanation(boolean vis) {
-		setShowExplanation(vis, ExplanationArea.minimumHeightExplanation);
+	//	if (!MesquiteThread.isScripting()) //if scripting, listen only to direct height setting
+			setShowExplanation(vis, ExplanationArea.minimumHeightExplanation);
 	}
 	/*.................................................................................................................*/
 	/** Gets the height of the explanation area */
@@ -1572,7 +1573,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		else
 			explanationHeight = 0;
 
-		setWindowSize(MesquiteInteger.unassigned,h - (explanationHeight - oldEH));  //unassigned
+		setWindowSize(MesquiteInteger.unassigned, h - (explanationHeight - oldEH));  //unassigned
 	}
 	/*.................................................................................................................*/
 	/** Increments the height of the explanation area */
@@ -1600,7 +1601,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*.................................................................................................................*/
 	/** Sets the visibility of the Annotation area */
 	public void setShowAnnotation(boolean vis) {
-		setShowAnnotation(vis, ExplanationArea.minimumHeightAnnotation);
+	//	if (!MesquiteThread.isScripting())
+			setShowAnnotation(vis, ExplanationArea.minimumHeightAnnotation);
 	}
 	/*.................................................................................................................*/
 	/** Gets the height of the Annotation area */
@@ -1834,8 +1836,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		int g0LPH = 0;
 		if (graphics != null && graphics.length > 0 && graphics[0] != null)
 			g0LPH = graphics[0].getLedgePanelHeight();
-		if (MesquiteInteger.isCombinable(height))
-			outerHeight += infoBarHeight + explanationHeight + annotationHeight + g0LPH;		
+		if (MesquiteInteger.isCombinable(height)) {
+			outerHeight += infoBarHeight+ g0LPH;	
+			outerHeight += explanationHeight + annotationHeight;		
+		}
 		parentFrame.setWindowSize(this, outerWidth, outerHeight, !isLoneWindow());
 	}
 	/*.................................................................................................................*/
@@ -1851,7 +1855,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		int g0LPH = 0;
 		if (graphics != null && graphics.length > 0 && graphics[0] != null)
 			g0LPH = graphics[0].getLedgePanelHeight();
-		int outerHeight = height+infoBarHeight + explanationHeight + annotationHeight + g0LPH;		
+		int outerHeight = height + infoBarHeight + g0LPH;
+		outerHeight += explanationHeight + annotationHeight;		
 		parentFrame.setWindowSize(this, outerWidth, outerHeight, !isLoneWindow());
 	}
 
@@ -1981,10 +1986,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*.................................................................................................................*/
 	/** Gets the content height of the window (excluding the insets) */
 	public int getContentsHeight(){
-		Insets insets = getInsets();
-		if (insets==null)
-			return (getBounds().height - infoBarHeight - explanationHeight -annotationHeight);
-		return (getBounds().height - infoBarHeight -explanationHeight -annotationHeight);
+		return (getBounds().height - infoBarHeight - explanationHeight -annotationHeight);
+	}
+	/*.................................................................................................................*/
+	/** Gets the content height of the window (excluding the insets) */
+	public int getContentsHeightForScript(){
+		return (getBounds().height - infoBarHeight);
 	}
 	/*.................................................................................................................*/
 	/** Gets the content width of the graphics content area of the window (excluding the insets).  Also included tool palette if asked */
@@ -2332,19 +2339,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*........................................................*/
 	//This saves the menus of current up until a difference with target, then transfers target menus over
 	void mergeMenus(MenuBar current, MenuBar target){
+		try{
 		int startOfDifference = sameUntil(current, target);
+		
 		if (startOfDifference == current.getMenuCount() && startOfDifference == target.getMenuCount())
 			return;
 		for (int it= current.getMenuCount()-1; it>=startOfDifference; it--){
-			try{
 				Menu m = current.getMenu(it);
 				disposeMenuComponent(m);
 				current.remove(it);
-			}
-			catch (NullPointerException e){
-			}
-			catch (ArrayIndexOutOfBoundsException e){
-			}
 		}
 		Menu[] toTransfer = new Menu[target.getMenuCount()-startOfDifference+1];
 		int k = 0;
@@ -2353,6 +2356,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 		for (int it = 0; it<toTransfer.length; it++)
 			current.add(toTransfer[it]);
+		}
+		catch (NullPointerException e){
+		}
+		catch (ArrayIndexOutOfBoundsException e){
+		}
 	}
 
 
@@ -2372,7 +2380,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		resetMenuTime.start();
 		MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); 
 		if (ownerModule==null) {
-			MesquiteMessage.printStackTrace("################# null ownerModule in window");
+			//MesquiteMessage.printStackTrace("################# null ownerModule in window");
 			return;
 		}
 		else {
@@ -2532,11 +2540,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		else
 			temp.addLine("offInfoBar");
 		 */
+		parentFrame.resetFullDimensions();
 		temp.addLine("setExplanationSize " + explanationHeight);
 		temp.addLine("setAnnotationSize " + annotationHeight);
 		temp.addLine("setFontIncAnnot " + StringUtil.tokenize(Integer.toString(annotationArea.fontIncrement)));
 		temp.addLine("setFontIncExp " + StringUtil.tokenize(Integer.toString(explanationArea.fontIncrement)));
-		if (!(isPoppedOut() && popAsTile))  //size of poptile will be set in late snapshot of ProjectWindow
+		if (!(isPoppedOut() && popAsTile) && isVisible())  //size of poptile will be set in late snapshot of ProjectWindow
 			temp.addLine("setSize " + getContentsWidth() + " " + getContentsHeight());
 		temp.addLine("setLocation " + getLocation().x + " " + getLocation().y);
 		temp.addLine("setFont " + ParseUtil.tokenize(currentFont.getName())); //fixed to tokenize 12 Oct 01
@@ -2557,6 +2566,22 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			temp.addLine("setActive"); //so that file save will remember foremost window
 
 		return temp;
+	}
+	
+	String reportHeights(){
+		String s = "window " + getTitle() + " HEIGHTS: contentsHeight " + getContentsHeight();
+		s += " getBounds().height " + getBounds().height;
+		s += " graphics[0] " + graphics[0].getBounds().height;
+		s += " annotationHeight " + annotationHeight;
+		s += " explanationHeight " + explanationHeight;
+		s += " infoBarHeight " + infoBarHeight + " (" + showInfoBar + ")";
+		Insets insets = getInsets();
+		if (insets != null) {
+			s += " insets.top " + insets.top;
+			s += " insets.bottom " + insets.bottom;
+		}
+		s += " (" + parentFrame.reportHeights() + ") ";
+		return s;
 	}
 	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
@@ -2925,6 +2950,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			int width= MesquiteInteger.fromString(arguments, io);
 			int height= MesquiteInteger.fromString(arguments, io);
 			if (MesquiteInteger.isCombinable(width) && MesquiteInteger.isCombinable(height)) {
+				Insets insets = getInsets();
+				if (insets != null)
+					height -= insets.top + insets.bottom;
+				//.height -= insets.top + insets.bottom+explanationHeight+annotationHeight;
 				fromScriptCommand = true;//this is needed to counteract difficulties with popping in/out and size setting in window constructors
 				setWindowSize(width, height);
 				parentFrame.recordScriptedWindowSize(this, width, height);
@@ -3024,6 +3053,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				annotationArea.resetFont();
 			}
 			return null;
+		}
+		else if (checker.compare(MesquiteWindow.class, "reports height stats", "[]", commandName, "reportHeights")) {
+			MesquiteMessage.println(reportHeights());
 		}
 		else if (checker.compare(MesquiteWindow.class, "Dumps to the log a list of the employees of the owner module", null, commandName, "listEmployees")) {
 			if (ownerModule!=null)

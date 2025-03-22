@@ -266,6 +266,8 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			parser.setLineEndingsDark(false);
 		} //^^^^^^^^  INTERLEAVED #################################################################
+		
+		
 		else {  //vvvvvvvv NOT INTERLEAVED #################################################################
 			String deleteID = MesquiteTrunk.getUniqueIDBase() + taxa.getID();
 			boolean toDelete = false;
@@ -329,7 +331,10 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 
 					while (ic<numChars) {
 						readTime.start();
-						int response = data.setStateQuickNexusReading(ic++, extraTaxon, parser.getParserAtCurrentPosition());
+						int response =  data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
+						while (response == CharacterData.EOL)//current little parser didn't have enough; get more
+							response = data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
+						ic++;
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);
@@ -379,7 +384,10 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				else {
 					while (ic<numChars) {
 						readTime.start();
-						int response = data.setStateQuickNexusReading(ic++, whichTaxon, parser.getParserAtCurrentPosition());
+						int response =  data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
+						while (response == CharacterData.EOL)//current little parser didn't have enough; get more
+							response = data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
+						ic++;
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);

@@ -2564,6 +2564,8 @@ public class Mesquite extends MesquiteTrunk
 		mesquiteTrunk.pendingCommandsCommand = makeCommand("pendingCommands",  mesquiteTrunk);
 		mesquiteTrunk.pendingCommandsCommand.setQueueBypass(true);
 		mesquiteTrunk.resetMenusCommand = makeCommand("resetMenus",  mesquiteTrunk);
+		if (!MesquiteTrunk.developmentMode)
+			mesquiteTrunk.resetMenusCommand.setSuppressLogging(true);
 		mesquiteTrunk.showLicenseCommand = makeCommand("showLicense",  mesquiteTrunk);
 		mesquiteTrunk.quitCommand = makeCommand("quit",  mesquiteTrunk);
 		mesquiteTrunk.quitCommand.setQueueBypass(true);
