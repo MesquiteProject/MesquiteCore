@@ -418,6 +418,11 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 	}
 
 	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
+		return true;
+	}
+
+	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return false;
 	}

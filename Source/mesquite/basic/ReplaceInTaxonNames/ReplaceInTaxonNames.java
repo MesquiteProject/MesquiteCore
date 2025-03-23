@@ -83,6 +83,12 @@ public class ReplaceInTaxonNames extends TaxonNameAlterer {
     	 		return  super.doCommand(commandName, arguments, checker);
 		return null;
    	 }
+    	 
+   /*.................................................................................................................*/
+    	 public boolean requestPrimaryChoice(){
+    		 return true;
+    	 }
+
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
 		return "Replace in Name...";
