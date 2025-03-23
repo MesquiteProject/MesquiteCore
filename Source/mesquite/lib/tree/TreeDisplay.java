@@ -627,7 +627,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void drawAllExtras(Tree tree, int drawnRoot, Graphics g) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
-
 		if (extras != null) {
 			Enumeration e = extras.elements();
 			//EARLY
@@ -742,6 +741,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/*.................................................................................................................*/
 	public int getOrientation() {
 		return treeOrientation;
+	}
+	/*.................................................................................................................*/
+	public boolean isUpDownRightLeft() {
+		return treeOrientation == UP || treeOrientation == DOWN || treeOrientation == LEFT || treeOrientation == RIGHT;
 	}
 	/*.................................................................................................................*/
 	public boolean isUp() {

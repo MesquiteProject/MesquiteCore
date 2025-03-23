@@ -706,6 +706,106 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		}
 	}
 
+	public void getAssociatesWithBetweenness(ListableVector v, int node, boolean target){
+		if (v == null)
+			return;
+		if (bits!=null)
+			for (int i=0; i<bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				if (b.isBetween() == target && b.isBitOn(node))
+					v.addElement(b, false);
+			}
+		if (longs!=null)
+			for (int i=0; i<longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				if (b.isBetween() == target && MesquiteLong.isCombinable(b.getValue(node)))
+					v.addElement(b, false);
+			}
+		if (doubles!=null)
+			for (int i=0; i<doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				if (b.isBetween() == target && MesquiteDouble.isCombinable(b.getValue(node)))
+					v.addElement(b, false);
+			}
+		if (strings!=null)
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b.isBetween() == target && !StringUtil.blank(b.getValue(node)))
+					v.addElement(b, false);
+			}
+		if (objects!=null)
+			for (int i=0; i<objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b.isBetween() == target && b.getValue(node) != null)
+					v.addElement(b, false);
+			}
+	}
+	public boolean anyAssociatesWithBetweenness(int node, boolean target){
+		if (bits!=null)
+			for (int i=0; i<bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				if (b.isBetween() == target && b.isBitOn(node))
+					return true;
+			}
+		if (longs!=null)
+			for (int i=0; i<longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				if (b.isBetween() == target && MesquiteLong.isCombinable(b.getValue(node)))
+					return true;
+			}
+		if (doubles!=null)
+			for (int i=0; i<doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				if (b.isBetween() == target && MesquiteDouble.isCombinable(b.getValue(node)))
+					return true;
+			}
+		if (strings!=null)
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b.isBetween() == target && !StringUtil.blank(b.getValue(node)))
+					return true;
+			}
+		if (objects!=null)
+			for (int i=0; i<objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b.isBetween() == target && b.getValue(node) != null)
+					return true;
+			}
+		return false;
+	}
+	public boolean anyAssociatesWithBetweenness(boolean target){
+		if (bits!=null)
+			for (int i=0; i<bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				if (b.isBetween() == target)
+					return true;
+			}
+		if (longs!=null)
+			for (int i=0; i<longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				if (b.isBetween() == target)
+					return true;
+			}
+		if (doubles!=null)
+			for (int i=0; i<doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				if (b.isBetween() == target)
+					return true;
+			}
+		if (strings!=null)
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b.isBetween() == target)
+					return true;
+			}
+		if (objects!=null)
+			for (int i=0; i<objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b.isBetween() == target)
+					return true;
+			}
+		return false;
+	}
 
 	public void deassignAllColor(){
 		deassignAllAssociatedStrings(ColorDistribution.colorRGBNameReference);

@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.trees.BranchInfo;
 
 import java.util.*;
@@ -22,72 +22,114 @@ import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
-public class BranchInfo extends TreeDisplayAssistantI {
-	public boolean loadModule(){
-		return false;
-	}
+public class BranchInfo extends TreeDisplayAssistantDI {
+
 	public Vector extras;
-	 public String getFunctionIconPath(){
-   		 return getPath() + "branchInfo.gif";
-   	 }
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
 		return true;
 	} 
 	/*.................................................................................................................*/
-   	 public boolean isSubstantive(){
-   	 	return false;
-   	 }
+	public boolean isSubstantive(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
 		InfoToolExtra newPj = new InfoToolExtra(this, treeDisplay);
 		extras.addElement(newPj);
 		return newPj;
 	}
+
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Branch Information";
-   	 }
-   	 
+	}
+
 	/*.................................................................................................................*/
-  	 public String getExplanation() {
-		return "Provides a tool that shows information about branches.";
-   	 }
+	public String getExplanation() {
+		return "Shows information about branches.";
+	}
 }
 
 /* ======================================================================== */
 class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
-	TreeTool infoTool;
-	MesquiteMenuItemSpec hideMenuItem = null;
 	BranchInfo infoModule;
 	Tree tree;
 	MesquiteCommand respondCommand;
+	Image warningGif;
 
 	public InfoToolExtra (BranchInfo ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
+		Debugg.println("@ ITE " + treeDisplay.getExtras().getList());
+		warningGif = MesquiteImage.getImage(ownerModule.getPath() + "rerootWarning.gif");
+
 		respondCommand = ownerModule.makeCommand("respond", this);
 		infoModule = ownerModule;
-		infoTool = new TreeTool(this, "BranchInfo", ownerModule.getPath(), "branchInfo.gif", 5,2,"Branch Info", "This tool is used to show information about a branch.");
-		infoTool.setTouchedCommand(MesquiteModule.makeCommand("query",  this));
-		if (ownerModule.containerOfModule() instanceof MesquiteWindow) {
-			((MesquiteWindow)ownerModule.containerOfModule()).addTool(infoTool);
-			//infoTool.setPopUpOwner(ownerModule);
-			//ownerModule.setUseMenubar(false); //menu available by touching button
-		}
+	}
+	Rectangle warningRect = new Rectangle(0,0, 27, 27);
+	double dist(int x, int y, int aX, int aY){
+		return Math.sqrt((x-aX)*(x-aX) + (y-aY)*(y-aY));
 	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
 		this.tree = tree;
+		warningRect.x = -1000;
+		warningRect.y = -1000;
+
+		if (tree instanceof MesquiteTree){
+			MesquiteTree mTree = (MesquiteTree)tree;
+			if (mTree.anyUpsideDownProperties()){
+				int originalRoot = mTree.getOriginalRootDaughter();
+				TreeDrawing td = treeDisplay.getTreeDrawing();
+				int x = (int)td.x[originalRoot];
+				int y = (int)td.y[originalRoot];
+				if (treeDisplay.isUpDownRightLeft()){
+					int aX = (int)td.x[tree.motherOfNode(originalRoot)];
+					int aY = (int)td.y[tree.motherOfNode(originalRoot)];
+					int pX = (x+aX)/2;
+					int pY = (y+aY)/2;
+					if (dist(x, y, pX, pY)<40){
+						x = pX;
+						y = pY;
+					}
+					else {
+						pX = (2*x + aX)/3;
+						pY = (2*y + aY)/3;
+						if (dist(x, y, pX, pY)<40){
+							x = pX;
+							y = pY;
+						}
+						else {	
+							pX = (3*x + aX)/4;
+							pY = (3*y + aY)/4;
+							if (dist(x, y, pX, pY)<40){
+								x = pX;
+								y = pY;
+							}
+						}
+					}
+
+				}
+
+
+				warningRect.x = x;
+				warningRect.y = y;
+				g.drawImage(warningGif, x,y, treeDisplay);
+
+			}
+		}
 	}
-	
+
 	/*.................................................................................................................*/
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 		drawOnTree(tree, drawnRoot, g);
@@ -107,192 +149,42 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 		if (responseRequested == response)
 			ownerModule.alert(s);
 	}
-	/*.................................................................................................................*/
- 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
 
-    	 	if (checker.compare(this.getClass(), "Shows popup menu with information about the branch", "[branch number]", commandName, "query")) {
-  			int branchFound= MesquiteInteger.fromFirstToken(arguments, pos);
-  			if (branchFound >0 && MesquiteInteger.isCombinable(branchFound)) {
-				if (popup==null)
-					popup = new MesquitePopup(treeDisplay);
-				popup.removeAll();
-				int responseNumber = 0;
-				addToPopup("Branch/node number: " + branchFound, branchFound, responseNumber++);
-				addToPopup("-", branchFound, responseNumber++);
-				addToPopup("Length: " + MesquiteDouble.toString(tree.getBranchLength(branchFound)), branchFound, responseNumber++);
-				int num = tree.getNumberAssociatedLongs();
-				if (num>0)
-					for (int i=0; i<num; i++) {
-						LongArray lo = tree.getAssociatedLongs(i);
-						NameReference nr = lo.getNameReference();
-						if (nr==null)
-							addToPopup("?: " + MesquiteLong.toString(lo.getValue(branchFound)), branchFound, responseNumber++);
-						else
-							addToPopup(nr.getValue() + ": " + MesquiteLong.toString(lo.getValue(branchFound)), branchFound, responseNumber++);
-					}
-				num = tree.getNumberAssociatedDoubles();
-				if (num>0)
-					for (int i=0; i<num; i++) {
-						DoubleArray lo = tree.getAssociatedDoubles(i);
-						NameReference nr = lo.getNameReference();
-						if (nr==null)
-							addToPopup("?: " + MesquiteDouble.toString(lo.getValue(branchFound)), branchFound, responseNumber++);
-						else
-							addToPopup(nr.getValue() + ": " + MesquiteDouble.toString(lo.getValue(branchFound)), branchFound, responseNumber++);
-					}
-				num = tree.getNumberAssociatedStrings();
-				if (num>0)
-					for (int i=0; i<num; i++) {
-						StringArray lo = tree.getAssociatedStrings(i);
-						String s = lo.getValue(branchFound);
-						if (s != null){
-							NameReference nr = lo.getNameReference();
-							if (nr==null)
-								addToPopup("?: " + s, branchFound, responseNumber++);
-							else
-								addToPopup(nr.getValue() + ": " + s, branchFound, responseNumber++);
-						}
-					}
-				num = tree.getNumberAssociatedObjects();
-				if (num>0)
-					for (int i=0; i<num; i++) {
-						ObjectArray lo = tree.getAssociatedObjects(i);
-						Object obj = lo.getValue(branchFound);
-						if (obj != null && (obj instanceof String || obj instanceof Listable)){
-							String s = "";
-							if (obj instanceof String)
-								s = (String)obj;
-							else if (obj instanceof Listable)
-								s = ((Listable)obj).getName();
-							NameReference nr = lo.getNameReference();
-							if (nr==null)
-								addToPopup("?: " + s, branchFound, responseNumber++);
-							else
-								addToPopup(nr.getValue() + ": " + s, branchFound, responseNumber++);
-						}
-					}
-				
-			Enumeration e = treeDisplay.getExtras().elements();
-				while (e.hasMoreElements()) {
-					Object obj = e.nextElement();
-					TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-					String strEx =ex.textAtNode(tree, branchFound);
-		 			if (!StringUtil.blank(strEx)) {
-			 			if (ex.ownerModule!=null)
-			 				strEx = ex.ownerModule.getName() + ": " + strEx;
-		 				addToPopup(strEx, branchFound, responseNumber++);
-		 			}
-		 		}
-			popup.showPopup((int)treeDisplay.getTreeDrawing().x[branchFound], (int)treeDisplay.getTreeDrawing().y[branchFound]);
-   			}
- 	 	}
-    	 	else if (checker.compare(this.getClass(), "Responds to choice of popup menu with information about the branch", "[branchNumber][choice number]", commandName, "respond")) {
-  			int branchFound= MesquiteInteger.fromFirstToken(arguments, pos);
-  			if (branchFound >0 && MesquiteInteger.isCombinable(branchFound)) {
-	  			int responseRequested = MesquiteInteger.fromString(arguments, pos);
-				int responseNumber = 2 ;
-				if (responseRequested == responseNumber++)
-					ownerModule.alert("This represents the length of the branch (stored in the primary branch length storage of the tree)");
-				int num = tree.getNumberAssociatedLongs();
-				if (num>0)
-					for (int i=0; i<num; i++) {
-						if (responseRequested == responseNumber++) {
-							LongArray lo = tree.getAssociatedLongs(i);
-							NameReference nr = lo.getNameReference();
-							String name = "?";
-							if (nr!=null)
-								name = nr.getValue();
-							ownerModule.alert("This represents an integral (long) value attached to the branch of the tree, named " + name);
-						//todo: allow user to change value
-						}
-					}
-				num = tree.getNumberAssociatedDoubles();
-				if (num>0)
-					for (int i=0; i<num; i++) {
-						if (responseRequested == responseNumber++) {
-							DoubleArray lo = tree.getAssociatedDoubles(i);
-							NameReference nr = lo.getNameReference();
-							String name = "?";
-							if (nr!=null)
-								name = nr.getValue();
-							ownerModule.alert("This represents a floating-point (double) value attached to the branch of the tree, named " + name);
-						//todo: allow user to change value
-						}
-					}
-				
-				num = tree.getNumberAssociatedObjects();
-				if (num>0)
-					for (int i=0; i<num; i++) {
-						if (responseRequested == responseNumber++) {
-							ObjectArray lo = tree.getAssociatedObjects(i);
-							Object obj = lo.getValue(branchFound);
-							if (obj != null && (obj instanceof String || obj instanceof Listable)){
-								NameReference nr = lo.getNameReference();
-								String name = "?";
-								if (nr!=null)
-									name = nr.getValue();
-								String s = "";
-								if (obj instanceof String) {
-									s = (String)obj;
-									if (tree instanceof MesquiteTree){
-										String message = "This represents a String attached to the branch of the tree, with name " + name + " and value \"" + s + "\".  Do you want to change the string?";
-										if (AlertDialog.query(ownerModule.containerOfModule(), "String at node", message)){
-											String newString = MesquiteString.queryString(ownerModule.containerOfModule(), "Change String", "Change string to", s);
-											if (newString !=null)
-												((MesquiteTree)tree).setAssociatedString(nr, branchFound, newString);
-										}
-									}
-									else {
-										ownerModule.alert("This represents a String attached to the branch of the tree, with name " + name + " and value \"" + s + "\"");
-									}
-								}
-								else if (obj instanceof Listable) {
-									s = ((Listable)obj).getName();
-									ownerModule.alert("This represents an object attached to the branch of the tree, of category " + name + " and with name " + s);
-								}
-							}
-						}
-					}
-				Enumeration e = treeDisplay.getExtras().elements();
-				while (e.hasMoreElements()) {
-					Object obj = e.nextElement();
-					TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-					String strEx =ex.textAtNode(tree, branchFound);
-		 			if (!StringUtil.blank(strEx)) {
-			 			String name = "";
-			 			if (ex.ownerModule!=null)
-			 				name = ex.ownerModule.getName();
-						if (responseRequested == responseNumber++){
-							if (tree instanceof MesquiteTree){
-								String message ="This represents the output of a tree display assistant named " + name + ". Do you want to store the result at this and other nodes in the tree as strings?";
-								if (AlertDialog.query(ownerModule.containerOfModule(), "Tree display assistant output", message)){
-									String stringName = MesquiteString.queryString(ownerModule.containerOfModule(), "Name", "Name to give to strings attached to nodes (single token please)", StringUtil.tokenize(name));
-									if (!StringUtil.blank(stringName)){
-										NameReference nr = NameReference.getNameReference(StringUtil.tokenize(stringName));
-										transferToStrings((MesquiteTree)tree, tree.getRoot(), ex, nr);
-								   		((MesquiteTree)tree).notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
-									}
-								}
-							}
-							else
-								ownerModule.alert("This represents the output of a tree display assistant named " + name + ".");
-						}
-		 			}
-		 		}
-   			}
- 	 	}
- 		return null;
- 	}
+	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
+	public void cursorTouchBranch(Tree tree, int N, Graphics g){
+		/*
+		MesquiteTree mTree = (MesquiteTree)tree;
+		if (mTree.anyUpsideDownProperties()){
+			int originalRoot = mTree.getOriginalRootDaughter();
+			if (N == originalRoot)
+				respondCommand.doItMainThread(null, null, this);
+		}
+	*/
+	}
+	/**to inform TreeDisplayExtra that cursor has just touched the field (not in a branch or taxon)*/
+	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
+		if (warningRect.contains(x, y)) {
+			respondCommand.doItMainThread(null, null, this);
+			return true;
+		}
+		return false;
+	}
+
 	/*.................................................................................................................*/
- 	private void transferToStrings(MesquiteTree tree, int node, TreeDisplayExtra ex, NameReference nr){
-		String s = ex.textAtNode(tree, node);
-		if (!StringUtil.blank(s))
-			tree.setAssociatedString(nr, node, s);
-		
-		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter))
-			transferToStrings(tree, daughter, ex, nr);
-						
- 	}
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
+
+		if (checker.compare(this.getClass(), "Explains", "[branch number]", commandName, "respond")) {
+			MesquiteTree mTree = (MesquiteTree)tree;
+			if (mTree.anyUpsideDownProperties()){
+				ListableVector v = mTree.getUpsideDownProperties();
+				ownerModule.discreetAlert("This tree was originally rooted along this branch. It has since been rerooted. "
+						+"This rerooting has violated the polarity of some properties associated with nodes, and which are sensitive to rerooting. These properties are:\n\n" + v.getList());
+			}
+		}
+
+		return null;
+	}
+
 	/*.................................................................................................................*/
 	public void turnOff() {
 		if (infoModule.extras != null)
@@ -301,6 +193,6 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 	}
 }
 
-	
+
 
 

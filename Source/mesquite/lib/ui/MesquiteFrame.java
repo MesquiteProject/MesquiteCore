@@ -441,7 +441,9 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 	public int getResourcesWidth(){
 		return resourcesWidth; 
 	}
-	public void setPopoutWidth(int poptileWidth){
+	public void requestPopoutWidth(int poptileWidth){
+		if (poptileWidth < this.poptileWidth) //this only increases
+			return;
 		this.poptileWidth = poptileWidth;
 		if (tabs != null)
 			tabs.repaint();

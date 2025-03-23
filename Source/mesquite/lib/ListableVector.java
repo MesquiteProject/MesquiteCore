@@ -97,6 +97,15 @@ public class ListableVector extends FileElement implements StringLister, Command
 	public String getTypeName(){
 		return "Listable Vector";
 	}
+	
+	public ListableVector clone(){
+		ListableVector lv = new ListableVector();
+		for (int i=0; i<size(); i++)
+			lv.addElement(elementAt(i), false);
+		return lv;
+		
+	}
+	
 	public Listable getElement(String name){
 		if (name==null)
 			return null;

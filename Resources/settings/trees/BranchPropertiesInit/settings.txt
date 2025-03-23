@@ -1,6 +1,7 @@
 #name of property	"kind (double, long, boolean, String, Object). Use Object for double[], String[], etc."	assigned to branch or node	source
 #lines beginning with a number/pound sign are ignored			
 nodeLabel	String	node	Mesquite
+originalRootDaughter	boolean	branch	Mesquite
 branchLength	double	branch	Mesquite
 color	long	branch	Mesquite
 !color	String	branch	Mesquite/other
@@ -14,11 +15,11 @@ length mean	double	branch	BEAST
 length median	double	branch	BEAST
 length 95%HPD	object	branch	BEAST
 length range	object	branch	BEAST
-height	double	branch	BEAST
-height mean	double	branch	BEAST
-height median	double	branch	BEAST
-height 95%HPD	object	branch	BEAST
-height range	object	branch	BEAST
+height	double	node	BEAST
+height mean	double	node	BEAST
+height median	double	node	BEAST
+height 95%HPD	object	node	BEAST
+height range	object	node	BEAST
 rate	double	branch	BEAST
 rate mean	double	branch	BEAST
 rate median	double	branch	BEAST

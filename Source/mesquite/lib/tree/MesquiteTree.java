@@ -3172,16 +3172,63 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
 		return nodeInfo;
 	}
+	
+	
 	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
-		/*	if (readingMrBayesConTree) {  //ZQ why this kludge?
-			String c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">", false) + ">";  //get next token
-			c = retokenizeMrBayesConTreeNodeInfo(c); //what is this?
-			readAssociated(c, node, new MesquiteInteger(0), "", ",=>{}", predefinedDouble(TreeDescription, stringLoc));
-			ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
-		} else  */
 		readAssociated(TreeDescription, node, stringLoc,whitespaceInNewickComments, punctuationInNewickComments, predefinedDouble(TreeDescription, stringLoc));
-
 	}
+	
+	/*-----------------------------------------*/
+	/*The system to record the original root is used specifically to warn
+if there is a property belonging to nodes (rather than branches, i.e. betweenness = false; property.belongsToBranch = false)
+and the tree has been rerooted. Properties that belong to nodes implicitly have an "up" polarity, and hence are sensitive to rerooting.*/
+	NameReference originalRootNameRef = NameReference.getNameReference("originalRootDaughter");
+
+	/* getOriginalRoot returns 0 unless an original root had been designated because of a node-associated property. 
+	 * Otherwise it returns a node that had been one of the daughters of the original root, i.e. rerooting along there gets you back to the original*/
+	public int getOriginalRootDaughter(){
+		if (getAssociatedBits(originalRootNameRef) == null) //original root has already been stamped 
+			return 0;
+		Bits b = getAssociatedBits(originalRootNameRef);
+		for (int d = 1; d<getNumNodeSpaces(); d++)
+			if (b.isBitOn(d))
+				return d;
+		return 0;
+	}
+	public boolean anyUpsideDownProperties(){
+		int original = getOriginalRootDaughter();
+		if (!nodeExists(original))
+			return false;
+		int step = motherOfNode(original);
+		while (nodeExists(step) && step != getRoot()){
+			if (anyAssociatesWithBetweenness(step, false))
+				return true;
+			step = motherOfNode(step);
+		}
+		return false;
+	}
+	public ListableVector getUpsideDownProperties(){
+		ListableVector v = new ListableVector();
+		int original = getOriginalRootDaughter();
+		if (!nodeExists(original))
+			return null;
+		int step = motherOfNode(original);
+		while (nodeExists(step) && step != getRoot()){
+			getAssociatesWithBetweenness(v, step, false);
+			step = motherOfNode(step);
+		}
+		if (v.size() == 0)
+			return null;
+		return v;
+	}
+	public void stampRootIfNodeOrientedProperties(){
+		if (getAssociatedBits(originalRootNameRef) != null) //original root has already been stamped 
+			return;
+		if (anyAssociatesWithBetweenness(false)){ //some are node based!  Node label will not be a hit, because it's not a formal associate. originalRoot will not be a hit, because it's been checked just above
+			setAssociatedBit(originalRootNameRef, firstDaughterOfNode(getRoot()), true);
+		}
+	}
+
 	/*-----------------------------------------*/
 	/* reads the branch length; allows exponentials and negative numbers*/
 	private void skipValue (String TreeDescription, int node, MesquiteInteger stringLoc) {
@@ -3718,6 +3765,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			processAttachedProperties();
 		selected = getAssociatedBits(NameReference.getNameReference("selected"));
 		exists=true;
+		stampRootIfNodeOrientedProperties();
 		if (!checkTreeIntegrity(root)) {
 			intializeTree();
 			MesquiteMessage.warnProgrammer("tree failed integrity check");
@@ -3729,10 +3777,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
 		if (startingPos !=null){
 			startingPos.setValue(getTranslatedLoc(correspondenceContainer, stringLoc.getValue()));
-			/*
-			 * if (startingPos != null)
-				Debugg.println("   stringLoc after " + justBefore(TreeDescription, startingPos.getValue()));
-			*/
 		}
 		echo("\n", 100);
 		return true;

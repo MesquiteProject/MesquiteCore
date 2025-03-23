@@ -163,7 +163,7 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 			if (rfwt != null){
 				int rw = MesquiteInteger.fromString(rfwt);
 				if (MesquiteInteger.isCombinable(rw)){
-					f.setPopoutWidth(rw);
+					f.requestPopoutWidth(rw);
 				}
 				String rcwmt = parser.getNextToken();
 				if (rcwmt != null){

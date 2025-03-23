@@ -97,10 +97,10 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 			return;
 		}
 		addMenuItem("Add Property to Tree...", new MesquiteCommand("addProperty", this));
-	//	addMenuItem("New Property...", new MesquiteCommand("newProperty", this));
+		//	addMenuItem("New Property...", new MesquiteCommand("newProperty", this));
 		myWindow = new NodesAssociatesListWindow(this);
 		setModuleWindow(myWindow);
-		myWindow.getParentFrame().setPopoutWidth(460);
+		myWindow.getParentFrame().requestPopoutWidth(460);
 		if (!MesquiteThread.isScripting()){
 			myWindow.setPopAsTile(true);
 			myWindow.popOut(true);
@@ -138,7 +138,17 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 		return temp;
 	}
 
-
+	void subtractAlreadyAccountedFor(ListableVector v){
+		PropertyRecord.subtractIfInList(v, new TreeProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN));
+		PropertyRecord.subtractIfInList(v, new TreeProperty("nodelabel", Associable.STRINGS));
+		PropertyRecord.subtractIfInList(v, new TreeProperty(MesquiteTree.branchLengthName, Associable.BUILTIN));
+		PropertyRecord.subtractIfInList(v, new TreeProperty("branchlength", Associable.DOUBLES));
+		//now removing those from tree
+		DisplayableTreeProperty[] ps = myWindow.getPropertiesInTree();
+		if (ps != null)
+			for (int i = 0; i<ps.length; i++)
+				PropertyRecord.subtractIfInList(v, ps[i]);
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows the window", "[]", commandName, "showWindow")) {
@@ -171,13 +181,20 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 			propertiesToAdd.addElement(newProperty, false);
 			propertiesToAdd.addElement(new MesquiteString("   ", ""), false);
 			//All as options known properties, except if they are already in the tree!
-			propertiesToAdd.addElement(new MesquiteString(" — Properties in current file — ", ""), false);
-			propertiesToAdd.addElements(getProject().knownTreeProperties, false);
-			propertiesToAdd.addElement(new MesquiteString("   ", ""), false);
-			propertiesToAdd.addElement(new MesquiteString(" — Other known properties — ", ""), false);
-			PropertyRecord.addIfNotInList(propertiesToAdd, DisplayableTreeProperty.treePropertyDisplayPreferences);
-			PropertyRecord.addIfNotInList(propertiesToAdd, TreeProperty.treePropertiesSettingsVector);
-			//Now, exclude node label, nodelabel, branch length, branchlength
+			ListableVector kTP =  getProject().knownTreeProperties.clone();
+			subtractAlreadyAccountedFor(kTP);
+			if (kTP.size()>0){
+				propertiesToAdd.addElement(new MesquiteString(" — Properties in current file — ", ""), false);
+				propertiesToAdd.addElements(kTP, false);
+				propertiesToAdd.addElement(new MesquiteString("   ", ""), false);
+			}
+			kTP =  DisplayableTreeProperty.treePropertyDisplayPreferences.clone();
+			if (kTP.size() > 0){
+				propertiesToAdd.addElement(new MesquiteString(" — Other known properties — ", ""), false);
+				PropertyRecord.addIfNotInList(propertiesToAdd, kTP);
+				PropertyRecord.addIfNotInList(propertiesToAdd, TreeProperty.treePropertiesSettingsVector);
+				//Now, exclude node label, nodelabel, branch length, branchlength
+			}
 			PropertyRecord.subtractIfInList(propertiesToAdd, new TreeProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN));
 			PropertyRecord.subtractIfInList(propertiesToAdd, new TreeProperty("nodelabel", Associable.STRINGS));
 			PropertyRecord.subtractIfInList(propertiesToAdd, new TreeProperty(MesquiteTree.branchLengthName, Associable.BUILTIN));
@@ -187,7 +204,7 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 			if (ps != null)
 				for (int i = 0; i<ps.length; i++)
 					PropertyRecord.subtractIfInList(propertiesToAdd, ps[i]);
-		
+
 			Listable chosen = ListDialog.queryList(containerOfModule(), "Property to add to tree", "What property do you want to add to the tree?", null, propertiesToAdd, -1);
 			if (chosen == newProperty){
 				String[] kinds = new String[]{ "Decimal number", "Integer number", "String of text", "Boolean (true/false)"};
@@ -225,7 +242,7 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 			}
 			else if (chosen instanceof TreeProperty) {
 				myWindow.addProperty((TreeProperty)chosen);
-		}
+			}
 		}
 
 		else
@@ -446,6 +463,18 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		tree.addProperty(property, true);
 		resetAssociatesList();
 	}
+
+	void checkNodeOrientedProperties(boolean betweenness){
+		if (!betweenness){ // is node oriented; need to stamp original root if first time
+			int oRD = tree.getOriginalRootDaughter();
+			if (tree.nodeExists(oRD) && tree.motherOfNode(oRD)!= tree.getRoot()){ // there had been an original root, but the current root is different!
+				ownerModule.discreetAlert("This tree has node properties that are sensitive to rerooting, but it has been rerooted already. The property you have just added is also sensitive. "
+						+"Beware of any subsequent rerootings; the property might be misinterpreted as belonging to the wrong node."); 
+				return;
+			}
+			tree.stampRootIfNodeOrientedProperties();
+		}
+	}
 	void makeNewProperty(int kind, String name, boolean betweenness){
 		if (kind <0 || tree == null)
 			return;
@@ -458,6 +487,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 			NameReference nameRef = tree.makeAssociatedBits(candidateName);
 			Bits bits = tree.getAssociatedBits(nameRef);
 			bits.setBetweenness(betweenness);
+			checkNodeOrientedProperties(betweenness);
 			tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		}
 		else if (kind == Associable.DOUBLES){
@@ -468,6 +498,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 			NameReference nameRef = tree.makeAssociatedDoubles(candidateName);
 			DoubleArray ds = tree.getAssociatedDoubles(nameRef);
 			ds.setBetweenness(betweenness);
+			checkNodeOrientedProperties(betweenness);
 			tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		}
 		else if (kind == Associable.LONGS){
@@ -478,6 +509,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 			NameReference nameRef = tree.makeAssociatedLongs(candidateName);
 			LongArray ls = tree.getAssociatedLongs(nameRef);
 			ls.setBetweenness(betweenness);
+			checkNodeOrientedProperties(betweenness);
 			tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		}
 		else if (kind == Associable.STRINGS){
@@ -488,6 +520,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 			NameReference nameRef = tree.makeAssociatedStrings(candidateName);
 			StringArray sa = tree.getAssociatedStrings(nameRef);
 			sa.setBetweenness(betweenness);
+			checkNodeOrientedProperties(betweenness);
 			tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 		}
 		resetAssociatesList();
