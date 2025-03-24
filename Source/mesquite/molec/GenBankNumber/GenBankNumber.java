@@ -55,8 +55,9 @@ public class GenBankNumber extends TaxonListAssistant {
 	}
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
-		deleteMenuItem(mss2);
-		mss2 = addMenuItem("Move Numbers from GenBank/FASTA Taxon Name", makeCommand("moveNumbersFromName", this));
+		deleteAllMenuItems();
+		addMenuItem("Move Numbers from GenBank/FASTA Taxon Name", makeCommand("moveNumbersFromName", this));
+		addMenuItem( "Paste Values into Selected", makeCommand("paste",  this));
 		if (this.taxa != null)
 			this.taxa.removeListener(this);
 		this.taxa = taxa;
@@ -100,7 +101,14 @@ public class GenBankNumber extends TaxonListAssistant {
 			moveNumberFromGenBankTaxonName();
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
+			MesquiteBoolean success = pasteIntoRows(table);
+			if (StringUtil.notEmpty(success.getName()))
+				discreetAlert("Problem with pasting:" + success.getName());
+			if (!MesquiteThread.isScripting() && success.getValue()) parametersChanged();
+		}
 		else return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 	/*.................................................................................................................*/
 	private void moveNumberFromGenBankTaxonName() {

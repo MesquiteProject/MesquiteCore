@@ -228,13 +228,13 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 
 			
 			
-			Listable chosen = ListDialog.queryList(containerOfModule(), "Property to add to tree", "What property do you want to add to the tree?", null, propertiesToAdd, -1);
+			Listable chosen = ListDialog.queryList(containerOfModule(), "Property to add to branches/nodes", "What property do you want to add to the branches/nodes of the tree?", null, propertiesToAdd, -1);
 			if (chosen == newProperty){
 				String[] kinds = new String[]{ "Decimal number", "Integer number", "String of text", "Boolean (true/false)"};
 				MesquiteInteger selectedInDialog = new MesquiteInteger(0);
-				ListDialog dialog = new ListDialog(containerOfModule(), "New Property for Nodes/Branches", "What kind of property?", false,null, kinds, 8, selectedInDialog, "OK", null, false, true);
+				ListDialog dialog = new ListDialog(containerOfModule(), "New Property for branches/nodes", "What kind of property?", false,TreeProperty.branchNodeExplanation, kinds, 8, selectedInDialog, "OK", null, false, true);
 				SingleLineTextField nameF = dialog.addTextField("Name of Property:", "", 30);
-				Checkbox cb = dialog.addCheckBox("Pertains to Node (rather than branch between nodes)", false);
+				Checkbox cb = dialog.addCheckBox("Pertains to polarized node (rather than branch between nodes); see Help (?).", false);
 				dialog.addLargeOrSmallTextLabel("You can edit the values at branches/nodes by right-clicking on the branch with the arrow tool, or by clicking with the branch information tool (\"?\").");
 				dialog.completeAndShowDialog(true);
 				if (dialog.buttonPressed.getValue() == 0)  {
@@ -262,6 +262,7 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 						//REMEMBER IN PREFS //Debugg.println BETWEENNESS = !cb.getState()
 					}
 				}
+				dialog.dispose();
 			}
 			else if (chosen instanceof TreeProperty) {
 				myWindow.addProperty((TreeProperty)chosen);

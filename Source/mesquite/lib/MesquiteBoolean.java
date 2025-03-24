@@ -96,6 +96,10 @@ public class MesquiteBoolean implements Listable, Nameable {
 			v= true;
 		else if (b.equalsIgnoreCase("false"))
 			v = false;
+		else if (b.equalsIgnoreCase("on"))
+			v= true;
+		else if (b.equalsIgnoreCase("off"))
+			v = false;
 		else {
 			value = false;
 			if (cmis!=null) 

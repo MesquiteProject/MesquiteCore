@@ -27,7 +27,12 @@ import mesquite.lib.PropertyRecord;
 public class TreeProperty extends PropertyRecord  {
 
 	protected boolean belongsToBranch = true; //This is settable only from the settings managed by BranchPropertiesInit.
-	
+	public static final String branchNodeExplanation = "Some properties for branches/nodes imply a direction of time (polarized), others do not. Unpolarized properties, like branch length, stay the same however you reroot the tree. Those are labelled as being attached to the branch itself."
+			+" Polarized properties, like node height, assume that time proceeded forward along the branch toward the node. Those are labelled as \"Polarized node\". "
+			+"\n\nThis is important when the tree is rerooted. A branch property that is unpolarized may appear to flip to a different node on rerooting, "
+			+" while a property assigned to as \"up to node\" will appear to flip to a different branch on rerooting. Also, rerooting may generate a contradiction if it turns polarized properties upside-down."
+			+"\n\nFor instance, branch length, color, and clade confidence measures should belong to the branch, but some name labels and heights should belong the node.";
+
 	
 	/*This vector records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties.
 	 * This is read by BranchPropertiesInit, and cannot be changed at runtime. It cannot be overridden either.*/
