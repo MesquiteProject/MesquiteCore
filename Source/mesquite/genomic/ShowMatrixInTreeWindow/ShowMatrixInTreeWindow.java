@@ -602,6 +602,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		//###################### draw Matrix!!!
 		drawAndPrintOnTree(tree, drawnRoot, g);
 	
+		if (!ownerModule.showMatrix)
+			return;
 		
 		//###################### draw scroll and other decorations
 		Color oldColor = g.getColor();
@@ -645,8 +647,9 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				g.setColor(Color.lightGray);
 				g.fillRoundRect(x+2, scrollEdge-1, xEnd-x-4, 3, scrollRound, scrollRound); //scroller
 			}
-			g.setColor(Color.black);
+				g.setColor(Color.black);
 			g.drawString(matrixName, getBase()+fieldSize()/2-lengthName/2, scrollEdge+16);
+			
 
 		}
 		else if (treeDisplay.isUp() || treeDisplay.isDown()){
@@ -751,6 +754,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	public void printUnderTree(Tree tree, int drawnRoot, Graphics g){}
 
 	public void printOnTree(Tree tree, int drawnRoot, Graphics g) {
+		if (!ownerModule.showMatrix)
+			return;
 		//######################
 		drawAndPrintOnTree(tree, drawnRoot, g);
 		//######################
