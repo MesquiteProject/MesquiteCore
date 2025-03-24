@@ -72,6 +72,9 @@ public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDis
 	public boolean isSubstantive(){
 		return false;
 	}
+	public boolean suppressMenuAncestors(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 		if (dependentTreeWindow == null){

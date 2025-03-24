@@ -1,8 +1,10 @@
 #name of property	"kind (double, long, boolean, String, Object). Use Object for double[], String[], etc."	assigned to branch or node	source
 #lines beginning with a number/pound sign are ignored			
 nodeLabel	String	node	Mesquite
+Node label	String	node	Mesquite
 originalRootDaughter	boolean	branch	Mesquite
 branchLength	double	branch	Mesquite
+Branch length	double	branch	Mesquite
 color	long	branch	Mesquite
 !color	String	branch	Mesquite/other
 consensusFrequency	double	branch	Mesquite/other
@@ -14,16 +16,19 @@ length	double	branch	BEAST
 length mean	double	branch	BEAST
 length median	double	branch	BEAST
 length 95%HPD	object	branch	BEAST
+length 95% HPD	object	branch	BEAST
 length range	object	branch	BEAST
 height	double	node	BEAST
 height mean	double	node	BEAST
 height median	double	node	BEAST
 height 95%HPD	object	node	BEAST
+height 95% HPD	object	node	BEAST
 height range	object	node	BEAST
 rate	double	branch	BEAST
 rate mean	double	branch	BEAST
 rate median	double	branch	BEAST
 rate 95%HPD	object	branch	BEAST
+rate 95% HPD	object	branch	BEAST
 rate range	object	branch	BEAST
 prob(percent)	double	branch	MrBayes
 prob	double	branch	MrBayes

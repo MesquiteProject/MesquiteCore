@@ -63,9 +63,15 @@ public class DisplayableTreeProperty extends TreeProperty  {
 		DisplayableTreeProperty prefRecord = (DisplayableTreeProperty)findInList(treePropertyDisplayPreferences, nRef, kind);
 		if (prefRecord != null)
 			cloneFrom(prefRecord);
+		TreeProperty tp = (TreeProperty)findInList(treePropertiesSettingsVector, nRef, kind);
+		if (tp != null)
+			belongsToBranch = tp.belongsToBranch;
+		else
+			belongsToBranch = preferredBetweenness(name);
 	}
 	
 	
+	/*-------------------------------------*/
 	public void cloneFrom(DisplayableTreeProperty other){
 		showing = other.showing;
 		showName = other.showName;
@@ -81,9 +87,9 @@ public class DisplayableTreeProperty extends TreeProperty  {
 		xOffset = other.xOffset;
 		fontSize = other.fontSize;
 		color = other.color;
-		setBelongsToBranch(other.getBelongsToBranch(), false);
 	}
 	
+	/*-------------------------------------*/
 	public void setBooleans(Parser parser){//parser already with string and set to right position
 		// sequence: showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical, showing
 		//use "x" to ignore
@@ -105,10 +111,12 @@ public class DisplayableTreeProperty extends TreeProperty  {
 		if (StringUtil.notEmpty(b = parser.getNextToken()) && !"x".equals(b))
 			showing = MesquiteBoolean.fromTrueFalseString(b);
 	}
+	/*-------------------------------------*/
 	public String getBooleansString(){ 
 		return " " + showName + " " + centered + " " + whiteEdges + " " + showOnTerminals
 				+ " " + showIfUnassigned + " " + percentage + " " + vertical + " " + showing;
 	}
+	/*-------------------------------------*/
 	public void setNumbers(Parser parser){//parser already with string and set to right position
 		// sequence: fontSize, xOffset, yOffset, digits, color, thresholdValueToShow
 		String b;
@@ -128,6 +136,7 @@ public class DisplayableTreeProperty extends TreeProperty  {
 			thresholdValueToShow = dd;
 	}
 		
+	/*-------------------------------------*/
 	public String getNumbersString(){
 		return " " + MesquiteInteger.toString(fontSize) + " " + MesquiteInteger.toString(xOffset) 
 				+ " " + MesquiteInteger.toString(yOffset) + " " + MesquiteInteger.toString(digits)
@@ -135,6 +144,7 @@ public class DisplayableTreeProperty extends TreeProperty  {
 				+ " " + MesquiteDouble.toString(thresholdValueToShow); 
 	}
 	
+	/*-------------------------------------*/
 	public static void mergeIntoPreferences(ListableVector propertyList){
 		for (int i = 0; i< propertyList.size(); i++){
 			DisplayableTreeProperty property = (DisplayableTreeProperty)propertyList.elementAt(i);
@@ -148,8 +158,7 @@ public class DisplayableTreeProperty extends TreeProperty  {
 		treePropertyDisplayPreferences.notifyListeners(DisplayableTreeProperty.class, new Notification(MesquiteListener.PARTS_ADDED));
 	}
 	
-
-	
+	/*-------------------------------------*/
 	Font baseFont = null;
 	Font font = null;
 	int lastFontSizeUsed = 0;
@@ -161,13 +170,15 @@ public class DisplayableTreeProperty extends TreeProperty  {
 		}
 		return font;
 	}
+	/*-------------------------------------*/
 	public String getStringAtNode(Tree tree, int node){
 		return getStringAtNode(tree, node, false, false);
 	}
+	/*-------------------------------------*/
 	public String getStringAtNode(Tree tree, int node, boolean showNamesRegardless, boolean showIfUnassignedRegardless){
 		return getStringAtNode(tree, node, showNamesRegardless, false, showIfUnassignedRegardless);
 	}
-	
+	/*-------------------------------------*/
 	public String getStringAtNode(Tree tree, int node, boolean showNamesRegardless, boolean hideNamesRegardless, boolean showIfUnassignedRegardless){
 		String nodeString = "";
 		if (!tree.nodeIsInternal(node) &&  !showOnTerminals)

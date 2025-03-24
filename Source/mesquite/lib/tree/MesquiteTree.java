@@ -5683,7 +5683,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
-				if (!b.isBetween()) {  //writes only if says it's not between, i.e. for nodes
+				if (TreeProperty.findInTreePropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;
@@ -5695,7 +5695,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (longs!=null) {
 			for (int i=0; i< longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
-				if (!b.isBetween()) {
+				if (TreeProperty.findInTreePropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;
@@ -5707,7 +5707,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (doubles!=null)
 			for (int i=0; i< doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				if (!b.isBetween()) {
+				if (TreeProperty.findInTreePropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;
@@ -5718,7 +5718,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				if (!b.isBetween()) {
+				if (TreeProperty.findInTreePropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;

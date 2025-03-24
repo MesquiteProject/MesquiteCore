@@ -50,6 +50,7 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 	public void initiatePrefsList(){
 		ListableVector prefsList = DisplayableTreeProperty.treePropertyDisplayPreferences;
 		DisplayableTreeProperty nL = new DisplayableTreeProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN);
+		nL.setBelongsToBranch(false);
 		nL.showOnTerminals = false;
 		nL.showName = false;
 		prefsList.addElement(nL, false);

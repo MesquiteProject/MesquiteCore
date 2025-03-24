@@ -298,8 +298,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			fieldWidth = ownerModule.fieldWidth;
 		scroller = new Rectangle(0,0,0,0);
 		edgeGrabber = new Rectangle(0,0,0,0);
-		linkIcon = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "linkedMatrix.gif");  
-		linkOffIcon = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "linkedMatrixOff.gif");  
+		linkIcon = MesquiteImage.getImage(ownerModule.getPath() +  "linkedMatrix.gif");  
+		linkOffIcon = MesquiteImage.getImage(ownerModule.getPath() +  "linkedMatrixOff.gif");  
 	}
 
 	void turnOnOff(boolean on){

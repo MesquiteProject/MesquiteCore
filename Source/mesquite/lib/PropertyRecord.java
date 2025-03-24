@@ -35,6 +35,12 @@ public class PropertyRecord implements Listable, Nameable  {
 		this.kind = kind;
 	}
 
+	/*-------------------------------------*/
+	//Associables assume not between, except MesquiteTree, which assumes between as default (therefore overridden in TreeProperty)
+	public static boolean preferredBetweenness(String name){
+		return false;
+	}
+	/*-------------------------------------*/
 	public static int preferredKind(String name){
 		return -1;
 	}
@@ -52,32 +58,36 @@ public class PropertyRecord implements Listable, Nameable  {
 		return kind;
 	}
 
-
-
+	/*-------------------------------------*/
 	public boolean equals(PropertyRecord other){  //style doesn't matter; just name and kind
 		if (other ==null)
 			return false;
 		return nRef.equals(other.nRef) && kind == other.kind;
 	}
+	/*-------------------------------------*/
 	public static void addIfNotInList(ListableVector pList, PropertyRecord pr){
 		addIfNotInList(pList, pList, pr);
 	}
+	/*-------------------------------------*/
 	public static void addIfNotInList(ListableVector listToWhichToAdd, ListableVector source){
 		for (int i = 0; i< source.size(); i++) {
 			PropertyRecord pr = (PropertyRecord)source.elementAt(i);
 			addIfNotInList(listToWhichToAdd, pr); 
 		}
 	}
+	/*-------------------------------------*/
 	public static void addIfNotInList(ListableVector listToCheck, ListableVector listToWhichToAdd, PropertyRecord pr){
 		if (findInList(listToCheck, pr.getNameReference(), pr.getKind())==null){
 			listToWhichToAdd.addElement(pr, false);
 		}
 	}
+	/*-------------------------------------*/
 	public static void subtractIfInList(ListableVector listToCheck, PropertyRecord pr){
 		PropertyRecord found = findInList(listToCheck, pr.getNameReference(), pr.getKind());
 		if (found!=null)
 			listToCheck.removeElement(found, false);
 	}
+	/*-------------------------------------*/
 	public static PropertyRecord findInList(ListableVector pList, NameReference nr, int kind){
 		for (int i=0; i<pList.size(); i++){
 			Object obj = pList.elementAt(i);
@@ -89,6 +99,7 @@ public class PropertyRecord implements Listable, Nameable  {
 		}
 		return null;
 	}
+	/*-------------------------------------*/
 	public static PropertyRecord findInListNameOnly(ListableVector pList, NameReference nr){
 		for (int i=0; i<pList.size(); i++){
 			Object obj = pList.elementAt(i);
@@ -100,11 +111,12 @@ public class PropertyRecord implements Listable, Nameable  {
 		}
 		return null;
 	}
+	/*-------------------------------------*/
 	public static boolean inListButOtherKind(ListableVector pList, NameReference nr, int kind){
 		return (findInListNameOnly(pList, nr)!= null && findInList(pList, nr,kind)== null);
 	}
 
-
+	/*-------------------------------------*/
 	public static PropertyRecord[] findInList(ListableVector pList, String name){
 		int count = 0;
 		for (int i=0; i<pList.size(); i++){
@@ -129,6 +141,7 @@ public class PropertyRecord implements Listable, Nameable  {
 		}
 		return props;
 	}
+	/*-------------------------------------*/
 	public static String reportPropertyList(ListableVector pList){
 		String s = "Properties (" + pList.size() + ")\n";
 		for (int i=0; i<pList.size(); i++){
@@ -141,6 +154,7 @@ public class PropertyRecord implements Listable, Nameable  {
 		return s;
 	}
 
+	/*-------------------------------------*/
 	public String toString(){
 		return "Property name: " + name + " kind " + kind;
 	}

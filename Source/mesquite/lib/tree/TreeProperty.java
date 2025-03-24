@@ -26,7 +26,7 @@ import mesquite.lib.PropertyRecord;
 /*A specialized version of PropertyRecord for trees, especially for tree branches/nodes*/
 public class TreeProperty extends PropertyRecord  {
 
-	private boolean belongsToBranch = true; //This is settable only from the settings managed by BranchPropertiesInit.
+	protected boolean belongsToBranch = true; //This is settable only from the settings managed by BranchPropertiesInit.
 	
 	
 	/*This vector records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties.
@@ -49,15 +49,32 @@ public class TreeProperty extends PropertyRecord  {
 	}
 	public static int preferredKind(String name){
 		PropertyRecord[] props = findInTreePropertySettings(name);
-		if (props == null || props.length>1)
+		if (props == null || props.length==0 || props.length>1)
 			return -1;
 		return props[0].kind;
 	}
+	/*-------------------------------------*/
+	//Associables assume not between, except MesquiteTree, which assumes between as default (therefore overridden in TreeProperty)
+	public static boolean preferredBetweenness(String name){
+		PropertyRecord[] props = findInTreePropertySettings(name);
+		if (props == null || props.length==0 || props.length>1)
+			return true;
+		if (props[0] instanceof TreeProperty)
+			return ((TreeProperty)props[0]).belongsToBranch;
+		return true;
+	}
+	/*-------------------------------------*/
 	public boolean getBelongsToBranch(){ //in Associable, this is referred to as betweenness
 		return belongsToBranch;
 	}
 
-	//returns true if succeeds
+	/*-------------------------------------*/
+	//for internal use only; not for UI
+	public void setBelongsToBranch(boolean belongsToBranch){
+		this.belongsToBranch = belongsToBranch;
+	}
+	/*-------------------------------------*/
+	//returns true if succeeds. To be used by UI if a change is requested
 	public boolean setBelongsToBranch(boolean belongsToBranch, boolean recordIfNew){
 		if (kind == Associable.BUILTIN || TreeProperty.findInTreePropertySettings(nRef, kind) != null)
 			return false;
@@ -67,6 +84,7 @@ public class TreeProperty extends PropertyRecord  {
 		this.belongsToBranch = belongsToBranch;
 		return true;
 	}
+	/*-------------------------------------*/
 	public static TreeProperty findInTreePropertySettings(NameReference nr, int kind){
 		ListableVector pList = treePropertiesSettingsVector;
 		for (int i=0; i<pList.size(); i++){
@@ -77,6 +95,7 @@ public class TreeProperty extends PropertyRecord  {
 		return null;
 	}
 
+	/*-------------------------------------*/
 	public static TreeProperty[] findInTreePropertySettings(String name){
 		ListableVector pList = treePropertiesSettingsVector;
 		int count = 0;
@@ -97,11 +116,21 @@ public class TreeProperty extends PropertyRecord  {
 		return props;
 	}
 	
+	/*-------------------------------------*/
 	public void addToKnownTreePropertiesIfNeeded(MesquiteTree tree){
 		if (tree != null && tree.getTaxa() != null && tree.getTaxa().getProject()!= null)
 			addIfNotInList(tree.getTaxa().getProject().knownTreeProperties, this);// add p to project.knownTreeProperties if not there by name
 	}
 
+	/*-------------------------------------*/
+	public String toString(){
+		String s = super.toString();
+		if (belongsToBranch)
+			s += " branch";
+		else
+			s += " node";
+		return s;
+	}
 
 }
 

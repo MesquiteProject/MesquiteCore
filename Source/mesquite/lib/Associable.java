@@ -1978,6 +1978,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (b==null) {
 			b = new Bits(numParts);
 			b.setNameReference(nr);
+			b.setBetweenness(PropertyRecord.preferredBetweenness(name));
 			bits.addElement(b);
 		}
 		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
@@ -2075,6 +2076,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (d==null){
 			d = new LongArray(numParts);
 			d.setNameReference(nr);
+			d.setBetweenness(PropertyRecord.preferredBetweenness(name));
 			longs.addElement(d);
 		}
 		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
@@ -2178,6 +2180,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (d==null){
 			d = new DoubleArray(numParts);
 			d.setNameReference(nr);
+			d.setBetweenness(PropertyRecord.preferredBetweenness(name));
 			doubles.addElement(d);
 		}
 		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
@@ -2268,6 +2271,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (d==null){
 			d = new StringArray(numParts);
 			d.setNameReference(nr);
+			d.setBetweenness(PropertyRecord.preferredBetweenness(name));
 			strings.addElement(d);
 		}
 		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
@@ -2389,6 +2393,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		if (d==null){
 			d = new ObjectArray(numParts);
 			d.setNameReference(nr);
+			d.setBetweenness(PropertyRecord.preferredBetweenness(name));
 			objects.addElement(d);
 			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		}

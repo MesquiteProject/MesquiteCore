@@ -42,7 +42,7 @@ public class NodePropertiesListBetween extends NodePropertiesListAssistant  {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Ressign Selected to Branch", makeCommand("branch", this));
-		addMenuItem("Ressign Selected to Node", makeCommand("hide", this));
+		addMenuItem("Ressign Selected to Polarized Node", makeCommand("hide", this));
 		addMenuItem("Explanation...", makeCommand("explain", this));
 		return true;
 	}
@@ -54,10 +54,10 @@ public class NodePropertiesListBetween extends NodePropertiesListAssistant  {
 		return "For Branch or Node?";
 	}
 	public String getVeryShortName() {
-		return "At Branch/Node?";
+		return "Polarized?";
 	}
 	public String getExplanation() {
-		return "Shows whether the associated information applies to the node or branch." ;
+		return "Shows whether the associated information applies to the node in rooted orientation or to the unrooted branch." ;
 	}
 
 
@@ -81,10 +81,11 @@ public class NodePropertiesListBetween extends NodePropertiesListAssistant  {
 			discreetAlert("Sorry, designation of properties as assigned to branch vs. node is a system-level setting that can be edited only by changing the files in Mesquite_Folder/settings/trees/BranchPropertiesInit"); 
 		}
 		else if (checker.compare(this.getClass(), "Explains", null, commandName, "explain")) {
-			discreetAlert("A property is assigned either to a node or the branch just below it. "
-					+"\n\nThis is important when the tree is rerooted. A property assigned to the branch may appear to flip to a different node on rerooting, "
-					+" while a property assigned to the node will appear to flip to a different branch on rerooting."
-					+"\n\nFor instance, branch length, color, and clade confidence measures should belong to the branch, but some others should belong the node.");
+			discreetAlert("Some properties for branches/nodes imply a direction of time (polarized), others do not. Unpolarized properties, like branch length, stay the same however you reroot the tree. Those are labelled as being attached to the branch itself."
+					+" Polarized properties, like node height, assume that time proceeded forward along the branch toward the node. Those are labelled as \"Polarized node\". "
+					+"\n\nThis is important when the tree is rerooted. A branch property that is unpolarized may appear to flip to a different node on rerooting, "
+					+" while a property assigned to as \"up to node\" will appear to flip to a different branch on rerooting. Also, rerooting may generate a contradiction if it turns polarized properties upside-down."
+					+"\n\nFor instance, branch length, color, and clade confidence measures should belong to the branch, but some name labels and heights should belong the node.");
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -154,7 +155,7 @@ public class NodePropertiesListBetween extends NodePropertiesListAssistant  {
 	}
 	String nodeOrBranch(boolean isBetween){
 		if (!isBetween)
-			return "Node";
+			return "Polarized Node";
 		return "Branch";
 	}
 	public String getStringForRow(int ic) {

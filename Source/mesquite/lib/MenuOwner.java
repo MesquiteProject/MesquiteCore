@@ -1020,7 +1020,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			MesquiteMenu ancestralMenu = null;
 			if (module.isDoomed())
 				return;
-			if (module.getEmployer() != null)
+			if (!suppressMenuAncestors() && module.getEmployer() != null)
 				ancestralMenu = module.getEmployer().composeMenuAncestors(menuBar);
 
 
@@ -1170,7 +1170,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		MesquitePopup ancestralMenu = null;
 		if (module.isDoomed())
 			return null;
-		if (module.getEmployer() != null)
+		if (!suppressMenuAncestors() && module.getEmployer() != null)
 			ancestralMenu = module.getEmployer().composeMenuAncestors(menuVector);
 
 		MesquitePopup menuToUse = menu;
@@ -1515,7 +1515,11 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			return true;
 		}
 	}
-
+	/*............................................................................. */
+	// can be overridden by modules to suppress their employers' menus, e.g. for a dependent window, so it doesn't have unexpected clutter
+	public boolean suppressMenuAncestors(){
+		return false;
+	}
 	/*............................................................................. */
 	final MesquiteMenu composeMenuAncestors(MesquiteMenuBar menuBar) {
 		MesquiteMenu putHere;

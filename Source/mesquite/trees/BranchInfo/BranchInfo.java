@@ -70,7 +70,6 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 
 	public InfoToolExtra (BranchInfo ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
-		Debugg.println("@ ITE " + treeDisplay.getExtras().getList());
 		warningGif = MesquiteImage.getImage(ownerModule.getPath() + "rerootWarning.gif");
 
 		respondCommand = ownerModule.makeCommand("respond", this);
@@ -178,7 +177,7 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 			if (mTree.anyUpsideDownProperties()){
 				ListableVector v = mTree.getUpsideDownProperties();
 				ownerModule.discreetAlert("This tree was originally rooted along this branch. It has since been rerooted. "
-						+"This rerooting has violated the polarity of some properties associated with nodes, and which are sensitive to rerooting. These properties are:\n\n" + v.getList());
+						+"Some properties associated with the branches/nodes imply a polarity of time, but this rerooting violated the polarity by turning branches upside down. These properties are:\n\n" + v.getList());
 			}
 		}
 

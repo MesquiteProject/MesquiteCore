@@ -29,6 +29,7 @@ import mesquite.lib.tree.DisplayableTreeProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeProperty;
 import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.SingleLineTextField;
@@ -56,6 +57,12 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 		this.tree = tree;
 		if (myWindow != null)
 			myWindow.setTree(tree);
+		MesquiteModule twMB = findEmployerWithDuty(TreeWindowMaker.class);
+		if (twMB!= null && treeWindowMenuItem!= null){
+			MesquiteWindow treeWindow = twMB.getModuleWindow(); 
+			treeWindowMenuItem.setName("Tree Window: " + treeWindow.getTitle());
+			resetContainingMenuBar();
+		}
 	}
 
 	public String getAnnotation(){
@@ -84,7 +91,7 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 		displayModule = (NodePropertyDisplayControl)findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
 		showListWindow(false);
 	}
-
+	MesquiteMenuItemSpec treeWindowMenuItem = null;
 	/*.................................................................................................................*/
 	public void showListWindow(boolean hireAssistantsRegardless){
 		if (myWindow != null){
@@ -96,8 +103,13 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 			}
 			return;
 		}
+		MesquiteModule twMB = findEmployerWithDuty(TreeWindowMaker.class);
+		if (twMB!= null){
+			MesquiteWindow treeWindow = twMB.getModuleWindow(); 
+			treeWindowMenuItem = addMenuItem("Tree Window: " + treeWindow.getTitle(), new MesquiteCommand("showTreeWindow", this));
+			addMenuSeparator();
+		}
 		addMenuItem("Add Property to Tree...", new MesquiteCommand("addProperty", this));
-		//	addMenuItem("New Property...", new MesquiteCommand("newProperty", this));
 		myWindow = new NodesAssociatesListWindow(this);
 		setModuleWindow(myWindow);
 		myWindow.getParentFrame().requestPopoutWidth(460);
@@ -112,10 +124,9 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 			hireAssistant("#NodePropertiesListKind");
 			hireAssistant("#NodePropertiesListBetween");
 		}
-		myWindow.setTree(tree);
+		myWindow.setTree(tree);	
 		resetContainingMenuBar();
 		resetAllWindowsMenus();
-		//getModuleWindow().setVisible(true);
 	}
 	void hireAssistant(String name){
 		NodePropertiesListAssistant assistant = (NodePropertiesListAssistant)hireNamedEmployee(NodePropertiesListAssistant.class, StringUtil.tokenize(name));
@@ -124,7 +135,9 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 			assistant.setUseMenubar(false);
 		}
 	}
-
+	public boolean suppressMenuAncestors(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		if (getModuleWindow()==null || !getModuleWindow().isVisible())
@@ -167,10 +180,18 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 			}
 
 		}
+		else if (checker.compare(this.getClass(), "Returns the window", "[]", commandName, "showTreeWindow")) {
+			MesquiteModule twMB = findEmployerWithDuty(TreeWindowMaker.class);
+			if (twMB!= null){
+				MesquiteWindow treeWindow = twMB.getModuleWindow(); 
+				treeWindow.toFront();
+			}
+		}
 		else if (checker.compare(this.getClass(), "Returns the window", "[]", commandName, "getWindow")) {
 			return getModuleWindow();
 		}
 		else if (checker.compare(this.getClass(), "Adds existing property", "[]", commandName, "addProperty")) {
+			
 			//==== The storage points for tree properties are: ====
 			// TreeProperty.treePropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
 			// DisplayableTreeProperty.treePropertyDisplayPreferences: static, records the display preferences of tree properties
@@ -205,6 +226,8 @@ public class NodePropertiesList extends ListModule implements Annotatable {
 				for (int i = 0; i<ps.length; i++)
 					PropertyRecord.subtractIfInList(propertiesToAdd, ps[i]);
 
+			
+			
 			Listable chosen = ListDialog.queryList(containerOfModule(), "Property to add to tree", "What property do you want to add to the tree?", null, propertiesToAdd, -1);
 			if (chosen == newProperty){
 				String[] kinds = new String[]{ "Decimal number", "Integer number", "String of text", "Boolean (true/false)"};

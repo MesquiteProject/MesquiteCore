@@ -2046,6 +2046,7 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Forces a reset of the menus.", null, commandName, "resetMenus")) {
 			zeroMenuResetSuppression();
 			resetAllMenuBars();
+			zeroMenuResetSuppression();
 		}
 		else if (checker.compare(this.getClass(), "Shows the GNU Lesser General Public License.", null, commandName, "showLicense")) {
 			TextDisplayer displayer = (TextDisplayer)hireEmployee(TextDisplayer.class, null);
