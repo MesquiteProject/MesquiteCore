@@ -16,6 +16,7 @@ package mesquite.lib.tree;
 import java.awt.Font;
 
 import mesquite.lib.Associable;
+import mesquite.lib.Debugg;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
@@ -69,6 +70,7 @@ public class DisplayableTreeProperty extends TreeProperty  {
 		else
 			belongsToBranch = preferredBetweenness(name);
 	}
+	
 	
 	
 	/*-------------------------------------*/
@@ -127,6 +129,8 @@ public class DisplayableTreeProperty extends TreeProperty  {
 			xOffset = num;
 		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))
 			yOffset = num;
+		if (yOffset == 9)
+			Debugg.printStackTrace();
 		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))
 			digits = num;
 		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))

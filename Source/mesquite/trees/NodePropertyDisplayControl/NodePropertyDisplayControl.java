@@ -458,7 +458,7 @@ public class NodePropertyDisplayControl extends TreeDisplayAssistantI implements
 				if (MesquiteInteger.isCombinable(xOffsetF.getValue()))
 					property.xOffset = xOffsetF.getValue();
 				if (MesquiteInteger.isCombinable(yOffsetF.getValue()))
-					property.yOffset = yOffsetF.getValue();
+					property.yOffset =yOffsetF.getValue();
 
 				if (MesquiteDouble.isCombinable(thresholdValueToShowF.getValue()))
 					property.thresholdValueToShow =thresholdValueToShowF.getValue();
@@ -537,6 +537,7 @@ public class NodePropertyDisplayControl extends TreeDisplayAssistantI implements
 			String name = parser.getFirstToken(arguments);
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
 			DisplayableTreeProperty property = findInList(name, kind);
+	
 			if (property!= null){
 				property.setNumbers(parser);				 
 				if (!MesquiteThread.isScripting()) parametersChanged();

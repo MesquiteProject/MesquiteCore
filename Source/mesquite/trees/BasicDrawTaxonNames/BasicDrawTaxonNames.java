@@ -1200,7 +1200,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			storePreferences();
 		}
 		dialog.dispose();
-		return 0;	
+		return namesAngle;	
 	}
 }
 

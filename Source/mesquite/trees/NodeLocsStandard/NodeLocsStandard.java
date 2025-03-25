@@ -66,7 +66,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	//	double namesAngle = MesquiteDouble.unassigned;
 
 	MesquiteMenuItemSpec fixedScalingMenuItem, showScaleMenuItem, broadScaleMenuItem;
-	MesquiteMenuItemSpec offFixedScalingMenuItem, stretchMenuItem, evenMenuItem;
+	MesquiteMenuItemSpec stretchMenuItem, evenMenuItem;
 
 	MesquiteBoolean center;
 	boolean[] fixedSettings = null;
@@ -129,18 +129,33 @@ public class NodeLocsStandard extends NodeLocsVH {
 			addCheckMenuItemToSubmenu(null, mss, "Draw with Lengths, Unassigned as One", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWUNASSIGNEDASONE, this), blOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE));
 		}
 
+		fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
+		showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
+		broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);
+		stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch Tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
+		evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);
 		if (branchLengthsDisplayMode.getValue()==TreeDisplay.DRAWUNASSIGNEDASONE || branchLengthsDisplayMode.getValue()==TreeDisplay.AUTOSHOWLENGTHS) {
-			fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
+			stretchMenuItem.setEnabled(false);
+			evenMenuItem.setEnabled(false);
+			if (fixedScale) {
+				fixedScalingMenuItem.setName("Fixed Scaling Off");
+				fixedScalingMenuItem.setCommand(makeCommand("offFixedScaling", this));
+			}
+			/*fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
 			showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
-			broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);
+			broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);*/
 			resetShowBranchLengths=true;
 		}
 		else {
+			fixedScalingMenuItem.setEnabled(false);
+			showScaleMenuItem.setEnabled(false);
+			broadScaleMenuItem.setEnabled(false);
+
 			/*Debugg.println: if ultrametric, just add menu and use. If AUTO, add menu but rename as "Inhibit stretch if no BL".
 			 * 	if (showBranchLengths.getValue()==TreeDisplay.DRAWULTRAMETRIC || showBranchLengths.getValue()==TreeDisplay.AUTOSHOWLENGTHS)
 			 */
-			stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch Tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
-			evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);
+			/*stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch Tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
+			evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);*/
 		}
 
 
@@ -171,18 +186,18 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 
 	void deleteMostMenuItems(){
-		deleteMenuItem(stretchMenuItem);
-		stretchMenuItem = null;
-		deleteMenuItem(evenMenuItem);
-		evenMenuItem = null;
-		deleteMenuItem(fixedScalingMenuItem);
-		fixedScalingMenuItem = null;
-		deleteMenuItem(showScaleMenuItem);
-		showScaleMenuItem = null;
-		deleteMenuItem(broadScaleMenuItem);
-		broadScaleMenuItem = null;
-		deleteMenuItem(offFixedScalingMenuItem);
-		offFixedScalingMenuItem = null;
+		//	deleteMenuItem(stretchMenuItem);
+		stretchMenuItem.setEnabled(false);
+		//	deleteMenuItem(evenMenuItem);
+		evenMenuItem.setEnabled(false);
+		//	deleteMenuItem(fixedScalingMenuItem);
+		fixedScalingMenuItem.setEnabled(false);
+		//	deleteMenuItem(showScaleMenuItem);
+		showScaleMenuItem.setEnabled(false);
+		//	deleteMenuItem(broadScaleMenuItem);
+		broadScaleMenuItem.setEnabled(false);
+		//	deleteMenuItem(offFixedScalingMenuItem);
+		//	offFixedScalingMenuItem.setEnabled(false);
 	}
 
 
@@ -300,7 +315,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		if (changeInOrientation()) {
 			resetMenus();
 			parametersChanged();
-	}
+		}
 	}
 
 	boolean stretchWasSet = false;
@@ -419,19 +434,23 @@ public class NodeLocsStandard extends NodeLocsVH {
 			 */
 			if (branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC) {
 				deleteMostMenuItems();
-				if (stretchMenuItem == null)
-					stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
-				if (evenMenuItem == null)
-					evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);
-
+				stretchMenuItem.setEnabled(true);
+				evenMenuItem.setEnabled(true);
 			}
 			else {
 				deleteMostMenuItems();
-				fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
-				if (fixedScale)
-					offFixedScalingMenuItem = addMenuItem( "Off Fixed Scaling", makeCommand("offFixedScaling", this));
-				showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
-				broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);
+				fixedScalingMenuItem.setEnabled(true);
+				if (fixedScale) {
+					fixedScalingMenuItem.setName("Fixed Scaling Off");
+					fixedScalingMenuItem.setCommand(makeCommand("offFixedScaling", this));
+				}
+				else {
+					fixedScalingMenuItem.setName("Fixed Scaling...");
+					fixedScalingMenuItem.setCommand(makeCommand("setFixedScaling", this));
+				}
+				//offFixedScalingMenuItem.setEnabled(fixedScale);
+				showScaleMenuItem.setEnabled(true);
+				broadScaleMenuItem.setEnabled(true);
 			}
 			resetContainingMenuBar();
 			parametersChanged();
@@ -447,8 +466,9 @@ public class NodeLocsStandard extends NodeLocsVH {
 				fixedScale = true;
 				fixedDepth = newDepth;
 				leaveScaleAlone = false;
-				if (offFixedScalingMenuItem == null) {
-					offFixedScalingMenuItem = addMenuItem( "Off Fixed Scaling", makeCommand("offFixedScaling", this));
+				if (!fixedScalingMenuItem.getName().equalsIgnoreCase("Fixed Scaling Off")) {
+					fixedScalingMenuItem.setName("Fixed Scaling Off");
+					fixedScalingMenuItem.setCommand(makeCommand("offFixedScaling", this));
 					resetContainingMenuBar();
 				}
 				parametersChanged();
@@ -465,8 +485,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 		else if (checker.compare(this.getClass(), "Turns off fixed scaling", null, commandName, "offFixedScaling")) {
 			fixedScale = false;
 			leaveScaleAlone = false;
-			deleteMenuItem(offFixedScalingMenuItem);
-			offFixedScalingMenuItem = null;
+			fixedScalingMenuItem.setName("Fixed Scaling...");
+			fixedScalingMenuItem.setCommand(makeCommand("setFixedScaling", this));
+			//deleteMenuItem(offFixedScalingMenuItem);
+			//offFixedScalingMenuItem.setEnabled(false);
 			resetContainingMenuBar();
 			parametersChanged();
 		}
@@ -547,18 +569,15 @@ public class NodeLocsStandard extends NodeLocsVH {
 				blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
 				if (branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC) {
 					deleteMostMenuItems();
-					if (stretchMenuItem == null)
-						stretchMenuItem = addCheckMenuItem(null, "Stretch tree to Fit", makeCommand("stretchToggle", this), inhibitStretch);
-					if (evenMenuItem == null)
-						evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);
+					stretchMenuItem.setEnabled(true);
+					evenMenuItem.setEnabled(true);
 				}
 				else {
 					deleteMostMenuItems();
-					fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
-					if (fixedScale)
-						offFixedScalingMenuItem = addMenuItem( "Off Fixed Scaling", makeCommand("offFixedScaling", this));
-					showScaleMenuItem = addCheckMenuItem(null, "Show scale", makeCommand("toggleScale", this), showScale);
-					broadScaleMenuItem = addCheckMenuItem(null, "Broad scale", makeCommand("toggleBroadScale", this), broadScale);
+					fixedScalingMenuItem.setEnabled(true);
+					//offFixedScalingMenuItem.setEnabled(fixedScale);
+					showScaleMenuItem.setEnabled(true);
+					broadScaleMenuItem.setEnabled(true);
 				}
 				resetContainingMenuBar();
 			}
@@ -1544,7 +1563,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			else
 				scaleValues = new double[]{xBase+ (totalScaleHeight*scaling), yPos, xBase,yPos, 0, totalScaleHeight};
 		}
-	
+
 		if (scaleValues != null)
 			treeDisplay.setScale(scaleValues);
 	}
@@ -1559,7 +1578,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		boolean rulerOnly = false;
 		int rulerWidth = 8;
 		Color c=g.getColor();
-	
+
 		Color smallTickColor = Color.lightGray;
 		Color bigTickColor = Color.darkGray;
 		//returned are startingX, starting Y, ending X, ending Y, starting scale value, ending scale value
@@ -1681,7 +1700,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			if (rulerOnly)
 				GraphicsUtil.drawLine(g,(base), rightEdge, (base+ (totalScaleHeight*scaling)),rightEdge);
 		}		
-	
+
 		if (c !=null)
 			g.setColor(c);
 		g.setPaintMode();
@@ -1744,20 +1763,20 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 		if (showRectangles){  //rectangles
 			drawTranslatedRect(g, 2, 2, treeDisplay.getField().width, treeDisplay.getField().height, Color.green);
 			drawTranslatedRect(g, 2, 2, treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldHeight(), Color.cyan);
-			
+
 			g.setColor(Color.blue);
 			g.drawRect(2, 2, treeDisplay.effectiveFieldLeftMargin()-2, treeDisplay.effectiveFieldTopMargin()-2);
 			g.setColor(Color.red);
 			g.drawRect(treeDisplay.getField().width - treeDisplay.effectiveFieldRightMargin(), treeDisplay.getField().height - treeDisplay.effectiveFieldBottomMargin(), treeDisplay.effectiveFieldRightMargin()-2, treeDisplay.effectiveFieldBottomMargin()-2);
 
-			
+
 			int xTips = treeDisplay.effectiveFieldWidth()+treeDisplay.effectiveFieldLeftMargin()-treeDisplay.getTipsMargin();
 			g.setColor(ColorDistribution.lightBlue);
 			g.fillRect(xTips, treeDisplay.effectiveFieldTopMargin(), treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldHeight());
-			
-		//	g.setColor(ColorDistribution.lightBlue);
-			
-		//	g.fillRect(xTips + treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldTopMargin(), treeDisplay.totalTipsFieldDistance(), treeDisplay.effectiveFieldHeight());
+
+			//	g.setColor(ColorDistribution.lightBlue);
+
+			//	g.fillRect(xTips + treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldTopMargin(), treeDisplay.totalTipsFieldDistance(), treeDisplay.effectiveFieldHeight());
 		}
 		if (locsModule.showScaleConsideringAuto(tree,  treeDisplay)) 
 			locsModule.drawGrid(treeDisplay.nodeLocsParameters[locsModule.totalHeight], treeDisplay.fixedDepthScale, treeDisplay.nodeLocsParameters[locsModule.scaling], treeDisplay, g);
