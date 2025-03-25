@@ -1614,7 +1614,7 @@ class FrameTabsPanel extends MousePanel {
 	int tabTouched = MesquiteInteger.unassigned;
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		tabTouched = findTab(x);
-		if (tabTouched>= 0 && MesquiteEvent.commandOrControlKeyDown(modifiers)){
+		if (tabTouched>= 0 && MesquiteEvent.rightClick(modifiers)){
 			redoPopoutWindowMenu(tabTouched);
 			popupForPopoutWindow.show(this, x,y);
 		}

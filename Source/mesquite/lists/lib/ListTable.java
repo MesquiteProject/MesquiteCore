@@ -393,7 +393,7 @@ public class ListTable extends MesquiteTable {
 		showAnnotationAndExplanation(row);
 		if (window.getCurrentTool()== window.arrowTool) {
 			if (!window.interceptRowNameTouch(row, editorPanel, x, y, modifiers)) {
-				if (row >= 0 && MesquiteEvent.commandOrControlKeyDown(modifiers)){
+				if (row >= 0 && MesquiteEvent.rightClick(modifiers)){
 					Object a = ownerModule.getMainObject();
 					if (a instanceof ListableVector){
 						ListableVector v = (ListableVector)a;
