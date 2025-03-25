@@ -103,9 +103,12 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 				stop = true;
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (compatibleMatrix(data)) {
+				if (data.getNumChars()==0)
+				logln("Trees not inferred from matrix " +data.getName() + " because it has no characters");
+				else {
 				currentMatrix = data.getMCharactersDistribution();
 				int lastNumTrees = trees.size();
-				logln("Inferring trees from matrix #" +(im+1) + " (" + data.getName() + ")"); 
+				logln("Inferring trees from matrix #" +(im+1) + " (" + data.getName() + ", " + data.getNumChars() + " characters)"); 
 				progIndicator.setText("\nInferring trees from matrix " +data.getName());
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 				int result = inferenceTask.fillTreeBlock(trees);
@@ -143,6 +146,7 @@ public class TreesFromSelMatrices extends DatasetsListUtility {
 							tM.attach(new MesquiteString("fromMatrix", data.getName()));
 						}
 					}
+				}
 				}
 			}
 			else
