@@ -107,6 +107,10 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, StringUtil.getAllButLastItem(treeName, "."));
 		if (d == null)
 			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, StringUtil.getAllButLastItem(treeName, "#"));
+		if (d == null) {
+			if (treeName.endsWith("+"))
+				d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, treeName.substring(0, treeName.length()-1));
+		}
 		return d;
 	}
 
@@ -117,7 +121,6 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		CharacterData oldData = data;
 		if (choose0Link1 == 0){
 			data = getProject().chooseData(containerOfModule(), taxa, null, "Choose matrix to show with tree");
-			//Debugg.println remember what matrix for snapshot!
 		}
 		else if (tree != null) {
 			//here also look for matrix from source if needed
@@ -202,7 +205,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 			resetMatrix(tree);
 		if (extra!= null)
 			extra.turnOnOff(showMatrix);
-		
+
 		if (buttonPressed.getValue()==0 && notify)  
 			parametersChanged();
 		return true;
@@ -214,7 +217,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		sn.addLine("chooseOrLink " + choose0Link1);
 		sn.addLine("fieldWidth " + fieldWidth);
 		if (data != null && choose0Link1 == 0)
-			sn.addLine("setMatrix " + getProject().getMatrixNumber(data));
+			sn.addLine("setMatrix " +getProject().getCharMatrixReferenceExternal(data));
 		sn.addLine("selectedOnly " + selectedCharatersOnly);
 		sn.addLine("showMatrix " + showMatrix);
 		return sn;
@@ -244,9 +247,10 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Which matrix to show", "[matrix only]", commandName, "setMatrix")) {
-			int cL = MesquiteInteger.fromString(arguments);
-			if (MesquiteInteger.isCombinable(cL)){
-				data = getProject().getCharacterMatrix(cL);
+			String dataReference =parser.getFirstToken(arguments);
+			CharacterData d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, null, dataReference, true);
+			if (d != null){
+				data = d;
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets field width", "[pixels]", commandName, "fieldWidth")) {
@@ -287,7 +291,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	double perBox = birdsEyeW;
 	TreeDisplayRequests borders = new TreeDisplayRequests(0,0,0,0, fieldWidth, 0);
 	DoubleArray boxEdges;
-	Rectangle scroller, edgeGrabber;
+	Rectangle scroller, edgeGrabber, scrollPageDecrease, scrollPageIncrease;
 	Image linkIcon, linkOffIcon;
 
 	public ShowMatrixLinkedExtra(ShowMatrixInTreeWindow ownerModule, TreeDisplay treeDisplay) {
@@ -297,6 +301,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		if (ownerModule.showMatrix)
 			fieldWidth = ownerModule.fieldWidth;
 		scroller = new Rectangle(0,0,0,0);
+		scrollPageDecrease = new Rectangle(0,0,0,0);
+		scrollPageIncrease = new Rectangle(0,0,0,0);
 		edgeGrabber = new Rectangle(0,0,0,0);
 		linkIcon = MesquiteImage.getImage(ownerModule.getPath() +  "linkedMatrix.gif");  
 		linkOffIcon = MesquiteImage.getImage(ownerModule.getPath() +  "linkedMatrixOff.gif");  
@@ -539,7 +545,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 	TextRotator textRotator = new TextRotator();
 	Rectangle linkIconRect = new Rectangle(0, 0, 22, 14);
-	
+
 	void drawAndPrintOnTree(Tree tree, int drawnRoot, Graphics g){
 		data = ownerModule.data;
 		treeDrawing = treeDisplay.getTreeDrawing(); //just making sure this is most current
@@ -573,38 +579,38 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		}
 		g.setColor(oldColor);
 	}
-	
+	int pixelWidthScroller =1;
 	/* ========================================= */
 	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
-		
+
 		//###################### icons for linked matrix
 		if (treeDisplay.getOrientation() != TreeDisplay.LEFT && treeDisplay.getOrientation() != TreeDisplay.RIGHT && treeDisplay.getOrientation() != TreeDisplay.UP && treeDisplay.getOrientation() != TreeDisplay.DOWN)
 			return;
-			if (ownerModule.linkedMatrix(tree) != null){
-				if (treeDisplay.isRight())
-					linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()-30, treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
-				else if (treeDisplay.isLeft())
-					linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
-				else if (treeDisplay.isDown())
-					linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth()-20, treeDisplay.effectiveFieldTopMargin()-16);
-				else if (treeDisplay.isUp())
-					linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth()-20, treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
-				if (!ownerModule.showMatrix) {
-					g.drawImage(linkIcon, linkIconRect.x, linkIconRect.y, treeDisplay);
-					return;
-				}
-				else
-					g.drawImage(linkOffIcon, linkIconRect.x, linkIconRect.y, treeDisplay);
-			}		
-			else if (!ownerModule.showMatrix)
+		if (ownerModule.linkedMatrix(tree) != null){
+			if (treeDisplay.isRight())
+				linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()-30, treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
+			else if (treeDisplay.isLeft())
+				linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
+			else if (treeDisplay.isDown())
+				linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth()-20, treeDisplay.effectiveFieldTopMargin()-16);
+			else if (treeDisplay.isUp())
+				linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth()-20, treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
+			if (!ownerModule.showMatrix) {
+				g.drawImage(linkIcon, linkIconRect.x, linkIconRect.y, treeDisplay);
 				return;
+			}
+			else
+				g.drawImage(linkOffIcon, linkIconRect.x, linkIconRect.y, treeDisplay);
+		}		
+		else if (!ownerModule.showMatrix)
+			return;
 
 		//###################### draw Matrix!!!
 		drawAndPrintOnTree(tree, drawnRoot, g);
-	
+
 		if (!ownerModule.showMatrix)
 			return;
-		
+
 		//###################### draw scroll and other decorations
 		Color oldColor = g.getColor();
 		String matrixName = "";
@@ -643,13 +649,16 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 					xEnd = x+12;
 				scroller.x = x-3; scroller.y = scrollEdge-6; scroller.width = xEnd-x+6; scroller.height = 12;
 				g.fillRoundRect(x, scrollEdge-4, xEnd-x, 9, scrollRound, scrollRound); //scroller
-
+				pixelWidthScroller = scroller.width;
+				scrollPageDecrease.x = getBase(); scrollPageDecrease.y = scrollEdge-6; scrollPageDecrease.width = x-3-getBase(); scrollPageDecrease.height = 12;
+				scrollPageIncrease.x = xEnd+3; scrollPageIncrease.y = scrollEdge-6; scrollPageIncrease.width = fieldSize()-(xEnd+3-getBase()); scrollPageIncrease.height = 12;
+				
 				g.setColor(Color.lightGray);
 				g.fillRoundRect(x+2, scrollEdge-1, xEnd-x-4, 3, scrollRound, scrollRound); //scroller
 			}
-				g.setColor(Color.black);
+			g.setColor(Color.black);
 			g.drawString(matrixName, getBase()+fieldSize()/2-lengthName/2, scrollEdge+16);
-			
+
 
 		}
 		else if (treeDisplay.isUp() || treeDisplay.isDown()){
@@ -677,6 +686,9 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 					yEnd = y+12;
 				scroller.y = y-3; scroller.x = scrollEdge-6; scroller.height = yEnd-y+6; scroller.width = 12;
 				g.fillRoundRect(scrollEdge-4, y, 9, yEnd-y, scrollRound, scrollRound); //scroller
+				pixelWidthScroller = scroller.height;
+				scrollPageDecrease.y = getBase(); scrollPageDecrease.x = scrollEdge-6; scrollPageDecrease.height = y-3-getBase(); scrollPageDecrease.width = 12;
+				scrollPageIncrease.y = yEnd+3; scrollPageIncrease.x = scrollEdge-6; scrollPageIncrease.height = fieldSize()-(yEnd+3-getBase()); scrollPageIncrease.width = 12;
 
 				g.setColor(Color.lightGray);
 				g.fillRoundRect(scrollEdge-1, y+2, 3,  yEnd-y-4, scrollRound, scrollRound); //scroller
@@ -809,7 +821,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	public void addToRightClickPopup(MesquitePopup popup){
 		if (ownerModule.linkedMatrix(treeDisplay.getTree()) != null)
 			popup.addItem("Display of Matrix Linked to Tree...", ownerModule, new MesquiteCommand("queryLinkedOptions", ownerModule), "");
-		
+
 	}
 	public void cursorMove(Tree tree, int x, int y, Graphics g){
 		if (edgeGrabber.contains(x, y)) {
@@ -829,6 +841,14 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				scrollerTouch = x;
 			else if (treeDisplay.isUp() || treeDisplay.isDown())
 				scrollerTouch = y;
+			return true;
+		}
+		else if (scrollPageIncrease.contains(x, y)) {
+			resetBaseCharacter(pixelWidthScroller);
+			return true;
+		}
+		else if (scrollPageDecrease.contains(x, y)) {
+			resetBaseCharacter(-pixelWidthScroller);
 			return true;
 		}
 		else if (edgeGrabber.contains(x, y)) {
@@ -853,7 +873,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				ownerModule.showMatrix = false;
 				turnOnOff(false);
 			}
-			
+
 		}
 		return false;
 	}

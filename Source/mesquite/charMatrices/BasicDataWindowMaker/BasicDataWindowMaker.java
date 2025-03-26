@@ -538,6 +538,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AddDeleteData");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#SearchData");
 		// ownerModule.addMenuSeparator();
+		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#DefaultCellColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#NoColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorByState");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorCells");
@@ -612,7 +613,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 		MesquiteModule noColor = ownerModule.findEmployeeWithName("#NoColor", true);
 		if (data.colorCellsByDefault()) {
-			MesquiteModule mbc = ownerModule.findEmployeeWithName("#ColorByState", true);
+			MesquiteModule mbc = ownerModule.findEmployeeWithName("#DefaultCellColor", true);
 			setCellColorer(mbc);
 		}
 		else {

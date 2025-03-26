@@ -871,8 +871,9 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 		setInvalid(false);
 
 	}
+
 	public void update(Graphics g){
-		super.update(g);
+			super.update(g);
 	}
 	private int which = 0;
 
@@ -882,6 +883,8 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 			setDrawingInProcess(false);
 			repaintsPending  = 0;
 			repaint();
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("bail out [repaintsPending>initialPending] " + (repaintsPending>initialPending));
 			return true;
 		}
 		return false;

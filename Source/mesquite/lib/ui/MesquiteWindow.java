@@ -2370,8 +2370,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void resetMenus(){
 		resetMenus(true);
 	}
-
 	public void resetMenus(boolean generateRegardless){
+		if (ownerModule.isDoomed())
+			return;
 		if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
 			needMenuBarReset = true;
 			return;
@@ -2384,7 +2385,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			return;
 		}
 		else {
-			ownerModule.composeMenuBar(tempMenuBar, this); 
+			try {
+				ownerModule.composeMenuBar(tempMenuBar, this);
+			}
+			catch (Exception e ){
+				needMenuBarReset = true;
+				if (MesquiteTrunk.developmentMode)
+					Debugg.printStackTrace("Menu bar needs resetting! " + getTitle());
+				return;
+		}
 		}
 		mergeMenus(menuBar, tempMenuBar);
 

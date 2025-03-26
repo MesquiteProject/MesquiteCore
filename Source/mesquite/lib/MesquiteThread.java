@@ -424,7 +424,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 				if (diagnose) MesquiteMessage.println("isScripting:CommandRecordHolder, " + situation);
 			}
 		}
-		
+
 		return shouldBeScripting;
 	}
 	public static void setShowWaitWindow(boolean show){
@@ -540,16 +540,18 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 				while (e.hasMoreElements()) {
 					MesquiteWindow win = (MesquiteWindow)e.nextElement();
 					if (win.isVisible()){
-						if (win.getParentFrame().getMenuBar()== null) {
-							MesquiteTrunk.mesquiteTrunk.resetMenusCommand.doItMainThread(null, null, null);
-							break;
+						if (win.getOwnerModule()!= null && win.getOwnerModule().getProject()!= null && !win.getOwnerModule().getProject().developing){
+							if (win.getParentFrame().getMenuBar()== null) {  //uh ho, should have menu
+								MesquiteTrunk.mesquiteTrunk.resetMenusCommand.doItMainThread(null, null, null);
+								break;
+							}
 						}
 					}
 				}
 			}
-			 if (!MesquiteTrunk.isMacOSX()) 
-				 return;
-			
+			if (!MesquiteTrunk.isMacOSX()) 
+				return;
+
 			if (MesquiteModule.mesquiteTrunk.dialogVector.size() == 0)
 				return;
 			else {
@@ -647,7 +649,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			/* Old macOS (pre Java 9) handling of file opening. Disabling until someone complains
 			if (MesquiteTrunk.debugMode && mt != MesquiteTrunk.startupShutdownThread && (MesquiteTrunk.isMacOSX() &&mesquite.trunk.EAWTHandler.openFileThreads.indexOf(mt)<0) && defaultIfNull == CommandRecord.nonscriptingRecord)
 				MesquiteMessage.printStackTrace("&&&&&&&&&&&&\nNS CommandRecord used because none is attached to thread");
-			*/
+			 */
 			return defaultIfNull;
 		}
 		return cr;

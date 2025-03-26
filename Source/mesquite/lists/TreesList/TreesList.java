@@ -154,6 +154,38 @@ public class TreesList extends ListLVModule {
 		resetContainingMenuBar();
 		resetAllWindowsMenus();
 	}
+	
+	public boolean rowsShowable(){
+		return true;
+	}
+	public void showItemAtRow(int row){
+		mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker treeWindowModule = (mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker)getTreeWindowModule();
+		
+		treeWindowModule.goToTreeNumber(row);
+		treeWindowModule.showMe();
+	}
+	/*.................................................................................................................*/
+	TreeWindowMaker getTreeWindowModule(){
+		if (currentTreeBlock == null)
+			return null;
+		mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord treeWindowCoord = (mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord)findNearestModuleWithDuty(mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord.class);
+		MesquiteModule[] treeWindowMakers = treeWindowCoord.getImmediateEmployeesWithDuty(mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker.class);
+		if (treeWindowMakers != null && treeWindowMakers.length>0){
+			for (int i = 0; i<treeWindowMakers.length; i++){
+				TreeWindowMaker mod = (TreeWindowMaker)treeWindowMakers[i];
+				MesquiteModule source = mod.getTreeSource();
+				if (source instanceof mesquite.trees.StoredTrees.StoredTrees){
+					mesquite.trees.StoredTrees.StoredTrees ts = (mesquite.trees.StoredTrees.StoredTrees)source;
+					if (ts.showing(currentTreeBlock)){
+						return mod;
+					}
+				}
+			}
+		}
+		TreeWindowMaker mod = treeWindowCoord.makeWindowShowingTrees(currentTreeBlock.getTaxa(), currentTreeBlock);
+		return mod;
+		
+	}
 	/*.................................................................................................................*/
 	/* following required by ListModule*/
 	public Object getMainObject(){

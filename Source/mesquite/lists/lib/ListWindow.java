@@ -83,7 +83,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		if (getCurrentObject() instanceof Associable)
 			table.setRowAssociable((Associable)getCurrentObject());
 		collator = new MesquiteCollator();
-
 		//TODO:  note: strangely enough, the commands of the arrow tools are not used, since it uses default behavior of table
 		String selectExplanation = "Select items in table.  If a single cell in the table is touched, and that cell is editable, then you will be given a little box in which you can edit the ";
 		selectExplanation += "contents of the cell.  By holding down shift while clicking, the selection will be extended from the first to the last touched cell. ";
@@ -135,9 +134,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		//ownerModule.addMenuSeparator();
 		if (owner.rowsAddable())
 			ownerModule.addMenuItem( "Add " + owner.getItemTypeNamePlural() + "...", ownerModule.makeCommand("addRows", this));
-		if (owner.rowsShowable())
+	/*	if (owner.rowsShowable())
 			ownerModule.addMenuItem( "Show Selected " + owner.getItemTypeNamePlural(), showCommand = ownerModule.makeCommand("showSelectedRows", this));
-
+*/
 		if (owner.rowsDeletable()) {
 			ownerModule.addMenuItem( "Delete Selected " + owner.getItemTypeNamePlural(), deleteCommand = ownerModule.makeCommand("deleteSelectedRows", this));
 			MesquiteWindow.addKeyListener(this, this);
@@ -156,6 +155,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		MesquiteWindow.addKeyListener(this, table);
 		addKeyListenerToAll(table, getPalette(), true);
 		resetTitle();
+		if (ownerModule.rowsShowable()){
+			MesquiteModule assistant= (MesquiteModule)ownerModule.hireNamedEmployee(MesquiteModule.class, "#ShowItemInList");
+		}
 	}
 	public void requestFocus(){
 		if (table!=null)
@@ -292,14 +294,14 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			} 
 		} 
 	}
-	
+
 	/*------------------------------ MAGIC WAND ------------------------------------*/
 	int wandColumn = -1;
 	void enterAndUseTargetValue() {
-		
+
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(ownerModule.containerOfModule(), "Select by Target Value",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		
+
 		dialog.addLabel("Column for target value");
 		String[] cols = new String[table.getNumColumns()];
 		for (int i=0; i<table.getNumColumns(); i++)
@@ -311,7 +313,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			colChosen = new MesquiteInteger(wandColumn);
 		List columnsList = dialog.addList (cols, colChosen, null, 6);
 		SingleLineTextField target = dialog.addTextField("Target value to find in column:", targetValue, 8);
-		
+
 		Checkbox eq = dialog.addCheckBox("Equal", equals.getValue());
 		Checkbox gT = dialog.addCheckBox("Greater than", greaterThan.getValue());
 		Checkbox lT = dialog.addCheckBox("Less than", lessThan.getValue());
@@ -319,7 +321,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		Checkbox we = dialog.addCheckBox("Within existing selection", withinExistingSelection.getValue());
 		Checkbox nm = dialog.addCheckBox("Choose non-matching", nonMatching.getValue());
 		Checkbox des = dialog.addCheckBox("Deselect rather than select", deselectWandTouched.getValue());
-		
+
 		dialog.completeAndShowDialog(true);
 		boolean doIt = false;
 		if (buttonPressed.getValue()==0) {
@@ -333,8 +335,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			nonMatching.setValue(nm.getState());
 			deselectWandTouched.setValue(des.getState());
 			wandColumn = columnsList.getSelectedIndex();
-			
-	}
+
+		}
 		dialog.dispose();
 		if (doIt)
 			selectByWandCriteria(target.getText(), columnsList.getSelectedIndex(), -1, des.getState(), we.getState(), nm.getState(), false, gT.getState(), lT.getState(), eq.getState());
@@ -561,12 +563,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				popup.add(deselectWandTouchedItem);
 				/*
 				 * MesquiteCheckMenuItem useEnteredTargetValueMenuItem = new MesquiteCheckMenuItem("Use Entered Target Value", ownerModule, MesquiteModule.makeCommand("useTargetValue", this), null, null);
-				 
+
 				useEnteredTargetValueMenuItem.set(useTargetValue.getValue());
 				popup.add(useEnteredTargetValueMenuItem);
 				MesquiteMenuItem setTargetValueMenuItem = new MesquiteMenuItem("Set Target Value...", ownerModule, MesquiteModule.makeCommand("setTargetValue", this));
 				popup.add(setTargetValueMenuItem);
-*/
+				 */
 
 				MesquiteMenuItem useTargetValueMenuItem = new MesquiteMenuItem("Specify and Use Target Value...", ownerModule, MesquiteModule.makeCommand("enterAndUseTargetValue", this));
 				popup.add(useTargetValueMenuItem);
@@ -866,7 +868,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				table.setColumnWidth(table.getNumColumns()-1, w);
 			}
-  	 		reviewColumnWidths();
+			reviewColumnWidths();
 		}
 	}
 	public void reviewColumnNumber() {

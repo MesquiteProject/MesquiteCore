@@ -24,8 +24,6 @@ import java.net.*;
 
 import javax.imageio.ImageIO;
 
-import mesquite.io.InterpretPhylipTreesBasic.InterpretPhylipTreesBasic;
-import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.misc.ClassVector;
@@ -33,7 +31,6 @@ import mesquite.lib.misc.HPanel;
 import mesquite.lib.simplicity.*;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.NewickDialect;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ChecklistDialog;
@@ -677,19 +674,19 @@ public class Mesquite extends MesquiteTrunk
 
 		openSpecialSubmenuSpec = new MesquiteSubmenuSpec(fileMenu, "Open Special", this);
 		MesquiteMenuItemSpec mmiO = addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "One File", null);
-		 mmiO.setEnabled(false); // this wasn't getting enamed,f or some reason....
+		mmiO.setEnabled(false); // this wasn't getting enamed,f or some reason....
 		addModuleMenuItemsSeparatelyToSubmenu(fileMenu, openSpecialSubmenuSpec, makeCommand("openGeneral", this), GeneralFileMakerSingle.class);
 		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "-", null);
-		 mmiO = addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "Multiple Files", null);
-		 mmiO.setEnabled(false); // this wasn't getting enamed,f or some reason....
+		mmiO = addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "Multiple Files", null);
+		mmiO.setEnabled(false); // this wasn't getting enamed,f or some reason....
 		addModuleMenuItemsSeparatelyToSubmenu(fileMenu, openSpecialSubmenuSpec, makeCommand("openGeneral", this), GeneralFileMakerMultiple.class);
 		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec,"-", null);
 		MesquiteCommand eOCC =   new MesquiteCommand("explainOpenChoices", this);
 		eOCC.bypassQueue = true; //for some reason putting the HTML dialog on AWTEventThread helps!
 		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec,"Explain These Choices...",   eOCC);
-		
-	//	openSpecialSubmenuSpec.setCommand(makeCommand("openGeneral", this));
-	//	openSpecialSubmenuSpec.setList(GeneralFileMakerSingle.class);
+
+		//	openSpecialSubmenuSpec.setCommand(makeCommand("openGeneral", this));
+		//	openSpecialSubmenuSpec.setList(GeneralFileMakerSingle.class);
 
 		addMenuItem(helpMenu, "Mesquite Documentation", makeCommand("showHomePage",  this));
 		addMenuItem(helpMenu, "Support and Advice", makeCommand("showSupport",  this));
@@ -1903,6 +1900,13 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteFile.putFileContents(macro.getPath(), oldFile, true);
 			resetAllMenuBars();
 		}
+		else if (checker.compare(this.getClass(), "Returns a file coordinator for a project", "[number of project]", commandName, "getFileCoordinator")) {
+			int iProj = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(iProj) && iProj<projects.getNumProjects()){
+				MesquiteProject proj = projects.getProject(iProj);
+				return proj.getCoordinatorModule();
+			}
+		}
 		else if (checker.compare(this.getClass(), "Brings up a dialog box to examine macro files", null, commandName, "showMacros")) {
 
 			//first get list of user-defined configs; must filter configurations vector to include only user-defined.  Then delete corresponding files!
@@ -2625,7 +2629,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 	}
-*/
+	 */
 
 
 	public Mesquite(){
@@ -2731,9 +2735,9 @@ public class Mesquite extends MesquiteTrunk
 			if (getJavaVersionAsDouble()>=1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
 				applicationHandler9 = new ApplicationHandler9(this);
 			}
-		/*	else
+			/*	else
 				mesq.registerMacHandlers();  //no longer useful unless old Java & OS
-*/
+			 */
 
 
 			if (MesquiteTrunk.debugMode)
