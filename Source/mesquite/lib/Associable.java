@@ -159,7 +159,53 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		return sT;
 	}
 
-
+public ListableVector getAssociatesOfKind(int kind){
+	ListableVector v = new ListableVector();
+	if (kind == Associable.BITS){
+		if (bits!=null) {
+			for (int i=0; i<bits.size(); i++) {
+				v.addElement((Listable)bits.elementAt(i), false);
+			}
+		}
+	}
+	else if (kind == Associable.LONGS){
+		if (longs!=null) {
+			for (int i=0; i<longs.size(); i++) {
+				Object obj = longs.elementAt(i);
+				Listable b = (Listable)longs.elementAt(i);
+				v.addElement(b, false);
+			}
+		}
+	}
+	else if (kind == Associable.DOUBLES){
+		if (doubles!=null) {
+			for (int i=0; i<doubles.size(); i++) {
+				Object obj = doubles.elementAt(i);
+				Listable b = (Listable)doubles.elementAt(i);
+				v.addElement(b, false);
+			}
+		}
+	}
+	else if (kind == Associable.STRINGS){
+		if (strings!=null) {
+			for (int i=0; i<strings.size(); i++) {
+				Object obj = strings.elementAt(i);
+				Listable b = (Listable)strings.elementAt(i);
+				v.addElement(b, false);
+			}
+		}
+	}
+	else if (kind == Associable.OBJECTS){
+		if (objects!=null) {
+			for (int i=0; i<objects.size(); i++) {
+				Object obj = objects.elementAt(i);
+				Listable b = (Listable)objects.elementAt(i);
+				v.addElement(b, false);
+			}
+		}
+	}
+	return v;
+}
 
 	public String getTextVersionAssociates(String nameOfPart){
 		if (bits == null && longs == null && doubles == null && objects == null && strings == null)

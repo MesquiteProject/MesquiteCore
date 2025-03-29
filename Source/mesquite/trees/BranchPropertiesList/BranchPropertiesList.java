@@ -114,6 +114,12 @@ public class BranchPropertiesList extends ListModule implements Annotatable {
 		addItemToSubmenu(null, mss, "Branch Length to impliedHeight", new MesquiteCommand("branchLengthToImpliedHeight", this));
 		addItemToSubmenu(null, mss, "Height to implied Branch Length", new MesquiteCommand("heightToBranchLength", this));
 		addItemToSubmenu(null, mss, "Length to built-in Branch Length", new MesquiteCommand("lengthToBranchLength", this));
+		addMenuSeparator();
+		addItemToSubmenu(null, mss, "Node Label to Text Property...", makeCommand("nodeLabelToProperty", this));
+		addItemToSubmenu(null, mss, "Property to Node Label...", makeCommand("propertyToNodeLabel", this));
+		addMenuSeparator();
+		addItemToSubmenu(null, mss, "Property to New Text Property...", makeCommand("propertyToTextProperty", this));
+		addItemToSubmenu(null, mss, "Text Property to New Decimal Numbers Property...", makeCommand("textPropertyToNumbers", this));
 
 		myWindow = new NodesAssociatesListWindow(this);
 		setModuleWindow(myWindow);
@@ -217,6 +223,18 @@ public class BranchPropertiesList extends ListModule implements Annotatable {
 				branchLengthToImpliedHeight(tree, tree.getRoot(), tree.tallestPathAboveNode(tree.getRoot()), impliedHeightNR);
 				tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 			}
+		}
+		else	if (checker.compare(this.getClass(), "Transforms the node label to a text property", null, commandName, "nodeLabelToProperty")) {
+			nodeLabelToTextProperty();
+		}
+		else	if (checker.compare(this.getClass(), "Transforms the property to node labels", null, commandName, "propertyToNodeLabel")) {
+			propertyToNodeLabel();
+		}
+		else	if (checker.compare(this.getClass(), "Transforms the property to a new text property", null, commandName, "propertyToTextProperty")) {
+			propertyToTextProperty();
+		}
+		else	if (checker.compare(this.getClass(), "Transforms the text property to a new decimal numbers property", null, commandName, "textPropertyToNumbers")) {
+			textPropertyToNumbers();
 		}
 		else if (checker.compare(this.getClass(), "Adds existing property", "[]", commandName, "addProperty")) {
 
@@ -329,7 +347,75 @@ public class BranchPropertiesList extends ListModule implements Annotatable {
 			branchLengthToImpliedHeight(tree, d, depth - tree.getBranchLength(d, 0), nr);
 	}
 
-
+	double fromString(String s){
+		double d = MesquiteDouble.fromString(s);
+		if (!MesquiteDouble.isCombinable(d) && d != MesquiteDouble.unassigned)
+			d = MesquiteDouble.unassigned;
+		return d;
+	}
+	/*.................................................................................................................*/
+	void propertyToNodeLabel(){
+		DisplayableBranchProperty[] properties = tree.getPropertyRecords();
+		Listable listable = ListDialog.queryList(containerOfModule(), "Convert property to node labels", "Which property to convert to node labels?", null, properties, 0);
+		if (listable==null)
+			return;
+		DisplayableBranchProperty property = (DisplayableBranchProperty)listable;
+		for (int node = 0; node<tree.getNumNodeSpaces(); node++) {
+			if (tree.nodeExists(node)){
+				String s = property.getStringAtNode( tree, node, false, true, true);
+				tree.setNodeLabel(s, node);
+			}
+		}
+		tree.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
+		parametersChanged();
+	}
+	/*.................................................................................................................*/
+	void propertyToTextProperty(){
+		DisplayableBranchProperty[] properties = tree.getPropertyRecords();
+		Listable listable = ListDialog.queryList(containerOfModule(), "Convert property to text property", "Which property to convert to text?", null, properties, 0);
+		if (listable==null)
+			return;
+		NameReference nRef = tree.makeAssociatedStrings(listable.getName() + ".text");
+		DisplayableBranchProperty property = (DisplayableBranchProperty)listable;
+		for (int node = 0; node<tree.getNumNodeSpaces(); node++) {
+			if (tree.nodeExists(node)){
+				String s = property.getStringAtNode( tree, node, false, true, true);
+				tree.setAssociatedString(nRef, node, s);
+			}
+		}
+		tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+		parametersChanged();
+	}
+	/*.................................................................................................................*/
+	void textPropertyToNumbers(){
+		ListableVector associates = tree.getAssociatesOfKind(Associable.STRINGS); // extract out text ones
+		Listable listable = ListDialog.queryList(containerOfModule(), "Convert text property to decimal number", "Which property to convert to decimal numbers?", null, associates, 0);
+		if (listable==null)
+			return;
+		NameReference nRef = tree.makeAssociatedDoubles(listable.getName() + ".numbers");
+		DisplayableBranchProperty property = new DisplayableBranchProperty(listable.getName(), Associable.STRINGS);
+		for (int node = 0; node<tree.getNumNodeSpaces(); node++) {
+			if (tree.nodeExists(node)){
+				String s = property.getStringAtNode( tree, node, false, true, true);
+				double d = MesquiteDouble.fromString(s);
+				tree.setAssociatedDouble(nRef, node, d);
+			}
+		}
+		tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+		parametersChanged();
+	}
+	/*.................................................................................................................*/
+	void nodeLabelToTextProperty(){
+		NameReference nRef = NameReference.getNameReference("Node label.text");
+		for (int node = 0; node<tree.getNumNodeSpaces(); node++) {
+			if (tree.nodeExists(node)){
+				String s = tree.getNodeLabel(node);
+				tree.setAssociatedString(nRef, node, s);
+			}
+		}
+		tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+		parametersChanged();
+	}
 	/*.................................................................................................................*/
 	/* following required by ListModule*/
 	public Object getMainObject(){
