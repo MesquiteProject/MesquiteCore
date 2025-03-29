@@ -87,6 +87,7 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 
 		if (tree instanceof MesquiteTree){
 			MesquiteTree mTree = (MesquiteTree)tree;
+			
 			if (mTree.anyUpsideDownProperties()){
 				int originalRoot = mTree.getOriginalRootDaughter();
 				TreeDrawing td = treeDisplay.getTreeDrawing();
@@ -119,8 +120,6 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 					}
 
 				}
-
-
 				warningRect.x = x;
 				warningRect.y = y;
 				g.drawImage(warningGif, x,y, treeDisplay);

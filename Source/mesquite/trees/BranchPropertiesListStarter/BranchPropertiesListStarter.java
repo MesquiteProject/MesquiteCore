@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodePropertiesListStarter;
+package mesquite.trees.BranchPropertiesListStarter;
 
 import java.util.*;
 
@@ -25,15 +25,15 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lists.lib.ListModule;
-import mesquite.trees.NodePropertiesList.NodePropertiesList;
-import mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
+import mesquite.trees.BranchPropertiesList.BranchPropertiesList;
+import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;
 
 /* ======================================================================== */
-public class NodePropertiesListStarter extends TreeDisplayAssistantI  {
-	NodePropertiesList nodeAssocListModule = null;
+public class BranchPropertiesListStarter extends TreeDisplayAssistantI  {
+	BranchPropertiesList nodeAssocListModule = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		nodeAssocListModule= (NodePropertiesList)hireNamedEmployee(ListModule.class, "#NodePropertiesList");
+		nodeAssocListModule= (BranchPropertiesList)hireNamedEmployee(ListModule.class, "#BranchPropertiesList");
 		if (nodeAssocListModule == null)
 			return sorry(getName() + " couldn't start because no list module found");
 		return true;
@@ -52,7 +52,7 @@ public class NodePropertiesListStarter extends TreeDisplayAssistantI  {
 	}
 
 	public TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
-		NodePropertiesExtra extra = new NodePropertiesExtra(this, treeDisplay, nodeAssocListModule);
+		BranchPropertiesExtra extra = new BranchPropertiesExtra(this, treeDisplay, nodeAssocListModule);
 		return extra;
 	}
 	/*.................................................................................................................*/
@@ -62,14 +62,14 @@ public class NodePropertiesListStarter extends TreeDisplayAssistantI  {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Starts list module of node properties." ;
+		return "Starts list module of branch properties." ;
 	}
 
 }
 
-class NodePropertiesExtra extends TreeDisplayExtra {
-	NodePropertiesList nodeAssocListModule;
-	public NodePropertiesExtra(NodePropertiesListStarter module, TreeDisplay treeDisplay, NodePropertiesList nodeAssocListModule){
+class BranchPropertiesExtra extends TreeDisplayExtra {
+	BranchPropertiesList nodeAssocListModule;
+	public BranchPropertiesExtra(BranchPropertiesListStarter module, TreeDisplay treeDisplay, BranchPropertiesList nodeAssocListModule){
 		super(module, treeDisplay);
 		this.nodeAssocListModule = nodeAssocListModule;
 	}

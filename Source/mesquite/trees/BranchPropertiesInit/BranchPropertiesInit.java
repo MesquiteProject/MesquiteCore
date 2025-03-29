@@ -20,8 +20,8 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.duties.MesquiteInit;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.NewickDialect;
-import mesquite.lib.tree.DisplayableTreeProperty;
-import mesquite.lib.tree.TreeProperty;
+import mesquite.lib.tree.DisplayableBranchProperty;
+import mesquite.lib.tree.BranchProperty;
 
 import java.io.File;
 import java.util.Vector;
@@ -48,15 +48,15 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 	Parser parser = new Parser();
 
 	public void initiatePrefsList(){
-		ListableVector prefsList = DisplayableTreeProperty.treePropertyDisplayPreferences;
-		DisplayableTreeProperty nL = new DisplayableTreeProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN);
+		ListableVector prefsList = DisplayableBranchProperty.branchPropertyDisplayPreferences;
+		DisplayableBranchProperty nL = new DisplayableBranchProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN);
 		nL.setBelongsToBranch(false);
 		nL.showOnTerminals = false;
 		nL.showName = false;
 		prefsList.addElement(nL, false);
-		DisplayableTreeProperty bL = new DisplayableTreeProperty(MesquiteTree.branchLengthName, Associable.BUILTIN);
+		DisplayableBranchProperty bL = new DisplayableBranchProperty(MesquiteTree.branchLengthName, Associable.BUILTIN);
 		prefsList.addElement(bL, false);
-		DisplayableTreeProperty cF = new DisplayableTreeProperty("consensusFrequency", Associable.DOUBLES);
+		DisplayableBranchProperty cF = new DisplayableBranchProperty("consensusFrequency", Associable.DOUBLES);
 		prefsList.addElement(cF, false);
 		// booleans sequence: showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical
 		parser.setString(" false false false false false true false true ");
@@ -64,12 +64,12 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 		// numbers sequence: fontSize, xOffset, yOffset, digits, color, thresholdValueToShow
 		parser.setString(" x 0 0  0 x ?  ");
 		cF.setNumbers(parser);
-		DisplayableTreeProperty bF = new DisplayableTreeProperty("bootstrapFrequency", Associable.DOUBLES);
+		DisplayableBranchProperty bF = new DisplayableBranchProperty("bootstrapFrequency", Associable.DOUBLES);
 		prefsList.addElement(bF, false);
 		bF.cloneFrom(cF);
 		loadPreferences();
-		DisplayableTreeProperty.mergeIntoPreferences(temp);
-		DisplayableTreeProperty.treePropertyDisplayPreferences.addListener(this);
+		DisplayableBranchProperty.mergeIntoPreferences(temp);
+		DisplayableBranchProperty.branchPropertyDisplayPreferences.addListener(this);
 		temp.removeAllElements(false);
 	}
 
@@ -77,8 +77,8 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-		for (int k = 0; k< DisplayableTreeProperty.treePropertyDisplayPreferences.size(); k++){
-			DisplayableTreeProperty property = (DisplayableTreeProperty)DisplayableTreeProperty.treePropertyDisplayPreferences.elementAt(k);
+		for (int k = 0; k< DisplayableBranchProperty.branchPropertyDisplayPreferences.size(); k++){
+			DisplayableBranchProperty property = (DisplayableBranchProperty)DisplayableBranchProperty.branchPropertyDisplayPreferences.elementAt(k);
 			StringUtil.appendXMLTag(buffer, 2, "addRecord", StringUtil.tokenize(property.getName()) + " " + property.kind);  
 			StringUtil.appendXMLTag(buffer, 2, "setBooleans", StringUtil.tokenize(property.getName()) + " " + property.kind + " " + property.getBooleansString());  
 			StringUtil.appendXMLTag(buffer, 2, "setNumbers", StringUtil.tokenize(property.getName()) + " " + property.kind + " " + property.getNumbersString());  
@@ -95,10 +95,10 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 			String name = parser.getFirstToken(content);
 			NameReference nr = NameReference.getNameReference(name);
 			int kind = MesquiteInteger.fromString(parser);
-			DisplayableTreeProperty nL = new DisplayableTreeProperty(name, kind);
-			DisplayableTreeProperty property = (DisplayableTreeProperty)DisplayableTreeProperty.findInList(temp, nr, kind);
+			DisplayableBranchProperty nL = new DisplayableBranchProperty(name, kind);
+			DisplayableBranchProperty property = (DisplayableBranchProperty)DisplayableBranchProperty.findInList(temp, nr, kind);
 			if (property == null) {
-				property = new DisplayableTreeProperty(name, kind);
+				property = new DisplayableBranchProperty(name, kind);
 				temp.addElement(nL, false);			
 			}
 		}
@@ -106,7 +106,7 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 			String name = parser.getFirstToken(content);
 			NameReference nr = NameReference.getNameReference(name);
 			int kind = MesquiteInteger.fromString(parser);
-			DisplayableTreeProperty property = (DisplayableTreeProperty)DisplayableTreeProperty.findInList(temp, nr, kind);
+			DisplayableBranchProperty property = (DisplayableBranchProperty)DisplayableBranchProperty.findInList(temp, nr, kind);
 			if (property != null)
 				property.setBooleans(parser);
 		}
@@ -114,7 +114,7 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 			String name = parser.getFirstToken(content);
 			NameReference nr = NameReference.getNameReference(name);
 			int kind = MesquiteInteger.fromString(parser);
-			DisplayableTreeProperty property = (DisplayableTreeProperty)DisplayableTreeProperty.findInList(temp, nr, kind);
+			DisplayableBranchProperty property = (DisplayableBranchProperty)DisplayableBranchProperty.findInList(temp, nr, kind);
 			if (property != null)
 				property.setNumbers(parser);
 		}
@@ -165,15 +165,15 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 										kind = Associable.OBJECTS;
 									
 									NameReference nr = NameReference.getNameReference(name);
-									TreeProperty pr = TreeProperty.findInTreePropertySettings(nr, kind);
+									BranchProperty pr = BranchProperty.findInBranchPropertySettings(nr, kind);
 									if (pr == null)
-										pr = new TreeProperty(name, kind);
+										pr = new BranchProperty(name, kind);
 									if (tokens.length>2){
 										String assignment = tokens[2];
 										if ("node".equalsIgnoreCase(assignment) || "nodes".equalsIgnoreCase(assignment))
 											pr.setBelongsToBranch(false, false);
 									}
-									TreeProperty.treePropertiesSettingsVector.addElement(pr, false);
+									BranchProperty.branchPropertiesSettingsVector.addElement(pr, false);
 								}
 							}
 					}
@@ -184,7 +184,7 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
     /** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
 	public void changed(Object caller, Object obj, Notification notification){
 		int code = Notification.getCode(notification); 
-		if (obj == DisplayableTreeProperty.treePropertyDisplayPreferences){
+		if (obj == DisplayableBranchProperty.branchPropertyDisplayPreferences){
 			MesquiteMessage.println("Branch/node property display preferences saved.");
 			storePreferences();
 		}

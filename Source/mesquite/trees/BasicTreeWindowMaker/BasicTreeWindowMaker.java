@@ -30,7 +30,7 @@ import mesquite.lib.ui.*;
 
 import java.awt.datatransfer.*;
 
-import mesquite.trees.NodePropertiesList.NodePropertiesList;
+import mesquite.trees.BranchPropertiesList.BranchPropertiesList;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
 /** Makes and manages a Tree Window for tree editing and visualization */
@@ -434,8 +434,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (checker.compare(this.getClass(), "Returns the block of taxa associated with this tree window", null, commandName, "getTaxa")) {
 			return taxa;
 		}
-		else if (checker.compare(this.getClass(), "Displays the Node Properties List window if first tree has novel annotations other than built in or reserved.", null, commandName, "autoShowPropertiesList")) {
-			MesquiteModule mb = findEmployeeWithName("#NodePropertiesList");
+		else if (checker.compare(this.getClass(), "Displays the Branch Properties List window if first tree has novel annotations other than built in or reserved.", null, commandName, "autoShowPropertiesList")) {
+			MesquiteModule mb = findEmployeeWithName("#BranchPropertiesList");
 			if (mb != null && treeSourceTask != null && taxa != null){
 				Tree tempTree = treeSourceTask.getTree(taxa, 0);
 				if (tempTree instanceof MesquiteTree){
@@ -444,8 +444,14 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 						total--;
 					if (tempTree.getAssociatedStrings(NameReference.getNameReference("!color"))!= null)
 						total--;
-					if (total>0)
+					if (total>0) {
 						mb.doCommand("showWindowWithAssistants", null);
+						MesquiteWindow w = mb.getModuleWindow();
+						if (w != null){
+							w.setPopAsTile(true);
+							w.popOut(true);
+						}
+					}
 				}
 			}
 		}
@@ -1091,7 +1097,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		infoButton.setShowBackground(false);
 		infoButton.setButtonExplanation("Show Tree Info Panel");
 		controlStrip.addButton(infoButton);
-		MesquiteModule mbNAL = ownerModule.findEmployeeWithDuty(NodePropertiesList.class);
+		MesquiteModule mbNAL = ownerModule.findEmployeeWithDuty(BranchPropertiesList.class);
 		MesquiteButton nodeInfoButton = new MesquiteButton(ownerModule, MesquiteModule.makeCommand("toggleWindow", mbNAL), null, true, MesquiteModule.getRootImageDirectoryPath() + "showNodeAssoc.gif", 12, 16);
 		// infoBar.addExtraButton(MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", MesquiteModule.makeCommand("toggleInfoPanel", this));
 		nodeInfoButton.setUseWaitThread(false);

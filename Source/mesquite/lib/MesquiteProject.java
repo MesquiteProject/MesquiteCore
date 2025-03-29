@@ -66,11 +66,11 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	CentralModelListener modelListener;
 	
 	
-	public ListableVector knownTreeProperties = new ListableVector();
-	//The storage points for tree properties are:
-	// TreeProperty.treePropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
-	// DisplayableTreeProperty.treePropertyDisplayPreferences: static, records the display preferences of tree properties
-	// MesquiteProject.knownTreeProperties: instance, the properties known by the project. For interface; not saved to file.
+	public ListableVector knownBranchProperties = new ListableVector();
+	//The storage points for branch properties are:
+	// BranchProperty.branchPropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
+	// DisplayableBranchProperty.branchPropertyDisplayPreferences: static, records the display preferences of branch properties
+	// MesquiteProject.knownBranchProperties: instance, the properties known by the project. For interface; not saved to file.
 	// The module BranchPropertiesInit is the primary manager
 
 	public boolean virginProject = true;

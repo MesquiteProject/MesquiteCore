@@ -23,7 +23,7 @@ public class PropertyRecord implements Listable, Nameable  {
 	protected NameReference nRef;
 	public int kind = -1;
 
-	//as of 4.0, this isn't instantiated at this level, but only as DisplayableTreeProperty
+	//as of 4.0, this isn't instantiated at this level, but only as DisplayableBranchProperty
 	public PropertyRecord(String name,int kind){
 		this.name = name;
 		nRef = NameReference.getNameReference(name);
@@ -36,7 +36,7 @@ public class PropertyRecord implements Listable, Nameable  {
 	}
 
 	/*-------------------------------------*/
-	//Associables assume not between, except MesquiteTree, which assumes between as default (therefore overridden in TreeProperty)
+	//Associables assume not between, except MesquiteTree, which assumes between as default (therefore overridden in BranchProperty)
 	public static boolean preferredBetweenness(String name){
 		return false;
 	}

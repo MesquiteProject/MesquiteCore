@@ -31,7 +31,7 @@ import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
 
 /* ======================================================================== */
-public class DisplayableTreeProperty extends TreeProperty  {
+public class DisplayableBranchProperty extends BranchProperty  {
 	public boolean showing = false;
 	public boolean showName = true;
 	public boolean centered = false;
@@ -47,24 +47,24 @@ public class DisplayableTreeProperty extends TreeProperty  {
 	public int fontSize = 12;
 	public int color = 0; //standard Mesquite colors in ColorDistribution
 	
-	//this records the display preferences of tree properties
-	public static ListableVector treePropertyDisplayPreferences = new ListableVector();
+	//this records the display preferences of branch properties
+	public static ListableVector branchPropertyDisplayPreferences = new ListableVector();
 
-	//==== The storage points for tree properties are: ====
-	// TreeProperty.treePropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
-	// DisplayableTreeProperty.treePropertyDisplayPreferences: static, records the display preferences of tree properties
-	// MesquiteProject.knownTreeProperties: instance, the properties known by the project. For interface; not saved to file.
+	//The storage points for branch properties are:
+	// BranchProperty.branchPropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
+	// DisplayableBranchProperty.branchPropertyDisplayPreferences: static, records the display preferences of branch properties
+	// MesquiteProject.knownBranchProperties: instance, the properties known by the project. For interface; not saved to file.
 	// The module BranchPropertiesInit is the primary manager
 	
-	public boolean inCurrentTree = false;  //depends on current tree; used by NodePropertyDisplayControl and Node Properties List system
+	public boolean inCurrentTree = false;  //depends on current tree; used by BranchPropertyDisplayControl and Branch Properties List system
 
 	
-	public DisplayableTreeProperty(String name,int kind){
+	public DisplayableBranchProperty(String name,int kind){
 		super(name, kind);
-		DisplayableTreeProperty prefRecord = (DisplayableTreeProperty)findInList(treePropertyDisplayPreferences, nRef, kind);
+		DisplayableBranchProperty prefRecord = (DisplayableBranchProperty)findInList(branchPropertyDisplayPreferences, nRef, kind);
 		if (prefRecord != null)
 			cloneFrom(prefRecord);
-		TreeProperty tp = (TreeProperty)findInList(treePropertiesSettingsVector, nRef, kind);
+		BranchProperty tp = (BranchProperty)findInList(branchPropertiesSettingsVector, nRef, kind);
 		if (tp != null)
 			belongsToBranch = tp.belongsToBranch;
 		else
@@ -74,7 +74,7 @@ public class DisplayableTreeProperty extends TreeProperty  {
 	
 	
 	/*-------------------------------------*/
-	public void cloneFrom(DisplayableTreeProperty other){
+	public void cloneFrom(DisplayableBranchProperty other){
 		showing = other.showing;
 		showName = other.showName;
 		centered = other.centered;
@@ -151,15 +151,15 @@ public class DisplayableTreeProperty extends TreeProperty  {
 	/*-------------------------------------*/
 	public static void mergeIntoPreferences(ListableVector propertyList){
 		for (int i = 0; i< propertyList.size(); i++){
-			DisplayableTreeProperty property = (DisplayableTreeProperty)propertyList.elementAt(i);
-			DisplayableTreeProperty prefRecord = (DisplayableTreeProperty)findInList(treePropertyDisplayPreferences, property.getNameReference(), property.kind);
+			DisplayableBranchProperty property = (DisplayableBranchProperty)propertyList.elementAt(i);
+			DisplayableBranchProperty prefRecord = (DisplayableBranchProperty)findInList(branchPropertyDisplayPreferences, property.getNameReference(), property.kind);
 			if (prefRecord == null) {
-				prefRecord = new DisplayableTreeProperty(property.getName(), property.kind);
-				treePropertyDisplayPreferences.addElement(prefRecord, false);
+				prefRecord = new DisplayableBranchProperty(property.getName(), property.kind);
+				branchPropertyDisplayPreferences.addElement(prefRecord, false);
 			}
 			prefRecord.cloneFrom(property);
 		}
-		treePropertyDisplayPreferences.notifyListeners(DisplayableTreeProperty.class, new Notification(MesquiteListener.PARTS_ADDED));
+		branchPropertyDisplayPreferences.notifyListeners(DisplayableBranchProperty.class, new Notification(MesquiteListener.PARTS_ADDED));
 	}
 	
 	/*-------------------------------------*/

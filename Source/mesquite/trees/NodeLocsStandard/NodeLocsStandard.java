@@ -403,13 +403,14 @@ public class NodeLocsStandard extends NodeLocsVH {
 				return null;
 			if (arguments == null) //reading old scripts only
 				return null;
-
+			
 			MesquiteBoolean mbool = new MesquiteBoolean();
 			mbool.toggleValue(parser.getFirstToken(arguments));
 			if (mbool.getValue())
 				branchLengthsDisplayMode.setValue(TreeDisplay.DRAWUNASSIGNEDASONE);
 			else
 				branchLengthsDisplayMode.setValue(TreeDisplay.DRAWULTRAMETRIC);
+			
 			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
 			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
 			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);

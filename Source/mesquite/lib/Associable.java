@@ -17,7 +17,7 @@ import java.awt.*;
 import java.util.*;
 
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.DisplayableTreeProperty;
+import mesquite.lib.tree.DisplayableBranchProperty;
 import mesquite.lib.ui.ColorDistribution;
 
 /*.................................................................................................................*/
@@ -608,7 +608,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	}
 
 	/*-----------------------------------------*/
-	public void renameAssociated(DisplayableTreeProperty property, String newName, boolean notify){
+	public void renameAssociated(DisplayableBranchProperty property, String newName, boolean notify){
 		Nameable d = null;
 		if (property.kind == Associable.BITS)
 			d = getAssociatedBits(property.getNameReference());

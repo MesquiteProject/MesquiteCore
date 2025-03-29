@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodePropertiesListValue;
+package mesquite.trees.BranchPropertiesListValue;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -28,15 +28,15 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.DisplayableTreeProperty;
+import mesquite.lib.tree.DisplayableBranchProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
-import mesquite.trees.lib.NodePropertiesListAssistant;
+import mesquite.trees.lib.BranchPropertiesListAssistant;
 
 /* ======================================================================== */
-public class NodePropertiesListValue extends NodePropertiesListAssistant  {
+public class BranchPropertiesListValue extends BranchPropertiesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
@@ -46,7 +46,7 @@ public class NodePropertiesListValue extends NodePropertiesListAssistant  {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Value of Node Property";
+		return "Value of Branch/Node Property";
 	}
 	public String getVeryShortName() {
 		if (node >=0)
@@ -54,7 +54,7 @@ public class NodePropertiesListValue extends NodePropertiesListAssistant  {
 		return "Value";
 	}
 	public String getExplanation() {
-		return "Shows the value of property (a number, string, or other object) belonging to a node or branch." ;
+		return "Shows the value of property (a number, string, or other object) belonging to a branch or node." ;
 	}
 
 
@@ -137,7 +137,7 @@ public class NodePropertiesListValue extends NodePropertiesListAssistant  {
 	public String getStringForRow(int ic) {
 		if (tree == null || node<0)
 			return "—";
-		DisplayableTreeProperty property = getPropertyAtRow(ic);
+		DisplayableBranchProperty property = getPropertyAtRow(ic);
 		if (property != null){
 			return property.getStringAtNode(tree, node, false, true, true);
 		}

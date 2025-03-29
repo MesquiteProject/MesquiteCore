@@ -652,7 +652,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				pixelWidthScroller = scroller.width;
 				scrollPageDecrease.x = getBase(); scrollPageDecrease.y = scrollEdge-6; scrollPageDecrease.width = x-3-getBase(); scrollPageDecrease.height = 12;
 				scrollPageIncrease.x = xEnd+3; scrollPageIncrease.y = scrollEdge-6; scrollPageIncrease.width = fieldSize()-(xEnd+3-getBase()); scrollPageIncrease.height = 12;
-				
+
 				g.setColor(Color.lightGray);
 				g.fillRoundRect(x+2, scrollEdge-1, xEnd-x-4, 3, scrollRound, scrollRound); //scroller
 			}
@@ -819,8 +819,18 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	/* ========================================= */
 	/**Add any desired menu items to the right click popup*/
 	public void addToRightClickPopup(MesquitePopup popup){
-		if (ownerModule.linkedMatrix(treeDisplay.getTree()) != null)
-			popup.addItem("Display of Matrix Linked to Tree...", ownerModule, new MesquiteCommand("queryLinkedOptions", ownerModule), "");
+		try {
+			if (ownerModule.showMatrix){
+				if (ownerModule.choose0Link1 == 1 && ownerModule.linkedMatrix(treeDisplay.getTree()) != null)
+					popup.addItem("Display of Matrix Linked to Tree...", ownerModule, new MesquiteCommand("queryLinkedOptions", ownerModule), "");
+				else if (ownerModule.getProject().getNumberCharMatrices(treeDisplay.getTree().getTaxa()) >0)
+					popup.addItem("Display of Matrix with Tree...", ownerModule, new MesquiteCommand("queryOptions", ownerModule), "");
+			}
+			else
+				popup.addItem("Show Matrix with Tree...", ownerModule, new MesquiteCommand("queryOptions", ownerModule), "");
+		}
+		catch (Exception e){
+		}
 
 	}
 	public void cursorMove(Tree tree, int x, int y, Graphics g){

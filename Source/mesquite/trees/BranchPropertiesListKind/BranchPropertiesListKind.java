@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodePropertiesListKind;
+package mesquite.trees.BranchPropertiesListKind;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -28,15 +28,15 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.DisplayableTreeProperty;
+import mesquite.lib.tree.DisplayableBranchProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
-import mesquite.trees.lib.NodePropertiesListAssistant;
+import mesquite.trees.lib.BranchPropertiesListAssistant;
 
 /* ======================================================================== */
-public class NodePropertiesListKind extends NodePropertiesListAssistant  {
+public class BranchPropertiesListKind extends BranchPropertiesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
@@ -109,7 +109,7 @@ public class NodePropertiesListKind extends NodePropertiesListAssistant  {
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				DisplayableTreeProperty mi = getPropertyAtRow(ir);
+				DisplayableBranchProperty mi = getPropertyAtRow(ir);
 				String currentName = mi.getName();
 				String textName = currentName+".text";
 				String candidateName =textName;
@@ -224,7 +224,7 @@ public class NodePropertiesListKind extends NodePropertiesListAssistant  {
 		int count = 0;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				DisplayableTreeProperty mi = getPropertyAtRow(ir);
+				DisplayableBranchProperty mi = getPropertyAtRow(ir);
 				String currentName = mi.getName();
 				String doubleName = currentName+".num";
 				String candidateName =doubleName;
@@ -305,7 +305,7 @@ public class NodePropertiesListKind extends NodePropertiesListAssistant  {
 			return;
 		}
 		int ir = table.firstRowSelected();
-		DisplayableTreeProperty mi = getPropertyAtRow(ir);
+		DisplayableBranchProperty mi = getPropertyAtRow(ir);
 		String currentName = mi.getName();
 		NameReference currentRef = NameReference.getNameReference(currentName);
 		if (mi.kind == Associable.BUILTIN){
@@ -417,7 +417,7 @@ public class NodePropertiesListKind extends NodePropertiesListAssistant  {
 		return false;  
 	}
 	public String getStringForRow(int ic) {
-		DisplayableTreeProperty property = getPropertyAtRow(ic);
+		DisplayableBranchProperty property = getPropertyAtRow(ic);
 		if (property != null){
 			if (property.kind == Associable.BITS)
 				return "Boolean";

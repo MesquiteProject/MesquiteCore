@@ -5531,12 +5531,12 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		NameReference nr = super.makeAssociatedBits(n);
 		Bits b = getAssociatedBits(nr);
 		b.setBetweenness(true); //default for trees
-		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.BITS);
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.BITS);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
 		else
-			p = new TreeProperty(nr, Associable.BITS);
-		p.addToKnownTreePropertiesIfNeeded(this);
+			p = new BranchProperty(nr, Associable.BITS);
+		p.addToKnownBranchPropertiesIfNeeded(this);
 
 		return nr;
 	}
@@ -5544,51 +5544,51 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		NameReference nr = super.makeAssociatedLongs(n);
 		LongArray b = getAssociatedLongs(nr);
 		b.setBetweenness(true); //default for trees
-		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.LONGS);
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.LONGS);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
 		else
-			p = new TreeProperty(nr, Associable.LONGS);
-		p.addToKnownTreePropertiesIfNeeded(this);
+			p = new BranchProperty(nr, Associable.LONGS);
+		p.addToKnownBranchPropertiesIfNeeded(this);
 		return nr;
 	}
 	public NameReference makeAssociatedDoubles(String n){
 		NameReference nr = super.makeAssociatedDoubles(n);
 		DoubleArray b = getAssociatedDoubles(nr);
 		b.setBetweenness(true); //default for trees
-		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.DOUBLES);
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.DOUBLES);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
 		else
-			p = new TreeProperty(nr, Associable.DOUBLES);
-		p.addToKnownTreePropertiesIfNeeded(this);
+			p = new BranchProperty(nr, Associable.DOUBLES);
+		p.addToKnownBranchPropertiesIfNeeded(this);
 		return nr;
 	}
 	public NameReference makeAssociatedStrings(String n){
 		NameReference nr = super.makeAssociatedStrings(n);
 		StringArray b = getAssociatedStrings(nr);
 		b.setBetweenness(true); //default for trees
-		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.STRINGS);
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.STRINGS);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
 		else
-			p = new TreeProperty(nr, Associable.STRINGS);
-		p.addToKnownTreePropertiesIfNeeded(this);
+			p = new BranchProperty(nr, Associable.STRINGS);
+		p.addToKnownBranchPropertiesIfNeeded(this);
 		return nr;
 	}
 	public NameReference makeAssociatedObjects(String n){
 		NameReference nr = super.makeAssociatedObjects(n);
 		ObjectArray b = getAssociatedObjects(nr);
 		b.setBetweenness(true); //default for trees
-		TreeProperty p = TreeProperty.findInTreePropertySettings(nr, Associable.OBJECTS);
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.OBJECTS);
 		if (p != null)
 			b.setBetweenness(p.getBelongsToBranch());
 		else
-			p = new TreeProperty(nr, Associable.OBJECTS);
-		p.addToKnownTreePropertiesIfNeeded(this);
+			p = new BranchProperty(nr, Associable.OBJECTS);
+		p.addToKnownBranchPropertiesIfNeeded(this);
 		return nr;
 	}
-	public boolean addProperty(TreeProperty property, boolean notify){
+	public boolean addProperty(BranchProperty property, boolean notify){
 		NameReference nr = property.getNameReference();
 		if (property.kind == Associable.BITS){
 			if (getAssociatedBits(nr) != null)  //already exists
@@ -5632,41 +5632,41 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		return false;
 	}
 	/*--------------------------------------------*/
-	public DisplayableTreeProperty[] getPropertyRecords(){ 
+	public DisplayableBranchProperty[] getPropertyRecords(){ 
 		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
 		if (total == 0)
 			return null;
-		DisplayableTreeProperty[] names = new DisplayableTreeProperty[total];
+		DisplayableBranchProperty[] names = new DisplayableBranchProperty[total];
 		int count = 0;
 		if (bits!=null) {
 			for (int i=0; i<bits.size(); i++) {
 				Listable b = (Listable)bits.elementAt(i);
-				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.BITS);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.BITS);
 			}
 		}
 		if (longs!=null) {
 			for (int i=0; i<longs.size(); i++) {
 				Object obj = longs.elementAt(i);
 				Listable b = (Listable)longs.elementAt(i);
-				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.LONGS);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.LONGS);
 			}
 		}
 		if (doubles!=null){
 			for (int i=0; i<doubles.size(); i++) {
 				Listable b = (Listable)doubles.elementAt(i);
-				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.DOUBLES);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.DOUBLES);
 			}
 		}
 		if (strings!=null){
 			for (int i=0; i<strings.size(); i++) {
 				Listable b = (Listable)strings.elementAt(i);
-				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.STRINGS);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.STRINGS);
 			}
 		}
 		if (objects!=null) {
 			for (int i=0; i<objects.size(); i++) {
 				Listable b = (Listable)objects.elementAt(i);
-				names[count++] = new DisplayableTreeProperty(b.getName(), Associable.OBJECTS);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.OBJECTS);
 			}
 		}
 		return names;
@@ -5683,7 +5683,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (bits!=null) {
 			for (int i=0; i< bits.size(); i++) {
 				Bits b = (Bits)bits.elementAt(i);
-				if (TreeProperty.findInTreePropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
+				if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;
@@ -5695,7 +5695,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (longs!=null) {
 			for (int i=0; i< longs.size(); i++) {
 				LongArray b = (LongArray)longs.elementAt(i);
-				if (TreeProperty.findInTreePropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
+				if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;
@@ -5707,7 +5707,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (doubles!=null)
 			for (int i=0; i< doubles.size(); i++) {
 				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				if (TreeProperty.findInTreePropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
+				if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;
@@ -5718,7 +5718,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (objects!=null)
 			for (int i=0; i< objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				if (TreeProperty.findInTreePropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
+				if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
 					if (!first)
 						s += ",";
 					first = false;

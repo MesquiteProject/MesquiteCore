@@ -45,6 +45,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	boolean dead = false;
 	protected CommandRecord comRec;
 	protected boolean sayGoodbye = true;
+	public static boolean acceptNonMesquiteThreads = false;
 	public static boolean suppressInteractionAsLibrary = false;
 	public static boolean unknownThreadIsScripting = true;
 	private Vector hints;  // a vector of MesquiteStrings supplying hints to MesquiteModules during execution, e.g. temporary defaults for module startup
@@ -87,7 +88,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	}
 
 	public static void shouldBeOnMesquiteThread(boolean enable) {
-		if (enable && !isThreadBelongingToMesquite() && (MesquiteTrunk.developmentMode || MesquiteTrunk.debugMode))
+		if (!acceptNonMesquiteThreads && enable && !isThreadBelongingToMesquite() && (MesquiteTrunk.developmentMode || MesquiteTrunk.debugMode))
 			MesquiteMessage.printStackTrace("###### ######This should be on a Mesquite thread!!! (thread is " + Thread.currentThread() + ")");
 	}
 	public static boolean isReadingThread(){

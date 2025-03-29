@@ -26,6 +26,7 @@ import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.duties.*;
@@ -282,10 +283,16 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 				command.doItMainThread(argument + ParseUtil.tokenize(others[io.getValue()].getName()), CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
 			}
 		}
-		else if (argument != null)
+		else{ 
+			if (command.bypassQueue)
+				MesquiteThread.acceptNonMesquiteThreads = true; //not elegant and not particular threadsafe, but as it's just to suppress the immune system, it's OK
+			if (argument != null)
 			command.doItMainThread(arg, CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
 		else
 			command.doItMainThread("", CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
+			if (command.bypassQueue)
+				MesquiteThread.acceptNonMesquiteThreads = false;
+		}
 	}
 	public void finalize() throws Throwable{
 		totalFinalized++;

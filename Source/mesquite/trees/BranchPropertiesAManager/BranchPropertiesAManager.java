@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodePropertiesAManager;
+package mesquite.trees.BranchPropertiesAManager;
 /*~~  */
 
 
@@ -45,13 +45,13 @@ import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.DisplayableTreeProperty;
+import mesquite.lib.tree.DisplayableBranchProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
 
 /* ======================================================================== */
-public class NodePropertiesAManager extends TreeDisplayAssistantI {
+public class BranchPropertiesAManager extends TreeDisplayAssistantI {
 
 	String[] reservedNames = new String[]{"!color"};
 	String[] builtInNames = new String[]{MesquiteTree.branchLengthName, MesquiteTree.nodeLabelName};
@@ -70,8 +70,8 @@ public class NodePropertiesAManager extends TreeDisplayAssistantI {
 			propertyList = twMB.getBranchPropertiesList();
 		}
 	//	extras = new Vector();
-		propertyList.addElement(new DisplayableTreeProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
-		propertyList.addElement(new DisplayableTreeProperty(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
+		propertyList.addElement(new DisplayableBranchProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
+		propertyList.addElement(new DisplayableBranchProperty(MesquiteTree.branchLengthName, Associable.BUILTIN), false);
 
 		return true;
 	}
@@ -103,27 +103,27 @@ public class NodePropertiesAManager extends TreeDisplayAssistantI {
 		System.out.println("Properties on record & to show");
 
 		for (int i=0; i<list.size(); i++){
-			DisplayableTreeProperty mi = (DisplayableTreeProperty)list.elementAt(i);
+			DisplayableBranchProperty mi = (DisplayableBranchProperty)list.elementAt(i);
 			System.out.println(mi.getName() + "\t" + mi.kind + " showing " + mi.showing);
 		}
 	}
-	DisplayableTreeProperty findInList(NameReference nr, int kind){
-		return (DisplayableTreeProperty)DisplayableTreeProperty.findInList(propertyList, nr, kind);
+	DisplayableBranchProperty findInList(NameReference nr, int kind){
+		return (DisplayableBranchProperty)DisplayableBranchProperty.findInList(propertyList, nr, kind);
 	}
-	DisplayableTreeProperty findInList(String s, int kind){
+	DisplayableBranchProperty findInList(String s, int kind){
 		if (propertyList.indexOfByName(s)<0)
 			return null;
 		for (int i=0; i<propertyList.size(); i++){
-			DisplayableTreeProperty mi = (DisplayableTreeProperty)propertyList.elementAt(i);
+			DisplayableBranchProperty mi = (DisplayableBranchProperty)propertyList.elementAt(i);
 			if (mi.getName().equalsIgnoreCase(s) && mi.kind ==kind)
 				return mi;
 		}
 		return null;
 	}
 	/*...............................................................................*/
-	int indexInList(DisplayableTreeProperty property){
+	int indexInList(DisplayableBranchProperty property){
 		for (int i=0; i<propertyList.size(); i++){
-			DisplayableTreeProperty mi = (DisplayableTreeProperty)propertyList.elementAt(i);
+			DisplayableBranchProperty mi = (DisplayableBranchProperty)propertyList.elementAt(i);
 			if (mi.equals(property))
 				return i;
 		}
@@ -134,7 +134,7 @@ public class NodePropertiesAManager extends TreeDisplayAssistantI {
 		return indexInList(property)>=0;
 	}
 	/*...............................................................................*/
-	public boolean isBuiltIn(DisplayableTreeProperty mi){
+	public boolean isBuiltIn(DisplayableBranchProperty mi){
 		return mi.kind== Associable.BUILTIN;
 	}
 	/*...............................................................................*
@@ -175,9 +175,9 @@ public class NodePropertiesAManager extends TreeDisplayAssistantI {
 			return;
 		if (name.equalsIgnoreCase("selected") && kind == Associable.BITS)
 			return;
-		DisplayableTreeProperty mi = findInList(name, kind);
+		DisplayableBranchProperty mi = findInList(name, kind);
 		if (mi==null){  
-			mi = new DisplayableTreeProperty(name, kind);
+			mi = new DisplayableBranchProperty(name, kind);
 			mi.showing = show;
 			propertyList.addElement(mi, false);
 		}
@@ -193,12 +193,12 @@ public class NodePropertiesAManager extends TreeDisplayAssistantI {
 			return;
 		int count = 0;
 		for (int i=0; i<propertyList.size(); i++){
-			DisplayableTreeProperty property = (DisplayableTreeProperty)propertyList.elementAt(i);
+			DisplayableBranchProperty property = (DisplayableBranchProperty)propertyList.elementAt(i);
 			property.inCurrentTree = tree.isPropertyAssociated(property);
 			count++;
 			property.setBelongsToBranch(tree.propertyIsBetween(property), true);
 		}
-		DisplayableTreeProperty[] properties = tree.getPropertyRecords();
+		DisplayableBranchProperty[] properties = tree.getPropertyRecords();
 		if (properties == null)
 			return;
 		for (int i=0; i<properties.length; i++){
@@ -648,11 +648,11 @@ public class NodePropertiesAManager extends TreeDisplayAssistantI {
 
 /* ======================================================================== */
 class NAAMDisplayExtra extends TreeDisplayExtra{
-	NodePropertiesAManager controlModule;
+	BranchPropertiesAManager controlModule;
 	MesquiteTree myTree = null;
 
 	/*.--------------------------------------------------------------------------------------..*/
-	public NAAMDisplayExtra (NodePropertiesAManager ownerModule, TreeDisplay treeDisplay) {
+	public NAAMDisplayExtra (BranchPropertiesAManager ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		controlModule = ownerModule;
 	}

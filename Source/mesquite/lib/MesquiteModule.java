@@ -73,7 +73,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "22 March 2025";
+		return "29 March 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -91,7 +91,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1048;  
+		return 1049;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -161,7 +161,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	//URLs for phoneHome phoning home
 	/*.................................................................................................................*/
-	//As of 3.0 this becomes fixed, not changing with version)
+	//As of 4.0, new URLs)
+	public static String errorReportURL =  "http://NOTerror.mesquiteproject.org/mesquiteFeedback";
+	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquiteStartup.php";
+	public static String beansReportURL = "http://NOTbeans.mesquiteproject.org/mesquiteBeans";
+	
+	/* 3.x URLs
 	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
 	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
 	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";

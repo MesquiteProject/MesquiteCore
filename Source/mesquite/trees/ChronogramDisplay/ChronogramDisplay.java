@@ -242,7 +242,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	TreeDisplayRequests borderRequests = new TreeDisplayRequests(0, 0, 0, 100, 0, 20); 
 	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
 		borderRequests.bottomBorder = 100;
-		borderRequests.extraDepthAtRoot = findOldest((MesquiteTree)tree, treeDrawing.getDrawnRoot()) -getHeight((MesquiteTree)tree,  treeDrawing.getDrawnRoot());
+		borderRequests.extraDepthAtRoot = findOldest((MesquiteTree)tree, treeDrawing.getDrawnRoot()) - getHeight((MesquiteTree)tree,  treeDrawing.getDrawnRoot());
 		return borderRequests;
 	}
 	/*.................................................................................................................*/
@@ -276,9 +276,8 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			double v2 = getUpper(tree, node);
 			int lowerX = (int)getXFromTime(v1);
 			int upperX = (int)getXFromTime(v2);
-
 			int halfBar = (int)(HPDBarHeight/2.0);
-
+			
 			g.setColor(new Color(0x0101ff));
 			Composite composite = ColorDistribution.getComposite(g);
 			ColorDistribution.setTransparentGraphics(g,0.3f);		

@@ -24,7 +24,7 @@ import mesquite.lib.PropertyRecord;
 
 /* ======================================================================== */
 /*A specialized version of PropertyRecord for trees, especially for tree branches/nodes*/
-public class TreeProperty extends PropertyRecord  {
+public class BranchProperty extends PropertyRecord  {
 
 	protected boolean belongsToBranch = true; //This is settable only from the settings managed by BranchPropertiesInit.
 	public static final String branchNodeExplanation = "Some properties for branches/nodes imply a direction of time (polarized), others do not. Unpolarized properties, like branch length, stay the same however you reroot the tree. Those are labelled as being attached to the branch itself."
@@ -36,36 +36,36 @@ public class TreeProperty extends PropertyRecord  {
 	
 	/*This vector records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties.
 	 * This is read by BranchPropertiesInit, and cannot be changed at runtime. It cannot be overridden either.*/
-	public static ListableVector treePropertiesSettingsVector = new ListableVector(); 
+	public static ListableVector branchPropertiesSettingsVector = new ListableVector(); 
 
-	//The storage points for tree properties are:
-	// TreeProperty.treePropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
-	// DisplayableTreeProperty.treePropertyDisplayPreferences: static, records the display preferences of tree properties
-	// MesquiteProject.knownTreeProperties: instance, the properties known by the project. For interface; not saved to file.
+	//The storage points for branch properties are:
+	// BranchProperty.branchPropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
+	// DisplayableBranchProperty.branchPropertyDisplayPreferences: static, records the display preferences of branch properties
+	// MesquiteProject.knownBranchProperties: instance, the properties known by the project. For interface; not saved to file.
 	// The module BranchPropertiesInit is the primary manager
 
-	//as of 4.0, this isn't instantiated at this level, but only as DisplayableTreeProperty
-	public TreeProperty(String name,int kind){
+	//as of 4.0, this isn't instantiated at this level, but only as DisplayableBranchProperty
+	public BranchProperty(String name,int kind){
 		super(name, kind);
 	}
-	//as of 4.0, this isn't instantiated at this level, but only as DisplayableTreeProperty
-	public TreeProperty(NameReference nr,int kind){
+	//as of 4.0, this isn't instantiated at this level, but only as DisplayableBranchProperty
+	public BranchProperty(NameReference nr,int kind){
 		super(nr, kind);
 	}
 	public static int preferredKind(String name){
-		PropertyRecord[] props = findInTreePropertySettings(name);
+		PropertyRecord[] props = findInBranchPropertySettings(name);
 		if (props == null || props.length==0 || props.length>1)
 			return -1;
 		return props[0].kind;
 	}
 	/*-------------------------------------*/
-	//Associables assume not between, except MesquiteTree, which assumes between as default (therefore overridden in TreeProperty)
+	//Associables assume not between, except MesquiteTree, which assumes between as default (therefore overridden in BranchProperty)
 	public static boolean preferredBetweenness(String name){
-		PropertyRecord[] props = findInTreePropertySettings(name);
+		PropertyRecord[] props = findInBranchPropertySettings(name);
 		if (props == null || props.length==0 || props.length>1)
 			return true;
-		if (props[0] instanceof TreeProperty)
-			return ((TreeProperty)props[0]).belongsToBranch;
+		if (props[0] instanceof BranchProperty)
+			return ((BranchProperty)props[0]).belongsToBranch;
 		return true;
 	}
 	/*-------------------------------------*/
@@ -81,7 +81,7 @@ public class TreeProperty extends PropertyRecord  {
 	/*-------------------------------------*/
 	//returns true if succeeds. To be used by UI if a change is requested
 	public boolean setBelongsToBranch(boolean belongsToBranch, boolean recordIfNew){
-		if (kind == Associable.BUILTIN || TreeProperty.findInTreePropertySettings(nRef, kind) != null)
+		if (kind == Associable.BUILTIN || BranchProperty.findInBranchPropertySettings(nRef, kind) != null)
 			return false;
 		if (this.belongsToBranch != belongsToBranch){
 			//Debugg.println("!!!  recordInVector;
@@ -90,10 +90,10 @@ public class TreeProperty extends PropertyRecord  {
 		return true;
 	}
 	/*-------------------------------------*/
-	public static TreeProperty findInTreePropertySettings(NameReference nr, int kind){
-		ListableVector pList = treePropertiesSettingsVector;
+	public static BranchProperty findInBranchPropertySettings(NameReference nr, int kind){
+		ListableVector pList = branchPropertiesSettingsVector;
 		for (int i=0; i<pList.size(); i++){
-			TreeProperty mi = (TreeProperty)pList.elementAt(i);
+			BranchProperty mi = (BranchProperty)pList.elementAt(i);
 			if (mi.getNameReference().equals(nr) && mi.kind ==kind)
 				return mi;
 		}
@@ -101,8 +101,8 @@ public class TreeProperty extends PropertyRecord  {
 	}
 
 	/*-------------------------------------*/
-	public static TreeProperty[] findInTreePropertySettings(String name){
-		ListableVector pList = treePropertiesSettingsVector;
+	public static BranchProperty[] findInBranchPropertySettings(String name){
+		ListableVector pList = branchPropertiesSettingsVector;
 		int count = 0;
 		for (int i=0; i<pList.size(); i++){
 			PropertyRecord mi = (PropertyRecord)pList.elementAt(i);
@@ -111,10 +111,10 @@ public class TreeProperty extends PropertyRecord  {
 		}
 		if (count == 0)
 			return null;
-		TreeProperty[] props = new TreeProperty[count];
+		BranchProperty[] props = new BranchProperty[count];
 		count = 0;
 		for (int i=0; i<pList.size(); i++){
-			TreeProperty mi = (TreeProperty)pList.elementAt(i);
+			BranchProperty mi = (BranchProperty)pList.elementAt(i);
 			if (mi.getNameReference().equalsString(name))
 				props[count++] = mi;
 		}
@@ -122,9 +122,9 @@ public class TreeProperty extends PropertyRecord  {
 	}
 	
 	/*-------------------------------------*/
-	public void addToKnownTreePropertiesIfNeeded(MesquiteTree tree){
+	public void addToKnownBranchPropertiesIfNeeded(MesquiteTree tree){
 		if (tree != null && tree.getTaxa() != null && tree.getTaxa().getProject()!= null)
-			addIfNotInList(tree.getTaxa().getProject().knownTreeProperties, this);// add p to project.knownTreeProperties if not there by name
+			addIfNotInList(tree.getTaxa().getProject().knownBranchProperties, this);// add p to project.knownBranchProperties if not there by name
 	}
 
 	/*-------------------------------------*/

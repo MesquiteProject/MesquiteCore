@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.trees.NodePropertiesListBetween;
+package mesquite.trees.BranchPropertiesListShow;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -28,37 +28,36 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.DisplayableTreeProperty;
+import mesquite.lib.tree.DisplayableBranchProperty;
 import mesquite.lib.tree.Tree;
-import mesquite.lib.tree.TreeProperty;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
-import mesquite.trees.lib.NodePropertiesListAssistant;
+import mesquite.trees.BranchPropertiesList.BranchPropertiesList;
+import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;
+import mesquite.trees.lib.BranchPropertiesListAssistant;
 
 /* ======================================================================== */
-public class NodePropertiesListBetween extends NodePropertiesListAssistant  {
+public class BranchPropertiesListShow extends BranchPropertiesListAssistant  {
 	MesquiteTree tree =null;
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		addMenuItem("Ressign Selected to Branch", makeCommand("branch", this));
-		addMenuItem("Ressign Selected to Polarized Node", makeCommand("hide", this));
+		addMenuItem("Show Selected", makeCommand("show", this));
+		addMenuItem("Hide Selected", makeCommand("hide", this));
+		addMenuItem("Control Display of Properties on Tree......", makeCommand("controlAppearance", this));
 		addMenuItem("Explanation...", makeCommand("explain", this));
 		return true;
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Information Applies to Branch or Node?";
-	}
-	public String getNameForMenuItem() {
-		return "For Branch or Node?";
+		return "Information Showing on Tree?";
 	}
 	public String getVeryShortName() {
-		return "Polarized?";
+		return "Showing?";
 	}
 	public String getExplanation() {
-		return "Shows whether the associated information applies to the node in rooted orientation or to the unrooted branch." ;
+		return "Shows whether attached information is shown in the tree window." ;
 	}
 
 
@@ -66,75 +65,59 @@ public class NodePropertiesListBetween extends NodePropertiesListAssistant  {
 		this.table = table;
 	}
 
- 	public void setTree(MesquiteTree tree){
- 		this.tree = tree;
+	public void setTree(MesquiteTree tree){
+		this.tree = tree;
+		parametersChanged();
 	}
-
 	/*.................................................................................................................*/
+
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Reassigns the selected to the branch", null, commandName, "branch")) {
-			reassign(true);
+		if (checker.compare(this.getClass(), "Shows the items", null, commandName, "show")) {
+				showHideInTree(true);
 		}
-		else if (checker.compare(this.getClass(), "Reassigns the selected to the node", null, commandName, "node")) {
-			reassign(false);
-		}
-		if (checker.compare(this.getClass(), "Reassigns the selected to the branch", null, commandName, "reassign")) {
-			discreetAlert("Sorry, designation of properties as assigned to branch vs. node is a system-level setting that can be edited only by changing the files in Mesquite_Folder/settings/trees/BranchPropertiesInit"); 
-		}
-		else if (checker.compare(this.getClass(), "Explains", null, commandName, "explain")) {
-			discreetAlert(TreeProperty.branchNodeExplanation);
-		}
+		else if (checker.compare(this.getClass(), "Shows the items", null, commandName, "hide")) {
+			showHideInTree(false);
+	}
+		else if (checker.compare(this.getClass(), "Shows the items", null, commandName, "controlAppearance")) {
+			controlAppearanceOnTree();
+	}
+		else if (checker.compare(this.getClass(), "Explain", null, commandName, "explain")) {
+			discreetAlert("This column shows which values are shown on the branches of the tree in the tree window. "
+					+"You can control them here, or by the menu item \"Display Branch/Node Properties\" in the Tree menu. "
+					+"\n\nThat menu item also allows you to control the font and placement on the tree."
+					+ "\n\nNode labels and branch lengths can also be shown on the tree in other ways, using items in the Text menu.");
+	}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	
-	/*Where this can be set: 
-	 * -- Here in list window; 
-	 * -- when new property is made in list window 
-	 * -- when tree is read and has attachment
-	 * -- on startup in reading prefs */
 	/*.................................................................................................................*/
-	void reassign(boolean toBranch){
-		if (table == null || tree == null)
+	void showHideInTree(boolean show){
+		if (table == null)
 			return;
 		if (!table.anyRowSelected()){
-			discreetAlert("Please selected rows before attempting to reassign them here");
+			discreetAlert("Please selected rows before attempting to show or hide them here");
 			return;
 		}
-
+		DisplayableBranchProperty[] mis = new DisplayableBranchProperty[table.numRowsSelected()];
 		int count = 0;
-		boolean prohibited = false;
 		for (int ir = 0; ir<table.getNumRows(); ir++){
 			if (table.isRowSelected(ir)){
-				DisplayableTreeProperty pr = getPropertyAtRow(ir);
-				if (!pr.setBelongsToBranch(toBranch, true))
-					prohibited = true;
-				else if (tree.propertyIsBetween(pr) != toBranch) {
-					tree.setPropertyIsBetween(pr, toBranch);
-					//REMEMBER IN PREFS //Debugg.println BETWEENNESS
-					count++;
-				}
+				mis[count++] = getPropertyAtRow(ir);
 			}
 		}
-		if (prohibited){
-			discreetAlert("Sorry, some properties could not be reassigned to branch vs. node, because their assignment is already set as a system-level setting that can be edited only by changing the files in Mesquite_Folder/settings/trees/BranchPropertiesInit"); 
-		}
-		if (count>0)
-			discreetAlert("The properties that were reassigned to branch versus node for the current tree only"); 
-			
-		parametersChanged();
+		pleaseShowHideOnTree(mis, show);
 	}
 	
 	
 	/*.................................................................................................................*/
-	
 	public String getWidestString(){
-		return "8888888888888";
+		return "Showing?";
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
-		return getVeryShortName();
+		return "Showing?";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -150,16 +133,13 @@ public class NodePropertiesListBetween extends NodePropertiesListAssistant  {
 	public boolean isPrerelease(){
 		return false;  
 	}
-	String nodeOrBranch(boolean isBetween){
-		if (!isBetween)
-			return "Polarized Node";
-		return "Branch";
-	}
+	/*.................................................................................................................*/
 	public String getStringForRow(int ic) {
-		DisplayableTreeProperty property = getPropertyAtRow(ic);
-		if (property != null)
-			return nodeOrBranch(property.getBelongsToBranch());
-		return "—";
+			if (isShowingOnTree(getPropertyAtRow(ic)))
+			return "✓";
+			else
+				return "✗";
+
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

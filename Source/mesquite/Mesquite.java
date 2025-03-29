@@ -2091,7 +2091,7 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Reports memory status, for debugging of memory leaks.  Static boolean checkMemory needs to have been set first.", null, commandName, "reportMemory")) {
 			reportMemory();
 		}
-		else if (checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "quit") || checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "exit")) {
+		else if (checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "quit") || checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "exit")) { //"exit" here also in case command line use
 			if (startedAsLibrary){
 				logln("Mesquite is being used by another program.  You should avoid asking Mesquite to quit, and instead let the other program ask Mesquite to quit");
 				return null;

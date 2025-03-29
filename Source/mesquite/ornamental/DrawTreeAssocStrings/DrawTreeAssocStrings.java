@@ -29,10 +29,10 @@ import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.StringInABox;
-import mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
+import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;
 
 /* ======================================================================== */
-/* No longer used, subsumed under NodePropertyDisplayControl, but kept here to forward old scripts thereto */
+/* No longer used, subsumed under BranchPropertyDisplayControl, but kept here to forward old scripts thereto */
 public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 	public boolean loadModule(){
 		return true;
@@ -76,7 +76,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 			boolean B = true;
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
-			MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
+			MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
 			if (mb != null)
 				mb.doCommand("setBooleansAllStrings",  " false x x x x x " + !B + " ", checker);
 		}
@@ -85,7 +85,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 			boolean B = true;
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
-			MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
+			MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
 			if (mb != null)
 				mb.doCommand("setBooleansAllStrings",  " false x x " + B + " x x x ", checker);
 		}
@@ -94,7 +94,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 			boolean B = true;
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
-			MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
+			MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
 			if (mb != null)
 				mb.doCommand("setBooleansAllStrings",  " false " + B + " x x x x x ", checker);
 			
@@ -104,7 +104,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 			int newX= MesquiteInteger.fromFirstToken(arguments, pos);
 			int newY= MesquiteInteger.fromString(arguments, pos);
 			if (MesquiteInteger.isCombinable(newX) && newX>-200 && newX <200 && newY>-200 && newY <200) {
-				MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
+				MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
 				if (mb != null)
 					mb.doCommand("setNumbersAllStrings",  " x " + newX + " " + newY + " x x x x  ", checker);
 			}
@@ -112,7 +112,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 		else if (checker.compare(this.getClass(), "Sets font size", "[font size]", commandName, "setFontSize")) {//forwarded
 			int newWidth= MesquiteInteger.fromFirstToken(arguments, pos);
 			if (newWidth>1 && newWidth<96 ) {
-				MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
+				MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
 				if (mb != null)
 					mb.doCommand("setNumbersAllStrings",  " " + newWidth + " x x x x x x  ", checker);
 			}
@@ -124,7 +124,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
 				B = false;
 			if (B && on.getValue()){
-				MesquiteModule mb = findNearestColleagueWithDuty(NodePropertyDisplayControl.class);
+				MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
 			if (mb != null){
 				mb.doCommand("showAssociate",  StringUtil.tokenize(name) + " " + Associable.STRINGS + " true", checker);
 				mb.doCommand("setBooleans",  StringUtil.tokenize(name) + " " + Associable.STRINGS + " false x x x false x x ", checker); //defaults

@@ -8,7 +8,7 @@ import java.awt.event.KeyEvent;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.DisplayableTreeProperty;
+import mesquite.lib.tree.DisplayableBranchProperty;
 import mesquite.lib.tree.SquareTipDrawer;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;

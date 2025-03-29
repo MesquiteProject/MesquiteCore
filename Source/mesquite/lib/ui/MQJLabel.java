@@ -33,6 +33,11 @@ public class MQJLabel extends JLabel implements MQComponent {
 		super(s);
 	}
 
+	public void setText(String s){
+		if (s == null)
+			s = "";
+		super.setText(s);
+	}
 	/*################################
 	 *  The following overrides were built to handle (hide) the frequent StackOverflowErrors on Linux Java post-1.8, 
 	 *  but were extended in part to other OSs
