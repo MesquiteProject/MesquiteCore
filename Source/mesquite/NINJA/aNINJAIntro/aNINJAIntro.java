@@ -28,6 +28,11 @@ public class aNINJAIntro extends PackageIntro {
 	}
 
 	/*.................................................................................................................*/
+	/** Returns whether package is built-in (comes with default install of Mesquite)*/
+	public boolean isBuiltInPackage(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	public String getName() {
 		return "NINJA Package";
 	}
