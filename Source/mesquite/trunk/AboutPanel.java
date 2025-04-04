@@ -58,7 +58,7 @@ public class AboutPanel extends MQPanel {
 			g.drawImage(InfoBar.prereleaseImage,3,3,(ImageObserver)this);
 		}
 		g.drawString("http://www.mesquiteproject.org", 5,210);
-		g.drawString("Copyright (c) 1997-2024 W. & D. Maddison.", 5,225);
+		g.drawString("Copyright (c) 1997-2025 W. & D. Maddison.", 5,225);
 		
 		MesquiteWindow.uncheckDoomed(this);
 	}

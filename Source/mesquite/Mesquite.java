@@ -65,24 +65,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2024. Mesquite: A modular system for evolutionary analysis.  Version " + getVersion() + ".  https://www.mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2025. Mesquite: A modular system for evolutionary analysis.  Version " + getVersion() + ".  https://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.9Dev";
+		return "4.alpha";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 390;
+		return 395;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.9;
+		return 3.95;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "April 2023"; //"April 2007";
+		return "April 2025"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -774,7 +774,7 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 31");
 		decrementMenuResetSuppression();
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) 
-			logln("\nTHIS IS A PRERELEASE (BETA) VERSION: We discourage you from publishing results with this version of Mesquite, unless you check with the authors.\n");
+			logln("\nTHIS IS A PRERELEASE (ALPHA or BETA) VERSION: We discourage you from publishing results with this version of Mesquite, unless you check with the authors.\n");
 		if (debugMode){ 
 			logln("############### Startup Notices ###############");
 			for (int i=0; i<startupNotices.size(); i++)

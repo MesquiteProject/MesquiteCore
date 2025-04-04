@@ -74,7 +74,7 @@ public class PhoneHomeThread extends Thread {
 		//MesquiteTrunk.incrementMenuResetSuppression();
 
 		try {
-			if (!MesquiteTrunk.suppressVersionReporting){
+			if (!MesquiteTrunk.suppressVersionReporting && !MesquiteTrunk.developmentMode){
 				StringBuffer response = new StringBuffer();
 				String buildNum = Integer.toString(MesquiteTrunk.getBuildNumber());
 				if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
