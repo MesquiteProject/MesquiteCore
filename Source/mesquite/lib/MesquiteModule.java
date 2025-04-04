@@ -73,7 +73,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "29 March 2025";
+		return "4 April 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -91,7 +91,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1049;  
+		return 1050;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -162,9 +162,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//URLs for phoneHome phoning home
 	/*.................................................................................................................*/
 	//As of 4.0, new URLs)
-	public static String errorReportURL =  "http://NOTerror.mesquiteproject.org/mesquiteFeedback";
-	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquiteStartup.php";
-	public static String beansReportURL = "http://NOTbeans.mesquiteproject.org/mesquiteBeans";
+	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
+	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteFeedback.php"; //see exceptionAlert in MesquiteModule
+	//note: errorReportURL gets reset in Mesquite.java, errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePFeedback.php";
+	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
 	
 	/* 3.x URLs
 	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
@@ -1213,7 +1214,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		Exception e = new Exception();
 
 
-		if (!PhoneHomeUtil.phoneHomeSuccessful || !MesquiteTrunk.reportErrors || MesquiteTrunk.suppressErrorReporting || MesquiteThread.isScripting()){
+		if (!okToReportErrors() || MesquiteThread.isScripting()){
 			return;
 		}
 		String addendum = "";
@@ -1224,6 +1225,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		}
 		else if (AlertDialog.query(containerOfModule(), "Problem", s + "\n\nPlease send a report of this problem to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "Close without sending"))
 			reportCrashToHome(e, s);
+	}
+	boolean okToReportErrors(){
+		return false; //Debugg.println until fixed!
+	//	return PhoneHomeUtil.phoneHomeSuccessful  && MesquiteTrunk.reportErrors && !MesquiteTrunk.suppressErrorReporting;
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
@@ -1254,7 +1259,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (t instanceof MesquiteThread)
 			((MesquiteThread)t).doCleanUp();
 		logln(s);
-		if (!PhoneHomeUtil.phoneHomeSuccessful || !MesquiteTrunk.reportErrors || MesquiteTrunk.suppressErrorReporting){
+		if (!okToReportErrors()){
 			if (incompatibilityMessage != null)
 				discreetAlert(incompatibilityMessage + "\n" + rep);
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
@@ -1314,13 +1319,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
 	public void reportableAlert(String s, String details) {
-		if (!PhoneHomeUtil.phoneHomeSuccessful || !MesquiteTrunk.reportErrors || MesquiteTrunk.suppressErrorReporting){
+		if (!okToReportErrors()){
 			alert(s);
 			return;
 		}
 		String addendum = "";
 		if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
-			discreetAlert(s);
+		discreetAlert(s);
 		}
 		else {
 			boolean q = AlertDialog.query(containerOfModule(), "Error", s + "\n\nPlease send a report of this error to the Mesquite server, to help us understand how often this happens.  None of your data will be sent." + addendum, "OK, Send Report",  "Close without sending");

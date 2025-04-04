@@ -53,9 +53,7 @@ import mesquite.lib.*;
  */
 public class BaseHttpRequestMaker {
 	private static final int MAX_BYTES = 5000000;   
-
-	public static final String MESQUITE_VERSION_URI = "http://mesquiteproject.org/pyMesquiteStartup";
-
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
 	public static boolean contactServer(String message, String URI, StringBuffer response) {
 		HttpClient client = new HttpClient();
 		GetMethod method = new GetMethod(URI);
@@ -68,6 +66,7 @@ public class BaseHttpRequestMaker {
 		return executeMethod(client, method, response);
 	}
 
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
 	public static boolean postToServer(String s, String URI, StringBuffer response) {
 		HttpClient client = new HttpClient();
 		PostMethod method = new PostMethod(URI);
@@ -83,6 +82,7 @@ public class BaseHttpRequestMaker {
 
 		return executeMethod(client, method, response);
 	}
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
 	public static boolean sendInfoToServer(NameValuePair[] pairs, String URI, StringBuffer response, int retryCount) {
 		HttpClient client = new HttpClient();
 		GetMethod method = new GetMethod(URI);
@@ -93,6 +93,7 @@ public class BaseHttpRequestMaker {
 
 		return executeMethod(client, method, response);
 	}
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
 	public static boolean sendInfoToServer(NameValuePair[] pairs, String URI, StringBuffer response) {
 		return sendInfoToServer(pairs, URI, response, 3);
 	}

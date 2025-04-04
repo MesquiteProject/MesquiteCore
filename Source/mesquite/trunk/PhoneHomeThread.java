@@ -29,9 +29,13 @@ public class PhoneHomeThread extends Thread {
 	/*
 	 * 
 	 * The following are in MesquiteModule:
-	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
-	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
-	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
+	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
+	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteFeedback.php"; //see exceptionAlert in MesquiteModule
+	//note: errorReportURL gets reset in Mesquite.java, errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePFeedback.php";
+	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
+	
+	//See Mesquite.java for notices.xml URLs
+	//See Installer for updates.xml URLs
 
 	 * */
 	Vector beans = new Vector();
@@ -80,8 +84,9 @@ public class PhoneHomeThread extends Thread {
 				
 				BaseHttpRequestMaker.contactServer(buildNum, MesquiteModule.versionReportURL, response);
 				String r = response.toString();
-			//if mq3rs is included in response, then this is real response
-				if (!StringUtil.blank(r) && r.indexOf("mq3rs")>=0){
+			//if mq3rs or Feedback included in response, then this is real response
+				if (!StringUtil.blank(r) && (r.indexOf("mq3rs")>=0 || r.indexOf("Version")>=0)){
+					PhoneHomeUtil.phoneHomeSuccessful = true;
 					if (r.indexOf("mq3rsshow")>=0){  //show dialog at startup!!!!
 						AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", r, 600, 400, null);
 					}
@@ -90,6 +95,8 @@ public class PhoneHomeThread extends Thread {
 					if (MesquiteTrunk.debugMode)
 					MesquiteMessage.warnProgrammer("no response or incorrect response from server on startup");
 				}
+				response.setLength(0);
+
 			}
 		}
 		catch (Throwable t){

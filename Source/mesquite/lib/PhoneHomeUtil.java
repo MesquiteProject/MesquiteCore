@@ -27,9 +27,13 @@ public class PhoneHomeUtil {
 	/*
 	 * 
 	 * The following are in MesquiteModule:
-	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
-	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
-	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
+	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
+	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteFeedback.php"; //see exceptionAlert in MesquiteModule
+	//note: errorReportURL gets reset in Mesquite.java, errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePFeedback.php";
+	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
+	
+	//See Mesquite.java for notices.xml URLs
+	//See Installer for updates.xml URLs
 
 	 * */
 	static int OS = 0;
@@ -485,8 +489,6 @@ public class PhoneHomeUtil {
 		}
 		if (StringUtil.blank(noticesFromHome))
 			return null;
-		if (mmi.getModuleClass() == mesquite.Mesquite.class)
-			phoneHomeSuccessful = true;
 		return handleMessages(false, noticesFromHome, mmi, phoneHomeRecord, logBuffer);
 	}
 	/*.................................................................................................................*/
