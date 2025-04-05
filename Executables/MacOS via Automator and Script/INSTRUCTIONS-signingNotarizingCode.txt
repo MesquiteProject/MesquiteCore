@@ -150,7 +150,8 @@ codesign --force --sign "Developer ID Application: Wayne Maddison" MesquiteDMG.d
 xcrun notarytool submit --force --keychain-profile "MesquiteDMG" MesquiteDMG.dmg
 
 
-xcrun notarytool info --keychain-profile "MesquiteDMG" 50311eaf-eb3a-4a23-a0c0-49b6502d415d
+xcrun notarytool info --keychain-profile "MesquiteDMG" e760752e-5b0f-4992-9074-9b04d45b52ba
+xcrun notarytool log --keychain-profile "MesquiteDMG" e760752e-5b0f-4992-9074-9b04d45b52ba
 
 If succeeded:
 xcrun stapler staple MesquiteDMG.dmg
