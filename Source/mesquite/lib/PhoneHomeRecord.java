@@ -21,8 +21,8 @@ public class PhoneHomeRecord implements Listable {
 	 * 
 	 * The following are in MesquiteModule:
 	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
-	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteFeedback.php"; //see exceptionAlert in MesquiteModule
-	//note: errorReportURL gets reset in Mesquite.java, errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePFeedback.php";
+	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteError.php"; //see exceptionAlert in MesquiteModule
+	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
 	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
 	
 	//See Mesquite.java for notices.xml URLs

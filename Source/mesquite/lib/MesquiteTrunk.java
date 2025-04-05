@@ -53,7 +53,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static String tempDirectory ="";
 	public static String[] startupArguments = null;  //ask if flag "-myFlag" is in startupArguments by StringArray.indexOf(MesquiteTrunk.startupArguments, "-myFlag")>=0
 	public static boolean errorReportedDuringRun = false;
-	public static boolean errorReportedToHome = false;
+	public static int errorReportedToHome = 0;
 	public static boolean suppressMenuResponse = false;
 	static {
 		leakFinderObject = new LeakFinder();

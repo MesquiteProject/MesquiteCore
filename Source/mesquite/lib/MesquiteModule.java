@@ -73,7 +73,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "4 April 2025";
+		return "5 April 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -91,7 +91,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1051;  
+		return 1053;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -163,8 +163,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	//As of 4.0, new URLs)
 	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
-	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteFeedback.php"; //see exceptionAlert in MesquiteModule
-	//note: errorReportURL gets reset in Mesquite.java, errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePFeedback.php";
+	public static String devVersionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteDevStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
+	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteError.php"; //see exceptionAlert in MesquiteModule
+	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
 	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
 	
 	/* 3.x URLs
@@ -1219,16 +1220,21 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		}
 		String addendum = "";
 
-		if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
+		if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome>0){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
+		if (MesquiteTrunk.errorReportedToHome==1)
 			discreetAlert(s);
-
+		else
+			logln(s);
 		}
 		else if (AlertDialog.query(containerOfModule(), "Problem", s + "\n\nPlease send a report of this problem to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "Close without sending"))
 			reportCrashToHome(e, s);
+		MesquiteTrunk.errorReportedToHome++;
 	}
 	boolean okToReportErrors(){
-		return false; //Debugg.println until fixed!
-	//	return PhoneHomeUtil.phoneHomeSuccessful  && MesquiteTrunk.reportErrors && !MesquiteTrunk.suppressErrorReporting;
+		return PhoneHomeUtil.phoneHomeSuccessful  && MesquiteTrunk.reportErrors && !MesquiteTrunk.suppressErrorReporting;
+	}
+	boolean reportErrorsAutomatically(){
+		return mesquiteTrunk.isPrerelease();
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
@@ -1279,20 +1285,24 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				report += stack[i] + "\n";
 			logln(report);
 		}
-		else if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
+		else if (reportErrorsAutomatically() || MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome>0){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
+			if (reportErrorsAutomatically()) {
+				reportCrashToHome(e, s);
+			}
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
-
 		}
 		else {
 			if (incompatibilityMessage != null)
 				discreetAlert(incompatibilityMessage);
+			
 			int resp = AlertDialog.query(containerOfModule(), "Crash", s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "OK, Send and Force Quit", "Close without sending");
 			if (resp < 2)
 				reportCrashToHome(e, s);
 			if (resp == 1)
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 		}
+		MesquiteTrunk.errorReportedToHome++;
 	}
 
 	/*.................................................................................................................*/
@@ -1308,13 +1318,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			report += "\n\nEMERGENCY CANCELLED";
 
 		report += "\n";
-		String q = logWindow.getText();
+		/*String q = logWindow.getText();
 		q = StringUtil.replace(q,  "\n", "©");
 		q = StringUtil.replace(q,  "\r", "©");
-		report += "£log:" + q;
+		report += "£log:" + q; */
 		report += "£end\n";
 		reportProblemToHome(report);
-		MesquiteTrunk.errorReportedToHome = true;
+		MesquiteTrunk.errorReportedToHome++;
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
@@ -1324,16 +1334,18 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return;
 		}
 		String addendum = "";
-		if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
-		discreetAlert(s);
+		if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome>0){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
+			if (MesquiteTrunk.errorReportedToHome==1)
+				discreetAlert(s);
+			else
+				logln(s);
 		}
 		else {
-			boolean q = AlertDialog.query(containerOfModule(), "Error", s + "\n\nPlease send a report of this error to the Mesquite server, to help us understand how often this happens.  None of your data will be sent." + addendum, "OK, Send Report",  "Close without sending");
-			if (q){
-				reportProblemToHome("£reportableAlert:" + s + "\n\n" + details + "\n\n£log:" + logWindow.getText());
-				MesquiteTrunk.errorReportedToHome = true;
-			}
+			boolean q = AlertDialog.query(containerOfModule(), "Error", s + "\n\nPlease send a report of this error to the Mesquite server, to help us understand how often this happens.  Your data files will NOT be sent." + addendum, "OK, Send Report",  "Close without sending");
+			if (q)
+				reportProblemToHome("£reportableAlert:" + s + "\n\n" + details); // + "\n\n£log:" + logWindow.getText());
 		}
+		MesquiteTrunk.errorReportedToHome++;
 	}
 	/*.................................................................................................................*/
 	public String getClassName() {
@@ -1386,34 +1398,15 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
-	public void reportProblemToHome(String s) {
-		String email = MesquiteString.queryString(containerOfModule(), "E-mail for follow up?", "[Optional] Thank you for reporting this problem.  " + 
+	void reportProblemToHome(String s) {
+/*		String email = MesquiteString.queryString(containerOfModule(), "E-mail for follow up?", "[Optional] Thank you for reporting this problem.  " + 
 				"In order to fix this bug, we may need to contact you for more details.  " + 
 				"If you don't mind our contacting you, please indicate your email address here.  Thanks. " + 
 				"(If you want a response urgently, please send an email directly to info@mesquiteproject.org.)", "");
-
-		String report = "$build " + MesquiteTrunk.mesquiteTrunk.getBuildNumber() + "\t";
-		report += "$system java:" + System.getProperty("java.version") +"\tvm:" + System.getProperty("java.vendor") + "; os:" + System.getProperty("os.name") + "; osversion:" + System.getProperty("os.version") + "; arch:" + System.getProperty("os.arch") + "\t";
-		if (!StringUtil.blank(email))
-			report += "$EMAIL\t" + email +  "\t";
-		else
-			report += "$EMAIL NOT GIVEN\t";
+*/
 		s = StringUtil.replace(s,  "\n", "¢");
 		s = StringUtil.replace(s,  "\r", "¢");
-		report += "$report\t" + s + "$end";
-
-		StringBuffer response = new StringBuffer();
-		if (BaseHttpRequestMaker.postToServer(report, errorReportURL, response)){
-			String r = response.toString();
-			if (r == null || r.indexOf("mq3rs")<0)
-				discreetAlert("Sorry, Mesquite was unable to communicate properly with the server to send the report.");
-			else
-				AlertDialog.noticeHTML(containerOfModule(),"Note", r, 600, 400, null);
-		}
-		else
-			discreetAlert("Sorry, Mesquite was unable to connect to the server to send the report.");
-
-
+		MesquiteTrunk.phoneHomeThread.recordError(s);
 	}
 	/*.................................................................................................................*/
 	/** Reports status of module. To be used during debugging however useful for context.*/

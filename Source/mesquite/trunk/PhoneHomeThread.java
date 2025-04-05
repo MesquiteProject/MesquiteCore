@@ -30,8 +30,8 @@ public class PhoneHomeThread extends Thread {
 	 * 
 	 * The following are in MesquiteModule:
 	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
-	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteFeedback.php"; //see exceptionAlert in MesquiteModule
-	//note: errorReportURL gets reset in Mesquite.java, errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePFeedback.php";
+	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteError.php"; //see exceptionAlert in MesquiteModule
+	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
 	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
 	
 	//See Mesquite.java for notices.xml URLs
@@ -39,6 +39,7 @@ public class PhoneHomeThread extends Thread {
 
 	 * */
 	Vector beans = new Vector();
+	Vector errorReports = new Vector();
 	public PhoneHomeThread () {
 		setPriority(Thread.MIN_PRIORITY);
 	}
@@ -52,8 +53,26 @@ public class PhoneHomeThread extends Thread {
 				Thread.sleep(1000);
 				if (beans.size()>0){
 					NameValuePair[] b = (NameValuePair[])beans.elementAt(0);
-					beans.removeElementAt(0);
+					beans.removeElement(b);
 					BaseHttpRequestMaker.sendInfoToServer(b, MesquiteModule.beansReportURL, null, 0);
+				}
+				if (errorReports.size()>0){
+					String report = (String)errorReports.elementAt(0);
+					errorReports.removeElement(report);
+					StringBuffer response = new StringBuffer();
+					String url = MesquiteModule.errorReportURL;
+					if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
+						url = MesquiteModule.prereleaseErrorReportURL;
+					if (BaseHttpRequestMaker.contactServer("", report, url, response)){
+					String r = response.toString();
+					if (r == null || (r.indexOf("mq4v")<0 && r.indexOf("Thank")<0))
+						MesquiteMessage.println("Sorry, Mesquite was unable to communicate properly with the server to send the report.");
+					else
+						MesquiteMessage.println("Error reported to home Mesquite server.");
+						
+				}
+				else
+					MesquiteMessage.println("Sorry, Mesquite was unable to communicate properly with the server to send the report.");
 				}
 			}
 			catch (Throwable e){
@@ -69,25 +88,30 @@ public class PhoneHomeThread extends Thread {
 	public void postBean(NameValuePair[] pairs){
 		beans.addElement(pairs);
 	}
+	public void recordError(String s){
+		errorReports.addElement(s);
+	}
 	/*.................................................................................................................*/
 	public void checkForMessagesFromAllHomes(){
 		//MesquiteTrunk.incrementMenuResetSuppression();
 
 		try {
-			if (!MesquiteTrunk.suppressVersionReporting && !MesquiteTrunk.developmentMode){
+			if (!MesquiteTrunk.suppressVersionReporting){ 
 				StringBuffer response = new StringBuffer();
-				String buildNum = Integer.toString(MesquiteTrunk.getBuildNumber());
-				if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
-					buildNum = "PreRelease-" + buildNum;
-				if (contactMessage != null)
-					buildNum += "&" + contactMessage;
-				
-				BaseHttpRequestMaker.contactServer(buildNum, MesquiteModule.versionReportURL, response);
+				String url = MesquiteModule.versionReportURL;
+				if (MesquiteTrunk.developmentMode)
+					url = MesquiteModule.devVersionReportURL;
+				BaseHttpRequestMaker.contactServer(contactMessage, "", url, response);
 				String r = response.toString();
-			//if mq3rs or Feedback included in response, then this is real response
-				if (!StringUtil.blank(r) && (r.indexOf("mq3rs")>=0 || r.indexOf("Version")>=0)){
+				System.err.println(r);
+				//if mqrv or Feedback included in response, then this is real response
+				if (!StringUtil.blank(r) && (r.indexOf("mq4v")>=0 || r.indexOf("Version")>=0)){
 					PhoneHomeUtil.phoneHomeSuccessful = true;
-					if (r.indexOf("mq3rsshow")>=0){  //show dialog at startup!!!!
+					MesquiteTrunk.mesquiteTrunk.logln("Mesquite server was contacted to log your version and check for notices. To turn this off, choose \"Contact Mesquite Server on Startup\" in File>Defaults> submenu.");
+					if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
+						MesquiteTrunk.mesquiteTrunk.logln("Because this is a prerelease version, any crashes will be reported automatically to Mesquite's server. "
+								+"None of your data file(s) will be sent, just your basic system information and the point in Mesquite's code where the crash happened.");
+					if (r.indexOf("mq4rsshow")>=0){  //show dialog at startup!!!!
 						AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", r, 600, 400, null);
 					}
 				}

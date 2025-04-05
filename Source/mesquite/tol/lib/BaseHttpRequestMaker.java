@@ -54,11 +54,21 @@ import mesquite.lib.*;
 public class BaseHttpRequestMaker {
 	private static final int MAX_BYTES = 5000000;   
 	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
-	public static boolean contactServer(String message, String URI, StringBuffer response) {
+	public static boolean contactServer(String message, String addendum, String URI, StringBuffer response) {
 		HttpClient client = new HttpClient();
 		GetMethod method = new GetMethod(URI);
-		NameValuePair[] pairs = new NameValuePair[1];
-		pairs[0] = new NameValuePair("build", StringEscapeUtils.escapeHtml3("\t" + message + "\tOS =\t" + System.getProperty("os.name") + "\t" + System.getProperty("os.version") + "\tjava =\t" + System.getProperty("java.version") +"\t" + System.getProperty("java.vendor")));
+		int numPairs = 1;
+		if (StringUtil.notEmpty(addendum))
+			numPairs = 2;
+		NameValuePair[] pairs = new NameValuePair[numPairs];
+		String buildNum = Integer.toString(MesquiteTrunk.getBuildNumber());
+		if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
+			buildNum = "PreRel-" + buildNum;
+		if (StringUtil.notEmpty(message))
+			buildNum += "&" + message;
+		pairs[0] = new NameValuePair("build", StringEscapeUtils.escapeHtml3("\t" + buildNum + "\tOS =\t" + System.getProperty("os.name") + "\t" + System.getProperty("os.version") + "\tjava =\t" + System.getProperty("java.version") +"\t" + System.getProperty("java.vendor").replace("Corporation", "")));
+		if (numPairs==2)
+			pairs[1] = new NameValuePair("reportmq4", StringEscapeUtils.escapeHtml3(addendum));
 		method.setQueryString(pairs);
 
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
@@ -66,6 +76,21 @@ public class BaseHttpRequestMaker {
 		return executeMethod(client, method, response);
 	}
 
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
+	public static boolean errorToServer(String s, String URI, StringBuffer response) {
+		HttpClient client = new HttpClient();
+		GetMethod method = new GetMethod(URI);
+		NameValuePair[] pairs = new NameValuePair[1];
+		String errorString = "\tbuild =\t" + Integer.toString(MesquiteTrunk.getBuildNumber()) + "\tOS =\t" + System.getProperty("os.name") + "\t" + System.getProperty("os.version") + "\tjava =\t" + System.getProperty("java.version") +"\t" + System.getProperty("java.vendor");
+		errorString += "\terror = \t\n" + s;
+		errorString =  StringEscapeUtils.escapeHtml3(errorString);
+		pairs[0] = new NameValuePair("error", "oops");
+		method.setQueryString(pairs);
+
+		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
+				new DefaultHttpMethodRetryHandler(3, false));
+		return executeMethod(client, method, response);
+	}
 	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
 	public static boolean postToServer(String s, String URI, StringBuffer response) {
 		HttpClient client = new HttpClient();

@@ -204,8 +204,6 @@ public class Mesquite extends MesquiteTrunk
 		boolean makeNewPrefsDirectory = false;
 		configurations = new ListableVector(); 
 		packages = new ListableVector();
-	//	if (isPrerelease())
-	//		errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteFeedback.php";  //Debugg.println ask Nick to make one mesquitePFeedback.php
 
 		/* 
 (1) Look for Mesquite.pref file in .Mesquite_Prefs folder of user.home.  If exists, read it 
@@ -2519,6 +2517,10 @@ public class Mesquite extends MesquiteTrunk
 		}	
 		else if (checker.compare(this.getClass(), "Sends Error to Server", null, commandName, "testError")) {
 			reportableAlert("STRING:ERROR", "DETAILS:TESTING ERROR REPORTING");
+		}
+		else if (checker.compare(this.getClass(), "Causes intentional crash", null, commandName, "pleaseCrash")) {
+			String s = null;
+			s.substring(0, 2);
 		}
 
 		else
