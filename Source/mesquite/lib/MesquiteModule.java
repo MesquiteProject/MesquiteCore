@@ -1309,10 +1309,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Reports crash or error to Mesquite server*/
 	public void reportCrashToHome(Throwable e, String s) {
 		StackTraceElement[] stack = e.getStackTrace();
-		String report = "£message:" + MesquiteException.lastLocMessage() + "\n";
-		report += "£exception:" +e + "\n";
-		report += "£string:" + s + "\n£stacktrace:";
-		for (int i= 0; i< stack.length; i++)
+		String report = "messageq:" + MesquiteException.lastLocMessage() + "\n";
+		report += "exceptionq:" +e + "\n";
+		report += "stringq:" + s + "\nstacktraceq:";
+		int count = 0;
+		for (int i= 0; i< stack.length && count++<100; i++)
 			report += stack[i] + "\n";
 		if (MainThread.emergencyCancelled)
 			report += "\n\nEMERGENCY CANCELLED";
@@ -1322,7 +1323,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		q = StringUtil.replace(q,  "\n", "©");
 		q = StringUtil.replace(q,  "\r", "©");
 		report += "£log:" + q; */
-		report += "£end\n";
+		report += "endq\n";
 		reportProblemToHome(report);
 		MesquiteTrunk.errorReportedToHome++;
 	}
@@ -1404,8 +1405,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				"If you don't mind our contacting you, please indicate your email address here.  Thanks. " + 
 				"(If you want a response urgently, please send an email directly to info@mesquiteproject.org.)", "");
 */
-		s = StringUtil.replace(s,  "\n", "¢");
-		s = StringUtil.replace(s,  "\r", "¢");
+		s = StringUtil.replace(s,  "\r\n", "mqnl");
+		s = StringUtil.replace(s,  "\n", "mqnl");
+		s = StringUtil.replace(s,  "\r", "mqnl");
 		MesquiteTrunk.phoneHomeThread.recordError(s);
 	}
 	/*.................................................................................................................*/
