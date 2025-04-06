@@ -19,17 +19,34 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
 public class ScaleBranchLengths extends BranchLengthsAltererMult {
 	double resultNum;
-	double scale = 0;
+	double scale = 1.0;
+	boolean scaleOtherLengthProperties = true; 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
- 		scale = MesquiteDouble.queryDouble(containerOfModule(), "Scale branch lengths", "Multiply all branch lengths by", 1.0);
+ 		queryOptions(); 
+ 		//scale = MesquiteDouble.queryDouble(containerOfModule(), "Scale branch lengths", "Multiply all branch lengths by", 1.0);
 		return true;
   	 }
-  	 
+  	 void queryOptions(){
+ 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+ 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Scale branch lengths",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		DoubleField scaleField = dialog.addDoubleField("Multiply all branch lengths by:", scale, 4);
+		Checkbox others = dialog.addCheckBox("Scale also \"height\" and \"length\" properties, if present in tree.", scaleOtherLengthProperties);
+		dialog.addAuxiliaryDefaultPanels();//************
+		dialog.addPrimaryButtonRow("OK");
+		dialog.prepareAndDisplayDialog();
+		if (buttonPressed.getValue()==0)  {
+			scale = scaleField.getValue();
+			scaleOtherLengthProperties = others.getState();
+		}
+
+	 }
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
@@ -44,11 +61,27 @@ public class ScaleBranchLengths extends BranchLengthsAltererMult {
    	 	return true;
    	 }
    
+ 	NameReference heightNR = NameReference.getNameReference("height");
+ 	NameReference lengthNR = NameReference.getNameReference("length");
 	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
   	 		if (MesquiteDouble.isCombinable(scale) && tree instanceof MesquiteTree) {
   	 			if (tree.hasBranchLengths()){
    					((MesquiteTree)tree).scaleAllBranchLengths(scale, false);
+   					if (scaleOtherLengthProperties){
+   						int numNodes = tree.getNumNodeSpaces();
+   						DoubleArray lengths = tree.getAssociatedDoubles(lengthNR);
+   						DoubleArray heights = tree.getAssociatedDoubles(heightNR);
+   						if (lengths != null)
+   							for (int i = 0; i<numNodes && i<lengths.getSize(); i++)
+   								if (MesquiteDouble.isCombinable(lengths.getValue(i)))
+   									lengths.setValue(i, lengths.getValue(i)*scale);
+   						if (heights != null)
+   							for (int i = 0; i<numNodes && i<heights.getSize(); i++)
+   								if (MesquiteDouble.isCombinable(heights.getValue(i)))
+   									heights.setValue(i, heights.getValue(i)*scale);
+   						if (notify && tree instanceof Listened) ((Listened)tree).notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+   					}
 					if (notify && tree instanceof Listened) ((Listened)tree).notifyListeners(this, new Notification(MesquiteListener.BRANCHLENGTHS_CHANGED));
    				
    					return true;

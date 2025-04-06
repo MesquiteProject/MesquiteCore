@@ -75,7 +75,7 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 		respondCommand = ownerModule.makeCommand("respond", this);
 		infoModule = ownerModule;
 	}
-	Rectangle warningRect = new Rectangle(0,0, 27, 27);
+	Rectangle warningRect = new Rectangle(0,0, 18, 18);
 	double dist(int x, int y, int aX, int aY){
 		return Math.sqrt((x-aX)*(x-aX) + (y-aY)*(y-aY));
 	}

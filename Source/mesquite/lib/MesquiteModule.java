@@ -1405,9 +1405,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				"If you don't mind our contacting you, please indicate your email address here.  Thanks. " + 
 				"(If you want a response urgently, please send an email directly to info@mesquiteproject.org.)", "");
 */
-		s = StringUtil.replace(s,  "\r\n", "mqnl");
+	/*	s = StringUtil.replace(s,  "\r\n", "mqnl");
 		s = StringUtil.replace(s,  "\n", "mqnl");
-		s = StringUtil.replace(s,  "\r", "mqnl");
+		s = StringUtil.replace(s,  "\r", "mqnl");*/
 		MesquiteTrunk.phoneHomeThread.recordError(s);
 	}
 	/*.................................................................................................................*/

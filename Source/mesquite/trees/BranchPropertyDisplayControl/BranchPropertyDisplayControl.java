@@ -23,6 +23,8 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -61,6 +63,7 @@ import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MQJLabel;
 import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
@@ -72,11 +75,11 @@ import mesquite.trees.BranchPropertiesAManager.BranchPropertiesAManager;
 public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implements ActionListener, ItemListener, TextListener {
 	public Vector extras;
 
-//	MesquiteSubmenuSpec positionSubMenu;
-//	String[] reservedNames = new String[]{"!color"};
-//	String[] builtInNames = new String[]{MesquiteTree.branchLengthName, MesquiteTree.nodeLabelName};
+	//	MesquiteSubmenuSpec positionSubMenu;
+	//	String[] reservedNames = new String[]{"!color"};
+	//	String[] builtInNames = new String[]{MesquiteTree.branchLengthName, MesquiteTree.nodeLabelName};
 
-//	ListableVector propertyList;
+	//	ListableVector propertyList;
 	static boolean asked= false;
 
 	boolean moduleIsNaive = true; //so as not to save the snapshot
@@ -95,7 +98,7 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 		return true;
 	}
 	public void endJob(){
-			
+
 		if (this.tree != null)
 			this.tree.removeListener(this);
 
@@ -108,14 +111,14 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 		this.tree = tree;
 		this.tree.addListener(this);
 
-//		addPropertiesToList(tree);
+		//		addPropertiesToList(tree);
 	}
 	public void changed(Object caller, Object obj, Notification notification){
 		if (caller == tree || obj == tree){
 			setTree(tree);
 		}
 	}
-	
+
 	/*.========================================================..**/
 	DisplayableBranchProperty findInList(String s, int kind){
 		if (propertyList.indexOfByName(s)<0)
@@ -159,7 +162,7 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 		}
 		return false;
 	}
-	
+
 	/*.................................................................................................................*/
 	Button[] selectOrHide;
 	Listable[] queryPropertiesList;
@@ -346,7 +349,7 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 		list.setMinimumWidth(650);
 
 		list.setFont(new Font( "Monospaced", Font.PLAIN, 14 ));
-		
+
 		dialog.addLargeTextLabel("To change whether and how properties are shown on the tree, select properties in the list above, then hit the Show, Hide, and Set Style buttons below.");
 		selectOrHide = dialog.addButtonRow("✓ Show Selected", "Hide Selected", null, this);
 		selectOrHide[0].setActionCommand("showSelected");
@@ -476,13 +479,13 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 			actionTaken = true;
 		}
 		else if (e.getActionCommand().equalsIgnoreCase("saveStylesAsDefaults")) {
-				DisplayableBranchProperty.mergeIntoPreferences(propertyList); 
+			DisplayableBranchProperty.mergeIntoPreferences(propertyList); 
 		}
 		if (actionTaken){
 			rePrefaceList();
 			resetStyleWidgets();
 			settingsChanged();
-		
+
 		}
 
 	}
@@ -529,7 +532,7 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 			DisplayableBranchProperty property = findInList(name, kind);
 			if (property!= null){
 				property.setBooleans(parser);				 
-			if (!MesquiteThread.isScripting()) parametersChanged();
+				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets numbers", "[name][kind][5 integers & 1 double]", commandName, "setNumbers")) {
@@ -537,12 +540,12 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 			String name = parser.getFirstToken(arguments);
 			int kind = MesquiteInteger.fromString(parser.getNextToken());
 			DisplayableBranchProperty property = findInList(name, kind);
-	
+
 			if (property!= null){
 				property.setNumbers(parser);				 
 				if (!MesquiteThread.isScripting()) parametersChanged();
+			}
 		}
-	}
 
 		else if (checker.compare(this.getClass(), "Sets booleans for all double properties. For reading of 3.x scripts", "[on or off for 7 booleans]", commandName, "setBooleansAllDoubles")) {
 			for (int i= 0; i< propertyList.size(); i++){
@@ -623,7 +626,8 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 	MesquiteTree myTree = null;
 	StringInABox box = new StringInABox( "", treeDisplay.getFont(),1500);
 	TreeTool infoTool;
-
+	Rectangle consistencyBox = new Rectangle(0, 0, 18, 18);
+	Image inconsistencyIcon = null;
 	/*.--------------------------------------------------------------------------------------..*/
 	public NodeAssocDisplayExtra (BranchPropertyDisplayControl ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
@@ -632,6 +636,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		infoTool.setTouchedCommand(MesquiteModule.makeCommand("showPopup",  this));
 		if (ownerModule.containerOfModule() instanceof MesquiteWindow)
 			((MesquiteWindow)ownerModule.containerOfModule()).addTool(infoTool);
+		inconsistencyIcon = MesquiteImage.getImage(ownerModule.getPath() +  "inconsistency.gif");  
 
 		respondCommand = ownerModule.makeCommand("respondToPopup", this);
 	}
@@ -731,6 +736,13 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 				addToPopup(strings[i], branchFound, responseNumber++);
 
 		addToPopup("-", branchFound, -1);
+		if (!lengthsConsistent(myTree, branchFound)){
+			addToPopup("Inconsistency in branch lengths!", branchFound, -1);
+			addToPopup("     Stored conventionally: " + MesquiteDouble.toString(myTree.getBranchLength(branchFound)), branchFound, -1);
+			addToPopup("     Stored as separate \"length\" property: " + MesquiteDouble.toString(myTree.getAssociatedDouble(lengthNR, branchFound)), branchFound, -1);
+			addToPopup("     Implied by \"height\" properties: " + MesquiteDouble.toString(implicitLength(myTree, branchFound)), branchFound, -1);
+			addToPopup("-", branchFound, -1);
+		}
 		popup.addItem("Control Display of Properties on Tree...", ownerModule, new MesquiteCommand("showDialog", ownerModule));
 		popup.showPopup((int)treeDisplay.getTreeDrawing().x[branchFound], (int)treeDisplay.getTreeDrawing().y[branchFound]);
 	}
@@ -897,7 +909,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 			offsetX = treeDisplay.getTreeDrawing().getEdgeWidth()+4;
 			offsetY = -8;
 		}
-		
+
 		for (int p = 0; p< controlModule.propertyList.size(); p++){
 			DisplayableBranchProperty property = (DisplayableBranchProperty)controlModule.propertyList.elementAt(p);
 			if (property.inCurrentTree && property.showing && (tree.nodeIsInternal(node) || property.showOnTerminals)){
@@ -925,7 +937,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 						if (!property.vertical)
 							propertyOffsetX += property.xOffset + (box.getLineAscent()/2);
 						propertyOffsetY += property.xOffset;
-						
+
 					}
 					if (property.centered){   // center on branch
 						double centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + propertyOffsetX;
@@ -958,7 +970,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 					else {
 						offsetY += box.getLineHeight();
 					}
-				
+
 					g.setClip(ss);	
 				}
 			}
@@ -966,16 +978,36 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 
 	}
 	/*.................................................................................................................*/
-	public   void drawOnTree(Tree tree, int node, Graphics g) {
-		if (!controlModule.anyShowing())
-			return;
-		myDraw((MesquiteTree)tree, node, g);
-
-	}
-	/*.................................................................................................................*/
-
-	void update(){
-		treeDisplay.pleaseUpdate(false);
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+		if (controlModule.anyShowing())
+			myDraw((MesquiteTree)tree, drawnRoot, g);
+		if (checkLengthsConsistency((MesquiteTree)tree, tree.getRoot())>0) {
+			if (treeDisplay.isRight()) {
+				consistencyBox.x = (int)treeDisplay.getTreeDrawing().x[drawnRoot] -consistencyBox.width-treeDisplay.getTreeDrawing().getEdgeWidth()-2;
+				consistencyBox.y = treeDisplay.effectiveFieldTopMargin()-consistencyBox.height;
+			}
+			else if (treeDisplay.isLeft()){
+				consistencyBox.x = (int)treeDisplay.getTreeDrawing().x[drawnRoot]+treeDisplay.getTreeDrawing().getEdgeWidth()+2;
+				consistencyBox.y = treeDisplay.effectiveFieldTopMargin()-consistencyBox.height;
+			}
+			else if (treeDisplay.isUp()){
+				consistencyBox.x = treeDisplay.effectiveFieldLeftMargin()-consistencyBox.width;
+				consistencyBox.y = (int)treeDisplay.getTreeDrawing().y[drawnRoot] + treeDisplay.getTreeDrawing().getEdgeWidth()+2;
+			}
+			else if (treeDisplay.isDown()){
+				consistencyBox.x = treeDisplay.effectiveFieldLeftMargin()-consistencyBox.width;
+				consistencyBox.y = (int)treeDisplay.getTreeDrawing().y[drawnRoot] -consistencyBox.height-treeDisplay.getTreeDrawing().getEdgeWidth()-2;
+			}
+			if (consistencyBox.x<1)
+				consistencyBox.x = 1;
+			if (consistencyBox.y<1)
+				consistencyBox.y = 1;
+			g.drawImage(inconsistencyIcon, consistencyBox.x, consistencyBox.y, treeDisplay);
+		} 
+		else {
+			consistencyBox.x = MesquiteInteger.unassigned;
+			consistencyBox.y = MesquiteInteger.unassigned;
+		}
 	}
 
 	/*.................................................................................................................*/
@@ -985,6 +1017,11 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		if (!controlModule.anyShowing())
 			return "";
 		return stringAtNode((MesquiteTree) tree,  node, true, true, false, 0);
+	}
+	/*.................................................................................................................*/
+	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
+		if (controlModule.anyShowing())
+			myDraw((MesquiteTree)tree, drawnRoot, g);
 	}
 	/*.................................................................................................................*/
 	/**return a text version of information on tree, displayed on a text version of the tree*/
@@ -1008,11 +1045,66 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		return super.tableAtNodes(tree, node);
 	}
 
+	NameReference heightNR = NameReference.getNameReference("height");
+	NameReference lengthNR = NameReference.getNameReference("length");
 	/*.................................................................................................................*/
-	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		if (!controlModule.anyShowing())
-			return;
-		drawOnTree(tree, drawnRoot, g); //should draw numbered footnotes!
+	double implicitLength(MesquiteTree tree, int node) {
+		double heightOfNode = tree.getAssociatedDouble(heightNR, node);
+		double heightOfMother = tree.getAssociatedDouble(heightNR, tree.motherOfNode(node));
+		if (MesquiteDouble.isCombinable(heightOfMother) && MesquiteDouble.isCombinable(heightOfNode))
+			return heightOfMother-heightOfNode;
+		return MesquiteDouble.unassigned;
+	}
+	/*.................................................................................................................*/
+	double tolerance = 0.01;
+	boolean contradict(double a, double b){
+		if (MesquiteDouble.isCombinable(a) && MesquiteDouble.isCombinable(b)) {
+			double minAbs = MesquiteDouble.minimum(Math.abs(a), Math.abs(b));
+			if (minAbs == 0)
+				return a != b;
+			return (Math.abs(a-b)/minAbs)>tolerance;
+		}
+		return false;
+	}
+	
+	/*.................................................................................................................*/
+	boolean lengthsConsistent(MesquiteTree tree, int node) {
+		if (tree.getRoot() == node)
+			return true;
+		double branchLength = tree.getBranchLength(node);
+		double lengthAsProperty = tree.getAssociatedDouble(lengthNR, node);
+		double implicitLength = implicitLength(tree, node);
+		return !(contradict(branchLength, lengthAsProperty) || contradict(branchLength, implicitLength) || contradict(implicitLength, lengthAsProperty));
+	}
+	/*.................................................................................................................*/
+	int checkLengthsConsistency(MesquiteTree tree, int node) {
+		if (tree.withinCollapsedClade(node))
+			return 0;
+		if (!lengthsConsistent(tree, node))
+			return node;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+			if (checkLengthsConsistency(tree, d)>0)
+				return d;
+		return 0;
+	}
+	/**to inform TreeDisplayExtra that cursor has just touched the field (not in a branch or taxon)*/
+	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
+		if (consistencyBox.contains(x, y)){
+			String warning = "For at least one branch of the tree, there is inconsistency in branch lengths stored in different ways! "
+			+ " Branch lengths can be (1) stored conventionally in the Newick string, (2) stored as a separate \"length\" property, and/or (3) implicit in the \"height\" property."
+					+ "These should all imply the same branch length for each branch, but they don't in this tree.";
+			int branchFound = checkLengthsConsistency(myTree, myTree.getRoot());
+			if (branchFound>0){
+				warning += "\n\nFor instance, the branch ancestral to node " + branchFound + " has these contradictory lengths:";
+			warning += "\n    Stored conventionally: " + MesquiteDouble.toString(myTree.getBranchLength(branchFound));
+			warning += "\n    Stored as separate \"length\" property: " + MesquiteDouble.toString(myTree.getAssociatedDouble(lengthNR, branchFound));
+			warning += "\n    Implied by \"height\" properties: " + MesquiteDouble.toString(implicitLength(myTree, branchFound));
+			warning += "\n\nYou can right-click on other branches to look for inconsistencies.";
+			}
+			ownerModule.alert(warning);
+			return true;
+		}
+		return false;
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
@@ -1020,6 +1112,12 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		controlModule.setTree((MesquiteTree)tree);
 	}
 
+	/*.................................................................................................................*/
+
+	void update(){
+		treeDisplay.pleaseUpdate(false);
+	}
+	/*.................................................................................................................*/
 	public void turnOff() {
 		controlModule.extras.removeElement(this);
 		super.turnOff();

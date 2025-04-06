@@ -107,9 +107,9 @@ public class PhoneHomeThread extends Thread {
 				//if mqrv or Feedback included in response, then this is real response
 				if (!StringUtil.blank(r) && (r.indexOf("mq4v")>=0 || r.indexOf("Version")>=0)){
 					PhoneHomeUtil.phoneHomeSuccessful = true;
-					MesquiteTrunk.mesquiteTrunk.logln("Mesquite server was contacted to log your version and check for notices. To turn this off, choose \"Contact Mesquite Server on Startup\" in File>Defaults> submenu.");
+					MesquiteTrunk.mesquiteTrunk.logln("Mesquite contacted its server to log your version and check for notices. (To turn this off, choose \"Contact Mesquite Server on Startup\" in File>Defaults> submenu.)");
 					if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
-						MesquiteTrunk.mesquiteTrunk.logln("Because this is a prerelease version, any crashes will be reported automatically to Mesquite's server. "
+						MesquiteTrunk.mesquiteTrunk.logln("\nBecause this is a prerelease version, any crashes will be reported automatically to Mesquite's server. "
 								+"None of your data file(s) will be sent, just your basic system information and the point in Mesquite's code where the crash happened.");
 					if (r.indexOf("mq4rsshow")>=0){  //show dialog at startup!!!!
 						AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", r, 600, 400, null);
