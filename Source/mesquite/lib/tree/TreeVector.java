@@ -319,6 +319,8 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 				getManager().elementAdded(trees);
 			if (getProject() != null)
 				getProject().decrementProjectWindowSuppression();
+			if (getManager()!=null)
+				MesquiteTrunk.resetAllMenuBars();
 			return trees;
 		}
 		else if (checker.compare(this.getClass(), "Prepends to all tree names the given string", "[string to prepend]", commandName, "prefixNames")) {

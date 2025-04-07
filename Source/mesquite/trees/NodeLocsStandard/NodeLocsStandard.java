@@ -29,6 +29,7 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayBkgdExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeTool;
@@ -97,13 +98,16 @@ public class NodeLocsStandard extends NodeLocsVH {
 			center.setValue(true);
 		}
 
-		branchLengthsDisplayMode = new MesquiteInteger(lastLengthsDisplayMode);
+		branchLengthsDisplayMode = new MesquiteInteger(TreeDisplay.AUTOSHOWLENGTHS);
+		if (inBasicTreeWindow())
+			branchLengthsDisplayMode.setValue(lastLengthsDisplayMode);
 		showScale = new MesquiteBoolean(true);
 		broadScale = new MesquiteBoolean(false);
 
 		//really, this should all have been in node locs, but too busy to fix (also in other DrawTree modules that use NodeLocsVH)
 		if (employerAllowsReorientation()) {
-			ornt = lastOrientation;  
+			if (inBasicTreeWindow())
+				ornt = lastOrientation;  
 			MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
 			addCheckMenuItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this), upOn = new MesquiteBoolean(ornt == TreeDisplay.UP));
 			addCheckMenuItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this), rightOn = new MesquiteBoolean(ornt == TreeDisplay.RIGHT));
@@ -162,8 +166,14 @@ public class NodeLocsStandard extends NodeLocsVH {
 		addMenuItem( "Fixed Distance Between Taxa...", makeCommand("setFixedTaxonDistance",  this));
 		addCheckMenuItem(null, "Centered Branches", makeCommand("toggleCenter", this), center);
 
-		//	addMenuItem("Taxon Name Angle...", makeCommand("namesAngle", this));
 		return true;
+	}
+
+	private boolean inBasicTreeWindow(){
+		MesquiteModule mb = findEmployerWithDuty(TreeDisplayHolder.class);
+		if (mb != null && mb instanceof TreeWindowMaker)
+			return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	private boolean employerAllowsReorientation(){
@@ -427,7 +437,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
 			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
 			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
-			lastLengthsDisplayMode = branchLengthsDisplayMode.getValue();
+			if (!MesquiteThread.isScripting())
+				lastLengthsDisplayMode = branchLengthsDisplayMode.getValue();
 			/*
 			 * static final int SHOWULTRAMETRIC = 0; //	
 			static final int AUTOSHOWLENGTHS = 1;
@@ -536,7 +547,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 		}
 		if (treeDisplay.getOrientation() == TreeDisplay.NOTYETSET || !compatibleWithOrientation(treeDisplay.getOrientation())){
-			if (employerAllowsReorientation()){
+			if (employerAllowsReorientation() && inBasicTreeWindow()){
 				treeDisplay.setOrientation(lastOrientation);
 				if (ornt!= lastOrientation) 
 					ornt = lastOrientation;
@@ -552,7 +563,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		treeDisplay.setFixedTaxonSpacing(fixedTaxonDistance);
 
-		lastOrientation = treeDisplay.getOrientation();
+		if (inBasicTreeWindow())
+			lastOrientation = treeDisplay.getOrientation();
 
 		if (!leaveScaleAlone) {
 			treeDisplay.fixedDepthScale = fixedDepth;

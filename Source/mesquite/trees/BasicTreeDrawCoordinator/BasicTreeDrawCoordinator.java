@@ -883,7 +883,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 			setDrawingInProcess(false);
 			repaintsPending  = 0;
 			repaint();
-			if (MesquiteTrunk.developmentMode)
+			if (MesquiteTrunk.debugMode)
 				System.err.println("bail out [repaintsPending>initialPending] " + (repaintsPending>initialPending));
 			return true;
 		}
