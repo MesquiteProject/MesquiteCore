@@ -46,8 +46,8 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 	MesquiteBoolean showGrayBars = new MesquiteBoolean(true);
 	MesquiteBoolean showGeologicalTimeScale = new MesquiteBoolean(false);
 	int grayBarInterval = 10;
-	boolean showEpochNames = true;
-	boolean showPeriodNames = true;
+	MesquiteBoolean showEpochNames = new MesquiteBoolean(true);
+	MesquiteBoolean  showPeriodNames = new MesquiteBoolean(true);
 	int epochFontSize = 10;
 	int periodFontSize=12;
 	MesquiteSubmenuSpec mss;
@@ -70,12 +70,14 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 		// years as Integers or doubles
 		// font sizes for GTS
 
+		addCheckMenuItem(null,"Show Period Names", makeCommand("showPeriodNames",  this), showPeriodNames);
 		periodFontSizeName = new MesquiteString(Integer.toString(periodFontSize));
 		mss = addSubmenu(null, "Period Font Size", makeCommand("setPeriodFontSize", this), MesquiteSubmenu.getFontSizeList());
 		mss.setList(MesquiteSubmenu.getFontSizeList());
 		mss.setDocumentItems(false);
 		mss.setSelected(periodFontSizeName);
 				
+		addCheckMenuItem(null,"Show Epoch Names", makeCommand("showEpochNames",  this), showEpochNames);
 		epochFontSizeName = new MesquiteString(Integer.toString(epochFontSize));
 		mss2 = addSubmenu(null, "Epoch Font Size", makeCommand("setEpochFontSize", this), MesquiteSubmenu.getFontSizeList());
 		mss2.setList(MesquiteSubmenu.getFontSizeList());
@@ -110,6 +112,8 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 		StringUtil.appendXMLTag(buffer, 2, "grayBarInterval", grayBarInterval);  
 		StringUtil.appendXMLTag(buffer, 2, "showGrayBars", showGrayBars);  
 		StringUtil.appendXMLTag(buffer, 2, "showGeologicalTimeScale", showGeologicalTimeScale);  
+		StringUtil.appendXMLTag(buffer, 2, "showPeriodNames", showPeriodNames);  
+		StringUtil.appendXMLTag(buffer, 2, "showEpochNames", showEpochNames);  
 		StringUtil.appendXMLTag(buffer, 2, "periodFontSize", periodFontSize);  
 		StringUtil.appendXMLTag(buffer, 2, "epochFontSize", epochFontSize);  
 		return buffer.toString();
@@ -120,6 +124,10 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 			showGrayBars.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("showGeologicalTimeScale".equalsIgnoreCase(tag))
 			showGeologicalTimeScale.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("showPeriodNames".equalsIgnoreCase(tag))
+			showPeriodNames.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("showEpochNames".equalsIgnoreCase(tag))
+			showEpochNames.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("grayBarInterval".equalsIgnoreCase(tag))
 			grayBarInterval = MesquiteInteger.fromString(content);
 		if ("periodFontSize".equalsIgnoreCase(tag))
@@ -136,6 +144,8 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 		temp.addLine("showGeologicalTimeScale " + showGeologicalTimeScale.toString());
 		temp.addLine("setPeriodFontSize " + periodFontSize); 
 		temp.addLine("setEpochFontSize " + epochFontSize); 
+		temp.addLine("showPeriodNames " + showPeriodNames.toString());
+		temp.addLine("showEpochNames " + showEpochNames.toString());
 
 		//	temp.addLine("setOffset " + xOffset + "  " + yOffset); 
 
@@ -180,8 +190,48 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 			if (MesquiteInteger.isCombinable(fontSize) && fontSize>2) {
 				epochFontSize=fontSize;
 				epochFontSizeName.setValue(Integer.toString(epochFontSize));
-				newPj.setEpochFontSize(periodFontSize);
+				newPj.setEpochFontSize(epochFontSize);
 				newPj.update();
+				if ( !MesquiteThread.isScripting()) parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Show Period Names", "", commandName, "showPeriodNames")) {
+			boolean current = showPeriodNames.getValue();
+			String arg = parser.getFirstToken(arguments);
+			if (StringUtil.blank(arg))
+				showPeriodNames.toggleValue(arg);
+			else {
+				showPeriodNames.setValue(MesquiteBoolean.fromTrueFalseString(arg));
+			}
+			if (current!=showPeriodNames.getValue()) {
+				Enumeration e = extras.elements();
+				while (e.hasMoreElements()) {
+					Object obj = e.nextElement();
+					if (obj instanceof ChonogramDisplayExtra) {
+						ChonogramDisplayExtra cDE = (ChonogramDisplayExtra)obj;
+						cDE.setShowPeriodNames( showPeriodNames.getValue());
+					}
+				}
+				if ( !MesquiteThread.isScripting()) parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Show Epoch Names", "", commandName, "showEpochNames")) {
+			boolean current = showEpochNames.getValue();
+			String arg = parser.getFirstToken(arguments);
+			if (StringUtil.blank(arg))
+				showEpochNames.toggleValue(arg);
+			else {
+				showEpochNames.setValue(MesquiteBoolean.fromTrueFalseString(arg));
+			}
+			if (current!=showEpochNames.getValue()) {
+				Enumeration e = extras.elements();
+				while (e.hasMoreElements()) {
+					Object obj = e.nextElement();
+					if (obj instanceof ChonogramDisplayExtra) {
+						ChonogramDisplayExtra cDE = (ChonogramDisplayExtra)obj;
+						cDE.setShowEpochNames( showEpochNames.getValue());
+					}
+				}
 				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
@@ -260,12 +310,13 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	TextRotator textRotator;
 
 	boolean drawGrayTimeBars = true;
-	boolean drawGeologicalTimeScale = true;
+	boolean drawGeologicalTimeScale = false;
 
 	int nodeCircleSize = 10;
 	int HPDBarHeight = 6;
 	int timeBarInterval = 10;
 	boolean showEpochNames = true;
+
 	boolean showPeriodNames = true;
 	int epochFontSize = 10;
 
@@ -577,6 +628,22 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 	public void setEpochFontSize(int epochFontSize) {
 		this.epochFontSize = epochFontSize;
+	}
+
+	public boolean getShowPeriodNames() {
+		return showPeriodNames;
+	}
+
+	public void setShowPeriodNames(boolean showPeriodNames) {
+		this.showPeriodNames = showPeriodNames;
+	}
+
+	public boolean getShowEpochNames() {
+		return showEpochNames;
+	}
+
+	public void setShowEpochNames(boolean showEpochNames) {
+		this.showEpochNames = showEpochNames;
 	}
 
 	/*.................................................................................................................*/
