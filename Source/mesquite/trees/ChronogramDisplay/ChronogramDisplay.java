@@ -33,6 +33,7 @@ import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenu;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.StringInABox;
 import mesquite.lib.ui.TextRotator;
@@ -47,6 +48,12 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 	int grayBarInterval = 10;
 	boolean showEpochNames = true;
 	boolean showPeriodNames = true;
+	int epochFontSize = 10;
+	int periodFontSize=12;
+	MesquiteSubmenuSpec mss;
+	MesquiteString periodFontSizeName;
+	MesquiteSubmenuSpec mss2;
+	MesquiteString epochFontSizeName;
 	public static NameReference errorBarNameRef = NameReference.getNameReference("height 95% HPD");
 	
 	/*.................................................................................................................*/
@@ -61,9 +68,20 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 		addCheckMenuItem(null,"Show Geological Time Scale", makeCommand("showGeologicalTimeScale",  this), showGeologicalTimeScale);
 		// show nodeCircles or not
 		// years as Integers or doubles
-		// show geological time scale or not
 		// font sizes for GTS
 
+		periodFontSizeName = new MesquiteString(Integer.toString(periodFontSize));
+		mss = addSubmenu(null, "Period Font Size", makeCommand("setPeriodFontSize", this), MesquiteSubmenu.getFontSizeList());
+		mss.setList(MesquiteSubmenu.getFontSizeList());
+		mss.setDocumentItems(false);
+		mss.setSelected(periodFontSizeName);
+				
+		epochFontSizeName = new MesquiteString(Integer.toString(epochFontSize));
+		mss2 = addSubmenu(null, "Epoch Font Size", makeCommand("setEpochFontSize", this), MesquiteSubmenu.getFontSizeList());
+		mss2.setList(MesquiteSubmenu.getFontSizeList());
+		mss2.setDocumentItems(false);
+		mss2.setSelected(epochFontSizeName);
+				
 
 		addMenuSeparator();
 		addMenuItem( "Close Chronogram", makeCommand("closeChronogram",  this));
@@ -92,6 +110,8 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 		StringUtil.appendXMLTag(buffer, 2, "grayBarInterval", grayBarInterval);  
 		StringUtil.appendXMLTag(buffer, 2, "showGrayBars", showGrayBars);  
 		StringUtil.appendXMLTag(buffer, 2, "showGeologicalTimeScale", showGeologicalTimeScale);  
+		StringUtil.appendXMLTag(buffer, 2, "periodFontSize", periodFontSize);  
+		StringUtil.appendXMLTag(buffer, 2, "epochFontSize", epochFontSize);  
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
@@ -102,6 +122,10 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 			showGeologicalTimeScale.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("grayBarInterval".equalsIgnoreCase(tag))
 			grayBarInterval = MesquiteInteger.fromString(content);
+		if ("periodFontSize".equalsIgnoreCase(tag))
+			periodFontSize = MesquiteInteger.fromString(content);
+		if ("epochFontSize".equalsIgnoreCase(tag))
+			epochFontSize = MesquiteInteger.fromString(content);
 	}
 
 	/*.................................................................................................................*/
@@ -110,6 +134,8 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 		temp.addLine("grayBarInterval " + grayBarInterval); 
 		temp.addLine("showGrayBars " + showGrayBars.toString());
 		temp.addLine("showGeologicalTimeScale " + showGeologicalTimeScale.toString());
+		temp.addLine("setPeriodFontSize " + periodFontSize); 
+		temp.addLine("setEpochFontSize " + epochFontSize); 
 
 		//	temp.addLine("setOffset " + xOffset + "  " + yOffset); 
 
@@ -139,6 +165,26 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 			}
 
 		}
+		else if (checker.compare(this.getClass(), "Sets the font size used for the period names", "[size of font]", commandName, "setPeriodFontSize")) {
+			int fontSize = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(fontSize) && fontSize>2) {
+				periodFontSize=fontSize;
+				periodFontSizeName.setValue(Integer.toString(periodFontSize));
+				newPj.setPeriodFontSize(periodFontSize);
+				newPj.update();
+				if ( !MesquiteThread.isScripting()) parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets the font size used for the epoch names", "[size of font]", commandName, "setEpochFontSize")) {
+			int fontSize = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(fontSize) && fontSize>2) {
+				epochFontSize=fontSize;
+				epochFontSizeName.setValue(Integer.toString(epochFontSize));
+				newPj.setEpochFontSize(periodFontSize);
+				newPj.update();
+				if ( !MesquiteThread.isScripting()) parametersChanged();
+			}
+		}
 		else if (checker.compare(this.getClass(), "Show Gray Time Bars", "", commandName, "showGrayBars")) {
 			boolean current = showGrayBars.getValue();
 			String arg = parser.getFirstToken(arguments);
@@ -156,7 +202,7 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 						cDE.setDrawGrayTimeBars(showGrayBars.getValue());
 					}
 				}
-				parametersChanged();
+				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Show Geological Time Scale", "", commandName, "showGeologicalTimeScale")) {
@@ -176,7 +222,7 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 						cDE.setDrawGeologicalTimeScale(showGeologicalTimeScale.getValue());
 					}
 				}
-				parametersChanged();
+				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Turns off chronogram display", null, commandName, "closeChronogram")) {
@@ -221,6 +267,10 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	int timeBarInterval = 10;
 	boolean showEpochNames = true;
 	boolean showPeriodNames = true;
+	int epochFontSize = 10;
+
+	int periodFontSize=12;
+
 
 	boolean yearsAsIntegers = true;
 	int gapBetweenScaleAndGeologicalTimeScale = 30;
@@ -248,7 +298,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
 	TreeDisplayRequests borderRequests = new TreeDisplayRequests(0, 0, 0, 100, 0, 20); 
 	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
-		borderRequests.bottomBorder = 100;
+		borderRequests.bottomBorder = epochHeight+periodHeight;
 		borderRequests.extraDepthAtRoot = findOldest((MesquiteTree)tree, treeDrawing.getDrawnRoot()) - getHeight((MesquiteTree)tree,  treeDrawing.getDrawnRoot());
 		return borderRequests;
 	}
@@ -351,10 +401,9 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 	int epochHeight = 60;
 	int periodHeight = 40;
-	int epochFontSize = 10;
-	int periodFontSize=12;
 	/*.................................................................................................................*/
 	void calculateHeights(Graphics2D g) {
+		GraphicsUtil.setFontSize(epochFontSize, g);
 		int max = MesquiteInteger.maximum(GraphicsUtil.stringWidth(g, "Terreneuvian"), GraphicsUtil.stringWidth(g, "Pennsylvanian"));
 		if (epochHeight < max) 
 			epochHeight=max+8;
@@ -515,6 +564,21 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		g.setColor(t);
 
 	}
+	public int getPeriodFontSize() {
+		return periodFontSize;
+	}
+
+	public void setPeriodFontSize(int periodFontSize) {
+		this.periodFontSize = periodFontSize;
+	}
+	public int getEpochFontSize() {
+		return epochFontSize;
+	}
+
+	public void setEpochFontSize(int epochFontSize) {
+		this.epochFontSize = epochFontSize;
+	}
+
 	/*.................................................................................................................*/
 	public   void drawGrayBars(Tree tree, int node, Graphics g) {
 
