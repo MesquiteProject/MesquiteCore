@@ -735,9 +735,18 @@ public class MesquiteDouble implements Listable, Nameable {
 	public static String toStringInRange(double d, double range) {  
 		double threshold = Math.abs(range)*0.0001; //if close enough to zero compared to range, call it that
 		double absD = Math.abs(d);
-		if (absD<threshold)
-			return "0.0";
-		return toStringDigitsSpecified(d, defaultDigits);
+		if (absD<threshold) {
+			if (range <=5)  //if total range is big enough, show as whole numbers when possible
+				return "0.0";
+			else
+				return "0";
+		}
+		String s = toStringDigitsSpecified(d, defaultDigits);
+		if (s.endsWith(".0")){
+			if (range>5)
+				return s.substring(0, s.length()-2);
+		}
+		return s;
 	}
 	/** Returns string version of value, showing the given number of digits.
 	 Returns "unassigned" etc. if needed*/

@@ -403,14 +403,14 @@ public class NodeLocsStandard extends NodeLocsVH {
 				return null;
 			if (arguments == null) //reading old scripts only
 				return null;
-			
+
 			MesquiteBoolean mbool = new MesquiteBoolean();
 			mbool.toggleValue(parser.getFirstToken(arguments));
 			if (mbool.getValue())
 				branchLengthsDisplayMode.setValue(TreeDisplay.DRAWUNASSIGNEDASONE);
 			else
 				branchLengthsDisplayMode.setValue(TreeDisplay.DRAWULTRAMETRIC);
-			
+
 			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
 			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
 			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
@@ -1512,10 +1512,20 @@ public class NodeLocsStandard extends NodeLocsVH {
 			calculateScale(treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[totalHeight], treeDisplay.nodeLocsParameters[scaling], tree, drawnRoot, treeDisplay, extraDepthAtRootRequested);
 		}
 	}
-	private void drawString(Graphics g, String s, double x, double y){
+	private void drawString(Graphics g, String s, double x, double y, boolean upDown){
 		if (g == null || StringUtil.blank(s))
 			return;
 		try {
+			FontMetrics fm = g.getFontMetrics();
+			//if upDown, then move y up by half of ascent
+			if (upDown){
+				y += fm.getMaxAscent()/2;
+			}
+			//if not, then move x left by half of string length
+			else {
+				x -= fm.stringWidth(s)/2;
+			}
+
 			Graphics2D g2 = (Graphics2D)g;
 			g2.drawString(s,(float) x, (float)y);
 		}
@@ -1593,7 +1603,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		g.setColor(smallTickColor);
 		int scaleBuffer = 28;
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
-		int buffer = 8;
+		int buffer = 4;
 		double log10 = Math.log(10.0);
 		double hundredthHeight = Math.exp(log10* ((int) (Math.log(totalScaleHeight)/log10)-1));
 		if (totalScaleHeight/hundredthHeight <20.0)
@@ -1619,7 +1629,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				else
 					GraphicsUtil.drawLine(g,leftEdge, (base- (thisHeight*scaling)), rightEdge,  (base- (thisHeight*scaling)));
 				if (countTenths % 10 == 0)
-					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), rightEdge + buffer, (base- (thisHeight*scaling)));
+					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), rightEdge + buffer, (base- (thisHeight*scaling)), true);
 
 				countTenths ++;
 			}
@@ -1643,7 +1653,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				else
 					GraphicsUtil.drawLine(g,leftEdge, (base+ (thisHeight*scaling)), rightEdge,  (base+ (thisHeight*scaling)));
 				if (countTenths % 10 == 0)
-					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), rightEdge + buffer, (base+ (thisHeight*scaling)));
+					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), rightEdge + buffer, (base+ (thisHeight*scaling)), true);
 				countTenths ++;
 			}
 			if (rulerOnly)
@@ -1651,7 +1661,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
 			prepareFontMetrics(g.getFont(), g);
-			int textHeight = fm.getHeight();
+			int textHeight = fm.getAscent();
 			double leftEdge = startY;
 			double rightEdge = startY+ scaleBuffer;
 			if (narrowScaleOnly)
@@ -1669,7 +1679,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				else
 					GraphicsUtil.drawLine(g,(base- (thisHeight*scaling)), rightEdge,  (base- (thisHeight*scaling)),  leftEdge);
 				if (countTenths % 10 == 0)
-					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), (base- (thisHeight*scaling)), rightEdge + buffer + textHeight);
+					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), (base- (thisHeight*scaling)), rightEdge + buffer + textHeight, false);
 				countTenths ++;
 			}
 			if (rulerOnly)
@@ -1677,7 +1687,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
 			prepareFontMetrics(g.getFont(), g);
-			int textHeight = fm.getHeight();
+			int textHeight = fm.getAscent();
 			double leftEdge = startY;
 			double rightEdge = startY+ scaleBuffer;
 			if (narrowScaleOnly) {
@@ -1695,7 +1705,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				else
 					GraphicsUtil.drawLine(g,(base+ (thisHeight*scaling)), leftEdge,  (base+ (thisHeight*scaling)),  rightEdge);
 				if (countTenths % 10 == 0)
-					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), (base+ (thisHeight*scaling)), rightEdge + buffer + textHeight);
+					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), (base+ (thisHeight*scaling)), rightEdge + buffer + textHeight, false);
 				countTenths ++;
 			}
 			if (rulerOnly)
