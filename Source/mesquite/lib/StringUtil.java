@@ -855,6 +855,19 @@ public class StringUtil {
 		else
 			return token;
 	}
+	public static String shrinkInMiddle(String line, int cutToLength) {
+		if (blank(line))
+			return line;
+		else if (line.length()<= cutToLength)
+			return line;
+		int halfLength = cutToLength/2;
+		if (halfLength*2 == cutToLength) //even number, take one fewer
+			halfLength -= 1;
+		String start = line.substring(0, halfLength);
+		String endPart = line.substring(line.length()-halfLength, line.length());
+		Debugg.println("@ " + start.length() + " " +endPart.length());
+		return start + " … " + endPart;
+	}
 	/*.................................................................................................................*/
 	//TODO: quote should not be punctuation, and should be treated separately!!!!
 	private static String quote(String token, StringBuffer sb) {

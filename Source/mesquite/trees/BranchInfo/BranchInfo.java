@@ -176,7 +176,7 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 			if (mTree.anyUpsideDownProperties()){
 				ListableVector v = mTree.getUpsideDownProperties();
 				ownerModule.discreetAlert("This tree was originally rooted along this branch. It has since been rerooted. "
-						+"Some properties associated with the branches/nodes imply a polarity of time, but this rerooting violated the polarity by turning branches upside down. These properties are:\n\n" + v.getList());
+						+"Some properties associated with the branches/nodes imply a direction (i.e., polarity) of time, but this rerooting violated the polarity by turning branches upside down. These properties are:\n\n" + v.getList());
 			}
 		}
 

@@ -315,6 +315,29 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return s;
 	}
 	/*.................................................................................................................*/
+	/** returns the ith TreeVector */
+	public TreeVector getTreesByNumber(int i) {
+		if (i < getNumberTreeVectors())
+			return (TreeVector)getFileElement(TreeVector.class, i);
+		return null;
+	}
+	/*.................................................................................................................*/
+	/** returns the ith TreeVector */
+	public TreeVector getTreesByNumber(Taxa taxa, int i) {
+		if (i < getNumberTreeVectors(taxa)){
+			int count = 0;
+			for (int k = 0; k<treeVectors.size(); k++){
+				TreeVector trees = (TreeVector)treeVectors.elementAt(k);
+				if (trees.getTaxa() == taxa){
+					if (i == count)
+						return trees;
+					count++;
+				}
+			}
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	/** returns the Trees with given id number */
 	public TreeVector getTreesByID(long id) {
 		//second look for match with .# file number

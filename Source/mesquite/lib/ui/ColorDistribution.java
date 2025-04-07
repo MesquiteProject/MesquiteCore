@@ -56,6 +56,7 @@ public class ColorDistribution {
 
 	public static StringArray standardColorNames;
 	static ObjectArray standardColors, standardColorsDimmed, standardColorsAsHex;
+	static int[] translationOldToNewStandardNumbers;
 	public static double dimmingConstant = 0.3;
 	public static int NO_COLOR = 18;
 	static {
@@ -158,27 +159,30 @@ public class ColorDistribution {
 		for (int i=0; i<standardColorsAsHex.getSize(); i++)
 			standardColorsAsHex.setValue(i, hexFromColor((Color)standardColors.getValue(i)));
 
-
+		
 		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorNames = new StringArray(18);
 		standardColorNames.setValue(0, "Black");
+		standardColorNames.setValue(5, "Red");
+		standardColorNames.setValue(11, "Green");
+		standardColorNames.setValue(14, "Blue");
 		standardColorNames.setValue(1, "Dark Gray");
 		standardColorNames.setValue(2, "Gray");
 		standardColorNames.setValue(3, "Light Gray");
 		standardColorNames.setValue(4, "White");
-		standardColorNames.setValue(5, "Red");
+		standardColorNames.setValue(16, "Magenta");
+		standardColorNames.setValue(17, "Pink");
 		standardColorNames.setValue(6, "Orange");
 		standardColorNames.setValue(7, "Yellow");
 		standardColorNames.setValue(8, "Goldenrod");
 		standardColorNames.setValue(9, "Wood");
 		standardColorNames.setValue(10, "Sienna");
-		standardColorNames.setValue(11, "Green");
 		standardColorNames.setValue(12, "Light Green");
 		standardColorNames.setValue(13, "Cyan");
-		standardColorNames.setValue(14, "Blue");
 		standardColorNames.setValue(15, "Light Blue");
-		standardColorNames.setValue(16, "Magenta");
-		standardColorNames.setValue(17, "Pink");
+		
+		translationOldToNewStandardNumbers = new int[]{}; //Debugg.println()
+		
 		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorsDimmed = new ObjectArray(18);
 		standardColorsDimmed.setValue(0, Color.gray);

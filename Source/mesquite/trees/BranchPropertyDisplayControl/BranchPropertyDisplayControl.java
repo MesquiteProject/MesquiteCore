@@ -1082,17 +1082,19 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 			return 0;
 		if (!lengthsConsistent(tree, node))
 			return node;
-		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-			if (checkLengthsConsistency(tree, d)>0)
-				return d;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+			int problemNode = checkLengthsConsistency(tree, d);
+			if (problemNode>0)
+				return problemNode;
+		}
 		return 0;
 	}
 	/**to inform TreeDisplayExtra that cursor has just touched the field (not in a branch or taxon)*/
 	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
 		if (consistencyBox.contains(x, y)){
 			String warning = "For at least one branch of the tree, there is inconsistency in branch lengths stored in different ways! "
-			+ " Branch lengths can be (1) stored conventionally in the Newick string, (2) stored as a separate \"length\" property, and/or (3) implicit in the \"height\" property."
-					+ "These should all imply the same branch length for each branch, but they don't in this tree.";
+			+ " Branch lengths can be (1) stored conventionally via the \":\" in the Newick-formatted tree description, (2) stored as a separate \"length\" property, and/or (3) implicit in the \"height\" property."
+					+ " These should all imply the same branch length for each branch, but they don't in this tree.";
 			int branchFound = checkLengthsConsistency(myTree, myTree.getRoot());
 			if (branchFound>0){
 				warning += "\n\nFor instance, the branch ancestral to node " + branchFound + " has these contradictory lengths:";
@@ -1100,6 +1102,10 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 			warning += "\n    Stored as separate \"length\" property: " + MesquiteDouble.toString(myTree.getAssociatedDouble(lengthNR, branchFound));
 			warning += "\n    Implied by \"height\" properties: " + MesquiteDouble.toString(implicitLength(myTree, branchFound));
 			warning += "\n\nYou can right-click on other branches to look for inconsistencies.";
+			warning += "\n\nThe branch mentioned will be selected to help you find it; node numbers can be displayed via the Form menu.";
+			((MesquiteTree)tree).deselectAll();
+			((MesquiteTree)tree).setSelected(branchFound, true);
+			((MesquiteTree)tree).notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 			ownerModule.alert(warning);
 			return true;

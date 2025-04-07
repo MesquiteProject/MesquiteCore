@@ -129,8 +129,6 @@ public class DisplayableBranchProperty extends BranchProperty  {
 			xOffset = num;
 		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))
 			yOffset = num;
-		if (yOffset == 9)
-			Debugg.printStackTrace();
 		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))
 			digits = num;
 		if (MesquiteInteger.isCombinable(num = MesquiteInteger.fromString(parser)))

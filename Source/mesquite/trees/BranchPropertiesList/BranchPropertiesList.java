@@ -106,7 +106,7 @@ public class BranchPropertiesList extends ListModule implements Annotatable {
 		MesquiteModule twMB = findEmployerWithDuty(TreeWindowMaker.class);
 		if (twMB!= null){
 			MesquiteWindow treeWindow = twMB.getModuleWindow(); 
-			treeWindowMenuItem = addMenuItem("Tree Window: " + treeWindow.getTitle(), new MesquiteCommand("showTreeWindow", this));
+			treeWindowMenuItem = addMenuItem("Tree Window: " + StringUtil.shrinkInMiddle(treeWindow.getTitle(), 50), new MesquiteCommand("showTreeWindow", this));
 			addMenuSeparator();
 		}
 		addMenuItem("Add Property to Tree...", new MesquiteCommand("addProperty", this));

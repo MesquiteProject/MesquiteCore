@@ -23,6 +23,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ChartWindow;
@@ -38,6 +40,7 @@ import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.SingleLineTextField;
 import mesquite.lists.TaxonList.TaxonList;
 import mesquite.lists.lib.TaxonListAssistant;
+import mesquite.trees.ChronogramDisplay.ChronogramDisplay;
 
 /** The "vice president" of the Mesquite system (the MesquiteTrunk module "Mesquite" being the president).  One of these is hired to coordinate each project.
 Should actually be named ProjectCoordinator.*/
@@ -691,7 +694,20 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			mbb = (MesquiteModule)findElementManager(TreeVector.class);
 			if (mbb != null) {
 				if (getProject().getNumberTreeVectors()==1) {
-					mbb.doCommand("showTreesInWindow", "" + 0 + " \'autoShowPropertiesList;\'", CommandChecker.defaultChecker);
+					Object obj = mbb.doCommand("showTreesInWindow", "" + 0 + " \'autoShowPropertiesList;\'", CommandChecker.defaultChecker);
+					if (obj != null && obj instanceof MesquiteModule){
+						TreeVector trees = getProject().getTreesByNumber(0);
+						if (trees.size()>0){
+						Tree t = trees.getTree(0);
+							if (t instanceof MesquiteTree){
+								MesquiteTree tree = (MesquiteTree)t;
+								if (tree.getAssociatedObjects(ChronogramDisplay.errorBarNameRef)!= null){
+									((MesquiteModule)obj).doCommand("newAssistant", "#mesquite.trees.ChronogramDisplay.ChronogramDisplay", CommandChecker.defaultChecker);
+								}
+							}
+						}
+					}
+					//					newAssistant  #mesquite.trees.ChronogramDisplay.ChronogramDisplay;
 				}
 				else if (getProject().getNumberTreeVectors()>1) {
 					mbb.doCommand("showTreeBlocks", null, CommandChecker.defaultChecker);

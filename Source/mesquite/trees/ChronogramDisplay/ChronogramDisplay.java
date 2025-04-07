@@ -34,15 +34,18 @@ import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.StringInABox;
 import mesquite.lib.ui.TextRotator;
 
 /* ======================================================================== */
 public class ChronogramDisplay extends TreeDisplayAssistantD {
+	
 	public Vector extras;
 	ChonogramDisplayExtra newPj;
 	MesquiteBoolean showGrayBars = new MesquiteBoolean(true);
 	MesquiteBoolean showGeologicalTimeScale = new MesquiteBoolean(true);
 	int grayBarInterval = 10;
+	public static NameReference errorBarNameRef = NameReference.getNameReference("height 95% HPD");
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 
@@ -203,7 +206,6 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 /* ======================================================================== */
 class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra  {
 	ChronogramDisplay ownerModule;
-	NameReference errorBarNameRef = NameReference.getNameReference("height 95% HPD");
 	NameReference heightNameRef = NameReference.getNameReference("height");
 	TreeDisplay treeDisplay;
 	TextRotator textRotator;
@@ -307,7 +309,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	
 	/*.................................................................................................................*/
 	double getLower(MesquiteTree tree, int node){
-		Object obj = tree.getAssociatedObject(errorBarNameRef, node);
+		Object obj = tree.getAssociatedObject(ChronogramDisplay.errorBarNameRef, node);
 		if(obj != null && obj instanceof DoubleArray){
 			DoubleArray bar = (DoubleArray)obj;
 			if (bar.getSize() == 2){
@@ -318,7 +320,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 	/*.................................................................................................................*/
 	double getUpper(MesquiteTree tree, int node){
-		Object obj = tree.getAssociatedObject(errorBarNameRef, node);
+		Object obj = tree.getAssociatedObject(ChronogramDisplay.errorBarNameRef, node);
 		if(obj != null && obj instanceof DoubleArray){
 			DoubleArray bar = (DoubleArray)obj;
 			if (bar.getSize() == 2){
@@ -462,10 +464,21 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	}
 	
 	
+	//StringInABox orientationWarningBox;
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
-		if (treeDisplay.getOrientation()!=TreeDisplay.RIGHT)
+		if (treeDisplay.getOrientation()!=TreeDisplay.RIGHT){
+			double[] scale = treeDisplay.getScale();
+			int top = (int)scale[endY]+gapBetweenScaleAndGeologicalTimeScale;
+			Color c = g.getColor();
+			g.setColor(Color.blue);
+			g.drawString("Chronogram Display can be used only when tree is in \"Right\" orientation, with root at left and tips at right.", treeDisplay.effectiveFieldLeftMargin(), top);
+			/*if (orientationWarningBox== null)
+				orientationWarningBox = new StringInABox("Chronogram Display can be used only when tree is in \"Right\" orientation, with root at left and tips at right.", g.getFont(), 100);
+			orientationWarningBox.draw(g, treeDisplay.effectiveFieldLeftMargin(), top);*/
+			g.setColor(c);
 			return;
+		}
 		
 		/*reset();
 
