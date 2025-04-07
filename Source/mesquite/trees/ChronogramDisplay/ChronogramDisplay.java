@@ -455,10 +455,8 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	int periodHeight = 40;
 	/*.................................................................................................................*/
 	void calculateHeights(Graphics g) {
-		if (g==null) {
-			epochHeight = 60;
-		}
-		else {
+		epochHeight = 60;
+		if (g!=null) {
 			GraphicsUtil.setFontSize(epochFontSize, g);
 			int max = MesquiteInteger.maximum(GraphicsUtil.stringWidth(g, "Terreneuvian"), GraphicsUtil.stringWidth(g, "Pennsylvanian"));
 			if (epochHeight < max) 
