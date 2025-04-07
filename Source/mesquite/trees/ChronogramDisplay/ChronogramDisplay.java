@@ -45,7 +45,10 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 	MesquiteBoolean showGrayBars = new MesquiteBoolean(true);
 	MesquiteBoolean showGeologicalTimeScale = new MesquiteBoolean(false);
 	int grayBarInterval = 10;
+	boolean showEpochNames = true;
+	boolean showPeriodNames = true;
 	public static NameReference errorBarNameRef = NameReference.getNameReference("height 95% HPD");
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 
@@ -216,6 +219,8 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	int nodeCircleSize = 10;
 	int HPDBarHeight = 6;
 	int timeBarInterval = 10;
+	boolean showEpochNames = true;
+	boolean showPeriodNames = true;
 
 	boolean yearsAsIntegers = true;
 	int gapBetweenScaleAndGeologicalTimeScale = 30;
@@ -346,35 +351,89 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 	int epochHeight = 60;
 	int periodHeight = 40;
+	int epochFontSize = 10;
+	int periodFontSize=12;
+	/*.................................................................................................................*/
+	void calculateHeights(Graphics2D g) {
+		int max = MesquiteInteger.maximum(GraphicsUtil.stringWidth(g, "Terreneuvian"), GraphicsUtil.stringWidth(g, "Pennsylvanian"));
+		if (epochHeight < max) 
+			epochHeight=max+8;
+		
+	}
 	/*.................................................................................................................*/
 	public void drawPeriodBox(String name, int top, double oldestTime, double youngestTime,Graphics2D g, Color color) {
+		GraphicsUtil.setFontSize(periodFontSize, g);
 		int textYPos = top+epochHeight+periodHeight/2;
 		double oldestX = getXFromTime(oldestTime);
 		double youngestX = getXFromTime(youngestTime);
+		int textWidth = GraphicsUtil.stringWidth(g, name);
+		boolean drawText = youngestX-oldestX-textWidth>4;
+		int fontSize = periodFontSize;
+
+		if (!drawText) {  // won't fit
+			for (fontSize=periodFontSize-1; fontSize>3; fontSize--) {
+				GraphicsUtil.setFontSize(fontSize, g);
+				textWidth = GraphicsUtil.stringWidth(g, name);
+				drawText = youngestX-oldestX-textWidth>4;
+				if (drawText)
+					break;
+
+			}
+		
+		}
+
+		
 		if (youngestX>0) {
 			g.setColor(color);
 			GraphicsUtil.fillRect(g,oldestX,top+epochHeight,(youngestX-oldestX),periodHeight);
 			g.setColor(Color.black);
 			GraphicsUtil.drawRect(g,oldestX,top+epochHeight,(youngestX-oldestX),periodHeight);
-			GraphicsUtil.setFontSize(12, g);
-			g.drawString(name, (int)(oldestX+(youngestX-oldestX - GraphicsUtil.stringWidth(g, name))/2), textYPos);
+			if (drawText && showPeriodNames) {
+				GraphicsUtil.setFontSize(fontSize, g);
+				g.drawString(name, (int)(oldestX+(youngestX-oldestX - GraphicsUtil.stringWidth(g, name))/2), textYPos);
+			}
 		}
 
 	}
 	/*.................................................................................................................*/
+	
+	
+	/*.................................................................................................................*/
 	public void drawEpochBox(String name, int top, double oldestTime, double youngestTime,Graphics2D g, Color color) {
+		GraphicsUtil.setFontSize(epochFontSize, g);
 		int textYPos = top + ((epochHeight - GraphicsUtil.stringWidth(g, name))/2);
+		int textWidth = GraphicsUtil.stringHeight(g, name);
+		int fontSize = epochFontSize;
+		
+		
 		//textYPos = top+epochHeight;
 		//textYPos = top;
 		double oldestX = getXFromTime(oldestTime);
 		double youngestX = getXFromTime(youngestTime);
+		boolean drawText = youngestX-oldestX-textWidth>2;
+		
+		if (!drawText) {  // won't fit
+			for (fontSize=epochFontSize-1; fontSize>3; fontSize--) {
+				GraphicsUtil.setFontSize(fontSize, g);
+				textWidth = GraphicsUtil.stringHeight(g, name);
+				drawText = youngestX-oldestX-textWidth>2;
+				textYPos = top + ((epochHeight - GraphicsUtil.stringWidth(g, name))/2);
+				if (drawText)
+					break;
+
+			}
+		
+		}
+		
 		if (youngestX>0) {
 			g.setColor(color);
 			GraphicsUtil.fillRect(g,oldestX,top,(youngestX-oldestX),epochHeight);
 			g.setColor(Color.black);
 			GraphicsUtil.drawRect(g,oldestX,top,(youngestX-oldestX),epochHeight);
-			GraphicsUtil.setFontSize(10, g);
-			textRotator.drawRotatedText(name, g, (int)(oldestX+(youngestX-oldestX-GraphicsUtil.stringHeight(g, name))/2), textYPos);
+			if (drawText && showEpochNames) { 
+				GraphicsUtil.setFontSize(fontSize, g);
+				textRotator.drawRotatedText(name, g, (int)(oldestX+(youngestX-oldestX-textWidth)/2+2), textYPos);
+			}
 		}
 
 	}
@@ -383,6 +442,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		Color t = g.getColor();
 		if (g instanceof Graphics2D) {
 			Graphics2D g2 = (Graphics2D)g;
+			calculateHeights(g2);
 
 //Epochs
 			drawEpochBox("",top,2.58, 0,g2, new Color(0xfff1ae)); 
@@ -598,6 +658,8 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		g.setColor(t);
 	}
 }
+
+
 
 
 
