@@ -349,6 +349,7 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
 	TreeDisplayRequests borderRequests = new TreeDisplayRequests(0, 0, 0, 100, 0, 20); 
 	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
+		calculateHeights(treeDisplay.getGraphics());
 		borderRequests.bottomBorder = epochHeight+periodHeight;
 		borderRequests.extraDepthAtRoot = findOldest((MesquiteTree)tree, treeDrawing.getDrawnRoot()) - getHeight((MesquiteTree)tree,  treeDrawing.getDrawnRoot());
 		return borderRequests;
@@ -453,12 +454,16 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	int epochHeight = 60;
 	int periodHeight = 40;
 	/*.................................................................................................................*/
-	void calculateHeights(Graphics2D g) {
-		GraphicsUtil.setFontSize(epochFontSize, g);
-		int max = MesquiteInteger.maximum(GraphicsUtil.stringWidth(g, "Terreneuvian"), GraphicsUtil.stringWidth(g, "Pennsylvanian"));
-		if (epochHeight < max) 
-			epochHeight=max+8;
-		
+	void calculateHeights(Graphics g) {
+		if (g==null) {
+			epochHeight = 60;
+		}
+		else {
+			GraphicsUtil.setFontSize(epochFontSize, g);
+			int max = MesquiteInteger.maximum(GraphicsUtil.stringWidth(g, "Terreneuvian"), GraphicsUtil.stringWidth(g, "Pennsylvanian"));
+			if (epochHeight < max) 
+				epochHeight=max+8;
+		}
 	}
 	/*.................................................................................................................*/
 	public void drawPeriodBox(String name, int top, double oldestTime, double youngestTime,Graphics2D g, Color color) {
