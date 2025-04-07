@@ -41,7 +41,7 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 	public Vector extras;
 	ChonogramDisplayExtra newPj;
 	MesquiteBoolean showGrayBars = new MesquiteBoolean(true);
-	MesquiteBoolean showGeologicalTimeScale = new MesquiteBoolean(true);
+	MesquiteBoolean showGeologicalTimeScale = new MesquiteBoolean(false);
 	int grayBarInterval = 10;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
@@ -381,6 +381,8 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		Color t = g.getColor();
 		if (g instanceof Graphics2D) {
 			Graphics2D g2 = (Graphics2D)g;
+
+//Epochs
 			drawEpochBox("",top,2.58, 0,g2, new Color(0xfff1ae)); 
 			drawEpochBox("Pliocene",top,5.33,2.58, g2, new Color(0xffffa6)); 
 			drawEpochBox("Miocene",top,23.04,5.33, g2, new Color(0xffff54)); 
@@ -405,6 +407,25 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			drawEpochBox("Pennsylvanian", top,323.4,298.9, g2, new Color(0xa1c1b6));  // Carboniferous
 			drawEpochBox("Mississipian", top,358.86,323.4, g2, new Color(0x6f8e6a));  // Carboniferous
 
+			drawEpochBox("Upper", top,382.31,358.86, g2, new Color(0xF1E19D));  // Devonian
+			drawEpochBox("Middle", top,393.47,382.31, g2, new Color(0xF1C868));  // Devonian
+			drawEpochBox("Lower", top,419.62,393.47, g2, new Color(0xE5AC4D));  // Devonian
+
+			drawEpochBox("Priodoli", top,422.7,419.62, g2, new Color(0xE6F5E1));  // Silurian
+			drawEpochBox("Ludlow", top,426.7,422.7, g2, new Color(0xBFE6CF));  // Silurian
+			drawEpochBox("Wenlock", top,432.9,426.7, g2, new Color(0xB3E1C2));  // Silurian
+			drawEpochBox("Llandovery", top,443.1,432.9, g2, new Color(0x99D7B3));  // Silurian
+
+			drawEpochBox("Upper", top,458.2,443.1, g2, new Color(0x7FCA93));  // Ordovician
+			drawEpochBox("Middle", top,471.3,458.2, g2, new Color(0x4DB47E));  // Ordovician
+			drawEpochBox("Lower", top,486.85,471.3, g2, new Color(0x1A9D6F));  // Ordovician
+
+			drawEpochBox("Furongian", top,497,486.85, g2, new Color(0xB3E095));  // Cambrian
+			drawEpochBox("Miaolingian", top,506.5,497, g2, new Color(0xA6CF86));  // Cambrian
+			drawEpochBox("Series2", top,521,506.5, g2, new Color(0x99C078));  // Cambrian
+			drawEpochBox("Terreneuvian", top,538.8,521, g2, new Color(0x8CB06C));  // Cambrian
+
+//Periods
 			drawPeriodBox("", top,2.6,0, g2, new Color(0xf4ed84));
 			drawPeriodBox("Neogene", top,23,2.6, g2, new Color(0xfbe751));
 			drawPeriodBox("Paleogene", top,66,23, g2, new Color(0xef9f60));
@@ -413,6 +434,21 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			drawPeriodBox("Triassic", top,251.9,201.4, g2, new Color(0x77318d));
 			drawPeriodBox("Permian", top,298.9,251.9, g2, new Color(0xdd4f37));
 			drawPeriodBox("Carboniferous", top,358.86,298.9, g2, new Color(0x75a399));
+			drawPeriodBox("Devonian", top,419.6,358.86, g2, new Color(0xCB8C37));
+			drawPeriodBox("Silurian", top,443.1,419.6, g2, new Color(0xB3E1B6));
+			drawPeriodBox("Ordovician", top,486.9,443.1, g2, new Color(0x009270));
+			drawPeriodBox("Cambrian", top,538.8,486.9,g2, new Color(0x7FA056));
+			drawPeriodBox("Ediacaran", top,635, 538.8,g2, new Color(0xFED96A));
+			drawPeriodBox("Cryogenian", top,720, 635,g2, new Color(0xFECC5C));
+			drawPeriodBox("Tonian", top,1000,720,g2, new Color(0xFEBF4E));
+			drawPeriodBox("Stenian", top,1200,1000,g2, new Color(0xFED94E));
+			drawPeriodBox("Ectasian", top,1400,1200,g2, new Color(0xFDCC8A));
+			drawPeriodBox("Calymmian", top,1600,1400,g2, new Color(0xFDC07A));		
+			drawPeriodBox("Statherian", top,1800,1600,g2, new Color(0xF875A7));
+			drawPeriodBox("Orosirian", top,2050,1800,g2, new Color(0xF76898));
+			drawPeriodBox("Rhyacian", top,2300,2050,g2, new Color(0xF75B89));
+			drawPeriodBox("Siderian", top,2500,2300,g2, new Color(0xF74F7C));
+
 		}
 		g.setColor(t);
 
