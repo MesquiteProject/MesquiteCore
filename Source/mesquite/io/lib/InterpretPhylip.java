@@ -701,12 +701,12 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		outputBuffer.setLength(0);
 
 	//	saveExportedFileWithExtension(outputBuffer, arguments, "phy");
-		writeExtraFiles(taxa);
+		writeExtraFiles(taxa, filePath);
 		return true;
 	}
 
 	/*.................................................................................................................*/
-	public void writeExtraFiles(Taxa taxa){
+	public void writeExtraFiles(Taxa taxa, String filePath){
 	}
 	/*.................................................................................................................*/
 	public String getName() {

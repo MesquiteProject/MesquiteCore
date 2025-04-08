@@ -15,6 +15,7 @@ import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.NumberArray;
@@ -393,9 +394,15 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		saveExportedFileWithExtension(outputBuffer, arguments, "phy");
 		
 
-		String cfgString = getPartitionFinderCFGText(data, partition, getExportedFileName());
-		String cfgFilePath = getExportedFilePath();
-		cfgFilePath=StringUtil.getAllButLastItem(cfgFilePath, MesquiteFile.fileSeparator)+MesquiteFile.fileSeparator+"partition_finder.cfg";
+		MesquiteString dir = new MesquiteString();
+		MesquiteString fn = new MesquiteString();
+		String suggested = "PartitionFinder.txt";
+		if (file !=null)
+			suggested = file.getFileName();
+		String path = getPathForExport(arguments, suggested, dir, fn);
+
+		String cfgString = getPartitionFinderCFGText(data, partition, file.getName());
+		String cfgFilePath=StringUtil.getAllButLastItem(path, MesquiteFile.fileSeparator)+MesquiteFile.fileSeparator+"partition_finder.cfg";
 		MesquiteFile.putFileContents(cfgFilePath, cfgString, true);
 
 		

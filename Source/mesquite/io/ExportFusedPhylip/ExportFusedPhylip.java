@@ -101,15 +101,15 @@ public class ExportFusedPhylip extends InterpretPhylip {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public String getTranslationTablePath(){
-		return getExportedFileDirectory()+ TreeUtil.translationTableFileName;
+	public String getTranslationTablePath(String filePath){
+		return getExportedFileDirectory(filePath)+ TreeUtil.translationTableFileName;
 	}
 	/*.................................................................................................................*/
-	public void writeExtraFiles(Taxa taxa){
+	public void writeExtraFiles(Taxa taxa, String mainFilePath){
 		if (useTranslationTable) {
 			String table = ((SimpleNamesTaxonNamer)taxonNamer).getTranslationTable(taxa);
 			if (StringUtil.notEmpty(table)) {
-				String filePath = getTranslationTablePath();
+				String filePath = getTranslationTablePath(mainFilePath);
 				if (StringUtil.notEmpty(filePath))
 					MesquiteFile.putFileContents(filePath, table, true);
 			}

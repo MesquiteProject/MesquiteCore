@@ -44,7 +44,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean writeCharactersWithNoData = true;
 	public boolean writeCharLabels = true;
 
-	protected String filePath=null;
+	//protected String filePath2=null;
 
 	
 	protected static int STOPIMPORT = -1;
@@ -326,15 +326,11 @@ public abstract class FileInterpreter extends MesquiteModule  {
 
 	}
 	/*.................................................................................................................*/
-	public String getExportedFileDirectory(){
+	public String getExportedFileDirectory(String filePath){
 		return MesquiteFile.getDirectoryPathFromFilePath(filePath);
 	}
 	/*.................................................................................................................*/
-	public String getExportedFilePath(){
-		return filePath;
-	}
-	/*.................................................................................................................*/
-	public String getExportedFileName(){
+	public String getExportedFileName(String filePath){
 		if (filePath!=null) {
 			return MesquiteFile.getFileNameFromFilePath(filePath);
 		}
@@ -345,7 +341,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 
 	public void saveExportedFile(MesquiteStringBuffer output, String arguments, String suggestedFileName) {
 
-		filePath = getPathForExport(arguments, suggestedFileName, null, null);
+		String filePath = getPathForExport(arguments, suggestedFileName, null, null);
 		if (filePath!=null) {
 			MesquiteFile.putFileContents(filePath, output, true);
 			//logln("File exported to " + filePath);
@@ -369,7 +365,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		if (outputBuffer == null)
 			return;
 		String name = suggestedFileName(null, extension);
-		filePath = getPathForExport(arguments, name, null, null);
+		String filePath = getPathForExport(arguments, name, null, null);
 		if (filePath!=null) 
 			MesquiteFile.putFileContents(filePath, outputBuffer, true);
 	}
