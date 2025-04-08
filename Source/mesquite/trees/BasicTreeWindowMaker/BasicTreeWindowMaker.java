@@ -146,6 +146,20 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	public boolean allowsReorientation(){
 		return true;
 	}
+	int preferredBranchLengthsDisplay = TreeDisplay.AUTOSHOWLENGTHS;
+ 	public int getPreferredBranchLengthsDisplay(){
+ 		return preferredBranchLengthsDisplay;
+ 	}
+ 	public void setPreferredBranchLengthsDisplay(int bld){
+ 		preferredBranchLengthsDisplay = bld;
+ 	}
+	int preferredOrientation = TreeDisplay.NOTYETSET;
+ 	public int getPreferredOrientationForNewDisplay(){
+ 		return preferredOrientation;
+ 	}
+ 	public void setPreferredOrientationForNewDisplay(int orient){
+ 		preferredOrientation = orient;
+ 	}
 
 	public Taxa getTaxa() {
 		return taxa;

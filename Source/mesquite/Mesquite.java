@@ -619,33 +619,32 @@ public class Mesquite extends MesquiteTrunk
 		int count = 0;
 		if (isPrerelease())
 			count++;
-		boolean first = true;
+		String citationsString = "\nMesquite version " + getMesquiteVersion() + getBuildVersion() ;
+		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
+			citationsString  +="  " + MesquiteModule.getSpecialVersion();
+		citationsString += ":\n" + getCitation() + "\n";
+		int numExtra = 0;
 		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
 			MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
 			if (mmi.isSubstantive() && mmi.isPrerelease()) {
 				count++;
 			}
 			if (mmi.getIsPackageIntro() && !mmi.isBuiltInPackage()){
-				if (first)
-					logln("\n------------------------------------\nExtra package(s) installed:");
-				first = false;
-				String s = "\n" + mmi.getPackageName();
+				numExtra++;
+				citationsString+= "\n" + mmi.getPackageName();
 				if (!StringUtil.blank(mmi.getPackageVersion()))
-					s += " version " + mmi.getPackageVersion();
+					citationsString += " version " + mmi.getPackageVersion();
 				if (mmi.getPackageBuildNumber() > 0)
-					s += " build " + mmi.getPackageBuildNumber();
+					citationsString += " build " + mmi.getPackageBuildNumber();
 				if (StringUtil.notEmpty(mmi.getPackageDateReleased()))
-					s += ", " + mmi.getPackageDateReleased();
+					citationsString += ", " + mmi.getPackageDateReleased();
 				if (!StringUtil.blank(mmi.getPackageAuthors()))
-					s += " (by " + mmi.getPackageAuthors() + ")";
+					citationsString += " (by " + mmi.getPackageAuthors() + ")";
 				if (!StringUtil.blank(mmi.getPackageCitation()))
-					s += " [" + mmi.getPackageCitation() + "]";
-				logln(s);
-
+					citationsString += ":\n" + mmi.getPackageCitation() + "";
+				citationsString +="\n";
 			}
 		}
-		if (!first)
-			logln("\n------------------------------------");
 		if (verboseStartup) System.out.println("main init 28");
 
 
@@ -664,9 +663,6 @@ public class Mesquite extends MesquiteTrunk
 		if (MesquiteTrunk.isWindows())
 			ackn += " The Windows executable is wrapped with Launch4j by Grzegorz Kowal, copyright Grzegorz Kowal 2005-2014, distributed under a BSD license (http://opensource.org/licenses/bsd-license.html) and a MIT license (http://opensource.org/licenses/mit-license.html).";
 		logln(ackn);
-
-		logln(" ");
-		logln("====================================");
 		logln(" ");
 		makeMenu("Mesquite"); //just in case employees have no where else to put
 
@@ -739,7 +735,17 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 29");
 		hireAllEmployees(MesquiteInit.class);
 
+		logln("\n------------------------------------");
+		if (numExtra ==0)
+			logln("Citation for Mesquite:");
+		else if (numExtra ==1)
+			logln("Citations for Mesquite and extra package installed:");
+		else
+			logln("Citations for Mesquite and extra packages installed:");
+		//Mesquite citation
+		logln(citationsString);
 
+		logln("====================================");
 		if (!isApplet()){
 			//setModuleWindow(null);
 			BrowseHierarchy projectHierarchyTask= (BrowseHierarchy)hireEmployee(BrowseHierarchy.class, "Hierarchy browser");
@@ -771,6 +777,9 @@ public class Mesquite extends MesquiteTrunk
 
 		if (verboseStartup) System.out.println("main init 31");
 		decrementMenuResetSuppression();
+		
+		
+		
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) 
 			logln("\nTHIS IS A PRERELEASE (ALPHA or BETA) VERSION: We discourage you from publishing results with this version of Mesquite, unless you check with the authors.\n");
 		if (debugMode){ 

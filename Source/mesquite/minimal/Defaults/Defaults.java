@@ -52,7 +52,7 @@ public class Defaults extends MesquiteInit  {
 				"The defaults are presented in the Defaults submenu of the File menu.");
 	}
 	/*.................................................................................................................*/
-	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode;
+	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, useReports, suppressXORMode;
 	MesquiteBoolean taxonTruncTrees, permitSpaceUnderscoreEquivalentTrees, printTreeNameByDefault;
 	MesquiteBoolean tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; 
 	MesquiteString themeName;
@@ -72,7 +72,6 @@ public class Defaults extends MesquiteInit  {
 		printTreeNameByDefault = new MesquiteBoolean(TreeDisplay.printTreeNameByDefault);
 		debugMode = new MesquiteBoolean(false);
 		phoneHome = new MesquiteBoolean(MesquiteTrunk.phoneHome);
-		errorReports = new MesquiteBoolean(MesquiteTrunk.reportErrors);
 		useReports = new MesquiteBoolean(MesquiteTrunk.reportUse);
 		secondaryChoicesOnInDialogs = new MesquiteBoolean(true);
 		subChoicesOnInDialogs = new MesquiteBoolean(true);
@@ -92,7 +91,7 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Open Windows as Tabs", makeCommand("toggleTabbedWindows",  this), tabbedWindows);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use Wizard-style Dialogs", makeCommand("toggleWizards",  this), wizards);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Contact Mesquite Server on Startup", makeCommand("togglePhoneHome",  this), phoneHome);
-		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Send Error Reports to Mesquite Server", makeCommand("toggleErrorReports",  this), errorReports);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Send Error Reports Automatically to Mesquite Server", makeCommand("toggleErrorReports",  this), MesquiteException.reportErrorsAutomatically);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Send Usage Reports to Mesquite Server", makeCommand("toggleUseReports",  this), useReports);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use Log Window for Commands", makeCommand("toggleConsoleMode",  this), console);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Log All Commands", makeCommand("toggleLogAll",  this), logAll);
@@ -148,6 +147,7 @@ public class Defaults extends MesquiteInit  {
 	}
 
 	public void endJob(){
+		
 		storePreferences();
 		super.endJob();
 	}
@@ -266,9 +266,8 @@ public class Defaults extends MesquiteInit  {
 			phoneHome.setValue(content);
 			MesquiteTrunk.phoneHome = phoneHome.getValue();
 		}
-		else if ("errorReports".equalsIgnoreCase(tag)){
-			errorReports.setValue(content);
-			MesquiteTrunk.reportErrors = errorReports.getValue();
+		else if ("autoErrorReports".equalsIgnoreCase(tag)){
+			MesquiteException.reportErrorsAutomatically.setValue(content);
 		}
 		else if ("useReports".equalsIgnoreCase(tag)){
 			useReports.setValue(content);
@@ -347,7 +346,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "debugMode", debugMode);   
 		StringUtil.appendXMLTag(buffer, 2, "wizards", wizards);   
 		StringUtil.appendXMLTag(buffer, 2, "phoneHome", phoneHome);   
-		StringUtil.appendXMLTag(buffer, 2, "errorReports", errorReports);   
+		StringUtil.appendXMLTag(buffer, 2, "autoErrorReports", MesquiteException.reportErrorsAutomatically);   
 		StringUtil.appendXMLTag(buffer, 2, "useReports", useReports);   
 		StringUtil.appendXMLTag(buffer, 2, "showSecondaryChoicesInDialogs", secondaryChoicesOnInDialogs);   
 		StringUtil.appendXMLTag(buffer, 2, "subChoicesOnInDialogs", subChoicesOnInDialogs);   
@@ -589,10 +588,9 @@ public class Defaults extends MesquiteInit  {
 			return phoneHome;
 		}
 		else if (checker.compare(getClass(), "Sets whether to send error reports to Mesquite server", null, commandName, "toggleErrorReports")) {
-			errorReports.toggleValue(null);
-			MesquiteTrunk.reportErrors = errorReports.getValue();
+			MesquiteException.reportErrorsAutomatically.toggleValue(null);
 			storePreferences();
-			return errorReports;
+			return MesquiteException.reportErrorsAutomatically;
 		}
 		else if (checker.compare(getClass(), "Sets whether to send use reports to Mesquite server", null, commandName, "toggleUseReports")) {
 			useReports.toggleValue(null);

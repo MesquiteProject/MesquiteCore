@@ -865,7 +865,6 @@ public class StringUtil {
 			halfLength -= 1;
 		String start = line.substring(0, halfLength);
 		String endPart = line.substring(line.length()-halfLength, line.length());
-		Debugg.println("@ " + start.length() + " " +endPart.length());
 		return start + " … " + endPart;
 	}
 	/*.................................................................................................................*/

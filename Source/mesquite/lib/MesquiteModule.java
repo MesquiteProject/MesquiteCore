@@ -26,6 +26,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import mesquite.lib.duties.*;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteWindow;
@@ -1231,10 +1232,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		MesquiteTrunk.errorReportedToHome++;
 	}
 	boolean okToReportErrors(){
-		return PhoneHomeUtil.phoneHomeSuccessful  && MesquiteTrunk.reportErrors && !MesquiteTrunk.suppressErrorReporting;
+		return PhoneHomeUtil.phoneHomeSuccessful  && !MesquiteTrunk.suppressErrorReporting;
 	}
 	boolean reportErrorsAutomatically(){
-		return mesquiteTrunk.isPrerelease();
+		return MesquiteException.reportErrorsAutomatically.getValue() || mesquiteTrunk.isPrerelease();
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
@@ -1252,9 +1253,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		}
 		MesquiteTrunk.errorReportedDuringRun = true;
 		StackTraceElement[] stt = e.getStackTrace();
-		String rep = MesquiteException.lastLocMessage() + "\n";
+		String rep = "";
+		if (StringUtil.notEmpty(MesquiteException.lastLocMessage()))
+			rep += MesquiteException.lastLocMessage() + "\n";
 		rep += getRootPath() + "\n";
-		s = "Mesquite v. " + getMesquiteVersion() + "." +  getBuildNumber() + " on " +  System.getProperty("java.version") + "\n" + s;
+		s = "Mesquite v. " + getMesquiteVersion() + "." +  getBuildNumber() + " on " +  System.getProperty("java.version") + "\n\n" + s;
 		rep += e + "\n";
 		rep += s + "\n";
 		for (int i= 0; i< stt.length; i++)
@@ -1266,7 +1269,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			((MesquiteThread)t).doCleanUp();
 		logln(s);
 		if (!okToReportErrors()){
-			if (incompatibilityMessage != null)
+			if (StringUtil.notEmpty(incompatibilityMessage))
 				discreetAlert(incompatibilityMessage + "\n" + rep);
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
@@ -1296,13 +1299,25 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			if (incompatibilityMessage != null)
 				discreetAlert(incompatibilityMessage);
 			
-			int resp = AlertDialog.query(containerOfModule(), "Crash", s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "OK, Send and Force Quit", "Close without sending");
+			int resp = crashQuery(s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum);
 			if (resp < 2)
 				reportCrashToHome(e, s);
 			if (resp == 1)
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 		}
 		MesquiteTrunk.errorReportedToHome++;
+	}
+//	(s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "OK, Send and Force Quit", "Close without sending");
+	public int crashQuery(String message) {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Crash",buttonPressed);
+		id.addLargeTextLabel(message);
+		Checkbox sendAutomatically = id.addCheckBox("Send crash reports automatically in future (can turn off in File>Defaults)", false);
+		String okString = "OK, Send Report and Continue";
+		id.completeAndShowDialog(okString,"OK, Send and Force Quit","Close without sending",okString);
+		id.dispose();
+		MesquiteException.reportErrorsAutomatically.setValue(sendAutomatically.getState());
+		return buttonPressed.getValue();
 	}
 
 	/*.................................................................................................................*/

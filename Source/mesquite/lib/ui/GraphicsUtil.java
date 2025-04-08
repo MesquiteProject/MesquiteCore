@@ -418,6 +418,7 @@ public class GraphicsUtil {
 			g2.setStroke(st);
 		}
 		catch (Throwable e){
+			System.err.println("Throwable in GraphicsUtil: " + e);
 			//workaround to sun InternalError
 		}
 

@@ -95,7 +95,7 @@ public class ColorByAA extends DataWindowAssistantID implements CellColorer, Cel
 	public void viewChanged(){
 	}
   	public String getCellExplanation(int ic, int it){
-		if (ic<0)
+		if (ic<0 || !isActive())
 			return null;
 		if (data == null)
 			return null;

@@ -102,6 +102,7 @@ public class DoubleClickList extends List implements MouseListener {
 			return true;
 		}
 		catch(Exception e){
+			System.err.println("Exception in DoubleClickList: " + e);
 		}
 		return false;
 	}

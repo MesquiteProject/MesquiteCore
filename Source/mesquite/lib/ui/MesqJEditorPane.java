@@ -30,6 +30,7 @@ public class MesqJEditorPane extends JEditorPane implements MQComponent{
 			return super.getScrollableTracksViewportWidth();
 		}
 		catch(Exception e){
+			System.err.println("Throwable in " + getClass() + ": " + e);
 		}
 		return true;
 	}
@@ -38,7 +39,8 @@ public class MesqJEditorPane extends JEditorPane implements MQComponent{
 			return super.getScrollableTracksViewportHeight();
 		}
 		catch(Exception e){
-		}
+			System.err.println("Throwable in " + getClass() + ": " + e);
+	}
 
 		return true;
 	}

@@ -38,12 +38,13 @@ import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.trees.lib.DrawTreeUtil;
 
 /** Calculates node locations for tree drawing in a standard vertical/horizontal position, as used by DiagonalDrawTree and SquareTree (for example).*/
 public class NodeLocsStandard extends NodeLocsVH {
 
-	static int lastLengthsDisplayMode = TreeDisplay.AUTOSHOWLENGTHS;
-	static int lastOrientation = NodeLocsVH.defaultOrientation;
+	//	static int lastLengthsDisplayMode = TreeDisplay.AUTOSHOWLENGTHS;
+	//	static int lastOrientation = NodeLocsVH.defaultOrientation;
 	Vector extras;
 	double fixedDepth = 1;
 	boolean leaveScaleAlone = true;
@@ -51,6 +52,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	MesquiteBoolean inhibitStretch;
 	MesquiteBoolean showScale;
 	MesquiteBoolean broadScale;
+
 	MesquiteInteger branchLengthsDisplayMode;  
 
 	boolean resetShowBranchLengths = false;
@@ -76,7 +78,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	MesquiteBoolean upOn, downOn, rightOn, leftOn, autoOn, ultraOn, blOn;
 
 	//ORIENTATIONS
-	int ornt;
+	int ornt = TreeDisplay.RIGHT;
 
 	/*.................................................................................................................*/
 
@@ -99,15 +101,17 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 
 		branchLengthsDisplayMode = new MesquiteInteger(TreeDisplay.AUTOSHOWLENGTHS);
-		if (inBasicTreeWindow())
-			branchLengthsDisplayMode.setValue(lastLengthsDisplayMode);
+		int d = recoverLastLengthsDisplayMode();
+		if (d != TreeDisplay.INVALIDMODE)
+			branchLengthsDisplayMode.setValue(d);
 		showScale = new MesquiteBoolean(true);
 		broadScale = new MesquiteBoolean(false);
 
 		//really, this should all have been in node locs, but too busy to fix (also in other DrawTree modules that use NodeLocsVH)
 		if (employerAllowsReorientation()) {
-			if (inBasicTreeWindow())
-				ornt = lastOrientation;  
+			int or = recoverLastOrientation();
+			if (or != TreeDisplay.INVALIDORIENTATION && or != TreeDisplay.NOTYETSET)
+				ornt = or;  
 			MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
 			addCheckMenuItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this), upOn = new MesquiteBoolean(ornt == TreeDisplay.UP));
 			addCheckMenuItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this), rightOn = new MesquiteBoolean(ornt == TreeDisplay.RIGHT));
@@ -168,12 +172,40 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 		return true;
 	}
-
 	private boolean inBasicTreeWindow(){
 		MesquiteModule mb = findEmployerWithDuty(TreeDisplayHolder.class);
 		if (mb != null && mb instanceof TreeWindowMaker)
 			return true;
 		return false;
+	}
+
+	private void recordLastLengthsDisplayMode(int bld){
+		MesquiteModule mb = findEmployerWithDuty(TreeDisplayHolder.class);
+		if (mb != null && mb instanceof TreeWindowMaker){
+			((TreeWindowMaker)mb).setPreferredBranchLengthsDisplay(bld);
+		}
+	}
+	private int recoverLastLengthsDisplayMode(){
+		MesquiteModule mb = findEmployerWithDuty(TreeDisplayHolder.class);
+		if (mb != null && mb instanceof TreeWindowMaker){
+			return ((TreeWindowMaker)mb).getPreferredBranchLengthsDisplay();
+
+		}
+		return TreeDisplay.INVALIDMODE;
+	}
+	private void recordLastOrientation(int orient){
+		MesquiteModule mb = findEmployerWithDuty(TreeDisplayHolder.class);
+		if (mb != null && mb instanceof TreeWindowMaker){
+			((TreeWindowMaker)mb).setPreferredOrientationForNewDisplay(orient);
+		}
+	}
+	private int recoverLastOrientation(){
+		MesquiteModule mb = findEmployerWithDuty(TreeDisplayHolder.class);
+		if (mb != null && mb instanceof TreeWindowMaker){
+			return ((TreeWindowMaker)mb).getPreferredOrientationForNewDisplay();
+
+		}
+		return TreeDisplay.INVALIDORIENTATION;
 	}
 	/*.................................................................................................................*/
 	private boolean employerAllowsReorientation(){
@@ -437,8 +469,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
 			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
 			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
-			if (!MesquiteThread.isScripting())
-				lastLengthsDisplayMode = branchLengthsDisplayMode.getValue();
+			if (!MesquiteThread.isScripting() && inBasicTreeWindow())
+				recordLastLengthsDisplayMode(branchLengthsDisplayMode.getValue());
 			/*
 			 * static final int SHOWULTRAMETRIC = 0; //	
 			static final int AUTOSHOWLENGTHS = 1;
@@ -548,9 +580,14 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		if (treeDisplay.getOrientation() == TreeDisplay.NOTYETSET || !compatibleWithOrientation(treeDisplay.getOrientation())){
 			if (employerAllowsReorientation() && inBasicTreeWindow()){
-				treeDisplay.setOrientation(lastOrientation);
-				if (ornt!= lastOrientation) 
-					ornt = lastOrientation;
+				int or = recoverLastOrientation();
+				if (or !=TreeDisplay.INVALIDORIENTATION && or !=TreeDisplay.NOTYETSET){
+					treeDisplay.setOrientation(or);
+					ornt = or;
+				}
+				else
+					treeDisplay.setOrientation(ornt);
+					
 				resetMenus();
 			}
 		}
@@ -563,8 +600,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		treeDisplay.setFixedTaxonSpacing(fixedTaxonDistance);
 
-		if (inBasicTreeWindow())
-			lastOrientation = treeDisplay.getOrientation();
+		recordLastOrientation(treeDisplay.getOrientation());
 
 		if (!leaveScaleAlone) {
 			treeDisplay.fixedDepthScale = fixedDepth;
@@ -825,6 +861,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 			treeDrawing.x[N] = margin;
 			treeDrawing.y[N] = lastleft;
+
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -1222,6 +1259,16 @@ public class NodeLocsStandard extends NodeLocsVH {
 		return baseSpacing;
 	}
 
+	/*_________________________________________________*
+	private   void reportLocs(Tree tree, int node, TreeDisplay treeDisplay) {
+		if (tree.nodeExists(node)) {
+			int thisSister = tree.firstDaughterOfNode(node);
+			while (tree.nodeExists(thisSister)) {
+				reportLocs( tree, thisSister, treeDisplay);
+				thisSister = tree.nextSisterOfNode(thisSister);
+			}
+		}
+	}
 	/*.................................................................................................................*/
 	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot) { //Graphics g removed as parameter May 02
 		if (MesquiteTree.OK(tree)) {
@@ -1274,7 +1321,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 					treeDisplay.setTipsMargin(treeDisplay.getTaxonNameBuffer());
 				g.dispose();
 			}
-
+			if (ornt != treeDisplay.getOrientation() && MesquiteTrunk.developmentMode)
+				MesquiteMessage.printStackTrace("NodeLocsStandard has record of orientation being " + ornt + ", but TreeDisplay is set to " + treeDisplay.getOrientation());
 			boolean branchesProportionalToLength = treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || 
 					(treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (tree.hasBranchLengths() || treeDisplay.fixedScalingOn));
 			branchesProportionalToLength = branchesProportionalToLength & 
@@ -1783,7 +1831,9 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 	/*.................................................................................................................*/
 	boolean showRectangles = false; //see also drawDebuggingLines in TreeDrawing
 	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
+
 		if (showRectangles){  //rectangles
+			System.out.println("tree " + tree.writeTreeSimpleByNumbers());
 			drawTranslatedRect(g, 2, 2, treeDisplay.getField().width, treeDisplay.getField().height, Color.green);
 			drawTranslatedRect(g, 2, 2, treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldHeight(), Color.cyan);
 

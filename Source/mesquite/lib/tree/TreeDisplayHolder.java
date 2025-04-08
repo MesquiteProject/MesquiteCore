@@ -19,6 +19,7 @@ import mesquite.lib.duties.*;
 
 public interface TreeDisplayHolder    {
  	public boolean allowsReorientation();
+ 	
 }
 
 

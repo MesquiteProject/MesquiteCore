@@ -994,6 +994,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			doLayout();
 		}
 		catch (Throwable t){
+			System.err.println("Throwable in ExtensibleDialog: " + t);
 		}
 		MesquiteWindow.centerWindow(getParentDialog());
 		if (MesquiteTrunk.isMacOSXJaguar())
@@ -1685,6 +1686,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				textField.setCaretPosition(0);
 		}
 		catch (Exception e){
+			System.err.println("Throwable in ExtensibleDialog: " + e);
 		}
 		constraints.fill=GridBagConstraints.BOTH;
 		return textField;
@@ -1720,6 +1722,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				textField.setCaretPosition(0);
 		}
 		catch (Exception e){
+			System.err.println("Throwable in ExtensibleDialog: " + e);
 		}
 		constraints.fill=GridBagConstraints.BOTH;
 		return textField;

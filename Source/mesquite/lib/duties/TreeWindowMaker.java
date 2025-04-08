@@ -43,7 +43,11 @@ public abstract class TreeWindowMaker extends MesquiteModule   {
 	 * This might not be in control of this module; the DrawTree module hired might have already said no.*/
 	public abstract boolean allowsReorientation();
 	
-	
+ 	public abstract int getPreferredOrientationForNewDisplay();
+ 	public abstract void setPreferredOrientationForNewDisplay(int orient);
+ 	public abstract int getPreferredBranchLengthsDisplay();
+ 	public abstract void setPreferredBranchLengthsDisplay(int orient);
+
 	public String getDutyName() {
  		return "Tree Window Maker";
    	 }

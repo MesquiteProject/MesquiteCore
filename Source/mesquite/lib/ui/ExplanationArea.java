@@ -225,7 +225,8 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		}
 		}
 		catch (Exception q){
-		}
+			System.err.println("Exception in ExplanationArea: " + q);
+	}
 	}
 	public void setFocusSuppression(boolean suppress){
 		this.focusSuppressed = suppress;
@@ -516,6 +517,7 @@ class ExplTextArea extends MQTextArea {
 			super.setEditable(b);
 		}
 		catch (Throwable e){
+			System.err.println("Throwable in ExplanationArea: " + e);
 
 		}
 	}
@@ -532,6 +534,7 @@ class ExplTextArea extends MQTextArea {
 			}
 		}
 		catch (Throwable e){
+			System.err.println("Throwable in ExplanationArea: " + e);
 			//This is to catch ClassCastExceptions on Linux deep in java 1.8 code
 		}
 	}

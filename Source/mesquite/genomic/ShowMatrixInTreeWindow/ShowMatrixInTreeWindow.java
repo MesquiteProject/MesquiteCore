@@ -107,7 +107,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, StringUtil.getAllButLastItem(treeName, "."));
 		if (d == null)
 			d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, StringUtil.getAllButLastItem(treeName, "#"));
-		if (d == null) {
+		if (d == null && treeName != null) {
 			if (treeName.endsWith("+"))
 				d = project.getCharacterMatrixByReference(null, tree.getTaxa(), null, treeName.substring(0, treeName.length()-1));
 		}

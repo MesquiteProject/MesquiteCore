@@ -72,6 +72,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public static final int UNROOTED = 5;
 	/** Tree orientation is not yet set; take from node locs module */
 	public static final int NOTYETSET = -1;
+	/** Tree orientation is not valid*/
+	public static final int INVALIDORIENTATION = -1;
 
 	public static final int FONTSIZECHANGED = 18275;  //for notification
 
@@ -151,6 +153,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public static final int DRAWULTRAMETRIC = 0; //	
 	public static final int AUTOSHOWLENGTHS = 1;
 	public static final int DRAWUNASSIGNEDASONE = 2; //if a branch has unassigned length, treat as length 1
+	public static final int INVALIDMODE = -2;
 	public int branchLengthDisplay = DRAWULTRAMETRIC;
 	/**  If true, then branches are drawn proportional to their lengths*/
 	public boolean showBranchLengths(){

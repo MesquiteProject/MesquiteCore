@@ -19,6 +19,7 @@ import mesquite.lib.duties.*;
 public class MesquiteException extends RuntimeException{
 	public static int lastLocation = 0;
 	public static String lastCommand = "";
+	public static  MesquiteBoolean reportErrorsAutomatically = new MesquiteBoolean(false);
 	public static String lastLocMessage(){
 		if (lastLocation == 0 || StringUtil.blank(lastCommand))
 		return "";

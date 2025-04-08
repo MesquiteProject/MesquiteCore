@@ -175,7 +175,6 @@ public abstract class MesquiteTrunk extends MesquiteModule
 
 	//true if Mesquite should check website for notices
 	public static boolean phoneHome = true;
-	public static boolean reportErrors = true;
 	public static boolean reportUse = true;
 	public static PhoneHomeThread phoneHomeThread;
 	public static LinuxGWAThread linuxGWAThread;
