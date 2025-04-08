@@ -64,7 +64,7 @@ public class AssignTaxonNames extends TaxonNameAlterer {
    	}
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {

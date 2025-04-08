@@ -183,10 +183,12 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Rename Taxa Based On Table with File",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
+		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File with Replacement Names", "Column for Replacement Names");
+		dialog.addLabelSmallText("(Touch on help button, below, for a description of the format of the file)");
+		dialog.addHorizontalLine(1);
 		Checkbox matchTaxonName = dialog.addCheckBox("Match Current Taxon Name (otherwise Taxon ID code)", matchCurrentTaxonName.getValue());
 		Checkbox colorChanged = dialog.addCheckBox("Color changed taxa", changeColor.getValue());
 		
-		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File with Replacement Names", "Column for Replacement Names");
 		//sampleCodeFilePathField = dialog.addTextField("File with Replacement Names:", sampleCodeListPath,26);
 		//sampleCodeFilePathField.addTextListener(this);
 		//final Button dnaCodesBrowseButton = dialog.addAListenedButton("Browse...",null, this);
