@@ -205,6 +205,15 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 	protected MesquiteInteger lastColumnSelected= new MesquiteInteger();
 
 	/*.................................................................................................................*/
+	protected boolean useWindow() {
+		return false;
+	}
+	/*.................................................................................................................*/
+	protected long[][] windowAlignment(int rowToAlign, int recipientRow, int columnDropped, int columnDragged) {
+		return null;
+	}
+	
+	/*.................................................................................................................*/
 	protected boolean alignTouchedToDroppedBase(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
 		MesquiteNumber score = new MesquiteNumber();
 		boolean revComplemented=false;
@@ -213,7 +222,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 		preRevCompSetup(rowToAlign,  recipientRow,  columnDropped,  columnDragged);
 
 		if (reverseComplementIfNecessary.getValue() && data instanceof DNAData) {
-			revComplemented=MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(),rowToAlign, rowToAlign,recipientRow, false, false, false);
+				revComplemented=MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(),rowToAlign, rowToAlign,recipientRow, false, false, false);
 		}
 
 		if (aligner==null) {
@@ -226,15 +235,18 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 			aligner.setAllowNewInternalGaps(true);
 			//aligner.setGapCosts(8,3,1, 1);
 			long[][] aligned = null;
-			if (alwaysAlignEntireSequences())
+			if (alwaysAlignEntireSequences())   // Pairwise aligner
 				aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
-			else{
+			else{   // pairwise shifter
 				firstColumnSelected.setToUnassigned();
 				lastColumnSelected.setToUnassigned();
-				if (!alwaysAlignEntireSequences() && table.singleContiguousBlockSelected(rowToAlign, firstColumnSelected, lastColumnSelected)) { // there is a single block selected in the row
+				if (useWindow()) { // there is a single block selected in the row
+					aligned = windowAlignment(rowToAlign, recipientRow,  columnDropped,  columnDragged);
+/*				} else if (table.singleContiguousBlockSelected(rowToAlign, firstColumnSelected, lastColumnSelected)) { // there is a single block selected in the row
 					shiftOnlySelectedPiece=true;
 					aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, 0, data.getNumChars(), rowToAlign,firstColumnSelected.getValue(),lastColumnSelected.getValue(),true,score);
-				} else
+*/
+					} else
 					aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 			}
 			if (!AlignUtil.hasSomeAlignedSites(aligned)){

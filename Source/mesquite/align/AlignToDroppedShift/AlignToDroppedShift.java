@@ -22,14 +22,21 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
 import mesquite.lib.duties.*;
 
 
 /* ======================================================================== */
 public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	boolean defaultShiftToDragged = false;
+	boolean defaultUseWindow = true;
+	int windowLength = 100;
 	MesquiteBoolean shiftToDragged = new MesquiteBoolean(defaultShiftToDragged);
 	MesquiteBoolean shiftToDropped = new MesquiteBoolean(!defaultShiftToDragged);
+	MesquiteBoolean useWindow = new MesquiteBoolean(defaultUseWindow);
+	MesquiteBoolean localizedAlignmentRegion = new MesquiteBoolean(true);
+
 
 
 
@@ -40,6 +47,9 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	public void addToSnapshot(Snapshot temp) {
 		if (shiftToDragged.getValue()!=defaultShiftToDragged)
 			temp.addLine("toggleShiftToDragged " + shiftToDragged.toOffOnString());
+		if (useWindow.getValue()!=defaultUseWindow)
+			temp.addLine("useWindow " + useWindow.toOffOnString());
+		temp.addLine("setWindowLength " + windowLength);
 	}
 
 	/*.................................................................................................................*/
@@ -48,11 +58,18 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			shiftToDragged.setValue(MesquiteBoolean.fromTrueFalseString(content));
 			shiftToDropped.setValue(!shiftToDragged.getValue());
 		}
+		if ("useWindow".equalsIgnoreCase(tag)){
+			useWindow.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		}
+		if ("windowLength".equalsIgnoreCase(tag))
+			windowLength = MesquiteInteger.fromString(content);
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(60);	
 		StringUtil.appendXMLTag(buffer, 2, "shiftToDragged",shiftToDragged);
+		StringUtil.appendXMLTag(buffer, 2, "useWindow",useWindow);
+		StringUtil.appendXMLTag(buffer, 2, "windowLength",windowLength);
 		return super.preparePreferencesForXML()+buffer.toString();
 	}
 
@@ -69,15 +86,88 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	public boolean isPrerelease(){
 		return false;
 	}
+	
+	/*.................................................................................................................*/
+	protected boolean useWindow() {
+		return useWindow.getValue();
+	}
+
 	/*.................................................................................................................*/
 	public void addExtraMenus(){
 		addCheckMenuItem(null, "Shift Dragged Sequence so that Dragged Base Matches its Counterpart", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
 		addCheckMenuItem(null, "Shift Dragged Sequence so that Base on Which it is Dropped Matches its Counterpart", makeCommand("toggleShiftToDropped",  this), shiftToDropped);
+		addCheckMenuItem(null, "Examine Defined Window Around Base for Match", makeCommand("useWindow",  this), useWindow);
+		addMenuItem("Window Length...", MesquiteModule.makeCommand("setWindowLength", this));
 		addMenuSeparator();
 	}
 	/*.................................................................................................................*/
 	protected boolean alwaysAlignEntireSequences() {
 		return false;
+	}
+
+
+	/*.................................................................................................................*/
+	void getWindowBoundaries(int it, int column, MesquiteInteger windowStart, MesquiteInteger windowEnd) {
+		if (windowStart==null || windowEnd == null)
+			return;
+		int count = 0;
+		int start = 0;
+		int end = data.getNumChars();
+		for (int ic=column-1; ic>=0; ic--) {  // let's find the start of the window
+			if (!data.isInapplicable(ic, it)){
+				count++;
+				start=ic;
+				if (count>= windowLength/2) {
+					break;
+				}
+			}
+		}
+		int lastWindowHalfLength = windowLength-count;  
+		count = 0;
+		for (int ic=column; ic<data.getNumChars(); ic++) {  // let's find the end of the window
+			if (!data.isInapplicable(ic, it)){
+				count++;
+				end = ic;
+				if (count>=lastWindowHalfLength) {
+					break;
+				}
+			}
+		}
+		if (count<lastWindowHalfLength) {  // there wasn't enough at the end
+			int firstHalfWindowLength = windowLength-count;
+			count = 0;
+
+			for (int ic=column-1; ic>=0; ic--) {  // let's find the start of the window
+				if (!data.isInapplicable(ic, it)){
+					count++;
+					start=ic;
+					if (count>= firstHalfWindowLength) {
+						break;
+					}
+				}
+			}
+		}
+		windowStart.setValue(start);
+		windowEnd.setValue(end);
+
+	}
+	MesquiteInteger windowStart = new MesquiteInteger(0);
+	MesquiteInteger windowEnd = new MesquiteInteger(0);
+
+	/*.................................................................................................................*/
+	protected long[][] windowAlignment(int rowToAlign, int recipientRow, int columnDropped, int columnDragged) {
+		windowEnd.setValue(data.getNumChars());
+		MesquiteNumber score = new MesquiteNumber();
+		long[][] aligned = null;
+		boolean shiftToDropped = shiftToDragged.getValue() == optionDown;
+		if (shiftToDropped) {
+			getWindowBoundaries(recipientRow, columnDropped, windowStart, windowEnd);
+			aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, windowStart.getValue(), windowEnd.getValue(), rowToAlign,0, data.getNumChars(),true,score);
+		} else {
+			getWindowBoundaries(rowToAlign, columnDragged, windowStart, windowEnd);
+			aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, 0, data.getNumChars(), rowToAlign,windowStart.getValue(), windowEnd.getValue(),true,score);
+		}
+		return aligned;
 	}
 
 	/*.................................................................................................................*/
@@ -106,6 +196,9 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			} 
 			//let's find where the dropped cell is in the new alignment
 			int droppedAlignmentCount=0;
+			if (useWindow()) {
+				droppedAlignmentCount=windowStart.getValue();   // give it a head start because of all the cells that were not sent to the aligner
+			}
 			int droppedCellPositionInAlignment = 0;
 
 			for (int ic=0; ic<newAlignment.length; ic++) {  // let's see the position of droppedCellCount in the alignment of this sequence
@@ -156,7 +249,10 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 
 			int positionInOriginalAlignment= lastFilledCellDraggedOriginalPosition+extraGapsInNewAlignment;
 			amountToMove = columnDropped-positionInOriginalAlignment+1;
+			if (useWindow())
+				amountToMove=amountToMove-windowLength/2;
 		} 
+		
 		else {  //shift to dragged sequence
 			if (!draggedOnData) {  // not dragged on data; find nearest dragcell
 				if (draggedCellCount<=0){  //this means it was dragged to the left of the first cell in the dragged sequence 
@@ -179,6 +275,9 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 
 			//let's find where the dragged cell is in the new alignment
 			int draggedAlignmentCount=0;
+			if (useWindow()) {
+				draggedAlignmentCount=windowStart.getValue();   // give it a head start because of all the cells that were not sent to the aligner
+			}
 			int draggedCellPositionInAlignment = 0;
 
 			for (int ic=0; ic<newAlignment.length; ic++) {  // let's see the position of draggedCellCount in the alignment of this sequence
@@ -203,7 +302,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			}
 			int extraGapsInNewAlignment= draggedCellPositionInAlignment-lastFilledCellDroppedAlignmentPosition;
 
-			// we now know onto what cell the cell was dragged .  Where was this cell in the original alignment?
+			// we now know onto what cell the cell was dropped .  Where was this cell in the original alignment?
 
 			int droppedCellCountInOriginal=0;
 			int lastFilledCellDroppedOriginalPosition =0;
@@ -214,10 +313,12 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 				}
 			}
 			int positionOfDroppedInOriginalAlignment= lastFilledCellDroppedOriginalPosition+extraGapsInNewAlignment;
-			
+
 			amountToMove = positionOfDroppedInOriginalAlignment-columnDragged-1;
+			if (useWindow())
+				amountToMove=amountToMove+windowLength/2;
 		}
-		
+
 		MesquiteBoolean dataChanged = new MesquiteBoolean (false);
 		MesquiteInteger charAdded = new MesquiteInteger(0);
 		int added = 0;
@@ -248,7 +349,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 				droppedCellCount++;
 		}
 		draggedCellCount=0;
-		for (int ic=0; ic<=columnDragged && ic<data.getNumChars(); ic++) {  // let's add up how many data-filled cells are up to the sequence dropped
+		for (int ic=0; ic<=columnDragged && ic<data.getNumChars(); ic++) {  // let's add up how many data-filled cells are up to the sequence dragged
 			if (!data.isInapplicable(ic, rowToAlign))
 				draggedCellCount++;
 		}
@@ -265,6 +366,30 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			if (ignoreCommand()) return null;
 			shiftToDropped.toggleValue(parser.getFirstToken(arguments));
 			shiftToDragged.setValue(!shiftToDropped.getValue());
+		}
+		else if (checker.compare(this.getClass(), "Toggles whether a defined window is examined for the match (as opposed to the entire sequence).", "[on; off]", commandName, "useWindow")) {
+			if (ignoreCommand()) return null;
+			useWindow.toggleValue(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets the window length).", "[value]", commandName, "setWindowLength")) {
+			if (ignoreCommand()) return null;
+			MesquiteInteger io = new MesquiteInteger(0);
+			int newWindowLength = MesquiteInteger.fromString(arguments, io);
+			if (newWindowLength<0 || !MesquiteInteger.isCombinable(newWindowLength)){
+				if (!MesquiteThread.isScripting()) {
+					MesquiteInteger value = new MesquiteInteger(windowLength);
+					QueryDialogs.queryInteger(containerOfModule(),"Window length", "Window length for match comparison", true, value);
+					if (value.getValue()>0 && value.isCombinable())
+						windowLength=value.getValue();
+
+				}
+			}
+			else{
+				windowLength = newWindowLength;
+			}
+			resetAligner();
+			//parametersChanged(null);
+
 		}
 
 		else

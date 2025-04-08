@@ -237,18 +237,7 @@ public class MolecularDataUtil {
 			for (int it = itStart; it<taxa.getNumTaxa() && it<=itEnd; it++) {
 
 				double score = 0;
-				/*				if (againstAllOthers && false){
-					for (int ik = itStart; ik<taxa.getNumTaxa() && ik<=itEnd; ik++)
-						if (ik != it){
-							double thisScore = alignmentScoreRatioToRCScore((DNAData)data, module, ik, it, true);
-							score += thisScore;
-						}
-					score = score/(itEnd-itStart);
-				}
-				else {
-				 */
 				score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, verbose);
-				//		}
 
 				if (score>1.0){
 					data.reverseComplement(0, data.getNumChars(), it, false, true);  
@@ -258,9 +247,6 @@ public class MolecularDataUtil {
 					else if (it %10 ==0)
 						module.log(".");
 				}
-				//	else
-				//		module.logln("Sequence not reverse complemented " + (it+1));
-
 			}
 
 		}
