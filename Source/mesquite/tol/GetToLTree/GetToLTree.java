@@ -26,6 +26,10 @@ import mesquite.tol.lib.*;
 public class GetToLTree extends GeneralFileMakerSingle  {
 	protected int pageDepth = 1;
 	protected String cladeName = "";
+	
+	public boolean loadModule(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
