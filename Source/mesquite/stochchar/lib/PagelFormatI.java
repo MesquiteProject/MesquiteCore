@@ -144,7 +144,7 @@ public abstract class PagelFormatI extends FileInterpreterI {
 				String commands = "makeTreeWindow " + getProject().getTaxaReferenceExternal(taxa) + "  #BasicTreeWindowMaker; tell It; ";
 				commands += "setTreeSource  #StoredTrees; tell It; setTaxa " + getProject().getTaxaReferenceExternal(taxa) + " ;  setTreeBlock 1; endTell; ";
 				commands += "getTreeDrawCoordinator #BasicTreeDrawCoordinator; tell It; suppress; setTreeDrawer #BallsNSticks; ";
-				commands += "tell It;  getEmployee #NodeLocsStandard; tell It; branchLengthsToggle on; ";
+				commands += "tell It;  getEmployee #NodeLocsStandard; tell It; branchLengthsDisplay 1; ";
 				commands += " endTell; endTell; desuppress; endTell; getTreeWindow; tell It; setLocation 200 60; ";
 				commands += "newAssistant  #TraceCharacterHistory; tell It; suspend; setHistorySource  #RecAncestralStates;";
 				commands += "tell It; getCharacterSource  #CharSrcCoordObed; tell It; setCharacterSource #StoredCharacters; endTell;";

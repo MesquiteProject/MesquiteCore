@@ -440,7 +440,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		else if (checker.compare(this.getClass(), "[no longer available; here to prevent warning given as old scripts are read]", "[]", commandName, "namesAngle")) {
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not the branches are to be shown proportional to their lengths", "[on = proportional; off]", commandName, "branchLengthsToggle")) {
+		else if (checker.compare(this.getClass(), "Sets whether or not the branches are to be shown proportional to their lengths", "[on = proportional; off]", commandName, "branchLengthsToggle")) { //old; no longer used but may be in old scripts
 			if (fixedSettings != null && fixedSettings.length>0 && fixedSettings[0])
 				return null;
 			if (arguments == null) //reading old scripts only
@@ -458,7 +458,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
 			//param changed not needed because this is an old script
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not the branches are to be shown proportional to their lengths", "[on = proportional; off]", commandName, "branchLengthsDisplay")) {
+		else if (checker.compare(this.getClass(), "Sets whether or not the branches are to be shown proportional to their lengths", "[integer for mode]", commandName, "branchLengthsDisplay")) {
 			if (fixedSettings != null && fixedSettings.length>0 && fixedSettings[0])
 				return null;
 			resetShowBranchLengths=true;

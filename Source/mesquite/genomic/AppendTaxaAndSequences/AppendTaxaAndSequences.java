@@ -91,6 +91,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 			int countWarnings = 0;
 
 			if (incomingTaxa != null){ // 
+				boolean okToReplace = true;
 				for (int incomingTaxonNumber = 0; incomingTaxonNumber<incomingTaxa.getNumTaxa(); incomingTaxonNumber++){
 
 					String incomingTaxonName = incomingTaxa.getTaxonName(incomingTaxonNumber);
@@ -127,12 +128,21 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 							if (incomingSeqLeng == 0) //no sequence coming in, so don't transfer
 								doTransfer = false;
 							else if (receivingMatrix.hasDataForTaxon(receivingTaxonNumber, true)) {
-								for (int ic = 0; ic< receivingMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other //ZQ: do this, or have it as query at start?
-									receivingMatrix.setToInapplicable(ic, receivingTaxonNumber);
-								if (++countWarnings <10)
-									logln("Data in matrix " + receivingMatrix.getName() + " replaced for taxon " + receivingTaxa.getTaxonName(receivingTaxonNumber));
-								else if (countWarnings == 10)
-									logln("Data replaced for other matrices or taxa as well");
+								if (countWarnings == 0){
+									okToReplace = AlertDialog.query(containerOfModule(), "OK to replace data?", "An incoming matrix (" + incomingMatrixName + ") "
+											+"has data that would replace existing data for a taxon (" + receivingMatrix.getTaxa().getTaxonName(receivingTaxonNumber) + "). "
+											+"Do you want to permit replacement of this data, and of any other data in a receiving matrix for which an incoming matrix has data?", "Replace Data", "Skip if Data Already Exists");									
+								}
+								doTransfer = okToReplace;
+								countWarnings++;
+								if (okToReplace){
+									if (countWarnings <10)
+										logln("Data in matrix " + receivingMatrix.getName() + " replaced for taxon " + receivingTaxa.getTaxonName(receivingTaxonNumber));
+									else if (countWarnings == 10)
+										logln("Data replaced for other matrices or taxa as well");
+									for (int ic = 0; ic< receivingMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other //ZQ: do this, or have it as query at start?
+										receivingMatrix.setToInapplicable(ic, receivingTaxonNumber);
+								}
 							}
 						}
 						if (doTransfer){
@@ -153,7 +163,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 						+"Only the first taxa block in the incoming file is read, and so if that file had multiple taxa blocks, the appropriate matrices may belong to a subsequent taxa block."); 
 			else {
 				receivingTaxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
-				}
+			}
 			//***************
 			proj.getCoordinatorModule().closeFile(fileToRead, true);
 

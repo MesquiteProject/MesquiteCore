@@ -30,6 +30,7 @@ import mesquite.lib.tree.TreeDisplayEarlyExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePopup;
 
 /* ======================================================================== */
 public class ColorTreeByPartition extends TreeDisplayAssistantDI {
@@ -117,6 +118,10 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 		super(ownerModule, treeDisplay);
 		branchNotesModule = ownerModule;
 		showColors = branchNotesModule.colorByPartition.getValue();
+	}
+	
+	/*public void addToRightClickPopup(MesquitePopup popup){
+		popup.addItem("New Taxon Group for Clade", ownerModule, new MesquiteCommand(null, null), "newGroup");
 	}
 	/*_________________________________________________*/
 	public ColorDistribution colorsInClade(Tree tree, int node){

@@ -121,7 +121,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 		commands += " getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;\ntell It; ";
 		commands += "setTreeDrawer  #mesquite.trees.SquareTree.SquareTree; tell It; orientRight; ";
 		commands += "setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;";
-		commands += " tell It; branchLengthsToggle on; endTell; ";
+		commands += " tell It; branchLengthsDisplay 1; endTell; ";
 		commands += " setEdgeWidth 3; endTell; ";
 		commands += " endTell; ladderize root; ";
 		return commands;
