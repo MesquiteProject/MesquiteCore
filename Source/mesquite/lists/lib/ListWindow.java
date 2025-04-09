@@ -78,7 +78,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		ownerModule.setModuleWindow(this);
 		owner = ownerModule;
 		int numItems = owner.getNumberOfRows();
-		table = new ListTable (numItems, 0, windowWidth, windowHeight, 130, this, ownerModule);
+		table = new ListTable (numItems, 0, windowWidth, windowHeight, MesquiteTable.DEFAULTROWNAMEWIDTH, this, ownerModule);
 		setCurrentObject(owner.getMainObject());
 		if (getCurrentObject() instanceof Associable)
 			table.setRowAssociable((Associable)getCurrentObject());

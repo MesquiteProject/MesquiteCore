@@ -49,6 +49,7 @@ import mesquite.lib.ui.MousePanel;
  * Currently there are not too many settable parameters to customize the appearance of the table, but in the future it should be made possible to customize the table's appearance
  */
 public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWheelListener {
+	public static int DEFAULTROWNAMEWIDTH = 160;
 	protected ColumnNamesPanel columnNames = null;
 	protected RowNamesPanel rowNames = null;
 	protected MatrixPanel matrix;

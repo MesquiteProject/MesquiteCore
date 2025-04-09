@@ -320,6 +320,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	MatrixTable table;
 	int windowWidth = 420;
 	int windowHeight = 280;
+	int defaultRowNameWidth = 160;
 	int columnWidth = 12;
 	boolean widthsSet = false;
 	TableTool arrowTool, ibeamTool;// , charWandTool;//, taxaWandTool
@@ -363,7 +364,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			columnWidth = data.getDefaultColumnWidth();
 		MesquiteSubmenuSpec mssa = ownerModule.addSubmenu(ownerModule.addAuxiliaryMenu("Analysis:Matrix"), "Analyses for Matrix", MesquiteModule.makeCommand("newAssistant", this), DataWindowAssistantA.class);
 		mssa.setCompatibilityCheck(data.getStateClass());
-		table = new MatrixTable((BasicDataWindowMaker) ownerModule, this, data, data.getTaxa().getNumTaxa(), data.getNumChars(), windowWidth, windowHeight, 110);
+		table = new MatrixTable((BasicDataWindowMaker) ownerModule, this, data, data.getTaxa().getNumTaxa(), data.getNumChars(), windowWidth, windowHeight, MesquiteTable.DEFAULTROWNAMEWIDTH);
 		/**/
 		/*	*/
 		table.setQuickMode(true);

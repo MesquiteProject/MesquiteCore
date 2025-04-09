@@ -35,8 +35,8 @@ public class ListTable extends MesquiteTable {
 	ListWindow window;
 	LTCellAnnotation cellAnnotatable;
 	ListModule ownerModule;
-	public ListTable (int numRowsTotal, int numColumnsTotal, int totalWidth, int totalHeight, int columnNamesWidth, ListWindow window, ListModule ownerModule) {
-		super(numRowsTotal, numColumnsTotal, totalWidth, totalHeight, columnNamesWidth, window.getColorScheme(), true,false);
+	public ListTable (int numRowsTotal, int numColumnsTotal, int totalWidth, int totalHeight, int rowNamesWidth, ListWindow window, ListModule ownerModule) {  //QZ ZQ   rowNamesWidth was columnNamesWidth
+		super(numRowsTotal, numColumnsTotal, totalWidth, totalHeight, rowNamesWidth, window.getColorScheme(), true,false);
 		this.window = window;
 		cellAnnotatable = new LTCellAnnotation(ownerModule, window);
 		this.ownerModule = ownerModule;
