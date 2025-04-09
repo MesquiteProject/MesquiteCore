@@ -24,6 +24,7 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
@@ -818,7 +819,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 	/* ========================================= */
 	/**Add any desired menu items to the right click popup*/
-	public void addToRightClickPopup(MesquitePopup popup){
+	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branch){
 		try {
 			if (ownerModule.showMatrix){
 				if (ownerModule.choose0Link1 == 1 && ownerModule.linkedMatrix(treeDisplay.getTree()) != null)

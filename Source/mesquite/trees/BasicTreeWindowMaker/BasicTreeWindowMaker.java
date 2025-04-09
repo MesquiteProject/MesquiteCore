@@ -147,19 +147,19 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return true;
 	}
 	int preferredBranchLengthsDisplay = TreeDisplay.AUTOSHOWLENGTHS;
- 	public int getPreferredBranchLengthsDisplay(){
- 		return preferredBranchLengthsDisplay;
- 	}
- 	public void setPreferredBranchLengthsDisplay(int bld){
- 		preferredBranchLengthsDisplay = bld;
- 	}
+	public int getPreferredBranchLengthsDisplay(){
+		return preferredBranchLengthsDisplay;
+	}
+	public void setPreferredBranchLengthsDisplay(int bld){
+		preferredBranchLengthsDisplay = bld;
+	}
 	int preferredOrientation = TreeDisplay.NOTYETSET;
- 	public int getPreferredOrientationForNewDisplay(){
- 		return preferredOrientation;
- 	}
- 	public void setPreferredOrientationForNewDisplay(int orient){
- 		preferredOrientation = orient;
- 	}
+	public int getPreferredOrientationForNewDisplay(){
+		return preferredOrientation;
+	}
+	public void setPreferredOrientationForNewDisplay(int orient){
+		preferredOrientation = orient;
+	}
 
 	public Taxa getTaxa() {
 		return taxa;
@@ -3974,7 +3974,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				currentTreeTool.branchTouched(branchFound, x, y, tree, modifiers);
 				// branchFrom = 0;
 			}
-			notifyExtrasOfBranchTouch(g, branchFound, modifiers, currentTreeTool.isArrowTool());
+			if (MesquiteEvent.rightClick(modifiers)){
+				showTreePopup(x, y, tree, branchFound); 
+			}
+			else
+				notifyExtrasOfBranchTouch(g, branchFound, modifiers, currentTreeTool.isArrowTool());
 			return true;
 		}
 		else { // not in a branch
@@ -3990,7 +3994,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else { // not in a taxon
 				if (currentTreeTool.isArrowTool()) {
 					if (MesquiteEvent.rightClick(modifiers)){
-						showTreePopup(x, y); 
+						showTreePopup(x, y, tree, -1); 
 					}
 					else {
 						if (notifyExtrasOfFieldTouch(g, x, y, modifiers)){
@@ -4024,25 +4028,28 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else
 			popup.addItem(s, ownerModule, new MesquiteCommand(null, null), "");
 	}
-	void showTreePopup(int x, int y){
+	void showTreePopup(int x, int y, MesquiteTree tree, int branchFound){
 		if (tree == null)
 			return;
 		if (popup==null)
 			popup = new MesquitePopup(treeDisplay);
 		popup.removeAll();
-		addToPopup("Tree: " + tree.getName());
-		if (treeEdited)
-			addToPopup("— edited since obtained from source");
-		addToPopup(null);
-		addToPopup("Source: " + treeSourceTask.getParameters());
-		addToPopup("Number of taxa included: " + tree.numberOfTerminalsInClade(tree.getRoot()));
-		String bLS;
-		if (tree.hasBranchLengths())
-			bLS = "Branch lengths are defined";
-		else 
-			bLS = "No branch lengths are defined";
-		addToPopup(bLS);
-		notifyExtrasOfRightClickPopup(popup);
+		if (branchFound <=0){ //if no branch, then give tree details
+			addToPopup("Tree: " + tree.getName());
+			if (treeEdited)
+				addToPopup("— edited since obtained from source");
+			addToPopup(null);
+			addToPopup("Source: " + treeSourceTask.getParameters());
+			addToPopup("Number of taxa included: " + tree.numberOfTerminalsInClade(tree.getRoot()));
+			String bLS;
+			if (tree.hasBranchLengths())
+				bLS = "Branch lengths are defined";
+			else 
+				bLS = "No branch lengths are defined";
+			addToPopup(bLS);
+		}
+		notifyExtrasOfRightClickPopup(popup, tree, branchFound);
+		//show only if something in there! Debugg.println
 		popup.showPopup(x, y);
 	}
 
@@ -4585,20 +4592,39 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 	}
 	/* ................................................................................................ */
-	void notifyExtrasOfRightClickPopup(MesquitePopup popup) {
+	void notifyExtrasOfRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branch) {
+		Debugg.println("@notifyextras");
+		int numItemsTotal = popup.getItemCount();
 		if (treeDisplay.getExtras() != null) {
-			int numItems = popup.getItemCount();
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
+				int numItems = popup.getItemCount();
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.addToRightClickPopup(popup);
+					if (tce instanceof Priority0)
+						tce.addToRightClickPopup(popup, tree, branch);
 				}
+				if (popup.getItemCount()>numItems)
+					popup.insert(new MenuItem("-"), numItems);
 			}
-			if (popup.getItemCount()>numItems)
-				popup.insert(new MenuItem("-"), numItems);
+			e = treeDisplay.getExtras().elements();
+			while (e.hasMoreElements()) {
+				int numItems = popup.getItemCount();
+				Object obj = e.nextElement();
+				if (obj instanceof TreeDisplayExtra) {
+					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
+					if (!(tce instanceof Priority0))
+						tce.addToRightClickPopup(popup, tree, branch);
+				}
+				if (popup.getItemCount()>numItems)
+					popup.insert(new MenuItem("-"), numItems);
+			}
 		}
+		/*
+		if (popup.getItemCount()>numItemsTotal)
+			popup.remove(popup.getItemCount()-1);
+			*/
 	}
 
 	/* ................................................................................................................. */

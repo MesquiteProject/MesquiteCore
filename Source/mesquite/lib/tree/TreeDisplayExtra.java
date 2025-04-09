@@ -230,7 +230,7 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	}
 
 	/**Add any desired menu items to the right click popup*/
-	public void addToRightClickPopup(MesquitePopup popup){
+	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branch){
 		//popup.addItem("Show...", ownerModule, new MesquiteCommand(null, null), "argument");
 	}
 	public  int findBranch(Tree tree, int drawnRoot, int x, int y){return -1;} // should be renamed; need method to tell assistant to react to mousedown that might be in its node picture etc.

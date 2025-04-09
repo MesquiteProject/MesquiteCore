@@ -68,6 +68,7 @@ import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.Priority0;
 import mesquite.lib.ui.StringInABox;
 import mesquite.trees.BranchPropertiesAManager.BranchPropertiesAManager;
 
@@ -620,7 +621,7 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 
 
 /* ======================================================================== */
-class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, TreeDisplayLateExtra{
+class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, TreeDisplayLateExtra, Priority0 {
 	BranchPropertyDisplayControl controlModule;
 	MesquiteCommand taxonCommand, branchCommand, respondCommand;
 	MesquiteTree myTree = null;
@@ -695,27 +696,59 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		return strings;
 	}
 	/*.................................................................................................................*/
-	/*.................................................................................................................*/
+	/**Add any desired menu items to the right click popup*/
+	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branchFound){
+		if (branchFound>0){
+			int responseNumber = 0;
+			String nL = "Node Label: ";
+			if (StringUtil.blank(myTree.getNodeLabel(branchFound)))
+				nL +=  "[none]";
+			else
+				nL += myTree.getNodeLabel(branchFound);
+			popupKeys.addElement(new DisplayableBranchProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN));
+			addToPopup(popup, nL, branchFound, responseNumber++);
+
+			addToPopup(popup, "Branch/node number: " + branchFound, branchFound, responseNumber++);
+			popupKeys.addElement(new DisplayableBranchProperty("nodenumber", Associable.BUILTIN));
+			addToPopup(popup, "-", branchFound, responseNumber++);
+			popupKeys.addElement(new DisplayableBranchProperty("dash", Associable.BUILTIN));
+			String[] strings = stringsAtNode(myTree, branchFound, true, true, popupKeys, 2);
+			if (strings != null)
+				for (int i = 0; i<strings.length; i++)
+					addToPopup(popup, strings[i], branchFound, responseNumber++);
+
+			addToPopup(popup, "-", branchFound, -1);
+			if (!lengthsConsistent(myTree, branchFound)){
+				addToPopup(popup, "Inconsistency in branch lengths!", branchFound, -1);
+				addToPopup(popup, "     Stored conventionally: " + MesquiteDouble.toString(myTree.getBranchLength(branchFound)), branchFound, -1);
+				addToPopup(popup, "     Stored as separate \"length\" property: " + MesquiteDouble.toString(myTree.getAssociatedDouble(lengthNR, branchFound)), branchFound, -1);
+				addToPopup(popup, "     Implied by \"height\" properties: " + MesquiteDouble.toString(implicitLength(myTree, branchFound)), branchFound, -1);
+				addToPopup(popup, "-", branchFound, -1);
+			}
+		}
+		popup.addItem("Control Display of Properties on Tree...", ownerModule, new MesquiteCommand("showDialog", ownerModule));
+	}
+	/*.................................................................................................................*
 	public void cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, boolean isArrowTool){
 		if (MesquiteEvent.rightClick(modifiers) && isArrowTool){
 			showPopup(N);
 		}
 	}
 	/*...........................................*/
-	MesquitePopup popup;
+	MesquitePopup myPopup;
 	Vector popupKeys = new Vector();
 	MesquiteInteger pos = new MesquiteInteger();
 	/*...........................................*/
-	void addToPopup(String s, int node, int response){
+	void addToPopup(MesquitePopup popup, String s, int node, int response){
 		if (popup==null)
 			return;
 		popup.addItem(s, ownerModule, respondCommand, Integer.toString(node) + " " + Integer.toString(response));
 	}
 	/*...........................................*/
 	void showPopup(int branchFound){
-		if (popup==null)
-			popup = new MesquitePopup(treeDisplay);
-		popup.removeAll();
+		if (myPopup==null)
+			myPopup = new MesquitePopup(treeDisplay);
+		myPopup.removeAll();
 		popupKeys.removeAllElements();
 		int responseNumber = 0;
 		String nL = "Node Label: ";
@@ -724,27 +757,27 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		else
 			nL += myTree.getNodeLabel(branchFound);
 		popupKeys.addElement(new DisplayableBranchProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN));
-		addToPopup(nL, branchFound, responseNumber++);
+		addToPopup(myPopup,nL, branchFound, responseNumber++);
 
-		addToPopup("Branch/node number: " + branchFound, branchFound, responseNumber++);
+		addToPopup(myPopup,"Branch/node number: " + branchFound, branchFound, responseNumber++);
 		popupKeys.addElement(new DisplayableBranchProperty("nodenumber", Associable.BUILTIN));
-		addToPopup("-", branchFound, responseNumber++);
+		addToPopup(myPopup,"-", branchFound, responseNumber++);
 		popupKeys.addElement(new DisplayableBranchProperty("dash", Associable.BUILTIN));
 		String[] strings = stringsAtNode(myTree, branchFound, true, true, popupKeys, 2);
 		if (strings != null)
 			for (int i = 0; i<strings.length; i++)
-				addToPopup(strings[i], branchFound, responseNumber++);
+				addToPopup(myPopup,strings[i], branchFound, responseNumber++);
 
-		addToPopup("-", branchFound, -1);
+		addToPopup(myPopup,"-", branchFound, -1);
 		if (!lengthsConsistent(myTree, branchFound)){
-			addToPopup("Inconsistency in branch lengths!", branchFound, -1);
-			addToPopup("     Stored conventionally: " + MesquiteDouble.toString(myTree.getBranchLength(branchFound)), branchFound, -1);
-			addToPopup("     Stored as separate \"length\" property: " + MesquiteDouble.toString(myTree.getAssociatedDouble(lengthNR, branchFound)), branchFound, -1);
-			addToPopup("     Implied by \"height\" properties: " + MesquiteDouble.toString(implicitLength(myTree, branchFound)), branchFound, -1);
-			addToPopup("-", branchFound, -1);
+			addToPopup(myPopup,"Inconsistency in branch lengths!", branchFound, -1);
+			addToPopup(myPopup,"     Stored conventionally: " + MesquiteDouble.toString(myTree.getBranchLength(branchFound)), branchFound, -1);
+			addToPopup(myPopup,"     Stored as separate \"length\" property: " + MesquiteDouble.toString(myTree.getAssociatedDouble(lengthNR, branchFound)), branchFound, -1);
+			addToPopup(myPopup,"     Implied by \"height\" properties: " + MesquiteDouble.toString(implicitLength(myTree, branchFound)), branchFound, -1);
+			addToPopup(myPopup,"-", branchFound, -1);
 		}
-		popup.addItem("Control Display of Properties on Tree...", ownerModule, new MesquiteCommand("showDialog", ownerModule));
-		popup.showPopup((int)treeDisplay.getTreeDrawing().x[branchFound], (int)treeDisplay.getTreeDrawing().y[branchFound]);
+		myPopup.addItem("Control Display of Properties on Tree...", ownerModule, new MesquiteCommand("showDialog", ownerModule));
+		myPopup.showPopup((int)treeDisplay.getTreeDrawing().x[branchFound], (int)treeDisplay.getTreeDrawing().y[branchFound]);
 	}
 
 	Parser parser = new Parser();
@@ -1066,7 +1099,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		}
 		return false;
 	}
-	
+
 	/*.................................................................................................................*/
 	boolean lengthsConsistent(MesquiteTree tree, int node) {
 		if (tree.getRoot() == node)
@@ -1093,19 +1126,19 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
 		if (consistencyBox.contains(x, y)){
 			String warning = "For at least one branch of the tree, there is inconsistency in branch lengths stored in different ways! "
-			+ " Branch lengths can be (1) stored conventionally via the \":\" in the Newick-formatted tree description, (2) stored as a separate \"length\" property, and/or (3) implicit in the \"height\" property."
+					+ " Branch lengths can be (1) stored conventionally via the \":\" in the Newick-formatted tree description, (2) stored as a separate \"length\" property, and/or (3) implicit in the \"height\" property."
 					+ " These should all imply the same branch length for each branch, but they don't in this tree.";
 			int branchFound = checkLengthsConsistency(myTree, myTree.getRoot());
 			if (branchFound>0){
 				warning += "\n\nFor instance, the branch ancestral to node " + branchFound + " has these contradictory lengths:";
-			warning += "\n    Stored conventionally: " + MesquiteDouble.toString(myTree.getBranchLength(branchFound));
-			warning += "\n    Stored as separate \"length\" property: " + MesquiteDouble.toString(myTree.getAssociatedDouble(lengthNR, branchFound));
-			warning += "\n    Implied by \"height\" properties: " + MesquiteDouble.toString(implicitLength(myTree, branchFound));
-			warning += "\n\nYou can right-click on other branches to look for inconsistencies.";
-			warning += "\n\nThe branch mentioned will be selected to help you find it; node numbers can be displayed via the Form menu.";
-			((MesquiteTree)tree).deselectAll();
-			((MesquiteTree)tree).setSelected(branchFound, true);
-			((MesquiteTree)tree).notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+				warning += "\n    Stored conventionally: " + MesquiteDouble.toString(myTree.getBranchLength(branchFound));
+				warning += "\n    Stored as separate \"length\" property: " + MesquiteDouble.toString(myTree.getAssociatedDouble(lengthNR, branchFound));
+				warning += "\n    Implied by \"height\" properties: " + MesquiteDouble.toString(implicitLength(myTree, branchFound));
+				warning += "\n\nYou can right-click on other branches to look for inconsistencies.";
+				warning += "\n\nThe branch mentioned will be selected to help you find it; node numbers can be displayed via the Form menu.";
+				((MesquiteTree)tree).deselectAll();
+				((MesquiteTree)tree).setSelected(branchFound, true);
+				((MesquiteTree)tree).notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 			ownerModule.alert(warning);
 			return true;
