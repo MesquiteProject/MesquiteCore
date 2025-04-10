@@ -96,9 +96,9 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	public void addExtraMenus(){
 		addCheckMenuItem(null, "Shift Dragged Sequence so that Dragged Base Matches its Counterpart", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
 		addCheckMenuItem(null, "Shift Dragged Sequence so that Base on Which it is Dropped Matches its Counterpart", makeCommand("toggleShiftToDropped",  this), shiftToDropped);
+		addMenuSeparator();
 		addCheckMenuItem(null, "Examine Defined Window Around Base for Match", makeCommand("useWindow",  this), useWindow);
 		addMenuItem("Window Length...", MesquiteModule.makeCommand("setWindowLength", this));
-		addMenuSeparator();
 	}
 	/*.................................................................................................................*/
 	protected boolean alwaysAlignEntireSequences() {
@@ -155,25 +155,30 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	MesquiteInteger windowEnd = new MesquiteInteger(0);
 
 	/*.................................................................................................................*/
-	protected long[][] windowAlignment(int rowToAlign, int recipientRow, int columnDropped, int columnDragged) {
+	protected long[][] windowAlignment(int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged) {
 		windowEnd.setValue(data.getNumChars());
 		MesquiteNumber score = new MesquiteNumber();
 		long[][] aligned = null;
 		boolean shiftToDropped = shiftToDragged.getValue() == optionDown;
 		if (shiftToDropped) {
-			getWindowBoundaries(recipientRow, columnDropped, windowStart, windowEnd);
+			getWindowBoundaries(recipientRow, columnDropped.getValue(), windowStart, windowEnd);
+			Debugg.println("DROPPED  windowStart: " + windowStart + ", windowEnd: " + windowEnd);
 			aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, windowStart.getValue(), windowEnd.getValue(), rowToAlign,0, data.getNumChars(),true,score);
 		} else {
-			getWindowBoundaries(rowToAlign, columnDragged, windowStart, windowEnd);
+			getWindowBoundaries(rowToAlign, columnDragged.getValue(), windowStart, windowEnd);
+			Debugg.println("DRAGGED windowStart: " + windowStart + ", windowEnd: " + windowEnd);
 			aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, 0, data.getNumChars(), rowToAlign,windowStart.getValue(), windowEnd.getValue(),true,score);
 		}
 		return aligned;
 	}
 
 	/*.................................................................................................................*/
-	protected void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped, int columnDragged, boolean droppedOnData, boolean draggedOnData){
+	protected void alignShiftTouchedToDropped(long[][] aligned, long[] rowToAlignAlignment, int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged, boolean droppedOnData, boolean draggedOnData){
 		boolean shiftToDropped = shiftToDragged.getValue() == optionDown;
 		int amountToMove = 0;
+		int oldNumChars = data.getNumChars();
+		int effectiveColumnDropped = columnDropped.getValue();
+		int effectiveColumnDragged = columnDragged.getValue();
 
 		if (shiftToDropped) {
 			if (!droppedOnData) {  // not dropped on data; find nearest dropcell
@@ -181,14 +186,14 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 					droppedCellCount=1;
 					for (int icDropped=0; icDropped<data.getNumChars(); icDropped++) {  // let's add up how many data-filled cells are up to the sequence dropped
 						if (!data.isInapplicable(icDropped, recipientRow)){
-							columnDropped=icDropped;
+							effectiveColumnDropped = icDropped;
 							break;
 						}
 					}
 				} else { // was either internal gap or terminal gap at right end
-					for (int icDropped=columnDropped; icDropped>=0; icDropped--) {  // let's shift downward until we find the first cell
+					for (int icDropped=columnDropped.getValue(); icDropped>=0; icDropped--) {  // let's shift downward until we find the first cell
 						if (!data.isInapplicable(icDropped, recipientRow)){
-							columnDropped=icDropped;
+							effectiveColumnDropped = icDropped;
 							break;
 						}
 					}
@@ -201,7 +206,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			}
 			int droppedCellPositionInAlignment = 0;
 
-			for (int ic=0; ic<newAlignment.length; ic++) {  // let's see the position of droppedCellCount in the alignment of this sequence
+			for (int ic=0; ic<rowToAlignAlignment.length; ic++) {  // let's see the position of droppedCellCount in the alignment of this sequence
 				if (!CategoricalState.isInapplicable(aligned[ic][0])) {
 					droppedAlignmentCount++;
 					if (droppedAlignmentCount>=droppedCellCount) { // we have found the position in the alignment
@@ -215,8 +220,8 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			//let's see how many cells are in the alignment up to that point in the dragged sequence
 			int draggedAlignmentCellCount=0;
 			int lastFilledCellDraggedAlignmentPosition =-1;
-			for (int ic=0; ic<newAlignment.length && ic<=droppedCellPositionInAlignment; ic++) {  // let's see how many cells are in the dragged sequence up to that point
-				if (!CategoricalState.isInapplicable(newAlignment[ic])) {
+			for (int ic=0; ic<rowToAlignAlignment.length && ic<=droppedCellPositionInAlignment; ic++) {  // let's see how many cells are in the dragged sequence up to that point
+				if (!CategoricalState.isInapplicable(rowToAlignAlignment[ic])) {
 					draggedAlignmentCellCount++;
 					lastFilledCellDraggedAlignmentPosition=ic;  // within the alignment, this is the last cell, to the left of the dropped site,  in the dragged sequence that has data
 				}
@@ -226,8 +231,8 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 				extraGapsInNewAlignment= droppedCellPositionInAlignment-lastFilledCellDraggedAlignmentPosition;
 			else{  // there was nothing to the left; now we have to look to the right
 				int firstFilledCellDraggedAlignmentPosition =-1;
-				for (int ic=droppedCellPositionInAlignment; ic<newAlignment.length; ic++) {  // let's see how many cells are in the dragged sequence up to that point
-					if (!CategoricalState.isInapplicable(newAlignment[ic])) {  //let's find first one
+				for (int ic=droppedCellPositionInAlignment; ic<rowToAlignAlignment.length; ic++) {  // let's see how many cells are in the dragged sequence up to that point
+					if (!CategoricalState.isInapplicable(rowToAlignAlignment[ic])) {  //let's find first one
 						draggedAlignmentCellCount=1;
 						firstFilledCellDraggedAlignmentPosition=ic;  // within the alignment, this is the last cell, to the left of the dropped site,  in the dragged sequence that has data
 						break;
@@ -248,9 +253,10 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			}
 
 			int positionInOriginalAlignment= lastFilledCellDraggedOriginalPosition+extraGapsInNewAlignment;
-			amountToMove = columnDropped-positionInOriginalAlignment+1;
+			amountToMove = effectiveColumnDropped-positionInOriginalAlignment+1;
 			if (useWindow())
 				amountToMove=amountToMove-windowLength/2;
+			
 		} 
 		
 		else {  //shift to dragged sequence
@@ -259,14 +265,14 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 					draggedCellCount=1;
 					for (int ic=0; ic<data.getNumChars(); ic++) {  // let's add up how many data-filled cells are up to the sequence dropped
 						if (!data.isInapplicable(ic, rowToAlign)){
-							columnDragged=ic;
+							effectiveColumnDragged = ic;
 							break;
 						}
 					}
 				} else { // was either internal gap or terminal gap at right end
-					for (int ic=columnDragged; ic>=0; ic--) {  // let's shift downward until we find the first cell
+					for (int ic=columnDragged.getValue(); ic>=0; ic--) {  // let's shift downward until we find the first cell
 						if (!data.isInapplicable(ic, rowToAlign)){
-							columnDragged=ic;
+							effectiveColumnDragged = ic;
 							break;
 						}
 					}
@@ -280,7 +286,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			}
 			int draggedCellPositionInAlignment = 0;
 
-			for (int ic=0; ic<newAlignment.length; ic++) {  // let's see the position of draggedCellCount in the alignment of this sequence
+			for (int ic=0; ic<rowToAlignAlignment.length; ic++) {  // let's see the position of draggedCellCount in the alignment of this sequence
 				if (!CategoricalState.isInapplicable(aligned[ic][1])) {
 					draggedAlignmentCount++;
 					if (draggedAlignmentCount>=draggedCellCount) { // we have found the position in the alignment
@@ -294,7 +300,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			//let's see how many cells are in the alignment up to that point in the dropped sequence
 			int droppedAlignmentCellCount=0;
 			int lastFilledCellDroppedAlignmentPosition =-1;
-			for (int ic=0; ic<newAlignment.length && ic<=draggedCellPositionInAlignment; ic++) {  // let's see how many cells are in the dragged sequence up to that point
+			for (int ic=0; ic<rowToAlignAlignment.length && ic<=draggedCellPositionInAlignment; ic++) {  // let's see how many cells are in the dragged sequence up to that point
 				if (!CategoricalState.isInapplicable(aligned[ic][0])) {
 					droppedAlignmentCellCount++;
 					lastFilledCellDroppedAlignmentPosition=ic;
@@ -314,7 +320,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			}
 			int positionOfDroppedInOriginalAlignment= lastFilledCellDroppedOriginalPosition+extraGapsInNewAlignment;
 
-			amountToMove = positionOfDroppedInOriginalAlignment-columnDragged-1;
+			amountToMove = positionOfDroppedInOriginalAlignment-effectiveColumnDragged-1;
 			if (useWindow())
 				amountToMove=amountToMove+windowLength/2;
 		}
@@ -330,12 +336,25 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 		}
 		else
 			added = data.shiftAllCells(amountToMove, rowToAlign, true, true, true, dataChanged,charAdded, null);
-		if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
-			((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
-			//						((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
+		if (charAdded.isCombinable() && charAdded.getValue()!=0) {
+			if (data instanceof DNAData) {
+				((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
+				//						((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
+			}
+			if (amountToMove<0) { // then we added to the front
+				columnDropped.add(-amountToMove);
+				columnDragged.add(-amountToMove);
+			}
 		}
 		//MAY NEED TO NOTIFY!!!!!!
+		/*	data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, null, null));
+		data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED, null, null));
+		if (oldNumChars!=data.getNumChars()){
+			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, null, null));
+			data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
+		}
 
+*/
 
 	}
 

@@ -34,7 +34,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 	protected MesquiteTable table;
 	protected CategoricalData data;
 	protected TableTool alignShiftDropTool;
-	protected int firstColumnTouched = -2;
+	protected MesquiteInteger firstColumnTouched = new MesquiteInteger(-2);
 	protected int firstRowTouched = -2;
 	protected boolean defaultWarnCheckSum  =true;
 	protected MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
@@ -190,7 +190,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 
 
 	/*.................................................................................................................*/
-	protected abstract void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped, int columnDragged, boolean droppedOnData, boolean draggedOnData);
+	protected abstract void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged, boolean droppedOnData, boolean draggedOnData);
 	/*.................................................................................................................*/
 	protected boolean alwaysAlignEntireSequences() {
 		return true;
@@ -209,17 +209,17 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 		return false;
 	}
 	/*.................................................................................................................*/
-	protected long[][] windowAlignment(int rowToAlign, int recipientRow, int columnDropped, int columnDragged) {
+	protected long[][] windowAlignment(int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged) {
 		return null;
 	}
 	
 	/*.................................................................................................................*/
-	protected boolean alignTouchedToDroppedBase(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
+	protected boolean alignTouchedToDroppedBase(int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged){
 		MesquiteNumber score = new MesquiteNumber();
 		boolean revComplemented=false;
-		boolean droppedOnData = !data.isInapplicable(columnDropped, recipientRow);
-		boolean draggedOnData = !data.isInapplicable(columnDragged, rowToAlign);
-		preRevCompSetup(rowToAlign,  recipientRow,  columnDropped,  columnDragged);
+		boolean droppedOnData = !data.isInapplicable(columnDropped.getValue(), recipientRow);
+		boolean draggedOnData = !data.isInapplicable(columnDragged.getValue(), rowToAlign);
+		preRevCompSetup(rowToAlign,  recipientRow,  columnDropped.getValue(),  columnDragged.getValue());
 
 		if (reverseComplementIfNecessary.getValue() && data instanceof DNAData) {
 				revComplemented=MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(),rowToAlign, rowToAlign,recipientRow, false, false, false);
@@ -242,11 +242,11 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 				lastColumnSelected.setToUnassigned();
 				if (useWindow()) { // there is a single block selected in the row
 					aligned = windowAlignment(rowToAlign, recipientRow,  columnDropped,  columnDragged);
-/*				} else if (table.singleContiguousBlockSelected(rowToAlign, firstColumnSelected, lastColumnSelected)) { // there is a single block selected in the row
+					/*				} else if (table.singleContiguousBlockSelected(rowToAlign, firstColumnSelected, lastColumnSelected)) { // there is a single block selected in the row
 					shiftOnlySelectedPiece=true;
 					aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, 0, data.getNumChars(), rowToAlign,firstColumnSelected.getValue(),lastColumnSelected.getValue(),true,score);
-*/
-					} else
+					 */
+				} else
 					aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 			}
 			if (!AlignUtil.hasSomeAlignedSites(aligned)){
@@ -258,9 +258,9 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 				return false;
 			}
 			logln(getActionName()+ " " + (rowToAlign+1) + " onto " + (recipientRow+1));
-			long[] newAlignment = Long2DArray.extractRow(aligned,1);
+			long[] rowToAlignAlignment = Long2DArray.extractRow(aligned,1);   
 
-			alignShiftTouchedToDropped(aligned,newAlignment,  rowToAlign,  recipientRow,  columnDropped,  columnDragged, droppedOnData, draggedOnData);
+			alignShiftTouchedToDropped(aligned,rowToAlignAlignment,  rowToAlign,  recipientRow,  columnDropped,  columnDragged, droppedOnData, draggedOnData);
 
 			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
 			return true;
@@ -295,7 +295,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 				if (arguments.indexOf("option")>=0)
 					optionDown = true;
 				MesquiteInteger io = new MesquiteInteger(0);
-				firstColumnTouched= MesquiteInteger.fromString(arguments, io);
+				firstColumnTouched= new MesquiteInteger(MesquiteInteger.fromString(arguments, io));
 				firstRowTouched= MesquiteInteger.fromString(arguments, io);
 				shiftOnlySelectedPiece = false;
 
@@ -339,7 +339,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 					return null;
 				}
 				MesquiteInteger io = new MesquiteInteger(0);
-				int columnDropped = MesquiteInteger.fromString(arguments, io);
+				MesquiteInteger columnDropped = new MesquiteInteger(MesquiteInteger.fromString(arguments, io));
 				int rowDropped= MesquiteInteger.fromString(arguments, io);
 
 				if (!table.rowLegal(rowDropped))
