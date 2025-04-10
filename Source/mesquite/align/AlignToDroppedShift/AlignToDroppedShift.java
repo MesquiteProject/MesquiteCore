@@ -150,6 +150,8 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 		windowStart.setValue(start);
 		windowEnd.setValue(end);
 
+
+
 	}
 	MesquiteInteger windowStart = new MesquiteInteger(0);
 	MesquiteInteger windowEnd = new MesquiteInteger(0);
@@ -162,11 +164,9 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 		boolean shiftToDropped = shiftToDragged.getValue() == optionDown;
 		if (shiftToDropped) {
 			getWindowBoundaries(recipientRow, columnDropped.getValue(), windowStart, windowEnd);
-			Debugg.println("DROPPED  windowStart: " + windowStart + ", windowEnd: " + windowEnd);
 			aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, windowStart.getValue(), windowEnd.getValue(), rowToAlign,0, data.getNumChars(),true,score);
 		} else {
 			getWindowBoundaries(rowToAlign, columnDragged.getValue(), windowStart, windowEnd);
-			Debugg.println("DRAGGED windowStart: " + windowStart + ", windowEnd: " + windowEnd);
 			aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, 0, data.getNumChars(), rowToAlign,windowStart.getValue(), windowEnd.getValue(),true,score);
 		}
 		return aligned;
@@ -254,9 +254,18 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 
 			int positionInOriginalAlignment= lastFilledCellDraggedOriginalPosition+extraGapsInNewAlignment;
 			amountToMove = effectiveColumnDropped-positionInOriginalAlignment+1;
-			if (useWindow())
+			if (useWindow()) {
 				amountToMove=amountToMove-windowLength/2;
-			
+				int  windowStartShiftShift = (columnDropped.getValue()-(windowLength/2)-windowStart.getValue());
+				if (windowStartShiftShift>0) {
+					amountToMove-=windowStartShiftShift;
+				}
+				int  windowEndShiftShift = (columnDropped.getValue()+(windowLength/2)-windowEnd.getValue()-1);
+				if (windowEndShiftShift<0) {
+					amountToMove-=windowEndShiftShift;
+				}
+			}
+
 		} 
 		
 		else {  //shift to dragged sequence
