@@ -31,7 +31,7 @@ import mesquite.lib.duties.*;
 public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	boolean defaultShiftToDragged = false;
 	boolean defaultUseWindow = true;
-	int windowLength = 100;
+	int windowLength = 200;
 	MesquiteBoolean shiftToDragged = new MesquiteBoolean(defaultShiftToDragged);
 	MesquiteBoolean shiftToDropped = new MesquiteBoolean(!defaultShiftToDragged);
 	MesquiteBoolean useWindow = new MesquiteBoolean(defaultUseWindow);
