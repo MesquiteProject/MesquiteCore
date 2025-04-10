@@ -46,12 +46,20 @@ public class DatasetsListDeconcatenate extends DatasetsListUtility {
 	
 	MesquiteBoolean deleteOriginalMatrices = new MesquiteBoolean(true);
 	/*.................................................................................................................*/
-	public boolean queryOptions() {
+	public boolean queryOptions(ListableVector datas) {
 
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Deconcatenate matrix")){
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
 			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Deconcatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", deleteOriginalMatrices.getValue());
+			String m = "original matrices";
+			if (datas.size() == 1) {
+				m = 	"original matrix \"" + StringUtil.shrinkInMiddle(((CharacterData)datas.elementAt(0)).getName(), 50) + "\"";
+				dialog.addLabel("Deconcatenating partitions of matrix");
+			}
+			else
+				dialog.addLabel("Deconcatenating partitions of matrices");
+
+			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete "  + m + " after deconcatenation", deleteOriginalMatrices.getValue());
 			dialog.completeAndShowDialog(true);
 			if (buttonPressed.getValue()==0)  {
 				deleteOriginalMatrices.setValue(deleteMatricesBox.getState());
@@ -65,9 +73,11 @@ public class DatasetsListDeconcatenate extends DatasetsListUtility {
 	}
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
+		if (datas == null)
+			return false;
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
-		if (!queryOptions())
+		if (!queryOptions(datas))
 			return false;
 		Vector v = pauseAllPausables();
 		ProgressIndicator progIndicator = null;

@@ -243,6 +243,7 @@ public class TaxonListAssoc extends TaxonListAssistant {
 				discreetAlert("Can't calculate the association because current association does not refer to the taxa in this list");
 				return;
 			}
+			nameParser.setTrimVerb("attempts to match containing taxon");
 			if (specimens.getNumTaxa()>=3)
 				nameParser.setExamples(new String[]{specimens.getTaxonName(0), specimens.getTaxonName(specimens.getNumTaxa()/2), specimens.getTaxonName(specimens.getNumTaxa()-1)});
 			else if (specimens.getNumTaxa()>0)

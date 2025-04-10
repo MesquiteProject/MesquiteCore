@@ -4593,7 +4593,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 	/* ................................................................................................ */
 	void notifyExtrasOfRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branch) {
-		Debugg.println("@notifyextras");
 		int numItemsTotal = popup.getItemCount();
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();

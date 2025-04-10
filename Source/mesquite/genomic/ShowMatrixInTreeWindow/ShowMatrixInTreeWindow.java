@@ -93,7 +93,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 			resetMatrix(tree);
 	}
 
-
+/*
 	CharacterData linkedMatrix(Tree tree){
 		MesquiteProject project = getProject();
 		CharacterData d = null;
@@ -114,7 +114,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		}
 		return d;
 	}
-
+*/
 
 	void resetMatrix(Tree tree){
 		if (!showMatrix)
@@ -125,7 +125,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		}
 		else if (tree != null) {
 			//here also look for matrix from source if needed
-			CharacterData d = linkedMatrix(tree);
+			CharacterData d = ((MesquiteTree)tree).findLinkedMatrix(getProject());
 			if (d != null){
 				data = d;
 			}
@@ -275,7 +275,13 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 	public String getExplanation() {
 		return "Displays character matrix with the current tree." ;
 	}
-
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return MesquiteModule.NEXTRELEASE;  
+	}
 
 }
 
@@ -581,31 +587,41 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		g.setColor(oldColor);
 	}
 	int pixelWidthScroller =1;
+	boolean iconShown = false;
 	/* ========================================= */
 	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
 
 		//###################### icons for linked matrix
 		if (treeDisplay.getOrientation() != TreeDisplay.LEFT && treeDisplay.getOrientation() != TreeDisplay.RIGHT && treeDisplay.getOrientation() != TreeDisplay.UP && treeDisplay.getOrientation() != TreeDisplay.DOWN)
 			return;
-		if (ownerModule.linkedMatrix(tree) != null){
-			if (treeDisplay.isRight())
-				linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()-30, treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
-			else if (treeDisplay.isLeft())
-				linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
-			else if (treeDisplay.isDown())
-				linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth()-20, treeDisplay.effectiveFieldTopMargin()-16);
-			else if (treeDisplay.isUp())
-				linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth()-20, treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
+		if (treeDisplay.isRight())
+			linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()-30, treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
+		else if (treeDisplay.isLeft())
+			linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
+		else if (treeDisplay.isDown())
+			linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth()-20, treeDisplay.effectiveFieldTopMargin()-16);
+		else if (treeDisplay.isUp())
+			linkIconRect.setLocation(treeDisplay.effectiveFieldLeftMargin()+ treeDisplay.effectiveFieldWidth()-20, treeDisplay.effectiveFieldTopMargin() + treeDisplay.effectiveFieldHeight()-16);
+
+		iconShown = false;
+		CharacterData linkedMatrix = ((MesquiteTree)tree).findLinkedMatrix(ownerModule.getProject());
+		if (linkedMatrix != null){
 			if (!ownerModule.showMatrix) {
 				g.drawImage(linkIcon, linkIconRect.x, linkIconRect.y, treeDisplay);
+				iconShown = true;
 				return;
 			}
-			else
+			else {
 				g.drawImage(linkOffIcon, linkIconRect.x, linkIconRect.y, treeDisplay);
+				iconShown = true;
+		}
 		}		
 		else if (!ownerModule.showMatrix)
 			return;
-
+		else {
+			g.drawImage(linkOffIcon, linkIconRect.x, linkIconRect.y, treeDisplay);
+			iconShown = true;
+		}
 		//###################### draw Matrix!!!
 		drawAndPrintOnTree(tree, drawnRoot, g);
 
@@ -822,7 +838,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branch){
 		try {
 			if (ownerModule.showMatrix){
-				if (ownerModule.choose0Link1 == 1 && ownerModule.linkedMatrix(treeDisplay.getTree()) != null)
+				CharacterData linkedMatrix = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(ownerModule.getProject());
+				if (ownerModule.choose0Link1 == 1 && linkedMatrix != null)
 					popup.addItem("Display of Matrix Linked to Tree...", ownerModule, new MesquiteCommand("queryLinkedOptions", ownerModule), "");
 				else if (ownerModule.getProject().getNumberCharMatrices(treeDisplay.getTree().getTaxa()) >0)
 					popup.addItem("Display of Matrix with Tree...", ownerModule, new MesquiteCommand("queryOptions", ownerModule), "");
@@ -875,10 +892,12 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				return true;
 			}
 			else if (!ownerModule.showMatrix){
+				if (iconShown){
 				ownerModule.showMatrix = true;
 				ownerModule.choose0Link1 = 1;
 				ownerModule.resetMatrix(tree);
 				turnOnOff(true);
+				}
 			}
 			else {
 				ownerModule.showMatrix = false;

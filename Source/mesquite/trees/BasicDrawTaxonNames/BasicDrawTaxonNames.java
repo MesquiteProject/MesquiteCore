@@ -1184,7 +1184,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	double queryAngleRadians(){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Taxon Names Angle",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		dialog.addLabel("Click in circle to set angle of taxon names");
+		dialog.addLabel("Click in circle to set angle of taxon names.");
 		dialog.addLabel("Click a triangle for 0, 45, 90 degrees.");
 		dialog.addHorizontalLine(1);
 		AnglePickerPanel anglePicker = new AnglePickerPanel(namesAngle);
@@ -1193,6 +1193,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		Button useDefaultsButton = null;
 		useDefaultsButton = dialog.addAListenedButton("Set to Default", null, anglePicker);
 		useDefaultsButton.setActionCommand("setToDefault");
+		dialog.addLabel("Note: angled taxon names in effect");
+		dialog.addLabel("only when tree is in \"Up\" orientation.");
 		dialog.addHorizontalLine(1);
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {

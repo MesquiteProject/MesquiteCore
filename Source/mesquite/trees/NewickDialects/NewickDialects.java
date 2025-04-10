@@ -5,6 +5,7 @@ import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.MesquiteInit;
@@ -57,6 +58,13 @@ public class NewickDialects extends MesquiteInit {
 
 	public String getName() {
 		return "Newick Dialects Harvester";
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return MesquiteModule.NEXTRELEASE;  
 	}
 
 }
