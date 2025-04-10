@@ -93,8 +93,10 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
 		if (success)  {
 			mesquiteTabbedFile.processTabbedFileChoiceExtensibleDialog();
-			mesquiteTabbedFile.processNameCategories();
 			sampleCodeList = mesquiteTabbedFile.getSampleCodeList();
+			if (sampleCodeList==null)
+					return false;
+			mesquiteTabbedFile.processNameCategories();
 			chosenNameCategory = mesquiteTabbedFile.getChosenNameCategory();
 			nameOfPopulationTaxaBlock = populationBlockNameField.getText();
 		}
