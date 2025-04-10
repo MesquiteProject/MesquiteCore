@@ -32,13 +32,13 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 	int numFromEnd = 0;	
 	boolean includeEndBoundaryInName = false;
 	String[] examples;
+	String trimVerb = "becomes";
 
 	public NameParser (MesquiteModule ownerModule, String objectName){
 		this.objectName=objectName;
 		this.ownerModule = ownerModule;
 	}
 
-	//NOTE: if the screen size seems too small for more than two examples, only the first and last will be shown
 	public void setExamples(String[] examples){
 		if (examples == null)
 			return;
@@ -50,6 +50,9 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 			examples = ex;
 		}
 		this.examples = examples;
+	}
+	public void setTrimVerb(String verb){
+		this.trimVerb = verb;
 	}
 
 	RadioButtons includeExcludeButtons;
@@ -146,7 +149,7 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 			for (int i = 0; i<exampleLabels.length; i++){
 				exampleLabels[i] = new ExampleLabel();
 				exampleLabels[i].before = dialog.addLabel(examples[i]);
-				dialog.addLabelItalic("becomes");
+				dialog.addLabelItalic(trimVerb);
 				exampleLabels[i].after = dialog.addLabel(examples[i]);
 				dialog.addHorizontalLine(1);
 			}

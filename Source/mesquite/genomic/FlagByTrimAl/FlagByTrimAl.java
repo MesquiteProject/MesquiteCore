@@ -85,6 +85,9 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 		else if ("manualOptions".equalsIgnoreCase(tag)) {
 			manualOptions = content;
 		}
+		else if ("trimAlPath".equalsIgnoreCase(tag)) {
+			trimAlPath = content;
+		}
 		super.processSingleXMLPreference(tag, content);
 	}
 	/*.................................................................................................................*/
@@ -96,8 +99,12 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 		StringUtil.appendXMLTag(buffer, 2, "useBuiltInIfAvailable", useBuiltInIfAvailable);  
 		if (!StringUtil.blank(manualOptions))
 			StringUtil.appendXMLTag(buffer, 2, "manualOptions", manualOptions);  
+		
+		if (!StringUtil.blank(trimAlPath))
+			StringUtil.appendXMLTag(buffer, 2, "trimAlPath", trimAlPath);  
 		return super.preparePreferencesForXML()+buffer.toString();
 	}
+
 	/*.................................................................................................................*/
 	public void queryLocalOptions () {
 		if (queryOptions())
@@ -235,7 +242,6 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 					deleteSupportDirectory();
 					return flags;
 			}
-					
 				String columnsText = MesquiteFile.getFileContentsAsString(columnsPath);
 				if (columnsText != null) {
 					columnsText = StringUtil.stripLeadingWhitespace(columnsText);
@@ -276,7 +282,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
 			else MesquiteMessage.warnUser(" Error status returned from attempt to run trimAl: " + resultStatus);
-			deleteSupportDirectory();
+			deleteSupportDirectory(); 
 
 		}
 

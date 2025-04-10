@@ -110,7 +110,7 @@ public class PhoneHomeThread extends Thread {
 					MesquiteTrunk.mesquiteTrunk.logln("\nMesquite contacted its server to log your version and check for notices and updates. (To turn this off, choose \"Contact Mesquite Server on Startup\" in File>Defaults> submenu.)");
 					if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
 						MesquiteTrunk.mesquiteTrunk.logln("\nBecause this is a prerelease version, any crashes will be reported automatically to Mesquite's server. "
-								+"None of your data file(s) will be sent, just your basic system information and the point in Mesquite's code where the crash happened.");
+								+"None of your data file(s) will be sent, just your basic system information and the point in Mesquite's code where the crash happened.\n");
 					if (r.indexOf("mq4rsshow")>=0){  //show dialog at startup!!!!
 						AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", r, 600, 400, null);
 					}

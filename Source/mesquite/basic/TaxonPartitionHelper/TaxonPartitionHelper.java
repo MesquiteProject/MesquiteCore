@@ -198,6 +198,7 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 				String helpString = "Taxon groups will be created based upon a portion of the taxon names.  In particular, the name of each taxon will be reduced "
 						+ "by removing a piece from the start and/or end; that reduced name will become the name of the taxon group.  If two taxa have the same"
 						+ " reduced name, the will be assigned to the same taxon group";
+				nameParser.setTrimVerb("yields group name");
 				if (taxa.getNumTaxa()>=3)
 					nameParser.setExamples(new String[]{taxa.getTaxonName(0), taxa.getTaxonName(taxa.getNumTaxa()/2), taxa.getTaxonName(taxa.getNumTaxa()-1)});
 				else if (taxa.getNumTaxa()>0)

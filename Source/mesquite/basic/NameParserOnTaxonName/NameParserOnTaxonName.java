@@ -51,13 +51,20 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	public boolean getOptions(Taxa taxa, int firstSelected){
 		if (MesquiteThread.isScripting())
 			return true;
-		if (taxa.getNumTaxa()>=3)
-			nameParser.setExamples(new String[]{taxa.getTaxonName(0), taxa.getTaxonName(taxa.getNumTaxa()/2), taxa.getTaxonName(taxa.getNumTaxa()-1)});
-		else if (taxa.getNumTaxa()==2)
-			nameParser.setExamples(new String[]{taxa.getTaxonName(0), taxa.getTaxonName(1)});
-		else if (taxa.getNumTaxa()>0)
+
+		if (taxa.getNumTaxa()==1)
 			nameParser.setExamples(new String[]{taxa.getTaxonName(0)});
+		else if (taxa.numberSelected()==1){
+			nameParser.setExamples(new String[]{taxa.getTaxonName( taxa.firstSelected())});
+		}
+		else if (taxa.getNumTaxa()>=2){
+			if (taxa.anySelected()) //must be at least two selected
+				nameParser.setExamples(new String[]{taxa.getTaxonName(taxa.firstSelected()), taxa.getTaxonName(taxa.lastSelected())});
+			else
+				nameParser.setExamples(new String[]{taxa.getTaxonName(0), taxa.getTaxonName(taxa.getNumTaxa()-1)});
+		}
 		String helpString = null;
+
 		boolean ok = nameParser.queryOptions("Options for trimming taxon names", "Taxon names will be trimmed by keeping or deleting parts of them", 
 				"In trimming the taxon names,", helpString);
 		if (ok)
@@ -117,6 +124,15 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	public String getExplanation() {
 		return "Changes taxon names by applying a set of rules about keeping and deleting portions of the names.";
 	}
+	
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return MesquiteModule.NEXTRELEASE;  
+	}
+
 }
 
 
