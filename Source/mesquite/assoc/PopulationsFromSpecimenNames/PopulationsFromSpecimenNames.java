@@ -131,7 +131,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 		association = manager.makeNewAssociation(populations, specimensTaxa, "Populations-Specimens");
 
 		if (association != null) {  // taxa is population, otherTaxa is contained/specimens
-			/*if (nameParser==null) {  //ZQ already done in createNewMasterTaxaBlockBasedOnNames
+			/*if (nameParser==null) {  //ZQ FYI: already done in createNewMasterTaxaBlockBasedOnNames
 				nameParser = new NameParser(this, "specimen");
 				if (!MesquiteThread.isScripting()) {
 					String helpString = "New containing taxa (i.e., populations or containing taxa) will be created based on a portion of the taxon names of the contained taxon (e.g., specimen or gene copy)." 

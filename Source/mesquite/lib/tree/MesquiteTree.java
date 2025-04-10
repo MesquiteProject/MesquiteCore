@@ -3163,9 +3163,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 
 
-	/** Takes the node information in a file created by a recent version of MrBayes, and retokenizes it as MrBayes does not use standard NEXUS tokenization rules for this. */
+	/* Takes the node information in a file created by a recent version of MrBayes, and retokenizes it as MrBayes does not use standard NEXUS tokenization rules for this. 
 	//USE OF THIS SHOULD BE REPLACED WITH NEW DIALECT SYSTEM
-	String retokenizeMrBayesConTreeNodeInfo(String nodeInfo) { //ZQ
+	String retokenizeMrBayesConTreeNodeInfo(String nodeInfo) { 
 		if (StringUtil.blank(nodeInfo))
 			return nodeInfo;
 		nodeInfo = StringUtil.replace(nodeInfo, " ", "");
@@ -3174,7 +3174,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
 		return nodeInfo;
 	}
-
+*/
 
 	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
 		readAssociated(TreeDescription, node, stringLoc,whitespaceInNewickComments, punctuationInNewickComments, predefinedDouble(TreeDescription, stringLoc));

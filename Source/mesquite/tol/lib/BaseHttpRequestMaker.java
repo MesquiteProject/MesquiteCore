@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.auth.AuthScope; //org.apache.http.auth.AuthScope  in httpclient
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -33,15 +33,13 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.NameValuePair; //# core
 import org.apache.commons.httpclient.params.HttpMethodParams;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.dom4j.*;
 import org.dom4j.io.*;
 
-import mesquite.tol.lib.*;
 import mesquite.lib.*;
 
 

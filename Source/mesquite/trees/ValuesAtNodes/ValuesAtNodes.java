@@ -135,7 +135,7 @@ public class ValuesAtNodes extends TreeDisplayAssistantMA implements LegendHolde
 		return false;
 	}
 	public void employeeQuit(MesquiteModule m){
-		if(m==displayTask)
+	//	if(m==displayTask)
 			iQuit();
 	}
 	/*.................................................................................................................*/

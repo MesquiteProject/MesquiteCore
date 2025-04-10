@@ -866,7 +866,7 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 					selected.setValue(-i-1); //if nothing selected do not respond!
 				dispose();
 			}
-			else if (buttonLabel.equalsIgnoreCase(thirdButton)){ //ZQ: what was this for?
+			else if (buttonLabel.equalsIgnoreCase(thirdButton)){ //ZQ: The seems to have a special use, to deselect, and yet it is written as if the label is flexible/generic.
 				if (selected != null)
 					selected.setValue(-1); 
 				for (int i = 0; i<list.getRows(); i++)

@@ -349,11 +349,9 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
 		else if (checker.compare(this.getClass(), "Creates a taxa block based upon the current partition", null, commandName, "createTaxaBlock")) {
-			//ZQ: I moved the two methods out of Taxa. They are best not done there. 
+			//ZQ: FYI: I moved the two methods out of Taxa. They are best not done there. 
 			// A module should do this, partly because it is not just the Taxa's internal management but affects the whole project, and partly to have interface choices.
-			// Do you plan to use it elsewhere soonish? If not, I'm inclined to leave it in this module so as not to complexify central stuff.
-			// Otherwise, if to be used elsewhere, then ManageTaxa is exactly for this sort of thing.
-			// Also changed name of method, since it's from the partition.
+			//  ManageTaxa is exactly for this sort of thing. Also changed name of method, since it's from the partition.
 			TaxaManager manager = (TaxaManager)findElementManager(Taxa.class);
 			if (manager!=null) {
 				manager.createTaxaBlockBasedOnPartition(taxa);

@@ -140,7 +140,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 										logln("Data in matrix " + receivingMatrix.getName() + " replaced for taxon " + receivingTaxa.getTaxonName(receivingTaxonNumber));
 									else if (countWarnings == 10)
 										logln("Data replaced for other matrices or taxa as well");
-									for (int ic = 0; ic< receivingMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other //ZQ: do this, or have it as query at start?
+									for (int ic = 0; ic< receivingMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other 
 										receivingMatrix.setToInapplicable(ic, receivingTaxonNumber);
 								}
 							}

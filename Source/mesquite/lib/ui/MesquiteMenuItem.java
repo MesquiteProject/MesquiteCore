@@ -37,7 +37,7 @@ import mesquite.lib.simplicity.InterfaceManager;
 /**A menu item.  Note that a command must be associated with each menu item.
 Each menu item belongs to a MesquiteModule.*/
 
-public class MesquiteMenuItem extends MenuItem implements ActionListener{
+public class MesquiteMenuItem extends MenuItem implements ActionListener {
 	public static long totalCreated = 0;//to catch memory leaks
 	public static long totalDisposed =0;//to catch memory leaks
 	public static long totalFinalized =0;//to catch memory leaks
@@ -214,7 +214,6 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 		}*/
 	}
 	Journal j =null;
-
 	public void actionPerformed(ActionEvent e) {
 		//Event queue
 		if (command==null || !command.isExecutable())

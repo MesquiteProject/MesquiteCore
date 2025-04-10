@@ -324,47 +324,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					
 					//***************
 					transferCurrentPartitionAndGroups( proj, previousTaxas, currentTaxas, taxaToReceive, previousGroups);
-/*
-					ListableVector newlyAddedGroups = new ListableVector();
-					TaxaPartition currentPartition = (TaxaPartition)taxaToReceive.getOrMakeCurrentSpecsSet(TaxaPartition.class);
-					//cycle through looking for taxon names that match and pulling across info
-					for (int iTax = 0; iTax<currentTaxas.length; iTax++){
-						Taxa sourceTaxa = (Taxa)currentTaxas[iTax];
-						if (sourceTaxa != taxaToReceive && ObjectArray.indexOf(previousTaxas, sourceTaxa)<0){  //look only at the newly read taxa blocks
-							TaxaPartition sourcePartition = (TaxaPartition)sourceTaxa.getCurrentSpecsSet(TaxaPartition.class);
-							if (sourcePartition != null){
-								for (int iSourceTaxon = 0; iSourceTaxon<sourceTaxa.getNumTaxa(); iSourceTaxon++){ //in each look for taxa with the same name as one in the recipient block
-									String sourceName = sourceTaxa.getTaxonName(iSourceTaxon);
-									int recipientTaxon = taxaToReceive.whichTaxonNumber(sourceName);
-									if (recipientTaxon>=0){ //recipient taxon matches source taxon!
-										TaxaGroup sourceGroup = (TaxaGroup)sourcePartition.getProperty(iSourceTaxon);
-										if (sourceGroup != null){  //the source has a group for this taxon
-											//First, deal with copying over the group information
-											TaxaGroup recGroupOfSameName = null;
-											int groupFoundInNew = newlyAddedGroups.indexOfByName(sourceGroup.getName());
-											int groupFoundInOld = ListableVector.indexOfByName(previousGroups, sourceGroup.getName());
-											if (groupFoundInOld>=0) //group of same name already exists in this file; therefore just copy over its colours etc.
-												recGroupOfSameName = (TaxaGroup)previousGroups[groupFoundInOld];
-											else if (groupFoundInNew>=0) //group of same name already exists in this file; therefore just copy over its colours etc.
-												recGroupOfSameName = (TaxaGroup)newlyAddedGroups.elementAt(groupFoundInNew);
-											else {
-												recGroupOfSameName = new TaxaGroup();
-												newlyAddedGroups.addElement(recGroupOfSameName, false);
-												recGroupOfSameName.addToFile(taxaToReceive.getFile(), proj, null);
-											}
-											//ZQ how to bring over symbol?
-											recGroupOfSameName.equalizeAs(sourceGroup);
 
-											TaxaGroup receivingGroup = (TaxaGroup)currentPartition.getProperty(recipientTaxon);
-											if (receivingGroup != recGroupOfSameName)
-												currentPartition.setProperty(recGroupOfSameName, recipientTaxon);
-
-										}
-									}
-								}
-							}
-						}
-					}
 					//***************
 					///*/
 					proj.getCoordinatorModule().closeFile(fileToRead, true);
@@ -406,7 +366,6 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 									newlyAddedGroups.addElement(recGroupOfSameName, false);
 									recGroupOfSameName.addToFile(taxaToReceive.getFile(), proj, null);
 								}
-								//ZQ how to bring over symbol?
 								recGroupOfSameName.equalizeAs(sourceGroup);
 
 								TaxaGroup receivingGroup = (TaxaGroup)currentPartition.getProperty(recipientTaxon);

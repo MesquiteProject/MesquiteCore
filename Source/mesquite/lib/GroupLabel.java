@@ -55,7 +55,7 @@ public class GroupLabel extends FileElement {
 		if (toCopy.symbol == null)
 			symbol = null;
 		else {
-			symbol = toCopy.symbol.cloneMethod(); //ZQ: I assume this needs to be cloned, not the exact same object?  
+			symbol = toCopy.symbol.cloneMethod(); 
 		}
 		colorWasSet = toCopy.colorWasSet;
 		visible = toCopy.visible;
