@@ -4105,19 +4105,20 @@ boolean reportTiming = true;
 
 		timers[timerNum++].end();
 		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 8% but only if selected blocks
-		timers[timerNum].start();
 		if (selected) {
-			if (true) {
+			timers[timerNum].start();
+			/*if (true) {
 				transparentG.fillRect( x, y, w, h);
 				}
 			else /**/
+			
 			if (leaveEdges)
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x + 1, y + 1, w - 1, h - 1);
 			else
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x, y, w, h);
+			timers[timerNum++].end();
 		}
 		//@@@@@@ macOS
-		timers[timerNum++].end();
 
 		if (writeStates) {
 			timers[timerNum].start();
