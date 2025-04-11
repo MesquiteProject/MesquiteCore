@@ -190,7 +190,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 
 
 	/*.................................................................................................................*/
-	protected abstract void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged, boolean droppedOnData, boolean draggedOnData);
+	protected abstract void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged, boolean droppedOnData, boolean draggedOnData, MesquiteInteger charsAddedToFront);
 	/*.................................................................................................................*/
 	protected boolean alwaysAlignEntireSequences() {
 		return true;
@@ -214,7 +214,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 	}
 	
 	/*.................................................................................................................*/
-	protected boolean alignTouchedToDroppedBase(int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged){
+	protected boolean alignTouchedToDroppedBase(int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged, MesquiteInteger charsAddedToFront){
 		MesquiteNumber score = new MesquiteNumber();
 		boolean revComplemented=false;
 		boolean droppedOnData = !data.isInapplicable(columnDropped.getValue(), recipientRow);
@@ -260,7 +260,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 			logln(getActionName()+ " " + (rowToAlign+1) + " onto " + (recipientRow+1));
 			long[] rowToAlignAlignment = Long2DArray.extractRow(aligned,1);   
 
-			alignShiftTouchedToDropped(aligned,rowToAlignAlignment,  rowToAlign,  recipientRow,  columnDropped,  columnDragged, droppedOnData, draggedOnData);
+			alignShiftTouchedToDropped(aligned,rowToAlignAlignment,  rowToAlign,  recipientRow,  columnDropped,  columnDragged, droppedOnData, draggedOnData, charsAddedToFront);
 
 			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
 			return true;
@@ -341,6 +341,8 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 				MesquiteInteger io = new MesquiteInteger(0);
 				MesquiteInteger columnDropped = new MesquiteInteger(MesquiteInteger.fromString(arguments, io));
 				int rowDropped= MesquiteInteger.fromString(arguments, io);
+				MesquiteInteger charsAddedToFront= new MesquiteInteger(0);
+				boolean changed=false;
 
 				if (!table.rowLegal(rowDropped))
 					return null;
@@ -359,12 +361,12 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 						}
 						UndoReference undoReference = new UndoReference(data,this, new int[] {UndoInstructions.CHAR_ADDED});
 						int count = 0;
-						boolean changed = false;
 						int oldNumChars = data.getNumChars();
 						for (int it = 0; it<table.getNumRows(); it++) 
 							if (table.isRowSelected(it) && (it!=rowDropped)) {
-								if (alignTouchedToDroppedBase(it,rowDropped, columnDropped, firstColumnTouched))
+								if (alignTouchedToDroppedBase(it,rowDropped, columnDropped, firstColumnTouched, charsAddedToFront)) {
 									changed = true;
+								}
 								if (progIndicator != null) {
 									if (progIndicator.isAborted()) {
 										progIndicator.goAway();
@@ -385,6 +387,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 								data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, null, null));
 								data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
 							}
+								
 						}
 						if (progIndicator != null)
 							progIndicator.goAway();
@@ -394,9 +397,8 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 				else if (firstRowTouched!=rowDropped) {
 					UndoReference undoReference = new UndoReference();
 					UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_ADDED});
-					boolean changed=false;
 					int oldNumChars = data.getNumChars();
-					if (alignTouchedToDroppedBase(firstRowTouched,rowDropped, columnDropped, firstColumnTouched))
+					if (alignTouchedToDroppedBase(firstRowTouched,rowDropped, columnDropped, firstColumnTouched, charsAddedToFront))
 						changed = true;
 					UndoReference uR=null;
 					if (undoInstructions!=null) {
@@ -418,6 +420,10 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 						}
 					}
 				}
+				if (changed && charsAddedToFront.getValue()>0 && table!=null) {  // we've added characters to front, let's scroll over to maintain view
+					table.shiftHorizScroll(charsAddedToFront.getValue());
+				}
+
 				alignJustTouchedRow = true;
 			}
 		}

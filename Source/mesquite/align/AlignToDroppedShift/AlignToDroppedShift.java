@@ -94,8 +94,8 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 
 	/*.................................................................................................................*/
 	public void addExtraMenus(){
-		addCheckMenuItem(null, "Shift Dragged Sequence so that Dragged Base Matches its Counterpart", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
 		addCheckMenuItem(null, "Shift Dragged Sequence so that Base on Which it is Dropped Matches its Counterpart", makeCommand("toggleShiftToDropped",  this), shiftToDropped);
+		addCheckMenuItem(null, "Shift Dragged Sequence so that Dragged Base Matches its Counterpart", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
 		addMenuSeparator();
 		addCheckMenuItem(null, "Examine Defined Window Around Base for Match", makeCommand("useWindow",  this), useWindow);
 		addMenuItem("Window Length...", MesquiteModule.makeCommand("setWindowLength", this));
@@ -173,7 +173,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	}
 
 	/*.................................................................................................................*/
-	protected void alignShiftTouchedToDropped(long[][] aligned, long[] rowToAlignAlignment, int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged, boolean droppedOnData, boolean draggedOnData){
+	protected void alignShiftTouchedToDropped(long[][] aligned, long[] rowToAlignAlignment, int rowToAlign, int recipientRow, MesquiteInteger columnDropped, MesquiteInteger columnDragged, boolean droppedOnData, boolean draggedOnData, MesquiteInteger charsAddedToFront){
 		boolean shiftToDropped = shiftToDragged.getValue() == optionDown;
 		int amountToMove = 0;
 		int oldNumChars = data.getNumChars();
@@ -353,6 +353,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			if (amountToMove<0) { // then we added to the front
 				columnDropped.add(-amountToMove);
 				columnDragged.add(-amountToMove);
+				charsAddedToFront.add(-amountToMove);
 			}
 		}
 		//MAY NEED TO NOTIFY!!!!!!

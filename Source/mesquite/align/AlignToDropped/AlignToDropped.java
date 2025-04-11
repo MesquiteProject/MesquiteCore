@@ -80,7 +80,7 @@ public class AlignToDropped extends AlignShiftToDroppedBase {
 	}
 
 	/*.................................................................................................................*/
-	protected void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, MesquiteInteger columnDropped,  MesquiteInteger columnDragged, boolean droppedOnData, boolean draggedOnData) {
+	protected void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, MesquiteInteger columnDropped,  MesquiteInteger columnDragged, boolean droppedOnData, boolean draggedOnData, MesquiteInteger charsAddedToFront) {
 		int[] newGaps = aligner.getGapInsertionArray();
 		if (newGaps!=null) 
 			alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
