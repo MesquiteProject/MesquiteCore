@@ -315,17 +315,29 @@ public class ColorDistribution {
 	}
 
 	public static void setComposite(Graphics g, Composite composite) {
-		if (g!=null && composite!=null && (g instanceof Graphics2D)) {
-			((Graphics2D)g).setComposite(composite); 
-		}
+		if (g!=null) {
+			if (g instanceof Graphics2D) {
+				if (composite ==null)
+					((Graphics2D)g).setComposite(AlphaComposite.SrcOver);
+				else 
+					((Graphics2D)g).setComposite(composite); 
+			}
+		
+			else g.setPaintMode();
+			}
 	}
 
-
+static Composite storedComposite = null;
+static float prevCompositeFloat = 0;
 
 	public static void setTransparentGraphics(Graphics g, float f) {
 		if (g!=null && (g instanceof Graphics2D)) {
-			if (f>0.0f && f<1.0f)
-				((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, f)); 
+			if (f>0.0f && f<1.0f) {
+				if (storedComposite == null || f != prevCompositeFloat) {
+					storedComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, f);
+				}
+				((Graphics2D)g).setComposite(storedComposite); 
+			}
 			//			else if (f==0.0f)
 			//				((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.00001f)); 
 		}

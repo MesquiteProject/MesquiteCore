@@ -426,7 +426,7 @@ public class GraphicsUtil {
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		Composite composite = ColorDistribution.getComposite(g);
-		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		ColorDistribution.setTransparentGraphics(g,0.3f);		//Debugg.println("@33333
 		g.setColor(Color.gray);
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		

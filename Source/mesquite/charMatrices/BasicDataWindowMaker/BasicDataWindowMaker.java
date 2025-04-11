@@ -4034,7 +4034,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	int numTimers = 15;
 MesquiteTimer[] timers = new MesquiteTimer[numTimers];
 long timerCount = 0;
-boolean reportTiming = false;
+boolean reportTiming = true;
 	public synchronized void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected, boolean writeStates, boolean leaveEdges) {
 		if (data == null)
 			return;
@@ -4046,6 +4046,14 @@ boolean reportTiming = false;
 		int guiltyA = 0;
 				int guiltyB = 0;
 		int timerNum = 0;
+
+		Composite composite = ColorDistribution.getComposite(g);
+		if (composite != AlphaComposite.SrcOver)
+			System.err.println("@*");
+		Graphics transparentG = getMatrixPanel().getGraphics();
+		ColorDistribution.setTransparentGraphics(transparentG,0.3f);
+//System.err.println("@tg=g " + (g == transparentG));	
+		
 		timers[timerNum].start();
 		boolean changedSinceSave = showChanges.getValue() && data.getChangedSinceSave(column, row);
 
@@ -4099,6 +4107,10 @@ boolean reportTiming = false;
 		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 8% but only if selected blocks
 		timers[timerNum].start();
 		if (selected) {
+			if (true) {
+				transparentG.fillRect( x, y, w, h);
+				}
+			else /**/
 			if (leaveEdges)
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x + 1, y + 1, w - 1, h - 1);
 			else
@@ -4185,6 +4197,9 @@ boolean reportTiming = false;
 				g.drawString(st, cent, vert); // this is very time costly on OSX java 1.4!! (as of 10.3.9 on Powerbook G4)
 			timers[timerNum++].end();
 			timers[timerNum].start();
+			timers[timerNum++].end();
+			//@@@
+			timers[timerNum].start(); 
 			if (useClip) {
 				g.setClip(clip);
 			}
@@ -4194,7 +4209,7 @@ boolean reportTiming = false;
 		if (c != null)
 			g.setColor(c);
 		timerCount++;
-		if (reportTiming && timerCount % 100 == 0) {
+		if (reportTiming && timerCount % 1000 == 0) {
 			String s = "";
 			for (int i = 0; i<timerNum; i++)
 				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
