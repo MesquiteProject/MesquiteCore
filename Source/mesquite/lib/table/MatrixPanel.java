@@ -66,6 +66,7 @@ public class MatrixPanel extends EditorPanel implements FocusListener {
 		Graphics g = getGraphics();
 		if (g!=null) {
 			redrawCell(g, column, row);
+			System.err.println("@d " + column + " , " + row);
 			g.dispose();
 		}
 	}
@@ -99,6 +100,7 @@ timer6.end();
 	 */
 	public void redrawCell(Graphics g, int column, int row) {
 		redrawCellOffset(g, column, row, 0, 0);
+		System.err.println("@e " + column + " , " + row);
 	}
 
 	public void redrawCellBlock(Graphics g, int columnStart, int columnEnd, int rowStart, int rowEnd) {
@@ -125,6 +127,7 @@ timer6.end();
 	//draws cell appearing at column, row, but with contents for cell column+offsetColumn, row+offsetRow.  Used with non-zero offsets for quick draw during manual sequence alignment
 	public void redrawCellOffset(Graphics g, int column, int row, int offsetColumn, int offsetRow) {
 		redrawCells++;
+		System.err.println("@f " + column + " , " + row);
 		int left = table.getFirstColumnVisible();
 		int top = table.getFirstRowVisible();
 		if (column<left || row<top)  

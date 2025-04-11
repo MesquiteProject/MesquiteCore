@@ -3115,6 +3115,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				if (i < getNumColumns() && j < getNumRows())
 					redrawCellOffset(i, j, offsetColumn, offsetRow, g);
 		g.dispose();
+		System.err.println("@a " + firstColumn + " , " + lastColumn);
 	}
 
 	/* ............................................................................................................... */
@@ -3133,6 +3134,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			for (int j = r1; j <= r2; j++)
 				if (i < getNumColumns() && j < getNumRows())
 					redrawCell(i, j, g);
+		System.err.println("@b " + firstColumn + " , " + lastColumn);
 		g.dispose();
 	}
 	/* ............................................................................................................... */
@@ -3149,6 +3151,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			for (int j = 0; j <= numRowsTotal; j++)
 				if (whichRows.isBitOn(j) && i < getNumColumns() && j < getNumRows())
 					redrawCell(i, j, g);
+		System.err.println("@c " + firstColumn + " , " + lastColumn);
 		g.dispose();
 	}
 

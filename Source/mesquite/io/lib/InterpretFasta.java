@@ -752,8 +752,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 		//new style
 		String fileName = suggestedFileName(null, preferredDataFileExtension());
-		String filePath = getPathForExport(arguments, fileName, null, null);   //Wayne QZ:  you declared a local variable filePath here, but filePath is global to FileInterpreter, and some methods use this.
-																									// I've changed this back to global; is this OK?
+		String filePath = getPathForExport(arguments, fileName, null, null);   
 		boolean success = writeMatrixToFile(data, filePath ); 
 
 		/*
