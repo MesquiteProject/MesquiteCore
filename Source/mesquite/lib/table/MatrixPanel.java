@@ -321,6 +321,7 @@ timer6.end();
 		super.repaint();
 	}
 
+	MesquiteTimer matrixTimer = new MesquiteTimer();
 	/*...............................................................................................................*/
 	public void paint(Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
@@ -386,6 +387,9 @@ timer6.end();
 			Shape clip = g.getClip();
 			table.resetNumColumnsVisible();
 			table.resetNumRowsVisible();
+			matrixTimer.start();
+			table.resetTiming(false);
+			GraphicsUtil.resetTiming(false);
 			for (int r=table.firstRowVisible; r<=table.lastRowVisible+1 && (r<table.numRowsTotal)   && r< table.rowHeights.length && (lineY<resetHeight); r++) {
 				lineY += table.rowHeights[r];
 
@@ -439,6 +443,10 @@ timer6.end();
 				}
 				oldLineY=lineY;
 			}
+			table.reportTiming();
+			GraphicsUtil.reportTiming();
+			matrixTimer.end();
+			System.err.println("@mp total " + matrixTimer.getAccumulatedTime());
 			if (table.getBetweenSelected()) {
 				drawBetweenSelection(g);
 			}

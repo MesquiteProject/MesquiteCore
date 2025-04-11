@@ -4031,9 +4031,6 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public CellColorer getCellColorer() {
 		return cellColorer;
 	}
-	int numTimers = 15;
-MesquiteTimer[] timers = new MesquiteTimer[numTimers];
-long timerCount = 0;
 boolean reportTiming = true;
 	public synchronized void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected, boolean writeStates, boolean leaveEdges) {
 		if (data == null)
@@ -4046,7 +4043,7 @@ boolean reportTiming = true;
 		int guiltyA = 0;
 				int guiltyB = 0;
 		int timerNum = 0;
-
+		
 		Composite composite = ColorDistribution.getComposite(g);
 		if (composite != AlphaComposite.SrcOver)
 			System.err.println("@*");
@@ -4210,12 +4207,12 @@ boolean reportTiming = true;
 		if (c != null)
 			g.setColor(c);
 		timerCount++;
-		if (reportTiming && timerCount % 1000 == 0) {
+		/*if (reportTiming && timerCount % 1000 == 0) {
 			String s = "";
 			for (int i = 0; i<timerNum; i++)
 				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
-			System.err.println("@ " + s + " /// " + guiltyA + "  " + guiltyB);
-		}
+			System.err.println("@bdw " + s + " /// " + guiltyA + "  " + guiltyB);
+		}*/
 	}
 
 	/* ............................................................................................................... */

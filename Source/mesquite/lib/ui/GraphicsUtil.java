@@ -429,6 +429,27 @@ public class GraphicsUtil {
 	static MesquiteTimer[] timers = new MesquiteTimer[numTimers];
 	static long timerCount = 0;
 	static boolean reportTiming = true;
+	public static void resetTiming(boolean zeroTime){
+		if (timers[0] == null){
+			for (int i = 0; i<numTimers; i++)
+				timers[i] = new MesquiteTimer();
+		}
+		if (zeroTime){
+			System.err.println("@RESET GU");
+			for (int i = 0; i<numTimers; i++)
+			timers[i].reset();
+		}
+	}
+	public static void reportTiming(){
+		String s = "";
+		long total = 0;
+		for (int i = 0; i<numTimers; i++) {
+				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
+				total += timers[i].getAccumulatedTime();
+		}
+		System.err.println("@GU " + s + " TOTAL= " + total);
+	}
+	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		if (timers[0] == null){
 			for (int i = 0; i<numTimers; i++)
@@ -451,12 +472,9 @@ public class GraphicsUtil {
 		ColorDistribution.setComposite(g, composite);		
 		timers[timerNum++].end();
 		timerCount++;
-		if (reportTiming && timerCount % 1000 == 0) {
-			String s = "";
-			for (int i = 0; i<timerNum; i++)
-				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
-			System.err.println("@fTSR " + s );
-		}
+		/*if (reportTiming && timerCount % 1000 == 0) {
+			reportTiming();
+		}*/
 	}
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionPolygon (Graphics g, Polygon poly) {

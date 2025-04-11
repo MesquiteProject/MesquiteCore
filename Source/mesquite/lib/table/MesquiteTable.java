@@ -3115,7 +3115,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				if (i < getNumColumns() && j < getNumRows())
 					redrawCellOffset(i, j, offsetColumn, offsetRow, g);
 		g.dispose();
-		System.err.println("@a " + firstColumn + " , " + lastColumn);
 	}
 
 	/* ............................................................................................................... */
@@ -3134,7 +3133,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			for (int j = r1; j <= r2; j++)
 				if (i < getNumColumns() && j < getNumRows())
 					redrawCell(i, j, g);
-		System.err.println("@b " + firstColumn + " , " + lastColumn);
 		g.dispose();
 	}
 	/* ............................................................................................................... */
@@ -3151,7 +3149,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			for (int j = 0; j <= numRowsTotal; j++)
 				if (whichRows.isBitOn(j) && i < getNumColumns() && j < getNumRows())
 					redrawCell(i, j, g);
-		System.err.println("@c " + firstColumn + " , " + lastColumn);
 		g.dispose();
 	}
 
@@ -3267,6 +3264,30 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	public void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected) {
 		// g.drawString(Integer.toString(row + column), x+2, y+h-2);
 	}
+	
+	// timing for matrix redraws
+	protected	int numTimers = 15;
+	protected MesquiteTimer[] timers = new MesquiteTimer[numTimers];
+	protected long timerCount = 0;
+	public void resetTiming(boolean zeroTime){
+		if (timers[0] == null){
+			for (int i = 0; i<numTimers; i++)
+				timers[i] = new MesquiteTimer();
+		}
+		if (zeroTime)
+		for (int i = 0; i<numTimers; i++)
+			timers[i].reset();
+	}
+	public void reportTiming(){
+		String s = "";
+		long total = 0;
+		for (int i = 0; i<numTimers; i++) {
+				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
+				total += timers[i].getAccumulatedTime();
+		}
+		System.err.println("@mt " + s + " TOTAL= " + total);
+	}
+
 	/* ............................................................................................................... */
 	//to be overridden to change color; works only for MatrixPanel, and only when useString & overriding permit it
 	public Color getBackgroundColor(int column, int row, boolean selected){
