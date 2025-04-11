@@ -257,7 +257,6 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 				logln("Sequence " +(rowToAlign+1) + " relative to sequence " + (recipientRow+1)+": " + getProductName() + " failed!");
 				return false;
 			}
-			logln(getActionName()+ " " + (rowToAlign+1) + " onto " + (recipientRow+1));
 			long[] rowToAlignAlignment = Long2DArray.extractRow(aligned,1);   
 
 			alignShiftTouchedToDropped(aligned,rowToAlignAlignment,  rowToAlign,  recipientRow,  columnDropped,  columnDragged, droppedOnData, draggedOnData, charsAddedToFront);

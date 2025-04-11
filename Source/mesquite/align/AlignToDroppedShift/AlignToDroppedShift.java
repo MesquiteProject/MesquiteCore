@@ -356,6 +356,10 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 				charsAddedToFront.add(-amountToMove);
 			}
 		}
+		
+		if (amountToMove!=0) {
+			logln(" " + getActionName()+ " " + (rowToAlign+1) + " onto " + (recipientRow+1) + " [shift " + amountToMove +  " bases]");
+		}
 		//MAY NEED TO NOTIFY!!!!!!
 		/*	data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, null, null));
 		data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED, null, null));
