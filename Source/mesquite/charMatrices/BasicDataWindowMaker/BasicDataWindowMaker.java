@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
 
 import javax.swing.text.*;
 
@@ -4031,7 +4032,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public CellColorer getCellColorer() {
 		return cellColorer;
 	}
-boolean reportTiming = true;
+boolean reportTiming = false;
+FontRenderContext firstContext = null;
+RenderingHints firstHints = null;
 	public synchronized void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected, boolean writeStates, boolean leaveEdges) {
 		if (data == null)
 			return;
@@ -4043,7 +4046,11 @@ boolean reportTiming = true;
 		int guiltyA = 0;
 				int guiltyB = 0;
 		int timerNum = 0;
-		
+		if (firstContext == null)
+			firstContext = ((Graphics2D)g).getFontRenderContext();
+		if (firstHints == null)
+			firstHints = ((Graphics2D)g).getRenderingHints();
+
 		Composite composite = ColorDistribution.getComposite(g);
 		if (composite != AlphaComposite.SrcOver)
 			System.err.println("@*");
@@ -4190,6 +4197,11 @@ boolean reportTiming = true;
 			timers[timerNum++].end();
 			//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 46%-50% if states drawn
 			timers[timerNum].start(); 
+			if (reportTiming && timerCount % 1000 == 0) {
+				FontRenderContext frc = ((Graphics2D)g).getFontRenderContext();
+				RenderingHints fh = ((Graphics2D)g).getRenderingHints();
+				System.out.println("@drawString timer " + timerNum + " " + frc.equals( firstContext) + " " + fh.equals( firstHints));
+			}
 			guiltyB = timerNum;
 			if (st != null)
 				g.drawString(st, cent, vert); // this is very time costly on OSX java 1.4!! (as of 10.3.9 on Powerbook G4)

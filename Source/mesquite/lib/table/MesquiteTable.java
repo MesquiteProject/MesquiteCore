@@ -3285,7 +3285,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
 				total += timers[i].getAccumulatedTime();
 		}
-		System.err.println("@mt " + s + " TOTAL= " + total);
+	//	System.err.println("@mt " + s + " TOTAL= " + total);
 	}
 
 	/* ............................................................................................................... */

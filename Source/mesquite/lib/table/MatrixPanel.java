@@ -446,7 +446,7 @@ timer6.end();
 			table.reportTiming();
 			GraphicsUtil.reportTiming();
 			matrixTimer.end();
-			System.err.println("@mp total " + matrixTimer.getAccumulatedTime());
+			//System.err.println("@mp total " + matrixTimer.getAccumulatedTime());
 			if (table.getBetweenSelected()) {
 				drawBetweenSelection(g);
 			}

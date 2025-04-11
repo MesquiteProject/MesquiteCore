@@ -428,14 +428,14 @@ public class GraphicsUtil {
 	static 	int numTimers = 5;
 	static MesquiteTimer[] timers = new MesquiteTimer[numTimers];
 	static long timerCount = 0;
-	static boolean reportTiming = true;
+	static boolean reportTiming = false;
 	public static void resetTiming(boolean zeroTime){
 		if (timers[0] == null){
 			for (int i = 0; i<numTimers; i++)
 				timers[i] = new MesquiteTimer();
 		}
 		if (zeroTime){
-			System.err.println("@RESET GU");
+		//	System.err.println("@RESET GU");
 			for (int i = 0; i<numTimers; i++)
 			timers[i].reset();
 		}
@@ -447,7 +447,7 @@ public class GraphicsUtil {
 				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
 				total += timers[i].getAccumulatedTime();
 		}
-		System.err.println("@GU " + s + " TOTAL= " + total);
+		//System.err.println("@GU " + s + " TOTAL= " + total);
 	}
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
