@@ -424,7 +424,7 @@ public class GraphicsUtil {
 		}
 
 	}
-	/* -------------------------------------------------*/
+	/* -------------------------------------------------*
 	static 	int numTimers = 5;
 	static MesquiteTimer[] timers = new MesquiteTimer[numTimers];
 	static long timerCount = 0;
@@ -435,21 +435,21 @@ public class GraphicsUtil {
 				timers[i] = new MesquiteTimer();
 		}
 		if (zeroTime){
-		//	System.err.println("@RESET GU");
 			for (int i = 0; i<numTimers; i++)
 			timers[i].reset();
 		}
 	}
 	public static void reportTiming(){
+		if (!reportTiming)
+			return;
 		String s = "";
 		long total = 0;
 		for (int i = 0; i<numTimers; i++) {
 				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
 				total += timers[i].getAccumulatedTime();
 		}
-		//System.err.println("@GU " + s + " TOTAL= " + total);
+		System.err.println("@GraphicsUtils " + s + " TOTAL= " + total);
 	}
-	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		if (timers[0] == null){
 			for (int i = 0; i<numTimers; i++)
@@ -472,10 +472,15 @@ public class GraphicsUtil {
 		ColorDistribution.setComposite(g, composite);		
 		timers[timerNum++].end();
 		timerCount++;
-		/*if (reportTiming && timerCount % 1000 == 0) {
-			reportTiming();
-		}*/
 	}
+	/* -------------------------------------------------*/
+	static Color transparentGray3 = new Color(Color.gray.getRed(), Color.gray.getGreen(), Color.gray.getBlue(), (int)(0.3*255));
+	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
+		Color c = g.getColor();
+		g.setColor(transparentGray3);
+		g.fillRect(x,y,w, h);
+		g.setColor(transparentGray3);
+		}
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionPolygon (Graphics g, Polygon poly) {
 		Composite composite = ColorDistribution.getComposite(g);

@@ -4032,7 +4032,6 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public CellColorer getCellColorer() {
 		return cellColorer;
 	}
-boolean reportTiming = false;
 FontRenderContext firstContext = null;
 RenderingHints firstHints = null;
 	public synchronized void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected, boolean writeStates, boolean leaveEdges) {
@@ -4043,22 +4042,10 @@ RenderingHints firstHints = null;
 			for (int i = 0; i<numTimers; i++)
 				timers[i] = new MesquiteTimer();
 		}
-		int guiltyA = 0;
-				int guiltyB = 0;
 		int timerNum = 0;
-		if (firstContext == null)
-			firstContext = ((Graphics2D)g).getFontRenderContext();
-		if (firstHints == null)
-			firstHints = ((Graphics2D)g).getRenderingHints();
-
-		Composite composite = ColorDistribution.getComposite(g);
-		if (composite != AlphaComposite.SrcOver)
-			System.err.println("@*");
-		Graphics transparentG = getMatrixPanel().getGraphics();
-		ColorDistribution.setTransparentGraphics(transparentG,0.3f);
-//System.err.println("@tg=g " + (g == transparentG));	
 		
 		timers[timerNum].start();
+		
 		boolean changedSinceSave = showChanges.getValue() && data.getChangedSinceSave(column, row);
 
 		boolean annotationAvailable = isAttachedNoteAvailable(column, row);
@@ -4093,12 +4080,17 @@ RenderingHints firstHints = null;
 			fillColor = bgColor;
 		if (showPaleExcluded.getValue() && !data.isCurrentlyIncluded(column))
 			fillColor = ColorDistribution.brighter(fillColor, showPaleExcludedValueBackground);
+		
+		if (selected){
+			int red = fillColor.getRed();
+			
+		}
+		
 		Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), hsb);
 		//}
 		timers[timerNum++].end();
 		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 46%-50% if states drawn, ~100% if not
 		timers[timerNum].start();
-		guiltyA = timerNum;
 		g.setColor(fillColor);
 
 		if (leaveEdges)
@@ -4111,10 +4103,6 @@ RenderingHints firstHints = null;
 		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 8% but only if selected blocks
 		if (selected) {
 			timers[timerNum].start();
-			/*if (true) {
-				transparentG.fillRect( x, y, w, h);
-				}
-			else /**/
 			
 			if (leaveEdges)
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x + 1, y + 1, w - 1, h - 1);
@@ -4197,12 +4185,7 @@ RenderingHints firstHints = null;
 			timers[timerNum++].end();
 			//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 46%-50% if states drawn
 			timers[timerNum].start(); 
-			if (reportTiming && timerCount % 1000 == 0) {
-				FontRenderContext frc = ((Graphics2D)g).getFontRenderContext();
-				RenderingHints fh = ((Graphics2D)g).getRenderingHints();
-				System.out.println("@drawString timer " + timerNum + " " + frc.equals( firstContext) + " " + fh.equals( firstHints));
-			}
-			guiltyB = timerNum;
+		
 			if (st != null)
 				g.drawString(st, cent, vert); // this is very time costly on OSX java 1.4!! (as of 10.3.9 on Powerbook G4)
 			timers[timerNum++].end();
@@ -4219,12 +4202,7 @@ RenderingHints firstHints = null;
 		if (c != null)
 			g.setColor(c);
 		timerCount++;
-		/*if (reportTiming && timerCount % 1000 == 0) {
-			String s = "";
-			for (int i = 0; i<timerNum; i++)
-				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
-			System.err.println("@bdw " + s + " /// " + guiltyA + "  " + guiltyB);
-		}*/
+		
 	}
 
 	/* ............................................................................................................... */

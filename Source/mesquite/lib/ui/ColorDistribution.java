@@ -367,6 +367,8 @@ public class ColorDistribution {
 		if (g!=null  && (g instanceof Graphics2D))
 			((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 1));   
 	}
+	
+	
 	public static Color brighter(Color c, double percent){
 		if (c==null)
 			return null;
