@@ -159,7 +159,7 @@ public class ColorDistribution {
 		for (int i=0; i<standardColorsAsHex.getSize(); i++)
 			standardColorsAsHex.setValue(i, hexFromColor((Color)standardColors.getValue(i)));
 
-		
+
 		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorNames = new StringArray(18);
 		standardColorNames.setValue(0, "Black");
@@ -180,9 +180,9 @@ public class ColorDistribution {
 		standardColorNames.setValue(12, "Light Green");
 		standardColorNames.setValue(13, "Cyan");
 		standardColorNames.setValue(15, "Light Blue");
-		
+
 		translationOldToNewStandardNumbers = new int[]{}; //Debugg.println()
-		
+
 		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorsDimmed = new ObjectArray(18);
 		standardColorsDimmed.setValue(0, Color.gray);
@@ -315,28 +315,60 @@ public class ColorDistribution {
 	}
 
 	public static void setComposite(Graphics g, Composite composite) {
-		if (g!=null && composite!=null && (g instanceof Graphics2D)) {
-			((Graphics2D)g).setComposite(composite); 
+		if (g!=null) {
+			if (g instanceof Graphics2D) {
+				if (composite ==null)
+					((Graphics2D)g).setComposite(AlphaComposite.SrcOver);
+				else 
+					((Graphics2D)g).setComposite(composite); 
+			}
+
+			else g.setPaintMode();
 		}
 	}
 
-
+	static Composite alphaComposite2 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
+	static Composite alphaComposite3 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+	static Composite alphaComposite5 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+	static Composite storedComposite = null;
+	static float prevCompositeFloat = 0;
 
 	public static void setTransparentGraphics(Graphics g, float f) {
 		if (g!=null && (g instanceof Graphics2D)) {
-			if (f>0.0f && f<1.0f)
-				((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, f)); 
+			if (f>0.0f && f<1.0f) {
+				if (storedComposite == null || f != prevCompositeFloat) {
+					storedComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, f);
+				}
+				((Graphics2D)g).setComposite(storedComposite); 
+			}
 			//			else if (f==0.0f)
 			//				((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.00001f)); 
 		}
 	}
+	public static void setTransparentGraphics(Graphics g, Composite composite) {
+		if (g!=null && (g instanceof Graphics2D)) {
+			((Graphics2D)g).setComposite(composite); 
+		}
+
+	}
+	public static void setTransparentGraphics2(Graphics g) {
+		setTransparentGraphics(g,alphaComposite2); 
+	}
+	public static void setTransparentGraphics3(Graphics g) {
+		setTransparentGraphics(g,alphaComposite3); 
+	}
+	public static void setTransparentGraphics5(Graphics g) {
+		setTransparentGraphics(g,alphaComposite5); 
+	}
 	public static void setTransparentGraphics(Graphics g) {
-		setTransparentGraphics(g,0.5f); 
+		setTransparentGraphics(g,alphaComposite5); 
 	}
 	public static void setOpaqueGraphics(Graphics g) {
 		if (g!=null  && (g instanceof Graphics2D))
 			((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 1));   
 	}
+	
+	
 	public static Color brighter(Color c, double percent){
 		if (c==null)
 			return null;
@@ -500,8 +532,8 @@ public class ColorDistribution {
 			return false;
 		for (int i=0; i<colors.length; i++){
 			if (colors[i] !=null)
-			if (color.getRed() == colors[i].getRed() && color.getGreen() == colors[i].getGreen() && color.getBlue() == colors[i].getBlue())
-				return true;
+				if (color.getRed() == colors[i].getRed() && color.getGreen() == colors[i].getGreen() && color.getBlue() == colors[i].getBlue())
+					return true;
 		}
 		return false;
 	}

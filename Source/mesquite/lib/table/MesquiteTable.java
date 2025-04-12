@@ -3264,6 +3264,33 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	public void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected) {
 		// g.drawString(Integer.toString(row + column), x+2, y+h-2);
 	}
+	
+	// timing for matrix redraws
+	protected	int numTimers = 15;
+	protected MesquiteTimer[] timers = new MesquiteTimer[numTimers];
+	protected long timerCount = 0;
+	protected boolean reportTiming = false;
+	public void resetTiming(boolean zeroTime){
+		if (timers[0] == null){
+			for (int i = 0; i<numTimers; i++)
+				timers[i] = new MesquiteTimer();
+		}
+		if (zeroTime)
+		for (int i = 0; i<numTimers; i++)
+			timers[i].reset();
+	}
+	public void reportTiming(){
+		if (!reportTiming)
+			return;
+		String s = "";
+		long total = 0;
+		for (int i = 0; i<numTimers; i++) {
+				s += " " + i + " " + timers[i].getID() + "=" + timers[i].getAccumulatedTime() + " /";
+				total += timers[i].getAccumulatedTime();
+		}
+		System.err.println("@MesquiteTable/bdw.MatrixTable " + s + " TOTAL= " + total);
+	}
+
 	/* ............................................................................................................... */
 	//to be overridden to change color; works only for MatrixPanel, and only when useString & overriding permit it
 	public Color getBackgroundColor(int column, int row, boolean selected){

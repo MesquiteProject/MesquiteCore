@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
 
 import javax.swing.text.*;
 
@@ -4031,14 +4032,23 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public CellColorer getCellColorer() {
 		return cellColorer;
 	}
-
 	public synchronized void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected, boolean writeStates, boolean leaveEdges) {
 		if (data == null)
 			return;
+		
+		if (timers[0] == null){
+			for (int i = 0; i<numTimers; i++)
+				timers[i] = new MesquiteTimer();
+		}
+		int timerNum = 0;
+		
+		timers[timerNum].start();
+		
 		boolean changedSinceSave = showChanges.getValue() && data.getChangedSinceSave(column, row);
 
 		boolean annotationAvailable = isAttachedNoteAvailable(column, row);
-
+		timers[timerNum++].end();
+		timers[timerNum].start();
 		Color c = g.getColor();
 		hsb[0] = hsb[1] = hsb[2] = 1;
 
@@ -4054,6 +4064,8 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			} catch (Throwable e) {
 			}
 		}
+		timers[timerNum++].end();
+		timers[timerNum].start();
 
 		/*		if (paleInapplicable.getValue() && data.isTerminalInapplicable(column, row)){
 				fillColor = Color.white;
@@ -4066,29 +4078,50 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			fillColor = bgColor;
 		if (showPaleExcluded.getValue() && !data.isCurrentlyIncluded(column))
 			fillColor = ColorDistribution.brighter(fillColor, showPaleExcludedValueBackground);
+		
+		if (selected){
+			int red = fillColor.getRed();
+			
+		}
+		
 		Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), hsb);
 		//}
+		timers[timerNum++].end();
+		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 46%-50% if states drawn, ~100% if not
+		timers[timerNum].start();
 		g.setColor(fillColor);
 
 		if (leaveEdges)
 			g.fillRect(x + 1, y + 1, w - 1, h - 1);
 		else
 			g.fillRect(x, y, w, h);
+		//@@@@@@ macOS
+
+		timers[timerNum++].end();
+		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 8% but only if selected blocks 
 
 		if (selected) {
+			timers[timerNum].start(); // timing part 4
+			timers[timerNum].setID("ft");
 			if (leaveEdges)
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x + 1, y + 1, w - 1, h - 1);
 			else
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x, y, w, h);
+			timers[timerNum].end();
 		}
+		timerNum++;
+		//@@@@@@ macOS
 
 		if (writeStates) {
+			timers[timerNum].start();
 			if (changedSinceSave) {
 				g.setColor(ColorDistribution.getContrasting(selected, fillColor, hsb, Color.lightGray, Color.darkGray));
 				g.drawLine(x, y + 1, x + 1, y);
 				g.drawLine(x, y + 2, x + 2, y);
 				g.drawLine(x, y + 3, x + 3, y);
 			}
+			timers[timerNum++].end();
+			timers[timerNum].start();
 			if (annotationAvailable) {
 				g.setColor(ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black));
 				g.drawLine(x + w - 2, y + 1, x + w - 2, y + 2); // left
@@ -4100,12 +4133,16 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					g.drawLine(x + w - 1, y + 1, x + w - 1, y + 1);
 				}
 			}
+			timers[timerNum++].end();
 
 			try {
+				timers[timerNum].start();
 				Color textColor = null;
 				if (textColorer != null && !(textColorer instanceof mesquite.charMatrices.NoColor.NoColor) && !colorOnlyTaxonNames.getValue())
 					textColor = textColorer.getCellColor(column, row);
 
+				timers[timerNum++].end();
+				timers[timerNum].start();
 				if (textColor == null) {
 					if (paleInapplicable.getValue() && data.isInapplicable(column, row)){
 						/*	if (data.isTerminalInapplicable(column, row))
@@ -4122,12 +4159,18 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					else
 						textColor = ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black);
 				}
+				timers[timerNum++].end();
+				timers[timerNum].start();
 				if (showPaleExcluded.getValue() && !data.isCurrentlyIncluded(column))
 					textColor = ColorDistribution.brighter(textColor, showPaleExcludedValueText);
 				g.setColor(textColor);
+				timers[timerNum++].end();
+				//timers[timerNum].start();
 			} catch (Exception e) {
 			}
 
+			//timers[timerNum++].end();
+			timers[timerNum].start();
 			String st = getMatrixTextForDisplay(column, row);
 			overflow.setValue(false);
 			int cent = StringUtil.getStringCenterPosition(st, g, x, w, overflow);
@@ -4139,16 +4182,27 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				clip = g.getClip();
 				g.setClip(x, y, w, h);
 			}
+			timers[timerNum++].end();
+			//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 46%-50% if states drawn
+			timers[timerNum].start(); // timing part 11 
+			timers[timerNum].setID("ds");
 			if (st != null)
 				g.drawString(st, cent, vert); // this is very time costly on OSX java 1.4!! (as of 10.3.9 on Powerbook G4)
+			timers[timerNum++].end();
+			timers[timerNum].start(); // timing part 12 
+			timers[timerNum++].end();
+			//@@@
+			timers[timerNum].start(); // timing part 13
 			if (useClip) {
 				g.setClip(clip);
 			}
-
+			timers[timerNum++].end();
+			//@@@@@@ macOS
 		}
 		if (c != null)
 			g.setColor(c);
-
+		timerCount++;
+		
 	}
 
 	/* ............................................................................................................... */

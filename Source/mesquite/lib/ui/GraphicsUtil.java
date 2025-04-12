@@ -21,6 +21,7 @@ import java.awt.image.*;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.trees.SquareLineTree.SquareLineTree;
 
@@ -41,8 +42,8 @@ public class GraphicsUtil {
 	public static void drawString(Graphics2D g2, String s, double x, double y) {
 		g2.drawString(s, (float)x, (float)y);
 	}
-	
-	
+
+
 	public static Font getBoldFont(Graphics g) {
 		Font oldFont = g.getFont();
 		FontMetrics fm = g.getFontMetrics(g.getFont());
@@ -424,17 +425,26 @@ public class GraphicsUtil {
 
 	}
 	/* -------------------------------------------------*/
+	
+	/* -------------------------------------------------*/
+	static Color transparentGray3 = new Color(Color.gray.getRed(), Color.gray.getGreen(), Color.gray.getBlue(), (int)(0.3*255));
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		Composite composite = ColorDistribution.getComposite(g);
-		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		ColorDistribution.setTransparentGraphics3(g);		
 		g.setColor(Color.gray);
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		
-	}
+			/*
+		Color c = g.getColor();
+		g.setColor(transparentGray3);
+		g.fillRect(x,y,w, h);
+		g.setColor(transparentGray3);
+		*/
+		}
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionPolygon (Graphics g, Polygon poly) {
 		Composite composite = ColorDistribution.getComposite(g);
-		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		ColorDistribution.setTransparentGraphics3(g);		
 		g.setColor(Color.gray);
 		g.fillPolygon(poly);
 		ColorDistribution.setComposite(g, composite);		
@@ -442,7 +452,7 @@ public class GraphicsUtil {
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionArea (Graphics2D g, Area area) {
 		Composite composite = ColorDistribution.getComposite(g);
-		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		ColorDistribution.setTransparentGraphics3(g);		
 		g.setColor(Color.gray);
 		g.fill(area);
 		ColorDistribution.setComposite(g, composite);		
@@ -460,7 +470,7 @@ public class GraphicsUtil {
 			h = -h;
 		}
 		Composite composite = ColorDistribution.getComposite(g);
-		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		ColorDistribution.setTransparentGraphics3(g);		
 		g.setColor(Color.gray);
 		g.fillRect(x,y,w,h);
 		ColorDistribution.setComposite(g, composite);		
@@ -470,7 +480,7 @@ public class GraphicsUtil {
 	/* -------------------------------------------------*/
 	public static void fillTransparentBorderedSelectionPolygon (Graphics g, Polygon poly) {
 		Composite composite = ColorDistribution.getComposite(g);
-		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		ColorDistribution.setTransparentGraphics3(g);		
 		g.setColor(Color.gray);
 		g.fillPolygon(poly);
 		ColorDistribution.setComposite(g, composite);		
@@ -480,7 +490,7 @@ public class GraphicsUtil {
 	/* -------------------------------------------------*/
 	public static void shadeRectangle (Graphics g, int x, int y, int w, int h, Color color) {
 		Composite composite = ColorDistribution.getComposite(g);
-		ColorDistribution.setTransparentGraphics(g,0.2f);		
+		ColorDistribution.setTransparentGraphics2(g);		
 		g.setColor(color);
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		

@@ -15,6 +15,7 @@ package mesquite.lib.table;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.FileInterpreter;
@@ -318,6 +319,8 @@ timer6.end();
 		super.repaint();
 	}
 
+	MesquiteTimer matrixTimer = new MesquiteTimer();
+	FontRenderContext oldFRC;
 	/*...............................................................................................................*/
 	public void paint(Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
@@ -383,6 +386,9 @@ timer6.end();
 			Shape clip = g.getClip();
 			table.resetNumColumnsVisible();
 			table.resetNumRowsVisible();
+			matrixTimer.start();
+			table.resetTiming(false);
+			//GraphicsUtil.resetTiming(false);
 			for (int r=table.firstRowVisible; r<=table.lastRowVisible+1 && (r<table.numRowsTotal)   && r< table.rowHeights.length && (lineY<resetHeight); r++) {
 				lineY += table.rowHeights[r];
 
@@ -436,6 +442,12 @@ timer6.end();
 				}
 				oldLineY=lineY;
 			}
+			table.reportTiming();
+		//	GraphicsUtil.reportTiming();
+			matrixTimer.end();
+		//	System.err.println("@MatrixPanel total " + matrixTimer.getAccumulatedTime() + " g " + g.hashCode()+ " THREAD " + Thread.currentThread());
+		//	FontRenderContext frc = g.getFontRenderContext();
+			
 			if (table.getBetweenSelected()) {
 				drawBetweenSelection(g);
 			}
