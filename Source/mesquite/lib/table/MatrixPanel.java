@@ -388,7 +388,6 @@ timer6.end();
 			table.resetNumRowsVisible();
 			matrixTimer.start();
 			table.resetTiming(false);
-			//GraphicsUtil.resetTiming(false);
 			for (int r=table.firstRowVisible; r<=table.lastRowVisible+1 && (r<table.numRowsTotal)   && r< table.rowHeights.length && (lineY<resetHeight); r++) {
 				lineY += table.rowHeights[r];
 
@@ -443,7 +442,6 @@ timer6.end();
 				oldLineY=lineY;
 			}
 			table.reportTiming();
-		//	GraphicsUtil.reportTiming();
 			matrixTimer.end();
 		//	System.err.println("@MatrixPanel total " + matrixTimer.getAccumulatedTime() + " g " + g.hashCode()+ " THREAD " + Thread.currentThread());
 		//	FontRenderContext frc = g.getFontRenderContext();

@@ -4041,7 +4041,6 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				timers[i] = new MesquiteTimer();
 		}
 		int timerNum = 0;
-		
 		timers[timerNum].start();
 		
 		boolean changedSinceSave = showChanges.getValue() && data.getChangedSinceSave(column, row);
