@@ -22,6 +22,7 @@ public class MesquiteTimer {
 	long lastCheckedTime = 0;
 	long veryStart = 0;
 	int timesStarted = 0;
+	String id = "";
 	public MesquiteTimer(){
 		veryStart = System.currentTimeMillis();
 	}
@@ -38,6 +39,13 @@ public class MesquiteTimer {
 	public void reset() {
 		currentBout = 0;
 		accumulatedTime = 0;
+	}
+	public void setID(String id) {
+		this.id = id;
+	
+	}
+	public String getID() {
+		return id;
 	}
 	public void resetLastTime() {
 		lastCheckedTime = System.currentTimeMillis();

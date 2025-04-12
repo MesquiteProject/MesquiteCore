@@ -4032,8 +4032,6 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public CellColorer getCellColorer() {
 		return cellColorer;
 	}
-FontRenderContext firstContext = null;
-RenderingHints firstHints = null;
 	public synchronized void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected, boolean writeStates, boolean leaveEdges) {
 		if (data == null)
 			return;
@@ -4100,16 +4098,18 @@ RenderingHints firstHints = null;
 		//@@@@@@ macOS
 
 		timers[timerNum++].end();
-		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 8% but only if selected blocks
+		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 8% but only if selected blocks 
+
 		if (selected) {
-			timers[timerNum].start();
-			
+			timers[timerNum].start(); // timing part 4
+			timers[timerNum].setID("ft");
 			if (leaveEdges)
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x + 1, y + 1, w - 1, h - 1);
 			else
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x, y, w, h);
-			timers[timerNum++].end();
+			timers[timerNum].end();
 		}
+		timerNum++;
 		//@@@@@@ macOS
 
 		if (writeStates) {
@@ -4165,11 +4165,11 @@ RenderingHints firstHints = null;
 					textColor = ColorDistribution.brighter(textColor, showPaleExcludedValueText);
 				g.setColor(textColor);
 				timers[timerNum++].end();
-				timers[timerNum].start();
+				//timers[timerNum].start();
 			} catch (Exception e) {
 			}
 
-			timers[timerNum++].end();
+			//timers[timerNum++].end();
 			timers[timerNum].start();
 			String st = getMatrixTextForDisplay(column, row);
 			overflow.setValue(false);
@@ -4184,15 +4184,15 @@ RenderingHints firstHints = null;
 			}
 			timers[timerNum++].end();
 			//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 46%-50% if states drawn
-			timers[timerNum].start(); 
-		
+			timers[timerNum].start(); // timing part 11 
+			timers[timerNum].setID("ds");
 			if (st != null)
 				g.drawString(st, cent, vert); // this is very time costly on OSX java 1.4!! (as of 10.3.9 on Powerbook G4)
 			timers[timerNum++].end();
-			timers[timerNum].start();
+			timers[timerNum].start(); // timing part 12 
 			timers[timerNum++].end();
 			//@@@
-			timers[timerNum].start(); 
+			timers[timerNum].start(); // timing part 13
 			if (useClip) {
 				g.setClip(clip);
 			}

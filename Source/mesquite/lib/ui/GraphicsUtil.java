@@ -424,62 +424,22 @@ public class GraphicsUtil {
 		}
 
 	}
-	/* -------------------------------------------------*
-	static 	int numTimers = 5;
-	static MesquiteTimer[] timers = new MesquiteTimer[numTimers];
-	static long timerCount = 0;
-	static boolean reportTiming = false;
-	public static void resetTiming(boolean zeroTime){
-		if (timers[0] == null){
-			for (int i = 0; i<numTimers; i++)
-				timers[i] = new MesquiteTimer();
-		}
-		if (zeroTime){
-			for (int i = 0; i<numTimers; i++)
-			timers[i].reset();
-		}
-	}
-	public static void reportTiming(){
-		if (!reportTiming)
-			return;
-		String s = "";
-		long total = 0;
-		for (int i = 0; i<numTimers; i++) {
-				s += " " + i + "= " + timers[i].getAccumulatedTime() + " *";
-				total += timers[i].getAccumulatedTime();
-		}
-		System.err.println("@GraphicsUtils " + s + " TOTAL= " + total);
-	}
-	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
-		if (timers[0] == null){
-			for (int i = 0; i<numTimers; i++)
-				timers[i] = new MesquiteTimer();
-		}
-		int timerNum = 0;
-		timers[timerNum].start();
-		Composite composite = ColorDistribution.getComposite(g);
-		timers[timerNum++].end();
-		timers[timerNum].start();
-		ColorDistribution.setTransparentGraphics3(g);		
-		timers[timerNum++].end();
-		timers[timerNum].start();
-		g.setColor(Color.gray);
-		timers[timerNum++].end();
-		timers[timerNum].start(); //here
-		g.fillRect(x,y,w, h);
-		timers[timerNum++].end();
-		timers[timerNum].start();
-		ColorDistribution.setComposite(g, composite);		
-		timers[timerNum++].end();
-		timerCount++;
-	}
+	/* -------------------------------------------------*/
+	
 	/* -------------------------------------------------*/
 	static Color transparentGray3 = new Color(Color.gray.getRed(), Color.gray.getGreen(), Color.gray.getBlue(), (int)(0.3*255));
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics3(g);		
+		g.setColor(Color.gray);
+		g.fillRect(x,y,w, h);
+		ColorDistribution.setComposite(g, composite);		
+			/*
 		Color c = g.getColor();
 		g.setColor(transparentGray3);
 		g.fillRect(x,y,w, h);
 		g.setColor(transparentGray3);
+		*/
 		}
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionPolygon (Graphics g, Polygon poly) {
