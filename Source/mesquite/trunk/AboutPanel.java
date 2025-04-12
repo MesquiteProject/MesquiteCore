@@ -45,7 +45,7 @@ public class AboutPanel extends MQPanel {
 		g.drawImage(logo,0,0,(ImageObserver)this);
 		
 		g.setColor(ColorDistribution.lightYellow);
-		g.drawString("Version " + MesquiteModule.getMesquiteVersion() + MesquiteModule.getBuildVersion() , 8,95); //was 15
+		g.drawString("Version " + MesquiteModule.getMesquiteVersion() + MesquiteModule.getBuildVersion(), 8,95); //was 15
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
 			g.drawString(MesquiteModule.getBuildDate() , 8,110); //was 15
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))

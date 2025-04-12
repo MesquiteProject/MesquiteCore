@@ -180,7 +180,7 @@ public class ModuleLoader {
 					getModules(loaderAMMMODULES, "mesquite", MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
 
 					String[] classPathsFileMF = null; 
-					if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName)){
+				if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName)){
 						classPathsFileMF = MesquiteFile.getFileContentsAsStrings(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName);
 
 						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
@@ -415,9 +415,9 @@ public class ModuleLoader {
 					showMessage(true, "Loading from directory: " + fileName, directoryTotal, ++directoryNumber);
 					mesquite.log(" " + fileName);
 					if (MesquiteFile.fileOrDirectoryExists(filePathName + MesquiteFile.fileSeparator + "jars")){
-						StringBuffer buffer =new StringBuffer();
-						buffer.append("\n");
-						mesquite.logln(buffer.toString());
+						//StringBuffer buffer =new StringBuffer();
+						//buffer.append("\n");  //ZQ do you remember what this was for? why not just  logln? Debugg.println
+						//mesquite.logln(buffer.toString());
 					}
 				}
 				else
