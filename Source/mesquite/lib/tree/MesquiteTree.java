@@ -3618,7 +3618,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	public boolean readTree(String TreeDescription, MesquiteInteger startingPos, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
 		/**
-		Debugg.println("###################################################");
+		Debugg.printStackTrace("###################################################");
 		if (startingPos != null) {
 			Debugg.println("DESCRIPTION AS RECEIVED BY TREE (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
 			Debugg.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
@@ -3778,7 +3778,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		}
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
 		if (startingPos !=null){
-			startingPos.setValue(getTranslatedLoc(correspondenceContainer, stringLoc.getValue()));
+			startingPos.setValue(getUntranslatedLoc(correspondenceContainer, stringLoc.getValue()));
 		}
 		echo("\n", 100);
 		return true;
@@ -3790,6 +3790,17 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		int[] dialectCorrespondence = (int[])correspondenceContainer.getObject();
 		if (dialectCorrespondence!= null)
 			return dialectCorrespondence[loc];
+		return loc;
+	}
+	int getUntranslatedLoc(ObjectContainer correspondenceContainer, int loc){
+		if (correspondenceContainer == null)
+			return loc;
+		int[] dialectCorrespondence = (int[])correspondenceContainer.getObject();
+		if (dialectCorrespondence== null)
+			return loc;
+		for (int i= 0; i<dialectCorrespondence.length; i++)
+			if (loc<dialectCorrespondence[i])
+				return i;
 		return loc;
 	}
 	/*-----------------------------------------*/

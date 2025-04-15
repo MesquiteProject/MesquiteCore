@@ -132,6 +132,7 @@ public class TreeUtil {
 		String dialect = parser.getFileReadingArgumentSubtype(arguments, "newickDialect");
 		if (dialect == null)
 			dialect = "Default";
+		
 		if (dialect != null)
 			MesquiteMessage.println("Trees read assuming Newick dialect: " + dialect);
 		Parser treeParser = new Parser();

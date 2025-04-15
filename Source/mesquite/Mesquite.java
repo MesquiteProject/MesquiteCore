@@ -419,15 +419,16 @@ public class Mesquite extends MesquiteTrunk
 		/*
 (3) Try to find the logo for the about window
 		 */
-		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
+		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + " " + MesquiteModule.getBuildDate() + "\n";
+		logInitString += "https://www.mesquiteproject.org\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2024 W. Maddison and D. Maddison\n");
+		logInitString  += ("\nCopyright (c) 1997-2025 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
 				+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Daisie Huang, Peter Midford, Rutger Vos, Jeff Oliver"
-				+ "\nDevelopment Team Alumnus: Danny Mandel\n";
+				+ "\nDevelopment Team Alumnus: Danny Mandel\n* * * * * * * * * * * * * * * *\n";
 
 		if (verboseStartup) System.out.println("main init 11");
 		logWindow = new LogWindow(logInitString);
@@ -517,7 +518,7 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 21");
 		logln("Running under Java " + System.getProperty("java.version") +"; virtual machine by " + System.getProperty("java.vendor") + mrj + " on " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " (architecture: " + System.getProperty("os.arch") + ")");
 		logln("User: " + System.getProperty("user.name") );
-		logln(" ");
+	//	logln(" ");
 		/* EMBEDDED add following if embedded *
 		logWindow.setVisible(false);
 		 /* */
