@@ -358,6 +358,10 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 	/*======================================================*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 		if (data!=null && data.getNumChars()>0 && data instanceof MolecularData){
+			if (StringUtil.blank(gblocksPath)) {
+				discreetAlert( "No path to Gblocks has been specified.");
+				return null;
+			}	
 			if (flags == null)
 				flags = new MatrixFlags(data);
 			else 

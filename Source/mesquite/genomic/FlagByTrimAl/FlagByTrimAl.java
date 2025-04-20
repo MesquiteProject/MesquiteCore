@@ -35,6 +35,7 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.ParseUtil;
+import mesquite.lib.ResultCodes;
 import mesquite.lib.ShellScriptUtil;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
@@ -208,6 +209,10 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 	/*======================================================*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 		if (data!=null && data.getNumChars()>0 && data instanceof MolecularData){
+			if (StringUtil.blank(trimAlPath)) {
+				discreetAlert( "No path to trimAl has been specified.");
+				return null;
+			}	
 			if (flags == null)
 				flags = new MatrixFlags(data);
 			else 

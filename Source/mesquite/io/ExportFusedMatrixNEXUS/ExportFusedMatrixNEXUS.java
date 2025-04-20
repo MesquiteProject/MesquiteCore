@@ -31,7 +31,7 @@ import mesquite.cont.lib.*;
 public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(AssociationSource.class, getName() + "  needs information to indicate how taxa in different blocks are associated.",
-		"The source of information as to how taxa taxa in different blocks are associated is arranged on export");
+				"The source of information as to how taxa taxa in different blocks are associated is arranged on export");
 	}
 	/*.................................................................................................................*/
 	AssociationSource associationTask;
@@ -88,7 +88,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 	boolean generateMBBlock = true;
 	String lineEnding;
 	boolean simplifyNames = false;
-	
+
 	boolean removeExcluded = false;
 
 	public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
@@ -216,7 +216,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 				else
 					totNumChars += data.getNumChars();
 				logln("Fused matrix will contain " + numToAdd + " characters from matrix " + data.getName());
-				
+
 			}
 		}
 		return totNumChars;
@@ -354,15 +354,17 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		buffer.append("#NEXUS" + lineEnding + lineEnding + "begin data;" + lineEnding);
 		MesquiteStringBuffer[] taxaStrings = new MesquiteStringBuffer[masterTaxa.getNumTaxa()];
 		StringBuffer dataTypesBuffer = new StringBuffer();
-		
+
 		ManageTaxaPartitions manageTaxaPartitions = (ManageTaxaPartitions)findNearestColleagueWithDuty(mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions.class);
 		StringBuffer labelsBuffer = null;
 		if (manageTaxaPartitions!=null) {
-			labelsBuffer = new StringBuffer(lineEnding + "BEGIN LABELS;"+lineEnding);
 			String labels = manageTaxaPartitions.getNexusCommands(file, "LABELS");
-			labelsBuffer.append(labels + lineEnding + "END;" + lineEnding);
+			if (StringUtil.notEmpty(labels)){
+				labelsBuffer = new StringBuffer(lineEnding + "BEGIN LABELS;"+lineEnding);
+				labelsBuffer.append(labels + lineEnding + "END;" + lineEnding);
+			}
 		}
-		
+
 		StringBuffer NEXUSpartitionBuffer = new StringBuffer(lineEnding + "BEGIN SETS;" + lineEnding);
 		NEXUSpartitionBuffer.append(lineEnding+ manageTaxaPartitions.getNexusCommands(file, "SETS"));
 		NEXUSpartitionBuffer.append(lineEnding+ "\tCHARPARTITION * matrices = ");
@@ -488,7 +490,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		MesquiteStringBuffer buffer = new MesquiteStringBuffer(500);
 		StringBuffer mrBayesBlockBuffer = new StringBuffer();
 		fillMatrix(file, masterTaxa, buffer, mrBayesBlockBuffer, CategoricalState.class);
-		
+
 
 
 		saveExportedFileWithExtension(buffer, arguments, "nex");

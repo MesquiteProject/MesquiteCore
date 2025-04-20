@@ -438,6 +438,13 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				resultCode.setValue(ResultCodes.INCOMPATIBLE_DATA);
 			return null;
 		}
+		if (StringUtil.blank(getProgramPath())) {
+			discreetAlert( "No path to the program has been specified. " + getName() + " cannot function without a program indicated.");
+			if (resultCode != null)
+				resultCode.setValue(ResultCodes.SPECIFICATION_MISSING);
+			return null;
+			
+		}	
 		MolecularData data = (MolecularData)matrix.getParentData();
 		boolean isProtein = data instanceof ProteinData;
 		boolean pleaseStorePref = false;

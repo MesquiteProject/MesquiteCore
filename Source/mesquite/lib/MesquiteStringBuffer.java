@@ -129,8 +129,10 @@ public class MesquiteStringBuffer {
 	}
 	public void append(MesquiteStringBuffer s){
 		for (int iother = 0; iother<s.getNumStrings(); iother++){
-			MesquiteStringBuffer n = new MesquiteStringBuffer(s.getStringBuffer(iother).toString());
-			buffers.addElement(n);
+			String iS = s.getStringBuffer(iother).toString();
+			append(iS);
+//			StringBuffer n = new StringBuffer(s.getStringBuffer(iother).toString());
+//			buffers.addElement(n);
 		}
 	}
 

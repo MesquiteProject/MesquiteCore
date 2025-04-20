@@ -18,6 +18,7 @@ import java.awt.event.*;
 
 
 public class ResultCodes {
+	public final static int SPECIFICATION_MISSING = -10;
 	public final static int NOTHING_RETURNED = -9;
 	public static int USERCANCELONINITIALIZE = -8;
 	public final static int NOT_YET_DONE = -7;
