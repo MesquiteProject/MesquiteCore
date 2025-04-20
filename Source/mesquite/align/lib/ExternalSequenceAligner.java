@@ -24,6 +24,7 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AlertWithLinkToDirectory;
 import mesquite.categ.lib.*;
 import mesquite.charMatrices.AlterData.AlterData;
 import mesquite.externalCommunication.AppHarvester.AppHarvester;
@@ -580,6 +581,19 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				logln("Alignment stopped by user\n");
 			progressIndicator.goAway();
 		}
+		File outputFile = new File(outFilePath);
+		if (!outputFile.exists() || outputFile.length() ==0){
+			success = false;
+			logln("Alignment file doesn't exist or is of zero length.");
+			if (resultCode != null)
+				resultCode.setValue(ResultCodes.FILE_PROBLEM);
+			data.decrementEditInhibition();
+			if (okToInteractWithUser(MesquiteModule.CAN_PROCEED_ANYWAY, "Alignment failed")){
+				AlertWithLinkToDirectory alert = new AlertWithLinkToDirectory(containerOfModule(),"Alignment failed", "Alignment file doesn't exist or is of zero length. Please examine the analysis folder for information.", rootDir);
+			}
+			return null;
+		}
+		
 		if (success){
 			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
 			logln("Processing results...");

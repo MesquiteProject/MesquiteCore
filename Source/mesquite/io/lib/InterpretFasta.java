@@ -182,12 +182,15 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 		RadioButtons radio = id.addRadioButtons(new String[] {"Ignore", "Replace Data","Replace If Empty, Otherwise Add","Replace If Empty, Otherwise Ignore","Add As New Taxa"},treatmentOfIncomingDuplicates);
 
+		Checkbox selectIncomingBox = id.addCheckBox("select imported sequences", selectIncoming);
+		
 		id.completeAndShowDialog(true);
 
 		int value = -1;
 		if (buttonPressed.getValue()==0)  {
 			value = radio.getValue();
 			treatmentOfIncomingDuplicates = value;
+			selectIncoming = selectIncomingBox.getState();
 		}
 		id.dispose();
 		return value;
@@ -283,6 +286,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 							data.setState(ic, taxonNumber, cs);
 					added=false;
 					processFileName(fileName, data, taxa, taxonNumber);
+					if (selectIncoming)
+						taxa.setSelected(taxonNumber, true);
 
 				} else if (!skipThisSequence) {  // adding to end, not replacing an existing one
 					if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
@@ -369,6 +374,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 							progIndicator.setSecondaryMessage("Reading character " + ic);
 
 					}
+					if (selectIncoming)
+						taxa.setSelected(taxonNumber, true);
 
 				} 
 			}

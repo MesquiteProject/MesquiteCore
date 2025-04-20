@@ -55,6 +55,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	protected static int ADDASNEW = 4;
 	
 	protected static int treatmentOfIncomingDuplicates = REPLACEIFEMPTYOTHERWISEADD;
+	protected  boolean selectIncoming = false;
 
 //	protected static boolean defaultReplaceDataOfTaxonWithSameName = false;
 	protected static int defaultReplaceDataOfTaxonWithSameNameInt = ADDASNEW;

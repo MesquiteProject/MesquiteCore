@@ -491,7 +491,7 @@ public class ExternalProcessManager implements Commandable  {
 				stillGoing=false;
 				boolean goodValue = goodExitValue(proc.exitValue(), true);
 				if (!goodValue && !ownerModule.isDoomed() && (watcher==null || !watcher.userAborted()) && (watcher==null || watcher.warnIfError())) {
-					String message = name + " quit, possibly because of an error ("+proc.exitValue()+"). Please examine StandardOutputFile and StandardErrorFile in the analysis directory for information." +getBasicProcessInformation();
+					String message = name + " quit, possibly because of an error ("+proc.exitValue()+"). Please examine StandardOutputFile and StandardErrorFile in the analysis folder for information." +getBasicProcessInformation();
 					if (ownerModule.okToInteractWithUser(MesquiteModule.CAN_PROCEED_ANYWAY, "Error in execution")){
 						AlertWithLinkToDirectory alert = new AlertWithLinkToDirectory(ownerModule.containerOfModule(),"Error in executing "+name, message, directoryPath);
 					}
