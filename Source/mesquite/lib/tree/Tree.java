@@ -71,29 +71,29 @@ public interface Tree extends Listable {
 	/** Returns the number of a randomly chosen node.*/
 	public int randomNode(RandomBetween rng, boolean allowRoot);
 	/** Returns true if N is a valid node designation in tree.*/
-	public  boolean nodeExists(int node);
+	public boolean nodeExists(int node);
 	/** Returns whether node is part of tree. Differs from nodeExists by doing full recursion (more reliable, slower).*/
 	public boolean nodeInTree(int sought);
 	/** Returns true if node is an internal node.*/
-	public  boolean nodeIsInternal(int node);
+	public boolean nodeIsInternal(int node);
 	/** Returns true if node is a terminal node.*/
-	public  boolean nodeIsTerminal(int node);
+	public boolean nodeIsTerminal(int node);
 	/** Returns whether taxon is part of tree. */
 	public boolean taxonInTree(int taxonNum);
 	/** Returns the taxon number of the node.  This is -1 if the node is internal,
 	the taxon number if terminal.*/
-	public  int taxonNumberOfNode(int node); 
+	public int taxonNumberOfNode(int node); 
 	/** Returns the terminal node corresponding to the given taxon number; 0 if the taxon  is not part of the tree.*/
 	public int nodeOfTaxonNumber(int taxonNum);
 	/** Returns the immediate ancestor of node (mother) if node is non-reticulate.
 	If node is reticulate, returns the first (primary) parent.*/
-	public  int motherOfNode(int node);
+	public int motherOfNode(int node);
 	/** Returns the node's mother's mother.*/
-	public  int grandmotherOfNode(int node);
-	public  int firstLegalDaughterOfNode(int node, int[] legality);
-	public  int nextLegalSisterOfNode(int node, int[] legality);
-	public  int lastLegalDaughterOfNode(int node, int[] legality);
-	public  int getLegalRoot(int[] legality);
+	public int grandmotherOfNode(int node);
+	public int firstLegalDaughterOfNode(int node, int[] legality);
+	public int nextLegalSisterOfNode(int node, int[] legality);
+	public int lastLegalDaughterOfNode(int node, int[] legality);
+	public int getLegalRoot(int[] legality);
 	/** Returns the number of parents of node.*/
 	public int numberOfParentsOfNode(int node);
 	/** Returns the indexTH parent of node.*/
@@ -108,7 +108,7 @@ public interface Tree extends Listable {
 	/** Returns the deepest path in the clade, in terms of numbers of nodes*/
 	public int deepestPath(int node);
 	/** Returns the first (left-most) daughter of node.*/
-	public  int firstDaughterOfNode(int node);
+	public int firstDaughterOfNode(int node);
 	/** Returns the right-most daughter of node.*/
 	public int lastDaughterOfNode(int node);
 	/** Returns the array of daughters of a node.  Normally it will be best to cycle through the
@@ -130,13 +130,13 @@ public interface Tree extends Listable {
 	public int whichDaughterDescendantOf(int branchD, int branchA); 
 	/** Returns the node's sister immediately to the right.  If the node has no
 	sister to the right, returns 0 (which is not a valid node designation).*/
-	public  int nextSisterOfNode(int node);
+	public int nextSisterOfNode(int node);
 	/** Returns the node's sister immediately to the left.  If the node has no 
 	sister to the right, returns 0 (which is not a valid node designation).*/
 	public int previousSisterOfNode(int node);
 	/** Returns true if branch1 and branch2 are sisters by their mother (i.e., primary parent).
 	There is currently no method to return whether two nodes share at least one parent.*/
-	public  boolean nodesAreSisters(int branch1, int branch2); 
+	public boolean nodesAreSisters(int branch1, int branch2); 
 	/** Returns whether tree has nodes with more than one parent.*/
 	public void setCollapsedClade(int node, boolean collapse);
 	public void decollapseClade(int node);
@@ -148,15 +148,15 @@ public interface Tree extends Listable {
 	public boolean isLeftmostTerminalOfCollapsedClade(int node);
 	public boolean isVisibleEvenIfInCollapsed(int node);
 	
-	public  boolean hasReticulations();
+	public boolean hasReticulations();
 	/** Returns whether clade has unbranched internal nodes.*/
-	public  boolean hasUnbranchedInternals(int node);
+	public boolean hasUnbranchedInternals(int node);
 	/** Returns true if the node is an internal node with only a single daughter.*/
 	public boolean nodeIsUnbranchedInternal(int node);
 	/** Returns whether clade has polytomies.*/
-	public  boolean hasPolytomies(int node);
+	public boolean hasPolytomies(int node);
 	/** Returns whether clade has soft polytomies (uncertainties).*/
-	public  boolean hasSoftPolytomies(int node);
+	public boolean hasSoftPolytomies(int node);
 	/** Returns true if the node is polytomous (has more than two daughters).*/
 	public boolean nodeIsPolytomous(int node);
 	/** Returns true if the node has one descendant, two, or is a hard polytomy.*/
@@ -164,17 +164,17 @@ public interface Tree extends Listable {
 	/** Returns true if the node is a soft polytomy.*/
 	public boolean nodeIsSoft(int node);
 	/** Returns number of total nodes (internal and external) in clade.*/
-	public  int numberOfNodesInClade(int node);
+	public int numberOfNodesInClade(int node);
 	/** Returns number of terminal taxa in clade.*/
-	public  int numberOfTerminalsInClade(int node);
+	public int numberOfTerminalsInClade(int node);
 	/** Returns number of terminal taxa in clade, counting collapsed clades as one terminal.*/
-	public  int numberOfVisibleTerminalsInClade(int node);
+	public int numberOfVisibleTerminalsInClade(int node);
 	/** Returns number of internal nodes in clade.*/
-	public  int numberOfInternalsInClade(int node);
+	public int numberOfInternalsInClade(int node);
 	/** Returns the left-most terminal that is descendant from node.*/
-	public  int leftmostTerminalOfNode(int node);
+	public int leftmostTerminalOfNode(int node);
 	/** Returns the right-most terminal that is descendant from node.*/
-	public  int rightmostTerminalOfNode(int node);
+	public int rightmostTerminalOfNode(int node);
 	/** Returns list of terminal taxa of clade of node.*/
 	public Bits getTerminalTaxaAsBits(int node);
 	/** Returns list of terminal taxa of clade of node.*/
@@ -228,32 +228,38 @@ public interface Tree extends Listable {
 	/** Returns most recent common ancestor of selected taxa.*/
 	public int mrcaSelected(); 
 	/** Returns the closest ancestor that has more than one daughter.*/
-	public  int branchingAncestor(int node);
+	public int branchingAncestor(int node);
 	/** Returns the closest descendant that has more than one daughter, or is terminal.*/
-	public  int branchingDescendant(int node);
+	public int branchingDescendant(int node);
 	/** Returns the next (clockwise) to node connected to anc.  This is one of the UR procedures, designed
 	to allow unrooted style traversal through the tree*/
 	public int nextAroundUR(int anc, int node);
 	/** Returns the first (left-most) daughter of node in an UNROOTED sense where the node
 	is treated as descendant from anc. This is one of the UR procedures, designed
 	to allow unrooted style traversal through the tree*/
-	public  int firstDaughterOfNodeUR(int anc, int node);
+	public int firstDaughterOfNodeUR(int anc, int node);
 	/** Returns the node's sister immediately to the right in an UNROOTED sense where the node
 	is treated as descendant from anc, which is descendant from ancAnc.  If the node has no
 	sister to the right, returns 0 (which is not a valid node designation). This is one of the UR procedures, designed
 	to allow unrooted style traversal through the tree*/
-	public  int nextSisterOfNodeUR(int ancAnc, int anc, int node);
+	public int nextSisterOfNodeUR(int ancAnc, int anc, int node);
 	/** Returns the first (left-most) daughter of node in an UNROOTED sense where the node
 	is treated as descendant from anc. This is one of the UR procedures, designed
 	to allow unrooted style traversal through the tree*/
-	public  int lastDaughterOfNodeUR(int anc, int node);
+	public int lastDaughterOfNodeUR(int anc, int node);
 	/** Returns what node number in Mesquite's standard rooted sense corresponds to the anc-node branch.*/
-	public  int nodeOfBranchUR(int anc, int node);
+	public int nodeOfBranchUR(int anc, int node);
 	/** Returns all of the "daughters" of a node, treating the tree as unrooted.  That is, it returns as
 	 * one of the daughters the mother of the node (which should be the the last entry in the array). 
 	 * If you pass into root the MRCA of a subtree containing "node", then it will treat
 	 * that subtree as unrooted.  Note:  if node is not the root or a descendant of root, then this will return null */
 	public int[] daughtersOfNodeUR (int root, int node);
+	/** Returns number of terminal taxa in clade in UNROOTED sense.*/
+	public int numberOfTerminalsInCladeUR(int anc, int node);
+	/** Returns the terminal taxa outward from a node in UNROOTED sense where the node
+	is treated as descendant from anc. This is one of the UR procedures, designed
+	to allow unrooted style traversal through the tree*/
+	public int[] getTerminalTaxaUR(int anc, int node);
 	
 	//============virtual taxon deletion ==================
 	/** Marks taxon (and any nodes required by it) as deleted virtually in the boolean array.  Used in conjunction with subsequent
@@ -262,25 +268,25 @@ public interface Tree extends Listable {
 	/** Writes a tree description into the StringBuffer, filtering virtually deleted nodes */
 	public void writeTree(int node, StringBuffer treeDescription, boolean[] deleted);
 	/** Returns the root, filtering virtually deleted nodes*/
-	public  int getRoot(boolean[] deleted);
+	public int getRoot(boolean[] deleted);
 	/** Returns whether root is real.  It isn't real if the tree is unrooted.*/
 	public boolean rootIsReal(boolean[] deleted);
 	/** Returns the first (left-most) daughter of node filtering virtuallyDeleted nodes.*/
-	public  int firstDaughterOfNode(int node, boolean[] deleted);
+	public int firstDaughterOfNode(int node, boolean[] deleted);
 	/** Returns the last (right-most) daughter of node filtering virtuallyDeleted nodes.*/
-	public  int lastDaughterOfNode(int node, boolean[] deleted);
+	public int lastDaughterOfNode(int node, boolean[] deleted);
 	/** Returns the node's sister immediately to the right, filtering virtually deleted nodes.*/
-	public  int nextSisterOfNode(int node, boolean[] deleted);
+	public int nextSisterOfNode(int node, boolean[] deleted);
 	/** Returns the node's sister immediately to the left, filtering virtually deleted nodes.*/
-	public  int previousSisterOfNode(int node, boolean[] deleted);
+	public int previousSisterOfNode(int node, boolean[] deleted);
 	/** Returns the immediate ancestor of node (mother) if node is non-reticulate, filtering virtually deleted nodes*/
-	public  int motherOfNode(int node, boolean[] deleted);
+	public int motherOfNode(int node, boolean[] deleted);
 	/** Returns the branch length of the node, filtered by virtual deletion of nodes.*/
-	public  double getBranchLength(int node, boolean[] deleted);
+	public double getBranchLength(int node, boolean[] deleted);
 	/** Returns the branch length of the node.  If the branch length is unassigned, pass back the double passed in, filtered by virtual deletion of nodes*/
-	public  double getBranchLength(int node, double ifUnassigned, boolean[] deleted);
+	public double getBranchLength(int node, double ifUnassigned, boolean[] deleted);
 	/** Returns whether branch length of node is unassigned, filtering virtually deleted nodes.*/
-	public  boolean branchLengthUnassigned(int node, boolean[] deleted);
+	public boolean branchLengthUnassigned(int node, boolean[] deleted);
 	//============ ==================
 	/** Puts into TreeVector trees from each rerooting within the clade of the node passed*/ 
 	public void makeAllRootings(int cladeRoot, TreeVector trees);
@@ -289,10 +295,10 @@ public interface Tree extends Listable {
 	/** Returns true if tree has branch lengths.*/
 	public boolean hasBranchLengths(); 
 	/** Returns the branch length of the node.*/
-	public  double getBranchLength(int node); 
+	public double getBranchLength(int node); 
 	/** Returns the branch length of the node.  If the branch length is unassigned, pass back the double passed in*/
-	public  double getBranchLength(int node, double ifUnassigned); 
-	public  boolean branchLengthUnassigned(int node);
+	public double getBranchLength(int node, double ifUnassigned); 
+	public boolean branchLengthUnassigned(int node);
 	public double tallestPathAboveNode (int node);
 	public double tallestPathAboveNodeUR (int anc, int node);
 	public double tallestPathAboveNode (int node, double perUnassignedLength);

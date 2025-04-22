@@ -2666,6 +2666,38 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return null;
 	}
 
+	/** Returns number of terminal taxa in clade in UNROOTED sense.*/
+	public int numberOfTerminalsInCladeUR(int anc, int node){
+		if (nodeIsTerminal(node))
+			return 1;
+		int nts = 0;
+		for (int d = firstDaughterOfNodeUR(anc, node); nodeExists(d); d = nextSisterOfNodeUR(anc, node, d)){
+			nts += numberOfTerminalsInCladeUR(node, d);
+		}
+		return nts;
+	}
+	
+	void collectTerms(int anc, int node, int[] terms, MesquiteInteger k){
+		if (nodeIsTerminal(node)){
+			terms[k.getValue()] = taxonNumberOfNode(node);
+			k.increment();
+			return;
+		}
+		int present = 0;
+		for (int d = firstDaughterOfNodeUR(anc, node); nodeExists(d); d = nextSisterOfNodeUR(anc, node, d)){
+			collectTerms(node, d, terms, k);
+		}
+	}
+	/** Returns the terminal taxa outward from a node in UNROOTED sense where the node
+	is treated as descendant from anc. This is one of the UR procedures, designed
+	to allow unrooted style traversal through the tree*/
+	public int[] getTerminalTaxaUR(int anc, int node){
+		int[] terms = new int[numberOfTerminalsInCladeUR(anc, node)];
+		MesquiteInteger k = new MesquiteInteger(0);
+		collectTerms(anc, node, terms, k);
+		return terms;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns whether any branchLengths are assigned.*/
 	private boolean lengthsAssigned(int node) { 
