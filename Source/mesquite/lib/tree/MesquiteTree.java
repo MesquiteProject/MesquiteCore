@@ -3400,7 +3400,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 			int taxonNumber = -1;
 			int fromWhichNamer = -1;
 			if (namer != null){
-				taxonNumber = namer.whichTaxonNumber(taxa, c);
+				taxonNumber = namer.whichTaxonNumber(this, c);
 				fromWhichNamer = 1;
 			}
 			if (taxonNumber < 0){
@@ -3417,7 +3417,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					taxonNumber = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement, permitSpaceUnderscoreEquivalent);
 					fromWhichNamer = 4;
 				}
-
+				// At this point the taxon still has not been found
 				if (taxonNumber<0){
 					/* Note: There is a problem with this if permitTONames is on.  If you read in a Zephyr produced tree file by itself, not after
 					 * opening the file with the taxa in order, then you will likely get reticulations.  In particular, permitTONames not only
@@ -3425,7 +3425,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					 * is that in reading the treefile, it creates the taxa in the orders it encounters them.  If t88 is the first taxon in the first
 					 * treedescription, this will be taxon 0.  So if it reads t0, it will interpret it as taxon 0, even if it is the 99th taxon read in. 
 					 * Our solution to this has been to set permitTONames to false by default, and warn the user not to turn it on unless they need to.
-					 * */
+					 * */ 
 					if (permitT0Names && c != null && c.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there 
 						String number = c.substring(1, c.length());
 						int num = MesquiteInteger.fromString(number);
@@ -3439,7 +3439,11 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					resetNodeOfTaxonNumbers();
 				if (taxonNumber>= nodeOfTaxon.length){
 					MesquiteMessage.warnProgrammer("taxon number too high found (" + c + "); number: "+taxonNumber);
-					taxonNumber = namer.whichTaxonNumber(taxa, c);
+					int fIT = taxa.getNumTaxa();
+					if (name != null)
+						taxonNumber = namer.whichTaxonNumber(this, c);
+					else
+						taxonNumber = fIT;
 					echo("s\n", 100);
 					return FAILED;
 				}
@@ -3447,9 +3451,12 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				if (nodeOfTaxon[taxonNumber]<=0){  // first time taxon encountered
 					//if (nodeOfTaxonNumber(taxonNumber)<=0){  // first time taxon encountered
 					setTaxonNumber(node, taxonNumber, false);
+					if (namer != null)
+						namer.taxonNameSet(this, taxonNumber, c);
 					return CONTINUE;
 				}
-				else {
+				else { //same taxon encountered previously at tip!
+					
 					int termN = nodeOfTaxonNumber(taxonNumber);
 					if (motherOfNode(termN) != motherOfNode(node)) { //protect against redundant references; NOTE: may not protect if more than two parents
 						//apparent reticulation found!
@@ -3479,7 +3486,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					}
 				}
 			}
-			else { //see if apparent taxon is actually name of previously labelled internal node
+			else { //taxon still not found; see if token is actually name of previously labelled internal node
 				int labNode = nodeOfLabel(c);
 				if (labNode!=-1) {//IF LABEL already exists, then attach new ancestor
 					if (motherOfNode(labNode) != motherOfNode(node)) { //protect against redundant references; NOTE: may not protect if more than two parents
@@ -3522,10 +3529,14 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 						inProgressAddingTaxa = true;
 						boolean success = taxa.addTaxa(taxa.getNumTaxa(), 1, true);
 						if (success){
-							taxa.setTaxonName(taxa.getNumTaxa()-1, c);
 							oldNumTaxa = taxa.getNumTaxa();
 							taxaIDs = taxa.getTaxaIDs();
 							setTaxonNumber(node, taxa.getNumTaxa()-1, false);
+							String newTaxonName = c;
+							if (namer != null)
+								namer.setNameOfNewTaxon(taxa, taxa.getNumTaxa()-1, this, c);
+							else
+								taxa.setTaxonName(taxa.getNumTaxa()-1, newTaxonName);
 							inProgressAddingTaxa = false;
 							return CONTINUE;
 

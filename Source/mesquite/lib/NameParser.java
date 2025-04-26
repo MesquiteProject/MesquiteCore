@@ -94,7 +94,8 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		numEndField.setEnabled(considerEndField.getState());
 		endBoundaryField.setEnabled(considerEndField.getState());
 		includeEndBoundaryInNameField.setEnabled(considerEndField.getState());
-		for (int i = 0; i<exampleLabels.length; i++){
+		if (exampleLabels != null)
+			for (int i = 0; i<exampleLabels.length; i++){
 			
 			exampleLabels[i].before.setText(examples[i]);
 			exampleLabels[i].after.setText(exampleExtraction(examples[i]));

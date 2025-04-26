@@ -18,6 +18,7 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.*;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -61,6 +62,12 @@ public class GraphicsUtil {
 		if (!(g instanceof Graphics2D))
 			return;
 		Graphics2D g2 = (Graphics2D)g;
+		if ((fromX == 0 && fromY == 0) && (toX == 0 && toY == 0))
+			Debugg.printStackTrace("@to and from");
+		else if ((fromX == 0 && fromY == 0))
+			Debugg.printStackTrace("@from");
+		if ((toX == 0 && toY == 0))
+			Debugg.printStackTrace("@to");
 		drawLine(g2,fromX, fromY, toX, toY);
 	}
 	/*_________________________________________________*/

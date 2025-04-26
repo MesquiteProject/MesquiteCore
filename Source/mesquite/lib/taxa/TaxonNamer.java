@@ -13,12 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.taxa;
 
-import mesquite.categ.lib.CategoricalState;
-import mesquite.categ.lib.DNAState;
-import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
+import mesquite.lib.tree.Tree;
 
 
 /* ======================================================================== */
@@ -27,12 +25,27 @@ public abstract class TaxonNamer  {
 	
 	public abstract String getNameToUse(Taxon taxon);
 	public abstract String getNameToUse(Taxa taxa, int it);
+	
+	/*For a new taxon in tree reading. 
+	To be subclassed if any interesting adjustments needed, e.g. for taxa block enlargement,*/
+	public void setNameOfNewTaxon(Taxa taxa, int it, Tree tree, String original){
+		taxa.setTaxonName(it, original);
+	}
+	public void taxonNameSet(Tree tree, int it, String original){
+	}
 
 	public boolean initialize(Taxa taxa){
 		getTranslationTable(taxa);
 		return true;
 	}
 
+	/** Given a taxon name "name", this method returns the taxon number this name represents. */
+	public int whichTaxonNumber(Tree tree, String name){
+		if (tree == null)
+			return -1;
+		return whichTaxonNumber(tree.getTaxa(), name);
+	}
+	
 	/** Given a taxon name "name", this method returns the taxon number this name represents. */
 	public abstract int whichTaxonNumber(Taxa taxa, String name);	
 

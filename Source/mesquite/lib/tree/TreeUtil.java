@@ -186,6 +186,8 @@ public class TreeUtil {
 			String c = debugParser.getNextToken();
 			stringLoc.setValue(oldLoc);
 */
+			//if (iTree%100 == 0)
+				//System.err.println("@=====================tree " + iTree );
 			t.readTree(line,stringLoc, namer, StringUtil.defaultWhitespace + "\n\r", "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
 			if (oldLoc < stringLoc.getValue()){
 				t.setName(treeNameBase + (iTree+1));

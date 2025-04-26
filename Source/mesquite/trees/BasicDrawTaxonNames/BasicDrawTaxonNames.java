@@ -69,6 +69,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected Tree tree;
 	protected Graphics gL;
 	protected int separation = 10;
+
 	protected Font currentFont = null;
 	protected Font currentFontBOLD = null;
 	protected Font currentFontBOLDITALIC = null;
@@ -108,7 +109,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		currentFont = MesquiteWindow.defaultFont;
+		currentFont = TreeDisplay.defaultTreeFont;
 		resetFonts();
 		MesquiteMenuSpec textMenu = findMenuAmongEmployers("Text");
 		MesquiteMenuSpec colorMenu = findMenuAmongEmployers("Color");
@@ -164,8 +165,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		currentFontBOLDITALIC = new Font(currentFont.getName(), Font.BOLD+Font.ITALIC, currentFont.getSize());
 		currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
 		currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
-		fontName = new MesquiteString(MesquiteWindow.defaultFont.getName());
-		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
+		fontName = new MesquiteString(TreeDisplay.defaultTreeFont.getName());
+		fontSizeName = new MesquiteString(Integer.toString(TreeDisplay.defaultTreeFont.getSize()));
 		currentFontsCollapsed[0] =currentFont; //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
 		currentFontsCollapsed[1] =currentFontBOLD; //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish
 		currentFontsCollapsed[2] =new Font(currentFont.getName(), Font.ITALIC, currentFont.getSize()); //0 normal, 1bold, 2 italic, 3 bold+italic, 4 biggish, 5 bold biggish, 6 italic biggish, 7 bold italic biggish

@@ -76,6 +76,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public static final int INVALIDORIENTATION = -1;
 
 	public static final int FONTSIZECHANGED = 18275;  //for notification
+	public static Font defaultTreeFont = new Font ("SanSerif", Font.PLAIN, 12); //added 25
 
 	/**  The margin from the tips to the edge of the drawing field*/
 	public int tipsMargin = -1;
@@ -270,7 +271,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public Font getFont(){
 		Font alreadyHere = super.getFont();
 		if (alreadyHere == null)
-			return MesquiteWindow.defaultFont;
+			return defaultTreeFont;
 		return alreadyHere;
 	}
 	public void setDrawingInProcess(boolean inProgress){

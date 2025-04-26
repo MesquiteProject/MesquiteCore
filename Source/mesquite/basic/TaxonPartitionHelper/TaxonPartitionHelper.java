@@ -50,6 +50,7 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+		nameParser = new NameParser(this, "Groups");
 		loadPreferences();
 		return true;
 	}

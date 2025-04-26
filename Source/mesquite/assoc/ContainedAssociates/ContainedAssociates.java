@@ -886,6 +886,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		}
 	}
 	NameReference migrateRef = NameReference.getNameReference("Migration");
+	
 	/*....................................................................................................*/
 	private void miniTerminals(Graphics g, Tree tree, int node, int[] terminals, double terminalY, int miniSpacing, boolean atTip, Color containedColor, TaxaPartition partitions) {
 		boolean inA =IntegerArray.inArray(node, terminals);
@@ -899,8 +900,7 @@ class WideTreeDrawing extends TreeDrawing  {
 			lastleft+= miniSpacing;
 			double oldX = miniX[node];
 			double oldY = miniY[node];
-
-			if (!atTip){ //(tree.nodeIsInternal(node) ||
+			if (!atTip && !recalculating){ //(tree.nodeIsInternal(node) ||
 				boolean useOld = false;
 				if (terminalY>= oldY || !legalY(oldY)) { //test for legalY added 9 Nov 01
 					useOld = true;
@@ -1065,6 +1065,8 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	boolean warned = false;
 	boolean legalXY(double x, double y){
+		if (x == 0 && y == 0)
+			return false;
 		boolean L = (x<treeDisplay.getBounds().width && y>treeDisplay.getBounds().height && y<300000000);
 		if (!L)
 			L = x>=0 && x<treeDisplay.getBounds().width && y>=0;
@@ -1099,7 +1101,7 @@ class WideTreeDrawing extends TreeDrawing  {
 						//if (miniY[d]<=0) MesquiteMessage.warnProgrammer("miniDraw Error: miniY[d] <=0 " + d + " miniY[d] " + miniY[d]);
 						//if (miniY[node]<=0) MesquiteMessage.warnProgrammer("miniDraw Error: miniY[node] <=0 " + node + " miniY[node] " + miniY[node]);
 					}
-					if (legalXY(miniX[node], miniY[node]) && legalXY(miniX[d], miniY[d])){
+					if (!recalculating && history != null && legalXY(miniX[node], miniY[node]) && legalXY(miniX[d], miniY[d])){
 						GraphicsUtil.drawLine(g,miniX[d], miniY[d], miniX[node], miniY[node]);
 						GraphicsUtil.drawLine(g,miniX[d]+1, miniY[d], miniX[node]+1, miniY[node]);
 
@@ -1211,7 +1213,9 @@ class WideTreeDrawing extends TreeDrawing  {
 				TaxaPartition partitions = null;
 				if (containedTree.getTaxa() != null)
 					partitions = (TaxaPartition)containedTree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
+				
 
+				//miniTerminalsTrialRun(containedTree, aNodes[i], terminals, yC, taxaSpacing, atTip, cc, partitions);
 				miniTerminals(g, containedTree, aNodes[i], terminals, yC, taxaSpacing, atTip, cc, partitions);
 				miniCalcInternalLocs(containedTree, aNodes[i], terminals);
 				int mother = tree.motherOfNode(containingNode);
@@ -1392,7 +1396,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	MesquiteNumber cost = new MesquiteNumber();
 	MesquiteString resultString = new MesquiteString();
-
+	boolean recalculating = false;
 	Tree rememberedTree = null;
 	void desuppress(){
 		recalculatePositions(rememberedTree);
@@ -1405,6 +1409,7 @@ class WideTreeDrawing extends TreeDrawing  {
 			return;
 		}
 		if (MesquiteTree.OK(tree)) {
+			recalculating = true;
 
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
@@ -1420,17 +1425,24 @@ class WideTreeDrawing extends TreeDrawing  {
 			calcBranchPolys(tree, drawnRoot);
 			if (association == null) {
 				originalContainedTree = null;
+				recalculating = false;
 				return;
 			}
 			if (originalContainedTree== null || containedTaxa !=currentContainedTaxa || currentContainedTree==null) 
 				resetContainedTree(containedTaxa); 
 
 			if (originalContainedTree !=null){
-				if (miniX==null || oldNumSpaces != originalContainedTree.getNumNodeSpaces()){
-					miniX = new double[originalContainedTree.getNumNodeSpaces()];
-					miniY = new double[originalContainedTree.getNumNodeSpaces()];
-					inTree = new boolean[originalContainedTree.getNumNodeSpaces()];
-					oldNumSpaces = originalContainedTree.getNumNodeSpaces();
+				int numNodeSpaces = originalContainedTree.getNumNodeSpaces();
+				if (miniX==null || oldNumSpaces != numNodeSpaces){
+					miniX = new double[numNodeSpaces];
+					miniY = new double[numNodeSpaces];
+					inTree = new boolean[numNodeSpaces];
+					oldNumSpaces = numNodeSpaces;
+				}
+				for (int i =0; i<miniX.length; i++){
+					miniX[i]=0;
+					miniY[i]=0;
+					inTree[i]=false;
 				}
 				if (tree!=currentTree || tree.getVersionNumber()!=currentTree.getVersionNumber() || containedTaxa != currentContainedTaxa || currentContainedTree != originalContainedTree || association!= currentAssociation) {
 					cost.setToUnassigned();
@@ -1440,7 +1452,7 @@ class WideTreeDrawing extends TreeDrawing  {
 						else
 							containedTree = originalContainedTree.cloneTree(); //no need to establish listener to Taxa, as will be remade when needed?
 					}
-
+					history = null;
 					history = reconstructTask.reconstructHistory(tree, containedTree, association, cost, resultString); //TODO: pass back string describing cost (e.g. "deep coalescence cost"
 				if (history != null){
 						MesquiteInteger duplications = new MesquiteInteger(0);
@@ -1451,6 +1463,7 @@ class WideTreeDrawing extends TreeDrawing  {
 				}
 			}
 			if (originalContainedTree == null) {
+				recalculating = false;
 				return;
 			}
 
@@ -1466,6 +1479,7 @@ class WideTreeDrawing extends TreeDrawing  {
 
 			currentContainedTaxa = containedTaxa;
 			currentAssociation = association;
+			recalculating = false;
 		}
 	}
 	/*_________________________________________________*/
@@ -1473,6 +1487,11 @@ class WideTreeDrawing extends TreeDrawing  {
 		if (ownerModule.suppressed)
 			return;
 		if (MesquiteTree.OK(tree)) {
+			if (association !=null) {
+				for (int i=0; i<inTree.length; i++)
+					inTree[i] = false;
+				checkInTree(tree, containedTree, containedTree.getRoot());
+			}
 
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());

@@ -159,6 +159,17 @@ public class DisplayableBranchProperty extends BranchProperty  {
 		}
 		branchPropertyDisplayPreferences.notifyListeners(DisplayableBranchProperty.class, new Notification(MesquiteListener.PARTS_ADDED));
 	}
+	/*-------------------------------------*/
+	public static void addToPreferences(DisplayableBranchProperty property){
+			DisplayableBranchProperty prefRecord = (DisplayableBranchProperty)findInList(branchPropertyDisplayPreferences, property.getNameReference(), property.kind);
+			if (prefRecord == null) {
+				prefRecord = new DisplayableBranchProperty(property.getName(), property.kind);
+				branchPropertyDisplayPreferences.addElement(prefRecord, false);
+			}
+			prefRecord.cloneFrom(property);
+	
+			branchPropertyDisplayPreferences.notifyListeners(DisplayableBranchProperty.class, new Notification(MesquiteListener.PARTS_ADDED));
+	}
 	
 	/*-------------------------------------*/
 	Font baseFont = null;
