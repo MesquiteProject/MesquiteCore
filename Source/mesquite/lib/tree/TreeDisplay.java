@@ -146,7 +146,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public TreeDisplay (MesquiteModule ownerModule, Taxa taxa) { 
 		super(ownerModule,taxa);
 		branchColor = Color.black;
-		branchColorDimmed = Color.gray;
+		branchColorDimmed = Color.lightGray;
 		recalcCommand = new MesquiteCommand("redoCalculations", this);
 		recalcCommand.setSuppressLogging(true); 
 	}

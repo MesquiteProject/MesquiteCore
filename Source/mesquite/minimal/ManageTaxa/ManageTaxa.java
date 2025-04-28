@@ -564,9 +564,9 @@ public class ManageTaxa extends TaxaManager {
 								found = true;
 							}
 						}
-						//look through all attached objects 
-						int numObs = taxa.getNumberAssociatedStrings();
-						for (int v = 0; v<numObs; v++){
+						//look through all attached strings 
+						int numStrs = taxa.getNumberAssociatedStrings();
+						for (int v = 0; v<numStrs; v++){
 							StringArray array = taxa.getAssociatedStrings(v);
 							if (!commentsRef.equals(array.getNameReference())){
 								String c = array.getValue(it);
@@ -584,6 +584,30 @@ public class ManageTaxa extends TaxaManager {
 								}
 							}
 						}
+						//look through all attached double arrays 
+						int numObs = taxa.getNumberAssociatedObjects();
+						for (int v = 0; v<numObs; v++){
+							ObjectArray array = taxa.getAssociatedObjects(v);
+							if (!commentsRef.equals(array.getNameReference())){
+								Object c = array.getValue(it);
+
+								if (c instanceof DoubleArray){
+									s.append("\tSUT  "+ taxonReference);
+									s.append(" TAXON = ");
+									s.append(Integer.toString(it+1));
+									s.append(" NAME = ");
+									s.append( ParseUtil.tokenize(array.getNameReference().getValue()));
+									s.append(" REALARRAY = ' ");
+									DoubleArray d = (DoubleArray)c;
+									for (int k = 0; k<d.getSize(); k++){
+										s.append(MesquiteDouble.toString(d.getValue(k)) + " ");
+									}
+									s.append( "';" + StringUtil.lineEnding());
+									found = true;
+								}
+							}
+						}
+
 					}
 				}
 			}
@@ -769,6 +793,26 @@ public class ManageTaxa extends TaxaManager {
 					}
 					else if ("STRING".equalsIgnoreCase(subC)) {
 						string = subcommands[1][i];
+					}
+					else if ("REALARRAY".equalsIgnoreCase(subC)) {
+						if (taxa !=null && name != null) {
+							String sA = subcommands[1][i];
+							
+							Parser parser = new Parser(sA);
+							DoubleArray dA = new DoubleArray(0);
+							double d;
+							int count = 0;
+							while (MesquiteDouble.isCombinable(d = MesquiteDouble.fromString(parser))){
+								count++;
+								dA.resetSize(count);
+								dA.setValue(count-1, d);
+							}
+							if (dA.getSize()>0)
+								taxa.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, dA);
+							
+							return true;
+						}
+						
 					}
 					else if ("CHARACTER".equalsIgnoreCase(subC)) {
 						return false;

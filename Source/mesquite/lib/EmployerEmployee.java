@@ -1139,7 +1139,6 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		if (!started) {
 			if (showHiringPath)
 				MesquiteMessage.warnProgrammer("(HIRING.4) FAILED TO START " + mb.getName());
-			Debugg.println("@@@@ " +getName() + " failed");
 			mb.inStartup = false;
 			mb.endJob();
 			mb.dispose();

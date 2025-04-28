@@ -236,7 +236,7 @@ public class SimulatedCharacters extends CharacterSource {
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Simulated Characters";
+		return "Simulated Characters on Tree";
    	 }
    	 
 	/*.................................................................................................................*/

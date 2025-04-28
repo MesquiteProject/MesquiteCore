@@ -114,13 +114,12 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	String getTaxonName(Taxa taxa, int it){
 		return StringUtil.simplifyIfNeededForOutput(taxa.getTaxonName(it),true);
 	}
+
 	/*.................................................................................................................*/
-	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, MesquiteFile file, boolean isCurrent){
+	String nexusStringForTaxSet(TaxaSelectionSet taxaSet, Taxa taxa, MesquiteFile file, boolean isCurrent){
 		String s= "";
 		if (taxaSet!=null && (taxaSet.getFile()==file || (taxaSet.getFile()==null && taxa.getFile()==file))) {
 			String sT = "";
-			int continuing = 0;
-			int lastWritten = -1;
 			for (int ic=0; ic<taxa.getNumTaxa(); ic++) {
 				if (taxaSet.isBitOn(ic)) {
 					sT += " " + getTaxonName(taxa,ic);
@@ -249,13 +248,13 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			if (ms!=null && (ms.getNexusBlockStored()==null || blockName.equalsIgnoreCase(ms.getNexusBlockStored()))) {
 				ms.setNexusBlockStored(blockName);
 				ms.setName("UNTITLED");
-				specSet = nexusStringForSpecsSet(ms, taxa, file, true);
+				specSet = nexusStringForTaxSet(ms, taxa, file, true);
 				s += specSet;
 			}
 
 
 			for (int ims = 0; ims<numSets; ims++) {
-				s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
+				s += nexusStringForTaxSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
 				s += specSet;
 			}
 		}

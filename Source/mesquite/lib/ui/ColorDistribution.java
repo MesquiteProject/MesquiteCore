@@ -185,7 +185,7 @@ public class ColorDistribution {
 
 		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorsDimmed = new ObjectArray(18);
-		standardColorsDimmed.setValue(0, Color.gray);
+		standardColorsDimmed.setValue(0, Color.lightGray);
 		standardColorsDimmed.setValue(1, brighter(Color.darkGray, dimmingConstant));
 		standardColorsDimmed.setValue(2, brighter(Color.gray, dimmingConstant));
 		standardColorsDimmed.setValue(3, brighter(Color.lightGray, dimmingConstant));

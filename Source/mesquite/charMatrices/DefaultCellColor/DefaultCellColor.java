@@ -15,6 +15,8 @@ package mesquite.charMatrices.DefaultCellColor;
 
 import java.util.*;
 import java.awt.*;
+
+import mesquite.categ.lib.MolecularData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -25,10 +27,12 @@ import mesquite.lib.ui.ColorRecord;
 
 /* ======================================================================== */
 public class DefaultCellColor extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
-	DataWindowAssistantID colorer = null;
+	DataWindowAssistantID colorerByState = null;
+	DataWindowAssistantID noColor = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		colorer = (DataWindowAssistantID)hireNamedEmployee(DataWindowAssistantID.class, "#ColorByState");
+		colorerByState = (DataWindowAssistantID)hireNamedEmployee(DataWindowAssistantID.class, "#ColorByState");
+		noColor = (DataWindowAssistantID)hireNamedEmployee(DataWindowAssistantID.class, "#NoColor");
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -42,7 +46,8 @@ public class DefaultCellColor extends DataWindowAssistantID implements CellColor
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.data = data;
 		taxa = data.getTaxa();
-		colorer.setTableAndData(table, data);
+		colorerByState.setTableAndData(table, data);
+		noColor.setTableAndData(table, data);
 	}
 	CharacterData data;
 	Taxa taxa;
@@ -67,22 +72,32 @@ public class DefaultCellColor extends DataWindowAssistantID implements CellColor
 		return true; 
   	 }
    	public ColorRecord[] getLegendColors(){
-   		return ((CellColorer)colorer).getLegendColors();
+   		if (data == null || !(data instanceof MolecularData))
+   			return ((CellColorer)noColor).getLegendColors();
+   		return ((CellColorer)colorerByState).getLegendColors();
    	}
    	public String getColorsExplanation(){
-   		return ((CellColorer)colorer).getColorsExplanation();
+   		if (data == null || !(data instanceof MolecularData))
+   	   		return ((CellColorer)noColor).getColorsExplanation();
+   		return ((CellColorer)colorerByState).getColorsExplanation();
    	}
 	public Color getCellColor(int ic, int it){
-   		return ((CellColorer)colorer).getCellColor(ic, it);
+   		if (data == null || !(data instanceof MolecularData))
+   			return ((CellColorer)noColor).getCellColor(ic, it);
+   		return ((CellColorer)colorerByState).getCellColor(ic, it);
 	}
    	public String getCellString(int ic, int it){
-   		return ((DataWindowAssistantID)colorer).getCellString(ic, it);
+   		if (data == null || !(data instanceof MolecularData))
+   			return ((DataWindowAssistantID)noColor).getCellString(ic, it);
+   		return ((DataWindowAssistantID)colorerByState).getCellString(ic, it);
    	}
 	public CompatibilityTest getCompatibilityTest(){
 		return new CharacterStateTest();
 	}
 	public String getParameters(){
-		return colorer.getParameters();
+   		if (data == null || !(data instanceof MolecularData))
+   			return noColor.getParameters();
+		return colorerByState.getParameters();
 	}
 }
 

@@ -278,7 +278,7 @@ public class SimCharsOnTrees extends CharacterSource {
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Simulated Characters on Trees";
+		return "Simulated Characters (One per Tree)";
    	 }
    	 
 	/*.................................................................................................................*/

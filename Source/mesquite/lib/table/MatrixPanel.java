@@ -443,8 +443,6 @@ timer6.end();
 			}
 			table.reportTiming();
 			matrixTimer.end();
-		//	System.err.println("@MatrixPanel total " + matrixTimer.getAccumulatedTime() + " g " + g.hashCode()+ " THREAD " + Thread.currentThread());
-		//	FontRenderContext frc = g.getFontRenderContext();
 			
 			if (table.getBetweenSelected()) {
 				drawBetweenSelection(g);

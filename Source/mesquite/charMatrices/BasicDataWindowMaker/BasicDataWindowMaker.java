@@ -91,6 +91,8 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 		matrixMenu = makeMenu("Matrix");
 		displayMenu = addAuxiliaryMenu("Display");
 		resetContainingMenuBar();
+		//Debugg.println("@ 
+		addMenuItem(getProject().includeMergeSubmenuSpec, "Add Sequences from Files", new MesquiteCommand("addseq", this));
 		return true;
 	}
 
