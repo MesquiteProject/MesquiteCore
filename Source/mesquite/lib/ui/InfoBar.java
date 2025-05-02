@@ -479,6 +479,11 @@ public class InfoBar extends MousePanel implements Commandable {
 		return null;
 	}
 	/*.................................................................................................................*/
+	/** Get the window in which it is embedded */
+	public MesquiteWindow getWindow(){
+		return window;
+	}
+	/*.................................................................................................................*/
 	/** Get the current mode (i.e. which page is currently being shown) */
 	public int getMode(){
 		return mode;

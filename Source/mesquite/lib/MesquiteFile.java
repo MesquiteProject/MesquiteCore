@@ -17,6 +17,8 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.List;
+
 import com.apple.mrj.*;
 
 import mesquite.lib.characters.CharactersGroup;
@@ -902,6 +904,31 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				MesquiteTrunk.mesquiteTrunk.logln("Open File not completed because file name not supplied.");
 			else if ( StringUtil.blank(tempDirectoryName))
 				MesquiteTrunk.mesquiteTrunk.logln("Open File not completed because directory name not supplied.");
+			return null;
+		}
+
+	}
+	/*-------------------------------------------------------*/
+	/** for use by open; chooses files.  Returns full path and also separate directory and file names in MesquiteStrings */
+	public static File[] openFilesDialog(String message) {
+
+
+		if (message == null)
+			message = "Select file";
+		MainThread.incrementSuppressWaitWindow();
+		MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), message, FileDialog.LOAD);
+		fdlg.setResizable(true);
+		fdlg.setBackground(ColorTheme.getInterfaceBackground());
+		fdlg.setMultipleMode(true);
+		fdlg.setVisible(true);
+		File[] files = fdlg.getFiles();
+		// fdlg.dispose();
+		MainThread.decrementSuppressWaitWindow();
+		if (files != null && files.length>0) {
+			return files;
+		}
+		else {
+			MesquiteTrunk.mesquiteTrunk.logln("Open Files not completed.");
 			return null;
 		}
 

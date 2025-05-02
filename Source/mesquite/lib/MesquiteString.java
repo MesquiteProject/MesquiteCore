@@ -107,14 +107,14 @@ public class MesquiteString extends Listened implements Listable, Identifiable {
 		}
 		setValue(value.toString(), true);
 	}
-
 	public void setValue(String value, boolean notify) {
 		if (value==null){
 			sb.setLength(0);
 			if (!isNull){
 				isNull = true;
-				if (bound)
+				if (bound){
 					MesquiteTrunk.resetCheckMenuItems(); //TODO: shouldn't this method be in MenuOwner???
+				}
 				if (notify)
 					notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
 			}
@@ -124,13 +124,15 @@ public class MesquiteString extends Listened implements Listable, Identifiable {
 			if (!value.equals(sb.toString())) {
 				sb.setLength(0);
 				sb.append(value);
-				if (bound)
+				if (bound){
 					MesquiteTrunk.resetCheckMenuItems(); //TODO: shouldn't this method be in MenuOwner???
+				}
 				if (notify)
 					notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
 			}
-			else if (bound)
+			else if (bound){
 				MesquiteTrunk.resetCheckMenuItems(); //TODO: shouldn't this method be in MenuOwner???
+			}
 		}
 	}
 

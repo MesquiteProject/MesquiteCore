@@ -18,6 +18,7 @@ import java.io.*;
 
 import mesquite.lib.duties.*;
 import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 /** The main thread for executing commands */
 public class MainThread extends MesquiteThread {
@@ -77,6 +78,13 @@ public class MainThread extends MesquiteThread {
 		return list;
 	}
 
+	MesquiteWindow windowContext = null;
+	public void setWindowContext(MesquiteWindow w){
+		windowContext = w;
+	}
+	public MesquiteWindow getWindowContext(){
+		return windowContext;
+	}
 	public static PendingCommand getCurrentlyExecuting(){
 		return currentlyExecuting;
 	}
@@ -123,7 +131,9 @@ public class MainThread extends MesquiteThread {
 								MesquiteThread.setLoggerCurrentThread(c.getSupplementalLogger());
 								loggerSet = true;
 							}
+							setWindowContext(c.getWindowContext()); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
 							pc.go();
+							setWindowContext(null); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
 							if (loggerSet){
 								MesquiteThread.setLoggerCurrentThread(null);
 							}

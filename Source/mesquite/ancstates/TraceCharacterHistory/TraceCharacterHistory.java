@@ -174,7 +174,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 			windowBabySitter = hireNamedEmployee (WindowHolder.class, "#WindowBabysitter");
 			if (windowBabySitter == null)
 				return;
-			window = new MesquiteHTMLWindow(windowBabySitter, null, "Trace Character", false);
+			window = new MesquiteHTMLWindow(windowBabySitter, null, "Reconstruct Ancestral States (Trace Character)", false);
 			window.setBackEnabled(false);
 			windowBabySitter.setModuleWindow(window);
 		}
@@ -215,7 +215,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	}
 	String getTracesText(){
 		StringBuffer sb = new StringBuffer();
-		sb.append("<h2>Trace Character</h2>");
+		sb.append("<h2>Reconstruct Ancestral States (Trace Character)</h2>");
 		sb.append(getTraceHTMLAllOperators());
 		sb.append("<p>You can see the node numbers by going to the Tree Window and selecting the menu item Display&gt;Show Node Numbers, " 
 		+ "or by looking at the text view of the Tree Window (menu item Window&gt;View Mode&gt;Text.");
@@ -964,7 +964,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Trace Character History";
+		return "Reconstruct Ancestral States (\"Trace Character\")";
 	}
 
 	/*.................................................................................................................*/
@@ -986,7 +986,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Traces a history of character evolution on the nodes of a drawn tree.";
+		return "Reconstructs ancestral states and traces the history of character evolution on the nodes of a drawn tree.";
 	}
 }
 

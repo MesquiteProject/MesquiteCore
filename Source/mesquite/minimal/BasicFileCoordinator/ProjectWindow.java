@@ -1420,6 +1420,15 @@ class TreesRPanel extends ElementPanel {
 
 	}
 
+	public String getFootnote(){
+		String s = " Tree";
+		int numTrees = ((TreeVector)element).size();
+		if (numTrees != 1)
+			s += "s";
+		
+		return "" + numTrees + s + "\n" + super.getFootnote();
+	}
+	
 	/*.................................................................................................................*/
 	String getAnalysisDirectoryPath(FileElement element) {
 		if (element instanceof TreeVector) {

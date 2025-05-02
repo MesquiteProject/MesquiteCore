@@ -62,6 +62,13 @@ public class MesquiteSubmenuSpec extends MesquiteMenuSpec{
 		super.dispose();
 	}
 	
+	boolean autoCheckChecks = false;
+	public void setAutoCheckChecks(boolean auto){
+		autoCheckChecks = auto;
+	}
+	public boolean getAutoCheckChecks(){
+		return autoCheckChecks;
+	}
 	public void addExtraItem(MesquiteMenuItemSpec mmis){
 		items.addElement(mmis, false);
 	}

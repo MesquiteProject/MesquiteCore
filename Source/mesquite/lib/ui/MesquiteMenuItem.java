@@ -16,6 +16,8 @@ package mesquite.lib.ui;
 import java.awt.*;
 import java.awt.event.*;
 
+import javax.swing.UIManager;
+
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Debugg;
 import mesquite.lib.Journal;
@@ -279,19 +281,45 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 			if (io.isCombinable()) {
 				if (argument == null)
 					argument = "";
+				command.setWindowContext(getWindow());
 				command.doItMainThread(argument + ParseUtil.tokenize(others[io.getValue()].getName()), CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
 			}
 		}
 		else{ 
 			if (command.bypassQueue)
 				MesquiteThread.acceptNonMesquiteThreads = true; //not elegant and not particular threadsafe, but as it's just to suppress the immune system, it's OK
+			command.setWindowContext(getWindow());
 			if (argument != null)
-			command.doItMainThread(arg, CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
-		else
-			command.doItMainThread("", CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
+				command.doItMainThread(arg, CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
+			else
+				command.doItMainThread("", CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
 			if (command.bypassQueue)
 				MesquiteThread.acceptNonMesquiteThreads = false;
 		}
+	}
+	public MesquiteWindow getWindow(){
+		MenuContainer mc = getParent();
+		while (mc != null && !(mc instanceof MenuBar) && !(mc instanceof InfoBar)){
+			if (mc instanceof MenuComponent)
+				mc = ((MenuComponent)mc).getParent();
+			else
+				mc = null;
+		}
+		if (mc != null){
+			if (mc instanceof MenuBar){
+				MenuBar mb = (MenuBar)mc;
+				MenuContainer mcc = mb.getParent();
+				if (mcc instanceof MesquiteFrame){
+					MesquiteWindow w = ((MesquiteFrame)mcc).getFrontWindow();
+					return w;
+				}
+			}
+			else if (mc instanceof InfoBar){
+				InfoBar mb = (InfoBar)mc;
+				return mb.getWindow();
+			}
+		}
+		return null;
 	}
 	public void finalize() throws Throwable{
 		totalFinalized++;

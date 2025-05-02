@@ -109,6 +109,15 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	public void setLogger(Logger logger){
 		this.logger = logger;
 	}
+	
+	MesquiteWindow windowContext = null;
+	public void setWindowContext(MesquiteWindow w){
+		windowContext = w;
+	}
+	public MesquiteWindow getWindowContext(){
+		return windowContext;
+	}
+
 	public String toString(){
 		return "command " + commandName + " to " + ownerObject;
 	}

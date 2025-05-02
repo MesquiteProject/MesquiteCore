@@ -45,6 +45,7 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 		filterable = msms.isFilterable();
 		addActionListener(this);
 		this.msms = msms;
+		this.autoCheckChecks = msms.getAutoCheckChecks();
 		if (msms.getSubmenuName() == null) {
 			System.out.println("submenu with no name");
 		}
@@ -119,11 +120,13 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 		for (int i=0; i<fonts.length; i++)
 			submenuFont.add(new MesquiteCheckMenuItem(fonts[i],  null, setFontCommand, StringUtil.tokenize(fonts[i]), submenuFont.checkString));
 		submenuFont.addSeparator();
+		submenuFont.setAutoCheckChecks(true);
 		submenuFont.add(new MesquiteMenuItem("Other...",  null, setFontCommand,FontUtil.otherFontArgument));
 		return submenuFont;
 	}
 	public static MesquiteSubmenu getFontSizeSubmenu(String title, Menu ownerMenu, MesquiteModule ownerModule, MesquiteCommand setFontSizeCommand) {
 		MesquiteSubmenu submenuSize=MesquiteSubmenu.getSubmenu(title, ownerMenu, ownerModule);
+		submenuSize.setAutoCheckChecks(true);
 		submenuSize.setSelected(new MesquiteString(""));
 		submenuSize.add(new MesquiteCheckMenuItem("6",  ownerModule, setFontSizeCommand, "6", submenuSize.checkString));
 		submenuSize.add(new MesquiteCheckMenuItem("7",  ownerModule, setFontSizeCommand, "7", submenuSize.checkString));
@@ -140,12 +143,19 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 		submenuSize.add((new MesquiteMenuItem("Other...",  ownerModule, setFontSizeCommand, null)).setDocument(false));
 		return submenuSize;
 	}
+	boolean autoCheckChecks = false;
+	public void setAutoCheckChecks(boolean auto){
+		autoCheckChecks = auto;
+	}
+	public boolean getAutoCheckChecks(){
+		return autoCheckChecks;
+	}
 	public void checkName(String s){
-		checkString.setValue(s);
+		if (checkString != null)
+			checkString.setValue(s);
 		resetCheck();
 	}
-	/** A method to resent which CheckBoxMenuItem is checked.  Currently not used because of bug in
-	 MRJ check menu system*/
+	/** A method to resent which CheckBoxMenuItem is checked. Used only for Font menus*/
 	public void resetCheck() {
 		try{
 		if (checkString != null) {

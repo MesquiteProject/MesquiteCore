@@ -118,6 +118,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		msf.setSelected(fontName);
 		MesquiteSubmenuSpec mss = addSubmenu(textMenu, "Font Size", makeCommand("setFontSize", this), MesquiteSubmenu.getFontSizeList());
 		mss.setList(MesquiteSubmenu.getFontSizeList());
+		mss.setAutoCheckChecks(true);
 		mss.setDocumentItems(false);
 		mss.setSelected(fontSizeName);
 		fontColorName = new MesquiteString("Black");

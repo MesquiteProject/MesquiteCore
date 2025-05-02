@@ -165,10 +165,10 @@ class GeneFamilyTaxonNamer extends BasicTaxonNamer {
 		if (StringUtil.blank(name))
 			return -1;
 		String baseName = nameParser.extractPart(name);
-		if (verbose) System.err.println("@ " + baseName);
+		if (verbose) System.err.println("  " + baseName);
 		int found =  findDerivativeInTaxaButNotInTree(tree,baseName);
 		if (found>=0){
-			if (verbose) System.err.println("@--- " + found + " " + tree.nodeOfTaxonNumber(found));
+			if (verbose) System.err.println(" --- " + found + " " + tree.nodeOfTaxonNumber(found));
 			((MesquiteTree)tree).setAssociatedString(geneNameRef, tree.nodeOfTaxonNumber(found), name);
 		}
 		return found;

@@ -266,11 +266,20 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 				MesquiteWindow.respondToQueryMode("Menu item \"" + getLabel() + "\"", command, this);
 			else*/
 				chooseItem(argument);
+				MenuContainer containing = getParent();
+				if (containing instanceof MesquiteSubmenu){  
+					MesquiteSubmenu msc = ((MesquiteSubmenu)containing);
+					if (msc.getAutoCheckChecks()){
+						msc.checkName(argument);
+					}
+				}
 			}
 
 		}
 
 	}
+	
+	//MesquiteCommand resetCommand = new MesquiteCommand("reset", this);
 	public void chooseItem(String arg) {
 		if (command == null || MesquiteTrunk.suppressMenuResponse)
 			return;
@@ -279,11 +288,11 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 			MesquiteDialog.currentWizard.toFront();
 			return;
 		}
-		if (argument != null)
-			command.doItMainThread(arg, CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
-		else
-			command.doItMainThread("", CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
-	//	resetCommand.doItMainThread("", null, false, false, this);
+		String useArg = arg;
+		if (argument == null)
+			useArg = "";
+		command.doItMainThread(useArg, CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
+		//resetCommand.doItMainThread("", null, null);
 	}
 
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {

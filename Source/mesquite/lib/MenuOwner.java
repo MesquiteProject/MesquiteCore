@@ -1008,7 +1008,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			// else {
 			// if (MesquiteTrunk.isMacOSX()){
 			Menu spot = new Menu(leftBracket);
-			// spot.setFont(new Font ("SanSerif", Font.PLAIN, 12));
+
 			spot.add(new MenuItem("Menus between " + leftBracket + " " + rightBracket));
 			spot.add(new MenuItem("  refer to current window"));
 			menuBar.add(spot);
