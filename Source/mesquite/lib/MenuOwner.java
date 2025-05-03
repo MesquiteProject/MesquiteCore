@@ -897,6 +897,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		if (menuItemsSpecs != null) {
 			for (int i = menuItemsSpecs.size() - 1; i >= 0; i--)
 				deleteMenuItem((MesquiteMenuItemSpec) menuItemsSpecs.elementAt(i));
+			if (menuItemsSpecs.size()>0)
+				Debugg.printStackTrace("@@@ menu items not deleted");
 		}
 
 	}

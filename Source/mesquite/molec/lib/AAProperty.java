@@ -19,6 +19,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorRecord;
 import mesquite.categ.lib.*;
 
 
@@ -30,6 +31,22 @@ public abstract class AAProperty extends MesquiteModule {
  	public String getDutyName() {
  		return "Amino Acid Property";
    	 }
+	/*.................................................................................................................*/
+	public double getMinimumValue(){
+		double m = MesquiteDouble.unassigned;
+		for (int is = 0; is<=ProteinState.maxProteinState; is++) { //-5 for * 1 2 3 4 ?
+			m = MesquiteDouble.minimum(m, getProperty(is));
+		}
+		return m;
+	}
+	/*.................................................................................................................*/
+	public double getMaximumValue(){
+		double m = MesquiteDouble.unassigned;
+		for (int is = 0; is<=ProteinState.maxProteinState; is++) { //-5 for * 1 2 3 4
+			m = MesquiteDouble.maximum(m, getProperty(is));
+		}
+		return m;
+	}
 	/*.................................................................................................................*/
 	public abstract double getProperty(int aa);
 	
