@@ -40,7 +40,7 @@ public class ColorForAlignment extends DataWindowAssistantID implements CellColo
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; 
 
 	}

@@ -102,6 +102,16 @@ public class Listened implements Listenable {
 		}
 	}
 	/*.................................................................................................................*/
+	/** adds a listener to notify if the element changes*/
+	public void removeListenerHighPriority(MesquiteListener listener) {
+		if (listeners==null) 
+			return;
+		if (listener!=null && listeners.indexOf(listener)>=0) {
+			listeners.removeElement(listener);
+			listenersRemaining--;
+		}
+	}
+	/*.................................................................................................................*/
 	/** removes all listeners*/
 	public void removeAllListeners() {
 		if (listeners!=null) {

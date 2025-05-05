@@ -331,7 +331,7 @@ public class CategoricalData extends CharacterData {
 	}
 
 	/*..........................................  CategoricalData  ..................................................*/
-	/**clone this CharacterData and return new copy.  Does not clone the associated specs sets etc.*/ //TODO: here should use super.setToClone(data) to handle specssets etc.???
+	/**clone this CharacterData and return new copy.  Now clones the associated specs sets etc.*/
 	public CharacterData cloneData(){
 		CategoricalData data = new CategoricalData(matrixManager, numTaxa, numChars, getTaxa());
 		if (symbols!=null)
@@ -339,6 +339,8 @@ public class CategoricalData extends CharacterData {
 				data.setSymbolDirect(i, symbols[i]);
 			}
 		for (int ic=0; ic<numChars; ic++){
+			if (characterHasName(ic))
+				data.setCharacterName(ic, getCharacterName(ic));
 			if (hasStateNames() && hasStateNames(ic))
 				for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
 					if (hasStateName(ic,i))
@@ -353,6 +355,7 @@ public class CategoricalData extends CharacterData {
 			if (getSelected(ic))
 				data.setSelected(ic, true);
 		}
+		data.setAssociateds(this);
 		data.resetCellMetadata();
 		return data;
 	}
@@ -373,6 +376,8 @@ public class CategoricalData extends CharacterData {
 				data.setSymbolDirect(i, symbols[i]);
 			}
 		for (int ic=icStart; ic<=icEnd; ic++){
+			if (characterHasName(ic))
+			data.setCharacterName(ic, getCharacterName(ic));
 			if (hasStateNames())
 				for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
 					data.setStateName(ic-icStart,i,getStateName(ic,i));

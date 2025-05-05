@@ -42,7 +42,7 @@ public class ColorByMatchToFirstTaxon extends DataWindowAssistantID implements C
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; 
 
 	}

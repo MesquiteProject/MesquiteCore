@@ -70,7 +70,7 @@ public class AnnotPanel extends DataWindowAssistantID implements CellColorer, Ce
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true;  
 	}
 	/*.................................................................................................................*/

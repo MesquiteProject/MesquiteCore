@@ -57,7 +57,7 @@ public class CharGroupColor extends DataWindowAssistantID implements CellColorer
 	public void viewChanged(){
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; 
 	}
 	public ColorRecord[] getLegendColors(){

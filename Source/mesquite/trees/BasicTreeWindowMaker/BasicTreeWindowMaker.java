@@ -1229,6 +1229,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		mSaveMacroAsst.setCommand(ownerModule.makeCommand("saveMacroDisplayAssistant", this));
 
 		MesquiteSubmenuSpec mCloseAsst = ownerModule.addSubmenu(null, "Close/Remove");
+		mCloseAsst.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		mCloseAsst.setList(ownerModule.getEmployeeVector());
 		mCloseAsst.setListableFilter(TreeDisplayAssistantAD.class);
 		mCloseAsst.setCommand(ownerModule.makeCommand("closeDisplayAssistant", this));

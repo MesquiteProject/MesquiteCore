@@ -47,7 +47,7 @@ public class ColorByTaxonValue extends DataWindowAssistantID implements CellColo
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		if (active){
 			if (numModulesAvailable(NumberForTaxon.class)>0) {
 				mss = addSubmenu(null, "Values for Colors", ntC, NumberForTaxon.class);

@@ -53,7 +53,7 @@ public class NoColor extends DataWindowAssistantID implements CellColorer, CellC
    	public void viewChanged(){
    	}
    	 public boolean setActiveColors(boolean active){
-   	 	setActive(true);
+   		setActive(active);
 		return true; 
   	 }
    	public ColorRecord[] getLegendColors(){

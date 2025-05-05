@@ -35,7 +35,7 @@ public class ColorOddAAs extends DataWindowAssistantID implements CellColorer, C
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; //TODO: check success
 	}
 	/*.................................................................................................................*/

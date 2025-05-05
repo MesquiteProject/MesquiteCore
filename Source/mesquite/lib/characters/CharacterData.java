@@ -207,6 +207,21 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		changedSinceSave = null;
 		anyChangesSinceSave = false;
 	}
+	
+	//THIS SHOULD BE USED with great caution. Designed only for transferring a matrix to another block of taxa in special circumstances.
+	public boolean setTaxa(Taxa otherTaxa, boolean areYouReallySureYouWantToDoThis){
+		if (otherTaxa == taxa)
+			return false;
+		if (otherTaxa.getNumTaxa() != taxa.getNumTaxa())
+			return false;
+		taxa.removeListenerHighPriority(this);  //TODO: this is dangerous for simulation matrices; if not disposed will be source of memory leak
+		
+		this.taxa = otherTaxa;
+		taxa.addListenerHighPriority(this);  //TODO: this is dangerous for simulation matrices; if not disposed will be source of memory leak
+		taxaIDs = taxa.getTaxaIDs();
+		doubleCheckTaxaIDs = taxa.getTaxaIDs();
+		return true;
+	}
 	/*.................................................................................................................*/
 	public boolean getCharNumChanging() {
 		return charNumChanging;
@@ -670,7 +685,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/** clones the data set.  Does not clone the associated specs sets etc.*/
 	public abstract CharacterData cloneData(); //SHOULD HERE PASS boolean to say whether to DEAL WITH CHARACTER SPEC SETS, character names, etc.
 
-	public void copyCurrentSpecsSetsTo(CharacterData targetData){
+	public void copyMetadataTo(CharacterData targetData){
+		for (int ic=0; ic<numChars; ic++){
+			if (characterHasName(ic))
+				targetData.setCharacterName(ic, getCharacterName(ic));
+		}
+		targetData.setAssociateds(this);
 		Vector specsVectors = getSpecSetsVectorVector();
 		if (specsVectors!=null){ 
 			for (int i=0; i<specsVectors.size(); i++) { 

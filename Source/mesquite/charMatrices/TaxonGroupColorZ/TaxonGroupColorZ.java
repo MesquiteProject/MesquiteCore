@@ -59,7 +59,7 @@ public class TaxonGroupColorZ extends DataWindowAssistantI implements CellColore
 	public void viewChanged(){
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; 
 	}
 	public ColorRecord[] getLegendColors(){

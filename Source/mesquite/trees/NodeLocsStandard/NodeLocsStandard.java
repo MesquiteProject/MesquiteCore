@@ -1344,7 +1344,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				g.dispose();
 			}
 			if (ornt != treeDisplay.getOrientation() && MesquiteTrunk.developmentMode)
-				MesquiteMessage.println("NodeLocsStandard has record of orientation being " + ornt + ", but TreeDisplay is set to " + treeDisplay.getOrientation());
+				MesquiteMessage.println("NodeLocsStandard has record of orientation being " + ornt + ", but TreeDisplay is set to " + treeDisplay.getOrientation() + "  (" + treeDisplay.hashCode() + ")");
 			boolean branchesProportionalToLength = treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || 
 					(treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (tree.hasBranchLengths() || treeDisplay.fixedScalingOn));
 			branchesProportionalToLength = branchesProportionalToLength & 

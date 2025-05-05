@@ -302,7 +302,37 @@ public class Taxa extends FileElement {
 		}
 		return true;
 	}
-
+	/* ................................................................................................................. */
+	/**
+	 * Reorders this taxa block to match sequence of other, but only if they ahve the same taxon names
+	 * 
+	 *  Returns true if reordered
+	 */
+	public boolean matchOrderIfEqual(Taxa otherTaxa) {
+		if (isDoomed()) {
+			return false;
+		}
+		if (otherTaxa == this || otherTaxa == null || otherTaxa.getNumTaxa() != numTaxa) {
+			return false;
+		}
+		for (int it = 0; it < numTaxa; it++){
+			String tName = getTaxonName(it);
+			if (otherTaxa.whichTaxonNumber(tName)<0) //taxon not found in other
+				return false;
+		}
+		for (int it = 0; it < otherTaxa.getNumTaxa(); it++){
+			String tName = otherTaxa.getTaxonName(it);
+			if (whichTaxonNumber(tName)<0) //taxon in other not found here; done both ways in case one has duplicate taxon names
+				return false;
+		}
+		//OK, taxa blocks match. Reorder this.
+		for (int it = 0; it < otherTaxa.getNumTaxa(); it++){
+			String tName = otherTaxa.getTaxonName(it);
+			int whereNow = whichTaxonNumber(tName); //taxon in other not found here; done both ways in case one has duplicate taxon names
+			moveParts(whereNow, 1, it-1);
+		}
+		return true;
+	}
 	/* ................................................................................................................. */
 	/**
 	 * Returns true if passed Taxa is the exact same, or if all of its taxon

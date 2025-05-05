@@ -26,11 +26,14 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ClosablePanel;
 import mesquite.lib.ui.ClosablePanelContainer;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.HelpSearchStrip;
+import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteImage;
@@ -248,10 +251,10 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	 */
 	public void windowResized(){
 		try {
-		if (projPanel != null){
-			projPanel.setBounds(0,0,getBounds().width, getBounds().height);
-			scrollPanel.setBounds(0,getBounds().height-scrollHeight,getWidth(), scrollHeight);
-		}
+			if (projPanel != null){
+				projPanel.setBounds(0,0,getBounds().width, getBounds().height);
+				scrollPanel.setBounds(0,getBounds().height-scrollHeight,getWidth(), scrollHeight);
+			}
 		}
 		catch (Exception e){
 		}
@@ -1140,6 +1143,14 @@ class TaxaPanel extends ElementPanel {
 			setOpen(true);
 		setColors(ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceTextMedium());
 		addCommand(false, "list.gif", "List &\nManage\nTaxa", "List & Manage Taxa", new MesquiteCommand("showMe", element));
+		if (otherMatch()) {
+			addCommand(true, null, "-", "-", null);
+			addCommand(true, null, "(NOTE: Taxa block duplicated? Select for details...)", "(NOTE: Taxa block duplicated? Select for details...)", new MesquiteCommand("duplicatedInfo", this));  
+			addCommand(true, null, "Copy Matrices to other Taxa Block", "Copy Matrices to other Taxa Block", new MesquiteCommand("transferMatrices", this));  
+			addCommand(true, null, "Copy Trees to other Taxa Block", "Copy Trees to other Taxa Block", new MesquiteCommand("transferTrees", this)); 
+			addCommand(true, null, "Merge Matrices and Trees with other Taxa Block", "Merge Matrices and Trees with other Taxa Block", new MesquiteCommand("mergeBlock", this)); 
+			addCommand(true, null, "-", "-", null);
+		}
 		addCommand(false, "chart.gif", "Chart\nTaxa", "Chart Taxa", new MesquiteCommand("chart", this));
 		addCommand(true, null, "Show New\nTree Window", "Show New Tree Window", new MesquiteCommand("showInitTreeWindow", this));
 		addCommand(true, null, "-", "-", null);
@@ -1170,8 +1181,122 @@ class TaxaPanel extends ElementPanel {
 			((BasicFileCoordinator)bfc).showInitTreeWindow((Taxa)element, true);
 			//MesquiteThread.setCurrentCommandRecord(oldCommandRec);
 		}
+		else if (checker.compare(this.getClass(), "Shows an initial tree window", null, commandName, "duplicatedInfo")) {
+			((BasicFileCoordinator)bfc).alert("This taxa block appears to be a duplicate of at least one other, because it has the same number of taxa and with the same names. " +
+					"Calculations with this taxa block will not have access to matrices and trees of the other block, and vice versa. " + 
+					"\n\nIf this was unintentional, you could choose the following menu items to transfer character matrices and trees to the other block. "+
+					"\n\nTo avoid this problem in the future, when combining separate files, try using options other than Include or Link under Include & Merge.");
+		}
+		else if (checker.compare(this.getClass(), "Transfers matrices to other taxa block", null, commandName, "transferMatrices")) {
+			Taxa taxa = (Taxa)element;
+			Taxa other = chooseOther(taxa, "Choose taxa block to which to copy the matrices");
+			if (other == null)
+				return null;
+			transferMatrices(taxa, other);
+			projectWindow.projPanel.refresh();
+		}
+		else if (checker.compare(this.getClass(), "Transfers matrices to other taxa block", null, commandName, "transferTrees")) {
+			Taxa taxa = (Taxa)element;
+			Taxa other = chooseOther(taxa, "Choose taxa block to which to copy the trees");
+			if (other == null)
+				return null;
+			transferTrees(taxa, other);
+			projectWindow.projPanel.refresh();
+		}
+		else if (checker.compare(this.getClass(), "Transfers matrices and trees to other taxa block and then deletes this taxa block", null, commandName, "mergeBlock")) {
+			Taxa taxa = (Taxa)element;
+			Taxa other = chooseOther(taxa, "Choose taxa block into which to merge this one, copying this one's matrices and trees before deleting it.");
+			if (other == null)
+				return null;
+			transferMatrices(taxa, other);
+			transferTrees(taxa, other);
+			taxa.deleteMe(false);
+			projectWindow.projPanel.refresh();
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+	
+	/* - - - - - - - - - - - - - - - - - - - - */
+	void transferMatrices(Taxa taxa, Taxa other){
+		MesquiteProject project = taxa.getProject();
+		boolean reordered = taxa.matchOrderIfEqual(other);
+		for (int iM = 0; iM < project.getNumberCharMatrices(taxa); iM++){
+			CharacterData data = project.getCharacterMatrix(taxa, iM);
+			CharacterData cloned = data.cloneData();
+			cloned.addToFile(project.getHomeFile(),project, bfc.findElementManager(CharacterData.class));  
+			data.copyMetadataTo(cloned);
+			cloned.setTaxa(other, true);
+			cloned.setName(data.getName());
+			cloned.setAnnotation(data.getAnnotation(), false);
+		}
+		if (reordered)
+			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
+	}
+	/* - - - - - - - - - - - - - - - - - - - - */
+	void transferTrees(Taxa taxa, Taxa other){
+		MesquiteProject project = taxa.getProject();
+		boolean reordered = taxa.matchOrderIfEqual(other);
+		for (int iM = 0; iM < project.getNumberTreeVectors(taxa); iM++){
+			TreeVector trees = project.getTreesByNumber(taxa, iM);
+			TreeVector otherTrees = new TreeVector(other);
+			otherTrees.setWriteWeights(trees.getWriteWeights());
+			for (int i=0; i<trees.size(); i++){
+				MesquiteTree t = (MesquiteTree)trees.elementAt(i);
+				MesquiteTree cloned = t.cloneTree();
+				cloned.setTaxa(other, true);
+				otherTrees.addElement(cloned, false);
+
+			}
+			otherTrees.addToFile(project.getHomeFile(),project, bfc.findElementManager(TreeVector.class));  
+			otherTrees.setName(trees.getName());
+			otherTrees.setAnnotation(trees.getAnnotation(), false);
+		}
+		if (reordered)
+			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
+	}	
+	/* - - - - - - - - - - - - - - - - - - - - */
+	Taxa chooseOther(Taxa taxa, String expl){
+		MesquiteProject project = taxa.getProject();
+		Taxa other = null;
+		ListableVector v = new ListableVector();
+		for (int iT = 0; iT < project.getNumberTaxas(); iT++){
+			Taxa c = taxa.getProject().getTaxa(iT);
+			if (c != taxa && c.equals(taxa, true, true))
+				v.addElement(c, false);
+		}
+		if (v.size() == 0)
+			return null;
+		else if (v.size() == 1){
+			other = (Taxa)v.elementAt(0);
+		}
+		else {
+			Listable result = ListDialog.queryList(bfc.containerOfModule(), "Choose taxa block", expl, null, v, 0); 
+			if (result == null)
+				return null;
+			other = (Taxa)result;
+		}
+		return other;
+	}
+	/* - - - - - - - - - - - - - - - - - - - - */
+	boolean otherMatch(){
+		if (element == null)
+			return false;
+		Taxa taxa = (Taxa)element;
+		MesquiteProject project = taxa.getProject();
+		for (int iT = 0; iT < project.getNumberTaxas(); iT++){
+			Taxa c = taxa.getProject().getTaxa(iT);
+			if (c != taxa && c.equals(taxa, true, true))
+				return true;
+		}
+		return false;
+	}
+	
+	/* - - - - - - - - - - - - - - - - - - - - */
+	public String getIconFileName(){
+		if (otherMatch())
+			return "warning.gif";
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -1425,10 +1550,10 @@ class TreesRPanel extends ElementPanel {
 		int numTrees = ((TreeVector)element).size();
 		if (numTrees != 1)
 			s += "s";
-		
+
 		return "" + numTrees + s + "\n" + super.getFootnote();
 	}
-	
+
 	/*.................................................................................................................*/
 	String getAnalysisDirectoryPath(FileElement element) {
 		if (element instanceof TreeVector) {

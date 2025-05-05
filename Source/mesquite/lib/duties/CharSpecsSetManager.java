@@ -19,6 +19,7 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
 
 
@@ -104,9 +105,20 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows the " + lowerCaseTypeName(), "[optional: number of data matrix for which to show " + lowerCaseTypeName() + "]", commandName, "showList")) {
 			if (StringUtil.blank(arguments)) {
+				ListableVector v = new ListableVector();
+
 				for (int i = 0; i< getProject().getNumberCharMatrices(checker.getFile()); i++) {
-					showSpecsSets(getProject().getCharacterMatrix(checker.getFile(), i), "List of " + upperCaseTypeName() + "s");
+					v.addElement(getProject().getCharacterMatrix(checker.getFile(), i), false);
 				}
+				CharacterData data = null;
+				if (v.size() == 1)
+					data = (CharacterData)v.elementAt(0);
+				else if (v.size() == 01)
+					alert("Sorry, there is no matrix for which to show the list.");
+				else
+					data = (CharacterData)ListDialog.queryList(containerOfModule(), "Show list for which matrix?", "", null, v, 0);
+				if (data != null)
+					showSpecsSets(data, "List of " + upperCaseTypeName() + "s");
 			}
 			else {
 				int t = MesquiteInteger.fromFirstToken(arguments, pos);

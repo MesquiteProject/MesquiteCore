@@ -40,7 +40,7 @@ public class ColorByState extends DataWindowAssistantID implements CellColorer, 
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; 
 
 	}

@@ -49,7 +49,7 @@ public class ColorByNumber extends DataWindowAssistantID implements CellColorer,
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-   	 	setActive(true);
+   	 	setActive(active);
  		if (active){
 			if (numCompatibleModulesAvailable(NumberForCharAndTaxon.class, stateClass, this)>0) {
 				mss = addSubmenu(null, "Values for Colors", ntC, NumberForCharAndTaxon.class);

@@ -48,7 +48,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 	protected Vector subPanels = new Vector();
 	protected MesquiteWindow w = null;
 	MesquiteModule owner;
-	ProjectWindow projectWindow;
+	protected ProjectWindow projectWindow;
 
 	public ProjPanelPanel(FileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, String name, MesquiteModule owner){
 		super(container, name);

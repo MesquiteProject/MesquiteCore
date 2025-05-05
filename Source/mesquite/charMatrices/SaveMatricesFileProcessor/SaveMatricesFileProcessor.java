@@ -267,7 +267,7 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 
 				logln("Saving file " + path);	
 				newMatrix.addToFile(tempDataFile, getProject(), null);
-				data.copyCurrentSpecsSetsTo(newMatrix);
+				data.copyMetadataTo(newMatrix);
 				tempDataFile.setPath(path);
 
 

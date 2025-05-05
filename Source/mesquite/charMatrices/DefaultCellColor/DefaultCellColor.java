@@ -68,7 +68,7 @@ public class DefaultCellColor extends DataWindowAssistantID implements CellColor
    	public void viewChanged(){
    	}
    	 public boolean setActiveColors(boolean active){
-   	 	setActive(true);
+   		setActive(active);
 		return true; 
   	 }
    	public ColorRecord[] getLegendColors(){

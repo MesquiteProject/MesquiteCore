@@ -56,7 +56,7 @@ public class ColorByExcluded extends DataWindowAssistantID implements CellColore
    	public void viewChanged(){
    	}
    	 public boolean setActiveColors(boolean active){
-   	 	setActive(true);
+   		setActive(active);
 		return true; 
 
    	 }

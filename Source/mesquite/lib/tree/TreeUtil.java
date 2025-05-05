@@ -21,6 +21,7 @@ import mesquite.lib.Associable;
 import mesquite.lib.Bits;
 import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
+import mesquite.lib.IntegerArray;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
@@ -67,7 +68,140 @@ public class TreeUtil {
 		}
 		return true;
 	}
+	static int matchScore( int[] targetTaxaSequence, int[] clade){
+		int minScore = MesquiteInteger.unassigned;
+		int[]longer, shorter;
+		if (targetTaxaSequence.length>clade.length){
+			longer = targetTaxaSequence;
+			shorter = clade;
+		}
+		else {
+			longer = clade;
+			shorter = targetTaxaSequence;
+		}
+		int diff = longer.length - shorter.length;
+		for (int offset = 0; offset<=diff; offset++){
+			int thisOffsetScore = 0;
+			for (int i= 0; i<shorter.length; i++){
+				int whereInTarget = IntegerArray.indexOf(longer, shorter[i]);
+				thisOffsetScore += Math.abs(whereInTarget- (offset+i));
+			}
+			minScore = MesquiteInteger.minimum(minScore, thisOffsetScore); 
+		}
+		return minScore;
+	}
+	static int[] getDaughters(MesquiteTree tree, int node){
+		int num = tree.numberOfDaughtersOfNode(node);
+		int[] daughters = new int[num];
+		int count = 0;
+		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) 
+			daughters[count++] = daughter;
+		return daughters;
+	}
+	static boolean verboseRotate = false;
+	static boolean rotateIfUseful(MesquiteTree tree, int node, int[] targetTaxaSequence){
+		boolean rotated = false;
+		if (tree.nodeIsInternal(node)) { 
+			int[] daughters = getDaughters(tree, node);
+			int dX = 0; int dY = 0;
+			int currentScore = matchScore(targetTaxaSequence, tree.getTerminalTaxa(node));
+			int min = currentScore;
+			boolean done = false;
+			if (verboseRotate)
+				System.err.println("@rIU " +node + " orig " + currentScore);
+			while (!done){
+				//try all flips
+				if (verboseRotate)
+					System.err.println("=== next flips at " +node + " orig " + currentScore);
+				for (int d1 = 0; d1<daughters.length; d1++)
+					for (int d2 = d1+1; d2<daughters.length; d2++){
+						tree.interchangeBranches(daughters[d1], daughters[d2], true, false);
+						int newScore = matchScore(targetTaxaSequence, tree.getTerminalTaxa(node) );
+						if (verboseRotate)
+							System.err.println(" ~~~ " +currentScore + " at " + node + " # " + daughters[d1] + " - " + daughters[d2] + " -> " + newScore);
+						if (newScore<min){
+							min = newScore;
+							dX = daughters[d1];
+							dY= daughters[d2];
+						}
+						tree.interchangeBranches(daughters[d1], daughters[d2], true, false); //undo previous
+					}
+				if (min<currentScore){ //better found remember as current score and do the interchange
+					if (verboseRotate)
+						System.err.println(" +++ better found " +currentScore + " at " + node + " # " + dX + " - " +dY);
+					currentScore = min;
+					tree.interchangeBranches(dX, dY, true, false);
+					rotated = true;
+				}
+				else
+					done = true;
+			}
 
+			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
+				boolean drotated = rotateIfUseful(tree, daughter, targetTaxaSequence);
+				rotated = rotated || drotated;
+			}
+		}
+		return rotated;
+	}
+
+	//rotates one tree to match other as well as possible. Returns improvement in score (if 0, no rotation done)
+	public static boolean rotateToMatch(MesquiteTree toBeRotated, Tree targetTree){
+		int[] targetTerminals = targetTree.getTerminalTaxa(targetTree.getRoot());
+		int count = 0;
+		int originalScore = matchScore(targetTerminals, toBeRotated.getTerminalTaxa(toBeRotated.getRoot()));
+		int oldScore = originalScore;
+		if (verboseRotate)
+			System.err.println("@tt-original score " + oldScore);
+		boolean done = false;
+		boolean rotated = false;
+		while (!done){
+			boolean trotated = rotateIfUseful((MesquiteTree)toBeRotated, toBeRotated.getRoot(), targetTerminals);
+			rotated = rotated || trotated;
+			int newScore = matchScore(targetTerminals, toBeRotated.getTerminalTaxa(toBeRotated.getRoot()));
+			if (verboseRotate)
+				System.err.println("@tt-new score " + newScore);
+			if (newScore>=oldScore)
+				done = true;
+			else
+				oldScore = newScore;
+			count++;
+			if (count>1000){
+				Debugg.printStackTrace("@oops, too many");
+				done = true;
+			}
+		}
+		return rotated;
+	}
+	
+	/*
+	 *  void furthestPoly(Tree tree, int node, MesquiteInteger d){
+		if (tree.nodeIsTerminal(node)) { 
+			TaxonPolygon poly = treeDisplay.getTreeDrawing().namePolys[tree.taxonNumberOfNode(node)];
+			Rectangle rect = poly.getBounds();
+			int edge = 0;
+			if (treeDisplay.isUp()) {
+				edge = rect.y;
+				d.setValue(MesquiteInteger.minimum(d.getValue(), edge));
+			}
+			else if (treeDisplay.isDown()) {
+				edge = rect.y + rect.height;
+				d.setValue(MesquiteInteger.maximum(d.getValue(), edge));
+			}
+			else if (treeDisplay.isRight()) {
+				edge = rect.x + rect.width;
+				d.setValue(MesquiteInteger.maximum(d.getValue(), edge));
+			}
+			else if (treeDisplay.isLeft()) {
+				edge = rect.x;
+				d.setValue(MesquiteInteger.minimum(d.getValue(), edge));
+			}
+			}
+
+			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
+				furthestPoly(tree, daughter, d);
+			}
+	}*/
 	/*.................................................................................................................*/
 	/*Old version 3.81 that couldn't read multiline trees*/
 	/*public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String arguments, String treeNameBase) {
@@ -132,21 +266,21 @@ public class TreeUtil {
 		String dialect = parser.getFileReadingArgumentSubtype(arguments, "newickDialect");
 		if (dialect == null)
 			dialect = "Default";
-		
+
 		if (dialect != null)
 			MesquiteMessage.println("Trees read assuming Newick dialect: " + dialect);
 		Parser treeParser = new Parser();
 		treeParser.setQuoteCharacter((char)0);
 		int numTrees = MesquiteInteger.infinite;
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
-		
+
 		/*
 		if (line != null){
 			treeParser.setString(line); 
 			String token = treeParser.getNextToken();  // numTrees
 			numTrees = MesquiteInteger.fromString(token);
 		}
-		*/
+		 */
 		int iTree = 0;
 		boolean abort = false;
 
@@ -185,7 +319,7 @@ public class TreeUtil {
 			debugParser.setPosition(oldLoc);
 			String c = debugParser.getNextToken();
 			stringLoc.setValue(oldLoc);
-*/
+			 */
 			t.readTree(line,stringLoc, namer, StringUtil.defaultWhitespace + "\n\r", "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
 			if (oldLoc < stringLoc.getValue()){
 				t.setName(treeNameBase + (iTree+1));

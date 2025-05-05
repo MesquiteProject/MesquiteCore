@@ -7004,6 +7004,19 @@ public void resetTaxaInfo(){
 	taxaIDs = taxa.getTaxaIDs();
 	oldNumTaxa = taxa.getNumTaxa();
 }
+
+//THIS SHOULD BE USED with great caution. Designed only for transferring a matrix to another block of taxa in special circumstances.
+public boolean setTaxa(Taxa otherTaxa, boolean areYouReallySureYouWantToDoThis){
+	if (otherTaxa == taxa)
+		return false;
+	if (otherTaxa.getNumTaxa() != taxa.getNumTaxa())
+		return false;
+	
+	this.taxa = otherTaxa;
+	resetTaxaInfo();
+	return true;
+}
+
 /*-----------------------------------------*/
 /** For MesquiteListener interface.  Passes which object was disposed*/
 public void disposing(Object obj){

@@ -57,7 +57,7 @@ public class ColorByFootnote extends DataWindowAssistantID implements CellColore
    	public void viewChanged(){
    	}
    	 public boolean setActiveColors(boolean active){
-   	 	setActive(true);
+   		setActive(active);
 		return true; 
 
    	 }

@@ -35,7 +35,7 @@ public class HighlightMultistateCells extends DataWindowAssistantID implements C
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; //TODO: check success
 	}
 	/*.................................................................................................................*/

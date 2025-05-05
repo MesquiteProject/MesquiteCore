@@ -46,7 +46,7 @@ public class ConstrainNodeAge extends TreeDisplayAssistantI {
 	} 
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
-		BranchNotesToolExtra newPj = new BranchNotesToolExtra(this, treeDisplay);
+		ConstrainNodesToolExtra newPj = new ConstrainNodesToolExtra(this, treeDisplay);
 		extras.addElement(newPj);
 		return newPj;
 	}
@@ -68,7 +68,7 @@ public class ConstrainNodeAge extends TreeDisplayAssistantI {
 }
 
 /* ======================================================================== */
-class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
+class ConstrainNodesToolExtra extends TreeDisplayExtra implements Commandable  {
 	TreeTool nodeAgeConstrTool;
 	ConstrainNodeAge nodeAgeConstrModule;
 	//MesquiteLabel message;
@@ -79,7 +79,7 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 	Image anchor;
 	Font small = new Font("SanSerif", Font.PLAIN, 9);
 
-	public BranchNotesToolExtra (ConstrainNodeAge ownerModule, TreeDisplay treeDisplay) {
+	public ConstrainNodesToolExtra (ConstrainNodeAge ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		anchor = MesquiteImage.getImage(ownerModule.getPath() + "anchor.gif");
 		nodeAgeConstrModule = ownerModule;

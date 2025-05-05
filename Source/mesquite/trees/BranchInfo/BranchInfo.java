@@ -18,6 +18,9 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
@@ -25,7 +28,10 @@ import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenu;
+import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
@@ -45,7 +51,7 @@ public class BranchInfo extends TreeDisplayAssistantDI {
 	}
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
-		InfoToolExtra newPj = new InfoToolExtra(this, treeDisplay);
+		BranchInfoExtra newPj = new BranchInfoExtra(this, treeDisplay);
 		extras.addElement(newPj);
 		return newPj;
 	}
@@ -62,13 +68,13 @@ public class BranchInfo extends TreeDisplayAssistantDI {
 }
 
 /* ======================================================================== */
-class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
+class BranchInfoExtra extends TreeDisplayExtra implements Commandable  {
 	BranchInfo infoModule;
-	Tree tree;
+	MesquiteTree tree;
 	MesquiteCommand respondCommand;
 	Image warningGif;
 
-	public InfoToolExtra (BranchInfo ownerModule, TreeDisplay treeDisplay) {
+	public BranchInfoExtra (BranchInfo ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		warningGif = MesquiteImage.getImage(ownerModule.getPath() + "rerootWarning.gif");
 
@@ -81,7 +87,7 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
-		this.tree = tree;
+		this.tree =(MesquiteTree)tree;
 		warningRect.x = -1000;
 		warningRect.y = -1000;
 
@@ -134,7 +140,7 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
-		this.tree = tree;
+		this.tree = (MesquiteTree)tree;
 	}
 	MesquitePopup popup;
 	MesquiteInteger pos = new MesquiteInteger();
@@ -167,16 +173,59 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 		}
 		return false;
 	}
+	/*.................................................................................................................*/
+	/**Add any desired menu items to the right click popup*/
+	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branchFound){
+		if (branchFound>0){
+			this.tree = tree;
+			Taxa taxa = tree.getTaxa();
+			if (tree.numberOfTerminalsInClade(tree.getRoot()) < taxa.getNumTaxa()){
+			MesquiteMenu addTaxaSubmenu = new MesquiteMenu("Add Taxon Here");
+			for (int i=0; i< taxa.getNumTaxa(); i++){
+				if (!tree.taxonInTree(i)) {
+					MesquiteMenuItem mmi = new MesquiteMenuItem(taxa.getTaxonName(i), ownerModule, new MesquiteCommand("addTaxon", this), MesquiteInteger.toString(branchFound) + " " + ParseUtil.tokenize("" + i));
+					addTaxaSubmenu.add(mmi);
+				}
+			}
+			popup.add(addTaxaSubmenu);
+			}
+		}
+	}
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
 
-		if (checker.compare(this.getClass(), "Explains", "[branch number]", commandName, "respond")) {
+		if (checker.compare(this.getClass(), "Explains", "", commandName, "respond")) {
 			MesquiteTree mTree = (MesquiteTree)tree;
 			if (mTree.anyUpsideDownProperties()){
 				ListableVector v = mTree.getUpsideDownProperties();
 				ownerModule.discreetAlert("This tree was originally rooted along this branch. It has since been rerooted. "
 						+"Some properties associated with the branches/nodes imply a direction (i.e., polarity) of time, but this rerooting violated the polarity by turning branches upside down. These properties are:\n\n" + v.getList());
+			}
+		}
+		else if (checker.compare(this.getClass(), "Adds taxon to branch", "[branch number][taxon number]", commandName, "addTaxon")) {
+			if (tree == null)
+				return null;
+			Parser parser = new Parser();
+			int branch = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			int it = MesquiteInteger.fromString(parser.getNextToken());
+			if (MesquiteInteger.isCombinable(branch) && MesquiteInteger.isCombinable(it)){
+				if (!tree.taxonInTree(it)) {
+					double cBL = tree.getBranchLength(branch);
+					double currentHeight = tree.tallestPathAboveNode(branch);
+					tree.graftTaxon(it, branch, false);
+					int node = tree.nodeOfTaxonNumber(it);
+					if (MesquiteDouble.isCombinable(cBL)){
+						tree.setBranchLength(branch, cBL/2, false);
+						tree.setBranchLength(tree.motherOfNode(branch), cBL/2, false);
+						currentHeight += cBL/2;
+						tree.setBranchLength(node, currentHeight, false);  //Debugg.println("@ OK to do this even though arbitrary?
+						tree.setAssociatedString(ColorDistribution.colorRGBNameReference, node, "#33BB00");
+					}
+					else
+						tree.setAssociatedString(ColorDistribution.colorRGBNameReference, node, "#00AA55");
+					tree.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+				}
 			}
 		}
 

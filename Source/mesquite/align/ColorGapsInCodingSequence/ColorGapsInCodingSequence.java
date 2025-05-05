@@ -35,7 +35,7 @@ public class ColorGapsInCodingSequence extends DataWindowAssistantID implements 
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; //TODO: check success
 	}
 	/*.................................................................................................................*/

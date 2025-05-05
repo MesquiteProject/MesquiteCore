@@ -22,6 +22,8 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorRecord;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.molec.lib.AAProperty;
 import mesquite.categ.lib.*;
 
 
@@ -34,11 +36,16 @@ public class ColorByAA extends DataWindowAssistantID implements CellColorer, Cel
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		emphasizeDegeneracy = new MesquiteBoolean(false);
-		addCheckMenuItem(null, "Emphasize Less Degenerate Amino Acids", makeCommand("emphasizeDegeneracy", this), emphasizeDegeneracy);
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
+		deleteAllMenuItems();
+		if (active){
+			addMenuSeparator();
+			addCheckMenuItem(null, "Emphasize Less Degenerate Amino Acids", makeCommand("emphasizeDegeneracy", this), emphasizeDegeneracy);
+		}
+		resetContainingMenuBar();
 		return true; //TODO: check success
 	}
 	/*.................................................................................................................*/
@@ -85,7 +92,7 @@ public class ColorByAA extends DataWindowAssistantID implements CellColorer, Cel
 		return "Color By Amino Acid";
 	}
 	public String getNameForMenuItem() {
-		return "Color Nucleotide by Amino Acid";
+		return "Color by Amino Acid";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {

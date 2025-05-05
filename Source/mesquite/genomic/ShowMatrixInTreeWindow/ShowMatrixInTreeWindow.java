@@ -363,6 +363,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	int prevTaxon = MesquiteInteger.unassigned;
 	double prevTip = MesquiteDouble.unassigned;
 	double minSpace = MesquiteDouble.unassigned;  // to help edges
+	
 	public void getTipEdges(Tree tree, int node) {
 		if (tree.nodeIsTerminal(node)){
 			if (treeDisplay.isRight() || treeDisplay.isLeft()) {

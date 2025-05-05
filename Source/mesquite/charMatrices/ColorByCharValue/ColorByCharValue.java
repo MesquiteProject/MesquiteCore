@@ -47,7 +47,7 @@ public class ColorByCharValue extends DataWindowAssistantID implements CellColor
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-   	 	setActive(true);
+		setActive(active);
  		if (active){
 			if (numCompatibleModulesAvailable(NumberForCharacter.class, stateClass, this)>0) {
 				mss = addSubmenu(null, "Values for Colors", ntC, NumberForCharacter.class);

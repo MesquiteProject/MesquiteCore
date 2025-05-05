@@ -429,6 +429,20 @@ public class GraphicsUtil {
 	
 	/* -------------------------------------------------*/
 	static Color transparentGray3 = new Color(Color.gray.getRed(), Color.gray.getGreen(), Color.gray.getBlue(), (int)(0.3*255));
+	public static void drawTransparentLine (Graphics g, int x, int y, int w, int h, Color color, double thickness) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics3(g);		
+		g.setColor(color);
+		drawLine(g, x, y, w, h, thickness);
+		ColorDistribution.setComposite(g, composite);		
+		}
+	public static void fillTransparentRect (Graphics g, int x, int y, int w, int h, Color color, double thickness) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics3(g);		
+		g.setColor(color);
+		g.fillRect(x,y,w, h);
+		ColorDistribution.setComposite(g, composite);		
+		}
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		
