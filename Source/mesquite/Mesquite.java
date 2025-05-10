@@ -418,7 +418,7 @@ public class Mesquite extends MesquiteTrunk
 
 		/**/
 		/*
-(3) Try to find the logo for the about window
+		(3) Try to find the logo for the about window
 		 */
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + " " + MesquiteModule.getBuildDate() + "\n";
 		logInitString += "https://www.mesquiteproject.org\n";
