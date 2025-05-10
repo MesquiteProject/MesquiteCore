@@ -49,6 +49,18 @@ public class Debugg {
 		printLogln(message);
 		printStackTrace();
 	}
+	public static String getTrace() {
+		Exception e = new Exception();
+		String trace = MesquiteFile.throwableToString(e);
+		return trace;
+	}
+	public static String getCaller() {
+		String trace = getTrace();
+		String[] s = StringUtil.delimitedTokensToStrings(trace, '\n', false);
+		if (s.length >4)
+			return "Caller: " + s[4];
+		return "no caller obtained";
+	}
 	public static void printStackTrace() {
 		printLogln("An exception was generated intentionally to show a stack trace.  It is used for debugging purposes.");
 		Exception e = new Exception();

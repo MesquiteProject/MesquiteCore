@@ -775,7 +775,6 @@ public class Bits implements Listable, Nameable {
 		return -1;
 	}
 	/*------------------------------------------*/
-
 	public int firstBitOn() {
 		for (int i = 0; i < numInts; i++)
 			if (array[i] != 0) {

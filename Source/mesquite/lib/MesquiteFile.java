@@ -3459,6 +3459,21 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return logStream;
 	}
 	/*.................................................................................................................*/
+	public static String throwableToString(Throwable e){
+		try {
+			if (e == null)
+				return "";
+			ByteArrayOutputStream throwableStream= new ByteArrayOutputStream();
+			PrintWriter throwableWriter= new PrintWriter(throwableStream);
+			e.printStackTrace(throwableWriter);
+			throwableWriter.flush();
+			return throwableStream.toString();
+		}
+		catch (Throwable t){
+		}
+		return "";
+	}
+	/*.................................................................................................................*/
 	public static void throwableToLog(Object obj, Throwable e){
 		try {
 			if (e == null)

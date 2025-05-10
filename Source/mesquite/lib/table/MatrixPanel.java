@@ -163,7 +163,7 @@ timer6.end();
 					prepareCell(g,column, row, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, selected, table.getCellDimmed(column+offsetColumn, row+offsetRow), table.isCellEditable(column+offsetColumn, row+offsetRow));
 					table.drawMatrixCellString(g, null, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column+offsetColumn, row+offsetRow, supplied);
 				}
-//				table.drawMatrixCellExtras(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column+offsetColumn, row+offsetRow);
+				//				table.drawMatrixCellExtras(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column+offsetColumn, row+offsetRow);
 			}
 		}
 		else {
@@ -177,7 +177,7 @@ timer6.end();
 				prepareCell(g,column, row,  leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, selected, table.getCellDimmed(column, row), table.isCellEditable(column, row));
 				table.drawMatrixCellString(g, null, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row, supplied);
 			}
-//			table.drawMatrixCellExtras(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row);
+			//			table.drawMatrixCellExtras(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row);
 
 		}
 
@@ -320,7 +320,7 @@ timer6.end();
 	}
 
 	MesquiteTimer matrixTimer = new MesquiteTimer();
-	FontRenderContext oldFRC;
+
 	/*...............................................................................................................*/
 	public void paint(Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
@@ -332,39 +332,50 @@ timer6.end();
 			int lineX;
 			width = getBounds().width;//this is here to test if width/height should be reset here
 			height = getBounds().height;
-			if (table.useQuickMode()){
-				g.setColor(Color.white);
-				g.fillRect(0,0,width, height);
-			}
-			
 
 			if (table.frameMatrixCells) {
-				int columnHeight = 0;
-				for (int r=table.firstRowVisible; (r<table.numRowsTotal)  && r< table.rowHeights.length&& (columnHeight<height); r++) {
-					columnHeight += table.rowHeights[r];
+				if (table.useQuickMode() && MesquiteTrunk.isWindows()) { //performance hit on Windows for drawing lines after an item selected is way too high
+					if (table.paleGrid)
+						g.setColor(ColorDistribution.veryLightGray);
+					else
+						g.setColor(Color.lightGray);
+					g.fillRect(0,0,width, height);
 				}
-				if  (columnHeight>height)
-					columnHeight=height;
-				if (table.paleGrid)
-					g.setColor(ColorDistribution.veryLightGray);
-				else
-					g.setColor(Color.gray);
-				lineX = 0;
-				for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && (lineX<width) && c< table.columnWidths.length; c++) {
-					lineX += table.columnWidths[c];
-					g.drawLine(lineX, 0, lineX, columnHeight);//matrixHeight + columnNamesRowHeight
-				}
-				int rowLength;
-				if  (lineX>width)
-					rowLength=width;
-				else
-					rowLength = lineX;
+				else {
+					if (table.paleGrid)
+						g.setColor(ColorDistribution.veryLightGray);
+					else
+						g.setColor(Color.gray);
+					int columnHeight = 0;
+					for (int r=table.firstRowVisible; (r<table.numRowsTotal)  && r< table.rowHeights.length&& (columnHeight<height); r++) {
+						columnHeight += table.rowHeights[r];
+					}
+					if  (columnHeight>height)
+						columnHeight=height;
+					lineX = 0;
+					int columnsDrawn = 0;
+					for (int c=table.firstColumnVisible;  (c<table.numColumnsTotal) && (lineX<width) && c< table.columnWidths.length; c++) {
+						lineX += table.columnWidths[c];
+						columnsDrawn++;
+						g.drawLine(lineX, 0, lineX, columnHeight);//matrixHeight + columnNamesRowHeight
+					}
 
-				lineY = 0;
-				for (int r=table.firstRowVisible; (r<table.numRowsTotal)  && r< table.rowHeights.length && (lineY<height); r++) {
-					lineY += table.rowHeights[r];
-					g.drawLine(0, lineY, rowLength, lineY);//rowNamesWidth+matrixWidth
+					int rowLength;
+					if  (lineX>width)
+						rowLength=width;
+					else
+						rowLength = lineX;
+
+					lineY = 0;
+					for (int r=table.firstRowVisible; (r<table.numRowsTotal)  && r< table.rowHeights.length && (lineY<height); r++) {
+						lineY += table.rowHeights[r];
+						g.drawLine(0, lineY, rowLength, lineY);//rowNamesWidth+matrixWidth
+					}
 				}
+			}
+			else if (table.useQuickMode()){
+				g.setColor(Color.white);
+				g.fillRect(0,0,width, height);
 			}
 			g.setColor(Color.black);
 			lineY = 0;
@@ -373,7 +384,7 @@ timer6.end();
 			int resetHeight = getBounds().height;
 
 			int numCells = 0;//���
-			
+
 			Font oldFont = g.getFont();
 			FontMetrics fm = g.getFontMetrics(g.getFont());
 			Font plainFont = new Font(oldFont.getName(), Font.PLAIN, oldFont.getSize());
@@ -382,15 +393,16 @@ timer6.end();
 				g.setFont(boldFont);
 			else
 				g.setFont(plainFont);
-				
+
 			Shape clip = g.getClip();
 			table.resetNumColumnsVisible();
 			table.resetNumRowsVisible();
 			matrixTimer.start();
 			table.resetTiming(false);
+
 			for (int r=table.firstRowVisible; r<=table.lastRowVisible+1 && (r<table.numRowsTotal)   && r< table.rowHeights.length && (lineY<resetHeight); r++) {
 				lineY += table.rowHeights[r];
-
+				boolean rowIsSelected = table.isRowSelected(r);
 				lineX = 0;
 				int oldLineX=lineX;
 				for (int c=table.firstColumnVisible; c<=table.lastColumnVisible+1 && (c<table.numColumnsTotal) && c< table.columnWidths.length && (lineX<resetWidth); c++) {
@@ -399,7 +411,8 @@ timer6.end();
 					if (c!= returningColumn || r != returningRow){ //don't draw if text about to be returned to cell, and will soon be redrawn anyway
 						if (!table.useQuickMode())
 							g.setClip(oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r]);
-						boolean selected = table.isCellSelected(c, r) || table.isRowSelected(r)|| table.isColumnSelected(c);
+						boolean selected = table.isCellSelected(c, r) || rowIsSelected|| table.isColumnSelected(c);
+						
 						if (!table.useString(c,r)) {
 							table.drawMatrixCell(g, oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r], c, r, selected);
 						}
@@ -443,7 +456,7 @@ timer6.end();
 			}
 			table.reportTiming();
 			matrixTimer.end();
-			
+
 			if (table.getBetweenSelected()) {
 				drawBetweenSelection(g);
 			}
@@ -458,7 +471,7 @@ timer6.end();
 				g.fillRect(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
 			}
 			g.setClip(clip);
-//			g.setColor(Color.black);
+			//			g.setColor(Color.black);
 			g.setColor(ColorTheme.getContentEdgeDark());  //used to be light
 
 			g.drawRect(0, 0, resetWidth-1, resetHeight-1);
@@ -591,9 +604,9 @@ timer6.end();
 				table.emphasizeRow(-1,firstRowTouched, -1, false, Color.blue);
 			}
 			mouseDownInField = true;
-//			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
-//			table.emphasizeRow(-1,row, -1, false, Color.red);
-//			}
+			//			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
+			//			table.emphasizeRow(-1,row, -1, false, Color.red);
+			//			}
 		}
 		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
 			table.cellTouched(column, row, this, x, y,modifiers, clickCount);
@@ -612,86 +625,86 @@ timer6.end();
 		if (!mouseDownInPanel)
 			return;
 		try {
-		int column = findColumn(x, y);
-		int row = findRow(x, y);
+			int column = findColumn(x, y);
+			int row = findRow(x, y);
 
-		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
-			table.checkForAutoScroll(this,x,y);
-			table.cellDrag(column, row, this, x, y,modifiers);
-			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
-				table.emphasizeRow(previousRowDragged,row, firstRowTouched, false, Color.blue);
-				previousRowDragged = row;
-			}
+			if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
+				table.checkForAutoScroll(this,x,y);
+				table.cellDrag(column, row, this, x, y,modifiers);
+				if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
+					table.emphasizeRow(previousRowDragged,row, firstRowTouched, false, Color.blue);
+					previousRowDragged = row;
+				}
 
-		} else if (column>=table.numColumnsTotal || row>=table.numRowsTotal)
-			table.checkForAutoScroll(this,x,y);
+			} else if (column>=table.numColumnsTotal || row>=table.numRowsTotal)
+				table.checkForAutoScroll(this,x,y);
 		}
 		catch (Exception e){
 		}
 		catch (Throwable e){
 		}
-		}
+	}
 	/*_________________________________________________*/
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		if (!(tool instanceof TableTool))
 			return;
 		try {
-		table.stopAutoScrollThread();
-		int column = findColumn(x, y);
-		int row = findRow(x, y);
+			table.stopAutoScrollThread();
+			int column = findColumn(x, y);
+			int row = findRow(x, y);
 
-		if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
-			table.redrawFullRow(previousRowDragged);
-			table.redrawFullRow(firstRowTouched);
-		}
-
-		if (((TableTool)tool).getEmphasizeRowsOnMouseDown()){
-			table.redrawFullRow(firstRowTouched);
-		}
-
-		if (((TableTool)tool).acceptsOutsideDrops() || (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal)) {
-			if (((TableTool)tool).getIsBetweenRowColumnTool())
-				column = findColumnBeforeBetween(x, y);
-			table.cellDropped(column, row, this, x, y,modifiers);
-		}
-		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
-			table.cellDropped(column, row, this, x, y,modifiers);
-		else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())
-			table.cellDropped(column, row, this, x, y, modifiers);
-		else if (!mouseDownInField && ((TableTool)tool).getDeselectIfOutsideOfCells()) {
-
-			table.offAllEdits();
-			table.clickOutside();
-			if (table.anythingSelected()) {
-				table.deselectAllNotify();
-				table.repaintAll();
+			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
+				table.redrawFullRow(previousRowDragged);
+				table.redrawFullRow(firstRowTouched);
 			}
+
+			if (((TableTool)tool).getEmphasizeRowsOnMouseDown()){
+				table.redrawFullRow(firstRowTouched);
+			}
+
+			if (((TableTool)tool).acceptsOutsideDrops() || (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal)) {
+				if (((TableTool)tool).getIsBetweenRowColumnTool())
+					column = findColumnBeforeBetween(x, y);
+				table.cellDropped(column, row, this, x, y,modifiers);
+			}
+			else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
+				table.cellDropped(column, row, this, x, y,modifiers);
+			else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())
+				table.cellDropped(column, row, this, x, y, modifiers);
+			else if (!mouseDownInField && ((TableTool)tool).getDeselectIfOutsideOfCells()) {
+
+				table.offAllEdits();
+				table.clickOutside();
+				if (table.anythingSelected()) {
+					table.deselectAllNotify();
+					table.repaintAll();
+				}
+			}
+			mouseDownInField = false;
+			mouseDownInPanel = false;
 		}
-		mouseDownInField = false;
-		mouseDownInPanel = false;
-	}
-	catch (Exception e){
-	}
-	catch (Throwable e){
-	}
+		catch (Exception e){
+		}
+		catch (Throwable e){
+		}
 	}
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		try {
-		table.stopAutoScrollThread();
-		if (!table.editingAnything() && !table.singleTableCellSelected()) 
-			setWindowAnnotation("", null);
-		setCursor(Cursor.getDefaultCursor());
-		int column = findColumn(x, y);
-		int row = findRow(x, y);
-		table.mouseExitedCell(modifiers, column, -1, row, -1, tool);
-	}
-	catch (Exception e){
-	}
-	catch (Throwable e){
-	}		MesquiteWindow.uncheckDoomed(this);
+			table.stopAutoScrollThread();
+			if (!table.editingAnything() && !table.singleTableCellSelected()) 
+				setWindowAnnotation("", null);
+			setCursor(Cursor.getDefaultCursor());
+			int column = findColumn(x, y);
+			int row = findRow(x, y);
+			table.mouseExitedCell(modifiers, column, -1, row, -1, tool);
+		}
+		catch (Exception e){
+		}
+		catch (Throwable e){
+		}		MesquiteWindow.uncheckDoomed(this);
 	}
 	/*...............................................................................................................*/
 	public void setCurrentCursor(int modifiers, int column, int row, MesquiteTool tool) {
@@ -710,10 +723,10 @@ timer6.end();
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		try {
-		int column = findColumn(x, y);
-		int row = findRow(x, y);
-		setCurrentCursor(modifiers, column, row, tool);
-		table.mouseInCell(modifiers, column,-1, row, -1,tool);
+			int column = findColumn(x, y);
+			int row = findRow(x, y);
+			setCurrentCursor(modifiers, column, row, tool);
+			table.mouseInCell(modifiers, column,-1, row, -1,tool);
 		}
 		catch (Exception e){
 		}
@@ -725,10 +738,10 @@ timer6.end();
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		try {
-		int column = findColumn(x, y);
-		int row = findRow(x, y);
-		setCurrentCursor(modifiers, column,  row, tool);
-		table.mouseInCell(modifiers, column,-1,  row, -1, tool);
+			int column = findColumn(x, y);
+			int row = findRow(x, y);
+			setCurrentCursor(modifiers, column,  row, tool);
+			table.mouseInCell(modifiers, column,-1,  row, -1, tool);
 		}
 		catch (Exception e){
 		}

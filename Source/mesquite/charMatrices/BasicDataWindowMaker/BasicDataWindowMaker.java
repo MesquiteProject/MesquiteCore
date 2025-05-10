@@ -928,15 +928,6 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	}
 
 	/* ................................................................................................................. */
-	int rowFirstTouched = 0;
-
-	int columnFirstTouched = 0;
-
-	int rowLastTouched = 0;
-
-	int columnLastTouched = 0;
-
-	/* ................................................................................................................. */
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 		temp.incorporate(super.getSnapshot(file), false);

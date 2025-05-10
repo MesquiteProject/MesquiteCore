@@ -360,6 +360,8 @@ public class GraphicsUtil {
 	}
 	/* ............................................................................................................... */
 	public static void shimmerVerticalOn(Graphics g, Panel panel, int top, int bottom, int x) {
+		if (MesquiteTrunk.isWindows()) //WindowsGraphicsSlowdown  //Debugg.println("@ double check all xormodes on Windows
+			return;
 		if (g==null && panel==null)
 			if (!MesquiteInteger.isCombinable(x))
 				return;
@@ -372,13 +374,23 @@ public class GraphicsUtil {
 		if (GraphicsUtil.useXORMode(g, false)){
 			mg.setXORMode(Color.white);
 			mg.drawLine(x, top, x, bottom);
+			mg.setPaintMode();
 		}
 		//		mg.drawLine(x+1, top, x+1, bottom);
 		if (g==null)
 			mg.dispose();
 	}
+	/*
+	 * Graphics2D g2d = (Graphics2D) g;
+g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.XOR, 1.0f));
+// Draw your shapes or images here
+g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // Reset composite mode
+
+	 */
 	/* ............................................................................................................... */
 	public static void shimmerHorizontalOn(Graphics g, Panel panel, int left, int right, int y) {
+	//	if (MesquiteTrunk.isWindows()) //WindowsGraphicsSlowdown
+	//		return;
 		if (g==null && panel==null)
 			if (!MesquiteInteger.isCombinable(y))
 				return;
@@ -388,8 +400,22 @@ public class GraphicsUtil {
 		if (mg == null)
 			return;
 		if (GraphicsUtil.useXORMode(g, false)){
-			mg.setXORMode(Color.white);
+			Composite ac = null;
+			if (mg instanceof Graphics2D) {
+				System.err.println("@xor " + y);
+				ac = ((Graphics2D)mg).getComposite();
+				((Graphics2D)mg).setComposite(AlphaComposite.Xor);
+			}
+			else
+				mg.setXORMode(Color.white);
+				
 			mg.drawLine(left, y, right, y);
+			mg.drawLine(left, y, right, y);
+			if (mg instanceof Graphics2D) {
+				((Graphics2D)mg).setComposite(ac);
+			}
+			else
+				mg.setPaintMode();
 		}
 		if (g==null)
 			mg.dispose();
@@ -426,7 +452,7 @@ public class GraphicsUtil {
 
 	}
 	/* -------------------------------------------------*/
-	
+
 	/* -------------------------------------------------*/
 	static Color transparentGray3 = new Color(Color.gray.getRed(), Color.gray.getGreen(), Color.gray.getBlue(), (int)(0.3*255));
 	public static void drawTransparentLine (Graphics g, int x, int y, int w, int h, Color color, double thickness) {
@@ -435,27 +461,27 @@ public class GraphicsUtil {
 		g.setColor(color);
 		drawLine(g, x, y, w, h, thickness);
 		ColorDistribution.setComposite(g, composite);		
-		}
+	}
 	public static void fillTransparentRect (Graphics g, int x, int y, int w, int h, Color color, double thickness) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		
 		g.setColor(color);
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		
-		}
+	}
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		
 		g.setColor(Color.gray);
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		
-			/*
+		/*
 		Color c = g.getColor();
 		g.setColor(transparentGray3);
 		g.fillRect(x,y,w, h);
 		g.setColor(transparentGray3);
-		*/
-		}
+		 */
+	}
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionPolygon (Graphics g, Polygon poly) {
 		Composite composite = ColorDistribution.getComposite(g);
