@@ -119,7 +119,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			else {
 				tf.setSize( 1, 1);
 				decrementButton.setLocation(0,2);
-				tf.setLocation(decrementButton.getBounds().x + decrementButton.getBounds().width, 2);
+				tf.setLocation(decrementButton.getBounds().x + decrementButton.getBounds().width, 3);
 				incrementButton.setLocation(tf.getBounds().x + tf.getBounds().width + EnterButton.MIN_DIMENSION+1,2);
 			}
 		}
@@ -186,7 +186,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 					setSize(totalWidth, totalHeight);
 					tf.setSize( textBoxWidth, textBoxHeight);
 					decrementButton.setLocation(0,2);
-					tf.setLocation(decrementButton.getBounds().x + decrementButton.getBounds().width + 1, 0);  // 1 added to x
+					tf.setLocation(decrementButton.getBounds().x + decrementButton.getBounds().width + 1, 1);  // 1 added to x
 					incrementButton.setLocation(tf.getBounds().x + tf.getBounds().width + EnterButton.MIN_DIMENSION+2,2);  //1 added to x
 				}
 				enterButton.setLocation(tf.getBounds().x + tf.getBounds().width+1, 2);

@@ -108,17 +108,31 @@ timer6.end();
 				redrawCellOffset(g, i, j, 0, 0);
 	}
 
-	public void redrawRow(Graphics g, int row) {
+	public void redrawColumn(Graphics g, int column) {
+		redrawCellOffset(g,-1, column, 0, 0);
+
+		for (int i = table.getFirstRowVisible(); i<=table.getLastRowVisible(); i++) 
+			if (i>=0 && i<table.getNumRows()) {
+				redrawCellOffset(g, i, column, 0, 0);
+			}
+	}
+	public void redrawRow(Graphics g, int row, boolean outline) {
+		Color c = g.getColor();
+		g.setColor(ColorTheme.getContentBackgroundPale());   //ggray
+		g.fillRect(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
+		g.setColor(c);
 		int lineX = 0;
 		int top = table.getTopOfRow(row);
 		for (int i = table.getFirstColumnVisible(); i<=table.getLastColumnVisible(); i++) 
 			if (i>=0 && i<table.getNumColumns()) {
 				lineX += table.columnWidths[i];
 				redrawCellOffset(g, i, row, 0, 0);
-				g.setColor(Color.gray);
 
-				g.drawLine(lineX,top, lineX, top+rowHeight(row));//matrixHeight + columnNamesRowHeight
-				g.drawLine(lineX,top+rowHeight(row), lineX+columnWidth(i), top+rowHeight(row));//matrixHeight + columnNamesRowHeight
+				if (outline){
+					g.setColor(Color.gray);
+					g.drawLine(lineX,top, lineX, top+rowHeight(row));//matrixHeight + columnNamesRowHeight
+					g.drawLine(lineX,top+rowHeight(row), lineX+columnWidth(i), top+rowHeight(row));//matrixHeight + columnNamesRowHeight
+				}
 			}
 	}
 
@@ -412,7 +426,7 @@ timer6.end();
 						if (!table.useQuickMode())
 							g.setClip(oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r]);
 						boolean selected = table.isCellSelected(c, r) || rowIsSelected|| table.isColumnSelected(c);
-						
+
 						if (!table.useString(c,r)) {
 							table.drawMatrixCell(g, oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r], c, r, selected);
 						}

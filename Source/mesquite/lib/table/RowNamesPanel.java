@@ -298,6 +298,8 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	int touchX = -1;
 	int lastX = -1;
 	int lastY=-1;
+	int shimmerRow = -1;
+	int shimmerColumn = -1;
 	int touchRow;
 	int previousRowDragged = -1;
 	/*...............................................................................................................*/
@@ -314,7 +316,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		if (x>getBounds().width-8) {
 			touchX=x;
 			lastX = x;
-			shimmerOn(x);
+			shimmerVerticalOn(x, y);
 		}
 		else
 		if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
@@ -324,6 +326,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 				lastY = y;
 				touchRow=possibleTouch;
 				table.shimmerHorizontalOn(touchY);
+				shimmerRow = touchRow;
 			}
 			else if ((table.showRowGrabbers) && (x<table.getRowGrabberWidth())) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool() && !isArrowEquivalent)
@@ -365,19 +368,21 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	/*...............................................................................................................*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
 		if (touchX >=0) {
-			shimmerOff(lastX);
-			shimmerOn(x);
+			shimmerVerticalOff();
+			shimmerVerticalOn(x, y);
 			lastX=x;
 		}
 		else if (touchRow>=0 && tool != null)
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				if (table.getUserAdjustColumn()==MesquiteTable.RESIZE) {
-					table.shimmerHorizontalOff(lastY);
+					table.shimmerHorizontalOff(lastY, shimmerRow);
+					shimmerRow = findRow(x, y);
 					table.shimmerHorizontalOn(y);
 					lastY=y;
 				}
-				else if (table.getUserMoveColumn()) {
-					table.shimmerHorizontalOff(lastY);
+				else if (table.getUserMoveRow()) {  //Debugg.println( why was this usermovecolumn? 
+					table.shimmerHorizontalOff(lastY, shimmerRow);
+					shimmerRow = findRow(x, y);
 					table.shimmerHorizontalOn(y);
 					lastY=y;
 				}
@@ -397,7 +402,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		table.stopAutoScrollThread();
 		if (touchX >=0) {
-			shimmerOff(lastX);
+			shimmerVerticalOff();
 			int newColumnWidth = getBounds().width + x-touchX-table.rowGrabberWidth;
 			if (newColumnWidth > 16) {
 				table.rowNamesWidthAdjusted = true;
@@ -421,13 +426,16 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 							table.repaintAll();
 						}*/
 					}
-					if (table.getUserMoveRow())
-						table.shimmerHorizontalOff(lastY);
+					if (table.getUserMoveRow()) {
+						table.shimmerHorizontalOff(lastY, shimmerRow);
+						shimmerRow = -1;
+					}
 				}
 				/*@@@*/
 				else {
 					if (table.getUserMoveRow()) {
-						table.shimmerHorizontalOff(lastY);
+						table.shimmerHorizontalOff(lastY, shimmerRow);
+						shimmerRow = -1;
 						int dropRow = findRowBeforeBetween(x, y);
 						if (dropRow == -2)
 							dropRow = table.getNumRows()-1;
@@ -446,25 +454,23 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 
 	}
 	/*...............................................................................................................*/
-   	public void shimmerOff(int x) {
-		if (x<=getBounds().width) {
-			table.shimmerVerticalOff(this,x);
-			table.shimmerVerticalOff(table.rowNames,x);
-		}
-		else {
-			table.shimmerVerticalOff(table.columnNames,x-touchX);
-			table.shimmerVerticalOff(table.matrix,x-touchX);
-		}
+   	void shimmerVerticalOff() {
+   		System.err.println("shimmer vert off");
+			table.shimmerVerticalOff(shimmerColumn);
+		
+		shimmerColumn = -1;
    	 }
 	/*...............................................................................................................*/
-   	public void shimmerOn(int x) {
+   	void shimmerVerticalOn(int x, int y) {
 		if (x<=getBounds().width) {
-			table.shimmerVerticalOn(this,x);
+			//table.shimmerVerticalOn(this,x);
 			table.shimmerVerticalOn(table.rowNames,x);
+			shimmerColumn = findColumn(x, y);
 		}
 		else {
 			table.shimmerVerticalOn(table.columnNames,x-touchX);
 			table.shimmerVerticalOn(table.matrix,x-touchX);
+			shimmerColumn = findColumn(x, y);
 		}
    	 }
 

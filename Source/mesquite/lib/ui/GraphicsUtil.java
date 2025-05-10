@@ -360,8 +360,6 @@ public class GraphicsUtil {
 	}
 	/* ............................................................................................................... */
 	public static void shimmerVerticalOn(Graphics g, Panel panel, int top, int bottom, int x) {
-		if (MesquiteTrunk.isWindows()) //WindowsGraphicsSlowdown  //Debugg.println("@ double check all xormodes on Windows
-			return;
 		if (g==null && panel==null)
 			if (!MesquiteInteger.isCombinable(x))
 				return;
@@ -371,26 +369,18 @@ public class GraphicsUtil {
 		if (mg == null)
 			return;
 		//		mg.setColor(Color.black);
-		if (GraphicsUtil.useXORMode(g, false)){
-			mg.setXORMode(Color.white);
-			mg.drawLine(x, top, x, bottom);
-			mg.setPaintMode();
-		}
+		//if (GraphicsUtil.useXORMode(g, false)){
+		//	mg.setXORMode(Color.white);
+			mg.drawLine(x, top, x, bottom);  //XOR mode disabled because corrupted Graphics on windows to ridiculous slowness
+		//	mg.setPaintMode();
+		//}
 		//		mg.drawLine(x+1, top, x+1, bottom);
 		if (g==null)
 			mg.dispose();
 	}
-	/*
-	 * Graphics2D g2d = (Graphics2D) g;
-g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.XOR, 1.0f));
-// Draw your shapes or images here
-g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // Reset composite mode
-
-	 */
+	
 	/* ............................................................................................................... */
 	public static void shimmerHorizontalOn(Graphics g, Panel panel, int left, int right, int y) {
-	//	if (MesquiteTrunk.isWindows()) //WindowsGraphicsSlowdown
-	//		return;
 		if (g==null && panel==null)
 			if (!MesquiteInteger.isCombinable(y))
 				return;
@@ -400,21 +390,11 @@ g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // 
 		if (mg == null)
 			return;
 		if (GraphicsUtil.useXORMode(g, false)){
-			Composite ac = null;
-			if (mg instanceof Graphics2D) {
-				System.err.println("@xor " + y);
-				ac = ((Graphics2D)mg).getComposite();
-				((Graphics2D)mg).setComposite(AlphaComposite.Xor);
-			}
-			else
-				mg.setXORMode(Color.white);
-				
+			if (false && MesquiteTrunk.isMacOS())
+				mg.setXORMode(Color.white); //on windows, just redraws row to turn off
+
 			mg.drawLine(left, y, right, y);
-			mg.drawLine(left, y, right, y);
-			if (mg instanceof Graphics2D) {
-				((Graphics2D)mg).setComposite(ac);
-			}
-			else
+			if (false && MesquiteTrunk.isMacOS())
 				mg.setPaintMode();
 		}
 		if (g==null)
