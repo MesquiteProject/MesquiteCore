@@ -39,8 +39,6 @@ public class Notification implements Identifiable {
 	public Notification(int code){
 		this();
 		this.code = code;
-		if (code == MesquiteListener.SELECTION_CHANGED && numNMSLC++ % 1000 == 0)
-			System.err.println("@numNMSLC ==== " + numNMSLC);
 	}
 	public Notification(int code,  UndoReference undoReference){
 		this();

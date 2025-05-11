@@ -321,9 +321,10 @@ class ContentSideContainer extends MousePanel {
 	}
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		xTouched = x;
-		if (x>0) {
-			GraphicsUtil.shimmerVerticalOn(null,this,0,getBounds().height,x);
+		/*if (x>0) {
+			GraphicsUtil.shimmerVerticalOn(null,this,0,getBounds().height,x); //shimmering seemed nonfunctional, and restricted to MesquiteTable following discovery of XORMode graphics slowdown on Windows 2025
 		}
+		*/
 		int edge = parent.sideSpacer;
 		for (int i=0; i<parent.sidePanels.size(); i++){
 			MousePanel sidePanel = (MousePanel)parent.sidePanels.elementAt(i);
@@ -337,8 +338,9 @@ class ContentSideContainer extends MousePanel {
 
 	}
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
-		if (x>0)
-			GraphicsUtil.shimmerVerticalOn(null,this,0,getBounds().height,x);
+		/*if (x>0)
+			GraphicsUtil.shimmerVerticalOn(null,this,0,getBounds().height,x);//shimmering seemed nonfunctional, and restricted to MesquiteTable following discovery of XORMode graphics slowdown on Windows 2025
+			*/
 		if (panelFollowing != null) {
 			int distance = x - xTouched;
 			if (distance + 16 > panelFollowing.ps)
@@ -352,7 +354,7 @@ class ContentSideContainer extends MousePanel {
 
 	}
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
-		if (x>0) {
+	/*	if (x>0) { //shimmering seemed nonfunctional, and restricted to MesquiteTable following discovery of XORMode graphics slowdown on Windows 2025
 			GraphicsUtil.shimmerVerticalOn(null,this,0,getBounds().height,x);
 			GraphicsUtil.shimmerVerticalOn(null,this,0,getBounds().height,x);
 		}
@@ -360,6 +362,7 @@ class ContentSideContainer extends MousePanel {
 			GraphicsUtil.shimmerVerticalOn(null,parent,0,getBounds().height,parent.getBounds().width-getBounds().width+x);
 			GraphicsUtil.shimmerVerticalOn(null,parent,0,getBounds().height,parent.getBounds().width-getBounds().width+x);
 		}
+		*/
 	}
 	public void paint(Graphics g){
 		g.setColor(Color.darkGray);

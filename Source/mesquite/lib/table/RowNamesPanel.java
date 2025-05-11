@@ -195,6 +195,30 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		g.drawLine(width-1, 0, width-1, height);
 	}
 
+	public void redrawColumn() {
+		Graphics mg = getGraphics();
+		if (mg == null)
+			return;
+		Color c = mg.getColor();
+		mg.setColor(ColorTheme.getContentBackgroundPale());   //ggray
+		mg.fillRect(0, 0, getWidth()-1, getHeight()-1);
+		int x = 0;
+		int w = getWidth();
+		for (int i = table.getFirstRowVisible(); i<=table.getLastRowVisible(); i++) 
+			if (i>=0 && i<table.getNumRows()) {
+				int y = table.getTopOfRow(i);
+				int h = table.rowHeights[i];
+				mg.setColor(ColorTheme.getContentBackgroundPale());   //ggray
+				mg.fillRect(x, y, w, h);
+				mg.setColor(Color.lightGray);
+				mg.drawRect(x, y, w, h);
+			}		
+		for (int i = table.getFirstRowVisible(); i<=table.getLastRowVisible(); i++) 
+			if (i>=0 && i<table.getNumRows()) {
+				redrawName(mg, i);
+			}
+		mg.dispose();
+	}
 	public void repaint(){
 		checkEditFieldLocation();
 		super.repaint();
@@ -316,7 +340,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		if (x>getBounds().width-8) {
 			touchX=x;
 			lastX = x;
-			shimmerVerticalOn(x, y);
+			table.shimmerVerticalOn(this, x);
 		}
 		else
 		if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
@@ -368,8 +392,8 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	/*...............................................................................................................*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
 		if (touchX >=0) {
-			shimmerVerticalOff();
-			shimmerVerticalOn(x, y);
+			table.shimmerVerticalOff(this, lastX, -1);
+			table.shimmerVerticalOn(this, x);
 			lastX=x;
 		}
 		else if (touchRow>=0 && tool != null)
@@ -402,7 +426,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		table.stopAutoScrollThread();
 		if (touchX >=0) {
-			shimmerVerticalOff();
+			table.shimmerVerticalOff(this, lastX, -1);
 			int newColumnWidth = getBounds().width + x-touchX-table.rowGrabberWidth;
 			if (newColumnWidth > 16) {
 				table.rowNamesWidthAdjusted = true;
@@ -453,26 +477,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			}
 
 	}
-	/*...............................................................................................................*/
-   	void shimmerVerticalOff() {
-   		System.err.println("shimmer vert off");
-			table.shimmerVerticalOff(shimmerColumn);
-		
-		shimmerColumn = -1;
-   	 }
-	/*...............................................................................................................*/
-   	void shimmerVerticalOn(int x, int y) {
-		if (x<=getBounds().width) {
-			//table.shimmerVerticalOn(this,x);
-			table.shimmerVerticalOn(table.rowNames,x);
-			shimmerColumn = findColumn(x, y);
-		}
-		else {
-			table.shimmerVerticalOn(table.columnNames,x-touchX);
-			table.shimmerVerticalOn(table.matrix,x-touchX);
-			shimmerColumn = findColumn(x, y);
-		}
-   	 }
+	
 
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {

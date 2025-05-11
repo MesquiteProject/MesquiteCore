@@ -109,17 +109,37 @@ timer6.end();
 	}
 
 	public void redrawColumn(Graphics g, int column) {
-		redrawCellOffset(g,-1, column, 0, 0);
+		Color c = g.getColor();
+		g.setColor(ColorTheme.getContentBackgroundPale());   //ggray
+		g.fillRect(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
+		g.fillRect(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
+		if (g == null ||column<0 || column>=table.getNumColumns()){
+			g.setColor(c);
+			return;
+		}
+		int x = table.getLeftOfColumn(column);
+		int w = table.columnWidths[column];
+		for (int i = table.getFirstRowVisible(); i<=table.getLastRowVisible(); i++) 
+			if (i>=0 && i<table.getNumRows()) {
+				int y = table.getTopOfRow(i);
+				int h = table.rowHeights[i];
+				g.setColor(ColorTheme.getContentBackgroundPale());   //ggray
+				g.fillRect(x, y, w, h);
+				g.setColor(Color.lightGray);
+				g.drawRect(x, y, w, h);
+			}
 
 		for (int i = table.getFirstRowVisible(); i<=table.getLastRowVisible(); i++) 
 			if (i>=0 && i<table.getNumRows()) {
-				redrawCellOffset(g, i, column, 0, 0);
+				redrawCellOffset(g,column, i, 0, 0);
 			}
+		g.setColor(c);
 	}
 	public void redrawRow(Graphics g, int row, boolean outline) {
 		Color c = g.getColor();
 		g.setColor(ColorTheme.getContentBackgroundPale());   //ggray
 		g.fillRect(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
+		g.fillRect(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
 		g.setColor(c);
 		int lineX = 0;
 		int top = table.getTopOfRow(row);
@@ -129,7 +149,10 @@ timer6.end();
 				redrawCellOffset(g, i, row, 0, 0);
 
 				if (outline){
-					g.setColor(Color.gray);
+					if (table.paleGrid)
+						g.setColor(ColorDistribution.veryLightGray);
+					else
+						g.setColor(Color.gray);
 					g.drawLine(lineX,top, lineX, top+rowHeight(row));//matrixHeight + columnNamesRowHeight
 					g.drawLine(lineX,top+rowHeight(row), lineX+columnWidth(i), top+rowHeight(row));//matrixHeight + columnNamesRowHeight
 				}

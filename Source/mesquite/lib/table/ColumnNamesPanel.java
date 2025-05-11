@@ -36,8 +36,9 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 	int touchColumn = -1;
 	int shimmerX = -1;
 	int shimmerY = -1;
+	int shimmerColumn = -1;
 
-	int origShimmer = -1;
+//	int origShimmer = -1;
 	int numRows = 1;
 	int numInfoStrips = 0;
 	static int defaultRowH = 20;
@@ -242,6 +243,13 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 			redrawName(g, column);
 			g.dispose();
 		}
+	}
+	
+	public int getColumnGrabberXOffset(){
+		if (!diagonal)
+			return 0;
+		int offX= -(int)(Math.tan(diagonalAngle)*diagonalHeight);
+		return offX;
 	}
 	int leftmostNumber = 0;
 	int rightmostNumber = 0;
@@ -749,7 +757,6 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		if (tool != null && isArrowEquivalent && isDiagonal() && y> height-3  && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 			touchY=y;
 			shimmerY = touchY;
-			//	table.shimmerHorizontalOn(shimmerY);
 			table.adjustingColumnNamesHeight = true;
 		}
 		else if (possibleTouch<table.numColumnsTotal && possibleTouch>=0) {
@@ -766,11 +773,8 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 				touchX=x;
 				touchColumn=nearWhichColumnBoundary(x, y);
 				shimmerX = touchX;
-				if (diagonal && touchColumn>=0){
-					shimmerX = (startOfColumn(touchColumn) + endOfColumn(touchColumn))/2;
-				}
-				origShimmer = shimmerX;
-				table.shimmerVerticalOn(shimmerX);
+				table.shimmerVerticalOn(this, shimmerX);
+				shimmerColumn = touchColumn;
 				table.adjustingColumnWidth = true;
 			}
 			/*@@@*/
@@ -778,11 +782,8 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 				touchX=x;
 				touchColumn=possibleTouch;
 				shimmerX = touchX;
-				if (diagonal && touchColumn>=0){
-					shimmerX = (startOfColumn(touchColumn) + endOfColumn(touchColumn))/2;
-				}
-				origShimmer = shimmerX;
-				table.shimmerVerticalOn(shimmerX);
+				table.shimmerVerticalOn(this, shimmerX);
+				shimmerColumn = touchColumn;
 			}
 			else if ((table.showColumnGrabbers) && (y<table.getColumnGrabberWidth())) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool() && !isArrowEquivalent)
@@ -791,7 +792,8 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 				if (tool != null && isArrowEquivalent && table.getUserMoveColumn() && table.isColumnSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 					touchX=x;
 					shimmerX = MesquiteInteger.unassigned;
-					origShimmer = shimmerX;
+					shimmerColumn = MesquiteInteger.unassigned;
+			//		origShimmer = shimmerX;
 					touchColumn=possibleTouch;
 				}
 			}
@@ -825,19 +827,18 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		else if (touchColumn>=0) {
 
 			if (table.getUserAdjustColumn()==MesquiteTable.RESIZE) {
-				table.shimmerVerticalOff(shimmerX);
-				if (diagonal){
-					x = (x-touchX) + origShimmer;
-				}
-				table.shimmerVerticalOn(x);
+				table.shimmerVerticalOff(this, shimmerX, shimmerColumn);
+				table.shimmerVerticalOn(this, x);
+				shimmerColumn = findColumn(x, y);
 				shimmerX=x;
 			}
 			else if (table.getUserMoveColumn() && tool != null && ((TableTool)tool).isArrowKeyOnColumn(y,table)) {
-				table.shimmerVerticalOff(shimmerX);
-				if (diagonal){
-					x = (x-touchX) + origShimmer;
-				}
-				table.shimmerVerticalOn(x);
+				table.shimmerVerticalOff(this, shimmerX, shimmerColumn);
+		//		if (diagonal){
+			//		x = (x-touchX) + origShimmer;
+			//	}
+				table.shimmerVerticalOn(this, x);
+				shimmerColumn = findColumn(x, y);
 				shimmerX=x;
 			}
 			table.checkForAutoScroll(this,x,MesquiteInteger.unassigned);
@@ -857,23 +858,23 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 			shimmerY=-1;
 			touchY=-1;
 			table.resetComponentSizes();
-			table.repaintAll();
 		}
 		else 	if (touchColumn>=0 && tool != null ) {
 			if (table.getUserAdjustColumn()==MesquiteTable.RESIZE && table.adjustingColumnWidth) {
-				table.shimmerVerticalOff(shimmerX);
-
+				table.shimmerVerticalOff(this, shimmerX, shimmerColumn);
+				shimmerColumn = MesquiteInteger.unassigned;
+				shimmerX = -1;
 				int newColumnWidth = table.columnWidths[touchColumn] + x-touchX;
 				if ((newColumnWidth >= table.getMinColumnWidth()) && (touchX>=0)) {
 					table.setColumnWidth(touchColumn, newColumnWidth);
 					table.columnWidthsAdjusted.setBit(touchColumn);
-					table.repaintAll();
 					//touchX=-1;
 				}
-
 			}
 			else if (table.getUserMoveColumn() && ((TableTool)tool).isArrowKeyOnColumn(y,table)) {
-				table.shimmerVerticalOff(shimmerX);
+				table.shimmerVerticalOff(this, shimmerX, shimmerColumn);
+				shimmerColumn = MesquiteInteger.unassigned;
+				shimmerX = -1;
 				int dropColumn = findHalfColumn(x, y);   //cursor; regionH; clickCount; colour by selected
 				if (dropColumn == -2)
 					dropColumn = table.getNumColumns();
@@ -882,6 +883,7 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 			}
 			table.adjustingColumnWidth = false;
 		}
+		table.repaintMainThread();
 	}
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {

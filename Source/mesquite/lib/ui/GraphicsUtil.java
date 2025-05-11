@@ -358,48 +358,7 @@ public class GraphicsUtil {
 		return poly;
 
 	}
-	/* ............................................................................................................... */
-	public static void shimmerVerticalOn(Graphics g, Panel panel, int top, int bottom, int x) {
-		if (g==null && panel==null)
-			if (!MesquiteInteger.isCombinable(x))
-				return;
-		Graphics mg = g;
-		if (mg==null)
-			mg = panel.getGraphics();
-		if (mg == null)
-			return;
-		//		mg.setColor(Color.black);
-		//if (GraphicsUtil.useXORMode(g, false)){
-		//	mg.setXORMode(Color.white);
-			mg.drawLine(x, top, x, bottom);  //XOR mode disabled because corrupted Graphics on windows to ridiculous slowness
-		//	mg.setPaintMode();
-		//}
-		//		mg.drawLine(x+1, top, x+1, bottom);
-		if (g==null)
-			mg.dispose();
-	}
 	
-	/* ............................................................................................................... */
-	public static void shimmerHorizontalOn(Graphics g, Panel panel, int left, int right, int y) {
-		if (g==null && panel==null)
-			if (!MesquiteInteger.isCombinable(y))
-				return;
-		Graphics mg = g;
-		if (mg==null)
-			mg = panel.getGraphics();
-		if (mg == null)
-			return;
-		if (GraphicsUtil.useXORMode(g, false)){
-			if (false && MesquiteTrunk.isMacOS())
-				mg.setXORMode(Color.white); //on windows, just redraws row to turn off
-
-			mg.drawLine(left, y, right, y);
-			if (false && MesquiteTrunk.isMacOS())
-				mg.setPaintMode();
-		}
-		if (g==null)
-			mg.dispose();
-	}
 	/* -------------------------------------------------*/
 	public static boolean useXOR = true;
 	/*Bugs is os x Tiger ca. 10.4.8 can cause crashes with XORMode.  With OS X Tiger, it does not do XORMode with printing or if senstive is on */
