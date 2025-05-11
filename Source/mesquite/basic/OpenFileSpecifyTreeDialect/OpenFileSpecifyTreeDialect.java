@@ -98,6 +98,8 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 			}
 
 			dialog.completeAndShowDialog(true);
+			
+			Debugg.println("@dc " + dialog.buttonPressed.getValue());
 			if (dialog.buttonPressed.getValue() == 0)  {
 				//DIALECT
 				if (dialog instanceof ListDialog){

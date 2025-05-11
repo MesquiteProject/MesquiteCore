@@ -30,6 +30,7 @@ import mesquite.lib.ui.*;
 
 import java.awt.datatransfer.*;
 
+import mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 import mesquite.trees.BranchPropertiesList.BranchPropertiesList;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
@@ -1488,6 +1489,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else
 				t = "Tree";
 		}
+		BasicTreeWindowCoord btwc = (BasicTreeWindowCoord)ownerModule.findEmployerWithDuty(BasicTreeWindowCoord.class);
+		if (btwc != null)
+			t = btwc.getUniqueTreeWindowName(t);
 		setTitle(t);
 	}
 
@@ -2206,8 +2210,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					previousEditedTree = tree.cloneTree();
 					if (previousEditedTree instanceof MesquiteTree)
 						taxa.addListener((MesquiteTree) previousEditedTree);
-					if (recoverEditedMenuItem != null)
+					if (recoverEditedMenuItem != null) {
 						recoverEditedMenuItem.setEnabled(true);
+						//setUndoRefForLostEditedTree(true);
+					}
 				}
 			}
 			else {
@@ -2262,7 +2268,17 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		checkPanelPositionsLegal();
 		resetBaseExplanation();
 	}
-
+	/*
+	void setUndoRefForLostEditedTree(boolean enableUndoMessage){
+		if (enableUndoMessage){
+			UndoReference undoReference =  new UndoReference(new HowToRecoverEditedTree(this), ownerModule);
+			setUndoer(undoReference);
+			System.err.println("@setUndoRefForLostEditedTree");
+		}
+		else
+			setUndoer((UndoReference)null);
+	}
+*/
 	public void numTreesChanged() {
 		if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
@@ -3504,8 +3520,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				previousEditedTree = tree.cloneTree();
 				if (previousEditedTree instanceof MesquiteTree)
 					taxa.addListener((MesquiteTree) previousEditedTree);
-				if (recoverEditedMenuItem != null)
+				if (recoverEditedMenuItem != null){
 					recoverEditedMenuItem.setEnabled(true);
+					//setUndoRefForLostEditedTree(true);
+				}
 			}
 			if (recoverEditedMenuItem != null && wasEnabled != recoverEditedMenuItem.isEnabled())
 				MesquiteTrunk.resetMenuItemEnabling();
@@ -5242,7 +5260,32 @@ class REALTreeScrollPane extends MQScrollPane implements AdjustmentListener, Mou
 
 }
 
-/* ======================================================================== */
+
+/* ======================================================================== *
+
+class HowToRecoverEditedTree implements Undoer {
+	BasicTreeWindow window;
+	public HowToRecoverEditedTree(BasicTreeWindow window){
+		this.window = window;
+		MesquiteMessage.println("@HowToRecoverEditedTree");
+	}
+	public Undoer undo() {
+		MesquiteMessage.println("@@@@PS");
+		return null;
+	}
+
+	public void dispose() {
+	}
+
+	public void setNewState(Object newState) {
+	}
+
+	public Object getNewState() {
+		return null;
+	} 
+}
+
+	
 /*
  * this is an attempt to get around the bug in OS X java 1.4+ in which ScrollPane scrollbars don't return their position and don't notify of adjustments. This faux-ScrollPane works reasonably well but is slower and has some graphical artifacts
  */

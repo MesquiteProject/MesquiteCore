@@ -314,6 +314,12 @@ public class MesquiteButton extends MousePanel implements Explainable, ImageOwne
 		}
 		else if (tool != null && InterfaceManager.isHiddenTool(tool) != InterfaceManager.NORMAL)
 			;
+		else if (MesquiteEvent.rightClick(modifiers)){
+			suppressUp = true;
+			command.doIt(arguments + "  " + Integer.toString(x) + "  " + Integer.toString(y) + "  command"); //right click bypasses wait
+			suppressUp = false;
+
+		}
 		else if (useWaitThread){
 			String modString = MesquiteEvent.modifiersToString(modifiers);
 			//command.doItMainThread(arguments + "  " + Integer.toString(x) + "  " + Integer.toString(y) + "  " + modString, CommandChecker.getQueryModeString("Button", command, this));

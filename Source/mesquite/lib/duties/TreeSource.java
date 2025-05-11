@@ -93,7 +93,16 @@ public abstract class TreeSource extends TreeBlockFiller implements ItemsSource 
  		}
  				
     	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Ignored (see command to DefaultTrees and StoredTrees)", "[]", commandName, "laxOff")){
+			//to consume to avoid unnecessary message
+		} 
 
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
 	/*===== For ItemsSource interface ======*/
    	/** returns item numbered ic*/
    	public Object getItem(Taxa taxa, int ic){

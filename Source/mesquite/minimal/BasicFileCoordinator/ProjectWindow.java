@@ -1550,8 +1550,10 @@ class TreesRPanel extends ElementPanel {
 		int numTrees = ((TreeVector)element).size();
 		if (numTrees != 1)
 			s += "s";
-
-		return "" + numTrees + s + "\n" + super.getFootnote();
+		String f = super.getFootnote();
+		if (f == null)
+			f = "";
+		return "" + numTrees + s + "\n" + f;
 	}
 
 	/*.................................................................................................................*/

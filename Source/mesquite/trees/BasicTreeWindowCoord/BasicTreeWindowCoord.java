@@ -64,6 +64,17 @@ public class BasicTreeWindowCoord extends FileInit {
 		else
 			return getProject().getTaxaReferenceExternal(d);
 	}
+	
+	public String getUniqueTreeWindowName(String proposed){
+		if (treeWindows == null || treeWindows.indexOfByName(proposed)<0)
+			return proposed;
+		proposed += " *";
+		while (true){
+			if (treeWindows.indexOfByName(proposed)<0)
+				return proposed;
+			proposed += "*";
+		}
+	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){
 		return false;
