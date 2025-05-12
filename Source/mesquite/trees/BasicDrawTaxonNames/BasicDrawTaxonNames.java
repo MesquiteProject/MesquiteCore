@@ -512,6 +512,26 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		else
 			return cc;
 	}
+	
+	/*_________________________________________________*/
+	double furthestTip(Tree tree, int node){
+		if  (tree.nodeIsTerminal(node) && (!tree.withinCollapsedClade(node) || tree.isLeftmostTerminalOfCollapsedClade(node))) {   //terminal
+			if (treeDisplay.isUp() || treeDisplay.isDown())
+				return treeDrawing.y[node];
+			else
+				return treeDrawing.x[node];
+		}
+		double furthest = MesquiteDouble.unassigned;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+			double f = furthestTip(tree, d);
+			if (treeDisplay.isUp() || treeDisplay.isLeft())
+				furthest = MesquiteDouble.minimum(f, furthest);
+			else
+			furthest = MesquiteDouble.maximum(f, furthest);
+		}
+		return furthest;
+	}
+
 	/*.................................................................................................................*/
 	protected void drawNamesOnTree(Tree tree, int drawnRoot, int N, TreeDisplay treeDisplay, TaxaPartition partitions) {
 		if  (tree.nodeIsTerminal(N)) {   //terminal ####################################################
@@ -525,7 +545,14 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			textRotator.assignBackground(bgColor);
 			double horiz=treeDrawing.x[N];
 			double vert=treeDrawing.y[N];
-			if (!treeDisplay.collapsedCladeNameAtLeftmostAncestor && tree.isLeftmostTerminalOfCollapsedClade(N)){
+			if (treeDisplay.floatNameAtHighest){ //Debugg.println("@ use another flag for floating at distance
+				double furthestT = furthestTip(tree, drawnRoot);
+				if (treeDisplay.isUp() || treeDisplay.isDown())
+					vert = furthestT;
+				else
+					horiz = furthestT;
+			}
+			else if (!treeDisplay.collapsedCladeNameAtLeftmostAncestor && tree.isLeftmostTerminalOfCollapsedClade(N)){
 				horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
 				vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
 			}

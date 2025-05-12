@@ -212,6 +212,7 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 		treeDisplays[1].setTaxonNameDistanceFromTip(14); ///absent
 		extra = new MirrorExtra(ownerModule, treeDisplays[0], this);
 		treeDisplays[0].addExtra(extra);
+		treeDisplays[0].floatNameAtHighest = true;
 		treeDisplays[0].centerNames = true;
 		//treeDisplays[1].setBackground(Color.cyan);
 		//treeDisplays[0].setBackground(Color.yellow);

@@ -39,6 +39,8 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	protected int repaintsPending =0;
 	/**  Records whether or not the taxon names should be centered, if drawn in one plane, about axis of longest name*/
 	public boolean centerNames = false;
+	/**  Records whether or not the taxon names should be not by the tips, but floating together at highest name (used in MirrorTreeWindow)*/
+	public boolean floatNameAtHighest = false;
 	/**  Records whether or not the taxon names are to be drawn*/
 	public boolean suppressNames = false;
 	
