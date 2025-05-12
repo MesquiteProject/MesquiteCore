@@ -210,6 +210,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			drawLine(g,ibX, ibY, lastX, lastY);
 			drawLine(g,ibX+1, ibY, lastX+1, lastY);
 			drawLine(g,ibX+2, ibY, lastX+2, lastY);
+			g.setPaintMode();
 			g.dispose();
 		}
 		lineOn=true;

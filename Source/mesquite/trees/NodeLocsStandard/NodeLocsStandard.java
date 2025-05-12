@@ -2057,6 +2057,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 			tempZoomFactor = -1;
 
 			GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
+			g.setPaintMode();
 			g.dispose();
 		}
 		lineOnTouch=true;
@@ -2091,6 +2092,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 				GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
 				lineOnTouch = true;
 			}
+			g.setPaintMode();
 			g.dispose();
 		}
 	}
@@ -2112,6 +2114,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Co
 			g.setXORMode(Color.white);
 			g.setColor(Color.red);
 			GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
+			g.setPaintMode();
 			g.dispose();
 		}
 

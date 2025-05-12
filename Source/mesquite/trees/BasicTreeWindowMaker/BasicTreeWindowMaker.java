@@ -4086,6 +4086,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()) {
 					g.setXORMode(Color.white); // for some reason color doesn't matter in MacOS, but does in Win95
 					GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
+					g.setPaintMode();
 				}
 				highlightedNodes = null;
 				highlightedTaxa = null;
@@ -4195,6 +4196,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					g.setXORMode(Color.white); // for some reason color doesn't matter in MacOS, but does in Win95
 					GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
 					GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY);
+					g.setPaintMode();
 					// g.drawRect(fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
 					// g.drawRect(fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
 				}
@@ -6556,6 +6558,7 @@ class BirdsEyePanel extends MesquitePanel {
 		dragOffsetY = y - origTouchY;
 		if (GraphicsUtil.useXORMode(null, false)) {
 			g.drawRoundRect(vis.x + dragOffsetX, vis.y + dragOffsetY, vis.width, vis.height, 8, 8);
+			g.setPaintMode();
 			g.dispose();
 		}
 		MesquiteWindow.uncheckDoomed(this);
@@ -6580,6 +6583,7 @@ class BirdsEyePanel extends MesquitePanel {
 			g.setXORMode(Color.white);
 			g.setColor(Color.green);
 			g.drawRoundRect(vis.x, vis.y, vis.width, vis.height, 8, 8);
+			g.setPaintMode();
 			g.dispose();
 		}
 		MesquiteWindow.uncheckDoomed(this);

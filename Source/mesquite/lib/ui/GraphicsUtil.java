@@ -361,14 +361,42 @@ public class GraphicsUtil {
 	
 	/* -------------------------------------------------*/
 	public static boolean useXOR = true;
-	/*Bugs is os x Tiger ca. 10.4.8 can cause crashes with XORMode.  With OS X Tiger, it does not do XORMode with printing or if senstive is on */
+	/*Bug in Windows Oracle JDK ~21 that slows graphics in panel hugely after XORMode used
+	 * Bugs in os x Tiger ca. 10.4.8 can cause crashes with XORMode.  With OS X Tiger, it does not do XORMode with printing or if sensitive is on */
 	public static boolean useXORMode(Graphics g, boolean sensitive){
+		//if (MesquiteTrunk.isWindows())
+		//	return false;
 		if (sensitive || g instanceof PrintGraphics){
 			//if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0)
 			//	return false;
 			return useXOR;
 		}
 		return true;
+	}
+	
+	public static Composite setSafeXORMode(Graphics g) {
+		if (false) {
+			g.setXORMode(Color.white);
+			return null;
+		}
+		else if (g instanceof Graphics2D) {
+		
+			Graphics2D g2 = (Graphics2D)g;
+			Composite comp = g2.getComposite();
+			ColorDistribution.setTransparentGraphics3(g2);
+			return comp;
+		}
+		return null;
+	
+	}
+	public static void setSafePaintMode(Graphics g, Composite c) {
+		if (c == null)
+			g.setPaintMode();
+		else if (g instanceof Graphics2D) {
+		
+			Graphics2D g2 = (Graphics2D)g;
+			g2.setComposite(c);
+		}
 	}
 	/* -------------------------------------------------*/
 	public static void drawXORLine (Graphics g, int xFrom, int yFrom, int xTo, int yTo, int thickness, Color color) {
@@ -383,6 +411,7 @@ public class GraphicsUtil {
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.drawLine(xFrom,yFrom,xTo,yTo);
 			g2.setStroke(st);
+			g2.setPaintMode();
 		}
 		catch (Throwable e){
 			System.err.println("Throwable in GraphicsUtil: " + e);

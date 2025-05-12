@@ -69,6 +69,7 @@ public abstract class ResizableLegend extends Legend {
 				sizeOffsetX=x-origTouchX;
 				sizeOffsetY=y-origTouchY;
 				g.drawRect(getBounds().x, getBounds().y, getBounds().width-1 + sizeOffsetX, getBounds().height-1 + sizeOffsetY);
+				g.setPaintMode();
 				g.dispose();
 			}
 		}
@@ -95,6 +96,7 @@ public abstract class ResizableLegend extends Legend {
 	    		g.setXORMode(Color.white);
 		   		g.setColor(Color.black);
 				g.drawRect(getBounds().x, getBounds().y, getBounds().width-1, getBounds().height-1);
+				g.setPaintMode();
 				g.dispose();
 			}
 			}
@@ -113,6 +115,7 @@ public abstract class ResizableLegend extends Legend {
 		    	g.setXORMode(Color.white);
 		   		g.setColor(Color.black);
 				g.drawRect(getBounds().x, getBounds().y, getBounds().width-1 + sizeOffsetX, getBounds().height-1 + sizeOffsetY);
+				g.setPaintMode();
 				g.dispose();
 				legendWidth = getBounds().width + sizeOffsetX;
 				legendHeight = getBounds().height + sizeOffsetY;

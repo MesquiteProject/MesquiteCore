@@ -270,7 +270,7 @@ public class SimulateTree extends TreeSource {
 	/*.................................................................................................................*/
 	public String getParameters() {
 		if (simulatorTask==null) return "";
-		return "Tree simulator: " + simulatorTask.getName() + ". [seed: " + originalSeed + "]";
+		return "Tree simulator: " + simulatorTask.getName() + ". (seed: " + originalSeed + ")";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */

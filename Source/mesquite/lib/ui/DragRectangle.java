@@ -67,6 +67,7 @@ public class DragRectangle {
 	    		g.setXORMode(Color.white);
 	   		g.setColor(Color.black);
 			drawRect(g, xDown, yDown,  xDrag, yDrag);
+			g.setPaintMode();
 		}
 	}
 	/* ----------------------------------*/
@@ -76,6 +77,7 @@ public class DragRectangle {
 	   		g.setColor(Color.black);
 			drawRect(g, xDown, yDown,  xDrag, yDrag);
 			drawRect(g, xDown, yDown,  xPixel, yPixel);
+			g.setPaintMode();
 			xDrag=xPixel;
 			yDrag=yPixel;
 		}

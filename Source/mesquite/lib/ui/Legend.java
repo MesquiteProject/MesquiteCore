@@ -176,6 +176,7 @@ public abstract class Legend extends MesquitePanel implements Commandable {
 					g.setXORMode(Color.white);
 					g.setColor(Color.black);
 					g.drawRect(getBounds().x, getBounds().y,  getBounds().width-1,  getBounds().height-1);
+					g.setPaintMode();
 					g.dispose();
 				}
 			}
@@ -197,6 +198,7 @@ public abstract class Legend extends MesquitePanel implements Commandable {
 				dragOffsetX=x-origTouchX;
 				dragOffsetY=y-origTouchY;
 				g.drawRect(getBounds().x + dragOffsetX, getBounds().y + dragOffsetY,  getBounds().width-1,  getBounds().height-1);
+				g.setPaintMode();
 				g.dispose();
 			}
 		}
@@ -220,6 +222,7 @@ public abstract class Legend extends MesquitePanel implements Commandable {
 				g.setXORMode(Color.white);
 				g.setColor(Color.black);
 				g.drawRect(getBounds().x + dragOffsetX, getBounds().y + dragOffsetY,  getBounds().width-1,  getBounds().height-1);
+				g.setPaintMode();
 				g.dispose();
 			}
 		}

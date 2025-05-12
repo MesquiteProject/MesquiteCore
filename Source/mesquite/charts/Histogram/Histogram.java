@@ -1443,6 +1443,7 @@ x axis can represent different things (items, values, values by category) it is 
 				drawVerticalLine(g, xPixel);
 				xDrag=xPixel;
 				yDrag=yPixel;
+				g.setPaintMode();
 				g.dispose();
 			}
 		}
@@ -1466,6 +1467,7 @@ x axis can represent different things (items, values, values by category) it is 
 				g.setColor(Color.black);
 				drawVerticalLine(g, xDown);
 				drawVerticalLine(g, xDrag);
+				g.setPaintMode();
 				g.dispose();
 			}
 			//single point selected
