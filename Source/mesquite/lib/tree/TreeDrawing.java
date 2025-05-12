@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.tree;
 
 import java.awt.*;
@@ -64,7 +64,7 @@ public abstract class TreeDrawing  {
 	This does not represent simple rotation, i.e. 180 is on left side, but the writing is not upside down.  Thus
 	0 would be appropriate for tree oriented RIGHT, 90 for tree DOWN, 180 for tree LEFT, 270 for tree UP */
 	public int[] labelOrientation; 
-	
+
 	/** namesFollowLines indicates whether orientation of names follows the base to tip line of the branch.
 	Supercedes labelOrientation for terminals and permits Java2D rotation of taxon names in circular tree */
 	public boolean namesFollowLines = false;
@@ -78,13 +78,13 @@ public abstract class TreeDrawing  {
 	private int drawnRoot=-1;
 	public static long totalCreated = 0;
 	public TaxonPolygon[] namePolys;
-	
+
 	public TreeDrawing (TreeDisplay treeDisplay, int numNodes) {
 		this.treeDisplay = treeDisplay;
 		totalCreated++;
 		resetNumNodes(numNodes);
 	}
-	
+
 	public TreeDisplay getTreeDisplay(){
 		return treeDisplay;
 	}
@@ -134,7 +134,7 @@ public abstract class TreeDrawing  {
 	}
 	/** Fill terminal box of node "node" with indicated set of colors */
 	public abstract void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g);
-	
+
 	/*.................................................................................................................*/
 	/** Find which terminal box is at x,y */
 	public int findTerminalBox(Tree tree,  int N, int x, int y) {
@@ -151,7 +151,7 @@ public abstract class TreeDrawing  {
 				return -1;
 			}
 			if (isInTerminalBox(tree, N, x, y))
-					return taxonNumber;
+				return taxonNumber;
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d) && foundTaxon==-1; d = tree.nextSisterOfNode(d)){
@@ -166,7 +166,7 @@ public abstract class TreeDrawing  {
 			drawnRoot = tree.getRoot();
 		return findTerminalBox(tree, drawnRoot, x, y); 
 	}
-	
+
 	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
 		return false;
 	}
@@ -200,11 +200,11 @@ public abstract class TreeDrawing  {
 	}
 	public double getBranchCenterX(int node){
 		return Math.abs(lineBaseX[node] + lineTipX[node])/2;
-}
+	}
 	public double getBranchCenterY(int node){
 		return Math.abs(lineBaseY[node] + lineTipY[node])/2;
-}
-	
+	}
+
 	public double getNodeValueTextBaseX(int node, int edgewidth,  int stringwidth, int fontHeight, boolean horizontalText){
 		double baseX = x[node];
 		if (horizontalText){
@@ -241,56 +241,50 @@ public abstract class TreeDrawing  {
 		g.fillOval( (int)lineTipX[node]-2, (int)lineTipY[node]-2, 4, 4);
 		g.setColor(Color.green);
 		g.fillOval( (int)x[node]-2, (int)y[node]-2, 4, 4);
-			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
-				drawDebuggingLines(tree, d, g);
-			}
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+			drawDebuggingLines(tree, d, g);
+		}
 	}
 	/*.................................................................................................................*/
 
 	/** Draw tree in graphics context */
 	public abstract void drawTree(Tree tree, int drawnRoot, Graphics g) ;
-	
+
 	/** Fill branch N with current color of graphics context */
 	public abstract void fillBranch(Tree tree, int N, Graphics g);
-	
 
-	/*_________________________________________________*/
-	/** Does the basic inverting of the color of a branch **/
-	public  void fillBranchInverted (Tree tree, int N, Graphics g) {
-		if (GraphicsUtil.useXORMode(g, true))  {
-			g.setColor(Color.black);
-			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
-		//	GraphicsUtil.setToXOR(g);
-			//	g.setColor(Color.yellow);
-			try{
-				fillBranch(tree, N, g);
-			}
-			catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
 
-			}
-			g.setPaintMode();
-			g.setColor(Color.black);
-		}
-	}
+
 	/*_________________________________________________*/
 	/** Does the basic highlighting of a branch **/
 	public  void highlightBranch (Tree tree, int N, Graphics g) {
-			g.setColor(Color.yellow);
+		if (GraphicsUtil.useXORMode(g, true))  {
+			g.setColor(Color.black);
+			GraphicsUtil.setSafeXORMode(g); 
 			try{
 				fillBranch(tree, N, g);
 			}
 			catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
-
 			}
 			g.setPaintMode();
 			g.setColor(Color.black);
+			return;
+		}
+		g.setColor(Color.yellow);
+		try{
+			fillBranch(tree, N, g);
+		}
+		catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
+		}
+		g.setPaintMode();
+		g.setColor(Color.black);
 	}
 	/*_________________________________________________*/
 	/** Does the basic unhighlighting of a branch **/
 	public  void unhighlightBranch (Tree tree, int N, Graphics g) {
 		treeDisplay.repaint();
 	}
-	
+
 	/** Fill branch N to indicate missing data */
 	public  void fillBranchWithMissingData(Tree tree, int N, Graphics g){  //default; to be overridden for better indication of equivocal
 		Color c = g.getColor();
@@ -304,7 +298,7 @@ public abstract class TreeDrawing  {
 		if (c!=null) g.setColor(c);
 	}
 
-	
+
 	/** Fill branch N with indicated set of colors */
 	public abstract void fillBranchWithColors(Tree tree, int N, ColorDistribution colors, Graphics g);
 
@@ -319,18 +313,18 @@ public abstract class TreeDrawing  {
 			module.alert("The current tree form does not support sequences of changes along branches.  Try selecting another, such as Classic Square Tree.");
 		}
 	}
-	
+
 	public boolean isAtNode(MesquiteDouble fraction) {
 		return fraction.isCloseEnough(ATNODE,0.00001);
 	}
-	
+
 	/** If true, then the TreeDrawing should draw the nodes distinctly.  Currently this is only for debugging purposes, so that the node boundaries are evident */
 	public boolean emphasizeNodes() {
 		return false;
 	}
 
 	/*   */
-	 public void redCrosses(Graphics g, Tree tree, int node) {
+	public void redCrosses(Graphics g, Tree tree, int node) {
 		g.setColor(Color.red);
 		MesquiteNumber xC = new MesquiteNumber();
 		MesquiteNumber yC = new MesquiteNumber();
@@ -343,9 +337,9 @@ public abstract class TreeDrawing  {
 		GraphicsUtil.drawAngledLine(g, xC.getIntValue(), yC.getIntValue(), angle.getValue(), 100);
 	}
 	/**/
-	
 
-		public void getMiddleOfBranch(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue, MesquiteDouble angle){
+
+	public void getMiddleOfBranch(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue, MesquiteDouble angle){
 		if (tree==null || xValue==null || yValue==null)
 			return;
 		if (!tree.nodeExists(N))
@@ -354,7 +348,7 @@ public abstract class TreeDrawing  {
 		yValue.deassignAllValues();
 		angle.setToUnassigned();
 	}
-		public void getSingletonLocation(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue){
+	public void getSingletonLocation(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue){
 		if (tree==null || xValue==null || yValue==null)
 			return;
 		if (!tree.nodeExists(N))
@@ -381,15 +375,15 @@ public abstract class TreeDrawing  {
 
 	/** Find which branch is at x,y (-1 if none) */
 	public abstract int findBranch(Tree tree, int drawnRoot, int x, int y, MesquiteDouble fraction);
-	
+
 	/*.................................................................................................................*/
 
 	/** Draw highlight for branch N with current color of graphics context */
 	public void drawHighlight(Tree tree, int N, Graphics g, boolean flip){}
 
-/** This allows access to edgeWidths */
+	/** This allows access to edgeWidths */
 	public abstract int getEdgeWidth();
-	
+
 	/** project point x,y onto the line between N's lineBase to lineTip. */
 	public Point2D.Double projectionOnLine(int N, double x, double y) {
 		double newX = x;
@@ -418,7 +412,7 @@ public abstract class TreeDrawing  {
 		}
 		return new Point2D.Double(newX, newY);		
 	}
-	
+
 	/* Choose point on line from lineBase to lineTip that corresponds to the i'th of "total" units along line. 
 	public Point placeOnLine(int N, int i, int total) {
 		Point thePoint= new Point();
@@ -444,8 +438,8 @@ public abstract class TreeDrawing  {
 		}
 		return thePoint;
 	}
-	*/
-	
+	 */
+
 	public void setHighlightsOn(boolean on){
 		/*
 		if (on) {
@@ -461,8 +455,8 @@ public abstract class TreeDrawing  {
 			}
 			highlightThread = null;
 		}
-		*/
-		
+		 */
+
 	}
 	public boolean getHighlightsOn(){
 		return false;

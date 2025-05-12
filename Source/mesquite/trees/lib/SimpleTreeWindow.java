@@ -342,14 +342,14 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 				return null;
 		return treeDisplay.getTree();
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void InvertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		if (ownerModule.isDoomed())
 			return;
 		highlightedBranch=N;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void RevertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		if (ownerModule.isDoomed())
 			return;

@@ -118,7 +118,6 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 			Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
 			if (t!=null){
 				taxa = t;
-				System.err.println("@setTaxa " + taxa);
 				if (extraTreeSource!= null)
 					extraTreeSource.setPreferredTaxa(taxa);
 
@@ -149,11 +148,13 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 		else if (checker.compare(this.getClass(), "Whether to rotate the main tree", "[true/false]", commandName, "rotateMain")) {
 			rotateMainTree.toggleValue(arguments);
 			if (extra!= null){
-				extra.rotateAndRefresh();
+				if (showTree.getValue())
+					extra.rotateAndRefresh();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Repaint the tree display and the extra tree", "[]", commandName, "repaint")) {
 			if (extra!= null){
+				if (showTree.getValue())
 				extra.repaintBoth();
 			}
 		}
@@ -377,9 +378,9 @@ class ShowOtherTreeExtra extends TreeDisplayExtra  {
 	}
 	public void setTree(Tree tree) {
 		mainTree = (MesquiteTree)tree;
-		if (ownerModule.extraTreeSource == null)
+		if (!ownerModule.showTree.getValue() || ownerModule.extraTreeSource == null)
 			return;
-		if (extraTreeScroll!= null)
+		if (extraTreeScroll!= null)  //Make sure this is done if later turned on
 			extraTreeScroll.setMaximumValue(ownerModule.extraTreeSource.getNumberOfTrees(tree.getTaxa()));
 		if (ownerModule.currentTree>= ownerModule.extraTreeSource.getNumberOfTrees(tree.getTaxa()))
 			ownerModule.currentTree = 0;

@@ -5811,9 +5811,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			return;
 
 		if (useShimmerMode()){
-			mg.setXORMode(Color.white); 
+			GraphicsUtil.setSafeXORMode(mg); 
 			mg.drawLine(x, top, x, bottom);  //XOR mode disabled because corrupted Graphics on windows to ridiculous slowness
-			mg.setPaintMode();
+			GraphicsUtil.setSafePaintMode(mg); 
 		}
 		else
 			mg.drawLine(x, top, x, bottom);  //XOR mode disabled because corrupted Graphics on windows to ridiculous slowness
@@ -5859,10 +5859,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			mg = panel.getGraphics();
 		if (mg == null)
 			return;
+		
 		if (useShimmerMode()){
-			mg.setXORMode(Color.white); 
+			GraphicsUtil.setSafeXORMode(mg); 
 			mg.drawLine(left, y, right, y);
-			mg.setPaintMode();
+			GraphicsUtil.setSafePaintMode(mg); 
 		}
 		else
 			mg.drawLine(left, y, right, y);
@@ -5875,7 +5876,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 	/* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	boolean useShimmerMode(){
-		return GraphicsUtil.useXORMode(null, true) && !MesquiteTrunk.isWindows(); //can't use XORmode with Windows JDK ~20s; corrupts Graphics &/or peer and causes subsequent glacial redraws
+		return GraphicsUtil.useXORMode(null, true);
 	}
 	/* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	/* ............................................................................................................... */

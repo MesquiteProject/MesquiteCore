@@ -222,7 +222,7 @@ public class GraphicsUtil {
 		g.drawLine(x-size, y, x+size, y);
 		g.setClip(oldClip);
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public static void drawCross(Graphics g, double x, double y, int size) {
 		Shape oldClip = g.getClip();
 		//g.setClip(x-size, y-size, size*2, size*2);
@@ -358,14 +358,14 @@ public class GraphicsUtil {
 		return poly;
 
 	}
-	
+
 	/* -------------------------------------------------*/
 	public static boolean useXOR = true;
 	/*Bug in Windows Oracle JDK ~21 that slows graphics in panel hugely after XORMode used
 	 * Bugs in os x Tiger ca. 10.4.8 can cause crashes with XORMode.  With OS X Tiger, it does not do XORMode with printing or if sensitive is on */
 	public static boolean useXORMode(Graphics g, boolean sensitive){
-		//if (MesquiteTrunk.isWindows())
-		//	return false;
+		if (MesquiteTrunk.isWindows())
+			return false;
 		if (sensitive || g instanceof PrintGraphics){
 			//if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0)
 			//	return false;
@@ -374,35 +374,30 @@ public class GraphicsUtil {
 		return true;
 	}
 	
-	public static Composite setSafeXORMode(Graphics g) {
-		if (false) {
+	/* -------------------------------------------------*/
+	/* These methods should be used instead of g.setXORMode(Color c) etc. so that Mesquite can intervene if XORMode requested on Windows.
+	 * Windows (Oracle JDK ~21) suffers severe performance hits if XORMode is used, and the problem persists through the lifetime of the component.*/
+
+	public static void setSafeXORMode(Graphics g) {
+		if (g != null)
 			g.setXORMode(Color.white);
-			return null;
-		}
-		else if (g instanceof Graphics2D) {
-		
-			Graphics2D g2 = (Graphics2D)g;
-			Composite comp = g2.getComposite();
-			ColorDistribution.setTransparentGraphics3(g2);
-			return comp;
-		}
-		return null;
+	}
 	
-	}
-	public static void setSafePaintMode(Graphics g, Composite c) {
-		if (c == null)
+	public static void setSafePaintMode(Graphics g) {
+		if (g != null)
 			g.setPaintMode();
-		else if (g instanceof Graphics2D) {
-		
-			Graphics2D g2 = (Graphics2D)g;
-			g2.setComposite(c);
-		}
 	}
+	/* -------------------------------------------------*/
+	public static void drawXORLine (Graphics g, double xFrom, double yFrom, double xTo, double yTo, int thickness, Color color) {
+		drawXORLine(g, (int)xFrom, (int)yFrom, (int)xTo,(int)yTo, thickness, color);
+	}
+
 	/* -------------------------------------------------*/
 	public static void drawXORLine (Graphics g, int xFrom, int yFrom, int xTo, int yTo, int thickness, Color color) {
 		try {
 			Graphics2D g2 = (Graphics2D)g;
-			g2.setXORMode(Color.white);
+			if (useXORMode(g, false))
+				g2.setXORMode(Color.white);
 			g2.setColor(color); 
 
 			Stroke st = g2.getStroke();
@@ -411,15 +406,241 @@ public class GraphicsUtil {
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.drawLine(xFrom,yFrom,xTo,yTo);
 			g2.setStroke(st);
-			g2.setPaintMode();
+			if (useXORMode(g, false))
+				g2.setPaintMode();
+
+
 		}
 		catch (Throwable e){
 			System.err.println("Throwable in GraphicsUtil: " + e);
 			//workaround to sun InternalError
 		}
-
 	}
 	/* -------------------------------------------------*/
+	public static void undrawXORLine (Component component, Graphics g, int xFrom, int yFrom, int xTo, int yTo, int thickness, Color color) {
+		try {
+			if (useXORMode(g, false)) {
+				Graphics2D g2 = (Graphics2D)g;
+				g2.setXORMode(Color.white);
+				g2.setColor(color); 
+
+				Stroke st = g2.getStroke();
+				g2.setStroke(new BasicStroke(thickness));
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.drawLine(xFrom,yFrom,xTo,yTo);
+				g2.setStroke(st);
+				g2.setPaintMode();
+			}
+			else {
+				Shape oldClip = g.getClip();
+				Polygon poly = new Polygon();
+				if (xFrom > xTo){
+					if (yFrom>yTo){
+						poly.addPoint(xFrom+thickness, yFrom-thickness);
+						poly.addPoint(xFrom+thickness, yFrom+thickness);
+						poly.addPoint(xFrom-thickness, yFrom+thickness);
+						poly.addPoint(xTo-thickness, yTo+thickness);
+						poly.addPoint(xTo-thickness, yTo-thickness);
+						poly.addPoint(xTo+thickness, yTo-thickness);
+					}
+					else {
+						poly.addPoint(xFrom-thickness, yFrom-thickness);
+						poly.addPoint(xFrom+thickness, yFrom-thickness);
+						poly.addPoint(xFrom+thickness, yFrom+thickness);
+						poly.addPoint(xTo+thickness, yTo+thickness);
+						poly.addPoint(xTo-thickness, yTo+thickness);
+						poly.addPoint(xTo-thickness, yTo-thickness);
+					}
+				}
+				else {
+					if (yFrom>yTo){
+						poly.addPoint(xFrom-thickness, yFrom-thickness);
+						poly.addPoint(xFrom-thickness, yFrom+thickness);
+						poly.addPoint(xFrom+thickness, yFrom+thickness);
+						poly.addPoint(xTo+thickness, yTo+thickness);
+						poly.addPoint(xTo+thickness, yTo-thickness);
+						poly.addPoint(xTo-thickness, yTo-thickness);
+					}
+					else {
+						poly.addPoint(xFrom-thickness, yFrom+thickness);
+						poly.addPoint(xFrom-thickness, yFrom-thickness);
+						poly.addPoint(xFrom+thickness, yFrom-thickness);
+						poly.addPoint(xTo+thickness, yTo-thickness);
+						poly.addPoint(xTo+thickness, yTo+thickness);
+						poly.addPoint(xTo-thickness, yTo+thickness);
+					}
+				}
+				g.setClip(poly);
+				Color c = g.getColor();
+				g.setColor(component.getBackground());
+				g.fillPolygon(poly);
+				g.setColor(c);
+				component.paint(g);
+				g.setClip(oldClip);
+			}
+
+		}
+		catch (Throwable e){
+			System.err.println("Throwable in GraphicsUtil: " + e);
+			//workaround to sun InternalError
+		}
+	}
+	/* -------------------------------------------------*/
+	public static void drawXORRect (Graphics g, int x, int y, int w, int h) {
+		if (useXORMode(g, false))
+			g.setXORMode(Color.white); 
+		if (w < 0){
+			int nx = x + w;
+			x = nx;
+			w = -w;
+		}
+		if (h < 0){
+			int ny = y + h;
+			y = ny;
+			h = -h;
+		}
+		Shape clip = g.getClip();
+		g.setClip(x-1, y-1, w+2, h+2);
+		g.drawRect(x, y, w, h);
+		g.setClip(clip);
+		if (useXORMode(g, false))
+			g.setPaintMode();
+	}
+	/* -------------------------------------------------*/
+	public static void undrawXORRect (Component component, Graphics g, int x, int y, int w, int h) {
+		if (useXORMode(g, false)) {
+			drawXORRect(g, x, y, w, h);
+		}
+		else {
+			if (w < 0){
+				int nx = x + w;
+				x = nx;
+				w = -w;
+			}
+			if (h < 0){
+				int ny = y + h;
+				y = ny;
+				h = -h;
+			}
+			Rectangle replaceRect = new Rectangle(x-1, y-1, w+2, h+2);
+			Shape oldClip = g.getClip();
+			g.setClip(replaceRect);
+			Color c = g.getColor();
+			g.setColor(component.getBackground());
+			g.fillRect(x-1, y-1, w+2, h+2);
+			g.setColor(c);
+			component.paint(g);
+			g.setClip(oldClip);
+		}
+	}
+	/* -------------------------------------------------*/
+	public static void fillXORRect (Graphics g, int x, int y, int w, int h) {
+		if (useXORMode(g, false))
+			g.setXORMode(Color.white); 
+		if (w < 0){
+			int nx = x + w;
+			x = nx;
+			w = -w;
+		}
+		if (h < 0){
+			int ny = y + h;
+			y = ny;
+			h = -h;
+		}
+		Shape clip = g.getClip();
+		g.setClip(x-1, y-1, w+2, h+2);
+		g.fillRect(x, y, w, h);
+		g.setClip(clip);
+		if (useXORMode(g, false))
+			g.setPaintMode();
+	}
+	/* -------------------------------------------------*/
+	public static void unfillXORRect (Component component, Graphics g, int x, int y, int w, int h) {
+		if (useXORMode(g, false)) 
+			fillXORRect(g, x, y, w, h);
+		else 
+			undrawXORRect(component, g, x, y, w, h);
+	}	
+	/* -------------------------------------------------*/
+	public static void drawXOROval (Graphics g, int x, int y, int w, int h) {
+		if (useXORMode(g, false))
+			g.setXORMode(Color.white); 
+		Shape clip = g.getClip();
+		g.setClip(x-1, y-1, w+2, h+2);
+		if (w < 0){
+			int nx = x + w;
+			x = nx;
+			w = -w;
+		}
+		if (h < 0){
+			int ny = y + h;
+			y = ny;
+			h = -h;
+		}
+	
+		g.drawOval(x, y, w, h);
+		g.setClip(clip);
+		if (useXORMode(g, false))
+			g.setPaintMode();
+	}
+	/* -------------------------------------------------*/
+	public static void undrawXOROval (Component component, Graphics g, int x, int y, int w, int h) {
+		if (useXORMode(g, false))
+			drawXOROval(g, x, y, w, h);
+		else 
+			undrawXORRect(component, g, x, y, w, h);
+	}
+	/* -------------------------------------------------*/
+	public static void fillXOROval (Graphics g, double x, double y, double w, double h) {
+		fillXOROval(g, (int)x, (int)y, (int)w, (int)h);
+	}
+	/* -------------------------------------------------*/
+	public static void fillXOROval (Graphics g, int x, int y, int w, int h) {
+		if (useXORMode(g, false))
+			g.setXORMode(Color.white); 
+		Shape clip = g.getClip();
+		if (w < 0){
+			int nx = x + w;
+			x = nx;
+			w = -w;
+		}
+		if (h < 0){
+			int ny = y + h;
+			y = ny;
+			h = -h;
+		}
+		g.setClip(x-1, y-1, w+2, h+2);
+		g.fillOval(x, y, w, h);
+		g.setClip(clip);
+		if (useXORMode(g, false))
+			g.setPaintMode();
+	}
+	/* -------------------------------------------------*/
+	public static void unfillXOROval (Component component, Graphics g, int x, int y, int w, int h) {
+		if (useXORMode(g, false))
+			fillXOROval(g, x, y, w, h);
+		else 
+			undrawXORRect(component, g, x, y, w, h);
+	}
+	/* -------------------------------------------------*/
+	public static void drawXORString (Graphics g, String s, int x, int y) {
+		if (useXORMode(g, false))
+			g.setXORMode(Color.white); 
+		
+		g.drawString(s, x, y);
+		if (useXORMode(g, false))
+			g.setPaintMode();
+	}
+	/* -------------------------------------------------*/
+	public static void undrawXORString (Component component, Graphics g, String s, int x, int y) {
+		if (useXORMode(g, false))
+			drawXORString(g, s, x, y);
+		else {
+			FontMetrics fm = g.getFontMetrics();
+			int width = fm.stringWidth(s);
+			undrawXORRect(component, g, x, y-fm.getMaxAscent(), width, fm.getMaxAscent() + fm.getMaxDescent());
+		}
+	}
 
 	/* -------------------------------------------------*/
 	static Color transparentGray3 = new Color(Color.gray.getRed(), Color.gray.getGreen(), Color.gray.getBlue(), (int)(0.3*255));

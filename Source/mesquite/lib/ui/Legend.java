@@ -119,7 +119,7 @@ public abstract class Legend extends MesquitePanel implements Commandable {
 		int conHeight=0;
 		if (constrainingContainer !=null ) {
 			conWidth = constrainingContainer.getBounds().width;
-		conHeight = constrainingContainer.getBounds().height;
+			conHeight = constrainingContainer.getBounds().height;
 		}
 		else if (constrainingRectangle != null){
 			conWidth = constrainingRectangle.width;
@@ -134,23 +134,23 @@ public abstract class Legend extends MesquitePanel implements Commandable {
 		if (constrainingRectangle == null && constrainingContainer == null)	 {
 		}
 		else {
-		if (legendX > (conWidth + buffer)) {
-			setOffsetX(conWidth-baseX-getBounds().width-buffer);
-			legendX = baseX+getOffsetX();
-		}
-		if (legendX<0) {
-			setOffsetX(-baseX+4);
-			legendX = baseX+getOffsetX();
-		}
+			if (legendX > (conWidth + buffer)) {
+				setOffsetX(conWidth-baseX-getBounds().width-buffer);
+				legendX = baseX+getOffsetX();
+			}
+			if (legendX<0) {
+				setOffsetX(-baseX+4);
+				legendX = baseX+getOffsetX();
+			}
 
-		if (legendY>conHeight + buffer) {
-			setOffsetY(conHeight-baseY-getBounds().height-buffer);
-			legendY = baseY+getOffsetY();
-		}
-		if (legendY<0) {
-			setOffsetY(-baseY+4);
-			legendY = baseY+getOffsetY();
-		}
+			if (legendY>conHeight + buffer) {
+				setOffsetY(conHeight-baseY-getBounds().height-buffer);
+				legendY = baseY+getOffsetY();
+			}
+			if (legendY<0) {
+				setOffsetY(-baseY+4);
+				legendY = baseY+getOffsetY();
+			}
 		}
 		if ((legendX!=getBounds().x) || (legendY!=getBounds().y)) {
 			setLocation(legendX, legendY);
@@ -169,17 +169,14 @@ public abstract class Legend extends MesquitePanel implements Commandable {
 			origTouchY=y;
 			dragOffsetX=0;
 			dragOffsetY=0;
-			if (GraphicsUtil.useXORMode(null, false)){
-				Graphics g=getParent().getGraphics();
-				if (g!=null){
-					g.setClip(null);
-					g.setXORMode(Color.white);
-					g.setColor(Color.black);
-					g.drawRect(getBounds().x, getBounds().y,  getBounds().width-1,  getBounds().height-1);
-					g.setPaintMode();
-					g.dispose();
-				}
+			Graphics g=getParent().getGraphics();
+			if (g!=null){
+				g.setClip(null);
+				g.setColor(Color.black);
+				GraphicsUtil.drawXORRect(g, getBounds().x, getBounds().y,  getBounds().width-1,  getBounds().height-1);
+				g.dispose();
 			}
+
 		}
 		MesquiteWindow.uncheckDoomed(this);
 	}
@@ -188,20 +185,17 @@ public abstract class Legend extends MesquitePanel implements Commandable {
 			return;
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		if (GraphicsUtil.useXORMode(null, false)){
-			Graphics g=getParent().getGraphics();
-			if (g!=null){
-				g.setClip(null);
-				g.setXORMode(Color.white);
-				g.setColor(Color.black);
-				g.drawRect(getBounds().x + dragOffsetX, getBounds().y + dragOffsetY, getBounds().width-1,  getBounds().height-1);
-				dragOffsetX=x-origTouchX;
-				dragOffsetY=y-origTouchY;
-				g.drawRect(getBounds().x + dragOffsetX, getBounds().y + dragOffsetY,  getBounds().width-1,  getBounds().height-1);
-				g.setPaintMode();
-				g.dispose();
-			}
+		Graphics g=getParent().getGraphics();
+		if (g!=null){
+			g.setClip(null);
+			g.setColor(Color.black);
+			GraphicsUtil.undrawXORRect(getParent(), g, getBounds().x + dragOffsetX, getBounds().y + dragOffsetY, getBounds().width-1,  getBounds().height-1);
+			dragOffsetX=x-origTouchX;
+			dragOffsetY=y-origTouchY;
+			GraphicsUtil.drawXORRect(g, getBounds().x + dragOffsetX, getBounds().y + dragOffsetY,  getBounds().width-1,  getBounds().height-1);
+			g.dispose();
 		}
+
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	public void mouseUp (int modifiers, int x, int y, MesquiteTool tool) {
@@ -215,17 +209,14 @@ public abstract class Legend extends MesquitePanel implements Commandable {
 		else doAdjust = true;
 		offsetX=offsetX + dragOffsetX;
 		offsetY=offsetY + dragOffsetY;
-		if (GraphicsUtil.useXORMode(null, false)){
-			Graphics g=getParent().getGraphics();
-			if (g!=null){
-				g.setClip(null);
-				g.setXORMode(Color.white);
-				g.setColor(Color.black);
-				g.drawRect(getBounds().x + dragOffsetX, getBounds().y + dragOffsetY,  getBounds().width-1,  getBounds().height-1);
-				g.setPaintMode();
-				g.dispose();
-			}
+		Graphics g=getParent().getGraphics();
+		if (g!=null){
+			g.setClip(null);
+			g.setColor(Color.black);
+			GraphicsUtil.undrawXORRect(getParent(), g, getBounds().x + dragOffsetX, getBounds().y + dragOffsetY,  getBounds().width-1,  getBounds().height-1);
+			g.dispose();
 		}
+
 		dragOffsetX=0;
 		dragOffsetY=0;
 		if (doAdjust) {

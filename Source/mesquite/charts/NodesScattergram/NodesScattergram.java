@@ -477,14 +477,7 @@ class NodeLabeller extends TreeDisplayExtra {
 			c.setLocation((int)treeDisplay.getBounds().width- w, (int)nodeY + 18);  // integer nodeloc approximation
 		else
 			c.setLocation((int)nodeX + 16, (int)nodeY + 18); // integer nodeloc approximation
-		g.setColor(brightGreen);
-		g.setXORMode(Color.white);
-		GraphicsUtil.drawLine(g,nodeX, nodeY, c.getBounds().x, c.getBounds().y);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+1, c.getBounds().x, c.getBounds().y + 1);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+2, c.getBounds().x, c.getBounds().y + 2);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+3, c.getBounds().x, c.getBounds().y + 3);
-		g.setPaintMode();
-		g.setColor(Color.black);
+		GraphicsUtil.drawXORLine(g, (int)nodeX, (int)nodeY, c.getBounds().x, c.getBounds().y, 3, brightGreen);
 		labelDrawn = N;
 	}
 	/*.................................................................................................................*/
@@ -499,13 +492,7 @@ class NodeLabeller extends TreeDisplayExtra {
 			return;
 		double nodeX = treeDisplay.getTreeDrawing().x[N];
 		double nodeY = treeDisplay.getTreeDrawing().y[N];
-		g.setColor(brightGreen);
-		g.setXORMode(Color.white);
-		GraphicsUtil.drawLine(g,nodeX, nodeY, c.getBounds().x, c.getBounds().y);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+1, c.getBounds().x, c.getBounds().y + 1);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+2, c.getBounds().x, c.getBounds().y + 2);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+3, c.getBounds().x, c.getBounds().y + 3);
-		g.setPaintMode();
+		GraphicsUtil.undrawXORLine(treeDisplay, g, (int)nodeX, (int)nodeY, c.getBounds().x, c.getBounds().y, 3, brightGreen);
 		labelDrawn = -1;
 	}
 	/*.................................................................................................................*/

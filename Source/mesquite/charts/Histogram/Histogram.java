@@ -23,6 +23,7 @@ import mesquite.lib.ui.ChartListener;
 import mesquite.lib.ui.ChartTool;
 import mesquite.lib.ui.Charter;
 import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MesquiteChart;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
@@ -1003,7 +1004,13 @@ x axis can represent different things (items, values, values by category) it is 
 	void drawVerticalLine(Graphics g, int x){
 		int y1 = 1;
 		int y2 = chart.getField().getBounds().height-1;
-		g.drawLine(x, y1, x, y2);
+		GraphicsUtil.drawXORLine(g, x, y1, x, y2, 1, Color.black);
+	}
+	//for selection dragging
+	void undrawVerticalLine(Graphics g, int x){
+		int y1 = 1;
+		int y2 = chart.getField().getBounds().height-1;
+		GraphicsUtil.undrawXORLine( chart.getField(), g, x, y1, x, y2, 1, Color.black);
 	}
 	void drawRectByCorners(Graphics g, int x1, int y1, int x2, int y2){
 		if (x1>x2){
@@ -1437,13 +1444,11 @@ x axis can represent different things (items, values, values by category) it is 
 		if (tool == chart.getArrowTool()){ 
 			Graphics g=chart.getField().getGraphics();
 			if (g!=null){
-				g.setXORMode(Color.white);
-				g.setColor(Color.black);
-				drawVerticalLine(g, xDrag);
+				if (xDrag != xDown)
+					undrawVerticalLine(g, xDrag);
 				drawVerticalLine(g, xPixel);
 				xDrag=xPixel;
 				yDrag=yPixel;
-				g.setPaintMode();
 				g.dispose();
 			}
 		}
@@ -1463,11 +1468,8 @@ x axis can represent different things (items, values, values by category) it is 
 		if (tool == chart.getArrowTool()){
 			Graphics g=chart.getField().getGraphics();
 			if (g!=null){
-				g.setXORMode(Color.white);
-				g.setColor(Color.black);
-				drawVerticalLine(g, xDown);
-				drawVerticalLine(g, xDrag);
-				g.setPaintMode();
+				undrawVerticalLine(g, xDown);
+				undrawVerticalLine(g, xDrag);
 				g.dispose();
 			}
 			//single point selected

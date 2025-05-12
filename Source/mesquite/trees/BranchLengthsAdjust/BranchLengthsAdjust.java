@@ -193,6 +193,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 		if (tree.getSelected(node))
 			tree.setBranchLength(node, length, false);
 	}
+	int spotRadius = 10;
 	void stretchTouched(int node, int x, int y, String mod) {
 		Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 		originalX = newOnLine.getX();
@@ -202,27 +203,14 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 		lastY = treeDisplay.getTreeDrawing().lineTipY[node];
 		double ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
 		double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
-		if (GraphicsUtil.useXORMode(null, false)){
 			Graphics g = treeDisplay.getGraphics();
-			g.setXORMode(Color.white);
 			g.setColor(Color.red);
-			GraphicsUtil.drawString(g,MesquiteDouble.toString(lastBL), lastX+10, lastY);
-			drawLine(g,ibX, ibY, lastX, lastY);
-			drawLine(g,ibX+1, ibY, lastX+1, lastY);
-			drawLine(g,ibX+2, ibY, lastX+2, lastY);
-			g.setPaintMode();
+			GraphicsUtil.fillXOROval(g, (int)lastX-spotRadius, (int)lastY-spotRadius, spotRadius+spotRadius, spotRadius+spotRadius);
 			g.dispose();
-		}
+		
 		lineOn=true;
 	}
-	void drawLine(Graphics g, double x, double y, double x2, double y2){
-		if (g==null)
-			return;
-		if (x==x2 && y>y2)
-			GraphicsUtil.drawLine(g, x2, y2, x, y);
-		else
-			GraphicsUtil.drawLine(g,x, y, x2, y2);
-	}
+
 	int count=0;
 	void stretchDragged(Tree t, int node, int x, int y){
 		Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
@@ -231,9 +219,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 		double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
 		double itX = treeDisplay.getTreeDrawing().lineTipX[node];
 		double itY = treeDisplay.getTreeDrawing().lineTipY[node];
-		if (GraphicsUtil.useXORMode(null, false)){
 			Graphics g = treeDisplay.getGraphics();
-			g.setXORMode(Color.white);
 			g.setColor(Color.red);
 
 
@@ -255,28 +241,17 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 						bL = t.getBranchLength(node)*extension;
 				}
 
-				drawLine(g,ibX, ibY, lastX, lastY);
-				drawLine(g,ibX+1, ibY, lastX+1, lastY);
-				drawLine(g,ibX+2, ibY, lastX+2, lastY);
+				GraphicsUtil.unfillXOROval(treeDisplay, g, (int)lastX-spotRadius, (int)lastY-spotRadius, spotRadius+spotRadius, spotRadius+spotRadius);
 				double newX =ibX+(extension*(tX-bX));
 				double newY = ibY+(extension*(tY-bY));
-				if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.getJavaVersionAsDouble()>=1.5 && MesquiteTrunk.getJavaVersionAsDouble()<1.6)  //due to a JVM bug
-					GraphicsUtil.fillRect(g,lastX, lastY-20, 100, 20);
-				GraphicsUtil.drawString(g,MesquiteDouble.toString(lastBL), lastX+10, lastY);
-				if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.getJavaVersionAsDouble()>=1.5 && MesquiteTrunk.getJavaVersionAsDouble()<1.6)  //due to a JVM bug
-					GraphicsUtil.fillRect(g,lastX, lastY-20, 100, 20);
-				GraphicsUtil.drawString(g,MesquiteDouble.toString(bL), newX+10, newY);
+				GraphicsUtil.fillXOROval(g, (int)newX-spotRadius, (int)newY-spotRadius, spotRadius+spotRadius, spotRadius+spotRadius);
 				count++;
 				lastBL = bL;
 				lastX= newX;
 				lastY = newY;
-				drawLine(g,ibX, ibY, newX, newY);
-				drawLine(g,ibX+1, ibY, newX+1, newY);
-				drawLine(g,ibX+2, ibY, newX+2, newY);
 			}
-			g.setPaintMode();
 			g.dispose();
-		}
+		
 	}
 	void stretchDropped(MesquiteTree t, int node, int x, int y){
 		Point2D newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
@@ -300,12 +275,8 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 		else
 			t.setBranchLength(node, 1, false);
 		t.notifyListeners(this, new Notification(MesquiteListener.BRANCHLENGTHS_CHANGED));
-		Graphics g = treeDisplay.getGraphics();
-		g.setPaintMode(); //why is this done? getGraphics creates a new graphics object.
 		treeDisplay.pleaseUpdate(true);
 		lineOn=false;
-		if (g!=null)
-			g.dispose();
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 

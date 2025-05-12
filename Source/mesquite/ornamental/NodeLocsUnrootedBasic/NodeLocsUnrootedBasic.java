@@ -1463,7 +1463,6 @@ public class NodeLocsUnrootedBasic extends NodeLocsUnrooted {
 
 		if (c !=null)
 			g.setColor(c);
-		g.setPaintMode();
 	}
 }
 

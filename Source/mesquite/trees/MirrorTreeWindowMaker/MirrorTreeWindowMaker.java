@@ -392,14 +392,14 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 		else messagePanel.setMessage("Error: source tree is null");  
 		messagePanel.repaint();
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	
 	public   void InvertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=N;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	   }
 	   
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void RevertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=0;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);

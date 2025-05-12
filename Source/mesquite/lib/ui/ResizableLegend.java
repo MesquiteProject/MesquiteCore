@@ -58,18 +58,15 @@ public abstract class ResizableLegend extends Legend {
 	public void mouseDrag (int modifiers, int x, int y, MesquiteTool tool) {
 	   	if (MesquiteWindow.checkDoomed(this))
 	   		return;
-		if (sizing && GraphicsUtil.useXORMode(null, false)) {
+		if (sizing) {
 			Graphics g=getParent().getGraphics();
 	    	if (g!=null){
-
-		    		g.setXORMode(Color.white);
-		    		g.setClip(null);
-		   		g.setColor(Color.black);
-				g.drawRect(getBounds().x, getBounds().y, getBounds().width-1 + sizeOffsetX, getBounds().height-1 + sizeOffsetY);
+		    	g.setClip(null);
+		    	g.setColor(Color.black);
+				GraphicsUtil.undrawXORRect(getParent(), g, getBounds().x, getBounds().y, getBounds().width-1 + sizeOffsetX, getBounds().height-1 + sizeOffsetY);
 				sizeOffsetX=x-origTouchX;
 				sizeOffsetY=y-origTouchY;
-				g.drawRect(getBounds().x, getBounds().y, getBounds().width-1 + sizeOffsetX, getBounds().height-1 + sizeOffsetY);
-				g.setPaintMode();
+				GraphicsUtil.drawXORRect(g, getBounds().x, getBounds().y, getBounds().width-1 + sizeOffsetX, getBounds().height-1 + sizeOffsetY);
 				g.dispose();
 			}
 		}
@@ -89,17 +86,14 @@ public abstract class ResizableLegend extends Legend {
 			origTouchY=y;
 			sizeOffsetX=0;
 			sizeOffsetY=0;
-			if (GraphicsUtil.useXORMode(null, false)){
 				Graphics g=getParent().getGraphics();
 	    	if (g!=null){
 	    		g.setClip(null);
-	    		g.setXORMode(Color.white);
 		   		g.setColor(Color.black);
-				g.drawRect(getBounds().x, getBounds().y, getBounds().width-1, getBounds().height-1);
-				g.setPaintMode();
+				GraphicsUtil.drawXORRect(g, getBounds().x, getBounds().y, getBounds().width-1, getBounds().height-1);
 				g.dispose();
 			}
-			}
+			
 		}
 		else {
 			super.mouseDown(modifiers, clickCount, when, x, y, tool);
@@ -109,13 +103,11 @@ public abstract class ResizableLegend extends Legend {
 	public void mouseUp (int modifiers, int x, int y, MesquiteTool tool) {
 	   	if (MesquiteWindow.checkDoomed(this))
 	   		return;
-		if (sizing && GraphicsUtil.useXORMode(null, false)) {
+		if (sizing) {
 			Graphics g=getParent().getGraphics();
 	    	if (g!=null){
-		    	g.setXORMode(Color.white);
 		   		g.setColor(Color.black);
-				g.drawRect(getBounds().x, getBounds().y, getBounds().width-1 + sizeOffsetX, getBounds().height-1 + sizeOffsetY);
-				g.setPaintMode();
+				GraphicsUtil.undrawXORRect(getParent(), g, getBounds().x, getBounds().y, getBounds().width-1 + sizeOffsetX, getBounds().height-1 + sizeOffsetY);
 				g.dispose();
 				legendWidth = getBounds().width + sizeOffsetX;
 				legendHeight = getBounds().height + sizeOffsetY;

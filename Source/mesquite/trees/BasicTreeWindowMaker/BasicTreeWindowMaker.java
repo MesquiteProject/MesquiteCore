@@ -107,7 +107,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	MagnifyExtra magnifyExtra;
 	MesquiteString xmlPrefs = new MesquiteString();
 	MesquiteMenuSpec alterMenu = null;
-	boolean useXORForBranchMoves = true;
 	String xmlPrefsString = null;
 	static {
 		warnUnsaved = true;
@@ -925,22 +924,10 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		basicTreeWindow.sizeDisplay();
 	}
 
-	/*
-	 * .................................................................................................................* public CompatibilityTest getCompatibilityTest() { return new BTWCompatibilityTest(); } /*.................................................................................................................
-	 */
-	public boolean getUseXORForBranchMoves() {
-		return useXORForBranchMoves;
-	}
 
-	public void setUseXORForBranchMoves(boolean useXORForBranchMoves) {
-		this.useXORForBranchMoves = useXORForBranchMoves;
-	}
 }
 
-/*
- * class BTWCompatibilityTest extends CompatibilityTest{ //should find out if available matrices of chosen sort public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer){ return true; } }
- * 
- * /* ========================================================================
+/* ========================================================================
  */
 class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListener, AdjustmentListener, XMLPreferencesProcessor {
 	MesquiteTree tree;
@@ -2268,17 +2255,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		checkPanelPositionsLegal();
 		resetBaseExplanation();
 	}
-	/*
-	void setUndoRefForLostEditedTree(boolean enableUndoMessage){
-		if (enableUndoMessage){
-			UndoReference undoReference =  new UndoReference(new HowToRecoverEditedTree(this), ownerModule);
-			setUndoer(undoReference);
-			System.err.println("@setUndoRefForLostEditedTree");
-		}
-		else
-			setUndoer((UndoReference)null);
-	}
-*/
+	
 	public void numTreesChanged() {
 		if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
@@ -3633,30 +3610,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	public void InvertTaxon(Graphics g, int M) {
 
 		if (findTaxon(treeDisplay.getMouseX(), treeDisplay.getMouseY()) == M) { // still in taxon
-			if (windowModule.getUseXORForBranchMoves() && false) {
-				g.setColor(Color.black);
-				if (GraphicsUtil.useXORMode(g, true)) {
-					g.setXORMode(Color.white);
-					try {
-						treeDisplay.fillTaxon(g, M);
-					} catch (InternalError e) { // workaround to bug in Windows Java 1.7_45
-					}
-					g.setPaintMode();
-					g.setColor(Color.black);
-				}
+			try {
+				treeDisplay.fillTaxon(g, M);
+			} catch (InternalError e) { // workaround to bug in Windows Java 1.7_45
 			}
-			else {
-				// g.setColor(Color.black);
-				// if (GraphicsUtil.useXORMode(g, true)) {
-				// g.setXORMode(Color.white);
-				try {
-					treeDisplay.fillTaxon(g, M);
-				} catch (InternalError e) { // workaround to bug in Windows Java 1.7_45
-				}
-				// g.setPaintMode();
-				g.setColor(Color.black);
-				// }
-			}
+
+			g.setColor(Color.black);
+
+
 			highlightedTaxon = M;
 		}
 		Tree t = treeDisplay.getTree();
@@ -3676,30 +3637,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (highlightedTaxon >= 0) {
 			g.setColor(Color.black);
 
-			if (windowModule.getUseXORForBranchMoves() && false) {
 
-				if (GraphicsUtil.useXORMode(g, true)) {
-					g.setXORMode(Color.white);
-					try {
-						treeDisplay.redrawTaxa(g, highlightedTaxon);
-					} catch (InternalError e) { // workaround to bug in Windows Java 1.7_45
-					}
-					g.setPaintMode();
-					treeDisplay.repaint(); // TODO: just redraw the taxon
-				}
+			try {
+				// treeDisplay.redrawTaxa(g, highlightedTaxon);
+			} catch (InternalError e) { // workaround to bug in Windows Java 1.7_45
 			}
-			else {
+			treeDisplay.repaint(); // TODO: just redraw the taxon
 
-				// if (GraphicsUtil.useXORMode(g, true)) {
-				// g.setXORMode(Color.white);
-				try {
-					// treeDisplay.redrawTaxa(g, highlightedTaxon);
-				} catch (InternalError e) { // workaround to bug in Windows Java 1.7_45
-				}
-				// g.setPaintMode();
-				treeDisplay.repaint(); // TODO: just redraw the taxon
-				// }
-			}
 
 			highlightedTaxon = -1;
 			g.setColor(Color.black);
@@ -3739,35 +3683,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	private int countinvert = 0;
 
-	public void InvertBranchOld(Graphics g, int N, MesquiteInteger highlight) {
-		InvertBranchOld(g, N, highlight, true);
-	}
-
-	public void InvertBranchOld(Graphics g, int N, MesquiteInteger highlight, boolean onlyIfStillInBranch) {
-		Tree t = treeDisplay.getTree();
-		if (t != null) {
-			MesquiteDouble fraction = new MesquiteDouble();
-			if (!onlyIfStillInBranch || findBranch(treeDisplay.getMouseX(), treeDisplay.getMouseY(), fraction) == N) { // still in N
-				TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
-				highlight.setValue(N); // sets the highlighed branch
-				if (treeDrawing != null && !treeDisplay.repaintPending()) {
-					treeDrawing.fillBranchInverted(t, N, g);
-				}
-				// colorInvertBranch(t,N,g);
-				showBranchExplanation(N);
-			}
-		}
-	}
-
+	
 	/* _________________________________________________ */
-	public void HighlightBranch(Graphics g, int N, MesquiteInteger highlight) {
-		if (windowModule.getUseXORForBranchMoves())
-			InvertBranchOld(g, N, highlight);
-		else
-			HighlightBranch(g, N, highlight, true);
-	}
 
-	public void HighlightBranch(Graphics g, int N, MesquiteInteger highlight, boolean onlyIfStillInBranch) {
+	void HighlightBranch(Graphics g, int N, MesquiteInteger highlight, boolean onlyIfStillInBranch) {
 		Tree t = treeDisplay.getTree();
 		if (t != null) {
 			MesquiteDouble fraction = new MesquiteDouble();
@@ -3775,7 +3694,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 				highlight.setValue(N); // sets the highlighed branch
 				if (treeDrawing != null && !treeDisplay.repaintPending()) {
-					treeDrawing.highlightBranch(t, N, g);
+						treeDrawing.highlightBranch(t, N, g);
 				}
 				// colorInvertBranch(t,N,g);
 				showBranchExplanation(N);
@@ -3811,45 +3730,20 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 	}
 
-	/* _________________________________________________ */
-	public void RevertBranchOld(Graphics g, MesquiteInteger highlight) {
-		// treeDisplay.deletePendingMoveDrag();
-
-		int wasHighlighted = highlight.getValue();
-		highlight.setValue(0);
-		if (wasHighlighted > 0 && !treeDisplay.repaintPending()) {
-			treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), wasHighlighted, g);
-			// treeDisplay.getTreeDrawing().fillBranchInverted(t, N, g);
-		}
-		showTreeAnnotation();
-		// setAnnotation("", null);
-		// treeAnnotationShown = false; //so that the base Explanation can know whether to refer to the annotation
-	}
-
-	/* _________________________________________________ */
-	public void UnhighlightBranchNew(Graphics g, MesquiteInteger highlight) {
-		// treeDisplay.deletePendingMoveDrag();
-
-		int wasHighlighted = highlight.getValue();
-		highlight.setValue(0);
-		if (wasHighlighted > 0 && !treeDisplay.repaintPending()) {
-			// treeDisplay.repaint(); // need to do it this way as XOR mode no good
-			treeDisplay.getTreeDrawing().unhighlightBranch(treeDisplay.getTree(), wasHighlighted, g);
-			// treeDisplay.getTreeDrawing().fillBranchInverted(t, N, g);
-		}
-		showTreeAnnotation();
-		// setAnnotation("", null);
-		// treeAnnotationShown = false; //so that the base Explanation can know whether to refer to the annotation
-	}
+	
 
 	/* _________________________________________________ */
 	public void UnhighlightBranch(Graphics g, MesquiteInteger highlight) {
-		if (windowModule.getUseXORForBranchMoves())
-			RevertBranchOld(g, highlight);
-		else
-			UnhighlightBranchNew(g, highlight);
+
+		int wasHighlighted = highlight.getValue();
+		highlight.setValue(0);
+		if (wasHighlighted > 0 && !treeDisplay.repaintPending()) {
+				treeDisplay.getTreeDrawing().unhighlightBranch(treeDisplay.getTree(), wasHighlighted, g);
+		}
+		showTreeAnnotation();
 	}
 
+	
 	/* _________________________________________________ */
 	public void ScanFlash(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay == null || tree == null || treeDrawCoordTask == null || treeDrawCoordTask.getNamesTask() == null || treeDisplay.getTreeDrawing() == null)
@@ -3872,13 +3766,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			else if (branchFound != highlightedBranch.getValue()) {
 				UnhighlightBranch(g, highlightedBranch);
-				HighlightBranch(g, branchFound, highlightedBranch);
+				HighlightBranch(g, branchFound, highlightedBranch, true);
 				notifyExtrasOfBranchExit(g, wasHighlighted);
 				notifyExtrasOfBranchEnter(g, branchFound);
 			}
 		}
 		else if (branchFound != 0) { // we weren't in a branch, but now we found one
-			HighlightBranch(g, branchFound, highlightedBranch);
+			HighlightBranch(g, branchFound, highlightedBranch, true);
 			notifyExtrasOfBranchEnter(g, branchFound);
 			if (tree.nodeIsTerminal(branchFound)) {
 				Taxon t = tree.getTaxa().getTaxon(tree.taxonNumberOfNode(branchFound));
@@ -3977,13 +3871,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				yFrom = y;
 				xTo = x;
 				yTo = y;
-				if (GraphicsUtil.useXORMode(g, true)) {
-					if (windowModule.getUseXORForBranchMoves()) {
-						GraphicsUtil.drawXORLine(g, xFrom, yFrom, xTo, yTo, scanLineThickness, Color.lightGray);
-					}
-					else
-						drawBranchTouchSpot(g, xFrom, yFrom);
-				}
+				GraphicsUtil.drawXORLine(g, xFrom, yFrom, xTo, yTo, scanLineThickness, Color.lightGray);
+				
 			}
 			else {
 				if (highlightedBranch.getValue() != 0) {
@@ -4025,10 +3914,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						fieldTouchY = y;
 						lastFieldDragX = x;
 						lastFieldDragY = y;
-						if (!windowModule.getUseXORForBranchMoves()) {
-							GraphicsUtil.drawCross(g, fieldTouchX, fieldTouchY, 10);
-							treeDisplay.setCrossDrawn(true);
-						}
+					
 					}
 				}
 
@@ -4083,11 +3969,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (currentTreeTool.isArrowTool()){
 			if (fieldTouchX >= 0 && fieldTouchY >= 0) {
 				g.setColor(Color.blue);
-				if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()) {
-					g.setXORMode(Color.white); // for some reason color doesn't matter in MacOS, but does in Win95
-					GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
-					g.setPaintMode();
-				}
+
+				GraphicsUtil.undrawXORRect(treeDisplay, g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
 				highlightedNodes = null;
 				highlightedTaxa = null;
 
@@ -4127,11 +4010,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			MesquiteDouble fraction = new MesquiteDouble();
 			if (currentTreeTool.informTransfer()) {
 				int branchTo = findBranch(x, y, fraction);
-				if (branchTo != 0 && !windowModule.getUseXORForBranchMoves()) {
-					GraphicsUtil.drawArrow((Graphics2D) g, xFrom, yFrom, xTo, yTo, 2); // only if drawn
-					drawBranchTouchSpot(g, xFrom, yFrom);
-					MesquiteThread.pauseForSeconds(0.5);
-				}
+				
 
 			}
 			if (highlightedBranch.getValue() != 0) {
@@ -4141,9 +4020,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else if (highlightedTaxon >= 0)
 				RevertTaxon(g, highlightedTaxon);
 			g.setColor(Color.black);
-			if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()) {
-				GraphicsUtil.drawXORLine(g, xFrom, yFrom, xTo, yTo, scanLineThickness, Color.lightGray);
-			}
+			GraphicsUtil.undrawXORLine(treeDisplay, g, xFrom, yFrom, xTo, yTo, scanLineThickness, Color.lightGray);
+
 
 			if (currentTreeTool.informTransfer()) {
 				int branchTo = findBranch(x, y, fraction);
@@ -4192,16 +4070,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (currentTreeTool.isArrowTool()){
 			if (fieldTouchX >= 0 && fieldTouchY >= 0) {
 				g.setColor(Color.blue);
-				if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()) {
-					g.setXORMode(Color.white); // for some reason color doesn't matter in MacOS, but does in Win95
-					GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
-					GraphicsUtil.drawRect(g, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY);
-					g.setPaintMode();
-					// g.drawRect(fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
-					// g.drawRect(fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
-				}
-				else
-					dragHighlight(g, modifiers, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY);
+				GraphicsUtil.undrawXORRect(treeDisplay, g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
+				GraphicsUtil.drawXORRect(g, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY);
 				lastFieldDragX = x;
 				lastFieldDragY = y;
 				return;
@@ -4223,7 +4093,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (branchFound > 0) {
 			if (branchFound != dropHighlightedBranch.getValue()) {
 				UnhighlightBranch(g, dropHighlightedBranch);
-				HighlightBranch(g, branchFound, dropHighlightedBranch);
+				HighlightBranch(g, branchFound, dropHighlightedBranch, true);
 			}
 		}
 		else if (dropHighlightedBranch.getValue() > 0)
@@ -4232,13 +4102,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (branchFrom != 0) {
 			if (currentTreeTool.informTransfer()) {
 				g.setColor(Color.black);
-				if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()) {
-					GraphicsUtil.drawXORLine(g, xFrom, yFrom, xTo, yTo, scanLineThickness, Color.lightGray);
-				}
+				GraphicsUtil.undrawXORLine(treeDisplay, g, xFrom, yFrom, xTo, yTo, scanLineThickness, Color.lightGray);
+
 				xTo = x;
 				yTo = y;
-				if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves())
-					GraphicsUtil.drawXORLine(g, xFrom, yFrom, xTo, yTo, scanLineThickness, Color.lightGray);
+				GraphicsUtil.drawXORLine(g, xFrom, yFrom, xTo, yTo, scanLineThickness, Color.lightGray);
 			}
 			else if (currentTreeTool.informDrag()) {
 				currentTreeTool.branchDragged(branchFrom, x, y, tree, modifiers);
@@ -4324,59 +4192,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		return vector;
 	}
 
-	private void dragHighlight(Graphics g, int modifiers, int x, int y, int w, int h) {
-		Vector nodes = new Vector();
-		Vector taxons = new Vector();
-
-		if (w < 0) {
-			int nx = x + w;
-			x = nx;
-			w = -w;
-		}
-		if (h < 0) {
-			int ny = y + h;
-			y = ny;
-			h = -h;
-		}
-		findContained(tree, tree.getRoot(), x, y, w, h, nodes, taxons);
-
-		Vector nodesToUnselect = vectorElementsInFirstButNotSecond(highlightedNodes, nodes);
-		Vector taxaToUnselect = vectorElementsInFirstButNotSecond(highlightedTaxa, taxons);
-
-		Vector nodesToSelect = null;
-		Vector taxaToSelect = null;
-
-		if ((nodesToUnselect != null && nodesToUnselect.size() > 0) || (taxaToUnselect != null && taxaToUnselect.size() > 0)) {
-			treeDisplay.update(g);
-			if (!windowModule.getUseXORForBranchMoves()) {
-				GraphicsUtil.drawCross(g, fieldTouchX, fieldTouchY, 10);
-				treeDisplay.setCrossDrawn(true);
-			}
-			nodesToSelect = nodes;
-			taxaToSelect = taxons;
-		}
-		else {
-			nodesToSelect = vectorElementsInFirstButNotSecond(nodes, highlightedNodes);
-			taxaToSelect = vectorElementsInFirstButNotSecond(taxons, highlightedTaxa);
-		}
-		if (nodesToSelect.size() > 0) {
-			for (int i = 0; i < nodesToSelect.size(); i++) {
-				MesquiteInteger mi = (MesquiteInteger) nodesToSelect.elementAt(i);
-				HighlightBranch(g, mi.getValue(), highlightedBranch, false);
-			}
-		}
-		if (taxaToSelect.size() > 0) {
-			for (int i = 0; i < taxaToSelect.size(); i++) {
-				MesquiteInteger mi = (MesquiteInteger) taxaToSelect.elementAt(i);
-				try {
-					treeDisplay.fillTaxon(g, mi.getValue());
-				} catch (InternalError e) { // workaround to bug in Windows Java 1.7_45
-				}
-			}
-		}
-		highlightedNodes = new Vector(nodes);
-		highlightedTaxa = new Vector(taxons);
-	}
 
 	/*-----------------------------------------*/
 
@@ -4644,7 +4459,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		/*
 		if (popup.getItemCount()>numItemsTotal)
 			popup.remove(popup.getItemCount()-1);
-			*/
+		 */
 	}
 
 	/* ................................................................................................................. */
@@ -5263,31 +5078,8 @@ class REALTreeScrollPane extends MQScrollPane implements AdjustmentListener, Mou
 }
 
 
-/* ======================================================================== *
+/* ======================================================================== */
 
-class HowToRecoverEditedTree implements Undoer {
-	BasicTreeWindow window;
-	public HowToRecoverEditedTree(BasicTreeWindow window){
-		this.window = window;
-		MesquiteMessage.println("@HowToRecoverEditedTree");
-	}
-	public Undoer undo() {
-		MesquiteMessage.println("@@@@PS");
-		return null;
-	}
-
-	public void dispose() {
-	}
-
-	public void setNewState(Object newState) {
-	}
-
-	public Object getNewState() {
-		return null;
-	} 
-}
-
-	
 /*
  * this is an attempt to get around the bug in OS X java 1.4+ in which ScrollPane scrollbars don't return their position and don't notify of adjustments. This faux-ScrollPane works reasonably well but is slower and has some graphical artifacts
  */
@@ -6547,20 +6339,19 @@ class BirdsEyePanel extends MesquitePanel {
 			return;
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		Graphics g = null;
-		if (GraphicsUtil.useXORMode(null, false)) {
-			g = getGraphics();
-			g.setXORMode(Color.white);
+		Graphics g =  getGraphics();
+		if (g != null){
 			g.setColor(Color.green);
-			g.drawRoundRect(vis.x + dragOffsetX, vis.y + dragOffsetY, vis.width, vis.height, 8, 8);
+			GraphicsUtil.undrawXORRect(this, g, vis.x + dragOffsetX, vis.y + dragOffsetY, vis.width, vis.height);
 		}
+		
 		dragOffsetX = x - origTouchX;
 		dragOffsetY = y - origTouchY;
-		if (GraphicsUtil.useXORMode(null, false)) {
-			g.drawRoundRect(vis.x + dragOffsetX, vis.y + dragOffsetY, vis.width, vis.height, 8, 8);
-			g.setPaintMode();
+		if (g != null) {
+			GraphicsUtil.drawXORRect(g, vis.x + dragOffsetX, vis.y + dragOffsetY, vis.width, vis.height);
 			g.dispose();
 		}
+		
 		MesquiteWindow.uncheckDoomed(this);
 	}
 
@@ -6572,20 +6363,17 @@ class BirdsEyePanel extends MesquitePanel {
 		dragOffsetX = 0;
 		dragOffsetY = 0;
 
+		Graphics g = getGraphics();
 		boolean changed = recalcVis();
 		if (changed) {
-			Graphics g = getGraphics();
 			update(g);
-			g.dispose();
 		}
-		if (GraphicsUtil.useXORMode(null, false)) {
-			Graphics g = getGraphics();
-			g.setXORMode(Color.white);
+		else {
 			g.setColor(Color.green);
-			g.drawRoundRect(vis.x, vis.y, vis.width, vis.height, 8, 8);
-			g.setPaintMode();
-			g.dispose();
+			GraphicsUtil.drawXORRect(g, vis.x, vis.y, vis.width, vis.height);
 		}
+
+		g.dispose();
 		MesquiteWindow.uncheckDoomed(this);
 	}
 
@@ -6596,14 +6384,11 @@ class BirdsEyePanel extends MesquitePanel {
 			return;
 		offsetX = offsetX + dragOffsetX;
 		offsetY = offsetY + dragOffsetY;
-		if (GraphicsUtil.useXORMode(null, false)) {
-			Graphics g = getGraphics();
-			g.setXORMode(Color.white);
-			g.setColor(Color.green);
-			g.drawRoundRect(vis.x + dragOffsetX, vis.y + dragOffsetY, vis.width, vis.height, 8, 8);
-			g.setPaintMode();
-			g.dispose();
-		}
+		Graphics g = getGraphics();
+		g.setColor(Color.green);
+		GraphicsUtil.undrawXORRect(this, g, vis.x + dragOffsetX, vis.y + dragOffsetY, vis.width, vis.height);
+		g.dispose();
+
 		int oX = (vis.x + dragOffsetX) * (treeWindow.treeDisplay.getFieldWidth()) / (getBounds().width);
 		int oY = (vis.y + dragOffsetY) * (treeWindow.treeDisplay.getFieldHeight()) / (getBounds().height);
 		if (oX < 0)

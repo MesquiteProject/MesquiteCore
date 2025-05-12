@@ -27,14 +27,16 @@ public class DragRectangle {
 	int xDrag = MesquiteInteger.unassigned;
 	int yDrag = MesquiteInteger.unassigned;
 	Graphics g;
+	Component component;
 	
-	public DragRectangle(Graphics g, int xDown, int yDown){
+	public DragRectangle(Component component, Graphics g, int xDown, int yDown){
 		this.g = g;
 		this.xDown=xDown;
 		this.yDown = yDown;
 		xDrag = xDown;
 		yDrag= yDown;
-		drawRectangleUpDown();
+		this.component = component;
+		drawRectangleDown();
 	}
 	public DragRectangle(){
 	}
@@ -44,40 +46,58 @@ public class DragRectangle {
 		this.yDown = yDown;
 		xDrag = xDown;
 		yDrag= yDown;
-		drawRectangleUpDown();
+		drawRectangleDown();
 	}
 	/* ----------------------------------*/
 	void drawRect(Graphics g, int x1, int y1, int x2, int y2){
 		if (x1>x2){
 			if (y1>y2)
-				g.drawRect(x2, y2, x1-x2, y1-y2);
+				GraphicsUtil.drawXORRect(g, x2, y2, x1-x2, y1-y2);
 			else 
-				g.drawRect(x2, y1, x1-x2, y2-y1);
+				GraphicsUtil.drawXORRect(g, x2, y1, x1-x2, y2-y1);
 		}
 		else {
 			if (y1>y2)
-				g.drawRect(x1, y2, x2-x1, y1-y2);
+				GraphicsUtil.drawXORRect(g, x1, y2, x2-x1, y1-y2);
 			else 
-				g.drawRect(x1, y1, x2-x1, y2-y1);
+				GraphicsUtil.drawXORRect(g, x1, y1, x2-x1, y2-y1);
 		}
 	}
 	/* ----------------------------------*/
-	public void drawRectangleUpDown(){
-    		if (g!=null && GraphicsUtil.useXORMode(g, false)){
-	    		g.setXORMode(Color.white);
+	void undrawRect(Component c, Graphics g, int x1, int y1, int x2, int y2){
+		if (x1>x2){
+			if (y1>y2)
+				GraphicsUtil.undrawXORRect(c, g, x2, y2, x1-x2, y1-y2);
+			else 
+				GraphicsUtil.undrawXORRect(c, g, x2, y1, x1-x2, y2-y1);
+		}
+		else {
+			if (y1>y2)
+				GraphicsUtil.undrawXORRect(c, g, x1, y2, x2-x1, y1-y2);
+			else 
+				GraphicsUtil.undrawXORRect(c, g, x1, y1, x2-x1, y2-y1);
+		}
+	}
+	/* ----------------------------------*/
+	public void drawRectangleDown(){
+    		if (g!=null){
 	   		g.setColor(Color.black);
 			drawRect(g, xDown, yDown,  xDrag, yDrag);
-			g.setPaintMode();
+		}
+	}
+	/* ----------------------------------*/
+	public void drawRectangleUp(){
+    		if (g!=null){
+	   		g.setColor(Color.black);
+			undrawRect(component, g, xDown, yDown,  xDrag, yDrag);
 		}
 	}
 	/* ----------------------------------*/
 	public void drawRectangleDrag(int xPixel, int yPixel){
-    		if (g!=null&& GraphicsUtil.useXORMode(g, false)){
-	    		g.setXORMode(Color.white);
+    		if (g!=null){
 	   		g.setColor(Color.black);
-			drawRect(g, xDown, yDown,  xDrag, yDrag);
+			undrawRect(component, g, xDown, yDown,  xDrag, yDrag);
 			drawRect(g, xDown, yDown,  xPixel, yPixel);
-			g.setPaintMode();
 			xDrag=xPixel;
 			yDrag=yPixel;
 		}

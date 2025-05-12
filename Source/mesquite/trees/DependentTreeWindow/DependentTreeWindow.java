@@ -390,12 +390,12 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 	public boolean okToDispose(Object obj, int queryUser){
 		return true;  //TODO: respond
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void InvertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=N;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void RevertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=0;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);

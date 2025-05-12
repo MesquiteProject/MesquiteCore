@@ -1067,7 +1067,7 @@ class ScattergramCharter extends Charter {
 		if (tool == chart.getArrowTool()){
 			xDown = xPixel;
 			yDown = yPixel;
-			dragRectangle = new DragRectangle(chart.getField().getGraphics(),xPixel, yPixel);
+			dragRectangle = new DragRectangle(chart.getField(), chart.getField().getGraphics(),xPixel, yPixel);
 			ListableVector extras = chart.getExtras();
 			for (int i=0; i<extras.size(); i++) {
 				((ChartExtra)extras.elementAt(i)).cursorTouchPoint(whichDown, findExactPoint(xPixel,yPixel, chart), null);
@@ -1129,7 +1129,7 @@ class ScattergramCharter extends Charter {
 		//arrow tool; handle selection
 		if (tool == chart.getArrowTool()){
 			if (dragRectangle!=null)
-				dragRectangle.drawRectangleUpDown();
+				dragRectangle.drawRectangleUp();
 			if (which == whichDown && MesquiteInteger.isNonNegative(which)) { // had touched directly on point before
 				if (MesquiteEvent.shiftKeyDown(modifiers)) {
 					if (isSelected(which))

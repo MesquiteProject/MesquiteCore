@@ -625,22 +625,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			if (c!=null) g.setColor(c);
 		}
 	}
-	/*_________________________________________________*/
-	/** Does the basic inverting of the color of a branch **/
-	public  void fillBranchInverted (Tree tree, int node, Graphics g) {
-		if (tree.nodeIsInternal(node) && !ownerModule.ballsInternal.getValue())
-			return;
-		if (GraphicsUtil.useXORMode(g, true))  {
-			g.setColor(Color.black);
-			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
-			//GraphicsUtil.setToXOR(g);
-			GraphicsUtil.drawOval(g,x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4);
-			GraphicsUtil.drawOval(g,x[node]- spotSize/2 + 3, y[node]- spotSize/2 + 3, spotSize - 6, spotSize - 6);
 
-			g.setPaintMode();
-			g.setColor(Color.black);
-		}
-	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {

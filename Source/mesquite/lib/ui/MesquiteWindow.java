@@ -2714,15 +2714,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			closeWindow();
 		}
 		else if (checker.compare(this.getClass(), "Undoes the previous change in the window", null, commandName, "undo")) {
-			System.err.println("@undo ");
 			if (getUndoer()!=null){
 				Undoer[] undoers = getUndoer();
-				System.err.println("@undo2 " + undoers);
 				if (undoers!=null) {
 					Undoer[] newUndoers = new Undoer[undoers.length];
 					for (int i=0;i<undoers.length; i++)
 						if (undoers[i] != null) {
-							System.err.println("@undo3 " + undoers[i]);
 							newUndoers[i]=undoers[i].undo();
 						}
 					setUndoer(newUndoers);

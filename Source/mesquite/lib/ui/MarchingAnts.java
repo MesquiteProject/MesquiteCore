@@ -93,15 +93,15 @@ class AntMarcher extends TimerTask {
 		return super.cancel();
 	}
 	public void drawAnts() {
-		if (c==null || !GraphicsUtil.useXORMode(g2, false))
+		if (c==null)
 			return;
 		g2.setPaint(Color.black);
-		g2.setXORMode(Color.white);
+		GraphicsUtil.setSafeXORMode(g2);
 		//	Stroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0.0f, new float[]{4, 2, 6, 2},dashPhase);
 		Stroke stroke = new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0.0f, new float[]{4, 4},dashPhase);
 		g2.setStroke(stroke);
 		g2.drawRect(c.getX(),c.getY(),c.getWidth(),c.getHeight());
-		g2.setPaintMode();
+		GraphicsUtil.setSafePaintMode(g2); 
 	}
 	public  void run() {
 		if (c==null)

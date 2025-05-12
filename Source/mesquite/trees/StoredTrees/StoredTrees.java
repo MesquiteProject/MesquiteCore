@@ -496,8 +496,11 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		if (currentTreeBlock == null) {
 			
 			
-			if (getProject() != null && getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode)
+			if (getProject() != null && getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode){
 				logln("No current tree block for taxa " + taxa.getName() + "(Module: Stored Trees)");
+				if (MesquiteTrunk.developmentMode)
+					Debugg.printStackTrace();
+			}
 			if (!MesquiteThread.isScripting())
 				iQuit();
 			return -1;

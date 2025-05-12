@@ -630,11 +630,10 @@ class AImagePanel extends MesquitePanel {
 
 				g.setColor(c);
 				g.setFont(f);
-				if (highlightedLabel == label && filled && GraphicsUtil.useXORMode(g, false)){
-					g.setXORMode(Color.white);
-					g.fillRect(labelX, labelY, label.getWidth(), label.getHeight());
-					if (squared) g.fillRect(labelX+label.getWidth()-growboxSize -2, labelY + label.getHeight()-growboxSize -2, growboxSize, growboxSize);
-					g.setPaintMode();
+				if (highlightedLabel == label && filled){
+					GraphicsUtil.fillXORRect(g, labelX, labelY, label.getWidth(), label.getHeight());
+					if (squared) 
+						GraphicsUtil.fillXORRect(g, labelX+label.getWidth()-growboxSize -2, labelY + label.getHeight()-growboxSize -2, growboxSize, growboxSize);
 				}
 			}
 		}
@@ -645,18 +644,18 @@ class AImagePanel extends MesquitePanel {
 		StringInABox textBox = label.getTextBox();
 		textBox.draw(g,labelX+offX+4, labelY+offY-4);
 		if (label.getShowPointer()){
-			drawPointerToClosestCorner(g, offX, offY, label);
+			drawPointerToClosestCorner(g, offX, offY, label, false);
 		}
 		g.drawRect(labelX+offX, labelY+offY, label.getWidth(), label.getHeight());
 	}
 
-	void drawPointerToClosestCorner(Graphics g, int offX, int offY, ImageLabel label){
+	void drawPointerToClosestCorner(Graphics g, int offX, int offY, ImageLabel label, boolean undraw){
 		int pointerX = (int)(picX + scale*label.getPointerX()); //inverse recordedPointerX = (pointerX-picX)/scale;
 		int pointerY = (int)(picY + scale*label.getPointerY());
-		drawPointerToClosestCorner(g, pointerX, pointerY, offX, offY, label);
+		drawPointerToClosestCorner(g, pointerX, pointerY, offX, offY, label, undraw);
 	}
 
-	void drawPointerToClosestCorner(Graphics g, int pointerX, int pointerY, int offX, int offY, ImageLabel label){
+	void drawPointerToClosestCorner(Graphics g, int pointerX, int pointerY, int offX, int offY, ImageLabel label, boolean undraw){
 		//first, get top left of label
 		int labelX = label.getX();
 		int labelY = label.getY();
@@ -695,9 +694,14 @@ class AImagePanel extends MesquitePanel {
 
 		//picX + label.getPointerX()
 		//int dTopLeft = 
-
-		g.drawLine(pointerX, pointerY, cornerX, cornerY);
-		g.fillOval(pointerX-1, pointerY-1, 2, 2);
+		if (undraw){
+		GraphicsUtil.undrawXORLine(this, g, pointerX, pointerY, cornerX, cornerY, 1, g.getColor());
+		GraphicsUtil.unfillXOROval(this, g, pointerX-1, pointerY-1, 2, 2);
+		}
+		else {
+			GraphicsUtil.drawXORLine(g, pointerX, pointerY, cornerX, cornerY, 1, g.getColor());
+			GraphicsUtil.fillXOROval(g, pointerX-1, pointerY-1, 2, 2);
+			}
 	}
 	int sqDistance(int x, int y, int x2, int y2){
 		return (x-x2)*(x-x2) + (y-y2)*(y-y2);
@@ -804,19 +808,16 @@ class AImagePanel extends MesquitePanel {
 
 	/*.................................................................................................................*/
 	void drawPointerXOR(ImageLabel label, int pointX, int pointY, boolean undoOld, boolean drawNew){
-		if (!GraphicsUtil.useXORMode(null, false))
-			return;
 		Graphics g=getGraphics();
 		if (g==null)
 			return;
-		g.setXORMode(Color.white);
 		g.setColor(Color.black);
 		if (undoOld && MesquiteInteger.isCombinable(prevPointX)){
 			//undo previous
-			drawPointerToClosestCorner(g, prevPointX, prevPointY, 0, 0, label);
+			drawPointerToClosestCorner(g, prevPointX, prevPointY, 0, 0, label, true);
 		}
 		if (drawNew) {
-			drawPointerToClosestCorner(g,  pointX, pointY, 0, 0, label);
+			drawPointerToClosestCorner(g,  pointX, pointY, 0, 0, label, false);
 			prevPointX = pointX;
 			prevPointY = pointY;
 		}
@@ -824,7 +825,6 @@ class AImagePanel extends MesquitePanel {
 			prevPointX = MesquiteInteger.unassigned;
 			prevPointY = MesquiteInteger.unassigned;
 		}
-		g.setPaintMode();
 		g.dispose();
 	}
 	/*.................................................................................................................*/
@@ -838,12 +838,9 @@ class AImagePanel extends MesquitePanel {
 	boolean squared = false;
 	/*.................................................................................................................*/
 	void drawXOR(ImageLabel label, int offX, int offY, boolean undoOld, boolean drawNew){
-		if (!GraphicsUtil.useXORMode(null, false))
-			return;
 		Graphics g=getGraphics();
 		if (g==null)
 			return;
-		g.setXORMode(Color.white);
 		g.setColor(Color.black);
 		int labelX = label.getX();
 		int labelY = label.getY();
@@ -854,10 +851,10 @@ class AImagePanel extends MesquitePanel {
 		if (adjustingSize){
 			if (undoOld && MesquiteInteger.isCombinable(prevX)){
 				//undo previous
-				g.drawRect(labelX, labelY, prevX, prevY);
+				GraphicsUtil.undrawXORRect(this, g, labelX, labelY, prevX, prevY);
 			}
 			if (drawNew) {
-				g.drawRect(labelX, labelY, label.getWidth()+offX, label.getHeight()+offY);
+				GraphicsUtil.drawXORRect(g, labelX, labelY, label.getWidth()+offX, label.getHeight()+offY);
 				prevX = label.getWidth()+offX;
 				prevY = label.getHeight()+offY;
 			}
@@ -869,10 +866,10 @@ class AImagePanel extends MesquitePanel {
 		else {
 			if (undoOld && MesquiteInteger.isCombinable(prevX)){
 				//undo previous
-				g.drawRect(prevX, prevY, label.getWidth(), label.getHeight());
+				GraphicsUtil.undrawXORRect(this, g, prevX, prevY, label.getWidth(), label.getHeight());
 			}
 			if (drawNew) {
-				g.drawRect(labelX+offX, labelY + offY, label.getWidth(), label.getHeight());
+				GraphicsUtil.drawXORRect(g, labelX+offX, labelY + offY, label.getWidth(), label.getHeight());
 				prevX = labelX+offX;
 				prevY = labelY+offY;
 			}
@@ -881,17 +878,17 @@ class AImagePanel extends MesquitePanel {
 				prevY = MesquiteInteger.unassigned;
 			}
 		}
-		g.setPaintMode();
 		g.dispose();
 	}
 	/*.................................................................................................................*/
+	void unfillXOR(ImageLabel label, boolean undo, boolean showSquare){
+		fillXOR(label, undo, showSquare);
+	}
+	/*.................................................................................................................*/
 	void fillXOR(ImageLabel label, boolean undo, boolean showSquare){
-		if (!GraphicsUtil.useXORMode(null, false))
-			return;
 		Graphics g=getGraphics();
 		if (g==null)
 			return;
-		g.setXORMode(Color.white);
 		g.setColor(Color.black);
 		int labelX = label.getX();
 		int labelY = label.getY();
@@ -903,10 +900,10 @@ class AImagePanel extends MesquitePanel {
 			if (undo){
 				if (MesquiteInteger.isCombinable(prevX)){
 					//undo previous
-					g.fillRect(labelX, labelY, prevX, prevY);
+					GraphicsUtil.unfillXORRect(this, g, labelX, labelY, prevX, prevY);
 					filled = !filled;
 					if (squared) {
-						g.fillRect(labelX + prevX -growboxSize - 2, labelY+ prevY -growboxSize - 2, growboxSize, growboxSize);
+						GraphicsUtil.fillXORRect(g, labelX + prevX -growboxSize - 2, labelY+ prevY -growboxSize - 2, growboxSize, growboxSize);
 						squared = false;
 					}
 					prevX = MesquiteInteger.unassigned;
@@ -914,10 +911,10 @@ class AImagePanel extends MesquitePanel {
 				}
 			}
 			else {
-				g.fillRect(labelX, labelY, label.getWidth(), label.getHeight());
+				GraphicsUtil.unfillXORRect(this, g, labelX, labelY, label.getWidth(), label.getHeight());
 				filled = !filled;
 				if (showSquare) {
-					g.fillRect(labelX + label.getWidth() - growboxSize - 2, labelY + label.getHeight() - growboxSize - 2, growboxSize, growboxSize);
+					GraphicsUtil.fillXORRect(g, labelX + label.getWidth() - growboxSize - 2, labelY + label.getHeight() - growboxSize - 2, growboxSize, growboxSize);
 					squared = true;
 				}
 				else
@@ -930,19 +927,20 @@ class AImagePanel extends MesquitePanel {
 			if (undo) {
 				if (MesquiteInteger.isCombinable(prevX)){
 					//undo previous
-					g.fillRect(prevX, prevY, label.getWidth(), label.getHeight());
+					GraphicsUtil.unfillXORRect(this, g, prevX, prevY, label.getWidth(), label.getHeight());
 					filled = !filled;
-					if (squared) g.fillRect(prevX+label.getWidth()-growboxSize - 2, prevY+label.getHeight()-growboxSize - 2, growboxSize, growboxSize);
+					if (squared) 
+						GraphicsUtil.fillXORRect(g, prevX+label.getWidth()-growboxSize - 2, prevY+label.getHeight()-growboxSize - 2, growboxSize, growboxSize);
 					squared = false;
 				}
 				prevX = MesquiteInteger.unassigned;
 				prevY = MesquiteInteger.unassigned;
 			}
 			else {
-				g.fillRect(labelX, labelY, label.getWidth(), label.getHeight());
+				GraphicsUtil.unfillXORRect(this, g, labelX, labelY, label.getWidth(), label.getHeight());
 				filled = !filled;
 				if (showSquare) {
-					g.fillRect(labelX + label.getWidth() - growboxSize - 2, labelY + label.getHeight() - growboxSize - 2, growboxSize, growboxSize);
+					GraphicsUtil.fillXORRect(g, labelX + label.getWidth() - growboxSize - 2, labelY + label.getHeight() - growboxSize - 2, growboxSize, growboxSize);
 					squared = true;
 				}
 				else
@@ -951,7 +949,6 @@ class AImagePanel extends MesquitePanel {
 				prevY = labelY;
 			}
 		}
-		g.setPaintMode();
 		g.dispose();
 	}
 	/*_________________________________________________*/
@@ -1034,12 +1031,11 @@ class AImagePanel extends MesquitePanel {
 			//otherwise ignore
 			if (touchedLabel !=null) {
 				if (adjustingSize) {
-					//drawXOR(touchedLabel,  x-touchedXImage, y-touchedYImage, true, false);
 					int w = (x-touchedXImage+touchedLabel.getWidth());
 					if (w <32)
 						w = 32;
 					touchedLabel.setWidth(w);
-					fillXOR(touchedLabel,  true, true); //dehighlight
+					unfillXOR(touchedLabel,  true, true); //dehighlight
 
 					adjustingSize = false;
 					if (findLabel(x,y)==touchedLabel){ //need to rehighlight
@@ -1049,7 +1045,6 @@ class AImagePanel extends MesquitePanel {
 						highlightedLabel = null;
 				}
 				else {
-					//drawXOR(touchedLabel,  x-touchedXImage, y-touchedYImage, true, false);
 					touchedLabel.setX(x-touchedXImage+touchedLabel.getX());
 					touchedLabel.setY(y-touchedYImage+touchedLabel.getY());
 					highlightedLabel = touchedLabel; //should sstill be highlighted
@@ -1086,7 +1081,7 @@ class AImagePanel extends MesquitePanel {
 		ImageLabel current = findLabel(x,y);
 		if (current != highlightedLabel){
 			if (highlightedLabel!= null)
-				fillXOR(highlightedLabel,  true, tool.getName().endsWith(".arrow"));
+				unfillXOR(highlightedLabel,  true, tool.getName().endsWith(".arrow"));
 			if (current!= null)
 				fillXOR(current,  false, tool.getName().endsWith(".arrow"));
 			highlightedLabel = current;
@@ -1099,7 +1094,7 @@ class AImagePanel extends MesquitePanel {
 		ImageLabel current = findLabel(x,y);
 		if (current != highlightedLabel){
 			if (highlightedLabel!= null)
-				fillXOR(highlightedLabel,  true, tool.getName().endsWith(".arrow"));
+				unfillXOR(highlightedLabel,  true, tool.getName().endsWith(".arrow"));
 			if (current!= null)
 				fillXOR(current,  false, tool.getName().endsWith(".arrow"));
 			highlightedLabel = current;
@@ -1110,7 +1105,7 @@ class AImagePanel extends MesquitePanel {
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 		//if (tool == pw.arrowTool){
 		if (highlightedLabel!= null)
-			fillXOR(highlightedLabel,  true, tool.getName().endsWith(".arrow"));
+			unfillXOR(highlightedLabel,  true, tool.getName().endsWith(".arrow"));
 		highlightedLabel = null;
 		//}
 	}

@@ -104,11 +104,6 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 		this.tree = tree;
 	}
 
-	public void drawThickLine(Graphics g, double fromX, double fromY, double toX, double toY){
-		GraphicsUtil.drawLine(g,fromX, fromY, toX, toY);
-		GraphicsUtil.drawLine(g,fromX+1, fromY, toX+1, toY);
-		GraphicsUtil.drawLine(g,fromX+2, fromY, toX+2, toY);
-	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
 		Tree trt = treeDisplay.getTree();
@@ -129,12 +124,6 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			originalY = newOnLine.getY();
 			//lastX= newOnLine.x;
 			//lastY = newOnLine.y;
-			Graphics g = null;
-			if (GraphicsUtil.useXORMode(null, false)){
-				g = treeDisplay.getGraphics();
-				g.setXORMode(Color.white);
-				g.setColor(Color.red);
-			}
 			//double bX = treeDisplay.getTreeDrawing().lineBaseX[node];
 			//double bY = treeDisplay.getTreeDrawing().lineBaseY[node];
 			//Math.sqrt((originalY-bY)*(originalY-bY) + (originalX-bX)*(originalX-bX));
@@ -153,21 +142,102 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
 			lastX = treeDisplay.getTreeDrawing().lineTipX[node];
 			lastY = treeDisplay.getTreeDrawing().lineTipY[node];
-			if (GraphicsUtil.useXORMode(null, false)){
-				drawThickLine(g,ibX, ibY, lastX, lastY);
-				for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
-					drawThickLine(g,treeDisplay.getTreeDrawing().lineTipX[daughter], treeDisplay.getTreeDrawing().lineTipY[daughter], lastX, lastY);
-				GraphicsUtil.fillOval(g,lastX-ovalRadius, lastY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
-				try {
-					GraphicsUtil.drawString(g,MesquiteDouble.toString(lastBL), lastX+10, lastY);
+
+			Graphics g = treeDisplay.getGraphics();
+			g.setColor(Color.red);
+
+			//Drawing "truss" *****************
+			GraphicsUtil.drawXORLine(g, (int)ibX,(int) (int)ibY, (int)lastX, (int)lastY, 3, Color.red);
+			for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
+				GraphicsUtil.drawXORLine(g, treeDisplay.getTreeDrawing().lineTipX[daughter], treeDisplay.getTreeDrawing().lineTipY[daughter], lastX, lastY, 3, Color.red);
+			GraphicsUtil.fillXOROval(g,lastX-ovalRadius, lastY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+			//*********************************
+
+			lineOn=true;
+			g.dispose();
+		}
+		else if (checker.compare(this.getClass(), "Adjust tool is being dragged", "[branch number][x coordinate][y coordinate]", commandName, "draggedPositionAdjust")) {
+			if (t==null)
+				return null;
+			if (editorOn)
+				return null;
+			MesquiteInteger io = new MesquiteInteger(0);
+			int node= MesquiteInteger.fromString(arguments, io);
+			int x= MesquiteInteger.fromString(arguments, io);
+			int y= MesquiteInteger.fromString(arguments, io);
+			Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+			Shape clip=null;
+			//WARNING":  This shouldn't result in length increase if simple click and release with no drag; must subtract original X, Y
+
+			//				if decreasing, & unassigned involved: push unassigned down and assign values to unassigned above; if increasing, push unassigne up
+			double ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
+			double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
+			double itX = treeDisplay.getTreeDrawing().lineTipX[node];
+			double itY = treeDisplay.getTreeDrawing().lineTipY[node];
+
+			double bX = ibX;
+			double bY = ibY;
+			double tX =itX;
+			double tY = itY;
+			double lengthLine =  Math.sqrt((originalY-bY)*(originalY-bY) + (originalX-bX)*(originalX-bX));
+			if (lengthLine!=0) {
+
+
+				double extension =  Math.sqrt((newOnLine.getY()-bY)*(newOnLine.getY()-bY) + (newOnLine.getX()-bX)*(newOnLine.getX()-bX))/lengthLine;
+				double bL;
+				if (t.getBranchLength(node)==0 || t.branchLengthUnassigned(node)) 
+					bL = extension;
+				else
+					bL = t.getBranchLength(node)*extension;
+				if (bL> upperLimit ) {
+					bL= upperLimit;
+					if (t.getBranchLength(node)==0 || t.branchLengthUnassigned(node))
+						extension = upperLimit;
+					else
+						extension = upperLimit/t.getBranchLength(node);
 				}
-				catch(InternalError e){  //workaround for bug on windows java 1.7.
+				else if (bL<lowerLimit) {
+					bL = lowerLimit;
+					if (t.getBranchLength(node)==0 || t.branchLengthUnassigned(node))
+						extension = lowerLimit;
+					else
+						extension = lowerLimit/t.getBranchLength(node);
 				}
-				catch(Throwable e){
+				lastBL = bL;
+
+				window.setExplanation("New branch length: " + MesquiteDouble.toString(lastBL));
+				if (lineOn) {
+					Graphics g =  treeDisplay.getGraphics();
+						clip = g.getClip();
+						g.setClip(0, 0, 99999, 99999);
+						g.setColor(Color.red);
+	
+					//UnDrawing "truss" *****************
+					GraphicsUtil.undrawXORLine(treeDisplay, g, (int)ibX,(int) (int)ibY, (int)lastX, (int)lastY, 3, Color.red);
+					for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
+						GraphicsUtil.undrawXORLine(treeDisplay, g, (int) treeDisplay.getTreeDrawing().lineTipX[daughter], (int)treeDisplay.getTreeDrawing().lineTipY[daughter], (int)lastX, (int)lastY, 3, Color.red);
+					GraphicsUtil.unfillXOROval(treeDisplay, g, (int)(lastX-ovalRadius), (int)(lastY-ovalRadius), ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+					//*********************************
+
+					double newX =ibX+(int)(extension*(tX-bX));
+					double newY = ibY+(int)(extension*(tY-bY));
+
+					//Drawing "truss" *****************
+					GraphicsUtil.drawXORLine(g, (int)ibX,(int) (int)ibY, (int)newX, (int)newY, 3, Color.red);
+					for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
+						GraphicsUtil.drawXORLine(g, treeDisplay.getTreeDrawing().lineTipX[daughter], treeDisplay.getTreeDrawing().lineTipY[daughter], newX, newY, 3, Color.red);
+					GraphicsUtil.fillXOROval(g,newX-ovalRadius, newY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+					//*********************************
+
+					lastX= newX;
+					lastY = newY;
+					g.setClip(clip);
 				}
-				lineOn=true;
-				g.dispose();
 			}
+
+			//lastX= newOnLine.x;
+			//lastY = newOnLine.y;
+
 		}
 		else if (checker.compare(this.getClass(), "Adjust tool has been dropped", "[branch number][x coordinate dropped][y coordinate dropped]", commandName, "droppedPositionAdjust")) {
 			if (t==null)
@@ -209,113 +279,12 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 					if (MesquiteDouble.isCombinable(t.getBranchLength(daughter)))
 						t.setBranchLength(daughter, t.getBranchLength(daughter) + difference, false);
 				t.notifyListeners(this, new Notification(MesquiteListener.BRANCHLENGTHS_CHANGED));
-				Graphics g = treeDisplay.getGraphics();
-				g.setPaintMode();
-				g.dispose();
 				treeDisplay.pleaseUpdate(true);
 				lineOn=false;
 			}
 		}
 
 
-		else if (checker.compare(this.getClass(), "Adjust tool is being dragged", "[branch number][x coordinate][y coordinate]", commandName, "draggedPositionAdjust")) {
-			if (t==null)
-				return null;
-			if (editorOn)
-				return null;
-			MesquiteInteger io = new MesquiteInteger(0);
-			int node= MesquiteInteger.fromString(arguments, io);
-			int x= MesquiteInteger.fromString(arguments, io);
-			int y= MesquiteInteger.fromString(arguments, io);
-			Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
-			Shape clip=null;
-			//WARNING":  This shouldn't result in length increase if simple click and release with no drag; must subtract original X, Y
-			Graphics g = null;
-			if (lineOn && GraphicsUtil.useXORMode(null, false)){
-				g = treeDisplay.getGraphics();
-				clip = g.getClip();
-				g.setClip(0, 0, 99999, 99999);
-				
-				g.setXORMode(Color.white);
-				g.setColor(Color.red);
-			}
-			//g.fillOval(lastX-ovalRadius, lastY-ovalRadius, ovalRadius + ovalRadius, ovalRadius + ovalRadius);
-			//g.fillOval(newOnLine.x-ovalRadius, newOnLine.y -ovalRadius, ovalRadius + ovalRadius, ovalRadius + ovalRadius);
-
-			//g.drawLine(originalX, originalY, lastX, lastY);
-			//g.drawLine(originalX, originalY, newOnLine.x, newOnLine.y);
-
-			//				if decreasing, & unassigned involved: push unassigned down and assign values to unassigned above; if increasing, push unassigne up
-			double ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
-			double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
-			double itX = treeDisplay.getTreeDrawing().lineTipX[node];
-			double itY = treeDisplay.getTreeDrawing().lineTipY[node];
-
-			double bX = ibX;
-			double bY = ibY;
-			double tX =itX;
-			double tY = itY;
-			double lengthLine =  Math.sqrt((originalY-bY)*(originalY-bY) + (originalX-bX)*(originalX-bX));
-			if (lengthLine!=0) {
-				if (lineOn) {
-					if (GraphicsUtil.useXORMode(null, false)){
-						if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.getJavaVersionAsDouble()>=1.5 && MesquiteTrunk.getJavaVersionAsDouble()<1.6)  //due to a JVM bug
-							GraphicsUtil.fillRect(g,lastX, lastY-20, 100, 20);
-						GraphicsUtil.drawString(g,MesquiteDouble.toString(lastBL), lastX+10, lastY);
-						if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.getJavaVersionAsDouble()>=1.5 && MesquiteTrunk.getJavaVersionAsDouble()<1.6)  //due to a JVM bug
-							GraphicsUtil.fillRect(g,lastX, lastY-20, 100, 20);
-					}
-				}
-				double extension =  Math.sqrt((newOnLine.getY()-bY)*(newOnLine.getY()-bY) + (newOnLine.getX()-bX)*(newOnLine.getX()-bX))/lengthLine;
-				double bL;
-				if (t.getBranchLength(node)==0 || t.branchLengthUnassigned(node)) 
-					bL = extension;
-				else
-					bL = t.getBranchLength(node)*extension;
-				if (bL> upperLimit ) {
-					bL= upperLimit;
-					if (t.getBranchLength(node)==0 || t.branchLengthUnassigned(node))
-						extension = upperLimit;
-					else
-						extension = upperLimit/t.getBranchLength(node);
-				}
-				else if (bL<lowerLimit) {
-					bL = lowerLimit;
-					if (t.getBranchLength(node)==0 || t.branchLengthUnassigned(node))
-						extension = lowerLimit;
-					else
-						extension = lowerLimit/t.getBranchLength(node);
-				}
-				lastBL = bL;
-
-				window.setExplanation("New branch length: " + MesquiteDouble.toString(lastBL));
-				if (lineOn) {
-					if (GraphicsUtil.useXORMode(null, false)){
-						drawThickLine(g,ibX, ibY, lastX, lastY);
-						for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
-							drawThickLine(g,treeDisplay.getTreeDrawing().lineTipX[daughter], treeDisplay.getTreeDrawing().lineTipY[daughter], lastX, lastY);
-						GraphicsUtil.fillOval(g,lastX-ovalRadius, lastY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
-					}
-					double newX =ibX+(int)(extension*(tX-bX));
-					double newY = ibY+(int)(extension*(tY-bY));
-					if (GraphicsUtil.useXORMode(null, false)){
-						GraphicsUtil.drawString(g,MesquiteDouble.toString(bL), newX+10, newY);
-						drawThickLine(g,ibX, ibY, newX, newY);
-						for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
-							drawThickLine(g,treeDisplay.getTreeDrawing().lineTipX[daughter], treeDisplay.getTreeDrawing().lineTipY[daughter], newX, newY);
-						GraphicsUtil.fillOval(g,newX-ovalRadius, newY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
-					}
-					lastX= newX;
-					lastY = newY;
-				}
-			}
-
-			if (g != null && clip != null)
-				g.setClip(clip);
-			//lastX= newOnLine.x;
-			//lastY = newOnLine.y;
-
-		}
 		return null;
 	}
 	public void turnOff() {
