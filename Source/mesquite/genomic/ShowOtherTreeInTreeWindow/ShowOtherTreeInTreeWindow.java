@@ -26,6 +26,7 @@ import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeUtil;
+import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteCMenuItemSpec;
@@ -40,6 +41,7 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 	DrawTreeCoordinator treeDrawCoordTask;
 	TreeSource extraTreeSource;
 	ShowOtherTreeExtra extra;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addCheckMenuItem(null, "Show & Compare Other Tree", new MesquiteCommand("showTree", this), showTree);
@@ -80,6 +82,7 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 		this.tree = tree;
 	}
 
+	
 	/* ................................................................................................................. */
 	/** passes which object changed (from MesquiteListener interface) */
 	public void changed(Object caller, Object obj, Notification notification) {
@@ -87,8 +90,13 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 		int[] parameters = Notification.getParameters(notification);
 		if (caller == this)
 			return;
-		if (obj instanceof Tree) 
+		if (obj instanceof Tree || obj instanceof TreeVector || obj instanceof MesquiteProject) 
 			extra.forceRefresh();
+	}
+	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
+		if (employee == extraTreeSource)
+			extra.forceRefresh();
+
 	}
 
 	/*.................................................................................................................*/
@@ -99,8 +107,8 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 		sn.addLine("showTree " + showTree.toOffOnString());
 		if (!showTree.getValue()){
 			sn.addLine("setTaxa " + getProject().getTaxaReferenceExternal(taxa));
-			sn.suppressCommandsToEmployee(treeDrawCoordTask);   //Debugg.println do not give tDC its script. 
-			sn.suppressCommandsToEmployee(extraTreeSource);
+			sn.suppressCommandsToEmployee(treeDrawCoordTask);   //If not on, do not give tDC its script. 
+			sn.suppressCommandsToEmployee(extraTreeSource); //If not on, do not give ets its script. 
 		}
 		else{
 			sn.addLine("setTaxa " + getProject().getTaxaReferenceExternal(taxa));
@@ -128,12 +136,25 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 			showTree.toggleValue(arguments);
 			if (extra!= null){
 				if (!extra.getTreeDisplay().isUpDownRightLeft() &&showTree.getValue() && !MesquiteThread.isScripting()){
-					alert("A comparison tree can be shown only if the tree is drawn in horizontal or vertical orientation.");
-					showTree.setValue(false);
+						alert("A comparison tree can be shown only if the tree is drawn in horizontal or vertical orientation.");
+					turnOff();
+					return null;
+				}
+				if (showTree.getValue() && extraTreeSource == null)
+					extraTreeSource= (TreeSource)hireNamedEmployee(TreeSource.class, "#StoredTrees");
+
+				if (extraTreeSource == null) {
+					if (!MesquiteThread.isScripting())
+						alert("No stored trees area available for comparison.");
+					turnOff();
 					return null;
 				}
 				extra.turnOnOff(showTree.getValue());
 				if (showTree.getValue()){
+					if (!MesquiteThread.isScripting()){
+						extraTreeSource.setPreferredTaxa(taxa);
+						extra.setTree(tree);
+					}
 					if (rotateMenuItem == null)
 						rotateMenuItem = addCheckMenuItem(null, "Rotate Main Tree for Better Match", new MesquiteCommand("rotateMain", this), rotateMainTree);
 				}
@@ -142,7 +163,6 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 					rotateMenuItem = null;
 				}
 				resetContainingMenuBar();
-				//extra.forceRefresh();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Whether to rotate the main tree", "[true/false]", commandName, "rotateMain")) {
@@ -176,6 +196,11 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 					if (extraTreeSource == null)
 						return null;
 					Tree tree = extraTreeSource.getTree(taxa, currentTree);
+					if (tree == null && !MesquiteThread.isScripting()){
+						alert("No comparison tree is available.");
+						turnOff();
+						return null;
+				}
 					extra.setExtraTree(extraTreeSource.getTree(taxa, currentTree), currentTree+1);
 					//extra.forceRefresh();
 				}
@@ -273,7 +298,6 @@ class ShowOtherTreeExtra extends TreeDisplayExtra  {
 		if (mainTreeDisplay == null || mainTreeDisplay.getTreeDrawing() == null)
 			return;
 
-		//System.err.println("@recalculateField " + where + " width " + fieldWidth);
 		borders.rightBorder = 0;
 		borders.leftBorder = 0;
 		borders.topBorder = 0;
@@ -325,7 +349,6 @@ class ShowOtherTreeExtra extends TreeDisplayExtra  {
 	}
 
 	void forceRefresh(){
-		//	System.err.println("@forceRefresh");
 		recalculateField(2);
 		mainTreeDisplay.redoCalculations(78344);
 		extraTreeDisplay.redoCalculations(78243);
@@ -343,16 +366,12 @@ class ShowOtherTreeExtra extends TreeDisplayExtra  {
 		boolean extraRotated = false;
 		if (mainTree != null){
 			extraRotated = TreeUtil.rotateToMatch(extraTree, mainTree);
-			//System.err.println(" (1e) " + extraRotated);
 			if (ownerModule.rotateMainTree.getValue()){
 				mainRotated = TreeUtil.rotateToMatch(mainTree, extraTree);
-				//System.err.println(" (2m) " + mainRotated);
 				if (extraRotated || mainRotated){
 					extraRotated = TreeUtil.rotateToMatch(extraTree, mainTree);
-					//System.err.println(" (3e) " + extraRotated);
 					if (extraRotated){
 						boolean tmainRotated = TreeUtil.rotateToMatch(mainTree, extraTree);
-						//System.err.println(" (4m) " + tmainRotated);
 						mainRotated = mainRotated || tmainRotated;
 					}
 				}
@@ -378,13 +397,22 @@ class ShowOtherTreeExtra extends TreeDisplayExtra  {
 	}
 	public void setTree(Tree tree) {
 		mainTree = (MesquiteTree)tree;
-		if (!ownerModule.showTree.getValue() || ownerModule.extraTreeSource == null)
+		if (tree == null || !ownerModule.showTree.getValue())
 			return;
+		if (ownerModule.extraTreeSource == null){
+			ownerModule.turnOff();
+			return;
+		}
 		if (extraTreeScroll!= null)  //Make sure this is done if later turned on
 			extraTreeScroll.setMaximumValue(ownerModule.extraTreeSource.getNumberOfTrees(tree.getTaxa()));
 		if (ownerModule.currentTree>= ownerModule.extraTreeSource.getNumberOfTrees(tree.getTaxa()))
 			ownerModule.currentTree = 0;
-		setExtraTree(ownerModule.extraTreeSource.getTree(tree.getTaxa(), ownerModule.currentTree), ownerModule.currentTree+1);
+		Tree extraTree = ownerModule.extraTreeSource.getTree(tree.getTaxa(), ownerModule.currentTree);
+		if (extraTree == null){
+			ownerModule.turnOff();
+			return;
+		}
+		setExtraTree(extraTree, ownerModule.currentTree+1);
 		if (boxEdges == null)
 			boxEdges = new DoubleArray(tree.getTaxa().getNumTaxa());
 		else if (tree.getTaxa().getNumTaxa()>boxEdges.getSize())
@@ -501,8 +529,6 @@ class ShowOtherTreeExtra extends TreeDisplayExtra  {
 		if (((mainTreeDisplay.isRight() || mainTreeDisplay.isLeft()) && mainTreeDisplay.effectiveFieldWidth()-mainTreeDisplay.getTipsMargin()-increase<100)
 				|| ((mainTreeDisplay.isUp() || mainTreeDisplay.isDown()) && mainTreeDisplay.effectiveFieldHeight()-mainTreeDisplay.getTipsMargin()<100))
 			return;
-
-		//	System.err.println("@resetFieldSize");
 
 		mainTreeDisplay.reviseBorders(false);
 		recalculateField(5);

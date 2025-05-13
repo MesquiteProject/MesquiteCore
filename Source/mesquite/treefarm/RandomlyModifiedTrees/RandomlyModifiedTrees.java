@@ -184,7 +184,7 @@ public class RandomlyModifiedTrees extends TreeSource {
    	public String getParameters() {
    		if (treeSourceTask == null || modifierTask == null)
    			return "Randomly modifying trees";
-   		return"Randomly modifying trees from: " + treeSourceTask.getParameters() + ". Modifications: " + modifierTask.getParameters() + ". [seed: " + originalSeed + "]";
+   		return"Randomly modifying trees from: " + treeSourceTask.getParameters() + ". Modifications: " + modifierTask.getParameters() + ". (seed: " + originalSeed + ")";
    	}
 	/*.................................................................................................................*/
     	 public String getName() {

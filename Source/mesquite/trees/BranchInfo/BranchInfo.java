@@ -219,7 +219,7 @@ class BranchInfoExtra extends TreeDisplayExtra implements Commandable  {
 						tree.setBranchLength(branch, cBL/2, false);
 						tree.setBranchLength(tree.motherOfNode(branch), cBL/2, false);
 						currentHeight += cBL/2;
-						tree.setBranchLength(node, currentHeight, false);  //Debugg.println("@ OK to do this even though arbitrary?
+						tree.setBranchLength(node, currentHeight, false);  //Debugg.println(" OK to do this even though arbitrary?
 						tree.setAssociatedString(ColorDistribution.colorRGBNameReference, node, "#33BB00");
 					}
 					else

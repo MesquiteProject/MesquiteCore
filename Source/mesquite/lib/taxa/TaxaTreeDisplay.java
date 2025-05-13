@@ -301,7 +301,7 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	public void paint(Graphics g) {
 	   	if (MesquiteWindow.checkDoomed(this))
 	   		return;
-	   	paintedOnce = true;
+	   	paintedOnce = true;  
 		MesquiteWindow.uncheckDoomed(this);
 	}
 

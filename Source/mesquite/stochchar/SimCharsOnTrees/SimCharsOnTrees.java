@@ -271,7 +271,7 @@ public class SimCharsOnTrees extends CharacterSource {
 				String s =  "Simulator: " + simulatorTask.getName();
 				if (lastTree !=null)
 					s+= "; most recent tree: " + lastTree.getName();
-				return s + " [seed for char sim. " + originalSeed + "]";
+				return s + " (seed for char sim. " + originalSeed + ")";
 			}
 			else
 				return "";

@@ -233,7 +233,7 @@ public class ReshuffleCharacter extends CharacterSource {
 	/*.................................................................................................................*/
    	public String getParameters() {
    		if (matrix==null) return "";
-		return "Character reshuffle: " + matrix.getName() + ". [seed: " + originalSeed + "]";
+		return "Character reshuffle: " + matrix.getName() + ". (seed: " + originalSeed + ")";
    	}
 	/*.................................................................................................................*/
     	 public String getName() {

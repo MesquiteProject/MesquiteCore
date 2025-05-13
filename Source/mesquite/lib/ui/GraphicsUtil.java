@@ -22,6 +22,7 @@ import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.trees.SquareLineTree.SquareLineTree;
@@ -360,20 +361,22 @@ public class GraphicsUtil {
 	}
 
 	/* -------------------------------------------------*/
-	public static boolean useXOR = true;
-	/*Bug in Windows Oracle JDK ~21 that slows graphics in panel hugely after XORMode used
-	 * Bugs in os x Tiger ca. 10.4.8 can cause crashes with XORMode.  With OS X Tiger, it does not do XORMode with printing or if sensitive is on */
-	public static boolean useXORMode(Graphics g, boolean sensitive){
-		if (MesquiteTrunk.isWindows())
+	public static boolean permitXOR = !MesquiteTrunk.isWindows();
+	/*Default is currently permitXOR unless Windows. Controlled by default in mesquite.minimal.Defaults.
+	 * Bug in Windows Oracle JDK ~21 that slows graphics in panel hugely after XORMode used
+	 * Now-ignored bug: Bugs in os x Tiger ca. 10.4.8 can cause crashes with XORMode.  With OS X Tiger, it does not do XORMode with printing or if sensitive is on */
+	public static boolean permitXORMode(Graphics g){
+		/*
+		if (g instanceof PrintGraphics) //this was needed because of bug in OS X Tiger. Turned off for now, but keeping information about graphics
 			return false;
-		if (sensitive || g instanceof PrintGraphics){
-			//if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0)
-			//	return false;
-			return useXOR;
-		}
-		return true;
+		*/
+		return permitXOR;
 	}
-	
+	/* -------------------------------------------------*/
+	//A kludge because of need to avoid XORMode. The tree gets redrawn (by the main Mesquite thread) during dragging, but calling to redraw extras would be too time-costly.
+	public static boolean OKToDrawTreeExtrasOnMesquiteThread(){
+		return permitXORMode(null) || !MesquiteThread.isThreadBelongingToMesquite();
+	}
 	/* -------------------------------------------------*/
 	/* These methods should be used instead of g.setXORMode(Color c) etc. so that Mesquite can intervene if XORMode requested on Windows.
 	 * Windows (Oracle JDK ~21) suffers severe performance hits if XORMode is used, and the problem persists through the lifetime of the component.*/
@@ -396,7 +399,7 @@ public class GraphicsUtil {
 	public static void drawXORLine (Graphics g, int xFrom, int yFrom, int xTo, int yTo, int thickness, Color color) {
 		try {
 			Graphics2D g2 = (Graphics2D)g;
-			if (useXORMode(g, false))
+			if (permitXORMode(g))
 				g2.setXORMode(Color.white);
 			g2.setColor(color); 
 
@@ -406,7 +409,7 @@ public class GraphicsUtil {
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.drawLine(xFrom,yFrom,xTo,yTo);
 			g2.setStroke(st);
-			if (useXORMode(g, false))
+			if (permitXORMode(g))
 				g2.setPaintMode();
 
 
@@ -419,7 +422,7 @@ public class GraphicsUtil {
 	/* -------------------------------------------------*/
 	public static void undrawXORLine (Component component, Graphics g, int xFrom, int yFrom, int xTo, int yTo, int thickness, Color color) {
 		try {
-			if (useXORMode(g, false)) {
+			if (permitXORMode(g)){
 				Graphics2D g2 = (Graphics2D)g;
 				g2.setXORMode(Color.white);
 				g2.setColor(color); 
@@ -487,7 +490,7 @@ public class GraphicsUtil {
 	}
 	/* -------------------------------------------------*/
 	public static void drawXORRect (Graphics g, int x, int y, int w, int h) {
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setXORMode(Color.white); 
 		if (w < 0){
 			int nx = x + w;
@@ -503,12 +506,12 @@ public class GraphicsUtil {
 		g.setClip(x-1, y-1, w+2, h+2);
 		g.drawRect(x, y, w, h);
 		g.setClip(clip);
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setPaintMode();
 	}
 	/* -------------------------------------------------*/
 	public static void undrawXORRect (Component component, Graphics g, int x, int y, int w, int h) {
-		if (useXORMode(g, false)) {
+		if (permitXORMode(g)){
 			drawXORRect(g, x, y, w, h);
 		}
 		else {
@@ -535,7 +538,7 @@ public class GraphicsUtil {
 	}
 	/* -------------------------------------------------*/
 	public static void fillXORRect (Graphics g, int x, int y, int w, int h) {
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setXORMode(Color.white); 
 		if (w < 0){
 			int nx = x + w;
@@ -551,19 +554,19 @@ public class GraphicsUtil {
 		g.setClip(x-1, y-1, w+2, h+2);
 		g.fillRect(x, y, w, h);
 		g.setClip(clip);
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setPaintMode();
 	}
 	/* -------------------------------------------------*/
 	public static void unfillXORRect (Component component, Graphics g, int x, int y, int w, int h) {
-		if (useXORMode(g, false)) 
+		if (permitXORMode(g))
 			fillXORRect(g, x, y, w, h);
 		else 
 			undrawXORRect(component, g, x, y, w, h);
 	}	
 	/* -------------------------------------------------*/
 	public static void drawXOROval (Graphics g, int x, int y, int w, int h) {
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setXORMode(Color.white); 
 		Shape clip = g.getClip();
 		g.setClip(x-1, y-1, w+2, h+2);
@@ -580,12 +583,12 @@ public class GraphicsUtil {
 	
 		g.drawOval(x, y, w, h);
 		g.setClip(clip);
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setPaintMode();
 	}
 	/* -------------------------------------------------*/
 	public static void undrawXOROval (Component component, Graphics g, int x, int y, int w, int h) {
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			drawXOROval(g, x, y, w, h);
 		else 
 			undrawXORRect(component, g, x, y, w, h);
@@ -596,7 +599,7 @@ public class GraphicsUtil {
 	}
 	/* -------------------------------------------------*/
 	public static void fillXOROval (Graphics g, int x, int y, int w, int h) {
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setXORMode(Color.white); 
 		Shape clip = g.getClip();
 		if (w < 0){
@@ -612,28 +615,28 @@ public class GraphicsUtil {
 		g.setClip(x-1, y-1, w+2, h+2);
 		g.fillOval(x, y, w, h);
 		g.setClip(clip);
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setPaintMode();
 	}
 	/* -------------------------------------------------*/
 	public static void unfillXOROval (Component component, Graphics g, int x, int y, int w, int h) {
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			fillXOROval(g, x, y, w, h);
 		else 
 			undrawXORRect(component, g, x, y, w, h);
 	}
 	/* -------------------------------------------------*/
 	public static void drawXORString (Graphics g, String s, int x, int y) {
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setXORMode(Color.white); 
 		
 		g.drawString(s, x, y);
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			g.setPaintMode();
 	}
 	/* -------------------------------------------------*/
 	public static void undrawXORString (Component component, Graphics g, String s, int x, int y) {
-		if (useXORMode(g, false))
+		if (permitXORMode(g))
 			drawXORString(g, s, x, y);
 		else {
 			FontMetrics fm = g.getFontMetrics();

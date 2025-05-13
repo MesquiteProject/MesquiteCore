@@ -24,6 +24,7 @@ import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteLong;
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
 import mesquite.lib.ProjectReadThread;
@@ -32,6 +33,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaTreeDisplay;
 import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
@@ -281,6 +283,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			//repaint();
 		}
 	}
+	/* see the subclasses, e.g. BasicTreeDisplay
+	public void paint(Graphics g) {
+	}
+	*/
 	public boolean repaintPending(){
 		return repaintsPending > 0;
 	}
@@ -587,6 +593,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void drawAllBackgroundExtrasOfPlacement(Tree tree, int drawnRoot, Graphics g, int placement) {
 		if (tree == null || tree.getTaxa().isDoomed())
 			return;
+		if (!GraphicsUtil.OKToDrawTreeExtrasOnMesquiteThread())
+			return;
 		if (extras != null) {
 			//EARLY
 			Enumeration e = extras.elements();
@@ -630,6 +638,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	}
 	public void drawAllExtras(Tree tree, int drawnRoot, Graphics g) {
 		if (tree == null || tree.getTaxa().isDoomed())
+			return;
+		if (!GraphicsUtil.OKToDrawTreeExtrasOnMesquiteThread())
 			return;
 		if (extras != null) {
 			Enumeration e = extras.elements();

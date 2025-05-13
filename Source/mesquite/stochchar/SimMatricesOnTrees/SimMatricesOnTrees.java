@@ -349,7 +349,7 @@ public class SimMatricesOnTrees extends CharMatrixSource {
 			s = "Matrix #" + CharacterStates.toExternal(currentDataSet) + " simulated by " + charSimulatorTask.getName() + " on trees from " + treeTask.getName();
 		else
 			s = "Matrix simulated by " + charSimulatorTask.getName() + " on trees from " + treeTask.getName();
-		return s + " [seed for matrix sim. " + originalSeed + "]";
+		return s + " (seed for matrix sim. " + originalSeed + ")";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {

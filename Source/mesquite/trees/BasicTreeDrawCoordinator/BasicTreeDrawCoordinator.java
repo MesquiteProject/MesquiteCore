@@ -754,8 +754,8 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 	int retry =0;
 	/*_________________________________________________*/
 	public void paint(Graphics g) {
-
-		if (getPrintingInProcess())
+		boolean wasAlreadyDrawing =  getDrawingInProcess();
+		if (getPrintingInProcess() || wasAlreadyDrawing)
 			return;
 		if (ownerModule == null || ownerModule.isDoomed())
 			return;
@@ -857,7 +857,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 			}
 		}
 		setDrawingInProcess(false);
-		if (tempTree != tree) {
+		if (tempTree != tree || wasAlreadyDrawing) {
 			repaint();
 		}
 		else if (bailOut(initialPending))

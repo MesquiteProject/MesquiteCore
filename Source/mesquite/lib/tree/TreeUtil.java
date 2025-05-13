@@ -98,7 +98,6 @@ public class TreeUtil {
 			daughters[count++] = daughter;
 		return daughters;
 	}
-	static boolean verboseRotate = false;
 	static boolean rotateIfUseful(MesquiteTree tree, int node, int[] targetTaxaSequence){
 		boolean rotated = false;
 		if (tree.nodeIsInternal(node)) { 
@@ -107,18 +106,12 @@ public class TreeUtil {
 			int currentScore = matchScore(targetTaxaSequence, tree.getTerminalTaxa(node));
 			int min = currentScore;
 			boolean done = false;
-			if (verboseRotate)
-				System.err.println("@rIU " +node + " orig " + currentScore);
 			while (!done){
 				//try all flips
-				if (verboseRotate)
-					System.err.println("=== next flips at " +node + " orig " + currentScore);
 				for (int d1 = 0; d1<daughters.length; d1++)
 					for (int d2 = d1+1; d2<daughters.length; d2++){
 						tree.interchangeBranches(daughters[d1], daughters[d2], true, false);
 						int newScore = matchScore(targetTaxaSequence, tree.getTerminalTaxa(node) );
-						if (verboseRotate)
-							System.err.println(" ~~~ " +currentScore + " at " + node + " # " + daughters[d1] + " - " + daughters[d2] + " -> " + newScore);
 						if (newScore<min){
 							min = newScore;
 							dX = daughters[d1];
@@ -127,8 +120,6 @@ public class TreeUtil {
 						tree.interchangeBranches(daughters[d1], daughters[d2], true, false); //undo previous
 					}
 				if (min<currentScore){ //better found remember as current score and do the interchange
-					if (verboseRotate)
-						System.err.println(" +++ better found " +currentScore + " at " + node + " # " + dX + " - " +dY);
 					currentScore = min;
 					tree.interchangeBranches(dX, dY, true, false);
 					rotated = true;
@@ -151,23 +142,18 @@ public class TreeUtil {
 		int count = 0;
 		int originalScore = matchScore(targetTerminals, toBeRotated.getTerminalTaxa(toBeRotated.getRoot()));
 		int oldScore = originalScore;
-		if (verboseRotate)
-			System.err.println("@tt-original score " + oldScore);
 		boolean done = false;
 		boolean rotated = false;
 		while (!done){
 			boolean trotated = rotateIfUseful((MesquiteTree)toBeRotated, toBeRotated.getRoot(), targetTerminals);
 			rotated = rotated || trotated;
 			int newScore = matchScore(targetTerminals, toBeRotated.getTerminalTaxa(toBeRotated.getRoot()));
-			if (verboseRotate)
-				System.err.println("@tt-new score " + newScore);
 			if (newScore>=oldScore)
 				done = true;
 			else
 				oldScore = newScore;
 			count++;
 			if (count>1000){
-				Debugg.printStackTrace("@oops, too many");
 				done = true;
 			}
 		}

@@ -4035,7 +4035,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				}
 			}
 			else if (currentTreeTool.informDrop()) {
-				// g.drawLine(xFrom,yFrom,xTo,yTo); //only if drawn
 				currentTreeTool.branchDropped(branchFrom, x, y, tree, modifiers);
 			}
 			branchFrom = 0;
@@ -4059,6 +4058,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		taxonTouched = -1;
 	}
 
+	long dragCount = 0;
+	private boolean timeToShowDraggedLine(){
+		if (GraphicsUtil.permitXORMode(null))
+			return true;
+		return (dragCount++ % 2 == 0); //so that less flashing when having to repaint field
+	}
 	/* _________________________________________________ */
 	/* Historical note: this method's name begins with an upper case letter because it descends directly
 	from Pascal source code for MacClade 1 (1986) */
@@ -4068,7 +4073,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (treeDisplay.getInvalid())
 			return;
 		if (currentTreeTool.isArrowTool()){
-			if (fieldTouchX >= 0 && fieldTouchY >= 0) {
+			if (fieldTouchX >= 0 && fieldTouchY >= 0 && timeToShowDraggedLine()) {
 				g.setColor(Color.blue);
 				GraphicsUtil.undrawXORRect(treeDisplay, g, fieldTouchX, fieldTouchY, lastFieldDragX - fieldTouchX, lastFieldDragY - fieldTouchY);
 				GraphicsUtil.drawXORRect(g, fieldTouchX, fieldTouchY, x - fieldTouchX, y - fieldTouchY);

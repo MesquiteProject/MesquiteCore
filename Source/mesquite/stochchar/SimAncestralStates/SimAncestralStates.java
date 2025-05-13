@@ -218,7 +218,7 @@ public class SimAncestralStates extends CharHistorySource {
 			String s =  "Simulator: " + simulatorTask.getName();
 			if (lastTree !=null)
 				s+= "; most recent tree: " + lastTree.getName();
-			return s + " [seed " + originalSeed + "]";
+			return s + " (seed " + originalSeed + ")";
 		}
 		else
 			return "";

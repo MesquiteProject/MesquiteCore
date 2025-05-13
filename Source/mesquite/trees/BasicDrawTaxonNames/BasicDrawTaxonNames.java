@@ -545,7 +545,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			textRotator.assignBackground(bgColor);
 			double horiz=treeDrawing.x[N];
 			double vert=treeDrawing.y[N];
-			if (treeDisplay.floatNameAtHighest){ //Debugg.println("@ use another flag for floating at distance
+			if (treeDisplay.floatNameAtHighest){ 
 				double furthestT = furthestTip(tree, drawnRoot);
 				if (treeDisplay.isUp() || treeDisplay.isDown())
 					vert = furthestT;

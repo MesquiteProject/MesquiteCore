@@ -258,7 +258,7 @@ public abstract class TreeDrawing  {
 	/*_________________________________________________*/
 	/** Does the basic highlighting of a branch **/
 	public  void highlightBranch (Tree tree, int N, Graphics g) {
-		if (GraphicsUtil.useXORMode(g, true))  {
+		if (GraphicsUtil.permitXORMode(g))  {
 			g.setColor(Color.black);
 			GraphicsUtil.setSafeXORMode(g); 
 			try{

@@ -360,7 +360,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 				if (lastTree !=null)
 					s+= "; most recent tree: " + lastTree.getName();
 				
-				return s + " [seed for matrix sim. " + originalSeed + "]";
+				return s + " (seed for matrix sim. " + originalSeed + ")";
 			}
 			else
 				return "";

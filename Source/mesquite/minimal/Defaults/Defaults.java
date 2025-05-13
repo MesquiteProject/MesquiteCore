@@ -52,7 +52,7 @@ public class Defaults extends MesquiteInit  {
 				"The defaults are presented in the Defaults submenu of the File menu.");
 	}
 	/*.................................................................................................................*/
-	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, useReports, suppressXORMode;
+	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, useReports, permitXOR;
 	MesquiteBoolean taxonTruncTrees, permitSpaceUnderscoreEquivalentTrees, printTreeNameByDefault;
 	MesquiteBoolean tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; 
 	MesquiteString themeName;
@@ -63,7 +63,7 @@ public class Defaults extends MesquiteInit  {
 		askSeed = new MesquiteBoolean(false);
 		console = new MesquiteBoolean(MesquiteTrunk.mesquiteTrunk.logWindow.isConsoleMode());
 		logAll = new MesquiteBoolean(MesquiteCommand.logEverything);
-		suppressXORMode = new MesquiteBoolean(GraphicsUtil.useXOR);
+		permitXOR = new MesquiteBoolean(GraphicsUtil.permitXOR);
 		wizards = new MesquiteBoolean(MesquiteDialog.useWizards);
 		tabbedWindows = new MesquiteBoolean(MesquiteWindow.compactWindows);
 		//tilePopouts = new MesquiteBoolean(MesquiteFrame.popIsTile);
@@ -127,8 +127,7 @@ public class Defaults extends MesquiteInit  {
 		sm = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.defaultsSubmenu,"Project Panel Font Size", makeCommand("setProjectPanelFontSize",  this), MesquiteSubmenu.getFontSizeList());		
 		sm.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use File-Specific Project Panel Width", makeCommand("respectFileSpecificResourceWidth",  this), respectFileSpecificResourceWidth);
-		if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0)
-			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Suppress Inverted Highlights", makeCommand("toggleXORMode",  this), suppressXORMode);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Permit Inverted Highlights (XORMode)", makeCommand("toggleXORMode",  this), permitXOR);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Ask for Random Number Seeds", makeCommand("toggleAskSeed",  this), askSeed);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Count Steps in Polymorphisms with Unord/Ord Parsimony", makeCommand("toggleCountStepsInTermPolymorphisms",  this), ParsAncStatesForModel.countStepsInTermPolymorphisms);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Partial Names in Tree Reading", makeCommand("togglePartNamesTrees",  this), taxonTruncTrees);
@@ -169,10 +168,8 @@ public class Defaults extends MesquiteInit  {
 			if (prefs.length>4 && prefs[4] !=null)
 				askSeed.setValue("askSeed".equalsIgnoreCase(prefs[4]));
 			if (prefs.length>5 && prefs[5] !=null){
-				if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0){
-					suppressXORMode.setValue("suppressXORMode".equalsIgnoreCase(prefs[5]));
-					GraphicsUtil.useXOR = !suppressXORMode.getValue();
-				}
+					permitXOR.setValue("permitXOR".equalsIgnoreCase(prefs[5]));
+					GraphicsUtil.permitXOR = permitXOR.getValue();
 			}
 			if (prefs.length>6 && prefs[6] !=null){
 				taxonTruncTrees.setValue("permitTruncTaxonNamesTrees".equalsIgnoreCase(prefs[6]));
@@ -211,11 +208,9 @@ public class Defaults extends MesquiteInit  {
 		else if ("countStepsInTermPolymorphisms".equalsIgnoreCase(tag)){
 			ParsAncStatesForModel.countStepsInTermPolymorphisms.setValue(content);
 		}
-		else if ("suppressXORMode".equalsIgnoreCase(tag)){
-			if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0){
-				suppressXORMode.setValue(content);
-				GraphicsUtil.useXOR = !suppressXORMode.getValue();
-			}
+		else if ("permitXOR".equalsIgnoreCase(tag)){
+				permitXOR.setValue(content);
+				GraphicsUtil.permitXOR = permitXOR.getValue();
 		}
 		else if ("taxonTruncTrees".equalsIgnoreCase(tag)){
 			taxonTruncTrees.setValue(content);
@@ -335,7 +330,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "python2Path", PythonUtil.python2Path);
 		StringUtil.appendXMLTag(buffer, 2, "python3Path", PythonUtil.python3Path);
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
-		StringUtil.appendXMLTag(buffer, 2, "suppressXORMode", suppressXORMode);   
+		StringUtil.appendXMLTag(buffer, 2, "permitXOR", permitXOR);   
 		StringUtil.appendXMLTag(buffer, 2, "countStepsInTermPolymorphisms", ParsAncStatesForModel.countStepsInTermPolymorphisms);  
 		StringUtil.appendXMLTag(buffer, 2, "taxonTruncTrees", taxonTruncTrees);   
 		StringUtil.appendXMLTag(buffer, 2, "permitSpaceUnderscoreEquivalentTrees", permitSpaceUnderscoreEquivalentTrees);   
@@ -605,10 +600,10 @@ public class Defaults extends MesquiteInit  {
 			return wizards;
 		}
 		else if (checker.compare(getClass(), "Sets whether to use xor mode", null, commandName, "toggleXORMode")) {
-			suppressXORMode.toggleValue(null);
-			GraphicsUtil.useXOR = !suppressXORMode.getValue();
+			permitXOR.toggleValue(null);
+			GraphicsUtil.permitXOR = permitXOR.getValue();
 			resetAllMenuBars();
-			return suppressXORMode;
+			return permitXOR;
 		}
 		else if (checker.compare(getClass(), "Sets whether to permit taxon name truncation in trees", null, commandName, "togglePartNamesTrees")) {
 			taxonTruncTrees.toggleValue(null);

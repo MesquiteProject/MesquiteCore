@@ -118,8 +118,8 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 		infoPanel.setVisible(aim != null);
 		refPanel.setVisible(aim != null);
 		commentPanel.setVisible(aim != null);
-		
-		
+
+
 	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
@@ -267,14 +267,14 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 					clipboardVector = null;
 				}
 			}
-			
+
 		}
 		else if (checker.compare(this.getClass(),  "Copies notes to notes clipboard", null, commandName, "copyAll")) {
 			if (aim != null){
-					clipboardVector = aim.cloneVector();
-					clipboardNote = null;
+				clipboardVector = aim.cloneVector();
+				clipboardNote = null;
 			}
-			
+
 		}
 		else if (checker.compare(this.getClass(),  "Paste notes here", null, commandName, "paste")) {
 			if (clipboardNote == null && (clipboardVector == null || clipboardVector.getNumNotes()==0))return null;
@@ -291,7 +291,7 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 				aim.addNote(clipboardNote, true);
 			}
 			setNote(aim.getNumNotes()-1);
-			
+
 		}
 		else if (checker.compare(this.getClass(),  "Indicates which in a series of notes to show", "[note number (1 based)]", commandName, "goToNoteNumber")) {
 			MesquiteInteger io = new MesquiteInteger(0);
@@ -418,7 +418,7 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 			imageHeader.repaint();
 			commentHeader.repaint();
 			infoHeader.repaint();
-	//	controls.setBackground(null);
+			//	controls.setBackground(null);
 			return;
 		}
 		else {
@@ -474,7 +474,7 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 		imageHeader.repaint();
 		imagePanel.repaint();
 		infoPanel.setNote(hL);
-	//	controls.setBackground(null);
+		//	controls.setBackground(null);
 		controls.repaint();
 		setDefaultExplanation();
 		hL.decrementStampSuppress();
@@ -489,7 +489,7 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 		if (aim!=null) {
 			aim.deleteNote(currentNoteNumber);
 			if (aim.getNumNotes()==0)
-			aim = null;
+				aim = null;
 		}
 		setNotes(aim, -1);
 	}
@@ -555,7 +555,7 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 				m[i].setEnabled(vis);
 			MesquiteTrunk.resetMenuItemEnabling();
 		}
-		
+
 		super.setVisible(vis);
 	}
 }
@@ -598,8 +598,8 @@ class AImagePanel extends MesquitePanel {
 			g.drawImage(pic,picX, picY, picWidth, picHeight, (ImageObserver)this);
 		}
 		AttachedNote note = pw.getCurrentNote();
+		Color c = g.getColor();
 		if (note != null){
-			Color c = g.getColor();
 			for (int i=0; i<note.getNumLabels(); i++){
 				Font f = g.getFont();
 				ImageLabel label = note.getLabel(i);
@@ -608,6 +608,12 @@ class AImagePanel extends MesquitePanel {
 				if (label.getFixedToImage()) {
 					labelX += picX;
 					labelY += picY;
+				}
+				g.setColor(Color.lightGray); 
+				if (highlightedLabel == label && filled){
+					GraphicsUtil.fillXORRect(g, labelX, labelY, label.getWidth(), label.getHeight());
+					if (squared) 
+						GraphicsUtil.fillXORRect(g, labelX+label.getWidth()-growboxSize -2, labelY + label.getHeight()-growboxSize -2, growboxSize, growboxSize);
 				}
 				if (label.getShowShadow()){
 					g.setColor(Color.white);
@@ -628,15 +634,10 @@ class AImagePanel extends MesquitePanel {
 					g.setColor(Color.black);
 				drawLabel(g, label, labelX, labelY, 0, 0);
 
-				g.setColor(c);
 				g.setFont(f);
-				if (highlightedLabel == label && filled){
-					GraphicsUtil.fillXORRect(g, labelX, labelY, label.getWidth(), label.getHeight());
-					if (squared) 
-						GraphicsUtil.fillXORRect(g, labelX+label.getWidth()-growboxSize -2, labelY + label.getHeight()-growboxSize -2, growboxSize, growboxSize);
-				}
 			}
 		}
+		g.setColor(c);
 		MesquiteWindow.uncheckDoomed(this);
 	}
 
@@ -695,13 +696,13 @@ class AImagePanel extends MesquitePanel {
 		//picX + label.getPointerX()
 		//int dTopLeft = 
 		if (undraw){
-		GraphicsUtil.undrawXORLine(this, g, pointerX, pointerY, cornerX, cornerY, 1, g.getColor());
-		GraphicsUtil.unfillXOROval(this, g, pointerX-1, pointerY-1, 2, 2);
+			GraphicsUtil.undrawXORLine(this, g, pointerX, pointerY, cornerX, cornerY, 1, g.getColor());
+			GraphicsUtil.unfillXOROval(this, g, pointerX-1, pointerY-1, 2, 2);
 		}
 		else {
 			GraphicsUtil.drawXORLine(g, pointerX, pointerY, cornerX, cornerY, 1, g.getColor());
 			GraphicsUtil.fillXOROval(g, pointerX-1, pointerY-1, 2, 2);
-			}
+		}
 	}
 	int sqDistance(int x, int y, int x2, int y2){
 		return (x-x2)*(x-x2) + (y-y2)*(y-y2);
@@ -1050,12 +1051,14 @@ class AImagePanel extends MesquitePanel {
 					highlightedLabel = touchedLabel; //should sstill be highlighted
 					filled = true;
 				}
-				touchedLabel = null;
 				touchedXImage = -1;
 				touchedYImage = -1;
-
-				repaint();
 			}
+			else 
+				highlightedLabel = null;
+
+			touchedLabel = null;
+			repaint();
 		}
 		else if (tool == pw.pointerTool){
 			if (touchedLabel !=null) {
@@ -1069,9 +1072,11 @@ class AImagePanel extends MesquitePanel {
 					fillXOR(touchedLabel,  true, false);
 					highlightedLabel = null;
 				}
-				touchedLabel = null;
-				repaint();
 			}
+			else
+				highlightedLabel = null;
+			touchedLabel = null;
+			repaint();
 		}
 	}
 	/*_________________________________________________*/

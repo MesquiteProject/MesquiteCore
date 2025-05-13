@@ -5777,7 +5777,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	/* ............................................................................................................... */
 	public void shimmerVerticalOff(Panel panel, int x, int column) {
-		if (useShimmerMode()){
+		if (GraphicsUtil.permitXORMode(null)){
 			shimmerVerticalOn(panel, x);
 		}
 		else  {
@@ -5810,7 +5810,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		if (mg == null)
 			return;
 
-		if (useShimmerMode()){
+		if (GraphicsUtil.permitXORMode(mg)){
 			GraphicsUtil.setSafeXORMode(mg); 
 			mg.drawLine(x, top, x, bottom);  //XOR mode disabled because corrupted Graphics on windows to ridiculous slowness
 			GraphicsUtil.setSafePaintMode(mg); 
@@ -5837,7 +5837,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	//Horizontal shimmering is more restricted -- it shimmers only in the MatrixPanel, and assumes initial call uses same y coordinates as MatrixPanel
 	public void shimmerHorizontalOff(int y, int row) {
-		if (useShimmerMode()){
+		if (GraphicsUtil.permitXORMode(null)){
 			shimmerHorizontalOn(y);
 		}
 		else {
@@ -5860,7 +5860,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		if (mg == null)
 			return;
 		
-		if (useShimmerMode()){
+		if (GraphicsUtil.permitXORMode(mg)){
 			GraphicsUtil.setSafeXORMode(mg); 
 			mg.drawLine(left, y, right, y);
 			GraphicsUtil.setSafePaintMode(mg); 
@@ -5873,10 +5873,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/* ............................................................................................................... */
 	public void shimmerHorizontalOn(int y) {
 		shimmerHorizontalOn(null,matrix,0,matrixWidth,y); //Note: if Windows doesn't use true shimmer mode, and must turn off by a redraw (to work around Windows glacial redraws following XORmode)
-	}
-	/* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
-	boolean useShimmerMode(){
-		return GraphicsUtil.useXORMode(null, true);
 	}
 	/* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	/* ............................................................................................................... */

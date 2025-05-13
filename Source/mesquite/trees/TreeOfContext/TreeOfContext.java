@@ -373,7 +373,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 		else
 			s = "Tree(s) used from " + context.getContextName() + ".";  
 		 if (lastTree!=null)
-		 	s+= " Last tree used: " + lastTree.getName() +  "  [tree: " + lastTree.writeTree() + "] ";
+		 	s+= " Last tree used: " + lastTree.getName() +  "  (tree: " + lastTree.writeTree() + ")";
 		return s;
    	 }
 	/*.................................................................................................................*/

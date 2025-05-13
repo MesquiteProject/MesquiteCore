@@ -175,10 +175,13 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 		if (e.getActionCommand().equalsIgnoreCase("Add")) { //You have hit ADD, so let's add to current script. 
 			//Look for and hire the next processor, and capture its script for later use
 			boolean wasUTIS = MesquiteThread.unknownThreadIsScripting;
+			boolean wasANMT = MesquiteThread.acceptNonMesquiteThreads;
 			MesquiteThread.unknownThreadIsScripting = false;
+			MesquiteThread.acceptNonMesquiteThreads = true;
 			DatasetsListProcessorUtility processor = (DatasetsListProcessorUtility)hireEmployee(DatasetsListProcessorUtility.class, "Matrix processor (" + (matrixProcessors.size() + 1)+ ")");
 			MesquiteThread.unknownThreadIsScripting = wasUTIS;
-			if (processor != null) {
+			MesquiteThread.acceptNonMesquiteThreads = wasANMT;
+		if (processor != null) {
 				currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
 				String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
 				currentScript +="\ntell It;\n" + sn + "\nendTell;";

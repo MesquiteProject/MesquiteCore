@@ -684,9 +684,9 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			else
 				tree = taxa.getDefaultTree();
 			if (tree.getName()!=null && !tree.getName().equals(""))
-				return "Tree \"" + tree.getName() + "\" from trees \"" + currentTreeBlock.getName() + "\" of file " + currentTreeBlock.getFileName() + "  [tree: " + tree + "]";
+				return "Tree \"" + tree.getName() + "\" from trees \"" + currentTreeBlock.getName() + "\" of file " + currentTreeBlock.getFileName() + "  (tree: " + tree + ")";
 			else
-				return "Tree # " + Integer.toString(MesquiteTree.toExternal(itree))  + " from trees \"" + currentTreeBlock.getName() + "\" of file " + currentTreeBlock.getFileName() + "  [tree: " + tree + "]";
+				return "Tree # " + Integer.toString(MesquiteTree.toExternal(itree))  + " from trees \"" + currentTreeBlock.getName() + "\" of file " + currentTreeBlock.getFileName() + "  (tree: " + tree + ")";
 		}
 		catch (NullPointerException e) {
 			return null;

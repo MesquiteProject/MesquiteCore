@@ -157,7 +157,7 @@ public class RandomModifTree extends SourceModifiedTree {
    	}
 	/*.................................................................................................................*/
    	public String getParameters() {
-   		return"Randomly modifying tree from: " + getBasisTreeSource().getParameters() + ". [seed: " + originalSeed + "]";
+   		return"Randomly modifying tree from: " + getBasisTreeSource().getParameters() + ". (seed: " + originalSeed + ")";
    	}
 	/*.................................................................................................................*/
     	 public String getName() {
