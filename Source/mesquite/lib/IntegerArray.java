@@ -381,6 +381,29 @@ public class IntegerArray  implements Listable  {
 			newD[i] = d[i];
 		return newD;
 	}
+	/*...........................................................*/
+	public static int[] compressUnassigneds(int[] d) {
+		if (d == null)
+			return d;
+		int[] newD = new int[d.length];
+		for (int i = 0; i<d.length; i++)
+			newD[i] = d[i];
+		boolean found = true;
+		for (int sink = 0; sink < newD.length && found; sink++) { 
+			if (MesquiteInteger.unassigned == newD[sink]){ //available to be filled
+				found = false;
+				for (int source = sink+1; source < newD.length; source++){
+					if (newD[source] != MesquiteInteger.unassigned){
+						newD[sink] = newD[source];
+						newD[source] = MesquiteInteger.unassigned;
+						found = true;
+						break;
+					}
+				}
+			}
+		}
+		return newD;
+	}
 	/*...........................................................*
 	public void deletePartsBy Blocks(int[][] blocks) {
 		values = deletePartsBy Blocks(values, blocks);

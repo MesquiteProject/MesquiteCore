@@ -74,6 +74,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		MesquiteSubmenuSpec mss = ownerModule.addSubmenu(null, "Analysis", MesquiteModule.makeCommand("newAssistant",  this), TreeDisplayAssistantA.class);
 		mss = ownerModule.addSubmenu(null, "Display", MesquiteModule.makeCommand("newAssistantD",  this), TreeDisplayAssistantD.class);
 		treeDisplay =treeDrawCoordTask.createOneTreeDisplay(taxa, this); //TODO: set tree display when tree is set for first time
+		treeDisplay.setOrientation(TreeDisplay.RIGHT);
 		scrollPane = new MQScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
 		scrollPane.add(treeDisplay);
 		treeDisplay.autoStretchIfNeeded = true;

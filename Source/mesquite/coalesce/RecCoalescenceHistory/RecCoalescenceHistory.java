@@ -185,7 +185,6 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 		if (unrootedContained.getValue()){  //treating contained tree as unrooted
 			AssociationHistory resultHistory = null;
 			int minCount = MesquiteInteger.unassigned;
-			
 			//Get rerootings of contained tree.  If contained tree was recently seen, rerootings don't need to be recalculated.
 			RerootStore rerootings = getRerootings(contained);
 			
@@ -200,6 +199,7 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 					containedRerooted.deselectAll();
 				calcContainedNodes(history, containing, containedRerooted, association, containing.getRoot(), false, count);
 			
+				history.cleanContained(contained);
 				if (!MesquiteInteger.isCombinable(minCount) || count.getValue()<minCount) {
 					minCount = count.getValue();
 					resultHistory = history; //just takes first one!
@@ -225,7 +225,9 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 				cost.setValue(count.getValue());
 			if (resultString!=null && cost!=null)
 				resultString.setValue("Deep coalescence cost: " + cost);
-			return history;
+			StringBuffer sb = new StringBuffer(100);
+			history.cleanContained(contained);
+					return history;
 		}
 		else {  //treating contained tree as rooted; look for its stored placement in containing tree (stored in "location" stored inside contained tree.  NOT AVAILABLE as option
 			AssociationHistory history = new AssociationHistory();
@@ -242,6 +244,7 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 				cost.setValue(count.getValue());
 			if (resultString!=null && cost!=null)
 				resultString.setValue("Deep coalescence cost: " + cost);
+			history.cleanContained(contained);
 			
 			return history;
 		}
@@ -297,6 +300,7 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 			}
 		}
 	}
+	
 	/*_________________________________________________*/
 	/** this method recurses up the containing (species?) tree reconnecting a contained tree which already has location information, into the containing tree.  NOT AVAILABLE yet*/
 	private void reconnect(AssociationHistory history, Tree containingTree, Tree containedTree, TaxaAssociation association, int node) {

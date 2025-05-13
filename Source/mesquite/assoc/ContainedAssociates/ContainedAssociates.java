@@ -43,21 +43,21 @@ import mesquite.assoc.lib.*;
 /* ======================================================================== */
 public class ContainedAssociates extends AnalyticalDrawTree {
 	static int maxEdgeWidth = 499;
-	
+
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-//		EmployeeNeed e = registerEmployeeNeed(OneTreeSource.class, getName() + " needs a source for the contained trees (e.g. gene trees) to fit within the containing tree (e.g. a species tree).",
-//		"The source of contained trees can be chosen initially or in the Contained Tree Source submenu");
+		//		EmployeeNeed e = registerEmployeeNeed(OneTreeSource.class, getName() + " needs a source for the contained trees (e.g. gene trees) to fit within the containing tree (e.g. a species tree).",
+		//		"The source of contained trees can be chosen initially or in the Contained Tree Source submenu");
 		EmployeeNeed e2 = registerEmployeeNeed(TreeSource.class, getName() + " needs a source for the contained trees (e.g. gene trees) to fit within the containing tree (e.g. a species tree).",
-		"The source of contained trees can be chosen initially or in the Contained Tree Source submenu");
+				"The source of contained trees can be chosen initially or in the Contained Tree Source submenu");
 		EmployeeNeed e3 = registerEmployeeNeed(NodeLocsVH.class,  getName() + " uses a module to define node locations.",
-		"This is dealt with automatically.");
+				"This is dealt with automatically.");
 		e3.setSuppressListing(true);
 		EmployeeNeed e4 = registerEmployeeNeed(AssociationSource.class,  getName() + " needs to know how contained taxa (e.g. genes) fit within containing taxa (e.g. species).",
-		"The taxa association is probably found automatcially; otherwise you can choose it initially.");
+				"The taxa association is probably found automatcially; otherwise you can choose it initially.");
 		EmployeeNeed e5 = registerEmployeeNeed(ReconstructAssociation.class,  getName() + " needs a method to reconstruct how contained lineages (e.g. genes) fit within containing lineages (e.g. species).",
-		"The reconstruction method is chosen initially.");
+				"The reconstruction method is chosen initially.");
 		EmployeeNeed e6 = registerEmployeeNeed(mesquite.assoc.DepContTreeWindow.DepContTreeWindow.class,  getName() + " can show the contained tree.",
-		"The contained tree can be shown by selecting Display Contained Tree.");
+				"The contained tree can be shown by selecting Display Contained Tree.");
 
 	}
 	public String getName() {
@@ -72,7 +72,7 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 	}
 	/*.................................................................................................................*/
 
-//	TODO: have standard AssociateHistory (like CharacterHistory)
+	//	TODO: have standard AssociateHistory (like CharacterHistory)
 	NodeLocsVH nodeLocsTask;
 	//OneTreeSource oneTreeSourceTask;
 	TreeSource treeSourceTask;
@@ -95,7 +95,7 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 	TWindowMaker depWindowMaker;
 	boolean suppressed = false;
 	boolean suppressedSet = false; //this is to handle old version files
-	
+
 	Color containedBranchColor;
 	MesquiteString containedBrColorName;
 	Color containingBranchColor = WideTreeDrawing.defaultBranchColor;
@@ -143,12 +143,12 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 		}
 		addCheckMenuItem(null, "Show Contained Names", makeCommand("toggleContainedNames",  this), showContainedTaxNames);
 		addMenuItem( "Display Contained Tree", makeCommand("showContainedTree",  this));
-		
+
 		/*containingBrColorName = new MesquiteString("Blue");
 		MesquiteSubmenuSpec mmis = addSubmenu(null, "Containing Branch Color", makeCommand("setContainingBranchColor",  this));
 		mmis.setList(ColorDistribution.standardColorNames);
 		mmis.setSelected(containingBrColorName);
-*/
+		 */
 		containedBrColorName = new MesquiteString("Black");
 		MesquiteSubmenuSpec mmis2 = addSubmenu(null, "Contained Branch Color", makeCommand("setContainedBranchColor",  this));
 		mmis2.setList(ColorDistribution.standardColorNames);
@@ -409,6 +409,9 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 			}
 			if (depWindowMaker == null)
 				return null;
+			MesquiteWindow w = depWindowMaker.getModuleWindow();
+			w.setPopAsTile(true);
+			w.popOut(false);
 			depWindowMaker.setWindowVisible(true);
 			return depWindowMaker;
 
@@ -560,7 +563,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	ContainedAssocExtra extra;
 	AssociationHistory history;
 	ReconstructAssociation reconstructTask;
-	
+
 	//MesquiteTimer firstTime, secondTime, thirdTime, d1Time, d2Time, d3Time, d4Time;
 	public WideTreeDrawing (TreeDisplay treeDisplay, int numTaxa, ContainedAssociates ownerModule, AssociationSource associationTask, MesquiteModule treeSourceTask, ReconstructAssociation reconstructTask) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
@@ -616,7 +619,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		}	
 		return edgeWidth;
 	}
-	
+
 	void setContainedColor(Color c) {
 		containedColor = c;
 	}
@@ -758,7 +761,7 @@ class WideTreeDrawing extends TreeDrawing  {
 			yValue.setValue(y[mother]+(y[mother]-y[daughter])/2);
 		}
 		else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-		//	int offset = (x[N]-x[mother])/2;
+			//	int offset = (x[N]-x[mother])/2;
 			xValue.setValue(x[mother]+(x[daughter]-x[mother])/2);
 			yValue.setValue(y[daughter]);
 		}
@@ -794,11 +797,11 @@ class WideTreeDrawing extends TreeDrawing  {
 		if (tree.nodeExists(node)) {
 			if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node]!=null) {
 				GraphicsUtil.fill(g,branchPoly[node]);
-				
+
 			}
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				drawBranches( tree, g, d);
-			
+
 		}
 	}
 	/*_________________________________________________*/
@@ -816,14 +819,14 @@ class WideTreeDrawing extends TreeDrawing  {
 
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				whiteBranches( tree, g, d);
-			
+
 			if (emphasizeNodes()) {
 				Color prev = g.getColor();
 				g.setColor(Color.red);//for testing
 				GraphicsUtil.fill(g,nodePoly(node));
 				g.setColor(prev);
 			}
-			
+
 		}
 	}
 	boolean multipleHomes = false;
@@ -886,7 +889,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		}
 	}
 	NameReference migrateRef = NameReference.getNameReference("Migration");
-	
+
 	/*....................................................................................................*/
 	private void miniTerminals(Graphics g, Tree tree, int node, int[] terminals, double terminalY, int miniSpacing, boolean atTip, Color containedColor, TaxaPartition partitions) {
 		boolean inA =IntegerArray.inArray(node, terminals);
@@ -939,14 +942,14 @@ class WideTreeDrawing extends TreeDrawing  {
 				miniY[node] = terminalY;
 				miniX[node] = lastleft;
 				if (ownerModule.showContainedTaxNames.getValue()){
-				int taxonNumber = tree.taxonNumberOfNode(node);
-				//draw only if node has associates and is part of tree
-				String s=tree.getTaxa().getName(taxonNumber);
-				if (tree.getTaxa().getSelected(taxonNumber))
-					g.setColor(selectedContainedColor);
-				else
-					g.setColor(containedColor);
-				textRotator.drawRotatedText(s, taxonNumber, g, treeDisplay, (int)miniX[node]-2, (int)miniY[node]-6);  //integer nodeloc approximation
+					int taxonNumber = tree.taxonNumberOfNode(node);
+					//draw only if node has associates and is part of tree
+					String s=tree.getTaxa().getName(taxonNumber);
+					if (tree.getTaxa().getSelected(taxonNumber))
+						g.setColor(selectedContainedColor);
+					else
+						g.setColor(containedColor);
+					textRotator.drawRotatedText(s, taxonNumber, g, treeDisplay, (int)miniX[node]-2, (int)miniY[node]-6);  //integer nodeloc approximation
 				}
 			}
 
@@ -1012,7 +1015,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	/*....................................................................................................*/
 	private void miniScaleInternalLocs (Tree tree, int node, int[] terminals, double top, double cladeTop, int containing, int root, double scaling) {
-		
+
 		if (IntegerArray.inArray(node, terminals)){ //internal
 			miniY[node]=top;
 		}
@@ -1169,7 +1172,7 @@ class WideTreeDrawing extends TreeDrawing  {
 				return true;
 		return false;
 	}
-	
+
 	/*private int highestContaining(Tree tree, int node){
 		if (tree.nodeIsTerminal(node))
 			return y[node];
@@ -1213,7 +1216,7 @@ class WideTreeDrawing extends TreeDrawing  {
 				TaxaPartition partitions = null;
 				if (containedTree.getTaxa() != null)
 					partitions = (TaxaPartition)containedTree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
-				
+
 
 				//miniTerminalsTrialRun(containedTree, aNodes[i], terminals, yC, taxaSpacing, atTip, cc, partitions);
 				miniTerminals(g, containedTree, aNodes[i], terminals, yC, taxaSpacing, atTip, cc, partitions);
@@ -1229,7 +1232,7 @@ class WideTreeDrawing extends TreeDrawing  {
 					}
 					else
 						scaling = (Math.abs(minimumYOfContained(tree, tree.getRoot())-y[tree.getRoot()])/(tree.tallestPathAboveNode(tree.getRoot(), 1.0)));
-					
+
 					//if this is the root and branch lengths are not being shown for the containing tree, don't scale
 					if (tree.hasBranchLengths() && (treeDisplay.branchLengthDisplay != TreeDisplay.DRAWULTRAMETRIC || (true|| containingNode!=tree.getRoot()))){
 						miniScaleInternalLocs (containedTree, aNodes[i], terminals,  top, cladeTop, containingNode, aNodes[i], scaling);
@@ -1371,7 +1374,7 @@ class WideTreeDrawing extends TreeDrawing  {
 			if (t == null) {
 				if (MesquiteThread.isScripting())
 					MesquiteMessage.warnUser("Error: no contained tree " + currentContained);
-					else MesquiteMessage.warnProgrammer("Error: no contained tree " + currentContained);
+				else MesquiteMessage.warnProgrammer("Error: no contained tree " + currentContained);
 			}
 			else
 				MesquiteMessage.warnProgrammer("Error: contained tree not of class MesquiteTree ");
@@ -1527,7 +1530,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		}
 	}
 
-	
+
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		Rectangle2D box;
@@ -1609,14 +1612,14 @@ class WideTreeDrawing extends TreeDrawing  {
 						fraction.setValue(EDGESTART);  //TODO: this is just temporary: need to calculate value along branch.
 						if (tree.nodeExists(motherNode)) 
 							fraction.setValue(GraphicsUtil.fractionAlongLine(x, y, this.x[motherNode], this.y[motherNode], this.x[node], this.y[node],false,true));
-						}
 					}
 			}
-			if (!tree.isCollapsedClade(node)) 
-				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-					ScanBranches(tree, d, x, y, fraction);
-
 		}
+		if (!tree.isCollapsedClade(node)) 
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				ScanBranches(tree, d, x, y, fraction);
+
+	}
 	/*_________________________________________________*/
 	public   int findBranch(Tree tree, int drawnRoot, int x, int y, MesquiteDouble fraction) { 
 		if (MesquiteTree.OK(tree) && ready) {
@@ -1632,8 +1635,8 @@ class WideTreeDrawing extends TreeDrawing  {
 
 	/*_________________________________________________*/
 	public void reorient(int orientation) {
-	//	treeDisplay.setOrientation(orientation);
-	//	treeDisplay.pleaseUpdate(true);
+		//	treeDisplay.setOrientation(orientation);
+		//	treeDisplay.pleaseUpdate(true);
 	}
 	/*_________________________________________________*/
 	public void setEdgeWidth(int edw) {
@@ -1751,7 +1754,7 @@ class ContainedAssocExtra extends TreeDisplayDrawnExtra {
 	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 	}
-	
+
 	/**to inform TreeDisplayExtra that cursor has just entered branch N*/
 	public void cursorEnterBranch(Tree tree, int N, Graphics g){
 		int numbersAtEnd = drawing.history.getNumberContainedNodes(N);
@@ -1766,8 +1769,8 @@ class ContainedAssocExtra extends TreeDisplayDrawnExtra {
 		super.cursorEnterBranch(tree, N, g);
 	}
 
-	
-	
+
+
 }
 
 

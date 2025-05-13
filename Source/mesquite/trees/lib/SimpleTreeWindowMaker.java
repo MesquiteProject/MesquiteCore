@@ -60,7 +60,12 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 		simpleTreeWindow.sizeDisplays();
 		return true;
 	}
-	
+	/*............................................................................. */
+	// can be overridden by modules to suppress their employers' menus, e.g. for a dependent window, so it doesn't have unexpected clutter
+	public boolean suppressMenuAncestors(){
+		return true;
+	}
+
 
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){
