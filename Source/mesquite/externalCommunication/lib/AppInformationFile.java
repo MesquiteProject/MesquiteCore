@@ -111,12 +111,12 @@ public class AppInformationFile implements Listable {
 	}
 	public String getName() {
 		String s = appName;
-		if (!StringUtil.blank(version) || !StringUtil.blank(appVariant) | StringUtil.blank(compiledAs)){
-			s += "(";
-			if (!StringUtil.blank(appVariant))
-				s+= " (" + appVariant + ")";
+		if (!StringUtil.blank(appVariant))
+			s+= " (" + appVariant + ")";
+		if (!StringUtil.blank(version) | StringUtil.blank(compiledAs)){
+			s += " (";
 			if (!StringUtil.blank(version))
-				s+= " v. " + version;
+				s+= "v. " + version;
 			if (!StringUtil.blank(compiledAs)){
 				String arch = StringUtil.getLastItem(compiledAs, ".");
 				if (arch.equalsIgnoreCase("univ"))
