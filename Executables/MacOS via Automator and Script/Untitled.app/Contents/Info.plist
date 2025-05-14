@@ -34,11 +34,11 @@
 	<key>CFBundleIconFile</key>
 	<string>Mesquite.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.apple.automator.Mesquite-Starter-2025May14</string>
+	<string>com.apple.automator.Untitled</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Mesquite_Starter_2025May14</string>
+	<string>Untitled</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

@@ -5,6 +5,7 @@ import java.util.Vector;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import mesquite.lib.Listable;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -12,7 +13,7 @@ import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.StringUtil;
 import mesquite.lib.XMLUtil;
 
-public class AppInformationFile {
+public class AppInformationFile implements Listable {
 	String appName;
 	String appVariant;
 	String compiledAs;
@@ -25,12 +26,13 @@ public class AppInformationFile {
 	String citation;
 	String otherProperties;
 	String appsFilePath;
+	boolean primary = true;
 	static final int infoFileVersion = 1;
 	String appNameWithinAppsDirectory;
-	
+
 	static String externalCommunicationXMLTag = "externalCommunication";
 
-	
+
 	public AppInformationFile(String appNameWithinAppsDirectory) {
 		this.appNameWithinAppsDirectory = appNameWithinAppsDirectory;
 	}
@@ -107,6 +109,26 @@ public class AppInformationFile {
 		}
 		return true;
 	}
+	public String getName() {
+		String s = appName;
+		if (!StringUtil.blank(version) || !StringUtil.blank(appVariant) | StringUtil.blank(compiledAs)){
+			s += "(";
+			if (!StringUtil.blank(appVariant))
+				s+= " (" + appVariant + ")";
+			if (!StringUtil.blank(version))
+				s+= " v. " + version;
+			if (!StringUtil.blank(compiledAs)){
+				String arch = StringUtil.getLastItem(compiledAs, ".");
+				if (arch.equalsIgnoreCase("univ"))
+						arch = "x86 or ARM64";
+				else if (arch.equalsIgnoreCase("aarch64"))
+					arch = "ARM64";
+				s+= " for " + arch;
+			}
+			s += ")";
+		}
+		return s;
+	}
 	public String getAppName() {
 		return appName;
 	}
@@ -131,6 +153,14 @@ public class AppInformationFile {
 	public String getOtherProperties() {
 		return otherProperties;
 	}
+
+	//* if there is a choice, is this one primary?
+	public boolean isPrimary() {
+		return primary;
+	}
+	public void setPrimary(boolean primary) {
+		this.primary = primary;
+	}
 	public String getURL() {
 		return URL;
 	}
@@ -146,5 +176,5 @@ public class AppInformationFile {
 	public String getCitation() {
 		return citation;
 	}
-	
+
 }

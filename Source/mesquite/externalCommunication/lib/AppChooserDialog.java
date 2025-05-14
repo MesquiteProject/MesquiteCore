@@ -1,11 +1,13 @@
 package mesquite.externalCommunication.lib;
 
 import java.awt.Button;
+import java.awt.Choice;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import mesquite.externalCommunication.AppHarvester.AppHarvester;
 import mesquite.lib.*;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.RadioButtons;
@@ -17,21 +19,33 @@ public class AppChooserDialog extends ExtensibleDialog implements ActionListener
 	AppChooser appChooser;
 	String programName;
 	String alternativeManualPath;
+	Choice builtInChoices = null;
+	ListableVector choices;
 	
-	public AppChooserDialog (Object parent, String title, MesquiteInteger buttonPressed, boolean builtInExecutableAllowed, MesquiteModule ownerModule, AppChooser appChooser, String programName, String versionOfBuiltIn, MesquiteBoolean useDefaultExecutablePath, MesquiteString alternativeManualPath) {
+	public AppChooserDialog (Object parent, String title, MesquiteInteger buttonPressed, boolean builtInExecutableAllowed, MesquiteModule ownerModule, AppChooser appChooser, MesquiteBoolean useDefaultExecutablePath, MesquiteString alternativeManualPath) {
 		super(parent, title);
 		setFont(defaultBigFont);
 		intializeDialog(title,buttonPressed);
 		addWindowListener(this);
 		this.appChooser=appChooser;
-		this.programName = programName;
+		this.programName = appChooser.programName;
 		if (alternativeManualPath!=null)
 			this.alternativeManualPath=alternativeManualPath.getValue();
 		
 		addBlankLine();
 		String warningUseWorking = "";
 		if (builtInExecutableAllowed) {
-			String builtInString = "Use built-in " + programName + " (version " + versionOfBuiltIn + ")"; 
+			choices = AppHarvester.getAppInfoFilesForProgram(appChooser.officialAppNameInAppInfo);
+			int numBuiltIn = 0;
+			if (choices != null)
+				numBuiltIn = choices.size();
+			String builtInString = getBuiltInString(numBuiltIn);
+			
+			/*
+			appChooser.builtInAppPath = appInfoFile.getFullPath();
+			appChooser.versionOfBuiltIn = appInfoFile.getVersion();
+			 */
+			
 			int defaultValue = 1;
 			if (useDefaultExecutablePath.getValue())
 				defaultValue = 0;
@@ -41,6 +55,19 @@ public class AppChooserDialog extends ExtensibleDialog implements ActionListener
 			}
 			builtInVsManual.addItemListener(this);
 			addHorizontalLine(1);
+			if (numBuiltIn>1) {
+				int current = 0;
+				for (int i = 0; i< choices.size(); i++){
+					AppInformationFile appInfoFile = (AppInformationFile)choices.elementAt(i);
+					if (appInfoFile.isPrimary()){
+						current = i;
+						break;
+					}
+				}
+				builtInChoices = addPopUpMenu ("Built-in versions:", choices, current);
+				builtInChoices.addItemListener(this);
+				addHorizontalLine(1);
+			}
 			addLabel("Path to alternative installed copy of " + programName + ":");
 			warningUseWorking = "If you use the alternative installed copy of " + programName + ", p";
 		}
@@ -58,7 +85,12 @@ public class AppChooserDialog extends ExtensibleDialog implements ActionListener
 		
 
 	}
-	
+	String getBuiltInString(int numBuiltIn){
+		String builtInString = "Use built-in " + appChooser.programName + " (version " + appChooser.versionOfBuiltIn + ")"; 
+		if (numBuiltIn>1)
+			builtInString += " [Choice available below]";
+		return builtInString;
+	}
 	public boolean builtInAppChosen() {
 		if (builtInVsManual !=null) {
 			return builtInVsManual.getValue() == 0;
@@ -83,10 +115,25 @@ public class AppChooserDialog extends ExtensibleDialog implements ActionListener
 	}
 
 	/*.................................................................................................................*/
-	public void itemStateChanged(ItemEvent arg0) {
-		appChooser.informAppUser();
+	AppInformationFile prefInfoFile;
+	public void itemStateChanged(ItemEvent e) {
+  		if (e.getItemSelectable() == builtInChoices){
+  			int which = builtInChoices.getSelectedIndex();
+  			prefInfoFile = (AppInformationFile)choices.elementAt(which);
+			appChooser.builtInAppPath = prefInfoFile.getFullPath();
+			appChooser.versionOfBuiltIn = prefInfoFile.getVersion();
+			builtInVsManual.setLabel(0, getBuiltInString(2));
+  			appChooser.informAppUser();
+  		}
+  		else {
+  			appChooser.informAppUser();
+  		}
 	}
-
+	public void storePrefsIfNeeded(){
+		if (prefInfoFile != null)
+  			AppHarvester.setAsPrimary(appChooser.officialAppNameInAppInfo, prefInfoFile, true);
+			
+	}
 	
 	
 

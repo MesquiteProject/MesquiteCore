@@ -267,7 +267,6 @@ public abstract class TreeDrawing  {
 			catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
 			}
 			g.setPaintMode();
-			g.setColor(Color.black);
 			return;
 		}
 		g.setColor(Color.yellow);
@@ -282,7 +281,14 @@ public abstract class TreeDrawing  {
 	/*_________________________________________________*/
 	/** Does the basic unhighlighting of a branch **/
 	public  void unhighlightBranch (Tree tree, int N, Graphics g) {
-		treeDisplay.repaint();
+		if (GraphicsUtil.permitXORMode(g))  {
+			g.setColor(Color.black);
+			GraphicsUtil.setSafeXORMode(g); 
+				fillBranch(tree, N, g);
+			g.setPaintMode();
+		}
+		else
+			treeDisplay.repaint();
 	}
 
 	/** Fill branch N to indicate missing data */

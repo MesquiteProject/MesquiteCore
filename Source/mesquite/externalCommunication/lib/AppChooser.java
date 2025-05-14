@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 
 package mesquite.externalCommunication.lib;
 
@@ -35,8 +35,8 @@ public class AppChooser implements ActionListener {
 	String programName;
 	MesquiteBoolean useDefaultExecutablePath = new MesquiteBoolean(false);
 	boolean builtInExecutableAllowed = false;  // whether or not the built in executable is allowed to be used
-					//- the system has already harvested app info and recorded whether or not a built-in executable exists.
-	
+	//- the system has already harvested app info and recorded whether or not a built-in executable exists.
+
 	String versionOfBuiltIn;
 	//RadioButtons builtInVsManual;
 	Button appButton, browseButton;
@@ -45,9 +45,9 @@ public class AppChooser implements ActionListener {
 	ExtensibleDialog containingDialog;
 	AppUser appUser;
 	MesquiteModule ownerModule;
-	
 
-	
+
+
 	public AppChooser(String officialAppNameInAppInfo, String programNameForDisplay, boolean useDefaultExecutablePath, String alternativeManualPath) {
 		this.officialAppNameInAppInfo = officialAppNameInAppInfo;
 		programName = programNameForDisplay;
@@ -62,11 +62,11 @@ public class AppChooser implements ActionListener {
 
 		this.alternativeManualPath.setValue(alternativeManualPath);;
 		this.useDefaultExecutablePath.setValue(useDefaultExecutablePath);;
-		
+
 	}
 
 	public AppChooser(MesquiteModule ownerModule, AppUser appUser, boolean useDefaultExecutablePath, String alternativeManualPath) {
-	//	this.useBuiltInIfAvailable = useBuiltInIfAvailable;
+		//	this.useBuiltInIfAvailable = useBuiltInIfAvailable;
 		this.appUser = appUser;
 		this.ownerModule = ownerModule;
 		if (appUser!=null) {
@@ -92,7 +92,7 @@ public class AppChooser implements ActionListener {
 		appButton = dialog.addAListenedButton("App...", null, this);
 		appButton.setActionCommand("chooseApp");
 	}
-	
+
 	AppChooserDialog appChooserDialog;
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
@@ -100,9 +100,9 @@ public class AppChooser implements ActionListener {
 
 			//Show app chooser dialog ========================
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
-			appChooserDialog = new AppChooserDialog(containingDialog,  "Choose " + programName,buttonPressed, builtInExecutableAllowed, ownerModule, this, programName, versionOfBuiltIn, useDefaultExecutablePath, alternativeManualPath);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			appChooserDialog = new AppChooserDialog(containingDialog,  "Choose " + programName,buttonPressed, builtInExecutableAllowed, ownerModule, this, useDefaultExecutablePath, alternativeManualPath);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 			appChooserDialog.completeAndShowDialog(true);
-			
+
 			if (buttonPressed.getValue()==0)  {
 				useDefaultExecutablePath.setValue(appChooserDialog.builtInAppChosen());
 				if (appChooserDialog.getAlternativePathField()!=null) {
@@ -112,21 +112,20 @@ public class AppChooser implements ActionListener {
 					} else
 						alternativeManualPath.setValue(tempPath);
 				}
-				//Remember in receiving module to receive the various parts
-				// set pathOfBuiltIn etc.?
+				appChooserDialog.storePrefsIfNeeded();
 			}
 
 			if (appUser!=null) {
 				appUser.appChooserDialogBoxEntryChanged();
 			}
-		
-			
+
+
 			appChooserDialog.dispose();
 			usingLabelMainDlog.setText(getMainDialogUsingString());
-		//	containingDialog.repaintAll();
+			//	containingDialog.repaintAll();
 		} 
 	}
-	
+
 	public boolean builtInAppChosen() {
 		if (appChooserDialog !=null) {
 			return appChooserDialog.builtInAppChosen();
@@ -159,7 +158,7 @@ public class AppChooser implements ActionListener {
 			return originalPath;
 		else
 			return "..." + MesquiteFile.fileSeparator + path;
-}
+	}
 	/*.................................................................................................................*/
 	String getMainDialogUsingString() {
 		if (!useDefaultExecutablePath.getValue() && alternativeManualPath.isBlank())
@@ -177,7 +176,7 @@ public class AppChooser implements ActionListener {
 			appUser.appChooserDialogBoxEntryChanged();
 		}
 	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	boolean usingBuiltIn() {
 		if (builtInExecutableAllowed) {
 			return useDefaultExecutablePath.getValue();

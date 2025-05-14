@@ -56,7 +56,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 	CharacterData data = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		addMenuItem("Show Matrix in Tree Window...", new MesquiteCommand("queryOptions", this));
+//		addMenuItem("Show Matrix in Tree Window...", new MesquiteCommand("queryOptions", this));
 		return true;
 	}
 
@@ -67,7 +67,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		return extra;
 	}
 
-
+	
 
 	public boolean isSubstantive(){
 		return false;
@@ -93,7 +93,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 			resetMatrix(tree);
 	}
 
-/*
+	/*
 	CharacterData linkedMatrix(Tree tree){
 		MesquiteProject project = getProject();
 		CharacterData d = null;
@@ -114,7 +114,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI  {
 		}
 		return d;
 	}
-*/
+	 */
 
 	void resetMatrix(Tree tree){
 		if (!showMatrix)
@@ -300,6 +300,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	DoubleArray boxEdges;
 	Rectangle scroller, edgeGrabber, scrollPageDecrease, scrollPageIncrease;
 	Image linkIcon, linkOffIcon;
+//	MesquiteTimer[] timers = new MesquiteTimer[8];
 
 	public ShowMatrixLinkedExtra(ShowMatrixInTreeWindow ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
@@ -313,6 +314,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		edgeGrabber = new Rectangle(0,0,0,0);
 		linkIcon = MesquiteImage.getImage(ownerModule.getPath() +  "linkedMatrix.gif");  
 		linkOffIcon = MesquiteImage.getImage(ownerModule.getPath() +  "linkedMatrixOff.gif");  
+	//	for (int i = 0; i<8; i++)
+	//		timers[i] = new MesquiteTimer();
 	}
 
 	void turnOnOff(boolean on){
@@ -363,7 +366,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	int prevTaxon = MesquiteInteger.unassigned;
 	double prevTip = MesquiteDouble.unassigned;
 	double minSpace = MesquiteDouble.unassigned;  // to help edges
-	
+
 	public void getTipEdges(Tree tree, int node) {
 		if (tree.nodeIsTerminal(node)){
 			if (treeDisplay.isRight() || treeDisplay.isLeft()) {
@@ -432,6 +435,41 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	int getCharacterOfLocationInScroll(int z){
 		return (int)((z-getBase())*getNumCharsTotal()*1.0/fieldSize());
 	}
+	int getCharacterOfLocationInField(int xLoc, int yLoc){
+		if (treeDisplay.isRight() || treeDisplay.isLeft()) {
+			double x = getBase();
+			if (treeDisplay.isLeft())
+				x += perBox;
+			if (xLoc<x || xLoc > x + fieldSize())
+				return -1;
+
+			perBox = spacingPerCharacter();
+			int count = 0;
+			int baseIC = data.selectedIndexToPartIndex(baseICSel);
+			for (int ic = baseIC; (count+1)*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
+				x += perBox; 
+				if (x>xLoc)
+					return ic;
+				count++;
+			}
+		}
+		else if (treeDisplay.isUp() || treeDisplay.isDown()) {  // to count+2
+			double y = getBase();
+			if (yLoc<y || yLoc >y + fieldSize())
+				return -1;
+
+			perBox = spacingPerCharacter();
+			int count=0;
+			int baseIC = data.selectedIndexToPartIndex(baseICSel);
+			for (int ic = baseIC; (count+1)*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
+				y += perBox; 
+				if (y>yLoc)
+					return ic;
+				count++;
+			}
+		}
+		return -1;
+	}
 
 	double spacingPerCharacter(){
 		if (data == null)
@@ -478,24 +516,27 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			//int edgeWidth = treeDrawing.getEdgeWidth();
 			//g.setColor(Color.black);
 			//for left-right
+			int taxonNumber = tree.taxonNumberOfNode(node);
 			if (treeDisplay.isRight() || treeDisplay.isLeft()) {
 				double topY = treeDrawing.y[node] - minSpace/2;
 				if (MesquiteInteger.isCombinable(prevTaxon)) // not the first
 					topY = boxEdges.getValue(prevTaxon);
 				minTip=MesquiteDouble.minimum(minTip, topY);
-				double bottomY = boxEdges.getValue(tree.taxonNumberOfNode(node));
+				double bottomY = boxEdges.getValue(taxonNumber);
 				if (!MesquiteDouble.isCombinable(bottomY)) // the last
 					bottomY = treeDrawing.y[node] + minSpace/2;
 				maxTip=MesquiteDouble.maximum(maxTip, bottomY);
 				if (data != null){
 					double x = getBase();
-
+					
 					perBox = spacingPerCharacter();
+					if (treeDisplay.isLeft())
+						x += perBox;
 					numIC = 0;  //redundant, but avoids isolating an example
 					int count = 0;
 					int baseIC = data.selectedIndexToPartIndex(baseICSel);
-					for (int ic = baseIC; count*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
-						drawStateRectangle(g, x, topY,bottomY-topY, data, ic, tree.taxonNumberOfNode(node));
+					for (int ic = baseIC; (count+1)*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
+						drawStateRectangle(g, x, topY,bottomY-topY, data, ic, taxonNumber);
 						x += perBox; 
 						count++;
 						numIC++;
@@ -515,7 +556,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				if (MesquiteInteger.isCombinable(prevTaxon)) // not the first
 					leftX = boxEdges.getValue(prevTaxon);
 				minTip=MesquiteDouble.minimum(minTip, leftX);
-				double rightX = boxEdges.getValue(tree.taxonNumberOfNode(node));
+				double rightX = boxEdges.getValue(taxonNumber);
 				if (!MesquiteDouble.isCombinable(rightX)) // the last
 					rightX = treeDrawing.x[node] + minSpace/2;
 				maxTip=MesquiteDouble.maximum(maxTip, rightX);
@@ -527,8 +568,10 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 					numIC = 0;  //redundant, but avoids isolating an example
 					int count=0;
 					int baseIC = data.selectedIndexToPartIndex(baseICSel);
-					for (int ic = baseIC; count*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
-						drawStateRectangle(g, leftX, y,rightX-leftX, data, ic, tree.taxonNumberOfNode(node));
+					for (int ic = baseIC; (count+1)*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
+					//	timers[2].start();
+						drawStateRectangle(g, leftX, y,rightX-leftX, data, ic,taxonNumber);
+					//	timers[2].end();
 						y += perBox; 
 						count++;
 						numIC++;
@@ -554,7 +597,9 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	TextRotator textRotator = new TextRotator();
 	Rectangle linkIconRect = new Rectangle(0, 0, 22, 14);
 
+
 	void drawAndPrintOnTree(Tree tree, int drawnRoot, Graphics g){
+	//	timers[0].start();
 		data = ownerModule.data;
 		treeDrawing = treeDisplay.getTreeDrawing(); //just making sure this is most current
 		Color oldColor = g.getColor();
@@ -571,9 +616,11 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		numIC = 0;
 		minTip = MesquiteDouble.unassigned;
 		maxTip = MesquiteDouble.unassigned;
-
+		
+	//	timers[0].end();
+	//	timers[1].start();
 		drawOnTreeRec(tree, drawnRoot, g);
-
+	//	timers[1].end();
 
 		if (data == null) {
 			g.setColor(ColorDistribution.veryLightGray);
@@ -591,6 +638,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 	boolean iconShown = false;
 	/* ========================================= */
 	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	//	timers[3].start();
 
 		//###################### icons for linked matrix
 		if (treeDisplay.getOrientation() != TreeDisplay.LEFT && treeDisplay.getOrientation() != TreeDisplay.RIGHT && treeDisplay.getOrientation() != TreeDisplay.UP && treeDisplay.getOrientation() != TreeDisplay.DOWN)
@@ -615,7 +663,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			else {
 				g.drawImage(linkOffIcon, linkIconRect.x, linkIconRect.y, treeDisplay);
 				iconShown = true;
-		}
+			}
 		}		
 		else if (!ownerModule.showMatrix)
 			return;
@@ -623,11 +671,13 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			g.drawImage(linkOffIcon, linkIconRect.x, linkIconRect.y, treeDisplay);
 			iconShown = true;
 		}
+	//	timers[3].end();
 		//###################### draw Matrix!!!
 		drawAndPrintOnTree(tree, drawnRoot, g);
 
 		if (!ownerModule.showMatrix)
 			return;
+	//	timers[4].start();
 
 		//###################### draw scroll and other decorations
 		Color oldColor = g.getColor();
@@ -716,6 +766,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 
 		}
 		g.setColor(oldColor);
+	//	timers[4].end();
+	//	System.err.println("@ before " + timers[0].getAccumulatedTime() + " draw "  + timers[1].getAccumulatedTime() + " rect " + timers[2].getAccumulatedTime()  + " overallBefore " + timers[3].getAccumulatedTime() + " overallAfter " + timers[4].getAccumulatedTime());
 	}
 	/*.................................................................................................................*/
 	/* ========================================= */
@@ -859,7 +911,15 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			else if (treeDisplay.isUp() || treeDisplay.isDown())
 				treeDisplay.setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
 		}
+		int ic = getCharacterOfLocationInField(x, y);
+		if (ic>=0){
+			MesquiteWindow w = ownerModule.containerOfModule();
+			String s = "Character " + (ic+1);
+			if (data != null && data.characterHasName(ic))
+				s += " (" + data.getCharacterName(ic) + ")";
 
+			w.setExplanation(s);
+		}
 	}
 	int edgeGrabTouch = -1;
 	int scrollerTouch = -1;
@@ -894,10 +954,10 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			}
 			else if (!ownerModule.showMatrix){
 				if (iconShown){
-				ownerModule.showMatrix = true;
-				ownerModule.choose0Link1 = 1;
-				ownerModule.resetMatrix(tree);
-				turnOnOff(true);
+					ownerModule.showMatrix = true;
+					ownerModule.choose0Link1 = 1;
+					ownerModule.resetMatrix(tree);
+					turnOnOff(true);
 				}
 			}
 			else {

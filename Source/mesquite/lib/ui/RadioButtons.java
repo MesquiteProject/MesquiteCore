@@ -162,6 +162,12 @@ public class RadioButtons implements ItemListener {
 				checkboxArray[i].setState(false);
 		}
 	}
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	public void setLabel (int i, String label) {
+		if (i>=0 && i< numCheckBoxes)
+				checkboxArray[i].setLabel(label);
+	}
 
 }
 

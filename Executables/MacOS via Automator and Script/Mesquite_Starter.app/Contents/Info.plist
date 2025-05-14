@@ -7,7 +7,7 @@
 	<key>AMStayOpen</key>
 	<false/>
 	<key>BuildMachineOSBuild</key>
-	<string>22A380021</string>
+	<string>23A344011</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -34,11 +34,11 @@
 	<key>CFBundleIconFile</key>
 	<string>Mesquite.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.apple.automator.Mesquite-Starter-Flex2-AutomatorApp-Universal-2025January25</string>
+	<string>com.apple.automator.Mesquite-Starter-2025May14</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Mesquite_Starter_Flex2-AutomatorApp-Universal-2025January25</string>
+	<string>Mesquite_Starter_2025May14</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -52,7 +52,7 @@
 	<key>CFBundleURLTypes</key>
 	<array/>
 	<key>CFBundleVersion</key>
-	<string>526</string>
+	<string>528</string>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
@@ -60,15 +60,15 @@
 	<key>DTPlatformName</key>
 	<string>macosx</string>
 	<key>DTPlatformVersion</key>
-	<string>15.2</string>
+	<string>15.4</string>
 	<key>DTSDKBuild</key>
-	<string>24C83</string>
+	<string>24E232</string>
 	<key>DTSDKName</key>
-	<string>macosx15.2.internal</string>
+	<string>macosx15.4.internal</string>
 	<key>DTXcode</key>
-	<string>1600</string>
+	<string>1630</string>
 	<key>DTXcodeBuild</key>
-	<string>16A6170g</string>
+	<string>16E6052g</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.9</string>
 	<key>LSUIElement</key>

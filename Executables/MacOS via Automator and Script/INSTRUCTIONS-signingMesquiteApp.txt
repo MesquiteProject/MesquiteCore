@@ -1,5 +1,8 @@
 January 2025
 
+First, make sure info.plist lists Mesquite.icns under CFBundleIconFile
+And add Mesquite.icns to Resources
+
 ////////
 PREP for signing and notarizing
 make application specific password at https://appleid.apple.com
@@ -18,6 +21,8 @@ xcrun notarytool store-credentials --apple-id "waynemaddison58@gmail.com" --team
 SIGNING Mesquite.app
 
 codesign --force --deep --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign --force --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Info.plist
+codesign --force --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Resources/openMesquite.png
 codesign -d --verbose=4 Mesquite.app
 spctl --assess --verbose=4 --type execute Mesquite.app
 /usr/bin/ditto -c -k --keepParent Mesquite.app Mesquite.zip

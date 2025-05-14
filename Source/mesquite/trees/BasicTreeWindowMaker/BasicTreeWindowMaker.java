@@ -1988,7 +1988,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						treePane.setSize(width, height);
 						adjustTreePane(true, false);
 						treePane.doLayout();
-						treeDisplay.redoCalculations(881153);
+						//treeDisplay.redoCalculations(881153);  //Debugg.println
 					}
 				}
 			}
@@ -4513,7 +4513,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		if (treeDisplay != null) {
 			treeDisplay.setTreeAllExtras(tree);
-			treeDisplay.pleaseUpdate(true);
+			treeDisplay.pleaseUpdate(false); //don't need to ask for recalc because those will be from sizeDisplay
 			if (getMode() > 0)
 				updateTextPage();
 		}

@@ -1299,7 +1299,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 			TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 			int root = drawnRoot;
 			int subRoot = tree.motherOfNode(drawnRoot);
-
 			//If it's just a single terminal on the tree, have to make the root size handle the whole tree
 			int effectiveROOTSIZE = 20;
 			if (tree.numberOfVisibleTerminalsInClade(drawnRoot) == 1){  // it is just a single terminal in the tree

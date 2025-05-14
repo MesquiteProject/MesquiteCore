@@ -44,13 +44,13 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		addCheckMenuItem(null, "Show & Compare Other Tree", new MesquiteCommand("showTree", this), showTree);
+	//	addCheckMenuItem(null, "Show & Compare Other Tree", new MesquiteCommand("showTree", this), showTree);
 		treeDrawCoordTask= (DrawTreeCoordinator)hireEmployee(DrawTreeCoordinator.class, null);
 		treeDrawCoordTask.setUseMenubar(false);
 		extraTreeSource= (TreeSource)hireNamedEmployee(TreeSource.class, "#StoredTrees");
 		return true;
 	}
-
+	
 
 	//This method is optional for TreeWindowAssistants, unlike TreeDisplayAssistants
 	public TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay){
@@ -65,7 +65,7 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 
 	// settings ******
 	MesquiteBoolean showTree = new MesquiteBoolean(false);
-	MesquiteBoolean rotateMainTree = new MesquiteBoolean(false);
+	MesquiteBoolean rotateMainTree = new MesquiteBoolean(true);
 	MesquiteCMenuItemSpec rotateMenuItem= null;
 	int currentTree = 0;
 
@@ -171,6 +171,9 @@ public class ShowOtherTreeInTreeWindow extends TreeWindowAssistantI  {
 				if (showTree.getValue())
 					extra.rotateAndRefresh();
 			}
+		}
+		else if (checker.compare(this.getClass(), "Returns boolean of whether on or not", "[]", commandName, "areYouOn")) {
+			return new MesquiteBoolean(showTree.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Repaint the tree display and the extra tree", "[]", commandName, "repaint")) {
 			if (extra!= null){
@@ -547,7 +550,8 @@ class ShowOtherTreeExtra extends TreeDisplayExtra  {
 	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
 		if (rotateRect.contains(x, y)) {
 			ownerModule.alert("This symbol indicates that the primary tree is actively being reoriented by rotating the nodes to match to compared tree. This does not change the phylogenetic relationships of the primary tree; "
-					+ "It changes only how the tree is presented.");
+					+ "It changes only how the tree is presented.\n\n"
+					+"To turn this off, uncheck the menu item \"Rotate Main Tree for Better Fit\".");
 			return true;
 		}
 		return false;

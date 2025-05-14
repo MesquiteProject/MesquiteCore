@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>AMApplicationBuild</key>
-	<string>526</string>
+	<string>528</string>
 	<key>AMApplicationVersion</key>
 	<string>2.10</string>
 	<key>AMDocumentVersion</key>
@@ -1218,11 +1218,9 @@ end run</string>
 				<dict>
 					<key>Container</key>
 					<string>List</string>
-					<key>Optional</key>
-					<true/>
 					<key>Types</key>
 					<array>
-						<string>com.apple.applescript.object</string>
+						<string>*</string>
 					</array>
 				</dict>
 				<key>AMRequiredResources</key>
@@ -1389,14 +1387,14 @@ end run</string>
 					</dict>
 				</dict>
 				<key>isViewVisible</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>location</key>
-				<string>560.250000:921.000000</string>
+				<string>560.250000:439.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
 			<key>isViewVisible</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -1501,7 +1499,7 @@ else
 if [[ ${#myvar} &lt;1 ]]; #no flags passed in
 	then
 		#Java 9 or above: Following call uses --add-exports, which assumes Java 9 or above. If that fails, we'll later try Java 8
-		nohup "${JAVALOC}" --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -Xmx${MEMORY}000M -Xss8m -XX:+EnableDynamicAgentLoading -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 "${PROGARGS}" &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
+		nohup "${JAVALOC}" --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -Xdock:icon="$whereAmI/images/openMesquite.png" -Xmx${MEMORY}000M -Xss8m -XX:+EnableDynamicAgentLoading -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 "${PROGARGS}" &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
 		mesquite_PID=$!
 		echo "CHECKING of Mesquite started with add-exports flag" &gt;&gt; Mesquite_Support_Files/stdout.txt
 		sleep 1
@@ -1524,12 +1522,12 @@ if [[ ${#myvar} &lt;1 ]]; #no flags passed in
 		else
 			#The add-exports failed; try instead without. This probably means we are starting Java 8
 			echo "Mesquite failed to started with add-exports; attempting without." &gt;&gt; Mesquite_Support_Files/stdout.txt
-			nohup "${JAVALOC}" -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 "${PROGARGS}" &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
+			nohup "${JAVALOC}" -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -Xdock:icon="$whereAmI/images/openMesquite.png" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 "${PROGARGS}" &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
 			mesquite_PID=$!
 		fi
 
 	else #flags passed in; use those
-		nohup "${JAVALOC}" ${FLAGS} -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 "${PROGARGS}" &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
+		nohup "${JAVALOC}" ${FLAGS} -Xmx${MEMORY}000M -Xss8m -Xdock:name="Mesquite" -Xdock:icon="$whereAmI/images/openMesquite.png" -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 "${PROGARGS}" &gt; Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2&gt;&amp;1 &amp;
 		mesquite_PID=$!
 fi
 
@@ -1657,7 +1655,7 @@ fi
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>560.250000:1103.000000</string>
+				<string>560.250000:1067.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1761,7 +1759,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>560.250000:1144.000000</string>
+				<string>560.250000:1108.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1871,7 +1869,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>560.250000:1185.000000</string>
+				<string>560.250000:1149.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Set Value of Variable.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -1881,82 +1879,82 @@ end run</string>
 	</array>
 	<key>connectors</key>
 	<dict>
-		<key>052020CB-FBCD-43CD-8E26-7D9BEC111724</key>
+		<key>13704452-7D39-45BE-9957-E52EB7DF7866</key>
+		<dict>
+			<key>from</key>
+			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
+			<key>to</key>
+			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
+		</dict>
+		<key>57BDCF8C-C841-44B2-8B7C-43B76AB4A1AF</key>
+		<dict>
+			<key>from</key>
+			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
+			<key>to</key>
+			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
+		</dict>
+		<key>907BFD84-D8BE-4385-97B1-DD13A7DF0AB3</key>
 		<dict>
 			<key>from</key>
 			<string>F849A9B6-79F4-4C68-8A3B-7EB1D38891CF - F849A9B6-79F4-4C68-8A3B-7EB1D38891CF</string>
 			<key>to</key>
 			<string>68382CD1-D430-4B49-B9DD-A7A6818AB49F - 68382CD1-D430-4B49-B9DD-A7A6818AB49F</string>
 		</dict>
-		<key>31E74405-0B0C-41B4-866D-06A885132693</key>
-		<dict>
-			<key>from</key>
-			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
-			<key>to</key>
-			<string>CE280BC0-9DA5-4B7A-B552-B8B9BACF1851 - CE280BC0-9DA5-4B7A-B552-B8B9BACF1851</string>
-		</dict>
-		<key>3A557D0E-0B22-42F1-BE6D-7EDE26FA3C88</key>
-		<dict>
-			<key>from</key>
-			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
-			<key>to</key>
-			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
-		</dict>
-		<key>5253ADF6-1510-40B0-B4B3-382C16EE5511</key>
-		<dict>
-			<key>from</key>
-			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
-			<key>to</key>
-			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
-		</dict>
-		<key>75C5D6E8-91BD-4194-BF0B-E9FEE8905901</key>
-		<dict>
-			<key>from</key>
-			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
-			<key>to</key>
-			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
-		</dict>
-		<key>92039AF2-7C14-47BD-BD22-A85BBB21EC54</key>
+		<key>9BA76EA2-56D3-4BA3-9146-6FBAB4417488</key>
 		<dict>
 			<key>from</key>
 			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
 			<key>to</key>
 			<string>F849A9B6-79F4-4C68-8A3B-7EB1D38891CF - F849A9B6-79F4-4C68-8A3B-7EB1D38891CF</string>
 		</dict>
-		<key>A4B6DF31-30FC-426C-83F5-58C407FF892C</key>
+		<key>A22DF318-FB92-4D93-865C-E40FB2B7BF89</key>
+		<dict>
+			<key>from</key>
+			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
+			<key>to</key>
+			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
+		</dict>
+		<key>B634428A-CE9D-4FB9-A07E-CA3E10B5B80F</key>
+		<dict>
+			<key>from</key>
+			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
+			<key>to</key>
+			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
+		</dict>
+		<key>B7977C9D-1551-4816-B61F-8AAAA21EFA2B</key>
 		<dict>
 			<key>from</key>
 			<string>B03365C9-D989-4E89-AD9B-7E0E25FC5E4B - B03365C9-D989-4E89-AD9B-7E0E25FC5E4B</string>
 			<key>to</key>
 			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
 		</dict>
-		<key>A84E2F37-241B-45FD-8689-140D665AFF22</key>
-		<dict>
-			<key>from</key>
-			<string>35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2 - 35565B5A-57E2-4F76-B8E4-02CE4A8CD9B2</string>
-			<key>to</key>
-			<string>59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9 - 59BCA6EA-60BF-47F5-8C7B-221B6D2C77B9</string>
-		</dict>
-		<key>B2A2FA28-590E-454F-8FB5-E576FC135F66</key>
+		<key>C5D83459-BD93-4E60-BDC8-0BD0E9D30A83</key>
 		<dict>
 			<key>from</key>
 			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
 			<key>to</key>
 			<string>4F14C189-CB3E-41E7-989A-E209FB44368B - 4F14C189-CB3E-41E7-989A-E209FB44368B</string>
 		</dict>
-		<key>B4B16A07-B448-4FB8-A7FF-A6650D8E8276</key>
+		<key>CF00EB3F-79D9-4153-8129-85AB3F5C3729</key>
+		<dict>
+			<key>from</key>
+			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
+			<key>to</key>
+			<string>CE280BC0-9DA5-4B7A-B552-B8B9BACF1851 - CE280BC0-9DA5-4B7A-B552-B8B9BACF1851</string>
+		</dict>
+		<key>D8C50F55-E1E7-44F5-ABFC-A1D1792C0978</key>
 		<dict>
 			<key>from</key>
 			<string>CE280BC0-9DA5-4B7A-B552-B8B9BACF1851 - CE280BC0-9DA5-4B7A-B552-B8B9BACF1851</string>
 			<key>to</key>
 			<string>4DC45CD0-786B-4A2A-A319-006E4C2254CD - 4DC45CD0-786B-4A2A-A319-006E4C2254CD</string>
 		</dict>
-		<key>B8FE519F-AD0F-45EB-9FA3-0C35F32389CA</key>
+		<key>F95BD479-E070-4FFC-B58B-7510B6C0B7BF</key>
 		<dict>
 			<key>from</key>
-			<string>4B07F06B-F2E4-49D5-8009-9C558FB1CD61 - 4B07F06B-F2E4-49D5-8009-9C558FB1CD61</string>
+			<string>6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561 - 6C9C82CC-A1E1-45B1-AEF4-6D4AFF533561</string>
 			<key>to</key>
-			<string>2528247D-5A8D-4ADD-9481-A0BC58FA668F - 2528247D-5A8D-4ADD-9481-A0BC58FA668F</string>
+			<string>99ABA085-8613-4D21-B7E9-0A892D2C7EF0 - 99ABA085-8613-4D21-B7E9-0A892D2C7EF0</string>
 		</dict>
 	</dict>
 	<key>variables</key>

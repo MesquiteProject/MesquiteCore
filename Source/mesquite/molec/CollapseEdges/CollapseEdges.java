@@ -49,7 +49,8 @@ public class CollapseEdges extends MolecularDataAlterer implements AltererWholeC
 			return ResultCodes.INCOMPATIBLE_DATA;
 		MolecularData data = (MolecularData)cData;
 		boolean changed = data.stripRightTerminalGaps(false);
-		changed = changed||data.stripLeftTerminalGaps(false);
+		boolean leftChanged = data.stripLeftTerminalGaps(false);
+		changed = changed || leftChanged;
 		if (changed)
 			return ResultCodes.SUCCEEDED;
 			return ResultCodes.MEH;
