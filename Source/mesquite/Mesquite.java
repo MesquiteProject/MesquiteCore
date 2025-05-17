@@ -649,6 +649,21 @@ public class Mesquite extends MesquiteTrunk
 		}
 		if (verboseStartup) System.out.println("main init 28");
 
+		try {
+	        Taskbar taskbar = Taskbar.getTaskbar();
+	        if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+	            java.awt.Image icon = Toolkit.getDefaultToolkit().getImage(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "openMesquite.png");
+	            taskbar.setIconImage(icon);
+	        }
+	    } catch (UnsupportedOperationException e) {
+	        // Handle cases where the operation is not supported (e.g., macOS)
+	        System.err.println("Taskbar API is not supported on this platform.");
+	        e.printStackTrace();
+	    } catch (SecurityException e) {
+	       // Handle security exceptions if necessary
+	        System.err.println("Security exception occurred while setting the taskbar icon.");
+	        e.printStackTrace();
+	    }
 
 
 		logln(" ");

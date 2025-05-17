@@ -122,6 +122,12 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		resources.setLayout(resourcesLayout = new CardLayout());
 		poptile.setLayout(poptileLayout = new CardLayout());
 		addComponentListener(new MWCE(this));
+		try {
+	            java.awt.Image icon = Toolkit.getDefaultToolkit().getImage(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "openMesquite.png");
+	            setIconImage(icon);
+	    } 
+		catch (UnsupportedOperationException e) {} 
+		catch (SecurityException e) {}
 
 		/* EMBEDDED if embedded remove this */
 		addWindowListener(new MWWE(this));
