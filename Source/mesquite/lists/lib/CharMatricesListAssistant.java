@@ -23,14 +23,14 @@ import mesquite.lib.duties.*;
 
 
 /* ======================================================================== */
-public abstract class DataSetsListAssistant extends ListAssistant  {
+public abstract class CharMatricesListAssistant extends ListAssistant  {
 	protected ListableVector datas =null;
 
    	 public Class getDutyClass() {
-   	 	return DataSetsListAssistant.class;
+   	 	return CharMatricesListAssistant.class;
    	 }
  	public String getDutyName() {
- 		return "Data sets list assistant";
+ 		return "Character matrices list assistant";
    	 }
 
 	 public String[] getDefaultModule() {

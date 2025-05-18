@@ -26,7 +26,7 @@ import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
-public class NumForCharMatrixList extends DataSetsListAssistant implements MesquiteListener, Pausable  {
+public class NumForCharMatrixList extends CharMatricesListAssistant implements MesquiteListener, Pausable  {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Number for Matrix (in List of Character Matrices window)";

@@ -724,7 +724,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		return !ownerModule.associateIsBuiltIn(row); //ok for !color
 	}
 	/*.................................................................................................................*/
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		if (ownerModule.associateIsBuiltIn(row)){
 		}
 		else if (row>=0 && row<associatesList.size()){

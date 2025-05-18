@@ -543,6 +543,35 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			else if (basicTreeWindow != null)
 				basicTreeWindow.showTree();
 		}
+		else if (checker.compare(this.getClass(), "Sets the source of trees", "[name of tree source module]", commandName, "setTreeSourceSuppressed")) {
+			TreeSource temp = (TreeSource) replaceEmployee(TreeSource.class, arguments, "Source of trees", treeSourceTask);
+			if (temp != null) {
+				if (treeSourceTask != null)
+					treeSourceTask.doCommand("laxOff", null, checker);
+				treeSourceTask = temp;
+				treeSourceName.setValue(treeSourceTask.getName());
+				treeSourceTask.setPreferredTaxa(taxa);
+				editMode = false;
+				if (basicTreeWindow != null)
+					basicTreeWindow.editedByHand = false;
+
+				resetContainingMenuBar();
+				resetAllWindowsMenus();
+				return treeSourceTask;
+			}
+			else if (basicTreeWindow != null)
+				basicTreeWindow.showTree();
+		}
+		else if (checker.compare(this.getClass(), "Sets the source of trees", "[name of tree source module]", commandName, "desuppressTreeSource")) {
+				if (basicTreeWindow != null) {
+					basicTreeWindow.setTreeSource(treeSourceTask);
+					basicTreeWindow.showTree();
+				}
+				resetContainingMenuBar();
+				resetAllWindowsMenus();
+				return null;
+			
+		}
 		else if (checker.compare(this.getClass(), "Constructs a tree window referring to a block of taxa, or returns the existing window if this module has already made one.", "[number of block of taxa, 0 based]", commandName, "makeTreeWindow")) {
 			if (basicTreeWindow != null)
 				return basicTreeWindow;

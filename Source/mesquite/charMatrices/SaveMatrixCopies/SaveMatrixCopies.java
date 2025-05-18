@@ -93,7 +93,7 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 		decrementMenuResetSuppression();
 	}
 
-	//code also used in DatasetsListExport
+	//code also used in CharMatricesListExport
 	public void saveFile(String exporterName, MesquiteFile file, String fileName, String directoryPath, boolean usePrevious, FileCoordinator coord){
 		if (exporterName.equals("NEXUS file"))
 			coord.writeFile(file);

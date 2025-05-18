@@ -755,10 +755,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 					returnedColumnNameText(i, null);
 			}
 		}
+		boolean rowNamesChanged = false;
 		for (int j = 0; j < numRowsTotal; j++) {
 			if (isRowNameSelected(j) || isRowSelected(j)) {
-				if (rowNamesEditable)
-					returnedRowNameText(j, null);
+				if (rowNamesEditable){
+					returnedRowNameText(j, null, false);
+					rowNamesChanged = true;
+				}
 			}
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
@@ -767,6 +770,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				}
 			}
 		}
+		if (rowNamesChanged)
+			rowNamesReturned();
+		
 	}
 
 	/* ................................................................................................................. */
@@ -790,7 +796,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				if (rowNamesEditable) {
 					String t = StringUtil.getNextTabbedToken(s, pos);
 					if (t != null)
-						returnedRowNameText(j, t);
+						returnedRowNameText(j, t, true);
 				}
 				count++;
 			}
@@ -820,11 +826,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			}
 		}
 
+		boolean rowNamesChanged = false;
 		for (int j = 0; j < numRowsTotal; j++) {
 			if (isRowNameSelected(j) || isRowSelected(j)) {
 				String t = StringUtil.getNextTabbedToken(s, pos);
-				if (t != null && rowNamesEditable && rowNamesCopyPaste)
-					returnedRowNameText(j, t);
+				if (t != null && rowNamesEditable && rowNamesCopyPaste){
+					returnedRowNameText(j, t, false);
+					rowNamesChanged = true;
+				}
 				count++;
 			}
 			for (int i = 0; i < numColumnsTotal; i++) {
@@ -836,6 +845,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				}
 			}
 		}
+		if (rowNamesChanged)
+			rowNamesReturned();
+
 	}
 
 	/* ................................................................................................................. */
@@ -3951,10 +3963,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/**
 	 * Called after editing a row name, passing the String resulting. Can be overridden in subclasses to respond to editing.
 	 */
-	public void returnedRowNameText(int row, String s) {
+	public void returnedRowNameText(int row, String s, boolean update) {
 		System.out.println("Text [" + s + "] returned for Row " + Integer.toString(row));
 	}
 
+	public void rowNamesReturned() {
+	}
 	/* ............................................................................................................... */
 	/** Remove all edit boxes; don't record the states. */
 	public void offAllEditsDontRecord() {//1. 12

@@ -468,11 +468,11 @@ class TaxonListWindow extends ListWindow {
 	public String getItemTypeName(){
 		return "Taxon";
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		if (taxa!=null) {
 			String warning = taxa.checkNameLegality(row, name);
 			if (warning == null)
-				taxa.setTaxonName(row, name);
+				taxa.setTaxonName(row, name, update);
 			else if (ownerModule!=null)
 				ownerModule.discreetAlert( warning);
 		}

@@ -284,12 +284,14 @@ class CharGroupListWindow extends ListWindow implements MesquiteListener {
 		}
 		return false;
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		CharactersGroup group = getCharGroup(row);
 		if (group!=null){
 			group.setName(name);
+			if (update){
 			resetAllTitles();
 			getOwnerModule().resetAllMenuBars();
+			}
 
 		}
 	}

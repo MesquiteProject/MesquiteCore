@@ -30,7 +30,7 @@ import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class ParallelAlterMatrixAsUtility extends DatasetsListProcessorUtility {
+public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 	static int numThreads = 2;
 
 	/* ................................................................................................................. */

@@ -75,7 +75,7 @@ public class DataSpecsListWindow extends ListWindow implements MesquiteListener 
 		}
 		super.setCurrentObject(obj);
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		if (data!=null) {
 			SpecsSet ss = data.getSpecsSet(row, ((DataSpecssetList)ownerModule).getItemType());
 			if (ss!=null)

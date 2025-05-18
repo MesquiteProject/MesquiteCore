@@ -25,7 +25,7 @@ import mesquite.lib.table.*;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class AlterMatrixAsUtility extends DatasetsListProcessorUtility {
+public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Alter Matrices";  

@@ -979,9 +979,12 @@ class StateNamesTable extends MesquiteTable {
 
 	}
 	/*...............................................................................................................*/
-	public void returnedRowNameText(int row, String s){
+	public void returnedRowNameText(int row, String s, boolean update){
 		if (rowsAreCharacters)
 			returnedCharNameText(row, s);
+	}
+
+	public void rowNamesReturned() {
 	}
 	public void returnedColumnNameText(int column, String s){
 		if (!rowsAreCharacters)

@@ -2244,6 +2244,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				oldColumnsWidths = table.getColumnWidthsUniform();
 				oldSuppress = table.suppressAutosize;
 				table.suppressAutosize = true;
+				table.frameMatrixCells = false;
 				table.setColumnWidthsUniform(table.birdsEyeWidth);
 				table.doAutosize = false;
 			}
@@ -2368,6 +2369,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			table.doAutosize = true;
 			table.showStates.setValue(oldShowStates);
 			table.suppressAutosize = oldSuppress;
+			table.frameMatrixCells = true;
 			table.showBirdsEyeView.setValue(false);
 		}
 	}
@@ -3607,7 +3609,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (atLeastOneFullRowSelected) {  // need to remove part before tab if a tab is there
 				removeTaxonNameIfPresent(sb);
 			} else if (rowNamesCopyPaste && (isRowNameSelected(j))) { // for name of taxon
-				returnedRowNameText(j, molecToken(sb, true));
+				returnedRowNameText(j, molecToken(sb, true), true);
 				taxNamesChanged = true;
 				sbUsed = true;
 			}  
@@ -5324,14 +5326,14 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void returnedRowNameText(int row, String s) {
+	public void returnedRowNameText(int row, String s, boolean update) {
 		if (data == null || taxa == null || window == null)
 			return;
 		String oldTaxonName = taxa.getTaxonName(row);
 		if (s != null && !s.equals(oldTaxonName)) {
 			String warning = taxa.checkNameLegality(row, s);
 			if (warning == null) {
-				taxa.setTaxonName(row, s);
+				taxa.setTaxonName(row, s, update);
 				taxNC = true; // for pasting, to discover if taxon names were changed (see pasteIt)
 				window.setUndoer(window.setUndoInstructions(UndoInstructions.SINGLETAXONNAME, -1, row, new MesquiteString(oldTaxonName), new MesquiteString(s)));
 			}
@@ -5348,6 +5350,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		}
 	}
 
+	public void rowNamesReturned() {
+		taxa.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
+	}
 	/* ............................................................................................................... */
 	public void returnedColumnNameText(int column, String s) {
 		if (data == null || taxa == null || window == null)

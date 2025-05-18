@@ -199,13 +199,17 @@ public class ConsensusTree extends TreeSource {
 				iConsenser.reset(taxa);
 			boolean done = false;
 			int count = 0;
-			if (verbose) logln("Consensing trees ");
-		//	Debugg.printStackTrace();
+
+			boolean first = true;
 			for (int i= startTree; i<numTrees && !done; i++) {
 				Tree t = trees.getTree(i);
 				if (t == null)
 					done = true;
 				else {
+					if (verbose && first){
+					logln("Consensing trees (" + numTrees + ")");
+					first = false;
+					}
 					iConsenser.addTree(t);
 					CommandRecord.tick("Processing tree " + (i+1));
 					startTree++;
@@ -219,9 +223,9 @@ public class ConsensusTree extends TreeSource {
 				}
 			}
 
-			if (verbose)
-				logln("Trees consensed");
-			//			if (count>0)
+			if (verbose && count>0){
+				logln("" + count + " Trees consensed");
+			}
 			tree = iConsenser.getConsensus();
 			if (tree instanceof MesquiteTree)
 				if (count==0)

@@ -24,20 +24,20 @@ import mesquite.lib.table.*;
 
 
 /* ======================================================================== */
-public abstract class DatasetsListUtility extends MesquiteModule  {
+public abstract class CharMatricesListProcessorUtility extends CharMatricesListUtility  {
 
    	 public Class getDutyClass() {
-   	 	return DatasetsListUtility.class;
+   	 	return CharMatricesListProcessorUtility.class;
    	 }
  	public String getDutyName() {
- 		return "Datasets list utility";
+ 		return "Character matrices list processor utility";
    	 }
-
-   	/** if returns true, then requests to remain on even after operateOnTaxas is called.  Default is false*/
-   	public boolean pleaseLeaveMeOn(){
-   		return false;
+ 	public String getNameForProcessorList() {
+ 		return getName();
    	}
-   	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
-   	public abstract boolean operateOnDatas(ListableVector datas, MesquiteTable table);
+   	public String[] getDefaultModule() {
+   		return new String[] { "#AlterMatrixAsUtility", "#ParallelAlterMatrixAsUtility", "#CharMatricesListConcatenate", "#CharMatricesListDeoncatenate", "#CharMatricesListDuplicate", "#CharMatricesListExport"};
+   	}
+
 }
 

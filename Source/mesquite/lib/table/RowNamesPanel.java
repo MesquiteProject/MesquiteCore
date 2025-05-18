@@ -107,7 +107,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		return width;
 	}
 	public void textReturned(int column, int row, String text){
-		table.returnedRowNameText(row, text);
+		table.returnedRowNameText(row, text, true);
 	}
 	public String getText(int column, int row){
 		return table.getRowNameText(row);

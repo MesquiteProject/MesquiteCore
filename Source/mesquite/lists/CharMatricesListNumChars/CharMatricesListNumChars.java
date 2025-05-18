@@ -11,8 +11,8 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.DatasetsListClass;
-/* created May 02 */
+package mesquite.lists.CharMatricesListNumChars;
+/*~~  */
 
 import mesquite.lists.lib.*;
 import java.util.*;
@@ -23,14 +23,13 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class DatasetsListClass extends DataSetsListAssistant implements MesquiteListener {
+public class CharMatricesListNumChars extends CharMatricesListAssistant implements MesquiteListener {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Type of character data matrix";
+		return "Number of characters of data matrix";
 	}
-
 	public String getExplanation() {
-		return "Indicates type of character data matrix (e.g., continuous, DNA, etc.)." ;
+		return "Indicates taxa of data matrix." ;
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -60,49 +59,32 @@ public class DatasetsListClass extends DataSetsListAssistant implements Mesquite
 		parametersChanged(notification);
 	}
 	public String getTitle() {
-		return "Type";
+		return "# Chars.";
 	}
 	public String getStringForRow(int ic){
 		try {
-			if (datas ==null || ic<0 || ic>= datas.size())
+			if (datas ==null || ic<0 || ic> datas.size())
 				return "";
-			CharacterData data =((CharacterData)datas.elementAt(ic));
-			if (data==null)
-				return "";
-			return data.getDataTypeName();
+			return Integer.toString(((CharacterData)datas.elementAt(ic)).getNumChars());
 		}
 		catch (NullPointerException e){
-			return "";
 		}
+		return "";
 	}
 	public String getWidestString(){
-		String best = " 888888 ";
-		if (datas==null)
-			return best;
-		int m = 8;
-		for (int i=0; i< datas.size(); i++) {
-			CharacterData data= (CharacterData)datas.elementAt(i);
-			if (data!=null){
-				String s = data.getDataTypeName();
-				int n = s.length();
-				if (n>m) {
-					m=n;
-					best = s;
-				}
-			}
-		}
-		return best + "888";
-
+		return " 888888 ";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return true;  
 	}
+
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return false;  
 	}
+	/*.................................................................................................................*/
 	public void endJob() {
 		if (datas !=null)
 			datas.removeListener(this);

@@ -226,15 +226,17 @@ class ModelsListWindow extends ListWindow implements MesquiteListener {
 		}
 		return false;
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		CharacterModel model = getModel(row);
 		if (model!=null){
 			if (model.isBuiltIn())
 				ownerModule.alert("The name of that character model cannot be changed, because the model is built in");
 			else {
 				model.setName(name);
+				if (update){
 				resetAllTitles();
 				getOwnerModule().resetAllMenuBars();
+				}
 			}
 		}
 	}

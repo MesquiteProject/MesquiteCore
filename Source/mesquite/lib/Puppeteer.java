@@ -1204,7 +1204,10 @@ public class Puppeteer  {
 			}
 			else if (checker.compare(null, "Displays a message in the system console indicating the current object being commanded", null, commandName, "showObjectCommanded")) {
 				if (fineDebugging) stamp("-sc- (" + level + ")22");
-				stamp("     object commanded: " + mb);
+				String addendum = "";
+				if (mb instanceof Listable)
+				addendum = " Name: " + ((Listable)mb).getName();
+				stamp("     object commanded: " + mb + addendum);
 				result = mb;
 			}
 			else if (checker.compare(null, "Used at the start of macros, to indicate the Class to which the macro is designed to direct its commands", "[short (packageless) name of Class]", commandName, "telling")) {

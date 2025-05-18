@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.DatasetsListDuplicate;
+package mesquite.lists.CharMatricesListDuplicate;
 
 import mesquite.lists.lib.*;
 
@@ -24,7 +24,7 @@ import mesquite.lib.table.*;
 import mesquite.lib.ui.AlertDialog;
 
 /* ======================================================================== */
-public class DatasetsListDuplicate extends DatasetsListUtility {
+public class CharMatricesListDuplicate extends CharMatricesListUtility {
 	boolean duplicateExcludedCharacters = false;
 	/*.................................................................................................................*/
 	public String getName() {

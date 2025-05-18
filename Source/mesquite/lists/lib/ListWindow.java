@@ -242,7 +242,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		temp.addLine("reviewColumnWidths");
 		return temp;
 	}
-	public abstract void setRowName(int row, String name);
+	public abstract void setRowName(int row, String name, boolean update);
 	public abstract String getRowName(int row);
 	public abstract String getRowNameForSorting(int row);
 	public int getSingleNameUndoConstant() {

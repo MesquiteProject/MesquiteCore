@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.DatasetsListProcess;
+package mesquite.lists.CharMatricesListProcess;
 
 import mesquite.lists.lib.*;
 
@@ -36,7 +36,7 @@ import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
-public class DatasetsListProcess extends DatasetsListUtility implements ActionListener {
+public class CharMatricesListProcess extends CharMatricesListUtility implements ActionListener {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Process Matrices ";
@@ -92,7 +92,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 		if (matrixProcessors == null)
 			return;
 		for (int i= 0; i< matrixProcessors.size(); i++){
-			DatasetsListProcessorUtility fProcessor = (DatasetsListProcessorUtility)matrixProcessors.elementAt(i);
+			CharMatricesListProcessorUtility fProcessor = (CharMatricesListProcessorUtility)matrixProcessors.elementAt(i);
 			fireEmployee(fProcessor);
 		}
 		if (matrixProcessors != null)
@@ -105,7 +105,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 			processorList.removeAll();
 		for (int i = 0; i<matrixProcessors.size(); i++){
 			if (matrixProcessors.elementAt(i)!=null)
-				processorList.add("(" + (i+1) + ") " + ((DatasetsListProcessorUtility)matrixProcessors.elementAt(i)).getNameAndParameters());
+				processorList.add("(" + (i+1) + ") " + ((CharMatricesListProcessorUtility)matrixProcessors.elementAt(i)).getNameAndParameters());
 		}
 
 	}
@@ -140,7 +140,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 		String[] steps = new String[matrixProcessors.size()];
 		for (int i = 0; i<steps.length; i++){
 			if (matrixProcessors.elementAt(i)!=null)
-				steps[i] = "(" + (i+1) + ") " + ((DatasetsListProcessorUtility)matrixProcessors.elementAt(i)).getNameAndParameters();
+				steps[i] = "(" + (i+1) + ") " + ((CharMatricesListProcessorUtility)matrixProcessors.elementAt(i)).getNameAndParameters();
 		}
 		processorList = dialog.addList (steps, null, null, 8);
 
@@ -178,7 +178,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 			boolean wasANMT = MesquiteThread.acceptNonMesquiteThreads;
 			MesquiteThread.unknownThreadIsScripting = false;
 			MesquiteThread.acceptNonMesquiteThreads = true;
-			DatasetsListProcessorUtility processor = (DatasetsListProcessorUtility)hireEmployee(DatasetsListProcessorUtility.class, "Matrix processor (" + (matrixProcessors.size() + 1)+ ")");
+			CharMatricesListProcessorUtility processor = (CharMatricesListProcessorUtility)hireEmployee(CharMatricesListProcessorUtility.class, "Matrix processor (" + (matrixProcessors.size() + 1)+ ")");
 			MesquiteThread.unknownThreadIsScripting = wasUTIS;
 			MesquiteThread.acceptNonMesquiteThreads = wasANMT;
 		if (processor != null) {
@@ -220,7 +220,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 		} 
 		else if (e.getActionCommand().equalsIgnoreCase("resetParams")) {//Ask all processors to re-query regarding options
 			for (int i= 0; i< matrixProcessors.size(); i++){
-				DatasetsListProcessorUtility fProcessor = (DatasetsListProcessorUtility)matrixProcessors.elementAt(i);
+				CharMatricesListProcessorUtility fProcessor = (CharMatricesListProcessorUtility)matrixProcessors.elementAt(i);
 				fProcessor.employeesQueryLocalOptions();
 			}
 			currentScript = recaptureScript();
@@ -230,7 +230,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 		}
 	}
 	/*.................................................................................................................*/
-	void recordProcessor(DatasetsListProcessorUtility processor){
+	void recordProcessor(CharMatricesListProcessorUtility processor){
 		if (matrixProcessors == null)
 			matrixProcessors = new Vector();
 		if (matrixProcessors.indexOf(processor)<0)
@@ -249,8 +249,8 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 		EmployeeVector employees = getEmployeeVector();
 		for (int i= 0; i<employees.size(); i++) {
 			MesquiteModule mb = (MesquiteModule)employees.elementAt(i);
-			if (mb instanceof DatasetsListProcessorUtility)
-				recordProcessor((DatasetsListProcessorUtility)mb);
+			if (mb instanceof CharMatricesListProcessorUtility)
+				recordProcessor((CharMatricesListProcessorUtility)mb);
 		}
 
 	}
@@ -260,7 +260,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 			return "";
 		String s = "";
 		for (int i = 0; i< matrixProcessors.size(); i++) {
-			DatasetsListProcessorUtility processor = (DatasetsListProcessorUtility)matrixProcessors.elementAt(i);
+			CharMatricesListProcessorUtility processor = (CharMatricesListProcessorUtility)matrixProcessors.elementAt(i);
 			s += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
 			String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
 			s +="\ntell It;\n" + sn + "\nendTell;";
@@ -270,7 +270,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the module processing matrices", "[name of module]", commandName, "addProcessor")) {
-			DatasetsListProcessorUtility processor = (DatasetsListProcessorUtility)hireNamedEmployee(DatasetsListProcessorUtility.class, arguments);
+			CharMatricesListProcessorUtility processor = (CharMatricesListProcessorUtility)hireNamedEmployee(CharMatricesListProcessorUtility.class, arguments);
 			if (processor!=null) {
 				recordProcessor(processor);
 			}
@@ -311,7 +311,7 @@ public class DatasetsListProcess extends DatasetsListUtility implements ActionLi
 			for (int i= 0; i< matrixProcessors.size(); i++)
 				warned[i] = false;
 			for (int i= 0; i< matrixProcessors.size() && continuePlease; i++){
-				DatasetsListProcessorUtility mProcessor = (DatasetsListProcessorUtility)matrixProcessors.elementAt(i);
+				CharMatricesListProcessorUtility mProcessor = (CharMatricesListProcessorUtility)matrixProcessors.elementAt(i);
 				if (mProcessor!=null) {
 					logln("Processing with " + mProcessor.getNameAndParameters());
 					boolean success = mProcessor.operateOnDatas(datas, table); //This could change how many matrices are in data, e.g. if it concatenates

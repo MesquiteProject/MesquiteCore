@@ -31,7 +31,7 @@ import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
 /* ============  a file interpreter for FASTA files ============*/
 /** This is the class for interpreting FASTA files.  It is subclassed to make interpreters specifically for
 DNA and Protein files. */
-public class zAddUCEModelLoci extends DatasetsListUtility {
+public class zAddUCEModelLoci extends CharMatricesListUtility {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.DatasetsListDeconcatenate;
+package mesquite.lists.CharMatricesListDeconcatenate;
 
 import mesquite.lists.lib.*;
 
@@ -25,7 +25,7 @@ import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class DatasetsListDeconcatenate extends DatasetsListUtility {
+public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Deconcatenate Partitions as Separate Matrices...";

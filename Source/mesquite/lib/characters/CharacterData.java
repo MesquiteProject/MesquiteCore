@@ -66,7 +66,7 @@ the CharacterData object, but are established by their managing modules and stor
   See general discussion of character storage classes under CharacterState
  */
 
-public abstract class CharacterData extends FileElement implements MesquiteListener, StringLister, Identifiable, CompatibilityChecker  {
+public abstract class CharacterData extends FileElement implements MesquiteListener, StringLister, Identifiable, CompatibilityChecker, NameableWithNotify  {
 	public static String DATATYPENAME="Character Data";
 	protected  int numTaxa; //number of taxa (rows): also determinable by taxa.getNumTaxa()
 	protected  int numChars; //number of characters (columns)
@@ -652,13 +652,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return true;
 	}
 	/** sets name of data matrix */
-	public void setName(String name) {
+	public void setName(String name, boolean notify) {
 		this.name= name;
-		notifyListeners(this, new Notification(NAMES_CHANGED));
+		if (notify)
+			notifyListeners(this, new Notification(NAMES_CHANGED));
 		if (getHShow()) {
 			if (getProject() != null)
 				getProject().refreshProjectWindow();
 		}
+	}
+	/** sets name of data matrix */
+	public void setName(String name) {
+		setName(name, true);
 	}
 	/** returns title of data if it has a title, or "Character Matrix" if has no title*/
 	public String getName() {

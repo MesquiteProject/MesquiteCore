@@ -25,7 +25,7 @@ import mesquite.lib.table.*;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class SelCharsInMatrixAsUtility extends DatasetsListProcessorUtility {
+public class SelCharsInMatrixAsUtility extends CharMatricesListProcessorUtility {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Select Characters ";  

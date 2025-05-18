@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.DatasetList;
+package mesquite.lists.CharMatricesList;
 /*~~  */
 
 import mesquite.lists.lib.*;
@@ -27,7 +27,7 @@ import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
-public class DatasetList extends ListLVModule {
+public class CharMatricesList extends ListLVModule {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Character Matrices List";
@@ -36,7 +36,7 @@ public class DatasetList extends ListLVModule {
 		return "Makes windows listing character data matrices and information about them." ;
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(DataSetsListAssistant.class, "The List of Character Matrices window can display columns showing information for each character matrix.",
+		EmployeeNeed e = registerEmployeeNeed(CharMatricesListAssistant.class, "The List of Character Matrices window can display columns showing information for each character matrix.",
 		"You can request that columns be shown using the Columns menu of the List of Character Matrices Window. ");
 	}
 	ListableVector datas;
@@ -69,27 +69,27 @@ public class DatasetList extends ListLVModule {
 		makeMenu("List");
 
 		MesquiteMenuSpec mss2 = addAuxiliaryMenu("Utilities");
-		addModuleMenuItems(mss2, makeCommand("doUtility", this), DatasetsListUtility.class);
+		addModuleMenuItems(mss2, makeCommand("doUtility", this), CharMatricesListUtility.class);
 		//MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
 		//mss2.setList(DatasetsListUtility.class);
 
 		if (!MesquiteThread.isScripting()){
-			DataSetsListAssistant assistant = (DataSetsListAssistant)hireNamedEmployee(DataSetsListAssistant.class, StringUtil.tokenize("Taxa of data matrix"));
+			CharMatricesListAssistant assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, StringUtil.tokenize("Taxa of data matrix"));
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
-			assistant = (DataSetsListAssistant)hireNamedEmployee(DataSetsListAssistant.class, StringUtil.tokenize("Number of characters of data matrix"));
+			assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, StringUtil.tokenize("Number of characters of data matrix"));
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
-			assistant = (DataSetsListAssistant)hireNamedEmployee(DataSetsListAssistant.class, "#DatasetsListClass");
+			assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, "#CharMatricesListClass");
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
-			assistant = (DataSetsListAssistant)hireNamedEmployee(DataSetsListAssistant.class, "#MatrixListVisible");
+			assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, "#MatrixListVisible");
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
@@ -119,7 +119,7 @@ public class DatasetList extends ListLVModule {
 			return datas.size();
 	}
 	public Class getAssistantClass(){
-		return DataSetsListAssistant.class;
+		return CharMatricesListAssistant.class;
 	}
 	/*.................................................................................................................*/
 	public boolean rowsDeletable(){
@@ -153,7 +153,7 @@ public class DatasetList extends ListLVModule {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Hires utility module to operate on the data matrices", "[name of module]", commandName, "doUtility")) { //12 Jan 02
 			if (getProject().getCharacterMatrices() !=null){
-				DatasetsListUtility tda= (DatasetsListUtility)hireNamedEmployee(DatasetsListUtility.class, arguments);
+				CharMatricesListUtility tda= (CharMatricesListUtility)hireNamedEmployee(CharMatricesListUtility.class, arguments);
 				if (tda!=null) {
 					MesquiteTable table = ((ListWindow)getModuleWindow()).getTable();
 					ListableVector datas = null;

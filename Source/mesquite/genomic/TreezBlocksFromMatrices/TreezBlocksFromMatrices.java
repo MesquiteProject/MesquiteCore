@@ -30,7 +30,7 @@ import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class TreezBlocksFromMatrices extends DatasetsListUtility {
+public class TreezBlocksFromMatrices extends CharMatricesListUtility {
 	//Name with z to make it sort after TreesFromSelMatrices
 
 	/*.................................................................................................................*/

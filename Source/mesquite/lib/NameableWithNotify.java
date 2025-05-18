@@ -11,33 +11,14 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lists.lib;
+package mesquite.lib;
 
 import java.awt.*;
-
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-
-
+import java.text.*;
 
 /* ======================================================================== */
-public abstract class DatasetsListProcessorUtility extends DatasetsListUtility  {
-
-   	 public Class getDutyClass() {
-   	 	return DatasetsListProcessorUtility.class;
-   	 }
- 	public String getDutyName() {
- 		return "Datasets list processor utility";
-   	 }
- 	public String getNameForProcessorList() {
- 		return getName();
-   	}
-   	public String[] getDefaultModule() {
-   		return new String[] { "#AlterMatrixAsUtility", "#ParallelAlterMatrixAsUtility", "#DatasetsListConcatenate", "#DatasetsListDeoncatenate", "#DatasetsListDuplicate", "#DatasetsListExport"};
-   	}
-
+/**Interface for object to claim it can be named, e.g. in List windows*/
+public interface NameableWithNotify extends Nameable {
+ 	public void setName(String name, boolean notify);
 }
 

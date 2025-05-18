@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.DatasetsListNumChars;
+package mesquite.lists.CharMatricesListTaxa;
 /*~~  */
 
 import mesquite.lists.lib.*;
@@ -21,12 +21,13 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
-public class DatasetsListNumChars extends DataSetsListAssistant implements MesquiteListener {
+public class CharMatricesListTaxa extends CharMatricesListAssistant implements MesquiteListener {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Number of characters of data matrix";
+		return "Taxa of data matrix";
 	}
 	public String getExplanation() {
 		return "Indicates taxa of data matrix." ;
@@ -56,33 +57,57 @@ public class DatasetsListNumChars extends DataSetsListAssistant implements Mesqu
 		return true;  //TODO: respond
 	}
 	public void changed(Object caller, Object obj, Notification notification){
+		if (Notification.appearsCosmetic(notification))
+			return;
 		parametersChanged(notification);
 	}
 	public String getTitle() {
-		return "# Chars.";
+		return "Taxa";
 	}
 	public String getStringForRow(int ic){
 		try {
-			if (datas ==null || ic<0 || ic> datas.size())
+			if (datas ==null || ic<0 || ic>= datas.size())
 				return "";
-			return Integer.toString(((CharacterData)datas.elementAt(ic)).getNumChars());
+			CharacterData data =((CharacterData)datas.elementAt(ic));
+			if (data==null)
+				return "";
+			Taxa t = data.getTaxa();
+			if (t == null)
+				return "";
+			else return t.getName();
 		}
 		catch (NullPointerException e){
+			return "";
 		}
-		return "";
 	}
 	public String getWidestString(){
-		return " 888888 ";
+		String best = " 888888 ";
+		if (datas==null)
+			return best;
+		int m = 8;
+		for (int i=0; i< datas.size(); i++) {
+			Taxa t = ((CharacterData)datas.elementAt(i)).getTaxa();
+			if (t!=null && t.getName()!=null){
+				String s = t.getName();
+				int n = s.length();
+				if (n>m) {
+					m=n;
+					best = s;
+				}
+			}
+		}
+		return best + "888";
+
 	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;  
+	}
+
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return true;  
-	}
-
-	/*.................................................................................................................*/
-	public boolean isPrerelease(){
-		return false;  
 	}
 	/*.................................................................................................................*/
 	public void endJob() {

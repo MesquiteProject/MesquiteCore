@@ -29,7 +29,7 @@ import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class TreezFilesFromMatrices extends DatasetsListUtility {
+public class TreezFilesFromMatrices extends CharMatricesListUtility {
 	//Name with z to make it sort after TreesFromSelMatrices
 	/*.................................................................................................................*/
 	public String getName() {

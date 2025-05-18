@@ -11,8 +11,8 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.DatasetsListTaxa;
-/*~~  */
+package mesquite.lists.CharMatricesListClass;
+/* created May 02 */
 
 import mesquite.lists.lib.*;
 import java.util.*;
@@ -21,16 +21,16 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
-import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
-public class DatasetsListTaxa extends DataSetsListAssistant implements MesquiteListener {
+public class CharMatricesListClass extends CharMatricesListAssistant implements MesquiteListener {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Taxa of data matrix";
+		return "Type of character data matrix";
 	}
+
 	public String getExplanation() {
-		return "Indicates taxa of data matrix." ;
+		return "Indicates type of character data matrix (e.g., continuous, DNA, etc.)." ;
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -57,12 +57,10 @@ public class DatasetsListTaxa extends DataSetsListAssistant implements MesquiteL
 		return true;  //TODO: respond
 	}
 	public void changed(Object caller, Object obj, Notification notification){
-		if (Notification.appearsCosmetic(notification))
-			return;
 		parametersChanged(notification);
 	}
 	public String getTitle() {
-		return "Taxa";
+		return "Type";
 	}
 	public String getStringForRow(int ic){
 		try {
@@ -71,10 +69,7 @@ public class DatasetsListTaxa extends DataSetsListAssistant implements MesquiteL
 			CharacterData data =((CharacterData)datas.elementAt(ic));
 			if (data==null)
 				return "";
-			Taxa t = data.getTaxa();
-			if (t == null)
-				return "";
-			else return t.getName();
+			return data.getDataTypeName();
 		}
 		catch (NullPointerException e){
 			return "";
@@ -86,9 +81,9 @@ public class DatasetsListTaxa extends DataSetsListAssistant implements MesquiteL
 			return best;
 		int m = 8;
 		for (int i=0; i< datas.size(); i++) {
-			Taxa t = ((CharacterData)datas.elementAt(i)).getTaxa();
-			if (t!=null && t.getName()!=null){
-				String s = t.getName();
+			CharacterData data= (CharacterData)datas.elementAt(i);
+			if (data!=null){
+				String s = data.getDataTypeName();
 				int n = s.length();
 				if (n>m) {
 					m=n;
@@ -100,16 +95,14 @@ public class DatasetsListTaxa extends DataSetsListAssistant implements MesquiteL
 
 	}
 	/*.................................................................................................................*/
-	public boolean isPrerelease(){
-		return false;  
-	}
-
-	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return true;  
 	}
 	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;  
+	}
 	public void endJob() {
 		if (datas !=null)
 			datas.removeListener(this);

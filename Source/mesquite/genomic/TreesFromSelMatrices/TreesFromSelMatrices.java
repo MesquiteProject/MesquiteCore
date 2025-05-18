@@ -31,7 +31,7 @@ import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class TreesFromSelMatrices extends DatasetsListUtility {
+public class TreesFromSelMatrices extends CharMatricesListUtility {
 
 	/*.................................................................................................................*/
 	public String getName() {

@@ -36,6 +36,7 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
+import mesquite.lib.NameableWithNotify;
 import mesquite.lib.Notification;
 import mesquite.lib.ObjectSpecsSet;
 import mesquite.lib.ParseUtil;
@@ -59,7 +60,7 @@ import mesquite.lib.ui.MesquiteWindow;
  * An object of this class represents a single set of taxa (a TAXA block in a
  * NEXUS file).
  */
-public class Taxa extends FileElement {
+public class Taxa extends FileElement implements NameableWithNotify {
 	private int numTaxa;
 	private Taxon[] taxon;
 	private MesquiteTree defaultTree;
@@ -744,16 +745,21 @@ public class Taxa extends FileElement {
 	}
 
 	/* ................................................................................................................. */
-	public void setName(String name) {
+	public void setName(String name, boolean notify) {
 		setDirty(true);
 		this.name = name;
-		notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
+		if (notify)
+			notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
 		if (getHShow()) {
 			if (getProject() != null)
 				getProject().refreshProjectWindow();
 		}
 	}
 
+	/* ................................................................................................................. */
+	public void setName(String name) {
+		setName(name, true);
+	}
 	
 	
 	/* ................................................................................................................. */

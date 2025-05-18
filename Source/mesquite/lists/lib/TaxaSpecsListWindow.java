@@ -64,7 +64,7 @@ public class TaxaSpecsListWindow extends ListWindow implements MesquiteListener 
 		else
 			super.setCurrentObject(obj);
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		if (taxa!=null) {
 			SpecsSet ss = taxa.getSpecsSet(row, ((TaxaSpecssetList)ownerModule).getItemType());
 			if (ss!=null)

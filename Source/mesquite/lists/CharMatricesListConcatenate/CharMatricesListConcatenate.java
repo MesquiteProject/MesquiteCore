@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.DatasetsListConcatenate;
+package mesquite.lists.CharMatricesListConcatenate;
 /* created May 02 */
 
 import mesquite.lists.lib.*;
@@ -27,7 +27,7 @@ import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
-public class DatasetsListConcatenate extends DatasetsListProcessorUtility {
+public class CharMatricesListConcatenate extends CharMatricesListProcessorUtility {
 	boolean anyExcluded = true;  //default true so provokes question if no data matrix
 	boolean preferencesSet=false;
 	MesquiteBoolean removeConcatenated = new MesquiteBoolean(false); //(-e)
@@ -172,7 +172,7 @@ public class DatasetsListConcatenate extends DatasetsListProcessorUtility {
 				anyExcluded = true;
 		}
 		getProject().getCharacterMatrices().incrementNotifySuppress(); 
-		if (!alreadyQueried && getHiredAs() != DatasetsListProcessorUtility.class && !queryOptions(false))
+		if (!alreadyQueried && getHiredAs() != CharMatricesListProcessorUtility.class && !queryOptions(false))
 			return false;
 		int count = 0;
 		int countFailed = 0;

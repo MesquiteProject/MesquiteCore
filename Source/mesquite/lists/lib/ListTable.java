@@ -508,13 +508,19 @@ public class ListTable extends MesquiteTable {
 			return window.getRowName(row);
 	}
 	/*...............................................................................................................*/
-	public void returnedRowNameText(int row, String s){
+	public void returnedRowNameText(int row, String s, boolean update){
 		if (s!=null && !s.equals(window.getRowName(row))) {
 			String oldName = window.getRowName(row);
-			window.setRowName(row, s);
+			window.setRowName(row, s, update);
 			window.setUndoer(ownerModule.getSingleNameUndoInstructions(row,oldName, s));
 		}
 		
+	}
+	public void rowNamesReturned() {
+		if (window.owner.resetMenusOnNameChange()){
+			window.resetAllTitles();
+			window.owner.resetAllMenuBars();
+		}
 	}
 	/*...............................................................................................................*/
 	public void returnedMatrixText(int column, int row, String s){

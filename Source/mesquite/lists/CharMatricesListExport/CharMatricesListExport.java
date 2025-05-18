@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.DatasetsListExport;
+package mesquite.lists.CharMatricesListExport;
 
 import mesquite.lists.lib.*;
 
@@ -35,7 +35,7 @@ import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
-public class DatasetsListExport extends DatasetsListProcessorUtility implements ItemListener {
+public class CharMatricesListExport extends CharMatricesListProcessorUtility implements ItemListener {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Export Matrices ";

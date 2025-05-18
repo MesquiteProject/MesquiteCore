@@ -483,7 +483,7 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 			selectionCoordinator.showPopUp(cont, x+5, y+5);
 	}
 	/*.................................................................................................................*/
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		if (data!=null) {
 			String warning = data.checkNameLegality(row, name);
 			if (warning == null)

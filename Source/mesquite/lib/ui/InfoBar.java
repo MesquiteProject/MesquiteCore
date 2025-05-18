@@ -496,6 +496,8 @@ public class InfoBar extends MousePanel implements Commandable {
 			MesquiteProject p = mod.getProject();
 			if (p!=null){
 				t+= "Window refers to project with home file " + p.getHomeFileName() + StringUtil.lineEnding();
+				t+= "Window name: " + window.getName() + StringUtil.lineEnding();
+				t+= "Window identity: " + window + StringUtil.lineEnding();
 				t+="File path: " + p.getHomeDirectoryName() + StringUtil.lineEnding();
 			}
 		}
