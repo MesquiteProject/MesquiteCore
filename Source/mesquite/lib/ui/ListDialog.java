@@ -51,6 +51,7 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 	TextArea explanation = null;
 	//Button ok;
 	String thirdButton = null;
+	String okButton = null;
 	Checkbox hideSecondaryCheckbox;
 	
 	boolean hideSecondary;
@@ -146,16 +147,17 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		if (numSelected() == 1)
 			showExplanation(list.getSelectedIndex());
 
+		this.okButton = okButton;
 		if (autoComplete){
 			String OK = defaultOKLabel;
 			if (!StringUtil.blank(okButton))
 				OK = okButton;
+			this.okButton = OK;
 			String cancel = defaultCancelLabel;
 			if (!StringUtil.blank(cancelButton))
 				cancel = cancelButton;
 			completeDialog(OK,cancel, hasDefault,this);
 		}
-		//ok = getMainButton();
 
 	}
 	
@@ -838,6 +840,10 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 					selected.setValue(translateIndexUsedToOriginal(list.getSelectedIndex()));
 				}
 				indicesSelected.setValues(translateIndicesUsedToOriginal(list.getSelectedIndexes()));
+				if (buttonPressed!=null) {
+					buttonPressed.setValue(getButtonNumber(okButton));
+				}
+				
 			}
 			catch (NumberFormatException eq){}
 			dispose();

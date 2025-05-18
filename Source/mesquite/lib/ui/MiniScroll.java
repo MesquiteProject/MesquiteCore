@@ -430,21 +430,21 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			incrementButton.setEnabled(i<maxValue);
 		}
 	}
-	public void increment () {  // have interface incrementable and pass object to this miniscroll so it can notify object
+	public void increment (int modifiers) {  // have interface incrementable and pass object to this miniscroll so it can notify object
  		if (MesquiteWindow.getQueryMode(this)) {
 			MesquiteWindow.respondToQueryMode("Mini scroll", command, this);
 			return;
 		}
 		if (currentValue<maxValue && command!=null) {
 			currentValue++;
-			command.doItMainThread(Long.toString(currentValue), CommandChecker.getQueryModeString("Mini scroll", command, this), this);
+			command.doItMainThread(Long.toString(currentValue) + " " + modifiers + " increment", CommandChecker.getQueryModeString("Mini scroll", command, this), this);
 			tf.setText(Long.toString(currentValue));
 			enterButton.setEnabled(false);
 			decrementButton.setEnabled(currentValue>minValue);
 			incrementButton.setEnabled(currentValue<maxValue);
 		}
 	}
-	public void decrement () {
+	public void decrement (int modifiers) {
 		if (MesquiteWindow.getQueryMode(this)) {
 			MesquiteWindow.respondToQueryMode("Mini scroll", command, this);
 			return;
@@ -452,7 +452,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		if (currentValue>minValue && command!=null) {
 			currentValue--;
 			tf.setText(Long.toString(currentValue));
-			command.doItMainThread(Long.toString(currentValue), CommandChecker.getQueryModeString("Mini scroll", command, this), this);
+			command.doItMainThread(Long.toString(currentValue) + " " + modifiers + " decrement", CommandChecker.getQueryModeString("Mini scroll", command, this), this);
 			enterButton.setEnabled(false);
 			decrementButton.setEnabled(currentValue>minValue);
 			incrementButton.setEnabled(currentValue<maxValue);

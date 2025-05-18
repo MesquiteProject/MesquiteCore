@@ -1235,7 +1235,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else
 			fi = getProject().getFileByID(id);
 		if (fi != null) { 
-			saveFile(fi);
+			if (!getProject().getHomeFile().fileExists()){ //no longer exists! user must have changed directories
+				saveFileAs(id);
+			}
+			else 
+				saveFile(fi);
 
 		}
 		else 

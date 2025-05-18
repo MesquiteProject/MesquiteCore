@@ -563,14 +563,14 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				basicTreeWindow.showTree();
 		}
 		else if (checker.compare(this.getClass(), "Sets the source of trees", "[name of tree source module]", commandName, "desuppressTreeSource")) {
-				if (basicTreeWindow != null) {
-					basicTreeWindow.setTreeSource(treeSourceTask);
-					basicTreeWindow.showTree();
-				}
-				resetContainingMenuBar();
-				resetAllWindowsMenus();
-				return null;
-			
+			if (basicTreeWindow != null) {
+				basicTreeWindow.setTreeSource(treeSourceTask);
+				basicTreeWindow.showTree();
+			}
+			resetContainingMenuBar();
+			resetAllWindowsMenus();
+			return null;
+
 		}
 		else if (checker.compare(this.getClass(), "Constructs a tree window referring to a block of taxa, or returns the existing window if this module has already made one.", "[number of block of taxa, 0 based]", commandName, "makeTreeWindow")) {
 			if (basicTreeWindow != null)
@@ -2284,7 +2284,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		checkPanelPositionsLegal();
 		resetBaseExplanation();
 	}
-	
+
 	public void numTreesChanged() {
 		if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
@@ -2713,7 +2713,28 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return new MesquiteInteger(currentTreeNumber);
 		}
 		else if (checker.compare(this.getClass(), "Sets the tree to be the i'th one from the current tree source", "[number of tree to be shown]", commandName, "setTreeNumber")) {
-			return goToTreeNumber(MesquiteTree.toInternal(MesquiteInteger.fromFirstToken(arguments, pos)), true);
+			int treeNumber =  MesquiteInteger.fromFirstToken(arguments, pos);
+			treeNumber = MesquiteTree.toInternal(treeNumber);
+			int modifiers =  MesquiteInteger.fromString(arguments,pos);
+			String incDec =  ParseUtil.getToken(arguments,pos);
+			if (MesquiteInteger.isCombinable(modifiers) && MesquiteEvent.optionKeyDown(modifiers) && !StringUtil.blank(incDec)){
+				Selectionable sel = treeSourceTask.getSelectionable();
+				if (sel.anySelected()){
+					if (incDec.equalsIgnoreCase("increment")){
+						while (!sel.getSelected(treeNumber) & treeNumber<treeSourceTask.getNumberOfItems(taxa)){
+							treeNumber++;
+						}
+					}
+					else if (incDec.equalsIgnoreCase("decrement")){
+						while (!sel.getSelected(treeNumber) & treeNumber>=0){
+							treeNumber--;
+						}
+					}
+					if (!sel.getSelected(treeNumber) || treeNumber<0 || treeNumber>=treeSourceTask.getNumberOfItems(taxa))
+						treeNumber = currentTreeNumber;
+				}
+			}
+			return goToTreeNumber(treeNumber, true);
 		}
 		else if (checker.compare(this.getClass(), "Present a dialog box to choose a tree from the current tree source", null, commandName, "chooseTree")) {
 			int ic = treeSourceTask.queryUserChoose(taxa, "for tree window");
@@ -2808,13 +2829,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "nextTree")) {
-			palette.paletteScroll.increment();
+			palette.paletteScroll.increment(0);
 		}
 		else if (checker.compare(this.getClass(), "Resets the title (needed for Zephyr).", null, commandName, "resetTitle")) {
 			resetTitle();
 		}
 		else if (checker.compare(this.getClass(), "Goes to the previous tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "previousTree")) {
-			palette.paletteScroll.decrement();
+			palette.paletteScroll.decrement(0);
 		}
 		else if (checker.compare(this.getClass(), "Steps through the trees.", null, commandName, "stepThroughTrees")) {
 			stepThroughTrees();
@@ -3712,7 +3733,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	private int countinvert = 0;
 
-	
+
 	/* _________________________________________________ */
 
 	void HighlightBranch(Graphics g, int N, MesquiteInteger highlight, boolean onlyIfStillInBranch) {
@@ -3723,7 +3744,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 				highlight.setValue(N); // sets the highlighed branch
 				if (treeDrawing != null && !treeDisplay.repaintPending()) {
-						treeDrawing.highlightBranch(t, N, g);
+					treeDrawing.highlightBranch(t, N, g);
 				}
 				// colorInvertBranch(t,N,g);
 				showBranchExplanation(N);
@@ -3759,7 +3780,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 	}
 
-	
+
 
 	/* _________________________________________________ */
 	public void UnhighlightBranch(Graphics g, MesquiteInteger highlight) {
@@ -3767,12 +3788,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		int wasHighlighted = highlight.getValue();
 		highlight.setValue(0);
 		if (wasHighlighted > 0 && !treeDisplay.repaintPending()) {
-				treeDisplay.getTreeDrawing().unhighlightBranch(treeDisplay.getTree(), wasHighlighted, g);
+			treeDisplay.getTreeDrawing().unhighlightBranch(treeDisplay.getTree(), wasHighlighted, g);
 		}
 		showTreeAnnotation();
 	}
 
-	
+
 	/* _________________________________________________ */
 	public void ScanFlash(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay == null || tree == null || treeDrawCoordTask == null || treeDrawCoordTask.getNamesTask() == null || treeDisplay.getTreeDrawing() == null)
@@ -3901,7 +3922,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				xTo = x;
 				yTo = y;
 				GraphicsUtil.drawXORLine(g, xFrom, yFrom, xTo, yTo, scanLineThickness, Color.lightGray);
-				
+
 			}
 			else {
 				if (highlightedBranch.getValue() != 0) {
@@ -3943,7 +3964,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						fieldTouchY = y;
 						lastFieldDragX = x;
 						lastFieldDragY = y;
-					
+
 					}
 				}
 
@@ -4039,7 +4060,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			MesquiteDouble fraction = new MesquiteDouble();
 			if (currentTreeTool.informTransfer()) {
 				int branchTo = findBranch(x, y, fraction);
-				
+
 
 			}
 			if (highlightedBranch.getValue() != 0) {
@@ -6378,14 +6399,14 @@ class BirdsEyePanel extends MesquitePanel {
 			g.setColor(Color.green);
 			GraphicsUtil.undrawXORRect(this, g, vis.x + dragOffsetX, vis.y + dragOffsetY, vis.width, vis.height);
 		}
-		
+
 		dragOffsetX = x - origTouchX;
 		dragOffsetY = y - origTouchY;
 		if (g != null) {
 			GraphicsUtil.drawXORRect(g, vis.x + dragOffsetX, vis.y + dragOffsetY, vis.width, vis.height);
 			g.dispose();
 		}
-		
+
 		MesquiteWindow.uncheckDoomed(this);
 	}
 

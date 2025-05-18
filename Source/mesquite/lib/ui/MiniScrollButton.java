@@ -271,7 +271,7 @@ public class MiniScrollButton extends MousePanel {
 	 			if (miniScroll.currentValue <= miniScroll.minValue) {
 				}
 	 			else {
-					miniScroll.decrement();
+					miniScroll.decrement(modifiers);
 				}
 	 		}
 			else if (orientation==RIGHT || orientation == UP){
@@ -279,7 +279,7 @@ public class MiniScrollButton extends MousePanel {
 
 				}
 	 			else {
-		 			miniScroll.increment();
+		 			miniScroll.increment(modifiers);
 				}
 	 		}
  			//repaint();

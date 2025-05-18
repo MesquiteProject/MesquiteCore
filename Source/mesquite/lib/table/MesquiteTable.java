@@ -56,7 +56,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	protected CornerPanel cornerCell;
 	protected ControlStrip controlStrip;
 
-	public TableMarchingAnts marchingAnts;
 	static final int AUTOSCROLLBOUNDARY = 4;
 
 
@@ -295,24 +294,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		return copied;
 	}
 
-	/* ................................................................................................................. */
-	public void adjustMarchingAnts(){
-		if (marchingAnts!=null)
-			marchingAnts.moveAnts();
-	}
-
-	/* ................................................................................................................. */
-	public void cancelMarchingAnts(){
-		if (marchingAnts!=null) {
-			marchingAnts.cancel();
-			marchingAnts=null;
-		}
-	}
-
-	/* ................................................................................................................. */
-	public void startMarchingAnts (int column1, int row1, int column2, int row2) {
-		marchingAnts = new TableMarchingAnts(this, getMatrixPanel().getGraphics(),  column1, row1, column2, row2);
-	}
+	
 	/* ................................................................................................................. */
 	MesquiteCommand repaintCommand = new MesquiteCommand("repaint", this);
 	public void repaintMainThread(){
