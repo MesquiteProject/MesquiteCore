@@ -20,9 +20,8 @@ xcrun notarytool store-credentials --apple-id "waynemaddison58@gmail.com" --team
 
 SIGNING Mesquite.app
 
+
 codesign --force --deep --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
-codesign --force --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Info.plist
-codesign --force --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app/Contents/Resources/openMesquite.png
 codesign -d --verbose=4 Mesquite.app
 spctl --assess --verbose=4 --type execute Mesquite.app
 /usr/bin/ditto -c -k --keepParent Mesquite.app Mesquite.zip
@@ -40,8 +39,8 @@ xcrun notarytool info --keychain-profile "mesquiteApp" SUBMISSION_ID
 xcrun notarytool log --keychain-profile "mesquiteApp" SUBMISSION_ID
 
 e.g.:
-xcrun notarytool info --keychain-profile "mesquiteApp" 377f5dad-d0b4-4b21-9d50-a6e4b9ba2c3a
-xcrun notarytool log --keychain-profile "mesquiteApp" bf7a1026-6d93-4ed1-9ce8-b1f38cfc09b5
+xcrun notarytool info --keychain-profile "mesquiteApp" 08763341-4e26-4d1f-bb8c-00a9834c6fde
+xcrun notarytool log --keychain-profile "mesquiteApp" 08763341-4e26-4d1f-bb8c-00a9834c6fde
 
 
 AFTER SIGNED AND NOTARIZED

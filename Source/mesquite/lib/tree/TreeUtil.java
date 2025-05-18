@@ -68,6 +68,14 @@ public class TreeUtil {
 		}
 		return true;
 	}
+	static int[] getDaughters(MesquiteTree tree, int node){
+		int num = tree.numberOfDaughtersOfNode(node);
+		int[] daughters = new int[num];
+		int count = 0;
+		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) 
+			daughters[count++] = daughter;
+		return daughters;
+	}
 	static int matchScore( int[] targetTaxaSequence, int[] clade){
 		int minScore = MesquiteInteger.unassigned;
 		int[]longer, shorter;
@@ -90,15 +98,7 @@ public class TreeUtil {
 		}
 		return minScore;
 	}
-	static int[] getDaughters(MesquiteTree tree, int node){
-		int num = tree.numberOfDaughtersOfNode(node);
-		int[] daughters = new int[num];
-		int count = 0;
-		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) 
-			daughters[count++] = daughter;
-		return daughters;
-	}
-	static boolean rotateIfUseful(MesquiteTree tree, int node, int[] targetTaxaSequence){
+	static boolean rotateIfUseful(MesquiteTree tree, int node, int[] targetTaxaSequence, boolean acceptEqual){
 		boolean rotated = false;
 		if (tree.nodeIsInternal(node)) { 
 			int[] daughters = getDaughters(tree, node);
@@ -112,7 +112,7 @@ public class TreeUtil {
 					for (int d2 = d1+1; d2<daughters.length; d2++){
 						tree.interchangeBranches(daughters[d1], daughters[d2], true, false);
 						int newScore = matchScore(targetTaxaSequence, tree.getTerminalTaxa(node) );
-						if (newScore<min){
+						if (newScore<min || (acceptEqual && newScore == min)){
 							min = newScore;
 							dX = daughters[d1];
 							dY= daughters[d2];
@@ -129,7 +129,7 @@ public class TreeUtil {
 			}
 
 			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
-				boolean drotated = rotateIfUseful(tree, daughter, targetTaxaSequence);
+				boolean drotated = rotateIfUseful(tree, daughter, targetTaxaSequence, acceptEqual);
 				rotated = rotated || drotated;
 			}
 		}
@@ -137,7 +137,7 @@ public class TreeUtil {
 	}
 
 	//rotates one tree to match other as well as possible. Returns improvement in score (if 0, no rotation done)
-	public static boolean rotateToMatch(MesquiteTree toBeRotated, Tree targetTree){
+	public static boolean rotateToMatch(MesquiteTree toBeRotated, Tree targetTree, boolean acceptEqual){
 		int[] targetTerminals = targetTree.getTerminalTaxa(targetTree.getRoot());
 		int count = 0;
 		int originalScore = matchScore(targetTerminals, toBeRotated.getTerminalTaxa(toBeRotated.getRoot()));
@@ -145,13 +145,13 @@ public class TreeUtil {
 		boolean done = false;
 		boolean rotated = false;
 		while (!done){
-			boolean trotated = rotateIfUseful((MesquiteTree)toBeRotated, toBeRotated.getRoot(), targetTerminals);
+			boolean trotated = rotateIfUseful((MesquiteTree)toBeRotated, toBeRotated.getRoot(), targetTerminals, acceptEqual);
 			rotated = rotated || trotated;
 			int newScore = matchScore(targetTerminals, toBeRotated.getTerminalTaxa(toBeRotated.getRoot()));
-			if (newScore>=oldScore)
-				done = true;
-			else
+			if (newScore<oldScore || (acceptEqual && newScore == oldScore))
 				oldScore = newScore;
+			else
+				done = true;
 			count++;
 			if (count>1000){
 				done = true;

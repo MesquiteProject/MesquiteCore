@@ -916,8 +916,10 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 
 		setSize(getFieldWidth(), getFieldHeight());
 		//super.paint(g);
-		if (tree==null)
-			MesquiteMessage.warnProgrammer("tree NULL in tree draw coord");
+		if (tree==null) {
+			if (MesquiteTrunk.developmentMode)
+				MesquiteMessage.warnProgrammer("tree NULL in tree draw coord printing. Probably not a problem!");
+		}
 		else if ((!suppress) && (!tree.isLocked())) {
 			repaintsPending = 0;
 
