@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Publication Quality Trees<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 3.9Dev<br />
-      October 2024<br /></td>
+    <td width="14%">Version 4.0beta<br />
+      May 2025<br /></td>
   </tr>
 </table>
 
@@ -201,8 +201,13 @@
     
     
 <h1 id="toc0"><a name="Publication Quality Trees"></a>Publication Quality Trees</h1>
- Mesquite is not designed for rigorous tree-estimation procedures, such a Maximum Parsimony, Maximum Likelihood, or Bayesian tree estimation. However, trees generated from programs such as PAUP, PHYLIP, and MrBayes can be read into and manipulated in Mesquite. This guide will help you perform these manipulations to create a tree usable for scientific publication. Users should begin by familiarizing themselves with the <a  href="Files.html" rel="nofollow">Mesquite file structure</a>. There is also a <a href="https://www.youtube.com/watch?v=wFJLXWOOw5Q">Youtube video showing you how to make publication quality trees</a>.<br />
-<br />
+  <hr />
+ <h3>***&nbsp; This page has not been updated yet for version 4 ***</h3>
+ <hr />
+
+ <p> Mesquite is not designed for rigorous tree-estimation procedures, such a Maximum Parsimony, Maximum Likelihood, or Bayesian tree estimation. However, trees generated from programs such as PAUP, PHYLIP, and MrBayes can be read into and manipulated in Mesquite. This guide will help you perform these manipulations to create a tree usable for scientific publication. Users should begin by familiarizing themselves with the <a href="Files.html" rel="nofollow">Mesquite file structure</a>. There is also a <a href="https://www.youtube.com/watch?v=wFJLXWOOw5Q">Youtube video showing you how to make publication quality trees</a>.<br />
+   <br />
+ </p>
 <h2 id="toc1"><a name="Publication Quality Trees-Step 1: Get a tree"></a>Step 1: Get a tree</h2>
  <ul><li>Within Mesquite — Mesquite can provide trees from simulations, some basic tree searches, or default trees. If you do not have trees from other sources, you can open a tree window from the Taxa&amp;Trees menu by selecting New Tree Window. If you have multiple taxa blocks in the file, you will be prompted to choose among the blocks included in the file. You will then be asked to choose a tree source. There are at least 13 different sources for trees, but we will only deal with the first two here. &quot;Stored Trees&quot; refers to trees that are stored in the Mesquite file. If you haven't stored any trees in the file yet, this option won't be available. Selecting &quot;Default Trees&quot; will open a Tree Window corresponding to a Tree Block with three trees: a fully resolved symmetrical tree (Default symmetrical), a completely unresolved tree (Default bush) and a ladderized tree (Default ladder) (the names of trees are shown in the panel beneath the the tree). You may manupilate any one of these trees, but be sure to store a copy of the tree in the Mesquite file (Tree &gt; Store Copy of Tree As...), or it will be lost.</li><li>Other sources — When importing trees from other files, be sure that the taxon names from the tree file match the taxon names in the Mesquite File. Although importated trees may contain fewer taxa than are in the Taxa Block, they cannot contain taxa that are not included in the Mesquite file. If the trees you wish to import contain taxa that are not represented in the Taxa Block you should either (1) add those taxa to the correspondidng taxa block in Mesquite ( List &gt; Add Taxa... from Taxa Window) or (2) delete those taxa from the tree file before importing them into Mesquite. We recommend the former (adding Taxa to file), in order to reduce the probabilty of inadvertantly altering tree structure.<br />
 Importing trees from files can be done through Taxa &amp;Trees &gt; Import File with Trees... menu option. To include the trees in the Mesquite file, select &quot;Include Contents...&quot;. Alternatively, you may open a Tree Window corresponding to trees from external sources from Taxa&amp;Trees &gt; New Tree Window by selecting &quot;Use Trees from Separate File&quot; as the source of trees for the new Tree Window.<br />
@@ -261,7 +266,7 @@ You can remove colors from branches by right/control-clicking on the Branch Colo
     </div>
 	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
   <div id="footer">
-    <p> ©2024 Wayne P. Maddison &amp;  David R. Maddison </p>
+    <p> ©2025 Wayne P. Maddison &amp;  David R. Maddison </p>
   <!-- end #footer --></div>
 <!-- end #container --></div>
 

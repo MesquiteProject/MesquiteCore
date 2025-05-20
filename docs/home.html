@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" --><!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 3.9Dev<br />
-      October 2024<br /></td>
+    <td width="14%">Version 4.0beta<br />
+      May 2025<br /></td>
   </tr>
 </table>
 
@@ -200,28 +200,24 @@
 <!-- InstanceBeginEditable name="content" --><br />
 <br />
 <h1 id="toc0"><a name="Mesquite: A modular system for evolutionary analysis"></a><span style="font-size: 130%;">Mesquite: A modular system for evolutionary analysis</span></h1>
- <h1 id="toc1"><a name="Current release version: 3.4 [download]"></a>Version: 3.81</h1>
- <br />
-Mesquite is modular, extendible software for evolutionary biology, designed to help biologists organize and analyze comparative data about organisms. Its emphasis is on phylogenetic analysis, but some of its modules concern population genetics, while others do non-phylogenetic multivariate analysis. Because it is modular, the analyses available depend on the modules installed.<br />
-<br />
-<br />
-<div style="text-align: center"><a href="/file/view/analysesMedleyLg.jpg"><img src="files/analysesMedley.jpg" alt="analysesMedley.jpg" width="737" height="260" ;" title="analysesMedley.jpg" /></a></div><br />
-<br />
-<span style="line-height: 1.5;">Mesquite also has many features for managing and processing data, including processing of chromatograms, sequence alignment, editing of morphometric data, and others.</span><br />
-<br />
-<div style="text-align: center"><a href="/file/view/HomePageData.jpg"><img src="files/HomePageData.jpg" alt="HomePageData.jpg" width="739" height="253"  title="HomePageData.jpg" /></a></div>
-<p><br />
-  More examples of Mesquite's features can be found in <a  href="What Mesquite does.html">What Mesquite Does</a>. There is also an outline of <a  href="Mesquites Features.html">Mesquite's features.</a> Additional packages can be installed to <a  href="Additional%20Mesquite%20Packages.html">extend Mesquite's capabilities</a>. </p>
-<p>As of version 3.80, the release versions of Mesquite come bundled with <a href="https://zephyr.mesquiteproject.org">Zephyr</a> (which enables Mesquite to start phylogenetic analysies for programs such as IQ-TREE, RAxML, PAUP*, and TNT, and harvest the results), <a href="https://chromaseq.mesquiteproject.org">Chromaseq</a>  (which enables Mesquite to process Sanger sequencing chromatograms and edit base calls), and  <a href="https://cartographer.mesquiteproject.org">Cartographer</a>  (which enables Mesquite to produce distribution maps with dots, stars, and other symbols).<br />
+ <h2 id="toc1"><a name="thisVersion"></a>Manual for version 4.0 beta</h2>
+ <p>For beginning users, we suggest the <a href="#videoIntroduction">video introduction</a> below, which introduces you to the major windows of Mesquite: the character matrix editor, the tree window, and the windows listing and managing taxa, trees, characters, and matrices. We also suggest you browse the menus here in the manual, at left, and that you take a self-guided tour through the example files (in Mesquite_Folder/examples). Look at <a href="Learning how to use Mesquite.html">learning Mesquite</a> for a guide about how best to become familiar with Mesquite.
+	  </p>
+	  <p>Mesquite is complex, but you can learn simple paths through it easily, just as you can with a city. We offer <a  href="https://www.youtube.com/channel/UCfSmgC0O_dWLI0PEoXZbS4Q" rel="nofollow">Youtube videos</a>, and this manual. Because Mesquite is modular, new functions can be added by adding extra packages, which means this manual cannot be fully complete. Three extra packages that now come bundled with Mesquite have their own manuals: <a href="https://zephyr.mesquiteproject.org">Zephyr</a> (which enables Mesquite to start phylogenetic analysies for programs such as IQ-TREE, RAxML, PAUP*, and TNT, and harvest the results), <a href="https://chromaseq.mesquiteproject.org">Chromaseq</a>  (which enables Mesquite to process Sanger sequencing chromatograms and edit base calls), and  <a href="https://cartographer.mesquiteproject.org">Cartographer</a>  (which enables Mesquite to produce distribution maps with dots, stars, and other symbols).<br />
   <br />
-  This manual introduces you to the Mesquite system for analysis in evolutionary biology. Its organization follows the manual of Mesquite 2.75, but we are planning to restructure it to serve as a better introduction to Mesquite's use. Some aspects of this documentation may be out of date, for example referring to menus that have moved or been renamed. If you find an obsolete reference, please contact us at <strong>info {at} mesquiteproject.org</strong>.<br />
+  To ask questions and find discussions about Mesquite, please go to the <a href="https://groups.google.com/g/mesquite-project">Mesquite Google Group</a>. You may contact the Mesquite developers at <strong>info {at} mesquiteproject.org</strong>.<br />
+  <br />
+	<i>Note: This manual is not yet updated for version 4 on many pages. Some pages have a warning; others do not.</i>
   <br />
 </p>
-<h2 id="toc2"><a name="Current release version: 3.4 [download]-Getting started"></a>Getting started</h2>
- To begin using Mesquite on the Mac OS, Unix/Linux or Windows, see the <a  href="Installation.html">installation instructions</a>. We encourage you to explore the example files in the &quot;examples&quot; directory of the Mesquite_Folder.<br />
+<h2 id="toc2"><a name="videoIntroduction"></a>A basic introduction to Mesquite</h2>
+<center><iframe width="720" height="405" src="https://www.youtube.com/embed/xsq5wdPVm4w?si=lB4t3mM3VHlg3RN_" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>	  </center>
+	  
 <br />
-Once you have installed Mesquite, we recommend that you read the <a  href="Learning%20how%20to%20use%20Mesquite.html">Learning Mesquite</a> page to learn how best to become familiar Mesquite. And, although reading this documentation will help, not all features are described here. <span style="line-height: 1.5;">Because many analyses are possible and those available depend on what modules are installed and loaded, a comprehensive manual cannot easily be written. For this reason, many analyses available in Mesquite are not included in any written manual. It is thus important to learn how to discover Mesquite's capabilities from the program itself, and documented on t</span>he <a  href="Learning%20how%20to%20use%20Mesquite.html">Learning Mesquite</a> page. <span style="line-height: 1.5;">You are encouraged to explore, and invent new analyses. </span><br />
 <br />
+	  <p>
+  More examples of Mesquite's features can be found in <a  href="What Mesquite does.html">What Mesquite Does</a>. There is also an outline of <a  href="Mesquites Features.html">Mesquite's features.</a> Additional packages can be installed to <a  href="Additional%20Mesquite%20Packages.html">extend Mesquite's capabilities</a>. </p>
+
 <span style="line-height: 1.5;">Should you wish to install additional features that are beyond the core Mesquite installation, please see the page on <a  href="Additional%20Mesquite%20Packages.html">Installing Additional Packages</a>. </span><br />
 <br />
 <h2 id="toc3"><a name="Current release version: 3.4 [download]-Mesquite is complex, but it is approachable"></a>Mesquite is complex, but it is approachable</h2>
@@ -231,7 +227,7 @@ Once you have installed Mesquite, we recommend that you read the <a  href="Learn
  We encourage you to report bugs or misbehaviour of Mesquite. You may find a problem that seems so obvious to you that you expect we must have seen it. Please report it anyway, because perhaps it occurs only in particular circumstances that we didn't test, or it occurs with a combination of options that we haven't tested recently. The <a  href="Bugs%20and%20Troubleshooting.html">Bugs and Troubleshooting</a> page has more details on reporting bugs.<br />
 <br />
 <h2 id="toc5"><a name="Current release version: 3.4 [download]-Conventions of this manual"></a>Conventions of this manual</h2>
- For compactness, we will use a special convention to refer to menu items. For example,File&gt;Save File refers to the Save File menu item of the File menu. (Tree Window)Display&gt;Tree Form&gt;Diagonal Tree refers to the Diagonal Tree menu item of the Tree Form submenu of the Display menu that is associated with the Tree Window. By referring to a menu as &quot;associated with&quot; a window, we mean that that menu is present in the menu bar at the top of the screen when the window is frontmost (on the MacOS), or that the menu is embedded within the window (on the Windows OS and most other operating systems).<br />
+ For compactness, we will use a special convention to refer to menu items. For example,File&gt;Save File refers to the Save File menu item of the File menu. (Tree Window)Form&gt;Tree Form&gt;Diagonal Tree refers to the Diagonal Tree menu item of the Tree Form submenu of the Form menu that is associated with the Tree Window. By referring to a menu as &quot;associated with&quot; a window, we mean that that menu is present in the menu bar at the top of the screen when the window is frontmost (on the MacOS), or that the menu is embedded within the window (on the Windows OS and most other operating systems).<br />
 <br />
 <h3 id="toc6"> </h3>
 <!-- InstanceEndEditable -->
@@ -241,7 +237,7 @@ Once you have installed Mesquite, we recommend that you read the <a  href="Learn
     </div>
 	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
   <div id="footer">
-    <p> ©2024 Wayne P. Maddison &amp;  David R. Maddison </p>
+    <p> ©2025 Wayne P. Maddison &amp;  David R. Maddison </p>
   <!-- end #footer --></div>
 <!-- end #container --></div>
 
