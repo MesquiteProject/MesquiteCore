@@ -119,6 +119,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 					stop = true;
 				}
 				else {
+					System.err.println("@ result code " + result);
 					progIndicator.increment();
 					if (im == 0)
 						progIndicator.toFront();

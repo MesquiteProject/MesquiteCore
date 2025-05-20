@@ -67,6 +67,8 @@ public abstract class DrawTreeCoordinator extends MesquiteModule  {
 
 	/** Returns true if will have preferred size for the tree drawing */
 	public abstract boolean hasPreferredSize();
+	public abstract int getTreeDrawTaskEdgeWidthMemory();
+	public abstract void recordTreeDrawTaskEdgeWidthMemory(int width);
 
 	/** return the module responsible for drawing terminal taxon names. */
 	public abstract DrawNamesTreeDisplay getNamesTask();

@@ -26,6 +26,8 @@ import mesquite.lib.tree.TreeDecorator;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayDrawnExtra;
 import mesquite.lib.tree.TreeDisplayLegend;
+import mesquite.lib.tree.TreeDisplayRequests;
+import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDialog;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQTextArea;

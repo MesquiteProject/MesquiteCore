@@ -1303,6 +1303,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (block !=null) {
 				if (files.indexOf(block.getFile())<0) {
 					MesquiteMessage.warnProgrammer("Error: NEXUS block found referring to file that no longer exists " + block.getClass());
+					if (MesquiteTrunk.developmentMode)
+						MesquiteMessage.printStackTrace();
 				}
 				block.dispose();
 				nexusBlocks.removeElement(block, true);

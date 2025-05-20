@@ -432,6 +432,8 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 				firstFile = false;
 				return false;
 			}
+			if (fileProcessors.size() == 0)
+				return false;
 			boolean firstResult = true;
 			if (warned == null) {
 				warned = new boolean[fileProcessors.size()];
@@ -565,8 +567,11 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 								results.setLength(0);
 								filesFound++;
 								boolean processFileRequestCancelled = !processFile( file, results, requestToSequester);  
-								if (processFileRequestCancelled) 
+								if (processFileRequestCancelled) {
+									processProject.getCoordinatorModule().closeFile(file, true);
+									progIndicator.goAway();
 									return;
+								}
 								if ( firstResultsOverall && resultsHeading.length()>0){
 									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", resultsHeading.toString(), true);
 									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", StringUtil.lineEnding(), true);

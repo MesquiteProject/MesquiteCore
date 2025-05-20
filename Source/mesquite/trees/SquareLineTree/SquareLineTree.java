@@ -34,12 +34,12 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 				"The calculator for node locations is chosen automatically or initially");
 	}
 	/*.................................................................................................................*/
-
+	DrawTreeCoordinator dtc;
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
 	Vector drawings;
-	static int previousEdgeWidth = 4;
-	int oldEdgeWidth = previousEdgeWidth;
+	static final int defaultEdgeWidth = 4;
+	int oldEdgeWidth = MesquiteInteger.unassigned;
 	MesquiteString nodeLocsName;
 	MesquiteBoolean showEdgeLines = new MesquiteBoolean(true);  //these needs to be set default true; otherwise Trace Character makes branches disappear in most common cases
 	/*.................................................................................................................*/
@@ -54,7 +54,13 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 			mss.setSelected(nodeLocsName);
 		}
 		drawings = new Vector();
-
+		dtc = (DrawTreeCoordinator)findEmployerWithDuty(DrawTreeCoordinator.class);
+		/*if (dtc != null) {
+			int mem = dtc.getTreeDrawTaskEdgeWidthMemory();
+			if (MesquiteInteger.isCombinable(mem)){
+				oldEdgeWidth = mem;
+			}
+		}*/
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
 		addCheckMenuItem(null,"Show Edge Lines", makeCommand("showEdgeLines",  this), showEdgeLines);
 		return true;
@@ -65,6 +71,12 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 		iQuit();
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
+		if (!MesquiteInteger.isCombinable(oldEdgeWidth))
+			oldEdgeWidth = dtc.getTreeDrawTaskEdgeWidthMemory();
+		if (!MesquiteInteger.isCombinable(oldEdgeWidth)) {
+			oldEdgeWidth = defaultEdgeWidth;
+			dtc.recordTreeDrawTaskEdgeWidthMemory(oldEdgeWidth);
+		}
 		SquareLineTreeDrawing treeDrawing =  new SquareLineTreeDrawing (treeDisplay, numTaxa, this);
 		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 
@@ -108,7 +120,7 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 				newWidth = MesquiteInteger.queryInteger(containerOfModule(), "Set edge width", "Edge Width:", oldEdgeWidth, 1, 99);
 			if (newWidth>0 && newWidth<100 && newWidth!=oldEdgeWidth) {
 				oldEdgeWidth=newWidth;
-				previousEdgeWidth = oldEdgeWidth;
+				dtc.recordTreeDrawTaskEdgeWidthMemory(oldEdgeWidth);
 				Enumeration e = drawings.elements();
 				while (e.hasMoreElements()) {
 					Object obj = e.nextElement();
@@ -172,7 +184,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	public int xFrom, yFrom, xTo, yTo;
 	public SquareLineTree ownerModule;
 	public int edgewidth = 4;
-	public int preferredEdgeWidth = SquareLineTree.previousEdgeWidth;
+	public int preferredEdgeWidth;
 	int oldNumTaxa = 0;
 	float inset=(float)1.0;
 	private boolean ready=false;
@@ -183,6 +195,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	public SquareLineTreeDrawing (TreeDisplay treeDisplay, int numTaxa, SquareLineTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		edgewidth = ownerModule.oldEdgeWidth;
+		preferredEdgeWidth = ownerModule.dtc.getTreeDrawTaskEdgeWidthMemory();
 		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 4); //better if only did this if tracing on
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;

@@ -444,6 +444,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				return -1;
 
 			perBox = spacingPerCharacter();
+			x += perBox; //to shift it over one, in case there are terminal boxes
+
 			int count = 0;
 			int baseIC = data.selectedIndexToPartIndex(baseICSel);
 			for (int ic = baseIC; (count+1)*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
@@ -459,6 +461,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				return -1;
 
 			perBox = spacingPerCharacter();
+			if (treeDisplay.isDown())
+				y += perBox;
 			int count=0;
 			int baseIC = data.selectedIndexToPartIndex(baseICSel);
 			for (int ic = baseIC; (count+1)*perBox<fieldSize() && (ic<data.getNumChars()); ic=data.nextPart(ic, ownerModule.selectedCharatersOnly)){
@@ -530,8 +534,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 					double x = getBase();
 					
 					perBox = spacingPerCharacter();
-					if (treeDisplay.isLeft())
-						x += perBox;
+					x += perBox; //to shift it over one, in case there are terminal boxes
 					numIC = 0;  //redundant, but avoids isolating an example
 					int count = 0;
 					int baseIC = data.selectedIndexToPartIndex(baseICSel);
@@ -565,6 +568,8 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 					double y = getBase();
 
 					perBox = spacingPerCharacter();
+					if (treeDisplay.isDown())
+						y += perBox;
 					numIC = 0;  //redundant, but avoids isolating an example
 					int count=0;
 					int baseIC = data.selectedIndexToPartIndex(baseICSel);

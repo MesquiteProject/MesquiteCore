@@ -67,6 +67,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	MesquiteBoolean showBrLenLabelsOnTerminals = new MesquiteBoolean(true);
 	MesquiteInteger numBrLenDecimals = new MesquiteInteger(6);
 	public Color brLenColor=Color.blue;
+	ListableVector edgeWidthMemory = new ListableVector();
 
 	MesquiteString highlightModeName;
 	String[] highlightChoices = new String[]{"No Highlight", "Gray Box", "Enlarge 1.25X", "Enlarge 1.5X", "Enlarge 1.75X", "Enlarge 2X"};
@@ -129,7 +130,28 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		addMenuItem(textMenu, "-", null);
 		return true;
 	}
-
+	
+	
+	public int getTreeDrawTaskEdgeWidthMemory(){ //refers only to current tree draw task
+		if (treeDrawTask == null)
+			return MesquiteInteger.unassigned;
+		String name = treeDrawTask.getName();
+		MesquiteInteger edW = (MesquiteInteger)edgeWidthMemory.elementWithName(name);
+		if (edW != null)
+			return edW.getValue();
+		return MesquiteInteger.unassigned;
+		
+	}
+	public void recordTreeDrawTaskEdgeWidthMemory(int width){//refers only to current tree draw task
+		if (treeDrawTask == null)
+			return;
+		String name = treeDrawTask.getName();
+		MesquiteInteger edW = (MesquiteInteger)edgeWidthMemory.elementWithName(name);
+		if (edW != null)
+			edW.setValue(width);
+		else
+			edgeWidthMemory.addElement(new MesquiteInteger(name, width), false);
+	}
 	public boolean getShowBrLensUnspecified(){
 		return showBrLensUnspecified.getValue();
 	}
