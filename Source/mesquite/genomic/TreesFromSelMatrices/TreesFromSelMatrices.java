@@ -118,8 +118,10 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 					userCancel=true;
 					stop = true;
 				}
+				else if (result<0){ //error
+				stop = true;
+				}
 				else {
-					System.err.println("@ result code " + result);
 					progIndicator.increment();
 					if (im == 0)
 						progIndicator.toFront();

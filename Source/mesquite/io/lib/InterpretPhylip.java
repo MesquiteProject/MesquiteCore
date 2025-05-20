@@ -430,7 +430,6 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		int numChars = data.getNumChars();
 		int counter;
 		String pad = "          ";
-		log("writeTaxaWithAllMissing " + writeTaxaWithAllMissing);
 		while (pad.length() < taxonNameLength)
 			pad += "  ";
 		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(1000);
