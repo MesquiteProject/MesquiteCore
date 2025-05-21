@@ -70,20 +70,20 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "4.alpha";
+		return "4.beta";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 395;
+		return 399;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.95;
+		return 3.99;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "April 2025"; //"April 2007";
+		return "May 2025"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -1814,7 +1814,10 @@ public class Mesquite extends MesquiteTrunk
 	String noticeLocation = "http://"; //before release, change URL to "http://"
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets the packages of modules loaded at startup, using a configuration file", null, commandName, "setConfig")) {
+		if (checker.compare(this.getClass(), "A command that is ignored; can give to menu items so that they are active but do nothing", "[]", commandName, "null")) {
+			
+		}
+		else if (checker.compare(this.getClass(), "Sets the packages of modules loaded at startup, using a configuration file", null, commandName, "setConfig")) {
 			//need Module Activation menu item with submenu items: Use All Installed Modules; Choose Module set
 			//use MesquiteTrunks.configs, a vector of configurations found (each stores name, explanation)
 			Listable[] list = new Listable[configurations.size()];
@@ -2782,7 +2785,7 @@ public class Mesquite extends MesquiteTrunk
 			mesquiteTrunk.init();
 			//EMBEDDED: include this  
 			((Mesquite)mesquiteTrunk).start(); 
-
+			MesquiteCommand.nullCommand = new MesquiteCommand("null", MesquiteTrunk.mesquiteTrunk);
 			if (MesquiteTrunk.debugMode)
 				System.out.println("main constructor 7");
 			// open the files requested at startup

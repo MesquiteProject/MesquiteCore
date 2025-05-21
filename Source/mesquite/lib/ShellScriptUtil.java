@@ -85,7 +85,7 @@ public class ShellScriptUtil  {
 	}
 	/*.................................................................................................................*/
 	public static String getChangeDirectoryCommand(String directory){
-		return getChangeDirectoryCommand(false, directory);
+		return getChangeDirectoryCommand(MesquiteTrunk.isWindows(), directory); //Debugg.println why was this false?
 	}
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(boolean isWindows, String filePath){
@@ -108,7 +108,7 @@ public class ShellScriptUtil  {
 	}
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(String filePath){
-		return getRemoveCommand(false, filePath);
+		return getRemoveCommand(MesquiteTrunk.isWindows(), filePath); //Debugg.println why was this false?
 	}
 	
 	/** This returns whether or not an exit command for shell scripts is available

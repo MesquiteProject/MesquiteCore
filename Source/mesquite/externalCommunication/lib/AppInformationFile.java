@@ -36,6 +36,11 @@ public class AppInformationFile implements Listable {
 	public AppInformationFile(String appNameWithinAppsDirectory) {
 		this.appNameWithinAppsDirectory = appNameWithinAppsDirectory;
 	}
+	
+	public String toString(){
+		return "AppInformationFile " + appName + " / " + compiledAs + " / " + path + " / " + version 
+				+ " / " + appNameWithinAppsDirectory;
+	}
 	/*.................................................................................................................*/
 	public String getAppInfoFilePath(){
 		if (MesquiteTrunk.isMacOSX())

@@ -20,6 +20,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
 import mesquite.lib.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaPartition;
@@ -34,6 +35,7 @@ import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MQTextArea;
 import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MiniScroll;
@@ -1754,21 +1756,32 @@ class ContainedAssocExtra extends TreeDisplayDrawnExtra {
 	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 	}
-
-	/**to inform TreeDisplayExtra that cursor has just entered branch N*/
-	public void cursorEnterBranch(Tree tree, int N, Graphics g){
+	String numStartEnd(Tree tree, int N){
 		int numbersAtEnd = drawing.history.getNumberContainedNodes(N);
 		int numbersAtStart = -1;
 		int anc = tree.parentOfNode(N,1);
 		if (anc>=0){
 			numbersAtStart = drawing.history.getNumberContainedNodes(anc);
-			MesquiteMessage.println("Number of contained branches at start: "+numbersAtStart + ",  at end: " + numbersAtEnd);
+			return "at start: "+numbersAtStart + ",  at end: " + numbersAtEnd;
 		}
-		else 
-			MesquiteMessage.println("Number of contained branches at end: " + numbersAtEnd);
+		else {
+			return "at end: " + numbersAtEnd;
+		}
+	}
+	/**to inform TreeDisplayExtra that cursor has just entered branch N*/
+	public void cursorEnterBranch(Tree tree, int N, Graphics g){
+		MesquiteWindow w = ownerModule.containerOfModule();
+		w.setExplanation("Number of contained branches "+numStartEnd(tree, N));
+		
 		super.cursorEnterBranch(tree, N, g);
 	}
 
+	/* ========================================= */
+	/**Add any desired menu items to the right click popup*/
+	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branch){
+		popup.addItem("# contained branches "+numStartEnd(tree, branch), ownerModule, MesquiteCommand.nullCommand, "");
+
+	}
 
 
 }

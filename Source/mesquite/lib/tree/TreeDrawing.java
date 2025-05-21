@@ -269,13 +269,15 @@ public abstract class TreeDrawing  {
 			g.setPaintMode();
 			return;
 		}
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics5(g);		
 		g.setColor(Color.yellow);
 		try{
 			fillBranch(tree, N, g);
 		}
 		catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
 		}
-		g.setPaintMode();
+		ColorDistribution.setComposite(g, composite);		
 		g.setColor(Color.black);
 	}
 	/*_________________________________________________*/

@@ -232,7 +232,7 @@ public class AppHarvester extends MesquiteInit {
 			AppInformationFile appInfoFile;
 			for (int iv=0; iv<appInformationFileVector.size(); iv++) {
 				appInfoFile = (AppInformationFile)(appInformationFileVector.elementAt(iv));
-				if (appInfoFile.isPrimary() && officialAppNameInAppInfo.equalsIgnoreCase(appInfoFile.getAppName())){
+				if (appInfoFile.isPrimary() && officialAppNameInAppInfo.equalsIgnoreCase(appInfoFile.getAppName())){  
 					return appInfoFile;
 				}
 			}
@@ -241,6 +241,8 @@ public class AppHarvester extends MesquiteInit {
 	}
 	/*.................................................................................................................*/
 	public static void setAsPrimary(String officialAppNameInAppInfo, AppInformationFile primary, boolean storePreferences) {
+		if (primary == null)
+			return;
 		if (appInformationFileVector!=null && StringUtil.notEmpty(officialAppNameInAppInfo)) {
 			AppInformationFile appInfoFile;
 			for (int iv=0; iv<appInformationFileVector.size(); iv++) {

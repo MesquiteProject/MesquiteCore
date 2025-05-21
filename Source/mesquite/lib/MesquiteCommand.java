@@ -52,7 +52,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	public static Vector classesLinked, classesUnlinked, countsOfClasses; //to detect memory leaks
 	private Logger logger = null;
 	private Logger supplementalLogger = null;
-	
+	public static MesquiteCommand nullCommand;
 	static {
 		currentThreads = new ListableVector(10);
 		if (MesquiteTrunk.checkMemory) {
@@ -135,7 +135,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 			logString +=  " \"" + arguments + "\"";
 		if (ownerObject instanceof Listable)
 			logString = ((Listable)ownerObject).getName() + logString;
-		else
+		else if (ownerObject != null)
 			logString = "[" + ownerObject.getClass().getName() + "]"  + logString;
 		if (separateThread)
 			logString += " -- on separate thread ";

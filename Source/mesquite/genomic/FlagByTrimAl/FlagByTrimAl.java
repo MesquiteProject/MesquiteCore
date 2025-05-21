@@ -244,7 +244,8 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 				String columnsPath = rootDir + unique + "columns.txt";
 				if (!MesquiteFile.fileExists(columnsPath)) {
 					MesquiteMessage.warnUser(" No trimming results file for matrix " + data.getName() + "; columns.txt file not found");
-					deleteSupportDirectory();
+					if (!MesquiteTrunk.developmentMode)
+						deleteSupportDirectory();
 					return flags;
 			}
 				String columnsText = MesquiteFile.getFileContentsAsString(columnsPath);
@@ -286,7 +287,12 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 
 				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
-			else MesquiteMessage.warnUser(" Error status returned from attempt to run trimAl: " + resultStatus);
+			else {
+				MesquiteMessage.warnUser(" Error status returned from attempt to run trimAl: " + resultStatus);
+				if (!MesquiteTrunk.developmentMode)
+				deleteSupportDirectory(); 
+				return flags;
+			}
 			deleteSupportDirectory(); 
 
 		}
