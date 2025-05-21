@@ -1507,7 +1507,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		BasicTreeWindowCoord btwc = (BasicTreeWindowCoord)ownerModule.findEmployerWithDuty(BasicTreeWindowCoord.class);
 		if (btwc != null)
-			t = btwc.getUniqueTreeWindowName(t);
+			t = btwc.getUniqueTreeWindowName(t, this);
 		setTitle(t);
 	}
 

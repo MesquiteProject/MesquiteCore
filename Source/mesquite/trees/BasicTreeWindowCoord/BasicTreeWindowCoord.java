@@ -65,12 +65,21 @@ public class BasicTreeWindowCoord extends FileInit {
 			return getProject().getTaxaReferenceExternal(d);
 	}
 	
-	public String getUniqueTreeWindowName(String proposed){
-		if (treeWindows == null || treeWindows.indexOfByName(proposed)<0)
+	boolean otherWithNameOtherThanThisOne(String proposed, MesquiteWindow w){
+		for (int i = 0; i<treeWindows.size(); i++){
+			Listable ow = treeWindows.elementAt(i);
+			if (ow != w && ow.getName().equals(proposed))
+				return true;
+		}
+		return false;
+	}
+	
+	public String getUniqueTreeWindowName(String proposed, MesquiteWindow w){
+		if (treeWindows == null || !otherWithNameOtherThanThisOne(proposed, w))
 			return proposed;
 		proposed += " *";
 		while (true){
-			if (treeWindows.indexOfByName(proposed)<0)
+			if (!otherWithNameOtherThanThisOne(proposed, w))
 				return proposed;
 			proposed += "*";
 		}

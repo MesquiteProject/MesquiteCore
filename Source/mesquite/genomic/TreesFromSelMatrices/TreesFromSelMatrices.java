@@ -120,6 +120,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 				}
 				else if (result<0){ //error
 				stop = true;
+				logln("Error in tree inference! Tree inferences will be stopped."); 
 				}
 				else {
 					progIndicator.increment();
